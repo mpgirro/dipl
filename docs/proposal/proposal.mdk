@@ -1,0 +1,70 @@
+[INCLUDE=style/lncs]
+Title        : Do sufficiently concurrent programming languages need microservice architectures?
+Subtitle     : Master Thesis Proposal [DRAFT]
+Author       : Maximilian Irro
+Email        : maximilian.irro@tuwien.ac.at
+
+Title Footer : April 2017
+
+Package       : [left=2.6cm,right=2.5cm,top=2.5cm,bottom=2.5cm] geometry
+
+Toc depth    : 1 
+Bibliography : proposal
+Bib style    : ieeetr
+Logo         : False
+
+[TITLE]
+
+[TOC]
+
+# Problem Statement
+
+In 2014, a new architectures style called *microservice architecture* emerged for designing software applications as distributed systems of loosley coupled, independently deployable, single purpose services.
+
+**blablabla über microservices**
+
+However, it is surpising that this architectural style was adopted by developers quickly and with gread **begeisterung**. It seems that splitting up a - presumingly easier to understand - monolythic applications into a - presumingly harder to understand - distributed system made up of many loosley coupled and highly cohesive (micro)applications makes it in fact either easier for the developers to understand or solves many pressing issues when in comes to dealing with the many requirements big applications have to serve today.
+
+If we take a closer look at common characteristics of microservice architectures, we will find that they look suprisingly similar to some object oriented design principles:
+
+~ Begin Columns
+~~ Column
+**OO design principles**:
+
+* "*good OO design should be loosely coupled and highly cohesive*"
+~~
+~~ Column { padding-left: 4ex; }
+**microservice archtiectures**:
+
+* "*aim to be as decoupled and as cohesive as possible*"
+~~
+~ End Columns
+
+**RQ**: What are the commonalities of object oriented design principles and microservice architectures?
+
+This rises the question of why already programmers feel the need to design their software applications in the form of micrsoservices, when the object oriented models as well as many sphisticated concurrency constructs of todays established programming languages have been around for decades. 
+
+**RQ**: Do sufficiently concurrent languages need microservice architectures?
+
+&pagebreak;
+
+# Expected Results
+
+The author expects that this work will result in an answer to the main research question of "*No: sufficiently concurrent programming languages do not need microservice architectures*". Many of the design principles are already established in other programming language principles, first of all object oriented design. For all of them, concurrency models have been developed and are widely available for developers to use. 
+Therefore, in many of todays concurrent programming languages, microservice architectures are only used because the languages concurrency models and primitives make it harder for developers to design, implement, debug and maintain - therefore ultimately *understand* - the software architectures that serve the same design goals as the corresponding microservice architecture does.
+
+However, the author also expects that the only argument remaining in favour of microservice architectures will be that todays concurrent by design programming languages do not (yet) provide solutions for an independently deploying of their concurrent components, e.g. the actors in the actor model. A microservice architecture has this property inherently. Each service (= concurrent architecture component) is its own sophisticated program and therefore at least a system process on the same machine. This makes it possible to achieve high scalability simply through distributing the microservices to multiple machines. 
+
+An expected conclusion of this work will therefore be, that microservice architectures will *not* be classified as a symptom to a problem that should have been already solved on a programming language level (as the thesis title might imply), but that they are merely a solution to the need for high scalability. On the other hand, many of the software applications being developed today using microservices are consequently a side effect, for developers grasp for easier to understand concurrency in their architectures. Micorservices inherently force them to plan the *separation of concernces* (and related principles we know from object oriented design) in more detail than programming languages usually do, resulting in an easier to understand concurrency model in their application architectures.
+
+# Methodology and Approach
+
+* Literature Review
+* Proof of Concept Implementation => **TODO** wovon?!
+
+# State of the Art
+
+# Relevance to the Software Engineering & Internet Computing Curricula
+
+[BIB]
+
