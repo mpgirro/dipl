@@ -1,0 +1,121 @@
+[INCLUDE=style/template]
+
+Title        : ???
+Subtitle     : 
+Author       : Maximilian Irro
+Title Footer : 2017
+<!-- TODO delete with new layout -->
+chead        : 
+
+Toc depth    : 3 
+Bibliography : thesis
+Bib style    : alpha
+Cite All     : False
+
+Package      : mathptmx
+
+.LitNote { background-color: yellow }
+
+[TITLE]
+
+[TOC]
+
+<!--
+# Danksagung
+
+* Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich sie viel zu selten anrufe.
+
+
+-->
+
+# Introduction
+
+## Motivation
+
+## Scope of this Thesis
+
+## Methodology used
+
+## Road Map
+
+# Microservice Architectures
+
+~ LitNote
+* <https://martinfowler.com/articles/microservices.html>
+
+* keywords for microservices challenges from [@AAE16]:
+  * Communication/Integration (API, REST, sockets, TCP, gateway, circuit breakers, load balancer, proxy)
+  * Service discovery (API gateways, etc)
+  * Performance ( QoS, performance, SLA, speed, simulation)
+  * Fault-tolerance
+  * Security
+  * Tracing and Logging
+  * Application Performance Monitoring
+  * Deployment operations
+~
+
+## Summary
+
+# Concurrency, Distributed Programming and Scalability
+
+## Summary
+
+# Concurrency Concepts
+
+
+## Actor-based Concurrency
+
+## Dataflow Programming
+
+## Communicating sequential processes
+
+<https://en.wikipedia.org/wiki/Communicating_sequential_processes>
+
+## Summary
+
+# Object Oriented Design Principles vs. Microservice Architectures
+
+* bzgl OOP: siehe <https://sanaulla.info/2008/06/26/cohesion-and-coupling-two-oo-design-principles/>
+
+## Summary
+
+# Concurrency Concepts, Distributed Programming and Microservice Architectures
+
+## Summary
+
+# TODO
+
+## Concurrent by Design Objects
+
+> OrcO: Concurrency First Approach on Objects
+
+
+## Concurrency and Parallelism in Microservice Architectures
+
+MSA per design Concurrent
+
+Wenn Service richtig geschrieben, kann ich diese Scalieren indem von jedem Service entsprechend mehr Instanzen laufen (Parallel). Benötigt natürlich API Gateway um Aufgaben zu verteilen, was aber über den Scope dieser Arbeit hinaus geht.
+
+Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte die auch ProgLang lösen (traditionell eher concurrent als parallel, aber das ist eine Sache der Sprachen).
+
+-> Ergo nur deswegen MSA, weil Sprachen diese Konzepte nicht gut genug umsetzen
+
+-> Tatsächlich ist in traditionellen Sprachen Concurrency noch eher umsetzbar, tatsächlich parallele Ausführung von Teilen (zB Actor == MicroService) sehr schwer, schon gar keine Verteilung im Netzwerk.
+  -> könnten hier VMs aushelfen
+  -> nennt man das Location-Transparency
+
+## Summary
+
+# Recommendations
+
+
+# Discussion
+
+
+# Outlook
+
+
+# Conclusion
+
+[BIB]
+
