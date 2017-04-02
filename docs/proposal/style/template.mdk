@@ -9,9 +9,6 @@ Package       : [left=2.6cm,right=2.5cm,top=2.5cm,bottom=2.5cm] geometry
 Package       : setspace
 <!--Package       : fancyhdr-->
 
-Cite All      : True
-
-
 Tex Header    :
   \parindent=0pt
   \parskip 1ex

@@ -9,13 +9,17 @@ Email        : maximilian.irro@tuwien.ac.at
 
 <!--Title Footer : April 2017-->
 
-Package       : [left=2.6cm,right=2.5cm,top=2.5cm,bottom=2.5cm] geometry
-
 Toc depth    : 1 
 Bibliography : proposal
 Bib style    : alpha
 Logo         : False
 Draft        : True
+
+.LitNote { background-color: yellow }
+
+@if not draft {
+  LitNote { display: none }
+}
 
 [TITLE]
 
@@ -23,7 +27,29 @@ Draft        : True
 
 # Problem Statement { #problem-statement }
 
-In 2014, a new architectures style called *microservice architecture* emerged for designing software applications as distributed systems of loosley coupled, independently deployable, single purpose services.
+In 2014, a new architectures style called *microservice architecture* emerged for designing software applications as distributed systems of loosley coupled, independently deployable, single purpose services [@FL17]. Instead of developing monolythic applications, developers choose to break up the application logic into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs are called *microservices*.
+
+The microservice architecture style is open for any programming language or paradigm. 
+
+Interesting enought, the architecture style itself also *shares* some similarities with some programming paradigm. For example, 
+
+~ TODO
+Argumentation bzgl Gemeinsamkeiten mit OO design principles (für RQ1)
+~ 
+
+
+~ TODO
+Erklären das gesamte funktionalität aus service composition besteht, daher gemeinsamkeiten mit funkprog suchen (für RQ2)
+~
+
+
+~ TODO
+motivieren das microservices ja eigene prozesse sind, daher unabhänig und somit concurrent+parallel laufen. damit RQ3 motivieren
+~
+
+~ TODO
+schließlich die finale RG4 auswerfen
+~
 
 **blablabla über microservices**
 
@@ -71,21 +97,68 @@ An expected conclusion of this work will therefore be, that microservice archite
 
 # Methodology and Approach { #methodology }
 
+~ LitNote
 * Literature Review
 * Proof of Concept Implementation => **TODO** wovon?!
+~
 
 # State of the Art { #state-of-the-art }
 
 
+
+
+In a recent systemantic mapping study of research literature [@AAE16], is was found that microservices architectural style research is yet at a very early stage, for the style was born from industrial needs, and academia has not yet full caught up. 
+
+~ TODO
+hochaktuelles thema, 2016 und bereits 2017 viele papers
+~
+
+~ TODO
+service oriented programming und JOLIE language
+~
+
+~ LitNote
 * Service-oriented programming with JOLIE [@MGZ14]
 * Microservices: yesterday, today, and tomorrow [@DGL16]
 * Towards Microservices and Beyond - An incoming Paradigm Shift in Distributed Computing [@MMSL16]
 * Is Parallel Programming Hard, And, If So, What Can You Do About It? [@McK17]
 * A Systematic Mapping Study in Microservice Architecture [@AAE16]
+* Microservices [@FL17]
+~
+
 
 # Relevance to the Curricula { #relevance }
 
-Curricula *Software Engineering & Internet Computing*
+Both the mircoservice as well as the programming language and concurrency model aspect of this proposal correlates well with the authors curricula *Software Engineering & Internet Computing* and subsequently the courses he took. Microservices were the sole content of *VU Distributed Systems Engineering*, while the other courses from the *Distributed Systems* module and others with a software engineering focus dicussed additional topics around concepts concerning microservice architectures.
+
+On the other hand, the many courses of the *Computersprachen und Programmierung* module provided deep insight in the programming paradigms, needed in order to make the intended connection of this work between microservices architectures and concurrent programming paradigms.
+
+Additionally, the seminar works in the authors master curriculum already dicussed related topics (multicore programming in JVM languages as well as cloud management frameworks - often used to manage microservice applications), providing valuable precognition for this work.
+
+Finally, a complete list of all relevant courses, from the authors bachelors curricula and the master curricula, is given in alphabetical order:
+
+* VU Advanced Internet Computing 
+* PR Advanced Software Engineering 
+* VO Advanced Software Engineering 
+* VU Distributed Systems Engineering 
+* VU Distributed Systems Technologies 
+* VL Einführung in das Programmieren 
+* VU Fortgeschrittene funktionale Programmierung 
+* VU Fortgeschrittene objektorientierte Programmierung 
+* VU Funktionale Programmierung 
+* UE Network Engineering 
+* VO Network Engineering 
+* VU Objektorientierte Modellierung 
+* VU Objektorientierte Programmiertechniken 
+* VU Programmiersprachen 
+* SE Seminar aus Programmiersprachen 
+* SE Seminar in Distributed Systems 
+* PR Software Engineering und Projektmanagement 
+* VO Software Engineering und Projektmanagement 
+* VO Typsysteme 
+* VU Verteiltes Programmieren mit Space Based Computing Middleware 
+* UE Verteilte Systeme 
+* VO Verteilte Systeme 
 
 [BIB]
 
