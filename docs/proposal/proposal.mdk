@@ -1,23 +1,27 @@
-[INCLUDE=style/lncs]
-Title        : Do sufficiently concurrent programming languages need microservice architectures?
-Subtitle     : Master Thesis Proposal [DRAFT]
+[INCLUDE=style/template]
+
+
+Title        : Master Thesis Proposal
+Subtitle     : Do sufficiently concurrent programming languages need microservice architectures?
+Title Note   : DRAFT, &date; (version 1.0)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
 
-Title Footer : April 2017
+<!--Title Footer : April 2017-->
 
 Package       : [left=2.6cm,right=2.5cm,top=2.5cm,bottom=2.5cm] geometry
 
 Toc depth    : 1 
 Bibliography : proposal
-Bib style    : ieeetr
+Bib style    : alpha
 Logo         : False
+Draft        : True
 
 [TITLE]
 
 [TOC]
 
-# Problem Statement
+# Problem Statement { #problem-statement }
 
 In 2014, a new architectures style called *microservice architecture* emerged for designing software applications as distributed systems of loosley coupled, independently deployable, single purpose services.
 
@@ -46,9 +50,17 @@ This rises the question of why already programmers feel the need to design their
 
 **RQ**: Do sufficiently concurrent languages need microservice architectures?
 
-&pagebreak;
+---
 
-# Expected Results
+> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
+
+> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
+
+> **RQ3**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1 and RQ2?
+
+> **RQ4**: Do sufficiently concurrent programming languages need microservice architectures?
+
+# Expected Results { #expected-results }
 
 The author expects that this work will result in an answer to the main research question of "*No: sufficiently concurrent programming languages do not need microservice architectures*". Many of the design principles are already established in other programming language principles, first of all object oriented design. For all of them, concurrency models have been developed and are widely available for developers to use. 
 Therefore, in many of todays concurrent programming languages, microservice architectures are only used because the languages concurrency models and primitives make it harder for developers to design, implement, debug and maintain - therefore ultimately *understand* - the software architectures that serve the same design goals as the corresponding microservice architecture does.
@@ -57,14 +69,23 @@ However, the author also expects that the only argument remaining in favour of m
 
 An expected conclusion of this work will therefore be, that microservice architectures will *not* be classified as a symptom to a problem that should have been already solved on a programming language level (as the thesis title might imply), but that they are merely a solution to the need for high scalability. On the other hand, many of the software applications being developed today using microservices are consequently a side effect, for developers grasp for easier to understand concurrency in their architectures. Micorservices inherently force them to plan the *separation of concernces* (and related principles we know from object oriented design) in more detail than programming languages usually do, resulting in an easier to understand concurrency model in their application architectures.
 
-# Methodology and Approach
+# Methodology and Approach { #methodology }
 
 * Literature Review
 * Proof of Concept Implementation => **TODO** wovon?!
 
-# State of the Art
+# State of the Art { #state-of-the-art }
 
-# Relevance to the Software Engineering & Internet Computing Curricula
+
+* Service-oriented programming with JOLIE [@MGZ14]
+* Microservices: yesterday, today, and tomorrow [@DGL16]
+* Towards Microservices and Beyond - An incoming Paradigm Shift in Distributed Computing [@MMSL16]
+* Is Parallel Programming Hard, And, If So, What Can You Do About It? [@McK17]
+* A Systematic Mapping Study in Microservice Architecture [@AAE16]
+
+# Relevance to the Curricula { #relevance }
+
+Curricula *Software Engineering & Internet Computing*
 
 [BIB]
 
