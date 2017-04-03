@@ -37,19 +37,33 @@ provide a single task of the business logic. Theses programs are called
 
 The microservice architecture style is open for any programming language or paradigm.
 
-Interesting enough, the architecture style itself also *shares* some similarities with some programming paradigms. For example, if we use *Definition 2* given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*"
+Interesting enough, the architecture style itself also *shares* some similarities with some programming paradigms. For example, if we use *Definition 2* given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*", we can spot commonalities with object-oriented design principles: objects should be loosely coupled (= independent) and highly cohesive [**Quelle!**]. Additionally, using the terminology Smalltalk established, communication between objects happens by sending *messages* between them (calling methods). Many more of these resemmblences can be pointed out not only in terminology, but also conceptionally. Therefore, we can define the first research question:
+
+> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
+
+But not only do microservice architecture share commonalities with object oriented design. In the functional programming paradigm, programs are written by combining functions, the so-called *function composition* [**Quelle!**]. In microservice archiectures, as with service-oriented architectures in generall, functionallity is build by composing services (together?) [**Quelle!**]. Therefore, following the idea of RQ1, we formulate:
+
+> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
+
+For each microservice is a dedicated program itself, and each service is a component in the application architecture, it is easy to argue that in a microservice architecture, the components are concurrent by design. Building on the knowledge of the previous questions, we can
+
+> **RQ3**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1 and RQ2?
+
+And finally, after we know about the commonalities and their concurrency concepts, we have to subsequently ask the question:
+
+> **RQ4**: Do sufficiently concurrent programming languages need microservice architectures?
+
+To be able to give a scientifically sound answer to RQ4, a definition for "sufficient concurrency" will have to be developed. 
+
+---
 
 ~ TODO
 Argumentation bzgl Gemeinsamkeiten mit OO design principles (für RQ1)
 ~
 
-> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
-
 ~ TODO
 Erklären das gesamte funktionalität aus service composition besteht, daher gemeinsamkeiten mit funkprog suchen (für RQ2)
 ~
-
-> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
 
 ~ TODO
 motivieren das microservices ja eigene prozesse sind, daher unabhänig und somit concurrent+parallel laufen. damit RQ3 motivieren
@@ -63,6 +77,7 @@ schreiben dass MS eigene data stores haben, somit auch data access parallelisier
 ist paralleles handling von connections auch eine sache die mit MS besser gemacht werden kann? (was steht denn in der web service concurrency DA nochmal dazu?)
 ~
 
+---
 
 ~ Begin LitNote
 **blablabla über microservices**
@@ -103,13 +118,7 @@ programming languages have been around for decades.
 
 ~ End LitNote
 
-> **RQ3**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1 and RQ2?
-
-And finally, after we know about the commonalities and their concurrency concepts, we have to subsequently ask the question:
-
-> **RQ4**: Do sufficiently concurrent programming languages need microservice architectures?
-
-To be able to give a scientifically sound answer to RQ4, a definition for "sufficient concurrency" will have to be developed. 
+---
 
 # Expected Results { #expected-results }
 
@@ -162,6 +171,8 @@ In a recent systemantic mapping study of research literature [@AAE16], is was fo
 
 
 Little has been written about the commonalities between microservices and object oriented paradigms, though some have mentioned that such exist [mehrere reference hier einfügen].
+
+No work so war **[behandeln, bearbeiten]** the relation between those commonalities and the **[auswirkungen, einfluss]** on concurrency models
 
 ~ TODO
 hochaktuelles thema, 2016 und bereits 2017 viele papers

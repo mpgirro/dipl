@@ -97,6 +97,13 @@ Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weitere
 
 # Concurrency Concepts, Distributed Programming and Microservice Architectures
 
+
+## Implicit Concurrency through (Framekworks|Inversion of Control)
+
+~ TODO
+Über Concurrency die einem zB Spring Framework gibt
+~
+
 ## Summary
 
 # TODO
