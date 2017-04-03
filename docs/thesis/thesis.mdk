@@ -54,6 +54,22 @@ Package      : mathptmx
   * Deployment operations
 ~
 
+## Componentization via Services (geklaut von M.Fowler)
+
+~ TODO
+Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weiterentwicklung sind?
+~
+
+## Smart endpoints and dumb pipes (geklaut von M.Fowler)
+
+
+## Concurrency considerations
+
+~ LitNote
+* Microservices sind ja per Design Concurrent, da eigene Programme (Service = Component). Und wenn man MS skaliert (mehrere Instanten gleichzeitig startet) dann ist diese Component auch parallel. Also falls man auf mehreren Maschinen deployed
+* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@FL17]
+~
+
 ## Summary
 
 # Concurrency, Distributed Programming and Scalability

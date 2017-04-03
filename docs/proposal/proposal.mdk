@@ -2,7 +2,7 @@
 
 
 Title        : Master Thesis Proposal
-Subtitle     : Do sufficiently concurrent programming languages need microservice architectures?
+Subtitle     : Do sufficiently concurrent programming &br; languages need microservice architectures?
 Title Note   : DRAFT, &date; (version 1.0)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
@@ -37,26 +37,34 @@ provide a single task of the business logic. Theses programs are called
 
 The microservice architecture style is open for any programming language or paradigm.
 
-Interesting enought, the architecture style itself also *shares* some similarities with some programming paradigm. For example,
+Interesting enough, the architecture style itself also *shares* some similarities with some programming paradigms. For example, if we use *Definition 2* given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*"
 
 ~ TODO
 Argumentation bzgl Gemeinsamkeiten mit OO design principles (für RQ1)
 ~
 
+> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
 
 ~ TODO
 Erklären das gesamte funktionalität aus service composition besteht, daher gemeinsamkeiten mit funkprog suchen (für RQ2)
 ~
 
+> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
 
 ~ TODO
 motivieren das microservices ja eigene prozesse sind, daher unabhänig und somit concurrent+parallel laufen. damit RQ3 motivieren
 ~
 
 ~ TODO
-schließlich die finale RG4 auswerfen
+schreiben dass MS eigene data stores haben, somit auch data access parallelisiert wird. ist das ein sache bei dem traditionelle concurrency auch nicht ausreicht?
 ~
 
+~ TODO
+ist paralleles handling von connections auch eine sache die mit MS besser gemacht werden kann? (was steht denn in der web service concurrency DA nochmal dazu?)
+~
+
+
+~ Begin LitNote
 **blablabla über microservices**
 
 However, it is surpising that this architectural style was adopted by developers
@@ -93,15 +101,15 @@ programming languages have been around for decades.
 
 **RQ**: Do sufficiently concurrent languages need microservice architectures?
 
----
-
-> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
-
-> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
+~ End LitNote
 
 > **RQ3**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1 and RQ2?
 
+And finally, after we know about the commonalities and their concurrency concepts, we have to subsequently ask the question:
+
 > **RQ4**: Do sufficiently concurrent programming languages need microservice architectures?
+
+To be able to give a scientifically sound answer to RQ4, a definition for "sufficient concurrency" will have to be developed. 
 
 # Expected Results { #expected-results }
 
@@ -152,6 +160,9 @@ concurrency model in their application architectures.
 
 In a recent systemantic mapping study of research literature [@AAE16], is was found that microservices architectural style research is yet at a very early stage, for the style was born from industrial needs, and academia has not yet full caught up.
 
+
+Little has been written about the commonalities between microservices and object oriented paradigms, though some have mentioned that such exist [mehrere reference hier einfügen].
+
 ~ TODO
 hochaktuelles thema, 2016 und bereits 2017 viele papers
 ~
@@ -167,6 +178,7 @@ service oriented programming und JOLIE language
 * Is Parallel Programming Hard, And, If So, What Can You Do About It? [@McK17]
 * A Systematic Mapping Study in Microservice Architecture [@AAE16]
 * Microservices [@FL17]
+* The essence of objects: Concepts and terms [@Sny93]
 ~
 
 
