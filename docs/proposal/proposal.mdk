@@ -27,57 +27,36 @@ Draft        : True
 
 # Problem Statement { #problem-statement }
 
-In 2014, a new architectures style called *microservice architecture* emerged
+In 2014, a new software architectures style called *microservice architecture* (MSA) emerged
 for designing software applications as distributed systems of loosley coupled,
 independently deployable, single purpose services [@FL17]. Instead of developing
-monolythic applications, developers choose to break up the application logic
-into a suite of small parts, each implemented as a dedicated program designed to
-provide a single task of the business logic. Theses programs are called
-*microservices*.
+monolythic applications, the application logic is split up into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs posing as the applications components are called *microservices*.
 
-The microservice architecture style is open for any programming language or paradigm.
+The microservice architecture style is open for any programming language or paradigm. Because the microservices are communication on a network level by sending messages (e.g. REST, sockets, etc.), the services themselfs may be written in different programming languages. As long as they expose the interface required by the architecture, they are useable components.
 
-Interesting enough, the architecture style itself also *shares* some similarities with some programming paradigms. For example, if we use *Definition 2* given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*", we can spot commonalities with object-oriented design principles: objects should be loosely coupled (= independent) and highly cohesive [**Quelle!**]. Additionally, using the terminology Smalltalk established, communication between objects happens by sending *messages* between them (calling methods). Many more of these resemmblences can be pointed out not only in terminology, but also conceptionally. Therefore, we can define the first research question:
+Interesting enough, this architecture style shares some similarities with long established programming paradigms. Some examples are:
 
-> **RQ1**: Which commonalities are microservice architectures sharing with object oriented design principles?
+* If we use the definition given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*", we can spot commonalities with object-oriented design principles: objects should be loosely coupled (= independent) and highly cohesive [**Quelle!**]. 
+* A fundamental concept of objects is "*Clients request services from objects*". In MSA, clients request services from other microservices. Using the Smalltalk terminology, communication between objects happens by sending *messages* (object method call) between them [@Sny93]. RESTful microservices send HTTP messages.
+* Simula 67 introduced the concept of objects being data structs with associated operators. Additionally, two different views were introduced: the *inside view* of an object - its local variables, procedures on these variables, initialising operations etc. - and its *outside view*, more abstract entities representing the remoteley accessible state and procedures [@Bla13]. A microservice too has an internal view (the programs internal architecture, state, etc.) and an outside view, the network interface it exposes (e.g REST APIs and data in JSON format), consisting of more abstract entities in general.
+* In the functional programming paradigm, programs are written by combining functions, the so-called *function composition* [**Quelle!**]. In microservice archiectures, as with service-oriented architectures (SOA) in generall, functionallity is build by composing services [**Quelle!**].
 
-But not only do microservice architecture share commonalities with object oriented design. In the functional programming paradigm, programs are written by combining functions, the so-called *function composition* [**Quelle!**]. In microservice archiectures, as with service-oriented architectures in generall, functionallity is build by composing services (together?) [**Quelle!**]. Therefore, following the idea of RQ1, we formulate:
+Many more conceptional resemblances can be pointed out. To get a basic ground to work upon, we therefore ask the first research question:
 
-> **RQ2**: Which commonalities are microservice architectures sharing with functional programming principles?
+> **RQ1**: Which commonalities are microservice architectures sharing with various programming paradigms?
 
-For each microservice is a dedicated program itself, and each service is a component in the application architecture, it is easy to argue that in a microservice architecture, the components are concurrent by design. Building on the knowledge of the previous questions, we can
+Not only can we draw connections to well-established programming paradigms. Each microservice is a dedicated program (and therefore a system process) itself, and each service is a component in the application architecture, so it is easy to argue that in an MSA the components are inherently concurrent. This also leads to some resemblences with concurrency models, e.g.:
 
-> **RQ3**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1 and RQ2?
+* In the *actor model*, an actor is a "*self-contained, interactive, independent component of a computing system that communicates by asynchronous message passing*" [@Agh90]. While in an MSA the communication can also be synchronous, this definition of an actor has a striking resemblance with the definition for a microservice by [@DGL16] we have already introduced.
+* The *active object pattern* allows a call of an objects method to be executed in a different thread, enabling concurrent method execution of the same object. This is achieved by using proxy objects on which the public methods of the active objects are called [@LS95]. In a microservice architecture, each service can be scaled horizontally by instantiating it multiple times. When using an API gateway to manage requests to microservices, it acts like the active object proxy, dispatching the request to a currently free service. 
 
-And finally, after we know about the commonalities and their concurrency concepts, we have to subsequently ask the question:
+We see, microservice architectures do not only have commonalities with programming principles, but also with models for concurrent programming. Therefore a close look at the concurrency aspects of this architecture style is in order. Building on the knowledge of the previous questions, we ask
 
-> **RQ4**: Do sufficiently concurrent programming languages need microservice architectures?
+> **RQ2**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1?
 
-To be able to give a scientifically sound answer to RQ4, a definition for "sufficient concurrency" will have to be developed. 
+And finally, after we have analysed the conceptual commonalities and related concurrency concepts, it is of interest why microservice architectures are on the rise in the first place. We have to subsequently ask the question:
 
----
-
-~ TODO
-Argumentation bzgl Gemeinsamkeiten mit OO design principles (für RQ1)
-~
-
-~ TODO
-Erklären das gesamte funktionalität aus service composition besteht, daher gemeinsamkeiten mit funkprog suchen (für RQ2)
-~
-
-~ TODO
-motivieren das microservices ja eigene prozesse sind, daher unabhänig und somit concurrent+parallel laufen. damit RQ3 motivieren
-~
-
-~ TODO
-schreiben dass MS eigene data stores haben, somit auch data access parallelisiert wird. ist das ein sache bei dem traditionelle concurrency auch nicht ausreicht?
-~
-
-~ TODO
-ist paralleles handling von connections auch eine sache die mit MS besser gemacht werden kann? (was steht denn in der web service concurrency DA nochmal dazu?)
-~
-
----
+> **RQ3**: Do sufficiently concurrent programming languages need microservice architectures?
 
 ~ Begin LitNote
 **blablabla über microservices**
@@ -106,15 +85,6 @@ oriented design principles:
 * "*aim to be as decoupled and as cohesive as possible*"
 ~~
 ~ End Columns
-
-**RQ**: What are the commonalities of object oriented design principles and microservice architectures?
-
-This rises the question of why already programmers feel the need to design their
-software applications in the form of micrsoservices, when the object oriented
-models as well as many sphisticated concurrency constructs of todays established
-programming languages have been around for decades.
-
-**RQ**: Do sufficiently concurrent languages need microservice architectures?
 
 ~ End LitNote
 
@@ -169,10 +139,17 @@ concurrency model in their application architectures.
 
 In a recent systemantic mapping study of research literature [@AAE16], is was found that microservices architectural style research is yet at a very early stage, for the style was born from industrial needs, and academia has not yet full caught up.
 
+In section [#problem-statement] we have given two examples for concurrency constructs resembling MSA very much. However, there the concurrent constructs were "locked" inside their  
 
 Little has been written about the commonalities between microservices and object oriented paradigms, though some have mentioned that such exist [mehrere reference hier einfügen].
 
 No work so war **[behandeln, bearbeiten]** the relation between those commonalities and the **[auswirkungen, einfluss]** on concurrency models
+
+The two examples given here describe concurrency constructs where the concurrent components are "locked" inside their encapsulating program. 
+
+If the microservice processes are also distributed accross multiple physical machines, the architecture becomes parallel. 
+
+* evolution out of SOA, instead of revolution [@MMSL16]
 
 ~ TODO
 hochaktuelles thema, 2016 und bereits 2017 viele papers
@@ -182,15 +159,6 @@ hochaktuelles thema, 2016 und bereits 2017 viele papers
 service oriented programming und JOLIE language
 ~
 
-~ LitNote
-* Service-oriented programming with JOLIE [@MGZ14]
-* Microservices: yesterday, today, and tomorrow [@DGL16]
-* Towards Microservices and Beyond - An incoming Paradigm Shift in Distributed Computing [@MMSL16]
-* Is Parallel Programming Hard, And, If So, What Can You Do About It? [@McK17]
-* A Systematic Mapping Study in Microservice Architecture [@AAE16]
-* Microservices [@FL17]
-* The essence of objects: Concepts and terms [@Sny93]
-~
 
 
 # Relevance to the Curricula { #relevance }

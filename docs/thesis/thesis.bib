@@ -1,10 +1,17 @@
 
 
 
-@masterthesis{montesi2010jolie,
+@masterthesis{Mon10,
   title={Jolie: a service-oriented programming language},
   author={Montesi, Fabrizio},
   year={2010}
+}
+
+@phdthesis{Mon14,
+  title={Choreographic programming},
+  author={Montesi, Fabrizio},
+  year={2014},
+  publisher={InstituttetThe Department, Software and SystemsSoftware \& Systems, Programming, Logic and SemanticsProgramming, Logic and Semantics}
 }
 
 @incollection{MGZ14,
@@ -16,16 +23,9 @@
   publisher={Springer}
 }
 
-@phdthesis{montesi2014choreographic,
-  title={Choreographic programming},
-  author={Montesi, Fabrizio},
-  year={2014},
-  publisher={InstituttetThe Department, Software and SystemsSoftware \& Systems, Programming, Logic and SemanticsProgramming, Logic and Semantics}
-}
-
-@masterthesis{Erb2012,
+@masterthesis{Erb12,
   author = {Benjamin Erb},
-  title = {Concurrent Programming for Scalable Web Architectures},
+  title = {{Concurrent Programming for Scalable Web Architectures}},
   school = {Institute of Distributed Systems, Ulm University},
   year = {2012},
   type = {Diploma Thesis},
@@ -70,8 +70,20 @@
 	howpublished = "\url{http://martinfowler.com/articles/microservices.html}"}
 }
 
+/*
+- New Objects can be created : vgl mit µS, hier können auch neue Services erzeugt werden, um zu skalieren (wenn entsprechend implementiert, daher im allgemeinen schwerer!)
+
+- Active Objects "can initiate computation spontaneously, without being requested to do so by a client, AO is a concurrent process" --> in etwa so wie µS
+
+- Objects can share implementations : wenn mehrere µS von der selben Codebase gestartet werden, tun sie das auch, haben eigenen State, aber "identical state format"
+
+- Objects can share partial implementation : inheritence eher schwierig, aber delegation in µS ganz normal, so auch bei Objekten
+
+- Dynamic Binding : nur eine Idee, aber kann man da einen Vergleich zu API Gateways ziehen, die zur Laufzeit den tatsächlichen Service an den weitergereicht wird (oder das dann selber entsprechende Antwort bei nicht existenz produziert) ziehen?
+
+*/
 @article{Sny93,
-  title={The essence of objects: Concepts and terms},
+  title={{The Essence of Objects: Concepts and Terms}},
   author={Snyder, Alan},
   journal={IEEE software},
   volume={10},
@@ -79,4 +91,71 @@
   pages={31--42},
   year={1993},
   publisher={IEEE}
+}
+
+@article{Bla13,
+  title={{Object-oriented programming: Some history, and challenges for the next fifty years}},
+  author={Black, Andrew P},
+  journal={Information and Computation},
+  volume={231},
+  pages={3--20},
+  year={2013},
+  publisher={Elsevier}
+}
+
+@article{Kil16,
+  title={{The Hidden Dividends of Microservices}},
+  author={Killalea, Tom},
+  journal={Communications of the ACM},
+  volume={59},
+  number={8},
+  pages={42--45},
+  year={2016},
+  publisher={ACM}
+}
+
+@article{Agh90,
+  title={{Concurrent Object-Oriented Programming}},
+  author={Agha, Gul},
+  journal={Communications of the ACM},
+  volume={33},
+  number={9},
+  pages={125--141},
+  year={1990},
+  publisher={ACM}
+}
+
+@article{GB99,
+  title={{From Active Objects to Autonomous Agents}},
+  author={Guessoum, Zahia and Briot, J-P},
+  journal={IEEE concurrency},
+  volume={7},
+  number={3},
+  pages={68--76},
+  year={1999},
+  publisher={IEEE}
+}
+
+@article{LS95,
+  title={{Active Object--an Object Behavioral Pattern for Concurrent Programming}},
+  author={Lavender, R Greg and Schmidt, Douglas C},
+  year={1995},
+  publisher={Citeseer}
+}
+
+@article{Vin07,
+  title={{Concurrency with Erlang}},
+  author={Vinoski, Steve},
+  journal={IEEE Internet Computing},
+  volume={11},
+  number={5},
+  year={2007},
+  publisher={IEEE}
+}
+
+@misc{SSRB00,
+  title={Pattern-oriented software architecture: patterns for concurrency and distributed objects},
+  author={Schmidt, Douglas C and Stal, Michael and Rohnert, Hans and Buschmann, Frank},
+  year={2000},
+  publisher={New York, NY: Wiley \& Sons}
 }
