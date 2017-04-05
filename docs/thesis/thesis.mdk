@@ -1,7 +1,7 @@
 [INCLUDE=style/template]
 
-Title        : ???
-Subtitle     : 
+Title        : A crack in the monolith
+Subtitle     : Do su ciently concurrent programming languages need microservice architectures?
 Author       : Maximilian Irro
 Title Footer : 2017
 <!-- TODO delete with new layout -->
@@ -62,6 +62,11 @@ Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weitere
 
 ## Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
+## API gateways, circuit breakers and discovery
+
+Case study: Hysterix library
+
+Case study: Akka provides a circuit breaker implementation [@MW16]
 
 ## Concurrency considerations
 
@@ -103,6 +108,12 @@ Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weitere
 ~ TODO
 Über Concurrency die einem zB Spring Framework gibt
 ~
+
+## MSA and the Unix Philosophy
+
+> Text streams are to Unix tools as messages are to objects in an object-oriented setting
+
+quelle: "Rule of Composition: Design programs to be connected with other programs." <http://catb.org/esr/writings/taoup/html/ch01s06.html#id2877684> (müsste bereits eine ordentliche Literaturreferenz existieren): [Raymond, Eric S. (2003), "1.6.3 Rule of Composition: Design programs to be connected with other programs", The Art of Unix Programming, Addison-Wesley, pp. 15–16, ISBN 978-0-13-142901-7.]
 
 ## Summary
 

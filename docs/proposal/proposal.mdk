@@ -1,8 +1,8 @@
 [INCLUDE=style/template]
 
 
-Title        : A crack in the monolith
-Subtitle     : Do sufficiently concurrent programming &br; languages need microservice architectures?
+Title        : Master Thesis Proposal
+Subtitle     : Do concurrent programming languages need microservice architectures?
 Title Note   : DRAFT, &date; (version 1.0)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
@@ -27,68 +27,36 @@ Draft        : True
 
 # Motivation & Problem Statement { #sec-motivation }
 
-In 2014, a new software architectures style called *microservice architecture* (MSA) emerged
+In 2014, a new software architecture style called *microservice architecture* (MSA) emerged
 for designing software applications as distributed systems of loosley coupled,
 independently deployable, single purpose services [@FL17]. Instead of developing
 monolythic applications, the application logic is split up into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs posing as the applications components are called *microservices*.
 
-The microservice architecture style is open for any programming language or paradigm [@DLL17]. Because the microservices are communication on a network level by sending messages (e.g. REST, sockets, etc.), the services themselfs may be written in different programming languages. As long as they expose the interface required by the architecture, they are useable components.
+The microservice architecture style is open for any programming language or paradigm. Because the microservices are communication on a network level by sending messages (e.g. REST, sockets, etc.), the services themselfs may be written in different programming languages. As long as they expose the interface required by the architecture, they are useable components [@MW16;@DGL16].
 
 Interesting enough, this architecture style shares some similarities with long established programming paradigms. Some examples are:
 
-* If we use the definition given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*", we can spot commonalities with object-oriented design principles: objects should be loosely coupled (= independent) and highly cohesive [**Quelle!**]. 
+* If we use the definition given in [@DGL16] "*A microservice is a cohesive, independent process interacting via messages*", we can spot commonalities with object-oriented design principles: objects should be loosely coupled (= independent) and highly cohesive. 
 * A fundamental concept of objects is "*Clients request services from objects*". In MSA, clients request services from other microservices. Using the Smalltalk terminology, communication between objects happens by sending *messages* (object method call) between them [@Sny93]. RESTful microservices send HTTP messages.
 * Simula 67 introduced the concept of objects being data structs with associated operators. Additionally, two different views were introduced: the *inside view* of an object - its local variables, procedures on these variables, initialising operations etc. - and its *outside view*, more abstract entities representing the remoteley accessible state and procedures [@Bla13]. A microservice too has an internal view (the programs internal architecture, state, etc.) and an outside view, the network interface it exposes (e.g REST APIs and data in JSON format), consisting of more abstract entities in general.
-* In the functional programming paradigm, programs are written by combining functions, the so-called *function composition* [**Quelle!**]. In microservice archiectures, as with service-oriented architectures (SOA) in generall, functionallity is build by composing services [**Quelle!**].
+* In the functional programming paradigm, programs are written by combining functions, the so-called *function composition*. In microservice archiectures, as with service-oriented architectures (SOA) in general, functionallity is build by composing services [@MGZ14].
 
-Many more conceptional resemblances can be pointed out. To get a basic ground to work upon, we therefore ask the first research question:
+Many more conceptional resemblances can be pointed out and analysed. To get a basic ground to work upon, we therefore ask the first research question:
 
 > **RQ1**: Which commonalities are microservice architectures sharing with various programming paradigms?
 
 Not only can we draw connections to well-established programming paradigms. Each microservice is a dedicated program (and therefore a system process) itself, and each service is a component in the application architecture, so it is easy to argue that in an MSA the components are inherently concurrent. This also leads to some resemblences with concurrency models, e.g.:
 
 * In the *actor model*, an actor is a "*self-contained, interactive, independent component of a computing system that communicates by asynchronous message passing*" [@Agh90]. While in an MSA the communication can also be synchronous, this definition of an actor has a striking resemblance with the definition for a microservice by [@DGL16] we have already introduced. Actors have a no-shared-state and immutable message philosophy, also properties of any SOA.
-* The *active object pattern* allows a call of an objects method to be executed in a different thread, enabling concurrent method execution of the same object. This is achieved by using proxy objects on which the public methods of the active objects are called [@LS95]. In a microservice architecture, each service can be scaled horizontally by instantiating it multiple times. When using an API gateway to manage requests to microservices, it acts like the active object proxy, dispatching the request to a currently free service. 
+* The *active object pattern* allows a call of an objects method to be executed in a different thread, enabling concurrent method execution of the same object. This is achieved by using proxy objects on which the public methods of the active objects are called [@LS95]. In a microservice architecture, when using an API gateway to manage requests to the services, the gateway acts like the active object proxy, dispatching or buffering the request. This is called the *proxy circuit breaker pattern* [@MW16].
 
-We see, microservice architectures do not only have commonalities with programming principles, but also with models for concurrent programming. Therefore a close look at the concurrency aspects of this architecture style is in order. Building on the knowledge of the previous questions, we ask
+We see, microservice architectures do not only have commonalities with programming paradigms, but also with models for concurrent programming. Therefore, a close look at the concurrency principles of this architecture style is in order. Building on the knowledge of the previous questions, we ask
 
 > **RQ2**: Which concurrency and distributed programming concepts are especially convenient for the commonalities identified in RQ1?
 
-And finally, after we have analysed the conceptual commonalities and related concurrency concepts, it is of interest why microservice architectures are on the rise in the first place. We have to subsequently ask the question:
+And finally, after we have analysed the conceptual commonalities and related concurrency concepts, we are interested in why microservice architectures are being adapted so eagerly in the first place. We subsequently ask the question:
 
 > **RQ3**: Do sufficiently concurrent programming languages need microservice architectures?
-
-~ Begin LitNote
-**blablabla über microservices**
-
-However, it is surpising that this architectural style was adopted by developers
-quickly and with gread **begeisterung**. It seems that splitting up a -
-presumingly easier to understand - monolythic applications into a - presumingly
-harder to understand - distributed system made up of many loosley coupled and
-highly cohesive (micro)applications makes it in fact either easier for the
-developers to understand or solves many pressing issues when in comes to dealing
-with the many requirements big applications have to serve today.
-
-If we take a closer look at common characteristics of microservice
-architectures, we will find that they look suprisingly similar to some object
-oriented design principles:
-
-~ Begin Columns
-~~ Column
-**OO design principles**:
-
-* "*good OO design should be loosely coupled and highly cohesive*"
-~~
-~~ Column { padding-left: 4ex; }
-**microservice archtiectures**:
-
-* "*aim to be as decoupled and as cohesive as possible*"
-~~
-~ End Columns
-
-~ End LitNote
-
----
 
 # Expected Results { #expected-results }
 
@@ -106,22 +74,18 @@ microservice architecture does.
 
 However, the author also expects that the only argument remaining in favour of
 microservice architectures will be that todays concurrent by design programming
-languages do not (yet) provide solutions for an independently deploying of their
-concurrent components, e.g. the actors in the actor model. A microservice
-architecture has this property inherently. Each service (= concurrent
+languages yet provide insufficient solutions for horizontal scalability through the distribution of concurrent components (e.g. the actors in the actor model) to multiple host machines. A microservice
+architecture has this property inherently through independent service deployment. Each service (= concurrent
 architecture component) is its own sophisticated program and therefore at least
-a system process on the same machine. This makes it possible to achieve high
-scalability simply through distributing the microservices to multiple machines.
+a system process on the machine. This makes it possible to achieve high
+scalability and parallelisation simply through distributing the microservice processes among multiple machines.
 
 An expected conclusion of this work will therefore be, that microservice
 architectures will *not* be classified as a symptom to a problem that should
 have been already solved on a programming language level (as the thesis title
 might imply), but that they are merely a solution to the need for high
-scalability. On the other hand, many of the software applications being
-developed today using microservices are consequently a side effect, for
-developers grasp for easier to understand concurrency in their architectures.
-Micorservices inherently force them to plan the *separation of concernces* (and
-related principles we know from object oriented design) in more detail than
+scalability. On the other hand, many todays software application having no scalability problem, and yet being 
+developed in a microservice architecture, are consequently a side effect. Developers grasp for easier to understand concurrency in their architectures and micorservices inherently force them to plan the *separation of concernces* in more detail than
 programming languages usually do, resulting in an easier to understand
 concurrency model in their application architectures.
 
@@ -139,52 +103,25 @@ The methodology used to answer the given research questions outlined in section 
   * The other implementation should use only the concurrency models available to the language, either as native constructs or via frameworks/libraries. The applications should therefore exist as a single executable artifact.
 7. Based on the prototypes developed in step 6, an answer to RQ3 should be argued.
 
-The language choices of step 5 should depend on the knowledge aquired prior. However, both languages should have ecosystem properties promoting a comparison and evaluation also towards scalability, for this is a key feature of MSA. 
-
-For example, we propose the *Go* language for its *Goroutines* and *Channels* concurrency, and the *Erlang* language for its actor based concurrency and natural resemblance to a microservice architecture. Both languages have cheap concurrency primitives with small footprints.
-
-On the other hand, it is also possible to select *Java* for its high utilization in microservice applications, the high availability of practically any concurrency model through libraries and the good support for MSA via frameworks, and *Scala* for its *Akka* powered and Erlang inspired actor model. Both being JVM languages, their memory footprints are inherently high. 
+The language choices of step 5 should depend on the knowledge aquired prior. For example, we propose the *Go* language for its *Goroutines* and *Channels* concurrency, and the *Erlang* language for its actor based concurrency and natural resemblance to a microservice architecture. Both languages have cheap concurrency primitives with small footprints.
 
 # State of the Art { #sec-sota }
 
-In a recent systemantic mapping study of research literature [@AAE16], is was found that microservices architectural style research is yet at a very early stage, for the style was born from industrial needs, and academia has not yet full caught up.
+In a recent systemantic mapping study of research literature [@AAE16], is was found that the microservice architectural style (MSA) research is currently at an early stage, for the style was born from industrial needs, and academia has not yet full caught up. Subsequently, we see many of the available literature from 2016 and early 2017. On the other hand, programming paradigm and concurrency research has been around for decades.
 
-In section [#problem-statement] we have given two examples for concurrency constructs resembling MSA very much. However, there the concurrent constructs were "locked" inside their  
+As we have motivated in § [#sec-motivation], the microservice architecture style has many conceptual roots in various programming paradigms (especially object-orientation), but it also originates from service oriented architectures (SOA) in general [@MMSL16;@MW16]. SOA can be considered the "first generation" of services, providing benefits like dynamism, modularity, distributed development and the integration of heterogenouse and legacy systems. Microservices can be considered "second generation" services, and therefore and evolution of SOA, where each service is being developed with the focus on one single functionality of business logic, and all unnecessary levels of complexity are being consequently removed and outsources to other dedicated services [@DGL16].
 
-Little has been written about the commonalities between microservices and object oriented paradigms, though some have mentioned that such exist [mehrere reference hier einfügen].
+Little has been written about the interrelations in design patterns of microservices and paradigms like object-orientation, though some have mentioned that such exist [@DGL16;@MMSL16]. No work so far has given a comprehensive review (cf. RQ1). Subsequently, no analysis of common concurrency concepts exists (cf. RQ2). 
 
-No work so war **[behandeln, bearbeiten]** the relation between those commonalities and the **[auswirkungen, einfluss]** on concurrency models
-
-The two examples given here describe concurrency constructs where the concurrent components are "locked" inside their encapsulating program. 
-
-If the microservice processes are also distributed accross multiple physical machines, the architecture becomes parallel. 
-
-~ TODO
-MSA evolution out of SOA, instead of revolution [@MMSL16]
-~
-
-~ TODO
-MS shares many concepts from programming paradigm, especially object-oriented
-~
-
-~ TODO
-OO has many concurrency models, some quite similar to the inherent concurrency of MS
-~
-
-A prominent representative of the actor model, the Erlang programming language, is currently experiencing a second spring both in industrial use and in academic attention. In contrast to most programming languages, an Erlang program has the main focus on the processes, rather than objects [@Bla13]. Its was designed for key challenges like high concurrency and availability, fault-tolerance and live-upgrades [@Vin07], similar to the needs that lead to the microservice architecture style [@DGL16; @DLL17]. Therefore, an idiomatic Erlang program has remarkable similarities with a microservice architecture. Additionally, with *Distributed Erlang*, the processes can be deployed across multiple Erlang VMs on difference host machines, incorporating even more properties of MSA [@CMT17].
+This is especially interesting, for concurrency research is developing new models aiming to solve the same or related issues through concurrent computation as do microservices. For example, a prominent representative of the actor model, the Erlang programming language, is currently experiencing a second spring both in industrial use and in academic attention. In contrast to most programming languages, an Erlang program has the main focus on the processes, rather than objects [@Bla13]. Its was designed for key challenges like high concurrency and availability, fault-tolerance and live-upgrades [@Vin07], similar to the needs that lead to the microservice architecture style [@DGL16; @DLL17]. Therefore, an idiomatic Erlang program has remarkable similarities with a microservice architecture. Additionally, with *Distributed Erlang*, the processes can be deployed across multiple Erlang VMs on difference host machines, incorporating even more properties of MSA [@CMT17].
 
 While Erlang has no focus on objects, other object-oriented approaches to concurrency interprete objects as processes, and therefore as concurrent and potentially parallel entities. In [@Giv14] this idea is introduced into the `new` keyword of C++, also illustrating that other object-oriented concepts like inheritance can be built ontop this approach.
 
-The *OrcO* programming language also as a *concurrency-first* approach to objects. Unlike active objects however, OrcOs objects to not 
+The *OrcO* programming language, an extension of the *Orc* language, also has a *concurrency-first* approach to objects. Unlike active objects, instead of adding concurrency objects explicitly, each program is concurrent by default. Sequential control structures are replaced by concurrent combinators, fields are implicitely futures, and the object and concurrency structure are orthogonal, to allow them to evolve separately [@PKTC16].
 
-~ TODO
-service oriented programming und JOLIE language
-~
+On the other hand, there is not only progress in concurrency evolution. The *Jolie* programming language calls itself the first of the kind of *service-oriented programming* paradigm [@MGZ14]. Originating in the pre-mircoservice era, it builds upon the SOA concept of service *orchestration*, meaning the behavioural composition of services. Jolies primary focus is the concept of the *service*, therefore each idiomatic Jolie program defines one such. A program is a composition of a *behaviour* and a *deployment*. The behaviour implements the functionality of the service. However, no communication with the service is defined inside the behaviour. This is part of the deployment, where so-called *communication ports* regulate the access functionality the service offers (cf. inside- and outside-view of objects mentioned in § [#sec-motivation]).
 
-~ TODO
-hochaktuelles thema, 2016 und bereits 2017 viele papers
-~
-
+Jolie is a prototype language where each component is essentially a microservice. Therefore, from a conceptual point of view, Jolie is a valuable proof of concept that microservice principles can make their way into language primitives of future programming languages [@MMSL16]. Subsequently Jolie has no more explicit concurrency considerations than an MSA per se (both in language construcs and accompaning scientic literature), therefore we think it does not make a suitable language candidate for our experimental implementations (§ [#sec-methodology], item 4.).
 
 # Relevance to the Curricula { #sec-relevance }
 
