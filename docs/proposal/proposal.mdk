@@ -2,7 +2,7 @@
 
 
 Title        : Master Thesis Proposal
-Subtitle     : Do concurrent programming languages need microservice architectures?
+Subtitle     : Concurrent Programming Languages and Microservice Architectures
 Title Note   : DRAFT, &date; (version 1.1)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
@@ -48,10 +48,10 @@ established programming paradigms. Some examples are:
   independent process interacting via messages*", we can spot commonalities with 
   object-oriented design principles: objects should be loosely coupled 
   (= independent) and highly cohesive. 
-* A fundamental concept of objects is "*Clients request services from objects*". 
+* A fundamental concept of objects is "*Clients request services from objects*" [@Sny93]. 
   In MSA, clients request services from other microservices. Using the Smalltalk 
   terminology, communication between objects happens by sending *messages* 
-  (object method call) between them [@Sny93]. RESTful microservices send HTTP 
+  (object method call) between them. RESTful microservices send HTTP 
   messages.
 * Simula 67 introduced the concept of objects being data structs with associated 
   operators. Additionally, two different views were introduced: the *inside view* 
@@ -81,7 +81,7 @@ models. For example:
 
 * In the *actor model*, an actor is a "*self-contained, interactive, independent 
   component of a computing system that communicates by asynchronous message 
-  passing*" [@Agh90]. While in an MSA the communication can also be synchronous, 
+  passing*" [@Agh90]. While in a MSA the communication can also be synchronous, 
   this definition of an actor has a striking resemblance with the definition for 
   a microservice by [@DGL16] we have already introduced. Actors have a 
   no-shared-state and immutable message philosophy, also properties of any SOA.
@@ -141,7 +141,7 @@ An expected conclusion of this work will therefore be, that microservice
 architectures will *not* be classified as a symptom to a problem that should
 have been already solved on a programming language level (as the thesis title
 might imply), but that they are merely a solution to the need for high
-scalability. On the other hand, many todays software application having no
+scalability. On the other hand, many of todays software application having no
 scalability problem, and yet being  developed in a microservice architecture,
 are consequently a side effect. Developers grasp for easier to understand
 concurrency in their architectures and micorservices inherently force them to
@@ -257,10 +257,10 @@ Jolie is a prototype language where each component is essentially a
 microservice. Therefore, from a conceptual point of view, Jolie is a valuable
 proof of concept that microservice principles can make their way into language
 primitives of future programming languages [@MMSL16]. Subsequently Jolie has no
-more explicit concurrency considerations than an MSA per se (both in language
-construcs and accompaning scientic literature), therefore we think it does not
-make a suitable language candidate for our experimental implementations (§
-[#sec-methodology], item 4.).
+more explicit concurrency considerations than a MSA per se (both in language
+construcs and accompaning scientic literature), because it is an inherent property. 
+Therefore we think it does not make a suitable language candidate for our 
+experimental implementations (§ [#sec-methodology], item 4.).
 
 # Relevance to the Curricula { #sec-relevance }
 
@@ -269,8 +269,7 @@ aspect of this proposal correlates well with the authors curricula *Software
 Engineering & Internet Computing* and subsequently the courses he took.
 Microservices were the sole content of *VU Distributed Systems Engineering*,
 while the courses from the *Distributed Systems* module and others with a
-software engineering focus dicussed additional topics around concepts concerning
-microservice architectures.
+software engineering focus dicussed additional topics around (distributed) software architectures.
 
 On the other hand, the many courses of the *Computersprachen und Programmierung*
 module provided deep insight in the programming paradigms needed in order to
@@ -295,6 +294,7 @@ curricula and the master curricula, is given in alphabetical order:
 * VU Fortgeschrittene funktionale Programmierung
 * VU Fortgeschrittene objektorientierte Programmierung
 * VU Funktionale Programmierung
+* VU Logikprogrammierung und Constraints
 * UE Network Engineering
 * VO Network Engineering
 * VU Objektorientierte Modellierung
@@ -304,9 +304,11 @@ curricula and the master curricula, is given in alphabetical order:
 * SE Seminar in Distributed Systems
 * PR Software Engineering und Projektmanagement
 * VO Software Engineering und Projektmanagement
+* VU Stackbasierte Sprachen
 * VO Typsysteme
 * VU Verteiltes Programmieren mit Space Based Computing Middleware
 * UE Verteilte Systeme
 * VO Verteilte Systeme
+* VU Web Engineering
 
 [BIB]
