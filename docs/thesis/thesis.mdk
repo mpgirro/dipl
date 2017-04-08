@@ -1,8 +1,13 @@
 [INCLUDE=style/template]
 
+<!--
 Title        : A crack in the monolith
-Subtitle     : Do su ciently concurrent programming languages need microservice architectures?
+Subtitle     : Do suffciently concurrent programming languages need microservice architectures?
+-->
+Title        : Concurrent Programming Languages and Microservice Architectures
 Author       : Maximilian Irro
+Email        : max@irro.at
+Copyright    : Maximilian Irro, 2017
 Title Footer : 2017
 <!-- TODO delete with new layout -->
 chead        : 
@@ -16,17 +21,60 @@ Package      : mathptmx
 
 .LitNote { background-color: yellow }
 
-[TITLE]
+@if html {
+  Name Contents   : \/
 
+  Section Depth : 1
+  Css           : webpaginated.css
+  Script*       : webpaginated.js
+}
+@if not html {
+  Name Contents   : Inhaltsverzeichnis
+}
+@if not (tex) {
+  Bib Search Url: scholar.google.at
+}
+
+CSS Header      :
+  .madoko .math-rendering {
+    color: black;
+  }
+  hr.figureline.madoko {
+    display: none;
+  }
+  .toc a, .toc a:visited { 
+    color: #0000EE;  
+  }
+
+~ Begin HtmlOnly
+[TITLE]
+~ Begin SidePanel
 [TOC]
+~ End SidePanel
+~ End HtmlOnly
+<!-- We open an HTML class here, which we'll need to close at the end -->
+~ Begin MainPanel
+
+<!-- TODO hier müssen sachen wie titleseite, frontmatter etc eingefügt werden -->
+
+
+# Danksagung { -; toc:clear; }
+
+TODO
 
 <!--
-# Danksagung
-
 * Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich sie viel zu selten anrufe.
-
-
 -->
+
+# Abstract { -; toc:clear; }
+
+# Kurzfassung { -; toc:clear; }
+
+~ TexOnly
+[TOC]
+[TOC=figures]
+[TOC=tables]
+~
 
 # Introduction
 
@@ -153,3 +201,7 @@ Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte
 
 [BIB]
 
+<!-- TODO glossar, nomenclature, index -->
+
+<!-- We need to close the HTML class we opened right at the top -->
+~ End MainPanel
