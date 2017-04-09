@@ -19,6 +19,27 @@ Cite All     : False
 
 Package      : mathptmx
 
+<!--  Blockquotes for chapter headers -->
+Package      : epigraph
+Epigraph {
+  replace:"~ Begin TexOnly&nl;\
+           ~ Begin TexRaw&nl;\
+             %\epigraphfontsize{\small\itshape}&nl;\
+             \epigraph{&source;}{--- &caption;}&nl;\
+           ~ End TexRaw&nl;\
+           ~ End TexOnly&nl;\
+           ~ Begin HtmlOnly&nl;\
+            <blockquote>&nl;\
+              <p>&source;</p>&nl;\
+              <hr />&nl;\
+              <footer style='float:right;'>— &caption;</footer>&nl;\
+            </blockquote>&nl;\
+           ~ End HtmlOnly"
+}
+.epigraph { max-width:50%; margin-left: auto; margin-right: 0; }
+.epigraph-footer { float:right; }
+<!-- # # # # # # # # # # # # # # # # # # # # # # -->
+
 .LitNote { background-color: yellow }
 
 @if html {
@@ -45,6 +66,8 @@ CSS Header      :
   .toc a, .toc a:visited { 
     color: #0000EE;  
   }
+
+
 
 ~ Begin HtmlOnly
 [TITLE]
@@ -78,6 +101,10 @@ TODO
 
 # Introduction
 
+~ Epigraph { caption: "Lewis Carroll, Alice in Wonderland"}
+Begin at the beginning," the King said gravely, and go on till you come to the end: then stop.
+~
+
 ## Motivation
 
 ## Scope of this Thesis
@@ -87,6 +114,10 @@ TODO
 ## Road Map
 
 # Microservice Architectures
+
+~ Epigraph { caption: "Higgs Boson (2012 -- present)" }
+Don't give up on your dreams, keep on sleeping.
+~
 
 ~ LitNote
 * <https://martinfowler.com/articles/microservices.html>
@@ -122,6 +153,13 @@ Case study: Akka provides a circuit breaker implementation [@MW16]
 * Microservices sind ja per Design Concurrent, da eigene Programme (Service = Component). Und wenn man MS skaliert (mehrere Instanten gleichzeitig startet) dann ist diese Component auch parallel. Also falls man auf mehreren Maschinen deployed
 * "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@FL17]
 ~
+
+## Development, Debugging and Maintenance
+
+~ Epigraph { caption: "Filipe Fortes" }
+Debugging is like being the detective in a crime movie where you're also the murderer.
+~
+
 
 ## Summary
 
@@ -196,6 +234,9 @@ Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte
 
 # Outlook
 
+~ Epigraph { caption: "Niels Bohr" }
+Predicition is very difficult, especially about the future.
+~
 
 # Conclusion
 
