@@ -1,59 +1,3 @@
-
-
-
-@masterthesis{Mon10,
-  title={Jolie: a service-oriented programming language},
-  author={Montesi, Fabrizio},
-  year={2010}
-}
-
-@phdthesis{Mon14,
-  title={Choreographic programming},
-  author={Montesi, Fabrizio},
-  year={2014},
-  publisher={InstituttetThe Department, Software and SystemsSoftware \& Systems, Programming, Logic and SemanticsProgramming, Logic and Semantics}
-}
-
-@incollection{MGZ14,
-  title={{Service-Oriented Programming with Jolie}},
-  author={Montesi, Fabrizio and Guidi, Claudio and Zavattaro, Gianluigi},
-  booktitle={Web Services Foundations},
-  pages={81--107},
-  year={2014},
-  publisher={Springer}
-}
-
-@masterthesis{Erb12,
-  author = {Benjamin Erb},
-  title = {{Concurrent Programming for Scalable Web Architectures}},
-  school = {Institute of Distributed Systems, Ulm University},
-  year = {2012},
-  type = {Diploma Thesis},
-  keywords = {web, scalability, architecture, concurrency},
-  month = {April},
-  number = {VS-D01-2012},
-  url = {http://www.benjamin-erb.de/thesis}
-} 
-
-/*
- 
-- "Before presenting the current state-of-the-art in the field, this chapter reviews the history of software architecture, the reasons that led to the diffusion of objects and services first, and microservices later"
-
-*/
-@article{DGL16,
-  title={{Microservices: yesterday, today, and tomorrow}},
-  author={Dragoni, Nicola and Giallorenzo, Saverio and Lafuente, Alberto Lluch and Mazzara, Manuel and Montesi, Fabrizio and Mustafin, Ruslan and Safina, Larisa},
-  journal={arXiv preprint arXiv:1606.04036},
-  year={2016}
-}
-
-@article{DLL17,
-  title={{Microservices: How To Make Your Application Scale}},
-  author={Dragoni, Nicola and Lanese, Ivan and Larsen, Stephan Thordal and Mazzara, Manuel and Mustafin, Ruslan and Safina, Larisa},
-  journal={arXiv preprint arXiv:1702.07149},
-  year={2017}
-}
-
 @inproceedings{AAE16,
   title={{A Systematic Mapping Study in Microservice Architecture}},
   author={Alshuqayran, Nuha and Ali, Nour and Evans, Roger},
@@ -63,62 +7,13 @@
   organization={IEEE}
 }
 
-/*
-
-- We define libraries as components that are linked into a program and called using in-memory function calls, while services are out-of-process components who communicate with a mechanism such as a web service request, or remote procedure call. (This is a different concept to that of a service object in many OO programs [3].
-
-	3: Many object-oriented designers, including ourselves, use the term service object in the Domain-Driven Design sense for an object that carries out a significant process that isn't tied to an entity. This is a different concept to how we're using "service" in this article. Sadly the term service has both meanings and we have to live with the polyseme.
-
-*/
-@misc{FL17,
-	author = {Fowler, Martin and Lewis, James},
-	title = {Microservices},
-	year = {2014 (accessed April 2, 2017)},
-	howpublished = "\url{http://martinfowler.com/articles/microservices.html}"}
-}
-
-/*
-- New Objects can be created : vgl mit µS, hier können auch neue Services erzeugt werden, um zu skalieren (wenn entsprechend implementiert, daher im allgemeinen schwerer!)
-
-- Active Objects "can initiate computation spontaneously, without being requested to do so by a client, AO is a concurrent process" --> in etwa so wie µS
-
-- Objects can share implementations : wenn mehrere µS von der selben Codebase gestartet werden, tun sie das auch, haben eigenen State, aber "identical state format"
-
-- Objects can share partial implementation : inheritence eher schwierig, aber delegation in µS ganz normal, so auch bei Objekten
-
-- Dynamic Binding : nur eine Idee, aber kann man da einen Vergleich zu API Gateways ziehen, die zur Laufzeit den tatsächlichen Service an den weitergereicht wird (oder das dann selber entsprechende Antwort bei nicht existenz produziert) ziehen?
-
-*/
-@article{Sny93,
-  title={{The Essence of Objects: Concepts and Terms}},
-  author={Snyder, Alan},
-  journal={IEEE software},
-  volume={10},
-  number={1},
-  pages={31--42},
-  year={1993},
-  publisher={IEEE}
-}
-
-@article{Bla13,
-  title={{Object-oriented programming: Some history, and challenges for the next fifty years}},
-  author={Black, Andrew P},
-  journal={Information and Computation},
-  volume={231},
-  pages={3--20},
-  year={2013},
-  publisher={Elsevier}
-}
-
-@article{Kil16,
-  title={{The Hidden Dividends of Microservices}},
-  author={Killalea, Tom},
-  journal={Communications of the ACM},
-  volume={59},
-  number={8},
-  pages={42--45},
-  year={2016},
-  publisher={ACM}
+@inproceedings{Agh85,
+  title={{Concurrent programming using actors: Exploiting large-scale parallelism}},
+  author={Agha, Gul and Hewitt, Carl},
+  booktitle={Foundations of Software Technology and Theoretical Computer Science},
+  pages={19--41},
+  year={1985},
+  organization={Springer}
 }
 
 @article{Agh90,
@@ -132,39 +27,21 @@
   publisher={ACM}
 }
 
-@article{GB99,
-  title={{From Active Objects to Autonomous Agents}},
-  author={Guessoum, Zahia and Briot, J-P},
-  journal={IEEE concurrency},
-  volume={7},
-  number={3},
-  pages={68--76},
-  year={1999},
-  publisher={IEEE}
-}
-
-@article{LS95,
-  title={{Active Object--an Object Behavioral Pattern for Concurrent Programming}},
-  author={Lavender, R Greg and Schmidt, Douglas C},
-  year={1995},
+@article{Arm93,
+  title={{Concurrent programming in ERLANG}},
+  author={Armstrong, Joe and Virding, Robert and Wikstr{\"o}m, Claes and Williams, Mike},
+  year={1993},
   publisher={Citeseer}
 }
 
-@article{Vin07,
-  title={{Concurrency with Erlang}},
-  author={Vinoski, Steve},
-  journal={IEEE Internet Computing},
-  volume={11},
-  number={5},
-  year={2007},
-  publisher={IEEE}
-}
-
-@misc{SSRB00,
-  title={{Pattern-Oriented Software Architecture: Patterns for Concurrent and Networked Objects}},
-  author={Schmidt, Douglas C and Stal, Michael and Rohnert, Hans and Buschmann, Frank},
-  year={2000},
-  publisher={New York, NY: Wiley \& Sons}
+@article{Bla13,
+  title={{Object-oriented programming: Some history, and challenges for the next fifty years}},
+  author={Black, Andrew P},
+  journal={Information and Computation},
+  volume={231},
+  pages={3--20},
+  year={2013},
+  publisher={Elsevier}
 }
 
 @article{CLG17,
@@ -180,37 +57,63 @@
  url = {http://ieeexplore.ieee.org/document/7820204/},
 }
 
+/*
+- "Before presenting the current state-of-the-art in the field, this chapter reviews the history of software architecture, the reasons that led to the diffusion of objects and services first, and microservices later"
+*/
+@article{DGL16,
+  title={{Microservices: yesterday, today, and tomorrow}},
+  author={Dragoni, Nicola and Giallorenzo, Saverio and Lafuente, Alberto Lluch and Mazzara, Manuel and Montesi, Fabrizio and Mustafin, Ruslan and Safina, Larisa},
+  journal={arXiv preprint arXiv:1606.04036},
+  year={2016}
+}
+
+@article{DLL17,
+  title={{Microservices: How To Make Your Application Scale}},
+  author={Dragoni, Nicola and Lanese, Ivan and Larsen, Stephan Thordal and Mazzara, Manuel and Mustafin, Ruslan and Safina, Larisa},
+  journal={arXiv preprint arXiv:1702.07149},
+  year={2017}
+}
+
+@masterthesis{Erb12,
+  author = {Benjamin Erb},
+  title = {{Concurrent Programming for Scalable Web Architectures}},
+  school = {Institute of Distributed Systems, Ulm University},
+  year = {2012},
+  type = {Diploma Thesis},
+  keywords = {web, scalability, architecture, concurrency},
+  month = {April},
+  number = {VS-D01-2012},
+  url = {http://www.benjamin-erb.de/thesis}
+} 
+
+/*
+- We define libraries as components that are linked into a program and called using in-memory function calls, while services are out-of-process components who communicate with a mechanism such as a web service request, or remote procedure call. (This is a different concept to that of a service object in many OO programs [3].
+
+  3: Many object-oriented designers, including ourselves, use the term service object in the Domain-Driven Design sense for an object that carries out a significant process that isn't tied to an entity. This is a different concept to how we're using "service" in this article. Sadly the term service has both meanings and we have to live with the polyseme.
+*/
+@misc{FL17,
+  author = {Fowler, Martin and Lewis, James},
+  title = {Microservices},
+  year = {2014 (accessed April 2, 2017)},
+  howpublished = "\url{http://martinfowler.com/articles/microservices.html}"}
+}
+
+@article{GB99,
+  title={{From Active Objects to Autonomous Agents}},
+  author={Guessoum, Zahia and Briot, J-P},
+  journal={IEEE concurrency},
+  volume={7},
+  number={3},
+  pages={68--76},
+  year={1999},
+  publisher={IEEE}
+}
+
 @article{Giv14,
   title={Object-Oriented Parallel Programming},
   author={Givelberg, Edward},
   journal={arXiv preprint arXiv:1404.4666},
   year={2014}
-}
-
-
-@inproceedings{PKTC16,
-  title={{OrcO: A Concurrency-First Approach to Objects}},
-  author={Peters, Arthur Michener and Kitchin, David and Thywissen, John A and Cook, William R},
-  booktitle={Proceedings of the 2016 ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications},
-  pages={548--567},
-  year={2016},
-  organization={ACM}
-}
-
-@article{MW16,
-  title={{Circuit Breakers, Discovery, and API Gateways in Microservices}},
-  author={Montesi, Fabrizio and Weber, Janine},
-  journal={arXiv preprint arXiv:1609.05830},
-  year={2016}
-}
-
-@article{McK17,
-  author    = {Paul E. McKenney},
-  title     = {{Is Parallel Programming Hard, And, If So, What Can You Do About It?
-               (v2017.01.02a)}},
-  journal   = {arXiv preprint arXiv:1701.00854},
-  url       = {http://arxiv.org/abs/1701.00854},
-  year={2017}
 }
 
 @article{Kil16,
@@ -222,4 +125,106 @@
   pages={42--45},
   year={2016},
   publisher={ACM}
+}
+
+@article{LS95,
+  title={{Active Object--an Object Behavioral Pattern for Concurrent Programming}},
+  author={Lavender, R Greg and Schmidt, Douglas C},
+  year={1995},
+  publisher={Citeseer}
+}
+
+@article{McK17,
+  author    = {Paul E. McKenney},
+  title     = {{Is Parallel Programming Hard, And, If So, What Can You Do About It?
+               (v2017.01.02a)}},
+  journal   = {arXiv preprint arXiv:1701.00854},
+  url       = {http://arxiv.org/abs/1701.00854},
+  year={2017}
+}
+
+@book{Mey97,
+ author = {Meyer, Bertrand},
+ title = {Object-oriented Software Construction (2Nd Ed.)},
+ year = {1997},
+ isbn = {0-13-629155-4},
+ publisher = {Prentice-Hall, Inc.},
+ address = {Upper Saddle River, NJ, USA},
+} 
+
+@incollection{MGZ14,
+  title={{Service-Oriented Programming with Jolie}},
+  author={Montesi, Fabrizio and Guidi, Claudio and Zavattaro, Gianluigi},
+  booktitle={Web Services Foundations},
+  pages={81--107},
+  year={2014},
+  publisher={Springer}
+}
+
+@masterthesis{Mon10,
+  title={Jolie: a service-oriented programming language},
+  author={Montesi, Fabrizio},
+  year={2010}
+}
+
+@phdthesis{Mon14,
+  title={Choreographic programming},
+  author={Montesi, Fabrizio},
+  year={2014},
+  publisher={InstituttetThe Department, Software and SystemsSoftware \& Systems, Programming, Logic and SemanticsProgramming, Logic and Semantics}
+}
+
+@article{MW16,
+  title={{Circuit Breakers, Discovery, and API Gateways in Microservices}},
+  author={Montesi, Fabrizio and Weber, Janine},
+  journal={arXiv preprint arXiv:1609.05830},
+  year={2016}
+}
+
+@inproceedings{PKTC16,
+  title={{OrcO: A Concurrency-First Approach to Objects}},
+  author={Peters, Arthur Michener and Kitchin, David and Thywissen, John A and Cook, William R},
+  booktitle={Proceedings of the 2016 ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications},
+  pages={548--567},
+  year={2016},
+  organization={ACM}
+}
+
+/*
+- New Objects can be created : vgl mit µS, hier können auch neue Services erzeugt werden, um zu skalieren (wenn entsprechend implementiert, daher im allgemeinen schwerer!)
+
+- Active Objects "can initiate computation spontaneously, without being requested to do so by a client, AO is a concurrent process" --> in etwa so wie µS
+
+- Objects can share implementations : wenn mehrere µS von der selben Codebase gestartet werden, tun sie das auch, haben eigenen State, aber "identical state format"
+
+- Objects can share partial implementation : inheritence eher schwierig, aber delegation in µS ganz normal, so auch bei Objekten
+
+- Dynamic Binding : nur eine Idee, aber kann man da einen Vergleich zu API Gateways ziehen, die zur Laufzeit den tatsächlichen Service an den weitergereicht wird (oder das dann selber entsprechende Antwort bei nicht existenz produziert) ziehen?
+*/
+@article{Sny93,
+  title={{The Essence of Objects: Concepts and Terms}},
+  author={Snyder, Alan},
+  journal={IEEE software},
+  volume={10},
+  number={1},
+  pages={31--42},
+  year={1993},
+  publisher={IEEE}
+}
+
+@misc{SSRB00,
+  title={{Pattern-Oriented Software Architecture: Patterns for Concurrent and Networked Objects}},
+  author={Schmidt, Douglas C and Stal, Michael and Rohnert, Hans and Buschmann, Frank},
+  year={2000},
+  publisher={New York, NY: Wiley \& Sons}
+}
+
+@article{Vin07,
+  title={{Concurrency with Erlang}},
+  author={Vinoski, Steve},
+  journal={IEEE Internet Computing},
+  volume={11},
+  number={5},
+  year={2007},
+  publisher={IEEE}
 }
