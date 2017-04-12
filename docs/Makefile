@@ -1,13 +1,18 @@
 
 # This uses Madoko (https://madoko.codeplex.com/)
-
-pdf:
+proposal:
 	madoko --pdf proposal.mdk
 
-html:
-	madoko proposal.mdk
+thesis:
+	madoko --pdf thesis.mdk
 
-all: pdf
+references:
+	madoko --pdf references.mdk
+
+journal:
+	madoko --pdf journal.mdk
+
+all: proposal thesis references journal
 
 clean:
 	cd out/
