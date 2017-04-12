@@ -1,4 +1,4 @@
-[INCLUDE=style/template]
+[INCLUDE=style/marticle]
 
 <!--
 Title        : A crack in the monolith
@@ -131,6 +131,7 @@ Don't give up on your dreams, keep on sleeping.
   * Tracing and Logging
   * Application Performance Monitoring
   * Deployment operations
+* eventueller Vergleich mit Komponentenbasiertem Softwareentwurf? "Bei einem komponentenorientierten Softwareentwurf sind Softwaresysteme in möglichst unabhängig wartbare und wiederverwendbare Softwarekomponenten zu zerlegen. Diese Ziele lassen sich verfolgen, indem bei der Definition von Softwarekomponenten dem Entwurfsprinzip der maximalen Kohäsion bei gleichzeitig minimalen Abhängigkeiten gefolgt wird [Szyperski et al. 2002, S. 40; Parnas 1972]" -> http://www.enzyklopaedie-der-wirtschaftsinformatik.de/lexikon/is-management/Systementwicklung/Hauptaktivitaten-der-Systementwicklung/Softwareentwurf/Komponentenorientierter-Softwareentwurf/index.html
 ~
 
 ## Componentization via Services (geklaut von M.Fowler)
