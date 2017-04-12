@@ -1,6 +1,5 @@
 [INCLUDE=style/marticle]
 
-
 Title        : Master Thesis Proposal
 Subtitle     : Concurrent Programming Languages and Microservice Architectures
 Title Note   : DRAFT, &date; (version 1.1)
@@ -9,8 +8,9 @@ Email        : maximilian.irro@tuwien.ac.at
 
 <!--Title Footer : April 2017-->
 
+chead        :
 Toc depth    : 1
-Bibliography : proposal
+Bibliography : thesis
 Bib style    : alpha
 Logo         : False
 Draft        : True
