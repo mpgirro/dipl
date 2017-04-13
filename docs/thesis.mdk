@@ -21,17 +21,19 @@ Package      : mathptmx
 
 <!--  Blockquotes for chapter headers -->
 Package      : epigraph
+Tex Header   : 
+  \epigraphsize{\small\itshape}
+  \setlength\epigraphwidth{8cm}
+  \setlength\epigraphrule{0pt}
 Epigraph {
   replace:"~ Begin TexOnly&nl;\
            ~ Begin TexRaw&nl;\
-             %\epigraphfontsize{\small\itshape}&nl;\
              \epigraph{&source;}{--- &caption;}&nl;\
            ~ End TexRaw&nl;\
            ~ End TexOnly&nl;\
            ~ Begin HtmlOnly&nl;\
             <blockquote>&nl;\
               <p>&source;</p>&nl;\
-              <hr />&nl;\
               <footer style='float:right;'>— &caption;</footer>&nl;\
             </blockquote>&nl;\
            ~ End HtmlOnly"
