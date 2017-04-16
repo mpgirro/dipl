@@ -53,7 +53,7 @@ established programming paradigms. Some examples are:
   terminology, communication between objects happens by sending *messages* 
   (object method call) between them. RESTful microservices send HTTP 
   messages.
-* Simula 67 introduced the concept of objects being data structs with associated 
+* *Simula 67* introduced the concept of objects being data structs with associated 
   operators. Additionally, two different views were introduced: the *inside view* 
   of an object - its local variables, procedures on these variables, initialising 
   operations etc. - and its *outside view*, more abstract entities representing 
@@ -144,7 +144,7 @@ might imply), but that they are merely a solution to the need for high
 scalability. On the other hand, many of todays software application having no
 scalability problem, and yet being  developed in a microservice architecture,
 are consequently a side effect. Developers grasp for easier to understand
-concurrency in their architectures and micorservices inherently force them to
+concurrency in their architectures and microservices inherently force them to
 plan the *separation of concernces* in more detail than programming languages
 usually do, resulting in an easier to understand concurrency model in their
 application architectures.
@@ -190,7 +190,7 @@ concurrency primitives with small footprints.
 
 # State of the Art { #sec-sota }
 
-In a recent systemantic mapping study of research literature [@AAE16], is was
+In a recent systemantic mapping study of research literature [@AAE16], it was
 found that the microservice architectural style (MSA) research is currently at
 an early stage, for the style was born from industrial needs, and academia has
 not yet fully caught up. Subsequently, we see many of the available literature
@@ -203,7 +203,7 @@ orientation), but it also originates from service oriented architectures (SOA)
 in general [@MMSL16;@MW16]. SOA can be considered the "first generation" of
 services, providing benefits like dynamism, modularity, distributed development
 and the integration of heterogenouse and legacy systems. Microservices can be
-considered "second generation" services, and therefore and evolution of SOA,
+considered "second generation" services, and therefore an evolution of SOA,
 where each service is being developed with the focus on one single functionality
 of business logic, and all unnecessary levels of complexity are being
 consequently removed and outsources to other dedicated services [@DGL16].
@@ -258,25 +258,26 @@ microservice. Therefore, from a conceptual point of view, Jolie is a valuable
 proof of concept that microservice principles can make their way into language
 primitives of future programming languages [@MMSL16]. Subsequently Jolie has no
 more explicit concurrency considerations than a MSA per se (both in language
-construcs and accompaning scientic literature), because it is an inherent property. 
+constructs and accompaning scientic literature), because it is an inherent property. 
 Therefore we think it does not make a suitable language candidate for our 
 experimental implementations (§ [#sec-methodology], item 4.).
 
 # Relevance to the Curricula { #sec-relevance }
 
-Both the mircoservice as well as the programming language and concurrency model
+Both the microservice as well as the programming language and concurrency model
 aspect of this proposal correlates well with the authors curricula *Software
 Engineering & Internet Computing* and subsequently the courses he took.
 Microservices were the sole content of *VU Distributed Systems Engineering*,
 while the courses from the *Distributed Systems* module and others with a
-software engineering focus dicussed additional topics around (distributed) software architectures.
+software engineering focus discussed additional topics around (distributed) 
+software architectures.
 
 On the other hand, the many courses of the *Computersprachen und Programmierung*
-module provided deep insight in the programming paradigms needed in order to
+module provided deep insight into the programming paradigms needed in order to
 make the intended connections of this work between microservices architectures
 and concurrent programming paradigms.
 
-Additionally, in the authors seminar works he already dicussed related topics
+Additionally, in the authors seminar works he already discussed related topics
 (multicore programming in JVM languages, as well as cloud management frameworks
 - often used to manage microservice applications), providing valuable
 precognition for this work.
