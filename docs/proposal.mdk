@@ -69,8 +69,8 @@ established programming paradigms. Some examples are:
 Many more conceptional resemblances can be pointed out and analysed. To get a
 basic ground to work upon, we therefore ask the first research question:
 
-> **RQ1**: Which commonalities are microservice architectures sharing with various 
-  programming paradigms?
+> **RQ1**: Which commonalities are microservice architectures sharing with 
+  object-oriented and functional programming paradigms?
 
 Not only can we draw connections to well-established programming paradigms. Each
 microservice is a dedicated program (and therefore a system process) itself, and
@@ -102,6 +102,14 @@ is in order. Building on the knowledge of the previous questions, we ask:
   sharing with concurrency models in general? Which concurrency and distributed 
   programming concepts are especially convenient for the commonalities identified 
   in RQ1?
+
+> **RQ2**: Which concepts are convenient?
+
+> **RQ2a**: Which commonalities are microservice architecture design principles 
+  sharing with concurrency models in general?
+
+> **RQ2b**: Which concurrency and distributed programming concepts are especially 
+  convenient for the commonalities identified in RQ1?
 
 And finally, after we have analysed the conceptual commonalities and related
 concurrency concepts, we are interested in why microservice architectures are
