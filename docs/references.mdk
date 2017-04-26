@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
-Bibliography : thesis
-Bib style    : alpha
+Bibliography : dipl
+Bib style    : abstract
 Cite All     : True
 
 [BIB]

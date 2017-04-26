@@ -4,7 +4,8 @@
 Title        : A crack in the monolith
 Subtitle     : Do suffciently concurrent programming languages need microservice architectures?
 -->
-Title        : Concurrent Programming Languages and Microservice Architectures
+<!--Title        : Concurrent Programming Languages and Microservice Architectures-->
+Title        : Concurrent Programming for Microservice Architectures
 Author       : Maximilian Irro
 Email        : max@irro.at
 Copyright    : Maximilian Irro, 2017
@@ -13,7 +14,7 @@ Title Footer : 2017
 chead        : 
 
 Toc depth    : 3 
-Bibliography : thesis
+Bibliography : dipl
 Bib style    : alpha
 Cite All     : False
 
