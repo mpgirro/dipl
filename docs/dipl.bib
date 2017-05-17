@@ -187,6 +187,15 @@ with more “abstract” entities.
   annote    = {}
 }
 
+* based on the observation that programming objects can be naturally interpreted as processes.
+* that communicate by executing remote methods
+* Programming objects can be thought of as processes
+* the above program differs from the standard C++ only in the extension of the operator new.
+* new allocates objects on remote machines, using the address of the remote machine specified inside parentheses.
+* The construction of a new object on a remote machine cre- ates a new process on that machine.
+* The introduction of processes, accessible by remote pointers, creates an object-oriented framework for parallel program- ming. Processes exchange information by executing meth- ods on remote objects rather than by passing messages.
+* Having defined processes as programming objects, it is now straightforward to derive new processes using previously de- fined processes. We illustrate process inheritance by extend- ing the example of the previous section.
+* In this paper we have shown that programming objects have a natural interpretation as processes
 @article{Giv14,
   title   = {{Object-Oriented Parallel Programming}},
   author  = {Givelberg, Edward},
@@ -377,4 +386,23 @@ TODO: das PDF organisieren (schwer zu kriegen!)
   year      = {1986},
   publisher = {The MIT Press, Cambridge, MA},
   annote    = {}
+}
+
+* Parallelism is ubiquitous in our problem domains.
+* by using various metaphors found in such systems
+* Each object in our computation model has its own (autonomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate.Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and constraints.
+* When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message.
+* Thus message passing takes place in a point-to-point (object-to-object)fashion.No message can be broadcast.
+* [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
+* [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
+@inproceedings{Yon86a,
+  title        = {{Object-oriented concurrent programming ABCL/1}},
+  author       = {Yonezawa, Akinori and Briot, Jean-Pierre and Shibayama, Etsuya},
+  booktitle    = {ACM SIGPLAN Notices},
+  volume       = {21},
+  numbe        = {11},
+  pages        = {258--268},
+  year         = {1986},
+  organization = {ACM},
+  annote       = {}
 }

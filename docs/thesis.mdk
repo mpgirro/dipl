@@ -143,6 +143,16 @@ Don't give up on your dreams, keep on sleeping.
 Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weiterentwicklung sind?
 ~
 
+~ TODO
+Case Study: Concurrency in ABCL/1 [@Yon86a]
+
+* "Each object in our computation model has its own (auto- nomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate. Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and con- straints."
+
+* "When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message."
+
+=> vgl mit REST API und wenn ein Service einen anderen Service synchron anspricht
+~
+
 ## Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
 ## API gateways, circuit breakers and discovery
