@@ -366,6 +366,21 @@ TODO fragen ob ich da ein PDF bekomme
   annote    = {}
 }
 
+* p.1: It’s not an exaggeration to say that writing correct multithreaded programs is beyond many programmers’ technical abilities. -- Highlighted 18 May 2017
+* p.1: One of the primary reasons concurrency is so hard is that popular imperative programming languages such as Java and C++ essentially require state to be shared among threads. -- Highlighted 18 May 2017
+* p.1: Programmers writing multithreaded applica  tions in languages like Java and C++ spend much   of their time determining what state is shared   among threads and how best to protect its integri  ty within the running application. Finding all the   shared state isn’t always easy.  -- Highlighted 18 May 2017
+* p.1: Assuming the pro  grammer can even find it, he or she must then pos  sess the skills, experience, and patience necessary   to determine the best way to serialize access to it -- Highlighted 18 May 2017
+* p.1: If locking is too coarse-grained, the application tends toward single-threading -- Highlighted 18 May 2017
+* p.1: Such applications make poor use of multicore CPUs and tend to be slow. If locking is too fine-grained, on the other hand, the chances for deadlock increase greatly as different threads are increasingly likely to obtain locks in different orders -- Highlighted 18 May 2017
+* p.1:  Idioms, patterns, and frameworks can help out partially, but they introduce restrictions and trade-offs of their own. -- Highlighted 18 May 2017
+* p.1: One way to avoid the problems with shared state is to simply avoid it, but that’s impractical in a language like C++ or Java. Doing so requires a combination of libraries or frameworks such as those based on actor models and message passing -- Highlighted 18 May 2017
+* p.1: A better way to avoid shared state is to switch to a programming language specifically designed to do exactly that. Erlang is one such language. -- Highlighted 18 May 2017
+* p.2: They required their language to help them build highly concurrent, fault-tolerant, highly available, and distributed services that supported live upgrades and ran with virtually zero downtime. -- Highlighted 18 May 2017
+* p.2: In fact, it’s so hard that even if you’ve done it before, you can still very easily get it wrong. Consequently, when building a new system, most developers tend to focus first on the nonreplicated, nonreliable version, seriously considering the really hard failover and load-balancing parts only after they get that working. -- Highlighted 18 May 2017
+* p.2: Erlang is a functional language that wholly embraces the “shared nothing” concept -- Highlighted 18 May 2017
+* p.2: Because Erlang variables are immutable, they don’t need concurrency protection -- Highlighted 18 May 2017
+* p.2: Avoiding shared variables allows for higher degrees of program parallelization, assuming threads aren’t too heavyweight. Erlang “processes,” which are essentially user-space threads rather than Unix processes or kernel threads, communicate only via message passing -- Highlighted 18 May 2017
+* p.4: Locks, condition variables, and other traditional multithreading constructs simply aren't necessary in any of this code. -- Highlighted 18 May 2017
 @article{Vin07,
   title     = {{Concurrency with Erlang}},
   author    = {Vinoski, Steve},
