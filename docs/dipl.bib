@@ -63,6 +63,23 @@
   annote       = {}
 }
 
+* p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
+* p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
+* p.126: hree common patterns of parallelism in problems have been found in practice (For example, see [8, 131). First, pipeline concurrency involves the enumeration of potential solutions and the concurrent testing of these solutions as they are enumerated. Second, divide and conquer concurrency involves the concurrent elaboration of different subproblems and the joining of (some or all) of their solutions in order to obtain a solution to the overall problem. In divide and conquer concurrency, there is no interaction between the procedures solving the subproblems.  -- Highlighted 19 May 2017
+* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s 
+* p.127: Divide-and-conquer concurrency algorithms can often be expressed as functions.  -- Highlighted 19 May 2017
+* p.128: n cooperative problem solving concurrency, intermediate results arestored in objects and shared by pass-ing messages between objects. -- Highlighted 19 May 2017
+* p.128: Another example of coopera-tive problem solving is blackboardsystems which allow collaborationbetween agents through a sharedwork space. -- Highlighted 19 May 2017
+* p.128: Actors are self-contained, interactive, independent componentsof a computing system that communicate by asynchronous message passing.  -- Highlighted 19 May 2017
+* p.128: Each time an actor processes a communication, it also computes its behavior in response to the next communication it may process.  -- Highlighted 19 May 2017
+* p.128: In other cases, the behavior may change. The change in the behavior may represent a simple change of state variables, such as change in the balance of an account, or it may represent changes in the operations (methods) which are carried out in response to messages. -- Highlighted 19 May 2017
+* p.128: Concurrent computations can be visualized in terms of event diagrams (see Figure 5). These diagrams were developed to model the behavior of actor systems. -- Highlighted 19 May 2017
+* p.130: A customer can be sent a reply message when a request is completed, or a complaint message if it is not possible to successfully complete the reqluest. -- Highlighted 19 May 2017
+* p.132: Although actors take a functionalview of an object’s internal behavior at any given point in time, actors can represent shared history-sensitive ob-jects.  -- Highlighted 19 May 2017
+* p.132: We call such a merge afair merge. Afair merge is complete because itmerges message:; from every senderand may not ignore any sender inde-finitely and it is indeterminate be-cause no particular order is specifiedfor messages sent to the same objectby different objects.  -- Highlighted 19 May 2017
+* Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
+* Inherent Concurrency
+* 
 @article{Agh90,
   title     = {{Concurrent Object-Oriented Programming}},
   author    = {Agha, Gul},
@@ -286,6 +303,31 @@ with more “abstract” entities.
   annote    = {}
 }
 
+* p.1:  Jolie, a language -- Highlighted 19 May 2017
+* p.1: inspired by Service-Oriented Architecture (SOA). The key difference between the two approaches lies in granularity. -- Highlighted 19 May 2017
+* p.1: a single executable artifact, called a monolith -- Highlighted 19 May 2017
+* p.1: Components can be deployed separate, -- Highlighted 19 May 2017
+* p.1: New versions of components can be gradually introduced in a system -- Highlighted 19 May 2017
+* p.1: Components can be more specialised -- Highlighted 19 May 2017
+* p.1: Scaling a microservice architecture does not imply a duplication of all its components -- Highlighted 19 May 2017
+* p.1: Interactions among microservices happen via message passing, which introduces the possibilities of communication failures and timeouts among components. -- Highlighted 19 May 2017
+* p.1: Services may become overloaded, because of too many concurrent client requests or resources being kept busy while waiting for replies from other services. This may easily trigger disastrous cascading failures. -- Highlighted 19 May 2017
+* p.1: Microservices can use different technologies, enabling specialisation to specific clients and tasks. -- Highlighted 19 May 2017
+* p.2: We also demonstrate how the solutions that carry novelty in the setting of microservices can be prototyped using constructs developed for service composition in Jolie [26], a native microservice programming language [20]. -- Highlighted 19 May 2017
+* p.2: Failure in an MSA is inevitable, and should be embraced with precaution rather than ignored. -- Highlighted 19 May 2017
+* p.2: The motto here is to fail fast: when a service becomes unresponsive, its invokers should stop waiting for it, assume the worst, and start dealing with the fact that the failing service may be unavailable -- Highlighted 19 May 2017
+* p.2: One of the most famous implementations of circuit breakers is provided by the Hystrix library [30] -- Highlighted 19 May 2017
+* p.2: Here, we make the (novel) observation that it makes sense to deploy a circuit breaker also in other places than just inside of clients -- Highlighted 19 May 2017
+* p.5: In practice, the location of a microservice may not be statically known at design time. -- Highlighted 19 May 2017
+* p.5: A service registry is a service that can be used by other components to retrieve binding information about other components -- Highlighted 19 May 2017
+* p.6: An MSA may need to serve different kinds of clients and user interfaces, such as those found in web browsers and various smart devices  -- Highlighted 19 May 2017
+* p.6: depending on the quality of its current network connection, a device may want to use an API that is more or less network intensive -- Highlighted 19 May 2017
+* p.6: It is a single entry point that provides access to many APIs -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security. -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security.Its position in the system is also ideal for adopting the proxy circuit breaker pattern, by equipping the API Gateway with circuit breakers for clients and/or services -- Highlighted 19 May 2017
+* p.7: However, MSAs are much more involved than other distributed applications where services are implemented as monoliths, because all internal components are subjects to potential communication failures and overloads -- Highlighted 19 May 2017
+* p.7: Circuit breakers have first been popularised in [35], where their role is discussed in the context of availability (resilience) for enterprise systems -- Highlighted 19 May 2017
+* p.7: Akka [22] provides a circuit breaker implementation that supports basic configuration parameters, such as call timeout, failure threshold and reset threshold. Hystrix [30] is much more flexible and is currently one of the reference solutions: -- Highlighted 19 May 2017
 @article{MW16,
   title   = {{Circuit Breakers, Discovery, and API Gateways in Microservices}},
   author  = {Montesi, Fabrizio and Weber, Janine},
