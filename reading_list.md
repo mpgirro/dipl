@@ -32,3 +32,4 @@
 
 - [ ] [Advanced Go Concurrency Patterns](https://talks.golang.org/2013/advconc.slide#1)
 - [ ] [Visualizing Concurrency in Go](http://divan.github.io/posts/go_concurrency_visualize/)
+- [ ] [[Book] The Art of Multiprocessor Programming](https://books.google.de/books?hl=de&lr=&id=pFSwuqtJgxYC&oi=fnd&pg=PP1&dq=the+art+of+multiprocessor+programming&ots=12RxsqLziV&sig=LYNAJZ7CFcFRH2HlKBpcIIcdF94#v=onepage&q=the%20art%20of%20multiprocessor%20programming&f=false)
