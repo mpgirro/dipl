@@ -1,0 +1,3 @@
+# TODO
+
+- [ ] *architectural views*: ich brauche eine gute Quelle um allgemein über *inside view* und *outside view* zu sprechen. Laut `Simula 67` haben Objekte diese beiden Views. Aber so kann man auch über jedes Programm, aber auch weitere Componenten (zB Actor) und natürlich auch Micorservices als Folge argumentieren (vor allem und die Functionalität und die API zu trennen). `Jolie` hat ebenfalls zwei derartige Teile (*behaviour* und *deployment*). Über eine allgemeine, idealerweise eine architekturfokusierte Quelle wäre hier ideal (vielleicht in dem Buch von Bertrand Meyer?)
