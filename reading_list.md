@@ -1,5 +1,18 @@
 # Reading List
 
+## Books
+
+- [ ] "Software Architecture: Perspectives on an Emerging Discipline" by Garlan and Shaw
+- [ ] "Design Patterns: Elements of Reusable Object-Oriented Software" by Erich Gamma
+    - "*The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.*" [DGL16]
+- [ ] "Component Software: Beyond Object-Oriented Programming" by Clemens Szyperski
+    - "*Attention to separation of concerns has recently led to the emergence of the so-called Component-based software engineering (CBSE) which has given better control over design, implementation and evolution of software systems. The last decade has seen a further shift towards the concept of service first [81] and the natural evolution to microservices afterwards*" [DGL16]
+- [ ] Sam Newman. Building Microservices. O’Reilly Media, Inc., 2015
+- [ ] Michael T. Nygard. Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers). Pragmatic Bookshelf, 2007
+    - **bzgl. Circuit Breakers**, empfohlen in [MW16, p.7]
+
+## Web
+
 **General**
 
 - [x] [Betteridge's law of headlines](https://en.wikipedia.org/wiki/Betteridge%27s_law_of_headlines)
