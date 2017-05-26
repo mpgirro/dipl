@@ -31,6 +31,7 @@
 - [ ] [Building Microservices: Using an API Gateway](https://www.nginx.com/blog/building-microservices-using-an-api-gateway/)
 - [ ] [Event-driven computing: A best practice for microservice architecture](https://techbeacon.com/event-driven-computing-best-practice-microservice-architecture)
 - [ ] [Microservices with Spring (spring.io)](https://spring.io/blog/2015/07/14/microservices-with-spring)
+- [ ] [Enough with the microservices (2017)](https://aadrake.com/posts/2017-05-20-enough-with-the-microservices.html)
 
 **Jolie language**
 
