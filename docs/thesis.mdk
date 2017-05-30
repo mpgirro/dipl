@@ -43,7 +43,14 @@ Epigraph {
 .epigraph-footer { float:right; }
 <!-- # # # # # # # # # # # # # # # # # # # # # # -->
 
-.LitNote { background-color: yellow }
+.LitNote { 
+  background-color: LightGray;
+  padding: 1ex;
+}
+.Todo { 
+  background-color: Aqua; 
+  padding: 1ex;
+}
 
 @if html {
   Name Contents   : \/
@@ -239,6 +246,47 @@ Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte
   -> nennt man das Location-Transparency
 
 ## Summary
+
+# Prototypical Comparison of a Concurrency-based and a Microservice-based implementation for the same Scenario
+
+## Scenario
+
+~TODO
+Hier beschreibe ich kurz die "Angabe" zu meinen Implementierungen. Es soll durch eine Geschichte motiviert werden
+~
+
+In order to base our implementations on a realistic scenario, we motivate the generel setting the implementations could actually be put to their use in a short summary:
+
+~ {font-style: italic; width: 40%; margin: 2ex;}
+A long time ago in a galaxy far, far away....
+
+The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku. His Separatist Droid Army is produced automatically inside Smart Factories somewhere in the Outer Rim. All production steps are performed by autonomouse droids. This highly concurrent process will lead to the ultimate victory over the Jedi....
+~
+
+In this scenario, a variaty of coordination problems have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
+
+* customers (separatist leaders ordering battle-droids)
+* management droids
+* logistic droids
+* assembly droids
+* quality-assurance droids
+* delivery droids
+
+The following poducts (battle droid models) can be produced inside the smart factory:
+
+~TODO
+droids siehe: http://starwars.wikia.com/wiki/Separatist_Droid_Army
+~
+
+* B1 battle droid
+* B2 super battle droid
+* Droideka
+* Super tactical droid
+
+
+We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model.
+
+
 
 # Recommendations
 
