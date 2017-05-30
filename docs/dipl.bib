@@ -32,9 +32,9 @@
   other actions performaed by an actor, the replacement process is intrinsically concurrent
 * In actor-based architectures, the only constraints on the speed of execution stem from the
   logical dependencies in the computation and the limitations imposed by the hardware resources
-* [...] this has the implicastio that message-passing can be used to spawn concurrency: An Actor, 
+* [...] this has the implicastio that message-passing can be used to spawn concurrency: An Actor,
   in response to a communciation, may send several communications to other actors
-* A "configuration" (p.7) is a instantaneous snapshot og an actor system from some viewpoint. Each 
+* A "configuration" (p.7) is a instantaneous snapshot og an actor system from some viewpoint. Each
   configuration has teh following parts:
   - local state function
   - set of unprocessed tasks
@@ -50,7 +50,7 @@
 * Actor languages uniformly use message-passing to spawn concurrency and are inherently parallel
 * The problem of shared resources with changing local state is dealt with by providing an
   object-oriented environment without the sequential bottle-neck caused by assignment commands
-* An actor language also provides a suitable basis for large-scale parallelism. Besides the 
+* An actor language also provides a suitable basis for large-scale parallelism. Besides the
   ability to distribute the work required in the course of a computation, actor systems can be composed simply by passing messages between them. The internal workings of an actor system are not available to any other system
 
 @inproceedings{AH85,
@@ -66,7 +66,7 @@
 * p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
 * p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
 * p.126: hree common patterns of parallelism in problems have been found in practice (For example, see [8, 131). First, pipeline concurrency involves the enumeration of potential solutions and the concurrent testing of these solutions as they are enumerated. Second, divide and conquer concurrency involves the concurrent elaboration of different subproblems and the joining of (some or all) of their solutions in order to obtain a solution to the overall problem. In divide and conquer concurrency, there is no interaction between the procedures solving the subproblems.  -- Highlighted 19 May 2017
-* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s 
+* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s
 * p.127: Divide-and-conquer concurrency algorithms can often be expressed as functions.  -- Highlighted 19 May 2017
 * p.128: n cooperative problem solving concurrency, intermediate results arestored in objects and shared by pass-ing messages between objects. -- Highlighted 19 May 2017
 * p.128: Another example of coopera-tive problem solving is blackboardsystems which allow collaborationbetween agents through a sharedwork space. -- Highlighted 19 May 2017
@@ -79,7 +79,7 @@
 * p.132: We call such a merge afair merge. Afair merge is complete because itmerges message:; from every senderand may not ignore any sender inde-finitely and it is indeterminate be-cause no particular order is specifiedfor messages sent to the same objectby different objects.  -- Highlighted 19 May 2017
 * Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
 * Inherent Concurrency
-* 
+*
 @article{Agh90,
   title     = {{Concurrent Object-Oriented Programming}},
   author    = {Agha, Gul},
@@ -177,7 +177,7 @@ with more “abstract” entities.
   number   = {VS-D01-2012},
   url      = {http://www.benjamin-erb.de/thesis},
   annote   = {}
-} 
+}
 
 
 * We define libraries as components that are linked into a program and called using in-memory function calls, while services are out-of-process components who communicate with a mechanism such as a web service request, or remote procedure call. (This is a different concept to that of a service object in many OO programs [3].
@@ -199,7 +199,7 @@ with more “abstract” entities.
 * p.69: An agent is not monolithic. -- Highlighted 21 May 2017
 * p.70: It can have several behaviors: communication, perception, deliberation, and so forth -- Highlighted 21 May 2017
 * p.70: An agent has a goal; it does not simply act in response to messages from other agents -- Highlighted 21 May 2017
-* 
+*
 @article{GB99,
   title     = {{From Active Objects to Autonomous Agents}},
   author    = {Guessoum, Zahia and Briot, J-P},
@@ -267,7 +267,7 @@ with more “abstract” entities.
   publisher = {Prentice-Hall, Inc.},
   address   = {Upper Saddle River, NJ, USA},
   annote    = {}
-} 
+}
 
 @incollection{MGZ14,
   title     = {{Service-Oriented Programming with Jolie}},
@@ -344,7 +344,7 @@ with more “abstract” entities.
   annote  = {}
 }
 
-* The Orc programming language [15, 22] enables a concur- rency-first style of programming, in which programmers start with a concurrent program, instead of adding concurrency only when it is required. 
+* The Orc programming language [15, 22] enables a concur- rency-first style of programming, in which programmers start with a concurrent program, instead of adding concurrency only when it is required.
 * For instance, in pure active object systems concurrency can only exist between ob- jects so a new object must be introduced to add concurrency even if that object will be adversely coupled to other objects.
 * OrcO objects are designed to be orthogonal to concurrency, allowing the concurrent structure and the object structure of a program to evolve independently.
 * Orc is pervasively concurrent, because it replaces conventional sequential control structures with concurrency combinators.
@@ -443,23 +443,13 @@ TODO fragen ob ich da ein PDF bekomme
 }
 
 
-TODO: das PDF organisieren (schwer zu kriegen!)
-
-@article{YT86,
-  title     = {{Object-Oriented Concurrent Programming}},
-  author    = {Yonezawa, Akinori and Tokoro, Mario},
-  year      = {1986},
-  publisher = {The MIT Press, Cambridge, MA},
-  annote    = {}
-}
-
 * Parallelism is ubiquitous in our problem domains.
 * by using various metaphors found in such systems
 * Each object in our computation model has its own (autonomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate.Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and constraints.
 * When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message.
 * Thus message passing takes place in a point-to-point (object-to-object)fashion.No message can be broadcast.
 * [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
-* [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
+* This assumption was not made in the Actor model of computa-tion. Without this, however, it is difficult to model even simple things as objects.
 @inproceedings{Yon86a,
   title        = {{Object-oriented concurrent programming ABCL/1}},
   author       = {Yonezawa, Akinori and Briot, Jean-Pierre and Shibayama, Etsuya},
@@ -472,11 +462,38 @@ TODO: das PDF organisieren (schwer zu kriegen!)
   annote       = {}
 }
 
+* Carl and his group member were interested in
+  –finding a universal model for concurrent computation, and
+  –the abstraction and simulation of activities for almost all entities which interact with each other and are able to move around in physical spaces.
+* The entire research group was convinced that the basic entities in the model should be process- or procedure-like things that mutually interact with message passing. Message passing is required to be asynchronous in the sense that an entity can send a message to another entity anytime, even when the destination entity is not ready or able to receive the message.
+* However, these notions of objects did not deal with message transmissions which take place among objects. Of course, the interactions among objects were called message passing, but they were merely meant to be dynamically dispatched method calls (or procedure calls). A more restricted formal cal-culus of modeling message passing objects was proposed by Robin Milner [7].
+* In our approach, the domain to be modeled/designed/implemented is represented as a collection of concurrent objects, and the interaction of the domain components is represented as concurrent message passing among such concurrent objects.
+* an intuitive characterization of concurrent objects (COs) below. Each CO
+  – has a globally unique identity/name,
+  – may have a protected, yet updatable local memory,
+  – has a set of procedures that manipulates the memory,
+  – receives a message that activates one of the procedures,
+  – has a single FIFO queue for arrived messages, and
+  – has autonomous thread(s) of control.
 @incollection{Yon14,
   title     = {My Early Education and Concurrent Objects},
   author    = {Yonezawa, Akinori},
   booktitle = {Concurrent Objects and Beyond},
   pages     = {1--17},
   year      = {2014},
-  publisher = {Springer}
+  publisher = {Springer},
+  annote    = {In this Festschrift, he is telling the interresting story about his education.
+               Some characters appear that are well known for their concurrency research as well.
+               In Part 2 he is giving some explinations about his understanding of Concurrent
+               Objects, and how it differes from the understanding of others.}
+}
+
+TODO: das PDF organisieren (schwer zu kriegen!)
+
+@article{YT86,
+  title     = {{Object-Oriented Concurrent Programming}},
+  author    = {Yonezawa, Akinori and Tokoro, Mario},
+  year      = {1986},
+  publisher = {The MIT Press, Cambridge, MA},
+  annote    = {}
 }
