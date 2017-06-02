@@ -162,6 +162,8 @@ Case Study: Concurrency in ABCL/1 [@Yon86a]
 
 ## Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
+## Failure is inevitable
+
 ## API gateways, circuit breakers and discovery
 
 Case study: Hysterix library
@@ -263,7 +265,7 @@ A long time ago in a galaxy far, far away....
 The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku. His Separatist Droid Army is produced automatically inside Smart Factories somewhere in the Outer Rim. All production steps are performed by autonomouse droids. This highly concurrent process will lead to the ultimate victory over the Jedi....
 ~
 
-In this scenario, a variaty of coordination problems have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
+In this scenario, we simulate the production process of such a *smart factory*. A variaty of coordination problems therefore have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
 
 * customers (separatist leaders ordering battle-droids)
 * management droids
@@ -285,6 +287,14 @@ droids siehe: http://starwars.wikia.com/wiki/Separatist_Droid_Army
 
 
 We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model.
+
+## Actors vs. autonomous Agents
+
+In microservive architectures, it is not usual for services to act as autonomous *active* agents. Some of the described droids in our scenario show activate (**TODO** hier ein wort für "selbst aktiv werdend") behaviour. For example, the logistic droids decide themselves which work step they will [**TODO** auswählen/als nächstes verfolgen/sowas in der art] perform next. 
+
+On the other hand, the actor model is considered to consist of *passive*, that is *reactive*, components. 
+
+[**TODO** Hier sollte ich dann irgendwie probleme zwischen actor model actors und agents besprechen, und dabei die literatur irgendwie etwas miteinbebziehen] The movements from active objects towards *active agents* has be discussed in [@GB99]. The problem we are facing is, that 
 
 
 
