@@ -262,10 +262,10 @@ In order to base our implementations on a realistic scenario, we motivate the ge
 ~ {font-style: italic; width: 40%; margin: 2ex;}
 A long time ago in a galaxy far, far away....
 
-The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku. His Separatist Droid Army is produced automatically inside Smart Factories somewhere in the Outer Rim. All production steps are performed by autonomouse droids. This highly concurrent process will lead to the ultimate victory over the Jedi....
+The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku. His Separatist Droid Army is produced automatically inside Smart Factories somewhere in the Outer Rim. All production steps are performed by autonomouse droids. This highly concurrent system will lead to the ultimate victory over the Jedi....
 ~
 
-In this scenario, we simulate the production process of such a *smart factory*. A variaty of coordination problems therefore have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
+In this scenario, we simulate the production processes of such a *smart factory*. A variaty of coordination problems therefore have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
 
 * customers (separatist leaders ordering battle-droids)
 * management droids
@@ -286,7 +286,7 @@ droids siehe: http://starwars.wikia.com/wiki/Separatist_Droid_Army
 * Super tactical droid
 
 
-We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model.
+We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model. The other implementation is written with a microservice architecture, in [**Java ?**] / [**Go ?**]
 
 ## Actors vs. autonomous Agents
 
