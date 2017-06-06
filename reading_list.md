@@ -10,6 +10,12 @@
 - [ ] Sam Newman. Building Microservices. O’Reilly Media, Inc., 2015
 - [ ] Michael T. Nygard. Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers). Pragmatic Bookshelf, 2007
     - **bzgl. Circuit Breakers**, empfohlen in [MW16, p.7]
+- [ ] [Microservices in GO](http://microservicesingo.com) + [book-code auf GitHub](https://github.com/mattkanwisher/microservices-book-code)
+
+## TU Bibliothek
+
+* Franz Puntigam. *Concurrent object-oriented programming with process types*. 2000. Habilitationsschrift.
+    * TU Wien Systematik: DAT:315 > DAT:334 > DAT:331
 
 ## Web
 
