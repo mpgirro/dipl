@@ -11,11 +11,18 @@
 - [ ] Michael T. Nygard. Release It!: Design and Deploy Production-Ready Software (Pragmatic Programmers). Pragmatic Bookshelf, 2007
     - **bzgl. Circuit Breakers**, empfohlen in [MW16, p.7]
 - [ ] [Microservices in GO](http://microservicesingo.com) + [book-code auf GitHub](https://github.com/mattkanwisher/microservices-book-code)
+- [ ] [Service Design Patterns: Fundamental Design Solutions for SOAP/WSDL and RESTful Web Services](https://martinfowler.com/books/sdp.html) by Robert Daigneau
+    - Zitat-Quelle für [TolerantReader Pattern](https://martinfowler.com/bliki/TolerantReader.html)
 
 ## TU Bibliothek
 
 * Franz Puntigam. *Concurrent object-oriented programming with process types*. 2000. Habilitationsschrift.
     * TU Wien Systematik: DAT:315 > DAT:334 > DAT:331
+
+## Patterns
+
+* [Consumer-Driven Contracts: A Service Evolution Pattern](https://martinfowler.com/articles/consumerDrivenContracts.html)
+* [TolerantReader](https://martinfowler.com/bliki/TolerantReader.html)
 
 ## Web
 
