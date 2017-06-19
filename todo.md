@@ -1,3 +1,7 @@
 # TODO
 
 - [ ] *architectural views*: ich brauche eine gute Quelle um allgemein über *inside view* und *outside view* zu sprechen. Laut `Simula 67` haben Objekte diese beiden Views. Aber so kann man auch über jedes Programm, aber auch weitere Componenten (zB Actor) und natürlich auch Micorservices als Folge argumentieren (vor allem und die Functionalität und die API zu trennen). `Jolie` hat ebenfalls zwei derartige Teile (*behaviour* und *deployment*). Über eine allgemeine, idealerweise eine architekturfokusierte Quelle wäre hier ideal (vielleicht in dem Buch von Bertrand Meyer?)
+- [ ] In "A Systematic Mapping Study of Microservice Architecture" stehen Referenzen, welche allgemein über "*Mapping Studies*" handeln. Im Prinzip habe ich auch so eine Mapping Study, und sollte mich auch an den dort beschriebenen "Guidlines" halten!
+    - [ ] Ich sollte dringend meine "Search Strategy" beschreiben (Suchwörter etc.), hat mir auch Punt. empfohlen!
+    - [ ] In dem Paper (S.47, Table III) steht eine Tabelle mit Papern, die für mich auch relevant sein könnten
+    - [ ] In dem Paper stehen "Challanges" Keywords für MS beschrieben, die ich für mein Mapping ggf auch verwenden kann, oder zumindest bedenken sollte. Ggf auch beschrieben, wieso diese für mich NICHT relevant sind.
