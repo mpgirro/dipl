@@ -232,6 +232,43 @@ quelle: "Rule of Composition: Design programs to be connected with other program
 
 > OrcO: Concurrency First Approach on Objects
 
+## Comparisons (welche Elemente lassen sich vergleichen)
+
+### Active Objects vs MS (inkl Gateways)
+
+* [@LS95] definiert Active Object pattern als: "decouples method execution from method invocation in order to simplify synchronized access to a shared resource bymethods invoked in different threads of control"
+  * genau dass, was auch in MSA passiert. 1) der MS an sich, denn auch hier bietet die REST schnittstelle eine Entkoppelung
+  * Weiters wird in dem Artikel noch diese Erklärung gebracht: "To illustrate the Active Object pattern, consider the design of a connection-oriented Gateway. A Gateway decouples cooperating components in a distributed system and allows them to interact without having direct dependencies among each other"
+    * Wieder genau MSA: connection-oriented gateway; decouples cooperating components in DS; interact without direct dependencies
+  * Im Artikel werden noch konkrete Beispiele (zB Input/Output Handler etc) gebracht -> gut für mehr Text
+* [@LS95] Use the Active Object pattern when
+  * The design and implementation of a concurrent program can be simplified
+    * Mein these ist auch, dass MSA hinsichtlich Concurrency leichter zu erdenken sind als andere Modelle
+  * Multiple threads of control require synchronized access to shared data
+    * Datastore-MS bieten ebenfalls einen synchronized data access (deren DB sind ja jeweils shared data)
+  * The order of method execution can differ from the order of method invocation
+    * Bei einem REST-based (zB Spring) MS, kann ich mich nicht darauf verlassen, dass der erste REST aufruf auch der erste ist der ausgeführt wird (je nachdem was im internen Spring Concurrency Modell zuerst dran kommt)
+  * The operations on a shared object are relatively coarse-grained
+    * coarse-grained ist eine gewünschte Eigenschaft von MSA
+* [@LS95] The Active Object pattern offers the following benefit
+  * Enhance application concurrency while reducing synchronization complexity
+    * Wieder genau MS
+  * Leverage parallelism available from the hardware and software platform
+    * Auch wieder MS, "inherente Parallelität" wie ich das gerne nenne, wenn die Hardware Multi-core bzw Multi-Maschine
+* [@LS95] The Active Object pattern has the following drawbacks
+  * It potentially increases context switching, data movement, and synchronization overhead
+  * It may be difficult to debug programs containing active objects due to the concurrency and non-determinism of the Scheduler 
+* Neue Service-oriented Languages bauen auf der Idee von Active Objects auf (und diese Sprachen bauen ja im Prinzip MS auf Sprachebene nach). **In welchen Quellen stand das?**
+
+### Subtyping vs neue MS Version
+
+* Subtyping: Ein Typ ist dann ein Untertyps eines Obertyps, wenn er überall dort verwendet werden kann, wo der Obertyp erwartet wird
+* Vorteil von MSA: Es kann jederzeit eine neue Instanz (Update auf neue Programversion) eines MS gestartet werden, ohne das Gesamtsystem der MSA durcheinanderzubringen, solange sich der MS bzgl seiner Schnittstelle genau so verhält wie seine alte Version
+* Update von MS <=> Subtype von Klassen/Objekten/etc
+* Praktischer Vergleich: Dependency Injection
+  * In Java Enterprise / Spring kann mittels XML basierter DI die verwendete Implementierung eines Interface Typs ausgetauscht werden, ohne das Gesamtsystem neu zu kompilieren, dh __Austausch (= Update) der Funktionalität__ ohne die gesamte Application zu ändern
+  * Update und re-deploy eines MS, welcher die selbe Aufgabe erfüllt, wie zB
+
 
 ## Concurrency and Parallelism in Microservice Architectures
 
@@ -252,6 +289,36 @@ Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte
 # Prototypical Comparison of a Concurrency-based and a Microservice-based implementation for the same Scenario
 
 ## Scenario
+
+Anforderungen an das Szenario; welche Showcases müssen demonstriert werden können:
+
+* Update von Funktionalität ohne Änderung des Gesamtsystems
+  * Deployment einer einzigen neuen MS-Programversion
+  * Update durch neuen Untertyp und Deployment mittels Dependency Injection
+* Synchronized access to shared data (zB die Fabrikshalle)
+  * Datastore MS, der von mehrere MS gleichzeitig benutzt werden kann
+  * Actor/ActiveObj/WasAuchImmer, welches die Sync to irgendeinem Datenspeicher übernimmt
+* Coarse grained operations on shared "objects" (in active objects), bzw auf services allgemein
+  * Kommunikation mit einem Roboter ist wohl ein einfaches Beispiel (via Object oder via Service Kommunikation)
+* Kein shared state
+  * Alle Actors/ActiveObbj/WasAuchImmer hat eigenen Datenspeicher
+  * MS haben eigenen State (und möglicherweise sogar eigene DB)
+  * Gemeinsame Datenspeicher via DataStore "pattern" (ist das irgendwie als echtes Pattern festgehalten?)
+* reusing, orchestration, aggrgation
+  * "every MS can be reused, orchestrated and aggregated with others"
+    * reuse: mehrere instanzen des selben MS starten
+    * orchestration: ?
+    * aggregation: ?
+  * passendes gegenstück zu concurrency model/objecten/etc?
+    * reuse
+    * orchestration
+    * aggregation
+* Bounded context
+  * MS: "Related functionalities are combined into a single business capability; implemented as a service"
+  * OOP: __Wie lauten die genauen definitionen, zB aus dem Buch von Meyer??__: 1) sich nur um eine Concern kümmern; 2)
+* Size
+  * OOP: nicht zu groß, sonst mehrere klassen; für maintainability; OOP generell für extendibility
+
 
 ~TODO
 Hier beschreibe ich kurz die "Angabe" zu meinen Implementierungen. Es soll durch eine Geschichte motiviert werden
