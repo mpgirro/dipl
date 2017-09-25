@@ -241,7 +241,24 @@ with more “abstract” entities.
   annote    = {}
 }
 
+* The ActiveObject pattern decouples method execution from method invocation in order to simplify synchronized access to a shared resource bymethods invoked in different threads of control
+* To illustrate the Active Object pattern, consider the design of a connection-oriented Gateway. A Gateway decouples cooperating components in a distributed system and allows them to interact without having direct dependencies among each other
 * This pattern enables a method to execute in a different thread than the one that invoked the method originally. In contrast, passive objects execute in the same thread as the object that called a method on the passiv object.
+* The active object Gateway design resolves the following forces:
+  * Simplify flow control
+  * Simplifyconcurrent programming
+  * Take advantage of parallelism
+* Use the Active Object pattern when
+  * The design and implementation of a concurrent program can be simplified
+  * Multiple threads of control require synchronized access to shared data
+  * The order of method execution can differ from the order of method invocation
+  * The operations on a shared object are relatively coarse-grained
+* The Active Object pattern offers the following benefit
+  * Enhance application concurrency while reducing synchronization complexity
+  * Leverage parallelism available from the hardware and software platform
+* The Active Object pattern has the following drawbacks
+  * It potentially increases context switching, data movement, and synchronization overhead
+  * It may be difficult to debug programs containing active objects due to the concurrency and non-determinism of the Scheduler
 @article{LS95,
   title     = {{Active Object--an Object Behavioral Pattern for Concurrent Programming}},
   author    = {Lavender, R Greg and Schmidt, Douglas C},
@@ -284,8 +301,8 @@ with more “abstract” entities.
 * Component-wise each build- ing block is built as a microservice [11] embedding busi- ness capabilities in isolation. Every microservice can be reused, orchestrated, and aggregated with others [10]
 * The microservices architecture [4] is built on very simple principles:
   - Bounded Context. First introduced in [5], this con- cept captures one of the key properties of microservice architecture: focus on business capabilities. Related functionalities are combined into a single business ca- pability which is then implemented as a service.
-  - Size
-  - Independency
+  - Size; benefits in terms of service maintainability and extendability; Idiomatic use of microservices architecture suggests that if a service is too large, it should be refined into two or more services, thus pre-serving granularity andmaintaining focus on providing only a single business capability.
+  - Independency: concepts encourages loose cou- pling and high cohesion by stating that each service Independency. This concepts encourages loose cou- pling and high cohesion by stating that each service in microservice architectures is operationally indepen-dent from others, and the only form of communication between services is through their published interfaces.
 * Even though it is likely to conduct to a paradigm shift and a dramatic change in perception, it does not build on vacuum, and instead relates to well-established paradigms such as OO and SOA.
 * [...] focusing on the evolutionary aspects more than the revolu- tionary ones.
 @article{MMSL16,
