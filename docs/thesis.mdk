@@ -232,7 +232,70 @@ quelle: "Rule of Composition: Design programs to be connected with other program
 
 > OrcO: Concurrency First Approach on Objects
 
+## Foundational Issues of concurrent systems
+
+* [@AH85] zu foundational issues in the design of programming languages for concurrent systems
+  * shared resources: may chance their internal state while shared 
+  * dynamic reconfiguration: dealw ith creation of new objects in the evolution of the system; must be a mechanism to for communicating the existance of such new objects or processes to already existing ones
+    * in MSA ist genau das die kernaufgabe der gateway
+  * inherent parallelism: programming model should exhibit inherent parallelism in the sense that the amount of available concurrency should be determined as mich as possible from the structure of the programs written
+    * also MSA nutzt parallelism inherent, da jeder MS ein prozess, und daher die nebenläufigkeit des OS herangezogen wird (ggf mit multicore-paralllelität); bei aufteilung auf mehr maschinen, sowieso parallel
+
 ## Comparisons (welche Elemente lassen sich vergleichen)
+
+### Actors vs MS
+
+* [@AH85] basic actor constructs:
+  * actor = agents which carries out its actions in response to accepting a Communication
+  * actions are:
+    * send Communication
+      * tun MS auch
+    * create more actors
+      * ist jetzt eher unüblich, außer vll von irgendeinem scaling process
+    * specify the *replacement behaviour* (replecement implements local state change while preserving referential transparency; replacement process is intrinsically concurrent)
+      * MS ???
+  * order of communications are delivered nondeterministic
+  * actor-based architecture, only constraint on the speed of execution stem from the logical dependencies is rhe computation and the limitations imposed by the hardware resources
+  * all actors in a system carry out their actions concurrently
+    * MS in MSA auch alle concurrent
+  * has the implications that message passing can be used to spawn concurrency
+  * in the actor model, the delivery of all communications is guaranteed
+  * the problem of shared resources with changing local state is dealt with by providing an object.oriented environment without the sequential bottle-neck caused by assignment commands
+  * "it is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change"
+    * im prinzip sind die MS jetzt relativ genau das was da beschrieben ist
+  * characteristics of open systems:
+    * continuous availability: a system may receive communications from the external environment at any point in time. there is no closed-world hypothesis
+      * bei REST ja, bei anderem kommunikationsmodell (zB space, queue) an sich nicht zwingend, denn hier entnehmen die MS ja aktiv nachrichten
+    * Modularity: the inner workings of one subsystem are not available to any other system; the behaviour of a system must be characterized only in terms of its interaction with the outside
+      * MS nur via REST interface (oder was auch immer verwendet wird) ansprechbar
+    * extensibility: it is possible for a system to grow. in particular, it is possible to compose different systems in order to define larger systems
+      * genau das prinzip von MSA, wo mehrere MS zusammengehängt werden 
+
+### Objects vs MS programs
+
+* "Essential concepts" of Objects in [@Sny93; @Bla13]:
+  * obj. embodies an abstraction
+    * MS tun das auch
+  * obj. provides services
+    * liegt bei MS im namen
+  * clients issue requests for those services
+    * MS werden angesprochen für ihre services, zB via REST
+  * obj. are encapsulated
+    * MS sind programme, daher encapsulated
+  * requests identify operations
+    * MS der zB via REST angesprochen wird, muss request die operation in der URL + PUT/GET/etc codieren
+  * requests identify objects
+    * Request muss irgendwie MS beschreiben, von dem angefordert wird (zumindest abstrakt via nicht-eindeutigen namen, damit dann ggf von Gateway auf einen konkreten dispatched werden kann)
+  * new obj. can be created
+    * neue MS anlegen, automatisch oder manuell
+  * same operation of distinct objects can have different implementations and observably different behaviour
+    * neue Programmversion von MS bringt natürlich neue Impl., und kann auch beobachtbar anderes Verhalten zeigen (zB zusätzliche aufrufe anderer Services, etc); muss halt immer noch die selbe erwartete Dienstleistung bringen, dann beeinfluss es das Gesamtsystem nicht, genau wie bei Untertypen
+  * obj. can be classified in terms of their services (interface hierarchy __?__)
+    * MS ???
+  * obj. can share a common implementation (multiple instances)
+    * mehrere instanzen des selben MS für horizontale skalierung, benötigt Gateway; essentielles argument für MSA!
+  * obj. can share partial impl. (impl. inheritance or delegation)
+    * delegation in MS ist service composition!
 
 ### Active Objects vs MS (inkl Gateways)
 
@@ -259,6 +322,13 @@ quelle: "Rule of Composition: Design programs to be connected with other program
   * It potentially increases context switching, data movement, and synchronization overhead
   * It may be difficult to debug programs containing active objects due to the concurrency and non-determinism of the Scheduler 
 * Neue Service-oriented Languages bauen auf der Idee von Active Objects auf (und diese Sprachen bauen ja im Prinzip MS auf Sprachebene nach). **In welchen Quellen stand das?**
+* [@GB99] beschreibt aspekte von active objects:
+  * Proactivity: an agent (= active object) has a goal; it does not simply act in response to messages from other agents (im gegensatz zum Actor model)
+    * manche MS sind auch genau dafür da, während andere nur reaktiv sind (eine genaue unterscheidung gibts hier meines wissens nach in der literatur noch nicht)
+  * Sociability: agents can interact by speaking different languages (hier ist was komisch-altes gemeint)
+    * aber in MSA können die MS auch 1) in verschiedenen sprachen geschrieben sein, und 2) via verschiedene kommunikationsmodelle reden (REST, message queues, spaces, etc)
+  * Adaptability: komisches zeugs
+
 
 ### Subtyping vs neue MS Version
 
