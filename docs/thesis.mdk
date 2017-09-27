@@ -243,6 +243,39 @@ quelle: "Rule of Composition: Design programs to be connected with other program
 
 ## Comparisons (welche Elemente lassen sich vergleichen)
 
+### MSA
+
+* [@MW16]
+  * components of an application are autonnomous services that execute independently
+  * communicate via message passing
+  * message passing introduces the possiilities of communnication failures and timeouts among components
+    * vgl.: im Actor Model ist die Zustellung von Nachrichten garantiert
+  * inspired by SOA
+  * key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)
+  * components can e deployed separately
+  * new versions can be gradually introduced into a system  
+    * vgl. Subtyping Idee
+  * Components can be more specialized, since they can be written in different techologies
+  * services may become overloaded (too many concurrent client requests) or resources kept busy
+  * this may easily trigger disastrous cascading failures
+  * failure in an MSA is inevitale and should embraced with precaution rather than ignored
+  * Failing service may have other services depending on it (what if it becomes unresponsive?)
+    * -> circuit breaker pattern; fail fast
+    * mit Circuit Breaker State Diagram p.2 !
+  * Circuit Breaker: 
+    * Hysterix Library
+    * Server-side Circuit Breaker
+    * Client-side Circuit Breaker
+    * Proxy Circuit Breaker
+      * introduces Network bottle neck
+  * Service Discovery
+    * Location of MS may not be statically known at design time
+    * using Service registry
+      * adopted from SOA
+      * = a service that can be used y other components to retrieve ending information about other components
+      * in SOA, service discovery part of enterprise service bus
+      * in MSA, service discovery as non-standard custom implementations
+
 ### Actors vs MS
 
 * [@AH85] basic actor constructs:
@@ -296,6 +329,10 @@ quelle: "Rule of Composition: Design programs to be connected with other program
     * mehrere instanzen des selben MS für horizontale skalierung, benötigt Gateway; essentielles argument für MSA!
   * obj. can share partial impl. (impl. inheritance or delegation)
     * delegation in MS ist service composition!
+* [@Giv14]
+  * Programmig objects can be interpreted as processes (example via new Operator in C++, creating Object on remote Machine)
+  * Encapsulation, which is an important feature of object-oriented programming, clarifies relationships between objects, facilitating parallelization of method execution across distinct objects
+    * MS sind encapsulated, und deren Methoden (= services) können durch dieses Wissen ebenfalls leicht parallelisiert werden
 
 ### Active Objects vs MS (inkl Gateways)
 
@@ -338,6 +375,11 @@ quelle: "Rule of Composition: Design programs to be connected with other program
 * Praktischer Vergleich: Dependency Injection
   * In Java Enterprise / Spring kann mittels XML basierter DI die verwendete Implementierung eines Interface Typs ausgetauscht werden, ohne das Gesamtsystem neu zu kompilieren, dh __Austausch (= Update) der Funktionalität__ ohne die gesamte Application zu ändern
   * Update und re-deploy eines MS, welcher die selbe Aufgabe erfüllt, wie zB
+
+### inheritance
+
+* [@Giv14]
+  * "Having defined processes as programming objects, it is now straighforward to derive new processes using previously defined processes"
 
 
 ## Concurrency and Parallelism in Microservice Architectures
