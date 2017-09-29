@@ -275,6 +275,83 @@ quelle: "Rule of Composition: Design programs to be connected with other program
       * = a service that can be used y other components to retrieve ending information about other components
       * in SOA, service discovery part of enterprise service bus
       * in MSA, service discovery as non-standard custom implementations
+    * Gateways:
+      * single entry point for many APIs
+      * since it is an entry point, it is natural to equip it with e.g. service discovery load-balancing, monitoring, security, etc
+  * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
+  * all internal services are subjects to potential communciation failures and overloads
+  * choreography does not require central control. a critical feature for the scalability of MSA
+* [@AAE16]
+  * Mache ich auch eine "Mapping Study"?
+  * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
+  * a distributed application where all its modules are microservices
+  * commonly agreed benefits:
+    * increase in agility
+    * developer productivity
+    * resilience
+    * scalability* reliability
+    * maintainability
+    * separation of concerns
+    * ease of development
+  * Even though microservices have emerged from the software industry and have been the focus of practitioners in the last decade[28][22], academic researchers have not kept with the pace
+  * Relevante keywords (werden auch für mich irgendwie relevant sein)
+    * Communication/Integration
+    * Service discovery
+    * Performance
+    * Fault-tolerance
+    * Security
+    * Tracing and Logging
+    * Application Performance Monitoring* Deploying operations
+  * Quality Attributes:
+    * Scalability: expandable, evolutionary
+    * Interestingly, it has been noticed that there was no distinction between component diagrams and container diagrams in the literature
+    * Maintainability: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Deployment: expandable, adaptability, changeability, flexible implementation, dynamically changing
+    * Health management: resilience, reliability, disaster recovery, no single point of failure
+    * Modularity: single responsibility, reduce complexity, separate business concern, specialization, customizable
+    * Manageability: self-managed, decentralized management, audibility
+    * Performance: response times, transaction duration, throughput, efficiency
+    * Reusability: pluggable
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Independence: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Agility: iterative, incremental, continuous delivery
+    * Security
+    * Load balancing: workload intensity distribution
+    * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
+    * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format
+
+### MSA: timeouts
+
+* see "Laura Bocchi, Julien Lange, and Nobuko Yoshida. Meeting deadlines together. In CONCUR, pages 283–296, 2015"
+
+### MSA: faults
+
+* see "Sara Capecchi, Elena Giachino, and Nobuko Yoshida. Global escape in multiparty sessions. Mathematical Structures in Computer Science, 26(2):156–205, 2016"
+* see "Marco Carbone. Session-based choreography with exceptions. Electr. Notes Theor. Comput. Sci., 241:35–55, 2009"
+
+### MSA: dynamic binding
+
+* important!
+* see "Fabrizio Montesi and Nobuko Yoshida. Compositional choreographies. In CONCUR, pages 425–439, 2013"
+
+### MSA: parametric behaviour
+
+* important!
+* see "Marco Carbone, Sam Lindley, Fabrizio Montesi, Carsten Schürmann, and Philip Wadler. Coherence generalises duality: A logical explanation of multiparty session types. In CONCUR, 2016. To appear"
+* see "Nicolas Tabareau, Mario Südholt, and Eric Tanter. Aspectual session types. In MODULARITY, pages 193–204, 2014"
+
+### Curcuit breakers
+
+* laut [@MW16]
+  * have been popularised in (book) "Release it! Design and Deploy Production-Ready Software (Pragmatic Programmers). 2007"
+  * Akka provides a circuit breaker implementation that supports basic configuration parameters
+    * => hat somit Scala (und vll Spring Boot) ebenfalls inherent einen Curcuit Breaker eingebaut im Actor Modell?
+  * Hysterix is much more flexible and currently one of the reference solutions; it supports rolling statistics, fallback mechanisms, resource control and control over the states and transitions of circuit breakers
+
+### Service Discovery
+
+* see [@MW16] for example solutions/implementations/technologies 
 
 ### Actors vs MS
 
@@ -376,7 +453,7 @@ quelle: "Rule of Composition: Design programs to be connected with other program
   * In Java Enterprise / Spring kann mittels XML basierter DI die verwendete Implementierung eines Interface Typs ausgetauscht werden, ohne das Gesamtsystem neu zu kompilieren, dh __Austausch (= Update) der Funktionalität__ ohne die gesamte Application zu ändern
   * Update und re-deploy eines MS, welcher die selbe Aufgabe erfüllt, wie zB
 
-### inheritance
+### Inheritance
 
 * [@Giv14]
   * "Having defined processes as programming objects, it is now straighforward to derive new processes using previously defined processes"
@@ -430,6 +507,9 @@ Anforderungen an das Szenario; welche Showcases müssen demonstriert werden kön
   * OOP: __Wie lauten die genauen definitionen, zB aus dem Buch von Meyer??__: 1) sich nur um eine Concern kümmern; 2)
 * Size
   * OOP: nicht zu groß, sonst mehrere klassen; für maintainability; OOP generell für extendibility
+* Technology heterogeneity
+  * in MSA können unterschiedliche MS in unterschiedlichen programmiersprachen geschrieben werden: wäre interessant für implementierung, einen service nicht in Java (zB Scala, Clojure, Ruby, irgendwas anderes) zu schreiben; idealerweise einen der nicht aufwändig ist!
+  * nicht machbar in OOP etc
 
 
 ~TODO
