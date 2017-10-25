@@ -144,6 +144,13 @@ Don't give up on your dreams, keep on sleeping.
 * eventueller Vergleich mit Komponentenbasiertem Softwareentwurf? "Bei einem komponentenorientierten Softwareentwurf sind Softwaresysteme in möglichst unabhängig wartbare und wiederverwendbare Softwarekomponenten zu zerlegen. Diese Ziele lassen sich verfolgen, indem bei der Definition von Softwarekomponenten dem Entwurfsprinzip der maximalen Kohäsion bei gleichzeitig minimalen Abhängigkeiten gefolgt wird [Szyperski et al. 2002, S. 40; Parnas 1972]" -> http://www.enzyklopaedie-der-wirtschaftsinformatik.de/lexikon/is-management/Systementwicklung/Hauptaktivitaten-der-Systementwicklung/Softwareentwurf/Komponentenorientierter-Softwareentwurf/index.html
 ~
 
+# Software Architectures
+
+## From the early days to Object-oriented design patterns [title from DGL17]
+
+* [@DGL17] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
+* [@DGL17] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
+
 ## Componentization via Services (geklaut von M.Fowler)
 
 ~ TODO
@@ -183,6 +190,7 @@ Case study: Akka provides a circuit breaker implementation [@MW16]
 Debugging is like being the detective in a crime movie where you're also the murderer.
 ~
 
+* [DGL17]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
 
 ## Summary
 
@@ -191,7 +199,6 @@ Debugging is like being the detective in a crime movie where you're also the mur
 ## Summary
 
 # Concurrency Concepts
-
 
 ## Actor-based Concurrency
 
@@ -209,7 +216,7 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 ## Summary
 
-# Concurrency Concepts, Distributed Programming and Microservice Architectures
+# The Microservice Architecture Style
 
 
 ## Implicit Concurrency through (Framekworks|Inversion of Control)
@@ -320,6 +327,73 @@ quelle: "Rule of Composition: Design programs to be connected with other program
     * Load balancing: workload intensity distribution
     * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
     * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format
+* [@DGL17]
+  * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
+  * modules of a monolith depend on said shared resources, they are not independently executable
+  * Definition 1 (Monolith): A monolith is a software application whose modules cannot be executed independently.
+    * Issues:
+      * I1: large-size monoliths are difficult to maintain and evolve due to their complexity. Tracking down bugs requires long perusals through their code base
+      * I2: monoliths also suffer from the "dependency hell" [55], in which adding or updating libraries results in inconsistent systems that do not compile/run or, worse, misbehave
+      * I3: any change in one module of a monolith requires rebooting the whole application. For large- sized projects, restarting usually entails considerable downtimes, hindering development, test- ing, and the maintenance of the project
+      * I4: deployment of monolithic applications is usually sub-optimal due to conflicting requirements on the constituent models’ resources: some can be memory-intensive, others computational- intensive, and others require ad-hoc components (e.g., SQL-basedrather than graph-based databases).When choosing a deployment environment, the developer must compromise with a one-size-fits-all configuration, which is either expensive or sub-optimal with respect to the individual modules
+      * I5: monoliths limit scalability. The usual strategy for handling increments of inbound requests is to create new instances of the same application and to split the load among said instances. However, it could be the case that the increased traffic stresses only a subset of the modules, making the allocation of the new resources for the other components inconvenient
+      * I6: monoliths also represent a technology lock-in for developers, whichare boundto use the same language and frameworks of the original application
+  * Definition 2 (Microservice): Amicroservice is a cohesive, independent process interacting via messages
+  * From a technical point of view,microservices should be independent components conceptually deployed in isolation and equipped with dedicated memory persistence tools (e.g., databases)
+  * Definition 3 (Microservice Architecture): Amicroservice architecture is a distributed application where all its modules are microservices
+  * The microservice architectural style does not favour or forbid any particular programming paradigm. It provides a guideline to partition the components of a distributed application into independent entities, each addressing one of its concerns. This means that a microservice, provided it offers its functionalities via message passing, can be internally implemented with any of the mainstream languages cited in the beginning of this section.
+  * The principle of microservice architectures assists project managers and developers: it provides a guideline for the design and implementation of distributed applications. Following this principle, developers focus on the implementation and testing of a few, cohesive functionali-ties. This holds also for higher-level microservices, which are concerned with coordinating the functionalities of other microservices.
+  * Solutions (S1 is a solution to I1):
+    * S1: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
+    * S2: it is possible to plan gradual transitions to new versions of a microservice. The new version can be deployed “next” to the old one and the services that depend on the latter can be gradually modified to interact with the former. This fosters continuous integration [32] and greatly eases software maintenance
+    * S3: as a consequence of the previous item, changing a module of a microservice architecture does not require a complete reboot of the whole system. The reboot regards only the microservices of that module. Since microservices are small in size, programmers can develop, test, and maintain services experiencing only very short re-deployment downtimes
+    * S4: microservices naturally lend themselves to containerisation [56], and developers enjoy a high degree of freedom in the configuration of the deployment environment that best suits their needs (both in terms of costs and quality of service)
+    * S5: scaling a microservice architecture does not imply a duplication of all its components and de- velopers can conveniently deploy/dispose instances of services with respect to their load
+    * S6: the only constraint imposed on a network of interoperating microservices is the technol- ogy used to make them communicate (media, protocols, data encodings). Apart from that, microservices impose no additional lock-in and developers can freely choose the optimal re- sources (languages, frameworks, etc.) for the implementation of each microservice
+  * In software engineering, architecture is concerned with providing a bridge between system functionality and requirements for quality attributes that the system has to meet.
+  * This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Ar- chitecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
+  * The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
+  * Attention to separation of concerns has recently led to the emergence of the so-calledComponent- based software engineering (CBSE)
+  * The last decade has seen a further shift towards the concept of service first [81] and the natural evolution to microservices afterwards
+  * Service-Oriented Computing (SOC) is an emerging paradigm for distributed computing and e-business processing that finds its origin in object-oriented and component computing
+  * In SOC, a program — called a service — offers functionalities to other components, accessible via message passing
+  * Services decouple their interfaces (i.e. how other services access their functionalities) from their implementation
+  * The benefits of service-orientation are:
+    * Dynamism - New instances of the same service can be launched to split the load onthe system;
+    * Modularity and reuse - Complex services are composed of simpler ones. The same services can be used by different systems;
+    * Distributed development - By agreeing on the interfaces of the distributed system, distinct development teams can develop partitions of it in parallel;
+    * Integration of heterogeneous and legacy systems - Services merely have to implement standard protocols to communicate
+  * The idea of componentization used in service-orientation can be partially traced back to the object-oriented programming (OOP) literature; however, there are peculiar differences that led to virtually separate research paths and communities. As a matter of fact, SOC at the origin was - and still is - built on top of OOP languages, largely due to their broad diffusion in the early 2000s
+  * However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing. It is therefore a paradigm shift, where both the paradigms share the common idea of componentization
+  * The next step is adding the notion of business capability and therefore focusing analysis and design on it so that the overall system architecture is determined on this basis
+  * The first “generation” of service-oriented architectures (SOA) defined daunting and nebulous requirements for services (e.g., discoverability and service contracts), and this hindered the adop- tion of the SOA model
+  * Microservices are the second iteration on the concept of SOA and SOC
+  * The aim is to strip away unnecessary levels of complexity in order to focus on the programming of simple services that effectively implement a single functionality
+  * Like OO, the microservices paradigm needs ad-hoc tools to support developers and naturally leads to the emergence of specific design patterns
+  * First and foremost, languages that embrace the service-oriented paradigm are needed (instead, for the most part, microservice architectures still use OO lan- guages like Java and Javascript or functional ones). The same holds for the other tools for development support like testing suites, (API) design tools, etc.
+  * The microservices architecture appeared lately as a new paradigm for programming applications by means of the composition of small services, each running its own processes and communicating via light-weight mechanisms
+  * This approach has been built on the concepts of SOA [51] brought from crossing-boundaries workflows to the application level and into the applications architec- tures, i.e. its Service-Oriented Architecture and Programming from the large to the small.
+  * The term “microservices” was first introduced in 2011 at an architectural workshop as a way to describe the participants’ common ideas in software architecture patterns [33]
+  * Microservices now are a new trend in software architecture, which emphasises the design and development of highly maintainable and scalable software
+  * Microservices manage growing com- plexity by functionally decomposing large systems into a set of independent services
+  * By making services completely independent in development and deployment, microservices emphasise loose coupling and high cohesion by taking modularity to the next level
+  * It also comes with a bundle of problems that are inherited from distributed systems and from SOA, its predecessor. The Mi- croservices architecture still shows distinctive characteristics that blend into something unique and different from SOA itself:
+    * Size - The size is comparatively small wrt. a typical service, supporting the belief that the architectural design of a system is highly dependent on the structural design of the organization producing it. Idiomatic use of the microservices architecture suggests that if a service is too large, it should be split into two or more services, thus preserving granularity and maintaining focus on providing only a single business capability. This brings benefits in terms of service maintainability and extendability
+    * Bounded context - Related functionalities are combined into a single business capability, which is then implemented as a service.
+    * Independency - Each service in microservice architecture is operationally independent from other services and the only form of communication between services is through their pub- lished interfaces
+  * The key system characteristics for microservices are: 
+    * Flexibility - A system is able to keep up with the ever-changing business environment and is able to support all modifications that is necessary for an organisation to stay competitive on the market
+    * Modularity - A system is composed of isolated components where each component con- tributes to the overall system behaviour rather than having a single component that offers full functionality
+    * Evolution - A system should stay maintainable while constantly evolving and addingnew features
+  * bzgl Teams:
+    * Back in 1968, Melvin Conway proposed that an organisation’s structure, or more specifically, its communication structure constrains a system’s design such that the resulting design is a copy of the organisation’s communication patterns [23]. The microservices approach is to organise cross- functional teams around services, which in turn are organised around business capabilities [33]. This approach is also known as “you build, you run it” principle, first introduced by Amazon CTOWerner Vogels [38]. According to this approach, teams are responsible for full support and development of a service throughout its lifecycle
+  * Each microservice may represent a single business capability that is delivered and updated in- dependently and on its own schedule
+  * Discovering a bug and or adding a minor improvement do not have any impact on other services and on their release schedule (of course, as long as back- wards compatibility is preserved and a service interface remains unchanged)
+  * essentially microservices are meant to be used with continuous delivery and continuous integration, making each stage of delivery pipeline automatic. By using automated continuous delivery pipelines and modern container tools, it is possible to deploy an updated version of a service to production in a matter of seconds
+  * microservicesmay cooperate in order to providemore complex and elaborate functionalities. There are two approaches to establish this cooperation – orchestration [54] and choreography [69]. Orchestration requires a conductor – a central service that will send requests to other services and oversee the process by receiving responses.Choreography, on the other hand, assumes no centralisation and uses events and publish/subscribemechanisms in order to establish collaboration. These two concepts are not new to microservices, but rather are inherited from the SOA world where languages such asWS-BPEL [66] andWS-CDL [82] have long represented the major references for orchestration and choreography respectively (with vivid discussions between the two communities of supporters).
+  * Prior to the advent of microservices and at the beginning of the SOA’s hype in particular, orchestration was generally more popular and widely adopted, due to its simplicity of use and easier ways to manage complexity. However, it clearly leads to service coupling and uneven distribution of responsibilities, and therefore some services have a more centralising role than others.
+  * Microservices’ culture of decentralisation and the high degrees of independence represents instead the natural application scenario for the use of choreography as a means of achieving collaboration. This approach has indeed recently seen a renewed interest in connection with the broader diffusion of microservices in what can be called the second wave of services
+
 
 ### MSA: timeouts
 
