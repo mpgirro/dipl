@@ -181,6 +181,34 @@ CSS Header      :
   * microservicesmay cooperate in order to providemore complex and elaborate functionalities. There are two approaches to establish this cooperation – orchestration [54] and choreography [69]. Orchestration requires a conductor – a central service that will send requests to other services and oversee the process by receiving responses.Choreography, on the other hand, assumes no centralisation and uses events and publish/subscribemechanisms in order to establish collaboration. These two concepts are not new to microservices, but rather are inherited from the SOA world where languages such asWS-BPEL [66] andWS-CDL [82] have long represented the major references for orchestration and choreography respectively (with vivid discussions between the two communities of supporters).
   * Prior to the advent of microservices and at the beginning of the SOA’s hype in particular, orchestration was generally more popular and widely adopted, due to its simplicity of use and easier ways to manage complexity. However, it clearly leads to service coupling and uneven distribution of responsibilities, and therefore some services have a more centralising role than others.
   * Microservices’ culture of decentralisation and the high degrees of independence represents instead the natural application scenario for the use of choreography as a means of achieving collaboration. This approach has indeed recently seen a renewed interest in connection with the broader diffusion of microservices in what can be called the second wave of services
+  * In order to better grasp microservices we need to understand the impact that this architecture has on some software quality attributes.
+    * Availability
+      * major concern in microservices as it directly affects the success of a system
+      * Given services independence, the whole system availability can be estimated in terms of the availability of the individual services that compose the system
+      * Even if a single service is not available to satisfy a request, the whole system may be compromised and experience di- rect consequences
+    * Reliability
+      * Given the distributed nature of the microservices architecture, particular attention should be paid to the reliability of message-passing mechanisms between services and to the reliability of the services themselves
+      * Building the system out of small and simple components is also one of the rules introduced in [72], which states that in order to achieve higher reliability one must find a way to manage the complexities of a large system: 
+      * building things out of simple components with clean interfaces is one way to achieve this
+      * The greatest threat to microservices reliability lies in the domain of integration and therefore when talking about microservices reli- ability, one should also mention integration mechanisms
+      * One example of this assumption being false is using a network as an integration mechanism and assuming network reliability is one of the first fallacies of distributed computing [73]. Therefore, in this aspect, **microservices reliability is inferior to the applications that use in-memory calls**
+      * It should be noted that this downside is not unique only to microservices and can be found in any distributed system. When talking about messaging reliability, it is also **useful to remember that microservices put restrictions on integration mechanisms**. More specifically, microservices use integration mechanisms in a very straightforward way - by removing all functionality that is not related to the message delivering and focusing solely on reliable message delivery
+    * Maintainability
+      * By nature, the microservices architecture is loosely coupled, meaning that there is a small number of links between services and services themselves being independent. This greatly contributes to the maintainability of a system by minimising the costs of modifying ser- vices, fixing errors or adding new functionality
+      * Despite all efforts to make a system as maintain- able as possible, it is always possible to spoil maintainability by writing obscure and counterintu- itive code [5]. 
+      * As such, another aspect of microservices that can lead to increased maintainability is the above mentioned “you build it, you run it” principle, which leads to better understanding a given service, its business capabilities and roles [29,21].
+    * Performance
+      * The prominent factor that negatively impacts performance in the microservices architecture is communication over a network
+      * The network latency is much greater than that of memory.
+      * Therefore, in terms of communication, the performance will degrade compared to applications that use in-memory call mechanisms. Restrictions that microservices put on size also indirectly contribute to this factor. In more general architectures without size-related restrictions, the ratio of in-memory calls to the total number of calls is higher than in the microservices architecture, which results in less communication over the network.Thus, the exact amount of performance degradation will also depend on the system’s interconnectedness. As such, systems with well-bounded contexts will experience less degradation due to looser coupling and fewer messages sent.
+      * In any distributed system security becomes a major concern. In this sense, microservices suffer from the same security vulnerabilities as SOA [6].
+    * Security
+      * As microservices use REST mechanism and XML with JSON as main data-interchange formats, particular attention should be paid to providing security of the data being transferred. This means adding additional overhead to the system in terms of additional encryption functionality. 
+      * Microservices promote service reuse, and as such it is natural to assume that some systems will include third-party services. Therefore, an additional challenge is to provide authenticationmechanisms with third-party services and ensure that the sent data is stored securely. 
+      * In summary, microservices’ security is impacted in a rather negative manner because one has to consider and implement additional security mechanisms to provide additional security functionality mentioned above
+    * Testability
+      * Since all components in a microservices architecture are independent, each compo- nent can be tested in isolation, which significantly improves component testability compared to monolithic architecture. It also allows to adjust the scope of testing based on the size of changes. This means that with microservices it is possible to isolate parts of the system that changed and parts that were affected by the change and to test them independently from the rest of the system
+      * Integration testing, on the other hand, can become very tricky, especially when the system that is being tested is very large, and there are too many connections between components. It is possible to test each service individually, but anomalies can emerge from collaboration of a number of services
 
 ## MSA: timeouts
 
@@ -213,6 +241,11 @@ CSS Header      :
 ## Service Discovery
 
 * see [@MW16] for example solutions/implementations/technologies 
+
+
+## Security Vulnerabilities of SOA
+
+* see *Len Bass, Paulo Merson, and Liam O’Brien. Quality attributes and service-oriented architectures. Department of Defense, Technical Report September,2005*
 
 
 ---
