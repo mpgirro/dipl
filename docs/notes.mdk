@@ -247,6 +247,32 @@ CSS Header      :
 
 * see *Len Bass, Paulo Merson, and Liam O’Brien. Quality attributes and service-oriented architectures. Department of Defense, Technical Report September,2005*
 
+# SOA (general stuff)
+
+* [@OBM05]
+  * Software architecture is the bridge between mission/business goals and a software-intensive system.
+  * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
+  * A service is an implementation of a well-defined piece of business functionality, with a published interface that is discoverable and can be used by service consumers when building different applications and business processes.
+  * There is no single, official definition of what an SOA is. Consequently, many of the organizations promoting the use of SOAs and building technologies to make it easier for organizations to adopt an SOA approach have defined the term. As a result, SOA is defined in many different ways, including
+    * "A service-oriented architecture (SOA) is an application framework that takes everyday business applications and breaks them down into individual business functions and processes, called services. An SOA lets you build, deploy and integrate these services independent of applications and the computing platforms on which they run." -- IBM Corporation
+    * "Service-Oriented Architecture is an approach to organizing information technology in which data, logic, and infrastructure resources are accessed by routing messages between network interfaces." -- Microsoft
+    * An SOA is "a set of components which can be invoked, and whose interface descriptions can be published and discovered." -- Worldwide Web Consortium [W3C 04]
+  * Just as there is no official definition of SOA, there is no official set of service-orientation design principles. There are, however, a common set of service-level design principles most associated with service orientation [Erl 05, McGovern 03]:
+    * Services are reusable. Regardless of whether immediate reuse opportunities exist, services are designed to support potential reuse
+    * Services share a formal contract. In order for them to interact, they need not share anything but a formal contract that defines the terms of information exchange and any supplemental service description information
+    * Services are loosely coupled. They must be designed to interact on a loosely coupled basis, and they must maintain this state of loose coupling
+    * Services abstract underlying logic. The only part of a service that is visible to the outside world is what is exposed via the service’s description and formal contract. The underlying logic (beyond what is expressed in the description and formal contract) is invisible and irrelevant to service requestors
+    * Services are composable. They may compose other services. This possibility allows logic to be represented at different levels of granularity and promotes reusability and the creation of abstraction layers
+    * Services are autonomous. The logic governed by a service resides within an explicit boundary. The service has complete autonomy within this boundary and is not dependent on other services for the execution of this governance
+    * Services are stateless. They should not be required to manage state information, since that can impede their ability to remain loosely coupled. Services should be designed to maximize statelessness even if that means deferring state management elsewhere
+    * Services are discoverable. They should allow their descriptions to be discovered and understood by humans and service users who may be able to make use of the services’ logic. Service discovery can be facilitated by the use of a directory provider, or, if the address of the service is known during implementation, the address can be hard-coded into the user’s software during implementation
+    * Services have a network-addressable interface. Service requestors must be able to invoke a service across the network. When a service user and service provider are on the same machine, it may be possible to access the service through a local interface and not through the network. However, the service must also support remote requests
+    * Services are location transparent. Service requestors do not have to access a service using its absolute network address. Requestors dynamically discover the location of a service looking up a registry. This feature allows services to move from one location to another without affecting the requestors.
+  * Of the principles described above, autonomy, loose coupling, abstraction, and the need for a formal contract can be considered the core principles that form the baseline foundation for SOA
+  * Furthermore, an application is created by assembling and coordinating the activities between the appropriate services it needs to accomplish its business process
+  * With an SOA, if the business rules associated with a specific function change, developers must modify only the one service that implements the function. In theory, all applications that use the service will then automatically adopt the new business rules
+  * It is critically important to identify what piece of functionality will become services and to define the interfaces of those services. The granularity of the service (i.e., the scope of functionality a service exposes) is also important because having many fine-grained services may result in a lot of message passing between the service users and the service providers. Coarse-grained services are recommended, which, like any other large pieces of software, may need to be architected themselves.
+  
 
 ---
 

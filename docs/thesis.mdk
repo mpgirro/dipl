@@ -123,7 +123,7 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Road Map
 
-# Microservice Architectures
+# Microservices and Microservice Architectures
 
 ~ Epigraph { caption: "Higgs Boson (2012 -- present)" }
 Don't give up on your dreams, keep on sleeping.
@@ -144,14 +144,31 @@ Don't give up on your dreams, keep on sleeping.
 * eventueller Vergleich mit Komponentenbasiertem Softwareentwurf? "Bei einem komponentenorientierten Softwareentwurf sind Softwaresysteme in möglichst unabhängig wartbare und wiederverwendbare Softwarekomponenten zu zerlegen. Diese Ziele lassen sich verfolgen, indem bei der Definition von Softwarekomponenten dem Entwurfsprinzip der maximalen Kohäsion bei gleichzeitig minimalen Abhängigkeiten gefolgt wird [Szyperski et al. 2002, S. 40; Parnas 1972]" -> http://www.enzyklopaedie-der-wirtschaftsinformatik.de/lexikon/is-management/Systementwicklung/Hauptaktivitaten-der-Systementwicklung/Softwareentwurf/Komponentenorientierter-Softwareentwurf/index.html
 ~
 
-# Software Architectures
+## Software Architectures and Concurrent Systems
 
-## From the early days to Object-oriented design patterns [title from DGL17]
+### From the early days to Object-oriented design patterns [title from DGL17]
 
 * [@DGL17] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
 * [@DGL17] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
 
-## Componentization via Services (geklaut von M.Fowler)
+### Service-oriented Architectures
+
+#### Service-level design principles
+
+Services are:
+
+* Services are reusable
+* Services share a formal contract
+* Services are loosely coupled
+* Services abstract underlying logic
+* Services are composable
+* Services are autonomous
+* Services are stateless
+* Services are discoverable
+* Services have a network-addressable interface
+* Services are location transparent
+
+### Componentization via Services (geklaut von M.Fowler)
 
 ~ TODO
 Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weiterentwicklung sind?
