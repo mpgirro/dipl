@@ -47,6 +47,11 @@ Epigraph {
   background-color: LightGray;
   padding: 1ex;
 }
+.Mind {
+  background-color: #cbffcb;
+  before="[";
+  after="]"
+}
 .Todo { 
   background-color: Aqua; 
   padding: 1ex;

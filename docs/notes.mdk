@@ -350,6 +350,19 @@ CSS Header      :
       * Interactions may be required between distributed pieces of the system (i.e., pieces that run on different machines across a network)
       * The organization may not be able to access the services’ source code, so it can’t identify the test cases required to thoroughly test them. This problem occurs when the services are external to the organization that owns the applications.
       * Services may be discovered at runtime, so it may be impossible to predict which service or set of services is actually used by a system until the system is executing. In addition, different services from different providers may be used at various times when the system runs. The services used may be running on different platforms or operating systems and use different middleware technologies. Building repeatable tests and automating the testing process for such a system will be a challenge.
+    * If a problem occurs when the system is running, it may be difficult to find the source of the problem. The problem may be
+      * within the application
+      * within a service that is being used by the application
+      * with in the infrastructure that is used by either the application or the service
+      * due to the load on the platform where the service executes
+      * within the discovery agent that locates the services
+  * Auditability
+    * Auditability is the quality factor representing the degree to which an application or component keeps sufficiently adequate records to support one or more specified financial or legal audits.
+    * [für MS wurscht würd ich sagen]{.mind}
+  * Operability and Deployability
+  * Modifiability
+    * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
+    * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
 ---
 
