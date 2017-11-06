@@ -12,10 +12,16 @@ Cite All     : False
   background-color: LightGray;
   padding: 1ex;
 }
+.Mind {
+  background-color: #cbffcb;
+  before="[";
+  after="]"
+}
 .Todo { 
   background-color: Aqua; 
   padding: 1ex;
 }
+
 
 CSS Header      :
   body.madoko {
@@ -272,7 +278,78 @@ CSS Header      :
   * Furthermore, an application is created by assembling and coordinating the activities between the appropriate services it needs to accomplish its business process
   * With an SOA, if the business rules associated with a specific function change, developers must modify only the one service that implements the function. In theory, all applications that use the service will then automatically adopt the new business rules
   * It is critically important to identify what piece of functionality will become services and to define the interfaces of those services. The granularity of the service (i.e., the scope of functionality a service exposes) is also important because having many fine-grained services may result in a lot of message passing between the service users and the service providers. Coarse-grained services are recommended, which, like any other large pieces of software, may need to be architected themselves.
-  
+  * Wilkes and Veryard outline a set of principles for architecting and designing an SOA that impacts agility [Wilkes 04]. These principles include some of those outlined earlier—such as loose coupling and precise specification of services—and additional ones such as standardized services, standards compliance, and defining services as coarse-grained.
+  * SOAs and Quality Attributes
+    * Interoperability
+      * Interoperability refers to the ability of a collection of communicating entities to share specific information and operate on it according to an agreed-upon operational semantics [Brownsword 04]. 
+      * Increased interoperability is the most prominent benefit of SOA, especially when we consider Web services technology [McGovern 03]. 
+      * Distributed systems have been developed using various languages and platforms that vary from portable devices to mainframes. They have used technologies such as the Common Object Request Broker Architecture (CORBA), Remote Method Invocation (RMI), Distributed Component Object Model (DCOM), Remote Procedure Call (RPC), and sockets for communication. However, until the advent of Web services, there was no standard communication protocol or data format that could be used effectively by systems using different technologies to interoperate on a worldwide scale
+      * Components implemented in disparate platforms using different languages can interact transparently through a call-and-return mechanism.
+    * Reliability
+      * Reliability is the ability of a system to keep operating over time [Clements 02].
+      * Message Reliability
+        * Services are often made available over a network with possibly unreliable communication channels. Connections break and messages fail to get delivered or are delivered more than once or in the wrong sequence
+      * Service Reliability
+        * Service reliability means the service operates correctly and either does not fail or reports any failure to the service user.
+    * Availability
+      * Availability is the degree to which a system or component is operational and accessible when required for use.
+      * From the services user’s perspective, if the system relies on a set of services being available in order to meet its functional requirements and one of those services becomes unavailable (even transiently), it could have dire consequences on the success of the system. 
+      * From the service provider’s perspective, in order for the services to be used (for which the provider may receive compensation), they must be available when needed.
+      * Service providers usually agree to provide to the service users a set of services and to include each service in an SLA. The SLA defines the contract for the provision of the service with details such as who provides the service, the guaranteed availability of the service, the escalation process (which is followed if the service is not handled to the service user’s satisfaction), and the penalties to the provider if the service level is not met.
+    * Usability
+      * Usability is a measure of the quality of a user’s experience in interacting with information or services
+      * To provide a more usable system, service providers should consider several things that derive from the distributed and service nature of SOA: data granularity, services to support usability, and disconnected operation.
+      * Data granularity: In SOAs, service users and service providers communicate over a network—a process that can introduce delays, possibly on the order of seconds, in user interactions
+      * Normal Usability Operations: The service must provide interfaces that support the normal usability operations such as canceling a request, undoing the last request, providing the service on aggregated data, and gaining information for feedback such as percentage completed and time to completion. Bass and John provide a list of possible operations [Bass 03]
+    * Security
+      * Although security denotes different things with respect to software systems, in general, it is associated with four principles:
+        * confidentiality – Access to information/service is granted only to authorized subjects.
+        * authenticity – We can trust that the indicated author/sender is the one responsible for the information.
+        * integrity – Information is not corrupted
+        * availability – The information/service is available in a timely manner.
+      * Web services solutions have been addressing some of the security concerns at the network infrastructure level. For example, Web servers that host Web services can be configured to use Secure Sockets Layers (SSLs) and digital certificates to encrypt data transmission and authenticate the communicating parties
+      * The architect should be aware of the security features offered by the target Web services platform. Security mechanisms often have a negative impact on performance and modifiability, so the architect may want to investigate these tradeoffs on specific platforms.
+    * Performance
+      * Like security, performance can have different meanings in different contexts. In general, it is related to response time (how long it takes to process a request), throughput (how many requests overall can be processed per unit of time), or timeliness (ability to meet deadlines, i.e., to process a request in a deterministic and acceptable amount of time).
+      * Performance is an important quality attribute that is usually affected negatively in SOAs. Careful design and evaluation of the architecture for the specific solution is necessary to avoid performance pitfalls. The key factors in SOA that contribute to performance issues are
+        * SOA involves distributed computing. Service and service user components are normally located in different containers, most often on different machines. The need to communicate over the network increases the response time. Typical networks used for SOA, such as the Internet, do not guarantee deterministic latency
+        * The interaction protocol sometimes requires a call to a directory of services to locate the desired service. This extra call increases the total time needed to perform the transaction. One way to reduce the response time and improve throughput is to prevent the call to the directory by having the location of the provider end point hard-coded (or cached after the first lookup) in the service user. However, hard-coding reduces availability, and caching must be reestablished after failure when another replica is found. [Gateways beheben das Problem des Lookup-calls. Sie habe das chachinng eingebaut, und leiten den call direkt weiter]{.mind}
+      * The ability to make services on different platforms interoperate seamlessly has a performance cost. Intermediaries are needed to perform data marshalling and handle all communication between a service user and a service provider. Depending on the SOA technology or framework being used, stubs, skeletons, SOAP engines, proxies, and other kinds of elements are in place. All such intermediaries negatively impact performance. [Gateways sind Proxies, die JSON konverter sind data marshalling dinger]{.mind}
+      * The use of a standard messaging format increases the time needed to process a request. As an example, the next section describes how the use of XML impacts the performance of Web Services. [JSON genau so]{.mind}
+      * On the positive side, SOA provides location transparency.
+      * XML in Web Services as a Performance Factor
+        * XML is flexible and extensible, making it suitable to represent any data that can be stored in text format.
+        * It has internationalization mechanisms to support multilingual documents. XML documents are human readable: that is, they use a text rather than binary format. In addition to data, XML documents may embed metadata describing the structure of the data. Despite all the benefits, the use of XML as the data representation format in Web Services creates additional overhead in the transmission and processing of data.
+        * XML messages can be 10 to 20 times larger than the equivalent binary representation, so transmitting them over a network takes longer. Because XML uses a text format, it has to be processed before any operation is performed.
+        * XML processing consists of at least three distinct activities, all of which are CPU and memory intensive:
+          1. parsing: the translation of XML data into the proper data structures of the component that consumes the XML. Parsing involves a lot of string processing.
+          2. validation: a step prior or concomitant to parsing that ensures that the XML document follows a predefined structure. Validation can be more time-consuming than parsing, especially when a reference to a remote Document Type Definition (DTD) or schema has to be resolved. 
+          3. transformation: the translation from one XML structure to another or from XML to some other format. Transformation is usually required when integrating services and components that come from different providers. Transformation can be 10 times slower than XML parsing and should be the first target for performance improvement when optimization of Web Services’ performance is the goal.
+        * Many techniques and best practices can be applied to minimize the performance costs of transmitting and processing XML documents; for example
+          * Use data compression (e.g., Zip format) on the XML document. There is a tradeoff with a loss in interoperability because both end points must be able to compress/decompress the documents using the same algorithm.
+          * Use the appropriate parsing model. The Document Object Model (DOM) should be used when elements in the XML document have to be accessed randomly or when the document has to be processed multiple times or modified. Use the Simple Application Programming Interface (API) for XML (SAX) when the elements have to be processed serially and just once. Also, don’t parse the entire document if you can obtain the desired information by reading only part of it.
+          * Turn off validation for documents that were generated by an application and are known to be valid. Once a document is validated, it can be converted to its DTD-less or schema-less equivalent. Also, remote DTDs and schemas can be cached locally or embedded into the XML documents to avoid the remote access.
+    * Scalability 
+      * Scalability is the ability of an SOA to function well (without degradation of other quality attributes) when the system is changed in size or in volume in order to meet users’ needs [W3C 04].
+      * Because service users know only about the service’s interface and not its implementation, changing the implementation to be more scalable requires little overhead [McGovern 03]. Options for solving scalability problems include
+        * horizontal scalability: distributing the workload across more computers. Doing so may mean adding an additional tier or more service sites. [besonders bei MS beliebt, da einfach viele viele services parallel + gateway als broker]{.mind}
+        * vertical scalability. upgrading to more powerful hardware for the service site
+    * Extensibility
+      * Extensibility is the ease with which the services’ capabilities can be extended without affecting other services or parts of the system.
+      * Extensibility for an architecture today (in particular, an SOA) is important because the business environment in which a software system lives is continually changing and evolving. These changes in the environment will mean changes in the software system, service users, and services providers and the messages exchanged among them. Extending an SOA means making changes that include extending
+        * the architecture to add additional services. SOAs allow for the easy addition of new services through loose coupling and the use of various Web standards. Services can be created and published by the providers and discovered by service users. Service users must update their application code to incorporate these new services.
+        * existing services without changing the interfaces. Because services are loosely coupled, adding new capabilities to them that do not require a change in the service interface can be done without affecting other services. However, an application may require changes if these new capabilities were already incorporated into the application (i.e., the functionality for these capabilities was either included in the application or handled by additional services). Identifying the services’ capabilities when they are first designed and implemented is very important because later, changes may cause problems within the service users’ applications.
+        * existing services with changes to interfaces. Adding new capabilities to a service—ones that require changes to the service interface—may have a major impact on the success of an SOA. Usually, an application learns about a service’s interface by reading informatio provided by the directory provider, and the interface may change over time. The service users’ application must be able to handle any changes to the interface.
+      * A major obstacle to extensibility is the interface message. If interface messages are notextensible, users and providers will be locked into one particular version of the interface to aservice. Moreover, messages must be written in a format, structure, and vocabularyunderstood by all parties. Limiting the vocabulary and structure of messages is a necessity forany efficient communication. The more restricted a message is, the easier it is to understand,although it comes at the expense of reduced extensibility. Restriction and extensibility aredeeply entwined. Both are needed, and increasing one comes at the expense of reducing the other. Tradeoffs between them are necessary to achieve the right balance.
+  * Adaptability
+    * Adaptability means the ease with which a system may be changed to fit changed requirements
+    * [hier passt der text nicht so richtug gut auf MS]{.mind}
+  * Testability
+    * Testability is the degree to which a system or service facilitates the establishment of test criteria and the performance of tests to determine whether those criteria have been met [IEEE 90].
+    * Testing a system that uses an SOA can be complex for many reasons including
+      * Interactions may be required between distributed pieces of the system (i.e., pieces that run on different machines across a network)
+      * The organization may not be able to access the services’ source code, so it can’t identify the test cases required to thoroughly test them. This problem occurs when the services are external to the organization that owns the applications.
+      * Services may be discovered at runtime, so it may be impossible to predict which service or set of services is actually used by a system until the system is executing. In addition, different services from different providers may be used at various times when the system runs. The services used may be running on different platforms or operating systems and use different middleware technologies. Building repeatable tests and automating the testing process for such a system will be a challenge.
 
 ---
 

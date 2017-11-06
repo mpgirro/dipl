@@ -184,6 +184,12 @@ Case Study: Concurrency in ABCL/1 [@Yon86a]
 => vgl mit REST API und wenn ein Service einen anderen Service synchron anspricht
 ~
 
+## Quality Attributes
+
+### Performance
+
+Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
+
 ## Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
 ## Failure is inevitable
