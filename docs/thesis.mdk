@@ -126,9 +126,92 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Methodology used
 
+
+* the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
+
 ## Road Map
 
-# Microservices and Microservice Architectures
+# The Microservice Architecture Style
+
+# Programming Paradigms
+
+* see (www1) http://cs.lmu.edu/~ray/notes/paradigms/
+* see (www2) http://people.cs.aau.dk/~normark/prog3-03/html/notes/paradigms_themes-paradigm-overview-section.html
+
+## Imperative, Structured and Procedual Programming
+
+
+## Object-oriented Programming
+
+* Data Abstraction and Modularity
+
+### History of Objects: Simula and Smalltalk
+
+## Functional Programming
+
+
+## Event-Driven and Flow-Driven Programming
+
+
+
+## Logic and Constraint Programming
+
+
+# Programming Services as a Paradigm 
+
+(aka Commonalities between Programming Paradigms and Microservices)
+
+# Models of Concurrent Computation
+
+## Basic Concepts in Concurrency
+
+### Execution Order and Nondeterminism
+
+* see chapter 14 in "Concepts in Programming Languages" by Mitchell
+
+## Threads, Locks and Shared State
+
+### Case Study of the Java Concurrency Model
+
+
+## Software Transactional Memory
+
+
+## Actors and Active Objects
+
+### Case Study of the Scala Concurrency Model
+
+
+## Event-driven Concurrency
+
+
+### Case Study of the JavaScript/node.js Concurrency Model
+
+
+## Other Approaches and Concurrency Primitives
+
+
+# Concurrency Models for Service-oriented Programming
+
+* Distributed Programming ?
+* die Überschrift passt nicht wirklich
+  * Distributed Programming with classical Programming Paradigms
+  * Distributed Programming through Microservices
+* hier sollen die Modelle beschrieben werden, welche sich am besten für die Gemeinsamkeiten eignen (ausgewählt basierend auf den identifizierten Attributen)
+
+# 
+
+# Recommendations
+
+# Discussion
+
+# Outlook
+
+# Conclusion
+
+---
+
+# Microservices and Microservice Architecture
 
 ~ Epigraph { caption: "Higgs Boson (2012 -- present)" }
 Don't give up on your dreams, keep on sleeping.
@@ -187,6 +270,14 @@ Case Study: Concurrency in ABCL/1 [@Yon86a]
 * "When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message."
 
 => vgl mit REST API und wenn ein Service einen anderen Service synchron anspricht
+~
+
+## Flexibility vs Efficiency
+
+über knowledge sharing (copy state durch message passinng vs shared memory)
+
+~LitNote
+* see "Iheritence and Synchronization in Concurrent OOP"
 ~
 
 ## Quality Attributes

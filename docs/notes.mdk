@@ -17,6 +17,11 @@ Cite All     : False
   before="[";
   after="]"
 }
+.Quelle {
+  color: red;
+  before="[";
+  after="]"
+}
 .Todo { 
   background-color: Aqua; 
   padding: 1ex;
@@ -366,6 +371,71 @@ CSS Header      :
 
 ---
 
+# Programming Paradigms
+
+* see (www1) http://cs.lmu.edu/~ray/notes/paradigms/
+* see (www2) http://people.cs.aau.dk/~normark/prog3-03/html/notes/paradigms_themes-paradigm-overview-section.html
+
+## Imperative, Structured and Procedual Programming
+
+* Imperative: Programming with an explicit sequence of commands that update state. (www1)
+* Structured: Programming with clean, goto-free, nested control structures. (www1)
+* Procedural: Imperative programming with procedure calls. (www1)
+
+* Characteristics of imperative P. (www2)
+  * Discipline and idea: Digital hardware technology and the ideas of Von Neumann
+  * Incremental change of the program state as a function of time.
+  * Execution of computational steps in an order governed by control structures
+  * Straightforward abstractions of the way a traditional Von Neumann computer works
+  * Similar to descriptions of everyday routines, such as food recipes and car repair
+  * Typical commands offered by imperative languages (Assignment, IO, procedure calls)
+  * Language representatives (Fortran, Algol, Pascal, Basic, C)
+  * The natural abstraction is the procedure (Abstracts one or more actions to a procedure, which can be called as a single command, "Procedural programming")
+
+## Object-oriented Programming
+
+* Object-Oriented: Programming by defining objects that send messages to each other. Objects have their own internal (encapsulated) state and public interfaces (www1). Object orientation can be:
+  * Class-based: Objects get state and behavior based on membership in a class.
+  * Prototype-based: Objects get behavior from a prototype object.
+
+* Characteristics (www2)
+  * Discipline and idea (The theory of concepts, and models of human interaction with real world phenomena)
+  * Data as well as operations are encapsulated in objects
+  * Information hiding is used to protect internal properties of an object
+  * Objects interact by means of message passing (A metaphor for applying an operation on an object)
+  * In most object-oriented languages objects are grouped in classes (Classes represent concepts whereas objects represent phenomena)
+  * Classes are organized in inheritance hierarchies (Provides for class extension or specialization)
+
+## Functional Programming
+
+* Functional (Applicative): Programming with function calls that avoid any global state. (www1)
+
+* Characteristics (www2)
+  * Discipline and idea: Mathematics and the theory of functions
+  * The values produced are non-mutable (Impossible to change any constituent of a composite value)
+  * Atemporal (Time only plays a minor role compared to the imperative paradigm)
+  * Applicative (All computations are done by applying (calling) functions)
+  * The natural abstraction is the function (Abstracts a single expression to a function which can be evaluated as an expression)
+  * Functions are first class values (Functions are full-fledged data just like numbers, lists, etc.)
+  * Fits well with computations driven by needs (Opens a new world of possibilities)
+
+## Event-Driven and Flow-Driven Programming
+
+* Event-Driven: Programming with emitters and listeners of asynchronous actions. (www1)
+* Flow-Driven: Programming processes communicating with each other over predefined channels. (www1)
+
+## Logic and Constraint Programming
+
+* Logic (Rule-based): Programming by specifying a set of facts and rules. An engine infers the answers to questions.
+* Constraint: Programming by specifying a set of constraints. An engine finds the values that meet the constraints.
+
+* Characteristics of Logic P. (www2)
+  * Discipline and idea: Automatic proofs within artificial intelligence
+  * Based on axioms, inference rules, and queries.
+  * Program execution becomes a systematic search in a set of facts, making use of a set of inference rules
+
+---
+
 # Concurrent Programming
 
 ## Foundational Issues of concurrent systems
@@ -376,7 +446,32 @@ CSS Header      :
     * in MSA ist genau das die kernaufgabe der gateway
   * inherent parallelism: programming model should exhibit inherent parallelism in the sense that the amount of available concurrency should be determined as mich as possible from the structure of the programs written
     * also MSA nutzt parallelism inherent, da jeder MS ein prozess, und daher die nebenläufigkeit des OS herangezogen wird (ggf mit multicore-paralllelität); bei aufteilung auf mehr maschinen, sowieso parallel
+    
 
+## Concurrent OOP
+
+* [@BY87] "Inheritance and Synchronization in Concurrent OOP"
+  * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
+  * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
+  * Delegation [Lieberman 86b] is another strategy we discuss as well. Delegation is discussed in the framework of the Actor model of computation (Hewitt 76,Lieberman 811.
+  * (parallel) semantic network languages (e.g., NETL (Fahlman 791). [dieses quelle sollte ich mir zwecks literatur vermutlich anschauen]{.quelle}
+  * Only the delegation scheme is flexible enough to be free from the shared memory assumption, so we will examine and criticize it in the distributed memory context. [MS haben inherent distributed memory]{.mind}
+  * Flexibility versus Efficiency: This is one of the main tradeoffs in knowledge sharing.
+  * Our main comment is that this inheritance scheme using hard-wired links is not suitable for distributed memory models. [hard-wired links = in-memory calls]{.mind}
+  * The delegation scheme has been proposed in the Act-1 language [Lieberman 811. An object (called an actor in this computation model [Hewitt 761 where the class concept is absent) knows about another object called a prozy.
+  * The delegation scheme enjoys the uniformity of the communication protocol: the delegation to the proxy of an object is performed by message passing, not by a system primitive through the hard-wired physical link (pointer).  [= in-memory call]{.mind}
+  * Thus delegation can be fully designed at the user-language level and it can be locally customized by the user easily. This scheme is independent of the assumption of shared memory andis perfectly suitable for distributed (memory and computation) models. It also allows full dynamicity and modularity.
+  * In examining this scheme, two issues, namely efficiency and synchronization, must be addressed. [Efficiency in MS hängt von Marshalling der Messages und dem network ab -> Performance von SOA]{.mind}
+  * In the delegation scheme, variable consultation as well as method activation should be performed through message passing because both can be delegated to another object (the proxy).
+  * Thus we first identify message passing with function call as in most of OOP extensions of Lisp. [msg passing == REST method call == function call]{.mind}
+  * Each such variable-object owns the two methods that handle two kinds of messages: one to consult the variable (get), and the other to update it (set). [vgl. CRUD methoden bei REST]{.mind}
+  * However in some concurrent models such as the Actor model, message passing is asynchronous and unidirectional. There is no implicit synchronization. AS a consequence, variable access is no more atomic and could be mishandled.
+  * Message Ordering Issue [???]{.mind}
+  * Fairness and Recursion: In an asynchronous message passing model, the messages sent to an object 0 are ordered (in a queue) following the ordering of their arrivals to 0. It is assumed that two messages cannot arrive at the same time.
+  * We notice that the latest Actor model [Agha 851 relies on atomic objects. In this model, there is no side effect.
+  * There is no delegation proposed in the Actor model of [Agha 85].
+  * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
+  * 
 
 ---
 
