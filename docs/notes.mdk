@@ -220,6 +220,34 @@ CSS Header      :
     * Testability
       * Since all components in a microservices architecture are independent, each compo- nent can be tested in isolation, which significantly improves component testability compared to monolithic architecture. It also allows to adjust the scope of testing based on the size of changes. This means that with microservices it is possible to isolate parts of the system that changed and parts that were affected by the change and to test them independently from the rest of the system
       * Integration testing, on the other hand, can become very tricky, especially when the system that is being tested is very large, and there are too many connections between components. It is possible to test each service individually, but anomalies can emerge from collaboration of a number of services
+  * in [@Fra17] wird über dieses Paper bebhauptet:
+    * one of the main results of the survey is that MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testability qualities
+
+* [@Fra17] "Architecting microservices"
+  * Fowler and Lewis define the microservice architectural style as an approach for developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API [15].
+  * (RQ-1) has revealed that performance and maintainability are among the most investigated quality attributes, while possible research gaps could exist in the field of security, reliability and portability for MSA [13].
+  * major barriers to cloud adoption there are security and vendor lock-in and quality assurance.
+  * MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testabil-ity qualities.
+  * Availability and scalability are largely discussed in multiple resources and books [33, 39]
+    * 33: S. Newman. Building Microservices.O'Reilly Media, Inc., 2015
+    * 39: M. Richards. Microservices vs. service-oriented architecture, 2015
+  * Hassan and Bahsoon in a recent study [19] have addressed some design problems about estimating the proper level of granularity of services. More specifically, they considered the existing trade offs between the following design concerns: size versus the number of services, and local versus global satisfac-tion of quality properties.
+  * In conclusion, in the state of the art of MSA, many quality properties (with their trade offs), design tactics, and architectural analysis and reasoning techniques must still be investigated and explored in order to identify and take full advantage of the potential benefits that MSA can offer.
+  * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
+  * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
+
+* [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
+  * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
+  * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
+  * One such design problem is finalising the optimal level of granularity of a microservice architecture. Related design trade-offs include: balancing the size and number of microservices in an architecture and balancing the non-functional requirement satisfaction levels of the individual microservices as well as their satisfaction for the overall system.
+  * We therefore view microservitizationas a form of servitization where services/components are transform into microservices —- a more fine-grained and autonomic form of services —- to add long-term value to the architecture.
+  * Isolating business functionalities aims at optimis-ing the autonomy and replaceability of the service(s).
+  * Despite the hype and the business push towards mi-croservitization [1], there is a lack of academic consensus regarding the definition and properties of the paradigm shift and corresponding design patterns for microservices [4].
+  * Among these problems is finalising the level of granularity of a microservice too early. "Splitting too soon can make things very difficult to reason about. It will likely happen that you (the software architect) will learn in the process. [1]."
+  * the size versus number of microservices [4]
+  * the local versus global non-fuctional requirement satisfaction trade-off.
+  * aggressive isolation of business functionalities is not necessarily ideal for all scenarios of the environment.
+
 
 ## MSA: timeouts
 

@@ -114,6 +114,22 @@ TODO
 [TOC=tables]
 ~
 
+TOC layout:
+
+* Introduction
+  * Motivation
+  * Scope of this Thesis
+  * Methodology used
+  * Road Map
+* The Microservice Architecture Styke
+* Programming Paradigms
+  * Imperative, Structured and Procedual Programming
+  * Object-oriented Programming
+    * History of Objects: Simula and Smalltalk
+  * Functional Programming
+  * Event-Driven and Flow-Driven Programming
+  * Logic and Constraint Programming
+
 # Introduction
 
 ~ Epigraph { caption: "Lewis Carroll, Alice in Wonderland"}
