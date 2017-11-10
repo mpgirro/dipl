@@ -23,3 +23,23 @@ Tex Header    :
   %\setlength{\fboxrule}{4pt}\setlength{\fboxsep}{2ex}
   %\renewcommand{\headrulewidth}{0.4pt}
   %\renewcommand{\footrulewidth}{0.4pt}
+
+
+.LitNote { 
+  background-color: LightGray;
+  padding: 1ex;
+}
+.Mind {
+  background-color: #cbffcb;
+  before="[";
+  after="]"
+}
+.Quelle {
+  color: red;
+  before="[";
+  after="]"
+}
+.Todo { 
+  background-color: Aqua; 
+  padding: 1ex;
+}
