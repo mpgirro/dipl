@@ -9,43 +9,10 @@ CSS Header      :
     max-width: 98ex;
   }
 
-* [@MW16] "Circuit Breakers, Discovery, and API Gateways in Microservices"
-  * components of an application are autonnomous services that execute independently
-  * communicate via message passing
-  * message passing introduces the possiilities of communnication failures and timeouts among components
-    * vgl.: im Actor Model ist die Zustellung von Nachrichten garantiert
-  * inspired by SOA
-  * key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)
-  * components can e deployed separately
-  * new versions can be gradually introduced into a system  
-    * vgl. Subtyping Idee
-  * Components can be more specialized, since they can be written in different techologies
-  * services may become overloaded (too many concurrent client requests) or resources kept busy
-  * this may easily trigger disastrous cascading failures
-  * failure in an MSA is inevitale and should embraced with precaution rather than ignored
-  * Failing service may have other services depending on it (what if it becomes unresponsive?)
-    * -> circuit breaker pattern; fail fast
-    * mit Circuit Breaker State Diagram p.2 !
-  * Circuit Breaker: 
-    * Hysterix Library
-    * Server-side Circuit Breaker
-    * Client-side Circuit Breaker
-    * Proxy Circuit Breaker
-      * introduces Network bottle neck
-  * Service Discovery
-    * Location of MS may not be statically known at design time
-    * using Service registry
-      * adopted from SOA
-      * = a service that can be used y other components to retrieve ending information about other components
-      * in SOA, service discovery part of enterprise service bus
-      * in MSA, service discovery as non-standard custom implementations
-    * Gateways:
-      * single entry point for many APIs
-      * since it is an entry point, it is natural to equip it with e.g. service discovery load-balancing, monitoring, security, etc
-  * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
-  * all internal services are subjects to potential communciation failures and overloads
-  * choreography does not require central control. a critical feature for the scalability of MSA
-* [@AAE16] "A Systematic Mapping Study in Microservice Architecture"
+
+
+**[@AAE16] "A Systematic Mapping Study in Microservice Architecture"**
+
   * Mache ich auch eine "Mapping Study"?
   * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
   * a distributed application where all its modules are microservices
@@ -84,7 +51,125 @@ CSS Header      :
     * Load balancing: workload intensity distribution
     * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
     * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format
-* [@DGL16] "Microservices: yesterday, today, and tomorrow"
+
+**[@Agh90] "Concurrent Object-Oriented Programming"**
+
+* p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
+* p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
+* p.126: hree common patterns of parallelism in problems have been found in practice (For example, see [8, 131). First, pipeline concurrency involves the enumeration of potential solutions and the concurrent testing of these solutions as they are enumerated. Second, divide and conquer concurrency involves the concurrent elaboration of different subproblems and the joining of (some or all) of their solutions in order to obtain a solution to the overall problem. In divide and conquer concurrency, there is no interaction between the procedures solving the subproblems.  -- Highlighted 19 May 2017
+* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s
+* p.127: Divide-and-conquer concurrency algorithms can often be expressed as functions.  -- Highlighted 19 May 2017
+* p.128: n cooperative problem solving concurrency, intermediate results arestored in objects and shared by pass-ing messages between objects. -- Highlighted 19 May 2017
+* p.128: Another example of coopera-tive problem solving is blackboardsystems which allow collaborationbetween agents through a sharedwork space. -- Highlighted 19 May 2017
+* p.128: Actors are self-contained, interactive, independent componentsof a computing system that communicate by asynchronous message passing.  -- Highlighted 19 May 2017
+* p.128: Each time an actor processes a communication, it also computes its behavior in response to the next communication it may process.  -- Highlighted 19 May 2017
+* p.128: In other cases, the behavior may change. The change in the behavior may represent a simple change of state variables, such as change in the balance of an account, or it may represent changes in the operations (methods) which are carried out in response to messages. -- Highlighted 19 May 2017
+* p.128: Concurrent computations can be visualized in terms of event diagrams (see Figure 5). These diagrams were developed to model the behavior of actor systems. -- Highlighted 19 May 2017
+* p.130: A customer can be sent a reply message when a request is completed, or a complaint message if it is not possible to successfully complete the reqluest. -- Highlighted 19 May 2017
+* p.132: Although actors take a functionalview of an object’s internal behavior at any given point in time, actors can represent shared history-sensitive ob-jects.  -- Highlighted 19 May 2017
+* p.132: We call such a merge afair merge. Afair merge is complete because itmerges message:; from every senderand may not ignore any sender inde-finitely and it is indeterminate be-cause no particular order is specifiedfor messages sent to the same objectby different objects.  -- Highlighted 19 May 2017
+* Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
+* Inherent Concurrency
+
+**[@AH85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"**
+
+* no consenus has emerged on a single model of concurrency
+* discussion on paradigm shift in [Pratt 83]
+* "Pratt's Process Model" satisfies several properties desirable in any model of concurrent
+  computation
+* (Pratts?) model does not assume the existance of global states
+* laws of parallel processing formulated in [Hewit and Baker 77]
+* Foundational Issues (p.3-4 genauer erklärt)
+  - Shared Resources
+  - Dynamic Reconfiguration
+  Inherent Parallelism
+* Actor = computational agent which caries out its actions in response to accepting a communication
+* Actions are:
+  - Send communication to itself or to other actors
+  - Create more actors (gibt es einen MSA mechanismus der das erlaubt? Cloud management frameworks
+    nicht von MS direkt angesprochen)
+  - Specify the replacement behaviour
+* The buffering of communication has the consequence that actor languages support recursion.
+  In languages relying on synchronous communication, any recursive procedure immediately leads to deadlock (!)
+* Two important obersavtions need to be made about replacement. First, replacement implements
+  local state chance while preserving referential transparency of the identifiers used in a program
+* [...] computation of a replacement actor is an action which may be carried out concurrently with
+  other actions performaed by an actor, the replacement process is intrinsically concurrent
+* In actor-based architectures, the only constraints on the speed of execution stem from the
+  logical dependencies in the computation and the limitations imposed by the hardware resources
+* [...] this has the implicastio that message-passing can be used to spawn concurrency: An Actor,
+  in response to a communciation, may send several communications to other actors
+* A "configuration" (p.7) is a instantaneous snapshot og an actor system from some viewpoint. Each
+  configuration has teh following parts:
+  - local state function
+  - set of unprocessed tasks
+  - subset of the population, called "receptionist" actors
+  - set of external actors
+* Open Systems (p.16)
+  It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change [Hewitt and de Jong 85]
+* Characteristics of Open Systems
+  - Continuous Availability
+  - Modularity
+  - Extensibility
+* "Definition: Composition. Let c1 || c2 represent the concurrent composition..." (p.19)
+* Actor languages uniformly use message-passing to spawn concurrency and are inherently parallel
+* The problem of shared resources with changing local state is dealt with by providing an
+  object-oriented environment without the sequential bottle-neck caused by assignment commands
+* An actor language also provides a suitable basis for large-scale parallelism. Besides the
+  ability to distribute the work required in the course of a computation, actor systems can be composed simply by passing messages between them. The internal workings of an actor system are not available to any other system
+
+**[@Bla13] "Object-oriented programming: Some history, and challenges for the next fifty years"**
+
+* [...] Alan Snyder of Hewlett Packard wrote an influential survey paper “The Essence of Objects”
+* In Snyder’s view, the essential concepts were as follows:
+  - An object embodies an abstraction.
+  - Objects provide services.
+  - Clients issue requests for those services.
+  - Objects are encapsulated.
+  - Requests identify operations.
+  - Requests can identify objects.
+  - New objects can be created.
+  - The same operation on distinct objects can have different implementations and observably different behaviour.
+  - Objects can be classified in terms of their services (interface hierarchy).
+  - Objects can share implementations.
+    – Objects can share a common implementation (multiple instances).
+    – Objects can share partial implementations (implementation inheritance or delegation).
+* Snyder does mention “Active Objects” as an “associated concept,” that is, an idea “associated with the notion of objects, but not essential to it.” The idea that classes can serve as modules does not appear at all.
+* Dan Ingalls’ sweeping 1981 Byte article “Design Principles behind Smalltalk” [27]
+* In 2002, Dahl wrote [14]:
+  The most important new concept of Simula 67 is surely the idea of data structures with associated operators . . . called objects. There is an important difference, except in trivial cases, between
+  - the inside view of an object, understood in terms of local variables, possibly initialising operations establishing an
+invariant, and implemented procedures operating on the variables maintaining the invariant, and
+  - the outside view, as presented by the remotely accessible procedures, including some generating mechanism, dealing
+with more “abstract” entities.
+* Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
+* Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
+
+**[@BY87] "Inheritance and Synchronization in Concurrent OOP"**
+
+  * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
+  * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
+  * Delegation [Lieberman 86b] is another strategy we discuss as well. Delegation is discussed in the framework of the Actor model of computation (Hewitt 76,Lieberman 811.
+  * (parallel) semantic network languages (e.g., NETL (Fahlman 791). [dieses quelle sollte ich mir zwecks literatur vermutlich anschauen]{.quelle}
+  * Only the delegation scheme is flexible enough to be free from the shared memory assumption, so we will examine and criticize it in the distributed memory context. [MS haben inherent distributed memory]{.mind}
+  * Flexibility versus Efficiency: This is one of the main tradeoffs in knowledge sharing.
+  * Our main comment is that this inheritance scheme using hard-wired links is not suitable for distributed memory models. [hard-wired links = in-memory calls]{.mind}
+  * The delegation scheme has been proposed in the Act-1 language [Lieberman 811. An object (called an actor in this computation model [Hewitt 761 where the class concept is absent) knows about another object called a prozy.
+  * The delegation scheme enjoys the uniformity of the communication protocol: the delegation to the proxy of an object is performed by message passing, not by a system primitive through the hard-wired physical link (pointer).  [= in-memory call]{.mind}
+  * Thus delegation can be fully designed at the user-language level and it can be locally customized by the user easily. This scheme is independent of the assumption of shared memory andis perfectly suitable for distributed (memory and computation) models. It also allows full dynamicity and modularity.
+  * In examining this scheme, two issues, namely efficiency and synchronization, must be addressed. [Efficiency in MS hängt von Marshalling der Messages und dem network ab -> Performance von SOA]{.mind}
+  * In the delegation scheme, variable consultation as well as method activation should be performed through message passing because both can be delegated to another object (the proxy).
+  * Thus we first identify message passing with function call as in most of OOP extensions of Lisp. [msg passing == REST method call == function call]{.mind}
+  * Each such variable-object owns the two methods that handle two kinds of messages: one to consult the variable (get), and the other to update it (set). [vgl. CRUD methoden bei REST]{.mind}
+  * However in some concurrent models such as the Actor model, message passing is asynchronous and unidirectional. There is no implicit synchronization. AS a consequence, variable access is no more atomic and could be mishandled.
+  * Message Ordering Issue [???]{.mind}
+  * Fairness and Recursion: In an asynchronous message passing model, the messages sent to an object 0 are ordered (in a queue) following the ordering of their arrivals to 0. It is assumed that two messages cannot arrive at the same time.
+  * We notice that the latest Actor model [Agha 851 relies on atomic objects. In this model, there is no side effect.
+  * There is no delegation proposed in the Actor model of [Agha 85].
+  * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
+
+**[@DGL16] "Microservices: yesterday, today, and tomorrow"**
+
   * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
   * modules of a monolith depend on said shared resources, they are not independently executable
   * Definition 1 (Monolith): A monolith is a software application whose modules cannot be executed independently.
@@ -181,7 +266,7 @@ CSS Header      :
   * in [@Fra17] wird über dieses Paper bebhauptet:
     * one of the main results of the survey is that MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testability qualities
 
-* [@Fra17] "Architecting microservices"
+**[@Fra17] "Architecting microservices"**
   * Fowler and Lewis define the microservice architectural style as an approach for developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API [15].
   * (RQ-1) has revealed that performance and maintainability are among the most investigated quality attributes, while possible research gaps could exist in the field of security, reliability and portability for MSA [13].
   * major barriers to cloud adoption there are security and vendor lock-in and quality assurance.
@@ -194,7 +279,8 @@ CSS Header      :
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
-* [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
+**[@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"**
+
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
   * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
   * One such design problem is finalising the optimal level of granularity of a microservice architecture. Related design trade-offs include: balancing the size and number of microservices in an architecture and balancing the non-functional requirement satisfaction levels of the individual microservices as well as their satisfaction for the overall system.
@@ -211,33 +297,47 @@ CSS Header      :
     * When does decomposing a microservice into more fine-grained ones achieve the required optimality for both trade-offs?
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
-* [@SRH17] "Microservices: Granularity vs. Performance"
-  * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
-  * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
-  * Microservices can be declared with varying levels of capability, and the size of this functionality is typically referred to as its granularity, that is, the functional complexity coded in a service or number of use cases implemented by a microservice[21].
-  * Since microservices are discrete and must be composed into greater functional entities to support businessworkflows, it follows that message passing between microservices (as a result of method invocation) increases as the microservices become finer-grained
-  * The 'building-block' approach to service composition is attrac-tive from an architectural perspective; arguments for service re-use can be made, and the gap between application design and the user requirements documentation can be reduced. However, the increase in communication between services (manifesting as out-of-process calls and the number of service calls made) also increases the response time of an application, particularly when many small increases in latency are compounded together[26].
-  * Achieving an optimum level of granularity is therefore of interest to application developers who want to exploreMSAfor deployment, and the key factors that contribute to this can be summarised as follows:
-    * Driven by business need or capability. The needs of a business may be changing rapidly and demanding new functionality from an application. This growth may not be manageable within the existing application architecture and therefore a granular approach is adopted. It is typical for application developers to use the functionality itself to set the scope that determines the size of a microservice.
-    * Size of application. For smaller applications the level of gran- ularity could be fine-grained. For enterprise (larger) sized applications, the granularity is likely to be at a higher level (coarser) with each microservice built up from smaller mi- croservices. However, aswe discuss later, for smaller applica- tions there may stiil need to be an aggregation of services to facilitate simpler communication and reduced latency over IoT network connections
-    * Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Conway(http://www.melconway.com/Home/Conways_Law. html) says “organizations which design systems ... are con-strained to produce designs which are copies of the commu-nication structures of these organizations”. In the context of MSA, but more specifically Domain Driven Design [12], the degree of success of functional decomposition, and its subse-quent implementation as a successful service, is dependent upon the organisational structure of the development teams.
-    * Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there is a product service and an order service, the functional de-composition is likely to have led to the implementation of separate data repositories for each service. Any association of the data between the databases will be implemented at code level, leading to more coarse-grained microservices.
-    *  Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-grained then reuse is possible but there is the additional overhead of wiring the services together. If the services are too coarse grained then it is difficult to reuse the services.
-    * It follows that whilst architectural concerns may lead designers towards finer-grained functional decomposition[12, 13], any po-tential increase in the number of methods invoked, either within a container or between physical servers via a network, will have an increased contribution towards latency, particularly when virtu-alised. 
-    * Containers are one means of addressing the latency to some extent when the microservices exist in cloud environments[9, 19]. 
-    * Figure1 illustrates the message request and response between two microservices, A and B. The overall latency is determined by a number of factors, including the following:
-      * Number of calls
-      * Network latency and availability
-      * Availability of microservice
-      * Processing time
-      * Variability in demand/load
-    * While considering latency there are two other factors to consider. First, the criticality of the service being called and second,the number of times it is called. For example, although calling a “qualifi-cation mapping” service is important, it is not critical to the function of the system. If it is not working the system can still accept new applications. 
-    * An additional factor to be considered is whether the application under consideration is a new application or an existing application that is being migrated to MSA. For a new application, databasedesign will have less influence as there will not be a database in place already. For an existing application, the organisation and design of existing data and their structures is an important factor to consider.
-    * Finer-grained microservices result in a potential increase in the number of in-process method invocations. This is tolerable when the microservices lie within the same container, as the message passing is rapid and the probability that the service request is completed is high and wholly dependent upon the application in the container.
-    * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
-    * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
 
-* [@OBM05] "Quality Attributes and Service-Oriented Architectures"
+**[@MW16] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
+
+  * components of an application are autonnomous services that execute independently
+  * communicate via message passing
+  * message passing introduces the possiilities of communnication failures and timeouts among components
+    * vgl.: im Actor Model ist die Zustellung von Nachrichten garantiert
+  * inspired by SOA
+  * key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)
+  * components can e deployed separately
+  * new versions can be gradually introduced into a system  
+    * vgl. Subtyping Idee
+  * Components can be more specialized, since they can be written in different techologies
+  * services may become overloaded (too many concurrent client requests) or resources kept busy
+  * this may easily trigger disastrous cascading failures
+  * failure in an MSA is inevitale and should embraced with precaution rather than ignored
+  * Failing service may have other services depending on it (what if it becomes unresponsive?)
+    * -> circuit breaker pattern; fail fast
+    * mit Circuit Breaker State Diagram p.2 !
+  * Circuit Breaker: 
+    * Hysterix Library
+    * Server-side Circuit Breaker
+    * Client-side Circuit Breaker
+    * Proxy Circuit Breaker
+      * introduces Network bottle neck
+  * Service Discovery
+    * Location of MS may not be statically known at design time
+    * using Service registry
+      * adopted from SOA
+      * = a service that can be used y other components to retrieve ending information about other components
+      * in SOA, service discovery part of enterprise service bus
+      * in MSA, service discovery as non-standard custom implementations
+    * Gateways:
+      * single entry point for many APIs
+      * since it is an entry point, it is natural to equip it with e.g. service discovery load-balancing, monitoring, security, etc
+  * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
+  * all internal services are subjects to potential communciation failures and overloads
+  * choreography does not require central control. a critical feature for the scalability of MSA
+
+**[@OBM05] "Quality Attributes and Service-Oriented Architectures"**
+
   * Software architecture is the bridge between mission/business goals and a software-intensive system.
   * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
   * A service is an implementation of a well-defined piece of business functionality, with a published interface that is discoverable and can be used by service consumers when building different applications and business processes.
@@ -346,28 +446,34 @@ CSS Header      :
     * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
     * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
+**[@SRH17] "Microservices: Granularity vs. Performance"**
 
-* [@BY87] "Inheritance and Synchronization in Concurrent OOP"
-  * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
-  * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
-  * Delegation [Lieberman 86b] is another strategy we discuss as well. Delegation is discussed in the framework of the Actor model of computation (Hewitt 76,Lieberman 811.
-  * (parallel) semantic network languages (e.g., NETL (Fahlman 791). [dieses quelle sollte ich mir zwecks literatur vermutlich anschauen]{.quelle}
-  * Only the delegation scheme is flexible enough to be free from the shared memory assumption, so we will examine and criticize it in the distributed memory context. [MS haben inherent distributed memory]{.mind}
-  * Flexibility versus Efficiency: This is one of the main tradeoffs in knowledge sharing.
-  * Our main comment is that this inheritance scheme using hard-wired links is not suitable for distributed memory models. [hard-wired links = in-memory calls]{.mind}
-  * The delegation scheme has been proposed in the Act-1 language [Lieberman 811. An object (called an actor in this computation model [Hewitt 761 where the class concept is absent) knows about another object called a prozy.
-  * The delegation scheme enjoys the uniformity of the communication protocol: the delegation to the proxy of an object is performed by message passing, not by a system primitive through the hard-wired physical link (pointer).  [= in-memory call]{.mind}
-  * Thus delegation can be fully designed at the user-language level and it can be locally customized by the user easily. This scheme is independent of the assumption of shared memory andis perfectly suitable for distributed (memory and computation) models. It also allows full dynamicity and modularity.
-  * In examining this scheme, two issues, namely efficiency and synchronization, must be addressed. [Efficiency in MS hängt von Marshalling der Messages und dem network ab -> Performance von SOA]{.mind}
-  * In the delegation scheme, variable consultation as well as method activation should be performed through message passing because both can be delegated to another object (the proxy).
-  * Thus we first identify message passing with function call as in most of OOP extensions of Lisp. [msg passing == REST method call == function call]{.mind}
-  * Each such variable-object owns the two methods that handle two kinds of messages: one to consult the variable (get), and the other to update it (set). [vgl. CRUD methoden bei REST]{.mind}
-  * However in some concurrent models such as the Actor model, message passing is asynchronous and unidirectional. There is no implicit synchronization. AS a consequence, variable access is no more atomic and could be mishandled.
-  * Message Ordering Issue [???]{.mind}
-  * Fairness and Recursion: In an asynchronous message passing model, the messages sent to an object 0 are ordered (in a queue) following the ordering of their arrivals to 0. It is assumed that two messages cannot arrive at the same time.
-  * We notice that the latest Actor model [Agha 851 relies on atomic objects. In this model, there is no side effect.
-  * There is no delegation proposed in the Actor model of [Agha 85].
-  * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
+  * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
+  * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
+  * Microservices can be declared with varying levels of capability, and the size of this functionality is typically referred to as its granularity, that is, the functional complexity coded in a service or number of use cases implemented by a microservice[21].
+  * Since microservices are discrete and must be composed into greater functional entities to support businessworkflows, it follows that message passing between microservices (as a result of method invocation) increases as the microservices become finer-grained
+  * The 'building-block' approach to service composition is attrac-tive from an architectural perspective; arguments for service re-use can be made, and the gap between application design and the user requirements documentation can be reduced. However, the increase in communication between services (manifesting as out-of-process calls and the number of service calls made) also increases the response time of an application, particularly when many small increases in latency are compounded together[26].
+  * Achieving an optimum level of granularity is therefore of interest to application developers who want to exploreMSAfor deployment, and the key factors that contribute to this can be summarised as follows:
+    * Driven by business need or capability. The needs of a business may be changing rapidly and demanding new functionality from an application. This growth may not be manageable within the existing application architecture and therefore a granular approach is adopted. It is typical for application developers to use the functionality itself to set the scope that determines the size of a microservice.
+    * Size of application. For smaller applications the level of gran- ularity could be fine-grained. For enterprise (larger) sized applications, the granularity is likely to be at a higher level (coarser) with each microservice built up from smaller mi- croservices. However, aswe discuss later, for smaller applica- tions there may stiil need to be an aggregation of services to facilitate simpler communication and reduced latency over IoT network connections
+    * Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Conway(http://www.melconway.com/Home/Conways_Law. html) says “organizations which design systems ... are con-strained to produce designs which are copies of the commu-nication structures of these organizations”. In the context of MSA, but more specifically Domain Driven Design [12], the degree of success of functional decomposition, and its subse-quent implementation as a successful service, is dependent upon the organisational structure of the development teams.
+    * Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there is a product service and an order service, the functional de-composition is likely to have led to the implementation of separate data repositories for each service. Any association of the data between the databases will be implemented at code level, leading to more coarse-grained microservices.
+    *  Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-grained then reuse is possible but there is the additional overhead of wiring the services together. If the services are too coarse grained then it is difficult to reuse the services.
+    * It follows that whilst architectural concerns may lead designers towards finer-grained functional decomposition[12, 13], any po-tential increase in the number of methods invoked, either within a container or between physical servers via a network, will have an increased contribution towards latency, particularly when virtu-alised. 
+    * Containers are one means of addressing the latency to some extent when the microservices exist in cloud environments[9, 19]. 
+    * Figure1 illustrates the message request and response between two microservices, A and B. The overall latency is determined by a number of factors, including the following:
+      * Number of calls
+      * Network latency and availability
+      * Availability of microservice
+      * Processing time
+      * Variability in demand/load
+    * While considering latency there are two other factors to consider. First, the criticality of the service being called and second,the number of times it is called. For example, although calling a “qualifi-cation mapping” service is important, it is not critical to the function of the system. If it is not working the system can still accept new applications. 
+    * An additional factor to be considered is whether the application under consideration is a new application or an existing application that is being migrated to MSA. For a new application, databasedesign will have less influence as there will not be a database in place already. For an existing application, the organisation and design of existing data and their structures is an important factor to consider.
+    * Finer-grained microservices result in a potential increase in the number of in-process method invocations. This is tolerable when the microservices lie within the same container, as the message passing is rapid and the probability that the service request is completed is high and wholly dependent upon the application in the container.
+    * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
+    * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
+
+
 
 
 

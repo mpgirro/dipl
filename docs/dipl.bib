@@ -8,78 +8,6 @@
   annote       = {}
 }
 
-* no consenus has emerged on a single model of concurrency
-* discussion on paradigm shift in [Pratt 83]
-* "Pratt's Process Model" satisfies several properties desirable in any model of concurrent
-  computation
-* (Pratts?) model does not assume the existance of global states
-* laws of parallel processing formulated in [Hewit and Baker 77]
-* Foundational Issues (p.3-4 genauer erklärt)
-  - Shared Resources
-  - Dynamic Reconfiguration
-  Inherent Parallelism
-* Actor = computational agent which caries out its actions in response to accepting a communication
-* Actions are:
-  - Send communication to itself or to other actors
-  - Create more actors (gibt es einen MSA mechanismus der das erlaubt? Cloud management frameworks
-    nicht von MS direkt angesprochen)
-  - Specify the replacement behaviour
-* The buffering of communication has the consequence that actor languages support recursion.
-  In languages relying on synchronous communication, any recursive procedure immediately leads to deadlock (!)
-* Two important obersavtions need to be made about replacement. First, replacement implements
-  local state chance while preserving referential transparency of the identifiers used in a program
-* [...] computation of a replacement actor is an action which may be carried out concurrently with
-  other actions performaed by an actor, the replacement process is intrinsically concurrent
-* In actor-based architectures, the only constraints on the speed of execution stem from the
-  logical dependencies in the computation and the limitations imposed by the hardware resources
-* [...] this has the implicastio that message-passing can be used to spawn concurrency: An Actor,
-  in response to a communciation, may send several communications to other actors
-* A "configuration" (p.7) is a instantaneous snapshot og an actor system from some viewpoint. Each
-  configuration has teh following parts:
-  - local state function
-  - set of unprocessed tasks
-  - subset of the population, called "receptionist" actors
-  - set of external actors
-* Open Systems (p.16)
-  It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change [Hewitt and de Jong 85]
-* Characteristics of Open Systems
-  - Continuous Availability
-  - Modularity
-  - Extensibility
-* "Definition: Composition. Let c1 || c2 represent the concurrent composition..." (p.19)
-* Actor languages uniformly use message-passing to spawn concurrency and are inherently parallel
-* The problem of shared resources with changing local state is dealt with by providing an
-  object-oriented environment without the sequential bottle-neck caused by assignment commands
-* An actor language also provides a suitable basis for large-scale parallelism. Besides the
-  ability to distribute the work required in the course of a computation, actor systems can be composed simply by passing messages between them. The internal workings of an actor system are not available to any other system
-
-@inproceedings{AH85,
-  title        = {{Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism}},
-  author       = {Agha, Gul and Hewitt, Carl},
-  booktitle    = {Foundations of Software Technology and Theoretical Computer Science},
-  pages        = {19--41},
-  year         = {1985},
-  organization = {Springer},
-  annote       = {}
-}
-
-* p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
-* p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
-* p.126: hree common patterns of parallelism in problems have been found in practice (For example, see [8, 131). First, pipeline concurrency involves the enumeration of potential solutions and the concurrent testing of these solutions as they are enumerated. Second, divide and conquer concurrency involves the concurrent elaboration of different subproblems and the joining of (some or all) of their solutions in order to obtain a solution to the overall problem. In divide and conquer concurrency, there is no interaction between the procedures solving the subproblems.  -- Highlighted 19 May 2017
-* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s
-* p.127: Divide-and-conquer concurrency algorithms can often be expressed as functions.  -- Highlighted 19 May 2017
-* p.128: n cooperative problem solving concurrency, intermediate results arestored in objects and shared by pass-ing messages between objects. -- Highlighted 19 May 2017
-* p.128: Another example of coopera-tive problem solving is blackboardsystems which allow collaborationbetween agents through a sharedwork space. -- Highlighted 19 May 2017
-* p.128: Actors are self-contained, interactive, independent componentsof a computing system that communicate by asynchronous message passing.  -- Highlighted 19 May 2017
-* p.128: Each time an actor processes a communication, it also computes its behavior in response to the next communication it may process.  -- Highlighted 19 May 2017
-* p.128: In other cases, the behavior may change. The change in the behavior may represent a simple change of state variables, such as change in the balance of an account, or it may represent changes in the operations (methods) which are carried out in response to messages. -- Highlighted 19 May 2017
-* p.128: Concurrent computations can be visualized in terms of event diagrams (see Figure 5). These diagrams were developed to model the behavior of actor systems. -- Highlighted 19 May 2017
-* p.130: A customer can be sent a reply message when a request is completed, or a complaint message if it is not possible to successfully complete the reqluest. -- Highlighted 19 May 2017
-* p.132: Although actors take a functionalview of an object’s internal behavior at any given point in time, actors can represent shared history-sensitive ob-jects.  -- Highlighted 19 May 2017
-* p.132: We call such a merge afair merge. Afair merge is complete because itmerges message:; from every senderand may not ignore any sender inde-finitely and it is indeterminate be-cause no particular order is specifiedfor messages sent to the same objectby different objects.  -- Highlighted 19 May 2017
-* Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
-* Inherent Concurrency
-*
 @article{Agh90,
   title     = {{Concurrent Object-Oriented Programming}},
   author    = {Agha, Gul},
@@ -92,6 +20,17 @@
   annote    = {}
 }
 
+@inproceedings{AH85,
+  title        = {{Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism}},
+  author       = {Agha, Gul and Hewitt, Carl},
+  booktitle    = {Foundations of Software Technology and Theoretical Computer Science},
+  pages        = {19--41},
+  year         = {1985},
+  organization = {Springer},
+  annote       = {}
+}
+
+TODO: noch keine literaturnotizen vorhanden!
 @article{Arm93,
   title     = {{Concurrent programming in ERLANG}},
   author    = {Armstrong, Joe and Virding, Robert and Wikstr{\"o}m, Claes and Williams, Mike},
@@ -100,30 +39,7 @@
   annote    = {}
 }
 
-* [...] Alan Snyder of Hewlett Packard wrote an influential survey paper “The Essence of Objects”
-* In Snyder’s view, the essential concepts were as follows:
-  - An object embodies an abstraction.
-  - Objects provide services.
-  - Clients issue requests for those services.
-  - Objects are encapsulated.
-  - Requests identify operations.
-  - Requests can identify objects.
-  - New objects can be created.
-  - The same operation on distinct objects can have different implementations and observably different behaviour.
-  - Objects can be classified in terms of their services (interface hierarchy).
-  - Objects can share implementations.
-    – Objects can share a common implementation (multiple instances).
-    – Objects can share partial implementations (implementation inheritance or delegation).
-* Snyder does mention “Active Objects” as an “associated concept,” that is, an idea “associated with the notion of objects, but not essential to it.” The idea that classes can serve as modules does not appear at all.
-* Dan Ingalls’ sweeping 1981 Byte article “Design Principles behind Smalltalk” [27]
-* In 2002, Dahl wrote [14]:
-  The most important new concept of Simula 67 is surely the idea of data structures with associated operators . . . called objects. There is an important difference, except in trivial cases, between
-  - the inside view of an object, understood in terms of local variables, possibly initialising operations establishing an
-invariant, and implemented procedures operating on the variables maintaining the invariant, and
-  - the outside view, as presented by the remotely accessible procedures, including some generating mechanism, dealing
-with more “abstract” entities.
-* Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
-* Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
+
 @article{Bla13,
   title     = {{Object-oriented programming: Some history, and challenges for the next fifty years}},
   author    = {Black, Andrew P},
@@ -155,10 +71,6 @@ with more “abstract” entities.
  url     = {http://ieeexplore.ieee.org/document/7820204/},
  annote  = {}
 }
-
-
-* "Before presenting the current state-of-the-art in the field, this chapter reviews the history of software architecture, the reasons that led to the diffusion of objects and services first, and microservices later"
-
 @article{DGL16,
   title   = {{Microservices: yesterday, today, and tomorrow}},
   author  = {Dragoni, Nicola and Giallorenzo, Saverio and Lafuente, Alberto Lluch and Mazzara, Manuel and Montesi, Fabrizio and Mustafin, Ruslan and Safina, Larisa},
@@ -187,11 +99,6 @@ with more “abstract” entities.
   url      = {http://www.benjamin-erb.de/thesis},
   annote   = {}
 }
-
-
-* We define libraries as components that are linked into a program and called using in-memory function calls, while services are out-of-process components who communicate with a mechanism such as a web service request, or remote procedure call. (This is a different concept to that of a service object in many OO programs [3].
-
-  - 3: Many object-oriented designers, including ourselves, use the term service object in the Domain-Driven Design sense for an object that carries out a significant process that isn't tied to an entity. This is a different concept to how we're using "service" in this article. Sadly the term service has both meanings and we have to live with the polyseme.
 
 @misc{FL17,
   title        = {Microservices},
