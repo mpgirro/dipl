@@ -236,6 +236,8 @@ CSS Header      :
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
+## Microservices: Granularity, Design, etc
+
 * [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
   * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
@@ -247,7 +249,43 @@ CSS Header      :
   * the size versus number of microservices [4]
   * the local versus global non-fuctional requirement satisfaction trade-off.
   * aggressive isolation of business functionalities is not necessarily ideal for all scenarios of the environment.
+  * Due to the recency of the research area, there is a multitude of ways in which microservices have been defined and modelled. Clear understanding of the paradigm shift, itsmotivations, and implications are prerequisites for advancing microservitization. We have reviewed the state of art and practice to capture the different ways in which microservices can be defined and modelled.
+  * We therefore view microservices as autonomic, repleace-able and deployable artefacts of microservitization that encapsulate fine-grained business functionalities presented to system users through standardised interfaces. The autonomy of these artefacts allows for governing them in a decentralised manner and tracing their changes.
+  * Among the crucial and non-trivial decision problems (DPs) that constitute addressing the size/number and the local/global NFRs satisfaction trade-offs are the following:
+    * When does decomposing a microservice into more fine-grained ones achieve the required optimality for both trade-offs?
+    * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
+    * When should the current level of granularity be kept without further merging or decomposition?
+* [@SRH17] "Microservices: Granularity vs. Performance"
+  * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
+  * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
+  * Microservices can be declared with varying levels of capability, and the size of this functionality is typically referred to as its granularity, that is, the functional complexity coded in a service or number of use cases implemented by a microservice[21].
+  * Since microservices are discrete and must be composed into greater functional entities to support businessworkflows, it follows that message passing between microservices (as a result of method invocation) increases as the microservices become finer-grained
+  * The 'building-block' approach to service composition is attrac-tive from an architectural perspective; arguments for service re-use can be made, and the gap between application design and the user requirements documentation can be reduced. However, the increase in communication between services (manifesting as out-of-process calls and the number of service calls made) also increases the response time of an application, particularly when many small increases in latency are compounded together[26].
+  * Achieving an optimum level of granularity is therefore of interest to application developers who want to exploreMSAfor deployment, and the key factors that contribute to this can be summarised as follows:
+    * Driven by business need or capability. The needs of a business may be changing rapidly and demanding new functionality from an application. This growth may not be manageable within the existing application architecture and therefore a granular approach is adopted. It is typical for application developers to use the functionality itself to set the scope that determines the size of a microservice.
+    * Size of application. For smaller applications the level of gran- ularity could be fine-grained. For enterprise (larger) sized applications, the granularity is likely to be at a higher level (coarser) with each microservice built up from smaller mi- croservices. However, aswe discuss later, for smaller applica- tions there may stiil need to be an aggregation of services to facilitate simpler communication and reduced latency over IoT network connections
+    * Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Conway(http://www.melconway.com/Home/Conways_Law. html) says “organizations which design systems ... are con-strained to produce designs which are copies of the commu-nication structures of these organizations”. In the context of MSA, but more specifically Domain Driven Design [12], the degree of success of functional decomposition, and its subse-quent implementation as a successful service, is dependent upon the organisational structure of the development teams.
+    * Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there is a product service and an order service, the functional de-composition is likely to have led to the implementation of separate data repositories for each service. Any association of the data between the databases will be implemented at code level, leading to more coarse-grained microservices.
+    *  Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-grained then reuse is possible but there is the additional overhead of wiring the services together. If the services are too coarse grained then it is difficult to reuse the services.
+    * It follows that whilst architectural concerns may lead designers towards finer-grained functional decomposition[12, 13], any po-tential increase in the number of methods invoked, either within a container or between physical servers via a network, will have an increased contribution towards latency, particularly when virtu-alised. 
+    * Containers are one means of addressing the latency to some extent when the microservices exist in cloud environments[9, 19]. 
+    * Figure1 illustrates the message request and response between two microservices, A and B. The overall latency is determined by a number of factors, including the following:
+      * Number of calls
+      * Network latency and availability
+      * Availability of microservice
+      * Processing time
+      * Variability in demand/load
+    * While considering latency there are two other factors to consider. First, the criticality of the service being called and second,the number of times it is called. For example, although calling a “qualifi-cation mapping” service is important, it is not critical to the function of the system. If it is not working the system can still accept new applications. 
+    * An additional factor to be considered is whether the application under consideration is a new application or an existing application that is being migrated to MSA. For a new application, databasedesign will have less influence as there will not be a database in place already. For an existing application, the organisation and design of existing data and their structures is an important factor to consider.
+    * Finer-grained microservices result in a potential increase in the number of in-process method invocations. This is tolerable when the microservices lie within the same container, as the message passing is rapid and the probability that the service request is completed is high and wholly dependent upon the application in the container.
+    * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
+    * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
 
+
+## MSA: key concepts
+
+
+## MSA: quality issues
 
 ## MSA: timeouts
 
