@@ -1,0 +1,374 @@
+[INCLUDE=style/marticle]
+
+Bibliography : dipl
+Bib style    : alpha
+Cite All     : False
+
+CSS Header      :
+  body.madoko {
+    max-width: 98ex;
+  }
+
+* [@MW16] "Circuit Breakers, Discovery, and API Gateways in Microservices"
+  * components of an application are autonnomous services that execute independently
+  * communicate via message passing
+  * message passing introduces the possiilities of communnication failures and timeouts among components
+    * vgl.: im Actor Model ist die Zustellung von Nachrichten garantiert
+  * inspired by SOA
+  * key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)
+  * components can e deployed separately
+  * new versions can be gradually introduced into a system  
+    * vgl. Subtyping Idee
+  * Components can be more specialized, since they can be written in different techologies
+  * services may become overloaded (too many concurrent client requests) or resources kept busy
+  * this may easily trigger disastrous cascading failures
+  * failure in an MSA is inevitale and should embraced with precaution rather than ignored
+  * Failing service may have other services depending on it (what if it becomes unresponsive?)
+    * -> circuit breaker pattern; fail fast
+    * mit Circuit Breaker State Diagram p.2 !
+  * Circuit Breaker: 
+    * Hysterix Library
+    * Server-side Circuit Breaker
+    * Client-side Circuit Breaker
+    * Proxy Circuit Breaker
+      * introduces Network bottle neck
+  * Service Discovery
+    * Location of MS may not be statically known at design time
+    * using Service registry
+      * adopted from SOA
+      * = a service that can be used y other components to retrieve ending information about other components
+      * in SOA, service discovery part of enterprise service bus
+      * in MSA, service discovery as non-standard custom implementations
+    * Gateways:
+      * single entry point for many APIs
+      * since it is an entry point, it is natural to equip it with e.g. service discovery load-balancing, monitoring, security, etc
+  * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
+  * all internal services are subjects to potential communciation failures and overloads
+  * choreography does not require central control. a critical feature for the scalability of MSA
+* [@AAE16] "A Systematic Mapping Study in Microservice Architecture"
+  * Mache ich auch eine "Mapping Study"?
+  * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
+  * a distributed application where all its modules are microservices
+  * commonly agreed benefits:
+    * increase in agility
+    * developer productivity
+    * resilience
+    * scalability* reliability
+    * maintainability
+    * separation of concerns
+    * ease of development
+  * Even though microservices have emerged from the software industry and have been the focus of practitioners in the last decade[28][22], academic researchers have not kept with the pace
+  * Relevante keywords (werden auch für mich irgendwie relevant sein)
+    * Communication/Integration
+    * Service discovery
+    * Performance
+    * Fault-tolerance
+    * Security
+    * Tracing and Logging
+    * Application Performance Monitoring* Deploying operations
+  * Quality Attributes:
+    * Scalability: expandable, evolutionary
+    * Interestingly, it has been noticed that there was no distinction between component diagrams and container diagrams in the literature
+    * Maintainability: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Deployment: expandable, adaptability, changeability, flexible implementation, dynamically changing
+    * Health management: resilience, reliability, disaster recovery, no single point of failure
+    * Modularity: single responsibility, reduce complexity, separate business concern, specialization, customizable
+    * Manageability: self-managed, decentralized management, audibility
+    * Performance: response times, transaction duration, throughput, efficiency
+    * Reusability: pluggable
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Independence: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Agility: iterative, incremental, continuous delivery
+    * Security
+    * Load balancing: workload intensity distribution
+    * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
+    * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format
+* [@DGL16] "Microservices: yesterday, today, and tomorrow"
+  * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
+  * modules of a monolith depend on said shared resources, they are not independently executable
+  * Definition 1 (Monolith): A monolith is a software application whose modules cannot be executed independently.
+    * Issues:
+      * I1: large-size monoliths are difficult to maintain and evolve due to their complexity. Tracking down bugs requires long perusals through their code base
+      * I2: monoliths also suffer from the "dependency hell" [55], in which adding or updating libraries results in inconsistent systems that do not compile/run or, worse, misbehave
+      * I3: any change in one module of a monolith requires rebooting the whole application. For large- sized projects, restarting usually entails considerable downtimes, hindering development, test- ing, and the maintenance of the project
+      * I4: deployment of monolithic applications is usually sub-optimal due to conflicting requirements on the constituent models’ resources: some can be memory-intensive, others computational- intensive, and others require ad-hoc components (e.g., SQL-basedrather than graph-based databases).When choosing a deployment environment, the developer must compromise with a one-size-fits-all configuration, which is either expensive or sub-optimal with respect to the individual modules
+      * I5: monoliths limit scalability. The usual strategy for handling increments of inbound requests is to create new instances of the same application and to split the load among said instances. However, it could be the case that the increased traffic stresses only a subset of the modules, making the allocation of the new resources for the other components inconvenient
+      * I6: monoliths also represent a technology lock-in for developers, whichare boundto use the same language and frameworks of the original application
+  * Definition 2 (Microservice): Amicroservice is a cohesive, independent process interacting via messages
+  * From a technical point of view,microservices should be independent components conceptually deployed in isolation and equipped with dedicated memory persistence tools (e.g., databases)
+  * Definition 3 (Microservice Architecture): Amicroservice architecture is a distributed application where all its modules are microservices
+  * The microservice architectural style does not favour or forbid any particular programming paradigm. It provides a guideline to partition the components of a distributed application into independent entities, each addressing one of its concerns. This means that a microservice, provided it offers its functionalities via message passing, can be internally implemented with any of the mainstream languages cited in the beginning of this section.
+  * The principle of microservice architectures assists project managers and developers: it provides a guideline for the design and implementation of distributed applications. Following this principle, developers focus on the implementation and testing of a few, cohesive functionali-ties. This holds also for higher-level microservices, which are concerned with coordinating the functionalities of other microservices.
+  * Solutions (S1 is a solution to I1):
+    * S1: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
+    * S2: it is possible to plan gradual transitions to new versions of a microservice. The new version can be deployed “next” to the old one and the services that depend on the latter can be gradually modified to interact with the former. This fosters continuous integration [32] and greatly eases software maintenance
+    * S3: as a consequence of the previous item, changing a module of a microservice architecture does not require a complete reboot of the whole system. The reboot regards only the microservices of that module. Since microservices are small in size, programmers can develop, test, and maintain services experiencing only very short re-deployment downtimes
+    * S4: microservices naturally lend themselves to containerisation [56], and developers enjoy a high degree of freedom in the configuration of the deployment environment that best suits their needs (both in terms of costs and quality of service)
+    * S5: scaling a microservice architecture does not imply a duplication of all its components and de- velopers can conveniently deploy/dispose instances of services with respect to their load
+    * S6: the only constraint imposed on a network of interoperating microservices is the technol- ogy used to make them communicate (media, protocols, data encodings). Apart from that, microservices impose no additional lock-in and developers can freely choose the optimal re- sources (languages, frameworks, etc.) for the implementation of each microservice
+  * In software engineering, architecture is concerned with providing a bridge between system functionality and requirements for quality attributes that the system has to meet.
+  * This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Ar- chitecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
+  * The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
+  * Attention to separation of concerns has recently led to the emergence of the so-calledComponent- based software engineering (CBSE)
+  * The last decade has seen a further shift towards the concept of service first [81] and the natural evolution to microservices afterwards
+  * Service-Oriented Computing (SOC) is an emerging paradigm for distributed computing and e-business processing that finds its origin in object-oriented and component computing
+  * In SOC, a program — called a service — offers functionalities to other components, accessible via message passing
+  * Services decouple their interfaces (i.e. how other services access their functionalities) from their implementation
+  * The benefits of service-orientation are:
+    * Dynamism - New instances of the same service can be launched to split the load onthe system;
+    * Modularity and reuse - Complex services are composed of simpler ones. The same services can be used by different systems;
+    * Distributed development - By agreeing on the interfaces of the distributed system, distinct development teams can develop partitions of it in parallel;
+    * Integration of heterogeneous and legacy systems - Services merely have to implement standard protocols to communicate
+  * The idea of componentization used in service-orientation can be partially traced back to the object-oriented programming (OOP) literature; however, there are peculiar differences that led to virtually separate research paths and communities. As a matter of fact, SOC at the origin was - and still is - built on top of OOP languages, largely due to their broad diffusion in the early 2000s
+  * However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing. It is therefore a paradigm shift, where both the paradigms share the common idea of componentization
+  * The next step is adding the notion of business capability and therefore focusing analysis and design on it so that the overall system architecture is determined on this basis
+  * The first “generation” of service-oriented architectures (SOA) defined daunting and nebulous requirements for services (e.g., discoverability and service contracts), and this hindered the adop- tion of the SOA model
+  * Microservices are the second iteration on the concept of SOA and SOC
+  * The aim is to strip away unnecessary levels of complexity in order to focus on the programming of simple services that effectively implement a single functionality
+  * Like OO, the microservices paradigm needs ad-hoc tools to support developers and naturally leads to the emergence of specific design patterns
+  * First and foremost, languages that embrace the service-oriented paradigm are needed (instead, for the most part, microservice architectures still use OO lan- guages like Java and Javascript or functional ones). The same holds for the other tools for development support like testing suites, (API) design tools, etc.
+  * The microservices architecture appeared lately as a new paradigm for programming applications by means of the composition of small services, each running its own processes and communicating via light-weight mechanisms
+  * This approach has been built on the concepts of SOA [51] brought from crossing-boundaries workflows to the application level and into the applications architec- tures, i.e. its Service-Oriented Architecture and Programming from the large to the small.
+  * The term “microservices” was first introduced in 2011 at an architectural workshop as a way to describe the participants’ common ideas in software architecture patterns [33]
+  * Microservices now are a new trend in software architecture, which emphasises the design and development of highly maintainable and scalable software
+  * Microservices manage growing com- plexity by functionally decomposing large systems into a set of independent services
+  * By making services completely independent in development and deployment, microservices emphasise loose coupling and high cohesion by taking modularity to the next level
+  * It also comes with a bundle of problems that are inherited from distributed systems and from SOA, its predecessor. The Mi- croservices architecture still shows distinctive characteristics that blend into something unique and different from SOA itself:
+    * Size - The size is comparatively small wrt. a typical service, supporting the belief that the architectural design of a system is highly dependent on the structural design of the organization producing it. Idiomatic use of the microservices architecture suggests that if a service is too large, it should be split into two or more services, thus preserving granularity and maintaining focus on providing only a single business capability. This brings benefits in terms of service maintainability and extendability
+    * Bounded context - Related functionalities are combined into a single business capability, which is then implemented as a service.
+    * Independency - Each service in microservice architecture is operationally independent from other services and the only form of communication between services is through their pub- lished interfaces
+  * The key system characteristics for microservices are: 
+    * Flexibility - A system is able to keep up with the ever-changing business environment and is able to support all modifications that is necessary for an organisation to stay competitive on the market
+    * Modularity - A system is composed of isolated components where each component con- tributes to the overall system behaviour rather than having a single component that offers full functionality
+    * Evolution - A system should stay maintainable while constantly evolving and addingnew features
+  * bzgl Teams:
+    * Back in 1968, Melvin Conway proposed that an organisation’s structure, or more specifically, its communication structure constrains a system’s design such that the resulting design is a copy of the organisation’s communication patterns [23]. The microservices approach is to organise cross- functional teams around services, which in turn are organised around business capabilities [33]. This approach is also known as “you build, you run it” principle, first introduced by Amazon CTOWerner Vogels [38]. According to this approach, teams are responsible for full support and development of a service throughout its lifecycle
+  * Each microservice may represent a single business capability that is delivered and updated in- dependently and on its own schedule
+  * Discovering a bug and or adding a minor improvement do not have any impact on other services and on their release schedule (of course, as long as back- wards compatibility is preserved and a service interface remains unchanged)
+  * essentially microservices are meant to be used with continuous delivery and continuous integration, making each stage of delivery pipeline automatic. By using automated continuous delivery pipelines and modern container tools, it is possible to deploy an updated version of a service to production in a matter of seconds
+  * microservicesmay cooperate in order to providemore complex and elaborate functionalities. There are two approaches to establish this cooperation – orchestration [54] and choreography [69]. Orchestration requires a conductor – a central service that will send requests to other services and oversee the process by receiving responses.Choreography, on the other hand, assumes no centralisation and uses events and publish/subscribemechanisms in order to establish collaboration. These two concepts are not new to microservices, but rather are inherited from the SOA world where languages such asWS-BPEL [66] andWS-CDL [82] have long represented the major references for orchestration and choreography respectively (with vivid discussions between the two communities of supporters).
+  * Prior to the advent of microservices and at the beginning of the SOA’s hype in particular, orchestration was generally more popular and widely adopted, due to its simplicity of use and easier ways to manage complexity. However, it clearly leads to service coupling and uneven distribution of responsibilities, and therefore some services have a more centralising role than others.
+  * Microservices’ culture of decentralisation and the high degrees of independence represents instead the natural application scenario for the use of choreography as a means of achieving collaboration. This approach has indeed recently seen a renewed interest in connection with the broader diffusion of microservices in what can be called the second wave of services
+  * In order to better grasp microservices we need to understand the impact that this architecture has on some software quality attributes.
+    * Availability
+      * major concern in microservices as it directly affects the success of a system
+      * Given services independence, the whole system availability can be estimated in terms of the availability of the individual services that compose the system
+      * Even if a single service is not available to satisfy a request, the whole system may be compromised and experience di- rect consequences
+    * Reliability
+      * Given the distributed nature of the microservices architecture, particular attention should be paid to the reliability of message-passing mechanisms between services and to the reliability of the services themselves
+      * Building the system out of small and simple components is also one of the rules introduced in [72], which states that in order to achieve higher reliability one must find a way to manage the complexities of a large system: 
+      * building things out of simple components with clean interfaces is one way to achieve this
+      * The greatest threat to microservices reliability lies in the domain of integration and therefore when talking about microservices reli- ability, one should also mention integration mechanisms
+      * One example of this assumption being false is using a network as an integration mechanism and assuming network reliability is one of the first fallacies of distributed computing [73]. Therefore, in this aspect, **microservices reliability is inferior to the applications that use in-memory calls**
+      * It should be noted that this downside is not unique only to microservices and can be found in any distributed system. When talking about messaging reliability, it is also **useful to remember that microservices put restrictions on integration mechanisms**. More specifically, microservices use integration mechanisms in a very straightforward way - by removing all functionality that is not related to the message delivering and focusing solely on reliable message delivery
+    * Maintainability
+      * By nature, the microservices architecture is loosely coupled, meaning that there is a small number of links between services and services themselves being independent. This greatly contributes to the maintainability of a system by minimising the costs of modifying ser- vices, fixing errors or adding new functionality
+      * Despite all efforts to make a system as maintain- able as possible, it is always possible to spoil maintainability by writing obscure and counterintu- itive code [5]. 
+      * As such, another aspect of microservices that can lead to increased maintainability is the above mentioned “you build it, you run it” principle, which leads to better understanding a given service, its business capabilities and roles [29,21].
+    * Performance
+      * The prominent factor that negatively impacts performance in the microservices architecture is communication over a network
+      * The network latency is much greater than that of memory.
+      * Therefore, in terms of communication, the performance will degrade compared to applications that use in-memory call mechanisms. Restrictions that microservices put on size also indirectly contribute to this factor. In more general architectures without size-related restrictions, the ratio of in-memory calls to the total number of calls is higher than in the microservices architecture, which results in less communication over the network.Thus, the exact amount of performance degradation will also depend on the system’s interconnectedness. As such, systems with well-bounded contexts will experience less degradation due to looser coupling and fewer messages sent.
+      * In any distributed system security becomes a major concern. In this sense, microservices suffer from the same security vulnerabilities as SOA [6].
+    * Security
+      * As microservices use REST mechanism and XML with JSON as main data-interchange formats, particular attention should be paid to providing security of the data being transferred. This means adding additional overhead to the system in terms of additional encryption functionality. 
+      * Microservices promote service reuse, and as such it is natural to assume that some systems will include third-party services. Therefore, an additional challenge is to provide authenticationmechanisms with third-party services and ensure that the sent data is stored securely. 
+      * In summary, microservices’ security is impacted in a rather negative manner because one has to consider and implement additional security mechanisms to provide additional security functionality mentioned above
+    * Testability
+      * Since all components in a microservices architecture are independent, each compo- nent can be tested in isolation, which significantly improves component testability compared to monolithic architecture. It also allows to adjust the scope of testing based on the size of changes. This means that with microservices it is possible to isolate parts of the system that changed and parts that were affected by the change and to test them independently from the rest of the system
+      * Integration testing, on the other hand, can become very tricky, especially when the system that is being tested is very large, and there are too many connections between components. It is possible to test each service individually, but anomalies can emerge from collaboration of a number of services
+  * in [@Fra17] wird über dieses Paper bebhauptet:
+    * one of the main results of the survey is that MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testability qualities
+
+* [@Fra17] "Architecting microservices"
+  * Fowler and Lewis define the microservice architectural style as an approach for developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API [15].
+  * (RQ-1) has revealed that performance and maintainability are among the most investigated quality attributes, while possible research gaps could exist in the field of security, reliability and portability for MSA [13].
+  * major barriers to cloud adoption there are security and vendor lock-in and quality assurance.
+  * MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testabil-ity qualities.
+  * Availability and scalability are largely discussed in multiple resources and books [33, 39]
+    * 33: S. Newman. Building Microservices.O'Reilly Media, Inc., 2015
+    * 39: M. Richards. Microservices vs. service-oriented architecture, 2015
+  * Hassan and Bahsoon in a recent study [19] have addressed some design problems about estimating the proper level of granularity of services. More specifically, they considered the existing trade offs between the following design concerns: size versus the number of services, and local versus global satisfac-tion of quality properties.
+  * In conclusion, in the state of the art of MSA, many quality properties (with their trade offs), design tactics, and architectural analysis and reasoning techniques must still be investigated and explored in order to identify and take full advantage of the potential benefits that MSA can offer.
+  * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
+  * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
+
+* [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
+  * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
+  * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
+  * One such design problem is finalising the optimal level of granularity of a microservice architecture. Related design trade-offs include: balancing the size and number of microservices in an architecture and balancing the non-functional requirement satisfaction levels of the individual microservices as well as their satisfaction for the overall system.
+  * We therefore view microservitizationas a form of servitization where services/components are transform into microservices —- a more fine-grained and autonomic form of services —- to add long-term value to the architecture.
+  * Isolating business functionalities aims at optimis-ing the autonomy and replaceability of the service(s).
+  * Despite the hype and the business push towards mi-croservitization [1], there is a lack of academic consensus regarding the definition and properties of the paradigm shift and corresponding design patterns for microservices [4].
+  * Among these problems is finalising the level of granularity of a microservice too early. "Splitting too soon can make things very difficult to reason about. It will likely happen that you (the software architect) will learn in the process. [1]."
+  * the size versus number of microservices [4]
+  * the local versus global non-fuctional requirement satisfaction trade-off.
+  * aggressive isolation of business functionalities is not necessarily ideal for all scenarios of the environment.
+  * Due to the recency of the research area, there is a multitude of ways in which microservices have been defined and modelled. Clear understanding of the paradigm shift, itsmotivations, and implications are prerequisites for advancing microservitization. We have reviewed the state of art and practice to capture the different ways in which microservices can be defined and modelled.
+  * We therefore view microservices as autonomic, repleace-able and deployable artefacts of microservitization that encapsulate fine-grained business functionalities presented to system users through standardised interfaces. The autonomy of these artefacts allows for governing them in a decentralised manner and tracing their changes.
+  * Among the crucial and non-trivial decision problems (DPs) that constitute addressing the size/number and the local/global NFRs satisfaction trade-offs are the following:
+    * When does decomposing a microservice into more fine-grained ones achieve the required optimality for both trade-offs?
+    * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
+    * When should the current level of granularity be kept without further merging or decomposition?
+* [@SRH17] "Microservices: Granularity vs. Performance"
+  * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
+  * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
+  * Microservices can be declared with varying levels of capability, and the size of this functionality is typically referred to as its granularity, that is, the functional complexity coded in a service or number of use cases implemented by a microservice[21].
+  * Since microservices are discrete and must be composed into greater functional entities to support businessworkflows, it follows that message passing between microservices (as a result of method invocation) increases as the microservices become finer-grained
+  * The 'building-block' approach to service composition is attrac-tive from an architectural perspective; arguments for service re-use can be made, and the gap between application design and the user requirements documentation can be reduced. However, the increase in communication between services (manifesting as out-of-process calls and the number of service calls made) also increases the response time of an application, particularly when many small increases in latency are compounded together[26].
+  * Achieving an optimum level of granularity is therefore of interest to application developers who want to exploreMSAfor deployment, and the key factors that contribute to this can be summarised as follows:
+    * Driven by business need or capability. The needs of a business may be changing rapidly and demanding new functionality from an application. This growth may not be manageable within the existing application architecture and therefore a granular approach is adopted. It is typical for application developers to use the functionality itself to set the scope that determines the size of a microservice.
+    * Size of application. For smaller applications the level of gran- ularity could be fine-grained. For enterprise (larger) sized applications, the granularity is likely to be at a higher level (coarser) with each microservice built up from smaller mi- croservices. However, aswe discuss later, for smaller applica- tions there may stiil need to be an aggregation of services to facilitate simpler communication and reduced latency over IoT network connections
+    * Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Size of development team. Thenumber of developers in a team, together with their skills capability should be considered. Conway(http://www.melconway.com/Home/Conways_Law. html) says “organizations which design systems ... are con-strained to produce designs which are copies of the commu-nication structures of these organizations”. In the context of MSA, but more specifically Domain Driven Design [12], the degree of success of functional decomposition, and its subse-quent implementation as a successful service, is dependent upon the organisational structure of the development teams.
+    * Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there Database design. The design of a database may have an im- pact on granularity. For example, in a retail scenario if there is a product service and an order service, the functional de-composition is likely to have led to the implementation of separate data repositories for each service. Any association of the data between the databases will be implemented at code level, leading to more coarse-grained microservices.
+    *  Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-Reuse. MSA promotion of reuse in the architecture is a con- cern for enterprise applications. If the services are fine-grained then reuse is possible but there is the additional overhead of wiring the services together. If the services are too coarse grained then it is difficult to reuse the services.
+    * It follows that whilst architectural concerns may lead designers towards finer-grained functional decomposition[12, 13], any po-tential increase in the number of methods invoked, either within a container or between physical servers via a network, will have an increased contribution towards latency, particularly when virtu-alised. 
+    * Containers are one means of addressing the latency to some extent when the microservices exist in cloud environments[9, 19]. 
+    * Figure1 illustrates the message request and response between two microservices, A and B. The overall latency is determined by a number of factors, including the following:
+      * Number of calls
+      * Network latency and availability
+      * Availability of microservice
+      * Processing time
+      * Variability in demand/load
+    * While considering latency there are two other factors to consider. First, the criticality of the service being called and second,the number of times it is called. For example, although calling a “qualifi-cation mapping” service is important, it is not critical to the function of the system. If it is not working the system can still accept new applications. 
+    * An additional factor to be considered is whether the application under consideration is a new application or an existing application that is being migrated to MSA. For a new application, databasedesign will have less influence as there will not be a database in place already. For an existing application, the organisation and design of existing data and their structures is an important factor to consider.
+    * Finer-grained microservices result in a potential increase in the number of in-process method invocations. This is tolerable when the microservices lie within the same container, as the message passing is rapid and the probability that the service request is completed is high and wholly dependent upon the application in the container.
+    * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
+    * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
+
+* [@OBM05] "Quality Attributes and Service-Oriented Architectures"
+  * Software architecture is the bridge between mission/business goals and a software-intensive system.
+  * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
+  * A service is an implementation of a well-defined piece of business functionality, with a published interface that is discoverable and can be used by service consumers when building different applications and business processes.
+  * There is no single, official definition of what an SOA is. Consequently, many of the organizations promoting the use of SOAs and building technologies to make it easier for organizations to adopt an SOA approach have defined the term. As a result, SOA is defined in many different ways, including
+    * "A service-oriented architecture (SOA) is an application framework that takes everyday business applications and breaks them down into individual business functions and processes, called services. An SOA lets you build, deploy and integrate these services independent of applications and the computing platforms on which they run." -- IBM Corporation
+    * "Service-Oriented Architecture is an approach to organizing information technology in which data, logic, and infrastructure resources are accessed by routing messages between network interfaces." -- Microsoft
+    * An SOA is "a set of components which can be invoked, and whose interface descriptions can be published and discovered." -- Worldwide Web Consortium [W3C 04]
+  * Just as there is no official definition of SOA, there is no official set of service-orientation design principles. There are, however, a common set of service-level design principles most associated with service orientation [Erl 05, McGovern 03]:
+    * Services are reusable. Regardless of whether immediate reuse opportunities exist, services are designed to support potential reuse
+    * Services share a formal contract. In order for them to interact, they need not share anything but a formal contract that defines the terms of information exchange and any supplemental service description information
+    * Services are loosely coupled. They must be designed to interact on a loosely coupled basis, and they must maintain this state of loose coupling
+    * Services abstract underlying logic. The only part of a service that is visible to the outside world is what is exposed via the service’s description and formal contract. The underlying logic (beyond what is expressed in the description and formal contract) is invisible and irrelevant to service requestors
+    * Services are composable. They may compose other services. This possibility allows logic to be represented at different levels of granularity and promotes reusability and the creation of abstraction layers
+    * Services are autonomous. The logic governed by a service resides within an explicit boundary. The service has complete autonomy within this boundary and is not dependent on other services for the execution of this governance
+    * Services are stateless. They should not be required to manage state information, since that can impede their ability to remain loosely coupled. Services should be designed to maximize statelessness even if that means deferring state management elsewhere
+    * Services are discoverable. They should allow their descriptions to be discovered and understood by humans and service users who may be able to make use of the services’ logic. Service discovery can be facilitated by the use of a directory provider, or, if the address of the service is known during implementation, the address can be hard-coded into the user’s software during implementation
+    * Services have a network-addressable interface. Service requestors must be able to invoke a service across the network. When a service user and service provider are on the same machine, it may be possible to access the service through a local interface and not through the network. However, the service must also support remote requests
+    * Services are location transparent. Service requestors do not have to access a service using its absolute network address. Requestors dynamically discover the location of a service looking up a registry. This feature allows services to move from one location to another without affecting the requestors.
+  * Of the principles described above, autonomy, loose coupling, abstraction, and the need for a formal contract can be considered the core principles that form the baseline foundation for SOA
+  * Furthermore, an application is created by assembling and coordinating the activities between the appropriate services it needs to accomplish its business process
+  * With an SOA, if the business rules associated with a specific function change, developers must modify only the one service that implements the function. In theory, all applications that use the service will then automatically adopt the new business rules
+  * It is critically important to identify what piece of functionality will become services and to define the interfaces of those services. The granularity of the service (i.e., the scope of functionality a service exposes) is also important because having many fine-grained services may result in a lot of message passing between the service users and the service providers. Coarse-grained services are recommended, which, like any other large pieces of software, may need to be architected themselves.
+  * Wilkes and Veryard outline a set of principles for architecting and designing an SOA that impacts agility [Wilkes 04]. These principles include some of those outlined earlier—such as loose coupling and precise specification of services—and additional ones such as standardized services, standards compliance, and defining services as coarse-grained.
+  * SOAs and Quality Attributes
+    * Interoperability
+      * Interoperability refers to the ability of a collection of communicating entities to share specific information and operate on it according to an agreed-upon operational semantics [Brownsword 04]. 
+      * Increased interoperability is the most prominent benefit of SOA, especially when we consider Web services technology [McGovern 03]. 
+      * Distributed systems have been developed using various languages and platforms that vary from portable devices to mainframes. They have used technologies such as the Common Object Request Broker Architecture (CORBA), Remote Method Invocation (RMI), Distributed Component Object Model (DCOM), Remote Procedure Call (RPC), and sockets for communication. However, until the advent of Web services, there was no standard communication protocol or data format that could be used effectively by systems using different technologies to interoperate on a worldwide scale
+      * Components implemented in disparate platforms using different languages can interact transparently through a call-and-return mechanism.
+    * Reliability
+      * Reliability is the ability of a system to keep operating over time [Clements 02].
+      * Message Reliability
+        * Services are often made available over a network with possibly unreliable communication channels. Connections break and messages fail to get delivered or are delivered more than once or in the wrong sequence
+      * Service Reliability
+        * Service reliability means the service operates correctly and either does not fail or reports any failure to the service user.
+    * Availability
+      * Availability is the degree to which a system or component is operational and accessible when required for use.
+      * From the services user’s perspective, if the system relies on a set of services being available in order to meet its functional requirements and one of those services becomes unavailable (even transiently), it could have dire consequences on the success of the system. 
+      * From the service provider’s perspective, in order for the services to be used (for which the provider may receive compensation), they must be available when needed.
+      * Service providers usually agree to provide to the service users a set of services and to include each service in an SLA. The SLA defines the contract for the provision of the service with details such as who provides the service, the guaranteed availability of the service, the escalation process (which is followed if the service is not handled to the service user’s satisfaction), and the penalties to the provider if the service level is not met.
+    * Usability
+      * Usability is a measure of the quality of a user’s experience in interacting with information or services
+      * To provide a more usable system, service providers should consider several things that derive from the distributed and service nature of SOA: data granularity, services to support usability, and disconnected operation.
+      * Data granularity: In SOAs, service users and service providers communicate over a network—a process that can introduce delays, possibly on the order of seconds, in user interactions
+      * Normal Usability Operations: The service must provide interfaces that support the normal usability operations such as canceling a request, undoing the last request, providing the service on aggregated data, and gaining information for feedback such as percentage completed and time to completion. Bass and John provide a list of possible operations [Bass 03]
+    * Security
+      * Although security denotes different things with respect to software systems, in general, it is associated with four principles:
+        * confidentiality – Access to information/service is granted only to authorized subjects.
+        * authenticity – We can trust that the indicated author/sender is the one responsible for the information.
+        * integrity – Information is not corrupted
+        * availability – The information/service is available in a timely manner.
+      * Web services solutions have been addressing some of the security concerns at the network infrastructure level. For example, Web servers that host Web services can be configured to use Secure Sockets Layers (SSLs) and digital certificates to encrypt data transmission and authenticate the communicating parties
+      * The architect should be aware of the security features offered by the target Web services platform. Security mechanisms often have a negative impact on performance and modifiability, so the architect may want to investigate these tradeoffs on specific platforms.
+    * Performance
+      * Like security, performance can have different meanings in different contexts. In general, it is related to response time (how long it takes to process a request), throughput (how many requests overall can be processed per unit of time), or timeliness (ability to meet deadlines, i.e., to process a request in a deterministic and acceptable amount of time).
+      * Performance is an important quality attribute that is usually affected negatively in SOAs. Careful design and evaluation of the architecture for the specific solution is necessary to avoid performance pitfalls. The key factors in SOA that contribute to performance issues are
+        * SOA involves distributed computing. Service and service user components are normally located in different containers, most often on different machines. The need to communicate over the network increases the response time. Typical networks used for SOA, such as the Internet, do not guarantee deterministic latency
+        * The interaction protocol sometimes requires a call to a directory of services to locate the desired service. This extra call increases the total time needed to perform the transaction. One way to reduce the response time and improve throughput is to prevent the call to the directory by having the location of the provider end point hard-coded (or cached after the first lookup) in the service user. However, hard-coding reduces availability, and caching must be reestablished after failure when another replica is found. [Gateways beheben das Problem des Lookup-calls. Sie habe das chachinng eingebaut, und leiten den call direkt weiter]{.mind}
+      * The ability to make services on different platforms interoperate seamlessly has a performance cost. Intermediaries are needed to perform data marshalling and handle all communication between a service user and a service provider. Depending on the SOA technology or framework being used, stubs, skeletons, SOAP engines, proxies, and other kinds of elements are in place. All such intermediaries negatively impact performance. [Gateways sind Proxies, die JSON konverter sind data marshalling dinger]{.mind}
+      * The use of a standard messaging format increases the time needed to process a request. As an example, the next section describes how the use of XML impacts the performance of Web Services. [JSON genau so]{.mind}
+      * On the positive side, SOA provides location transparency.
+      * XML in Web Services as a Performance Factor
+        * XML is flexible and extensible, making it suitable to represent any data that can be stored in text format.
+        * It has internationalization mechanisms to support multilingual documents. XML documents are human readable: that is, they use a text rather than binary format. In addition to data, XML documents may embed metadata describing the structure of the data. Despite all the benefits, the use of XML as the data representation format in Web Services creates additional overhead in the transmission and processing of data.
+        * XML messages can be 10 to 20 times larger than the equivalent binary representation, so transmitting them over a network takes longer. Because XML uses a text format, it has to be processed before any operation is performed.
+        * XML processing consists of at least three distinct activities, all of which are CPU and memory intensive:
+          1. parsing: the translation of XML data into the proper data structures of the component that consumes the XML. Parsing involves a lot of string processing.
+          2. validation: a step prior or concomitant to parsing that ensures that the XML document follows a predefined structure. Validation can be more time-consuming than parsing, especially when a reference to a remote Document Type Definition (DTD) or schema has to be resolved. 
+          3. transformation: the translation from one XML structure to another or from XML to some other format. Transformation is usually required when integrating services and components that come from different providers. Transformation can be 10 times slower than XML parsing and should be the first target for performance improvement when optimization of Web Services’ performance is the goal.
+        * Many techniques and best practices can be applied to minimize the performance costs of transmitting and processing XML documents; for example
+          * Use data compression (e.g., Zip format) on the XML document. There is a tradeoff with a loss in interoperability because both end points must be able to compress/decompress the documents using the same algorithm.
+          * Use the appropriate parsing model. The Document Object Model (DOM) should be used when elements in the XML document have to be accessed randomly or when the document has to be processed multiple times or modified. Use the Simple Application Programming Interface (API) for XML (SAX) when the elements have to be processed serially and just once. Also, don’t parse the entire document if you can obtain the desired information by reading only part of it.
+          * Turn off validation for documents that were generated by an application and are known to be valid. Once a document is validated, it can be converted to its DTD-less or schema-less equivalent. Also, remote DTDs and schemas can be cached locally or embedded into the XML documents to avoid the remote access.
+    * Scalability 
+      * Scalability is the ability of an SOA to function well (without degradation of other quality attributes) when the system is changed in size or in volume in order to meet users’ needs [W3C 04].
+      * Because service users know only about the service’s interface and not its implementation, changing the implementation to be more scalable requires little overhead [McGovern 03]. Options for solving scalability problems include
+        * horizontal scalability: distributing the workload across more computers. Doing so may mean adding an additional tier or more service sites. [besonders bei MS beliebt, da einfach viele viele services parallel + gateway als broker]{.mind}
+        * vertical scalability. upgrading to more powerful hardware for the service site
+    * Extensibility
+      * Extensibility is the ease with which the services’ capabilities can be extended without affecting other services or parts of the system.
+      * Extensibility for an architecture today (in particular, an SOA) is important because the business environment in which a software system lives is continually changing and evolving. These changes in the environment will mean changes in the software system, service users, and services providers and the messages exchanged among them. Extending an SOA means making changes that include extending
+        * the architecture to add additional services. SOAs allow for the easy addition of new services through loose coupling and the use of various Web standards. Services can be created and published by the providers and discovered by service users. Service users must update their application code to incorporate these new services.
+        * existing services without changing the interfaces. Because services are loosely coupled, adding new capabilities to them that do not require a change in the service interface can be done without affecting other services. However, an application may require changes if these new capabilities were already incorporated into the application (i.e., the functionality for these capabilities was either included in the application or handled by additional services). Identifying the services’ capabilities when they are first designed and implemented is very important because later, changes may cause problems within the service users’ applications.
+        * existing services with changes to interfaces. Adding new capabilities to a service—ones that require changes to the service interface—may have a major impact on the success of an SOA. Usually, an application learns about a service’s interface by reading informatio provided by the directory provider, and the interface may change over time. The service users’ application must be able to handle any changes to the interface.
+      * A major obstacle to extensibility is the interface message. If interface messages are notextensible, users and providers will be locked into one particular version of the interface to aservice. Moreover, messages must be written in a format, structure, and vocabularyunderstood by all parties. Limiting the vocabulary and structure of messages is a necessity forany efficient communication. The more restricted a message is, the easier it is to understand,although it comes at the expense of reduced extensibility. Restriction and extensibility aredeeply entwined. Both are needed, and increasing one comes at the expense of reducing the other. Tradeoffs between them are necessary to achieve the right balance.
+  * Adaptability
+    * Adaptability means the ease with which a system may be changed to fit changed requirements
+    * [hier passt der text nicht so richtug gut auf MS]{.mind}
+  * Testability
+    * Testability is the degree to which a system or service facilitates the establishment of test criteria and the performance of tests to determine whether those criteria have been met [IEEE 90].
+    * Testing a system that uses an SOA can be complex for many reasons including
+      * Interactions may be required between distributed pieces of the system (i.e., pieces that run on different machines across a network)
+      * The organization may not be able to access the services’ source code, so it can’t identify the test cases required to thoroughly test them. This problem occurs when the services are external to the organization that owns the applications.
+      * Services may be discovered at runtime, so it may be impossible to predict which service or set of services is actually used by a system until the system is executing. In addition, different services from different providers may be used at various times when the system runs. The services used may be running on different platforms or operating systems and use different middleware technologies. Building repeatable tests and automating the testing process for such a system will be a challenge.
+    * If a problem occurs when the system is running, it may be difficult to find the source of the problem. The problem may be
+      * within the application
+      * within a service that is being used by the application
+      * with in the infrastructure that is used by either the application or the service
+      * due to the load on the platform where the service executes
+      * within the discovery agent that locates the services
+  * Auditability
+    * Auditability is the quality factor representing the degree to which an application or component keeps sufficiently adequate records to support one or more specified financial or legal audits.
+    * [für MS wurscht würd ich sagen]{.mind}
+  * Operability and Deployability
+  * Modifiability
+    * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
+    * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
+
+
+* [@BY87] "Inheritance and Synchronization in Concurrent OOP"
+  * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
+  * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
+  * Delegation [Lieberman 86b] is another strategy we discuss as well. Delegation is discussed in the framework of the Actor model of computation (Hewitt 76,Lieberman 811.
+  * (parallel) semantic network languages (e.g., NETL (Fahlman 791). [dieses quelle sollte ich mir zwecks literatur vermutlich anschauen]{.quelle}
+  * Only the delegation scheme is flexible enough to be free from the shared memory assumption, so we will examine and criticize it in the distributed memory context. [MS haben inherent distributed memory]{.mind}
+  * Flexibility versus Efficiency: This is one of the main tradeoffs in knowledge sharing.
+  * Our main comment is that this inheritance scheme using hard-wired links is not suitable for distributed memory models. [hard-wired links = in-memory calls]{.mind}
+  * The delegation scheme has been proposed in the Act-1 language [Lieberman 811. An object (called an actor in this computation model [Hewitt 761 where the class concept is absent) knows about another object called a prozy.
+  * The delegation scheme enjoys the uniformity of the communication protocol: the delegation to the proxy of an object is performed by message passing, not by a system primitive through the hard-wired physical link (pointer).  [= in-memory call]{.mind}
+  * Thus delegation can be fully designed at the user-language level and it can be locally customized by the user easily. This scheme is independent of the assumption of shared memory andis perfectly suitable for distributed (memory and computation) models. It also allows full dynamicity and modularity.
+  * In examining this scheme, two issues, namely efficiency and synchronization, must be addressed. [Efficiency in MS hängt von Marshalling der Messages und dem network ab -> Performance von SOA]{.mind}
+  * In the delegation scheme, variable consultation as well as method activation should be performed through message passing because both can be delegated to another object (the proxy).
+  * Thus we first identify message passing with function call as in most of OOP extensions of Lisp. [msg passing == REST method call == function call]{.mind}
+  * Each such variable-object owns the two methods that handle two kinds of messages: one to consult the variable (get), and the other to update it (set). [vgl. CRUD methoden bei REST]{.mind}
+  * However in some concurrent models such as the Actor model, message passing is asynchronous and unidirectional. There is no implicit synchronization. AS a consequence, variable access is no more atomic and could be mishandled.
+  * Message Ordering Issue [???]{.mind}
+  * Fairness and Recursion: In an asynchronous message passing model, the messages sent to an object 0 are ordered (in a queue) following the ordering of their arrivals to 0. It is assumed that two messages cannot arrive at the same time.
+  * We notice that the latest Actor model [Agha 851 relies on atomic objects. In this model, there is no side effect.
+  * There is no delegation proposed in the Actor model of [Agha 85].
+  * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
+
+
+
+[BIB]
