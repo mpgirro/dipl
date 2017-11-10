@@ -1,0 +1,50 @@
+* Introduction
+    * Motivation
+    * Scope of this Thesis
+    * Methodology used
+    * Road Map
+* The Microservice Architecture Style
+    * Key Concepts
+    * Architecture Properties
+    * Quality Issues
+        * Software Quality Attributes
+    * Design Concerns
+        * Service Granularity: Size vs. Number of Services
+        * Satisfaction of local vs. global Quality Properties
+* Programming Paradigms
+    * Imperative, Structured and Procedual Programming
+    * Object-oriented Programming
+        * History of Objects: Simula and Smalltalk
+    * Functional Programming
+    * Event-Driven and Flow-Driven Programming
+    * Logic and Constraint Programming
+* Models of Concurrent Computation
+    * Basic Concepts in Concurrency
+        * Execution Order and Nondeterminism
+    * Threads, Locks and Shared State
+        * Case Study: the Java Concurrency Model
+    * Actors and Active Objects
+        * Case Study: the Scala Concurrency Model
+    * Software Transactional Memory
+    * Event-driven Concurrency
+        * Case Study: the JavaScript/node.js Concurrency Model
+    * Distributed Computation
+    * Other Approaches and Concurrency Primitives
+    * Problems of Developers with Concurrency Models
+        * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
+* MSA as a Concurrency Model
+    * Concurrency Models for Service-oriented Programming
+* Scenario-based Experiment
+    * Scenario
+    * Prototype using Standard Models of Concurrency
+    * Prototype based on a Micorservice Architecture
+    * Findings
+* Discussion
+    * Comparision of Attributes/Features/etc
+    * Answers to final Research Question
+* Outlook
+    * Language-based Approaches
+        * Jolie
+        * Distributed Erlang
+    * Plattform and Middleware-based Approaches
+* Conclusion
