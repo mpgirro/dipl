@@ -11,13 +11,16 @@
     * Design Concerns
         * Service Granularity: Size vs. Number of Services
         * Satisfaction of local vs. global Quality Properties
-* Programming Paradigms
+    * Patterns (Kapitel notwendig?)
+        * Event-driven architecture
+* Programming Paradigms: A Selective Overview
     * Imperative, Structured and Procedual Programming
     * Object-oriented Programming
         * History of Objects: Simula and Smalltalk
     * Functional Programming
     * Event-Driven and Flow-Driven Programming
     * Logic and Constraint Programming
+    * Role-based Programming
 * Models of Concurrent Computation
     * Basic Concepts in Concurrency
         * Execution Order and Nondeterminism
@@ -30,10 +33,16 @@
         * Case Study: the JavaScript/node.js Concurrency Model
     * Distributed Computation
     * Other Approaches and Concurrency Primitives
-    * Problems of Developers with Concurrency Models
-        * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
-* MSA as a Concurrency Model
+* The Microservice Programming Paradigm: A Look at Related Concepts
+    * Event-based View
+    * Flow-based View
+    * Delegation View
+        * Case Study: Delegation in JavaScript
+    * Services as Process Types
+* The Microservice Concurrency Model: A Conceptual View
     * Concurrency Models for Service-oriented Programming
+    * Distributed Computation
+    * Concurrent Process Types for Services
 * Scenario-based Experiment
     * Scenario
     * Prototype using Standard Models of Concurrency
@@ -41,10 +50,14 @@
     * Findings
 * Discussion
     * Comparision of Attributes/Features/etc
-    * Answers to final Research Question
-* Outlook
-    * Language-based Approaches
+    * Comparison of the MSA-Concurrency-Model with the others (based on the Properties they share with Paradigms)
+    * Why Developers adopt MSA
+    * Problems of Developers with Concurrency Models
+        * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
+    * Do Sufficiently Concurrent Programming Languages need MSA?
         * Jolie
         * Distributed Erlang
-    * Plattform and Middleware-based Approaches
+            * Scalability and Reliability
+        * Plattform and Middleware-based Approaches
+            * XVSM/MozartSpaces
 * Conclusion

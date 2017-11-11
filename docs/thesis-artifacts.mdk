@@ -1,0 +1,20 @@
+
+
+
+
+
+# Discussion
+
+~ { background-color: LightGrey }
+**Brauchen hinreichend nebeläufige Sprachen MSA?**
+
+Nein! Das Hauptargument, was einem sofort ins Gesicht springen mag ist die horizontale Skalierung. Es fehlen Programmiersprachen und Frameworks die die Tatsache ersetzen, dass jedes MS-Programm nunmal ein Programm ist, und entsprechen beliebig oft auf beliebig vielen Host gestartet werden kann. Dies kann allerdings als Sprachfeature- und Infrastrukturproblem argumentiert werden. Alle gängigen Programmiersprachen ergeben nach dem kompilieren ein einziges, ausführbares Artefakt (Executable). Das wäre anders auch schwer möglich, weil alle ihre grundlegenden Konstrukte (Objekte, Functionen, etc.) auch nicht dazu geeignett sind in mehrere Executables aufgeteilt zu werden (wo erfolgt die Trennung, wie passiert die Kommunikation? - am ehesten noch bei Objekten argumentierbar, aber auch hierfür sind Objekte nicht gedacht [oder vielleicht doch? Finde ich hier in den ganz alten Konzepte vielleicht etwas vergleichbares?]{.mind}).
+
+Wenn nunmehr eine Programmiersprache als grundlegenden Baustein den *Service* definieren würde [mit den Eigenschaften (internal/external; behaviour; Außenschnittstelle) wie in dem Jolie Paper definiert]{.mind}, könnte ein Kompiler sehrwohl die diese Bausteine in verschiedene Executables aufteilen und erstellen. Somit hätte man ein Programm im Quellcode, aber viele Executables als Ergebnis. All diese Artefakte wären somit auch inherent nebeläufig.
+
+Das nächste Argument wäre die mögliche schwere Handhabe des deployments derartiger automatischer Service-Executables. Das ist aber nur eine Frage der bereitgestellten Tools, welche deren Management vereinfachen (Docker wurde aus keinem anderen Grund geschaffen, und zB Scala ist auch nicht nur ein simpler Compiler sondern hat mit `sbt` auch ein Build- and Deployment Tool direkt mit dabei)
+
+Drittens das Argument des Kommunikationskanals dieser Services. An sich obliegt es dem Compiler, welches Mechanismus er für den Übertragungskanal er beim Erstellen der Executables einbaut. Er muss nur über das Netzwerk funktionieren (zB auch Sockets, MessageQueues, etc.). Hierbei würde aber wohl die **Interoperabilität** mit anderen Technologien verloren gehen, wie sie bei REST vorhanden sind. Aber der Compiler könnte auch sehr wohl automatisch REST Schnittstellen generieren. Alles eine Frage des wollens, technisch wäre es sehr wohl möglich.
+
+Discovery ist ein Argument, auf das mir derzeit aus dem stehgreif keine Argumentation einfallen mag.
+~

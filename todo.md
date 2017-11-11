@@ -12,3 +12,15 @@
         - "B. Kitchenham and S Charters. Guidelines for performing systematic literature reviews in software engineering, 2007"
         - "Kai Petersen, Robert Feldt, Shahid Mujtaba, and Michael Mattsson. Systematic mapping studies in software engineering. In Proceedings of the 12th International Conference on Evaluation and Assessment in Software Engineering, EASE’08, pages 68–77, Swinton, UK, UK, 2008. British Computer Society"
     - Wenn ich eine habe, dann sollte ich meine *Search Strategy* beschreiben, so wie das in [AAE16] gemacht wurde (p.2)
+
+**Dataflow Programming**
+
+* siehe https://en.wikipedia.org/wiki/Flow-based_programming
+    * hier gibt es ein Kapitel "Comparison with other paradigms and methodologies", welches vergleicht mit:
+        * Jackson Structured Programming (JSP) and Jackson System Development (JSD)
+        * Applicative programming
+        * Linda
+        * Object-oriented programming
+
+* Analyse bzgl *Role-oriented Programming
+
