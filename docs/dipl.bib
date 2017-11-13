@@ -179,6 +179,21 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   doi       = {10.1109/4434.788781}
 }
 
+@article{Gho12,
+  author    = {Debasish Ghosh and
+               Justin Sheehy and
+               Kresten Krab Thorup and
+               Steve Vinoski},
+  title     = {Programming language impact on the development of distributed systems},
+  journal   = {J. Internet Services and Applications},
+  volume    = {3},
+  number    = {1},
+  pages     = {23--30},
+  year      = {2012},
+  url       = {https://doi.org/10.1007/s13174-011-0042-y},
+  doi       = {10.1007/s13174-011-0042-y}∂
+}
+
 * based on the observation that programming objects can be naturally interpreted as processes.
 * that communicate by executing remote methods
 * Programming objects can be thought of as processes
@@ -366,6 +381,18 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   url         = {http://repository.cmu.edu/cgi/viewcontent.cgi?article=1440&context=sei},
 }
 
+@article{Par72,
+  author    = {David Lorge Parnas},
+  title     = {{On the Criteria To Be Used in Decomposing Systems into Modules}},
+  journal   = {Commun. {ACM}},
+  volume    = {15},
+  number    = {12},
+  pages     = {1053--1058},
+  year      = {1972},
+  url       = {http://doi.acm.org/10.1145/361598.361623},
+  doi       = {10.1145/361598.361623}
+}
+
 * The Orc programming language [15, 22] enables a concur- rency-first style of programming, in which programmers start with a concurrent program, instead of adding concurrency only when it is required.
 * For instance, in pure active object systems concurrency can only exist between ob- jects so a new object must be introduced to add concurrency even if that object will be adversely coupled to other objects.
 * OrcO objects are designed to be orthogonal to concurrency, allowing the concurrent structure and the object structure of a program to evolve independently.
@@ -411,6 +438,16 @@ TODO fragen ob ich da ein PDF bekomme
   year      = {2003},
   publisher = {Addison-Wesley Professional},
   annote    = {}
+}
+
+@techreport{RGO06,
+  title       = {{Fallacies of Distributed Computing Explained}},
+  author      = {Arnon Rotem-Gal-Oz and
+                 James Gosling and
+                 L. Peter Deutsch},
+  year        = {2006},
+  institution = {Sun Microsystems},
+  url         = {http://www.rgoarchitects.com/Files/fallacies.pdf},
 }
 
 
@@ -491,7 +528,7 @@ TODO fragen ob ich da ein PDF bekomme
 * Thus message passing takes place in a point-to-point (object-to-object)fashion.No message can be broadcast.
 * [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
 * This assumption was not made in the Actor model of computa-tion. Without this, however, it is difficult to model even simple things as objects.
-@inproceedings{DBLP:conf/oopsla/YonezawaBS86,
+@inproceedings{Yon86,
   author    = {Akinori Yonezawa and
                Jean{-}Pierre Briot and
                Etsuya Shibayama},

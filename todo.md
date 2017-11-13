@@ -24,3 +24,7 @@
 
 * Analyse bzgl *Role-oriented Programming
 
+# OOP
+
+* bzgl OOP: siehe <https://sanaulla.info/2008/06/26/cohesion-and-coupling-two-oo-design-principles/>
+

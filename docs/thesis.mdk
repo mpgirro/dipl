@@ -5,7 +5,8 @@ Title        : A crack in the monolith
 Subtitle     : Do suffciently concurrent programming languages need microservice architectures?
 -->
 <!--Title        : Concurrent Programming Languages and Microservice Architectures-->
-Title        : Concurrent Programming for Microservice Architectures
+Title        : Concurrent Programming
+               and the Microservice Architecture Style
 Author       : Maximilian Irro
 Email        : max@irro.at
 Copyright    : Maximilian Irro, 2017
@@ -108,6 +109,17 @@ TODO
 
 # Kurzfassung { -; toc:clear; }
 
+# Preface
+
+In 2016, I was reading a thread on HackerNews, and one of the comments cought my eye: 
+
+*Any ideomatic Erlang program is by design a microservices architecture* (link hier als fußnote)
+
+This made me wonder: *Is it really?* And if so, thus would imply that MSA are unnecessary, or that the underlying concurrency model Erlang uses (a concept which we will discuss in this thesis) would be much supreme compared to the models I am used to use.
+
+Having myself a bit of a crush on the Microservice Architecture Style, this did not let go of my grey cells, and I was thinking in the back of my brain that this should be analysed in detail. Having the masters thesis on my Todo list anyway, I was wondering how I cold make this my topic.
+
+
 ~ TexOnly
 [TOC]
 [TOC=figures]
@@ -126,14 +138,54 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Methodology used
 
-
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
 
 ## Road Map
 
 # The Microservice Architecture Style
 
-# Programming Paradigms: a selected Overview
+## Key Concepts
+
+### Architecture Properties
+
+### Architectural Elements
+
+#### API Gateway: The Request Broker and Curcuit Breaker
+
+##### Case Study: Hysterix and Akka
+
+### Quality Issues
+
+#### Software Quality Attributes
+
+##### Performance
+
+###### Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
+
+### Design Concerns
+
+#### mart endpoints and dumb pipes (geklaut von M.Fowler)
+
+#### Failure is inevitable
+
+#### Service Granularity: Size vs. Number of Services
+
+#### Satisfaction of local vs. global Quality Properties
+
+### Patterns (Kapitel notwendig?)
+
+#### Event-driven architecture
+
+### Development, Debugging and Maintenance
+
+~ Epigraph { caption: "Filipe Fortes" }
+Debugging is like being the detective in a crime movie where you're also the murderer.
+~
+
+* [DGL17]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
+
+
+# Programming Paradigms: A Selected Overview
 
 ## Imperative, Structured and Procedual Programming
 
@@ -149,10 +201,7 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Event-Driven and Flow-Driven Programming
 
-
-
 ## Logic and Constraint Programming
-
 
 # Programming Services as a Paradigm 
 
@@ -168,211 +217,55 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Threads, Locks and Shared State
 
-### Case Study of the Java Concurrency Model
-
-
-## Software Transactional Memory
-
+### Case Study: the Java Concurrency Model
 
 ## Actors and Active Objects
 
-### Case Study of the Scala Concurrency Model
+### Case Study: the Scala Concurrency Model
 
+## Software Transactional Memory
+
+### Case Study: the Clojure Concurrency Model
 
 ## Event-driven Concurrency
 
+### Case Study: the JavaScript/node.js Concurrency Model
 
-### Case Study of the JavaScript/node.js Concurrency Model
-
+## Concurrency Models and Distributed Systems Similarities
 
 ## Other Approaches and Concurrency Primitives
 
+# The Microservice Programming Paradigm: A Look at Analogies
 
-# Concurrency Models for Service-oriented Programming
+## Substitution and Behaviour
 
-* Distributed Programming ?
-* die Überschrift passt nicht wirklich
-  * Distributed Programming with classical Programming Paradigms
-  * Distributed Programming through Microservices
-* hier sollen die Modelle beschrieben werden, welche sich am besten für die Gemeinsamkeiten eignen (ausgewählt basierend auf den identifizierten Attributen)
+* Ersetzbarkeit von Services (zB durch neue Version)
+  * Wenn Schnittstellen gleich
+  * Wenn Verhalten (nach außen) gleich/kompatibel
 
-# 
+## Delegation: The Object's Way of Knowledge Sharing
 
-# Recommendations
+### Case Study: Delegation in JavaScript
 
-# Discussion
+## Message Passing: Avoiding Shared State
 
-# Outlook
+## Event-based View
 
-# Conclusion
+## Flow-based View   
 
----
+## The Service as a Process Types
 
-# Microservices and Microservice Architecture
+# The Microservice Concurrency Model: A Conceptual View
 
-~ Epigraph { caption: "Higgs Boson (2012 -- present)" }
-Don't give up on your dreams, keep on sleeping.
-~
+## Concurrency Models for Service-oriented Programming
 
-~ LitNote
-* <https://martinfowler.com/articles/microservices.html>
+## oncurrency based on Message Passing
 
-* keywords for microservices challenges from [@AAE16]:
-  * Communication/Integration (API, REST, sockets, TCP, gateway, circuit breakers, load balancer, proxy)
-  * Service discovery (API gateways, etc)
-  * Performance ( QoS, performance, SLA, speed, simulation)
-  * Fault-tolerance
-  * Security
-  * Tracing and Logging
-  * Application Performance Monitoring
-  * Deployment operations
-* eventueller Vergleich mit Komponentenbasiertem Softwareentwurf? "Bei einem komponentenorientierten Softwareentwurf sind Softwaresysteme in möglichst unabhängig wartbare und wiederverwendbare Softwarekomponenten zu zerlegen. Diese Ziele lassen sich verfolgen, indem bei der Definition von Softwarekomponenten dem Entwurfsprinzip der maximalen Kohäsion bei gleichzeitig minimalen Abhängigkeiten gefolgt wird [Szyperski et al. 2002, S. 40; Parnas 1972]" -> http://www.enzyklopaedie-der-wirtschaftsinformatik.de/lexikon/is-management/Systementwicklung/Hauptaktivitaten-der-Systementwicklung/Softwareentwurf/Komponentenorientierter-Softwareentwurf/index.html
-~
+## Distributed Computation
 
-## Software Architectures and Concurrent Systems
+## Concurrent Process Types for Services
 
-### From the early days to Object-oriented design patterns [title from DGL17]
-
-* [@DGL17] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
-* [@DGL17] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
-
-### Service-oriented Architectures
-
-#### Service-level design principles
-
-Services are:
-
-* Services are reusable
-* Services share a formal contract
-* Services are loosely coupled
-* Services abstract underlying logic
-* Services are composable
-* Services are autonomous
-* Services are stateless
-* Services are discoverable
-* Services have a network-addressable interface
-* Services are location transparent
-
-### Componentization via Services (geklaut von M.Fowler)
-
-~ TODO
-Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weiterentwicklung sind?
-~
-
-~ TODO
-Case Study: Concurrency in ABCL/1 [@Yon86a]
-
-* "Each object in our computation model has its own (auto- nomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate. Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and con- straints."
-
-* "When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message."
-
-=> vgl mit REST API und wenn ein Service einen anderen Service synchron anspricht
-~
-
-## Flexibility vs Efficiency
-
-über knowledge sharing (copy state durch message passinng vs shared memory)
-
-~LitNote
-* see "Iheritence and Synchronization in Concurrent OOP"
-~
-
-## Quality Attributes
-
-### Performance
-
-Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
-
-## Smart endpoints and dumb pipes (geklaut von M.Fowler)
-
-## Failure is inevitable
-
-## API gateways, circuit breakers and discovery
-
-Case study: Hysterix library
-
-Case study: Akka provides a circuit breaker implementation [@MW16]
-
-## Concurrency considerations
-
-~ LitNote
-* Microservices sind ja per Design Concurrent, da eigene Programme (Service = Component). Und wenn man MS skaliert (mehrere Instanten gleichzeitig startet) dann ist diese Component auch parallel. Also falls man auf mehreren Maschinen deployed
-* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@FL17]
-~
-
-## Development, Debugging and Maintenance
-
-~ Epigraph { caption: "Filipe Fortes" }
-Debugging is like being the detective in a crime movie where you're also the murderer.
-~
-
-* [DGL17]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
-
-## Summary
-
-# Concurrency, Distributed Programming and Scalability
-
-## Summary
-
-# Concurrency Concepts
-
-## Actor-based Concurrency
-
-## Dataflow Programming
-
-## Communicating sequential processes
-
-<https://en.wikipedia.org/wiki/Communicating_sequential_processes>
-
-## Summary
-
-# Object Oriented Design Principles vs. Microservice Architectures
-
-* bzgl OOP: siehe <https://sanaulla.info/2008/06/26/cohesion-and-coupling-two-oo-design-principles/>
-
-## Summary
-
-# The Microservice Architecture Style
-
-
-## Implicit Concurrency through (Framekworks|Inversion of Control)
-
-~ TODO
-Über Concurrency die einem zB Spring Framework gibt
-~
-
-## MSA and the Unix Philosophy
-
-> Text streams are to Unix tools as messages are to objects in an object-oriented setting
-
-quelle: "Rule of Composition: Design programs to be connected with other programs." <http://catb.org/esr/writings/taoup/html/ch01s06.html#id2877684> (müsste bereits eine ordentliche Literaturreferenz existieren): [Raymond, Eric S. (2003), "1.6.3 Rule of Composition: Design programs to be connected with other programs", The Art of Unix Programming, Addison-Wesley, pp. 15–16, ISBN 978-0-13-142901-7.]
-
-## Summary
-
-# TODO
-
-## Concurrent by Design Objects
-
-> OrcO: Concurrency First Approach on Objects
-
-## Foundational Issues of concurrent systems
-
-## Concurrency and Parallelism in Microservice Architectures
-
-MSA per design Concurrent
-
-Wenn Service richtig geschrieben, kann ich diese Scalieren indem von jedem Service entsprechend mehr Instanzen laufen (Parallel). Benötigt natürlich API Gateway um Aufgaben zu verteilen, was aber über den Scope dieser Arbeit hinaus geht.
-
-Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte die auch ProgLang lösen (traditionell eher concurrent als parallel, aber das ist eine Sache der Sprachen).
-
--> Ergo nur deswegen MSA, weil Sprachen diese Konzepte nicht gut genug umsetzen
-
--> Tatsächlich ist in traditionellen Sprachen Concurrency noch eher umsetzbar, tatsächlich parallele Ausführung von Teilen (zB Actor == MicroService) sehr schwer, schon gar keine Verteilung im Netzwerk.
-  -> könnten hier VMs aushelfen
-  -> nennt man das Location-Transparency
-
-
-# Prototypical Comparison of a Concurrency-based and a Microservice-based implementation for the same Scenario
+# Scenario-based Experiment
 
 ## Scenario
 
@@ -444,27 +337,48 @@ droids siehe: http://starwars.wikia.com/wiki/Separatist_Droid_Army
 
 We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model. The other implementation is written with a microservice architecture, in [**Java ?**] / [**Go ?**]
 
-## Actors vs. autonomous Agents
+## Prototype using Standard Models of Concurrency
 
-In microservive architectures, it is not usual for services to act as autonomous *active* agents. Some of the described droids in our scenario show activate (**TODO** hier ein wort für "selbst aktiv werdend") behaviour. For example, the logistic droids decide themselves which work step they will [**TODO** auswählen/als nächstes verfolgen/sowas in der art] perform next. 
+### Case Study: Why do Java Programmers like MSA?
 
-On the other hand, the actor model is considered to consist of *passive*, that is *reactive*, components. 
+## Prototype based on a Micorservice Architecture
 
-[**TODO** Hier sollte ich dann irgendwie probleme zwischen actor model actors und agents besprechen, und dabei die literatur irgendwie etwas miteinbebziehen] The movements from active objects towards *active agents* has be discussed in [@GB99]. The problem we are facing is, that 
-
-
-
-# Recommendations
-
+## Findings
 
 # Discussion
 
+## Comparision of Attributes/Features/etc
+
+## Comparison of the MSA-Concurrency-Model with the others
+
+## Why Developers adopt MSA
+
+## Problems of Developers with Concurrency Models
+
+### Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
+
+## Do Sufficiently Concurrent Programming Languages need MSA?
+
+### Jolie
+
+### Distributed Erlang
+
+#### Scalability and Reliability
+
+### Plattform and Middleware-based Approaches
+
+#### XVSM/MozartSpaces
 
 # Outlook
 
 ~ Epigraph { caption: "Niels Bohr" }
 Predicition is very difficult, especially about the future.
 ~
+
+* "Programming Services as a new Paradigm"
+  * Hier die Vision und die Gründe/Vorteile von einem neuen Paradigma beschreiben
+  * Bsp der Datenbank-Services: 
+    * Jeder MS sollte seine eigene DB haben. Kann man genau so mit zB Actors oder auch Threads handhaben. Aber beim Deployment gibt es hier Unterschiede. Beim starten eines neuen MS (= Program/Single-Executable-Artefact) ist es leicht auch eine neue DB zu starten (weil auch Programm). Über einen Mechanismus/Tool welches auf dieser konzeptionellen Ebene arbeitet (Programme im OS zu starten, zB Docker) lässt sich dies heute leicht automatisieren. Ein Thread (oder Actor/Active Obj/etc.) steht konzeptionell auf einer anderen Ebene. Es ist ein Konstrukt innerhalb des übergeordnetten Programms. Dh wenn ein neuer Thread erstellt wird ist dies in der Programmiersprache (oder Library/Framework) vorgesehen, aber die DB muss irgendwie extra über eine Interaktion mit dem unterliegenden OS (noch schwieriger in der Cloud, weil nicht umbedingt ein OS sichtbar/ansprechbar ist) gestartet werden. Java zB abstrahiert ja mit der JVM das OS so gut es geht weg (Plattformunabhängigkeit). Natürlich kann man mit dem System schon reden, aber es ist konzeptionell nicht vorgesehen dies als Standardmechanismus ständig zu verwenden. Die Datenbank muss anschließend auch noch irgendwie initialisiert werden, was zB wiederum das Laden eins Init-Scripts erforderlich macht. Dh das Deployment des Threads und das der Datenbank stehen auf konzeptionell unterschiedlichen Ebenen, ihr gemeinsames Deployment ist nicht vorgesehen und somit umständlich/schwierig. Bei MS ist dies konzeptionell auf die selbe Ebene gehoben. 
 
 # Conclusion
 

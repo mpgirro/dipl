@@ -8,6 +8,15 @@ Cite All     : False
 
 # Paradigms
 
+## OOP
+
+
+* SOLID design principles https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+    * ive design principles intended to make software designs more:
+        * understandable
+        * flexible
+        * maintainable
+
 ## Flow-based Programming
 
 * "Encapsulation, however, predates OOP - David Parnas wrote one of the seminal articles on it in the early 70s[19] - and is a basic concept in computing." (*D. Parnas, On the criteria to be used in decomposing systems into modules, Communications of the ACM, Vol. 5, No. 12, Dec. 1972, pp. 1053-8*)

@@ -1,6 +1,105 @@
+# Design by contract
+
+* Zusicherungen
+    * Vorbedingung: Was sich Server von Clients erwarten kann 
+    * Nachbedingung: Was sich Clients vom Server erwaten könnten
+    * Invarianten: Eigenschaften die in allen konsistenten Programmzuständen erfüllt sein müssen [zB das die Datenbank am Ende auch wieder konsistent ist? Vll auch ein besseres Bsp, da Datenbankkonsistenz ja auch speziell von der DB bearbeitet wird]{.mind}
+    * History-Constraints: Aufrufreihenvolge des Servers von Clients [== stateful Server: sollte in MSA vermieden werden]{.mind}
 
 
 
+# Microservices and Microservice Architecture
+
+~ Epigraph { caption: "Higgs Boson (2012 -- present)" }
+Don't give up on your dreams, keep on sleeping.
+~
+
+~ LitNote
+* <https://martinfowler.com/articles/microservices.html>
+
+* keywords for microservices challenges from [@AAE16]:
+  * Communication/Integration (API, REST, sockets, TCP, gateway, circuit breakers, load balancer, proxy)
+  * Service discovery (API gateways, etc)
+  * Performance ( QoS, performance, SLA, speed, simulation)
+  * Fault-tolerance
+  * Security
+  * Tracing and Logging
+  * Application Performance Monitoring
+  * Deployment operations
+* eventueller Vergleich mit Komponentenbasiertem Softwareentwurf? "Bei einem komponentenorientierten Softwareentwurf sind Softwaresysteme in möglichst unabhängig wartbare und wiederverwendbare Softwarekomponenten zu zerlegen. Diese Ziele lassen sich verfolgen, indem bei der Definition von Softwarekomponenten dem Entwurfsprinzip der maximalen Kohäsion bei gleichzeitig minimalen Abhängigkeiten gefolgt wird [Szyperski et al. 2002, S. 40; Parnas 1972]" -> http://www.enzyklopaedie-der-wirtschaftsinformatik.de/lexikon/is-management/Systementwicklung/Hauptaktivitaten-der-Systementwicklung/Softwareentwurf/Komponentenorientierter-Softwareentwurf/index.html
+~
+
+# From the early days to Object-oriented design patterns [title from DGL17]
+
+* [@DGL17] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
+* [@DGL17] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
+
+# Service-level design principles
+
+Services are:
+
+* Services are reusable
+* Services share a formal contract
+* Services are loosely coupled
+* Services abstract underlying logic
+* Services are composable
+* Services are autonomous
+* Services are stateless
+* Services are discoverable
+* Services have a network-addressable interface
+* Services are location transparent
+
+# Componentization via Services (geklaut von M.Fowler)
+
+~ TODO
+Kapitel vll eher "Evolution of the Components" nennen? Das Service deren Weiterentwicklung sind?
+~
+
+~ TODO
+Case Study: Concurrency in ABCL/1 [@Yon86a]
+
+* "Each object in our computation model has its own (auto- nomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate. Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and con- straints."
+
+* "When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message."
+
+=> vgl mit REST API und wenn ein Service einen anderen Service synchron anspricht
+~
+
+# MSA Concurrency considerations
+
+~ LitNote
+* Microservices sind ja per Design Concurrent, da eigene Programme (Service = Component). Und wenn man MS skaliert (mehrere Instanten gleichzeitig startet) dann ist diese Component auch parallel. Also falls man auf mehreren Maschinen deployed
+* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@FL17]
+~
+
+# MSA and the Unix Philosophy
+
+> Text streams are to Unix tools as messages are to objects in an object-oriented setting
+
+quelle: "Rule of Composition: Design programs to be connected with other programs." <http://catb.org/esr/writings/taoup/html/ch01s06.html#id2877684> (müsste bereits eine ordentliche Literaturreferenz existieren): [Raymond, Eric S. (2003), "1.6.3 Rule of Composition: Design programs to be connected with other programs", The Art of Unix Programming, Addison-Wesley, pp. 15–16, ISBN 978-0-13-142901-7.]
+
+# Concurrency and Parallelism in Microservice Architectures
+
+MSA per design Concurrent
+
+Wenn Service richtig geschrieben, kann ich diese Scalieren indem von jedem Service entsprechend mehr Instanzen laufen (Parallel). Benötigt natürlich API Gateway um Aufgaben zu verteilen, was aber über den Scope dieser Arbeit hinaus geht.
+
+Dh. MSA sowohl Concurrent wie auch Parallel. MSA lösen also wieder nur Konzepte die auch ProgLang lösen (traditionell eher concurrent als parallel, aber das ist eine Sache der Sprachen).
+
+-> Ergo nur deswegen MSA, weil Sprachen diese Konzepte nicht gut genug umsetzen
+
+-> Tatsächlich ist in traditionellen Sprachen Concurrency noch eher umsetzbar, tatsächlich parallele Ausführung von Teilen (zB Actor == MicroService) sehr schwer, schon gar keine Verteilung im Netzwerk.
+  -> könnten hier VMs aushelfen
+  -> nennt man das Location-Transparency
+
+
+# Actors vs. autonomous Agents
+
+In microservive architectures, it is not usual for services to act as autonomous *active* agents. Some of the described droids in our scenario show activate (**TODO** hier ein wort für "selbst aktiv werdend") behaviour. For example, the logistic droids decide themselves which work step they will [**TODO** auswählen/als nächstes verfolgen/sowas in der art] perform next. 
+
+On the other hand, the actor model is considered to consist of *passive*, that is *reactive*, components. 
+
+[**TODO** Hier sollte ich dann irgendwie probleme zwischen actor model actors und agents besprechen, und dabei die literatur irgendwie etwas miteinbebziehen] The movements from active objects towards *active agents* has be discussed in [@GB99]. The problem we are facing is, that 
 
 
 # Discussion

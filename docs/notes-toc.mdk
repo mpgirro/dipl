@@ -1,3 +1,7 @@
+* Abstract
+* Preface
+* Acknowledgements
+* Table of Contents
 * Introduction
     * Motivation
     * Scope of this Thesis
@@ -6,14 +10,22 @@
 * The Microservice Architecture Style
     * Key Concepts
     * Architecture Properties
+    * Architectural Elements
+        * API Gateway: The Request Broker and Curcuit Breaker
+            * Case Study: Hysterix and Akka
     * Quality Issues
         * Software Quality Attributes
+            * Performance
+                * Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
     * Design Concerns
+        * Smart endpoints and dumb pipes (geklaut von M.Fowler)
+        * Failure is inevitable
         * Service Granularity: Size vs. Number of Services
         * Satisfaction of local vs. global Quality Properties
     * Patterns (Kapitel notwendig?)
         * Event-driven architecture
-* Programming Paradigms: A Selective Overview
+    * Development, Debugging and Maintenance
+* Programming Paradigms: A Selected Overview
     * Imperative, Structured and Procedual Programming
     * Object-oriented Programming
         * History of Objects: Simula and Smalltalk
@@ -29,23 +41,31 @@
     * Actors and Active Objects
         * Case Study: the Scala Concurrency Model
     * Software Transactional Memory
+        * Case Study: the Clojure Concurrency Model
     * Event-driven Concurrency
         * Case Study: the JavaScript/node.js Concurrency Model
-    * Distributed Computation
+    * Concurrency Models and Distributed Systems Similarities
     * Other Approaches and Concurrency Primitives
-* The Microservice Programming Paradigm: A Look at Related Concepts
-    * Event-based View
-    * Flow-based View
-    * Delegation View
+* The Microservice Programming Paradigm: A Look at Analogies
+    * Encapsulation
+    * Information Hiding
+    * SOLID design principles
+    * Substitution and Behaviour
+    * Delegation: The Object's Way of Knowledge Sharing
         * Case Study: Delegation in JavaScript
-    * Services as Process Types
+    * Message Passing: Avoiding Shared State
+    * Event-based View
+    * Flow-based View   
+    * The Service as a Process Types
 * The Microservice Concurrency Model: A Conceptual View
     * Concurrency Models for Service-oriented Programming
+    * Concurrency based on Message Passing
     * Distributed Computation
     * Concurrent Process Types for Services
 * Scenario-based Experiment
     * Scenario
     * Prototype using Standard Models of Concurrency
+        * Case Study: Why do Java Programmers like MSA?
     * Prototype based on a Micorservice Architecture
     * Findings
 * Discussion
@@ -60,4 +80,6 @@
             * Scalability and Reliability
         * Plattform and Middleware-based Approaches
             * XVSM/MozartSpaces
+* Outlook
+    * Services as First-Class Citizens
 * Conclusion
