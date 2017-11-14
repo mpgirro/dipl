@@ -11,7 +11,7 @@ Email        : maximilian.irro@tuwien.ac.at
 chead        :
 Toc depth    : 1
 Bibliography : dipl
-Bib style    : abstract
+<!--Bib style    : abstract-->
 Logo         : False
 Draft        : True
 
