@@ -47,8 +47,10 @@
     * Concurrency Models and Distributed Systems Similarities
     * Other Approaches and Concurrency Primitives
 * The Microservice Programming Paradigm: A Look at Analogies
-    * Encapsulation
-    * Information Hiding
+    * Data Abstraction
+        * Encapsulation
+        * Information Hiding
+    * Identity and Equality
     * SOLID design principles
     * Substitution and Behaviour
     * Delegation: The Object's Way of Knowledge Sharing

@@ -237,6 +237,19 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 # The Microservice Programming Paradigm: A Look at Analogies
 
+## Data Abstraction
+
+### Encapsulation
+
+### Information Hiding
+
+## Identity and Equality
+
+* Identity = unique network address (may be abstracted behind gayteway proxy)
+* Equality = multiple (stateless) instances of the same service executable 
+
+## SOLID design principles
+
 ## Substitution and Behaviour
 
 * Ersetzbarkeit von Services (zB durch neue Version)
