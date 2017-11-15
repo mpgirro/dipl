@@ -65,7 +65,7 @@ CSS Header      :
 
 ## Curcuit breakers
 
-* laut [@MW16]
+* laut [@Mon16]
   * have been popularised in (book) "Release it! Design and Deploy Production-Ready Software (Pragmatic Programmers). 2007"
   * Akka provides a circuit breaker implementation that supports basic configuration parameters
     * => hat somit Scala (und vll Spring Boot) ebenfalls inherent einen Curcuit Breaker eingebaut im Actor Modell?
@@ -73,7 +73,7 @@ CSS Header      :
 
 ## Service Discovery
 
-* see [@MW16] for example solutions/implementations/technologies 
+* see [@Mon16] for example solutions/implementations/technologies 
 
 
 ## Security Vulnerabilities of SOA

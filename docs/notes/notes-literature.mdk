@@ -321,7 +321,7 @@ with more “abstract” entities.
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
 
-**[@MW16] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
+**[@Mon16] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
 
   * components of an application are autonnomous services that execute independently
   * communicate via message passing

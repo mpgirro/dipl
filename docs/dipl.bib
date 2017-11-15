@@ -10,6 +10,14 @@
   isbn      = {978-0-387-94775-4}
 }
 
+@phdthesis{Ahm14,
+  author    = {Salman Azeem Ahmad},
+  title     = {{Programming Language Design for Service-Oriented Systems}},
+  school    = {Massachusetts Institute of Technology, Cambridge, MA, {USA}},
+  year      = {2014},
+  url       = {http://hdl.handle.net/1721.1/92961}
+}
+
 @inproceedings{AAE16,
   author    = {Nuha Alshuqayran and
                Nour Ali and
@@ -74,7 +82,7 @@ TODO: noch keine literaturnotizen vorhanden!
 @inproceedings{BY87,
   author    = {Jean{-}Pierre Briot and
                Akinori Yonezawa},
-  title     = {{Inheritance and synchronization in concurrent OOP}},
+  title     = {{Inheritance and Synchronization in Concurrent OOP}},
   booktitle = {ECOOP'87 European Conference on Object-Oriented Programming, Paris,
                France, June 15-17, 1987, Proceedings},
   pages     = {32--40},
@@ -83,7 +91,7 @@ TODO: noch keine literaturnotizen vorhanden!
   doi       = {10.1007/3-540-47891-4_4}
 }
 
-@article{CLG17,
+@article{Che17,
   author    = {Natalia Chechina and
                Kenneth MacKenzie and
                Simon J. Thompson and
@@ -105,7 +113,7 @@ TODO: noch keine literaturnotizen vorhanden!
 
 
 TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
-@incollection{DGL16,
+@incollection{Dra17a,
   author    = {Nicola Dragoni and
                Saverio Giallorenzo and
                Alberto Lluch{-}Lafuente and
@@ -121,7 +129,7 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   doi       = {10.1007/978-3-319-67425-4_12}
 }
 
-@article{DLL17,
+@article{Dra17b,
   author    = {Nicola Dragoni and
                Ivan Lanese and
                Stephan Thordal Larsen and
@@ -150,7 +158,7 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   annote   = {}
 }
 
-@misc{FL17,
+@misc{Fow14,
   title        = {Microservices},
   author       = {Fowler, Martin and Lewis, James},
   year         = {2014 (accessed April 2, 2017)},
@@ -295,18 +303,6 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   isbn      = {0-13-629155-4}
 }
 
-@incollection{MGZ14,
-  author    = {Fabrizio Montesi and
-               Claudio Guidi and
-               Gianluigi Zavattaro},
-  title     = {{Service-Oriented Programming with Jolie}},
-  booktitle = {Web Services Foundations},
-  pages     = {81--107},
-  year      = {2014},
-  url       = {https://doi.org/10.1007/978-1-4614-7518-7_4},
-  doi       = {10.1007/978-1-4614-7518-7_4}
-}
-
 * Object-oriented technologies are prominent in software development
 * A notable example is the Eiffel programming language [9], incorporating solid principles of OOP within a programming framework coordinated by the idea of design- by-contract, which aims at correctness-by-construction.
 * Component-wise each build- ing block is built as a microservice [11] embedding busi- ness capabilities in isolation. Every microservice can be reused, orchestrated, and aggregated with others [10]
@@ -316,7 +312,7 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   - Independency: concepts encourages loose cou- pling and high cohesion by stating that each service Independency. This concepts encourages loose cou- pling and high cohesion by stating that each service in microservice architectures is operationally indepen-dent from others, and the only form of communication between services is through their published interfaces.
 * Even though it is likely to conduct to a paradigm shift and a dramatic change in perception, it does not build on vacuum, and instead relates to well-established paradigms such as OO and SOA.
 * [...] focusing on the evolutionary aspects more than the revolu- tionary ones.
-@article{MMSL16,
+@article{Maz16,
   author    = {Manuel Mazzara and
                Ruslan Mustafin and
                Larisa Safina and
@@ -338,7 +334,19 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   annote = {}
 }
 
-@phdthesis{Mon14,
+@incollection{Mon14a,
+  author    = {Fabrizio Montesi and
+               Claudio Guidi and
+               Gianluigi Zavattaro},
+  title     = {{Service-Oriented Programming with Jolie}},
+  booktitle = {Web Services Foundations},
+  pages     = {81--107},
+  year      = {2014},
+  url       = {https://doi.org/10.1007/978-1-4614-7518-7_4},
+  doi       = {10.1007/978-1-4614-7518-7_4}
+}
+
+@phdthesis{Mon14b,
   title     = {Choreographic programming},
   author    = {Montesi, Fabrizio},
   year      = {2014},
@@ -371,7 +379,7 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
 * p.7: However, MSAs are much more involved than other distributed applications where services are implemented as monoliths, because all internal components are subjects to potential communication failures and overloads -- Highlighted 19 May 2017
 * p.7: Circuit breakers have first been popularised in [35], where their role is discussed in the context of availability (resilience) for enterprise systems -- Highlighted 19 May 2017
 * p.7: Akka [22] provides a circuit breaker implementation that supports basic configuration parameters, such as call timeout, failure threshold and reset threshold. Hystrix [30] is much more flexible and is currently one of the reference solutions: -- Highlighted 19 May 2017
-@article{MW16,
+@article{Mon16,
   author    = {Fabrizio Montesi and
                Janine Weber},
   title     = {{Circuit Breakers, Discovery, and API Gateways in Microservices}},
@@ -381,6 +389,20 @@ TODO: da jetzt offiziell publiziert, das kürzel von DGL16 zu DGL17 umbenennen
   url       = {http://arxiv.org/abs/1609.05830},
   archivePrefix = {arXiv},
   eprint    = {1609.05830}
+}
+
+@inproceedings{Mon17,
+  author    = {Fabrizio Montesi and
+               Dan Sebastian Thrane},
+  title     = {{Packaging Microservices}},
+  booktitle = {Distributed Applications and Interoperable Systems - 17th {IFIP} {WG}
+               6.1 International Conference, {DAIS} 2017, Held as Part of the 12th
+               International Federated Conference on Distributed Computing Techniques,
+               DisCoTec 2017, Neuch{\^{a}}tel, Switzerland, June 19-22, 2017, Proceedings},
+  pages     = {131--137},
+  year      = {2017},
+  url       = {https://doi.org/10.1007/978-3-319-59665-5_9},
+  doi       = {10.1007/978-3-319-59665-5_9}
 }
 
 @techreport{OBM05,
@@ -496,6 +518,19 @@ TODO fragen ob ich da ein PDF bekomme
   eprint    = {1709.09242}
 }
 
+@article{Sha17b,
+  author    = {Dharmendra Shadija and
+               Mo Rezai and
+               Richard Hill},
+  title     = {Towards an Understanding of Microservices},
+  journal   = {CoRR},
+  volume    = {abs/1709.06912},
+  year      = {2017},
+  url       = {http://arxiv.org/abs/1709.06912},
+  archivePrefix = {arXiv},
+  eprint    = {1709.06912}
+}
+
 @misc{SSRB00,
   title     = {{Pattern-Oriented Software Architecture: Patterns for Concurrent and Networked Objects}},
   author    = {Schmidt, Douglas C and Stal, Michael and Rohnert, Hans and Buschmann, Frank},
@@ -529,6 +564,19 @@ TODO fragen ob ich da ein PDF bekomme
   year      = {2007},
   url       = {https://doi.org/10.1109/MIC.2007.104},
   doi       = {10.1109/MIC.2007.104}
+}
+
+@inproceedings{Xia16,
+  author    = {Zhongxiang Xiao and
+               Inji Wijegunaratne and
+               Xinjian Qiang},
+  title     = {{Reflections on SOA and Microservices}},
+  booktitle = {4th International Conference on Enterprise Systems, {ES} 2016, Melbourne,
+               Australia, November 2-3, 2016},
+  pages     = {60--67},
+  year      = {2016},
+  url       = {https://doi.org/10.1109/ES.2016.14},
+  doi       = {10.1109/ES.2016.14}
 }
 
 
