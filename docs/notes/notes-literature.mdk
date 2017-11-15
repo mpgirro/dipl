@@ -11,7 +11,7 @@ CSS Header      :
 
 
 
-**[@AAE16] "A Systematic Mapping Study in Microservice Architecture"**
+**[@Als16] "A Systematic Mapping Study in Microservice Architecture"**
 
   * Mache ich auch eine "Mapping Study"?
   * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
@@ -71,7 +71,7 @@ CSS Header      :
 * Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
 * Inherent Concurrency
 
-**[@AH85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"**
+**[@Agh85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"**
 
 * no consenus has emerged on a single model of concurrency
 * discussion on paradigm shift in [Pratt 83]
@@ -145,7 +145,7 @@ with more “abstract” entities.
 * Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
 * Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
 
-**[@BY87] "Inheritance and Synchronization in Concurrent OOP"**
+**[@Bri87] "Inheritance and Synchronization in Concurrent OOP"**
 
   * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
   * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.

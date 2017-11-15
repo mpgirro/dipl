@@ -88,7 +88,7 @@ models. For example:
 * The *active object pattern* allows a call of an objects method to be executed 
   in a different thread, enabling concurrent method execution of the same object. 
   This is achieved by using proxy objects on which the public methods of the active 
-  objects are called [@LS95]. In a microservice architecture, when using an API 
+  objects are called [@Lav95]. In a microservice architecture, when using an API 
   gateway to manage requests to the services, the gateway acts like the active 
   object proxy, dispatching or buffering the request. This is called the *proxy 
   circuit breaker pattern* [@Mon16].
@@ -198,7 +198,7 @@ concurrency primitives with small footprints.
 
 # State of the Art { #sec-sota }
 
-In a recent systemantic mapping study of research literature [@AAE16], it was
+In a recent systemantic mapping study of research literature [@Als16], it was
 found that the microservice architectural style (MSA) research is currently at
 an early stage, for the style was born from industrial needs, and academia has
 not yet fully caught up. Subsequently, we see many of the available literature
@@ -247,7 +247,7 @@ The *OrcO* programming language, an extension of the *Orc* language, also has a
 adding concurrency objects explicitly, each program is concurrent by default.
 Sequential control structures are replaced by concurrent combinators, fields are
 implicitely futures, and the object and concurrency structure are orthogonal, to
-allow them to evolve separately [@PKTC16].
+allow them to evolve separately [@Pet16].
 
 On the other hand, there is not only progress in concurrency evolution. The
 *Jolie* programming language calls itself the first of the kind of *service-
