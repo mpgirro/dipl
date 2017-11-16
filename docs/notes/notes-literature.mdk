@@ -1,4 +1,3 @@
-[INCLUDE=style/marticle]
 
 Bibliography : dipl
 Bib style    : alpha
@@ -168,7 +167,7 @@ with more “abstract” entities.
   * There is no delegation proposed in the Actor model of [Agha 85].
   * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
 
-**[@DGL16] "Microservices: yesterday, today, and tomorrow"**
+**[@Dra17a] "Microservices: yesterday, today, and tomorrow"**
 
   * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
   * modules of a monolith depend on said shared resources, they are not independently executable
@@ -266,6 +265,36 @@ with more “abstract” entities.
   * in [@Fra17] wird über dieses Paper bebhauptet:
     * one of the main results of the survey is that MSA is intrinsically related and has direct impact on specific quality properties at the system level, specifically: availability, reliability, maintainability, performance, security and testability qualities
 
+* Tomorrow:
+  * The greatest strength of microservices comes from pervasive distribution: even the internal components of software are autonomous services, leading to loosely coupled systems and the other benefits previously discussed. However, from this same aspect (distribution) also comes its greatest weakness: programming distributed systems is inherently harder than monoliths.Wenow have to think about new issues.
+  * Dependability
+    * There are many pitfalls that we need to keep in mind when programming with microservices. In particular, preventing programming errors is hard. Consequently, building dependable systems is challenging.
+    * Interfaces Since microservices are autonomous, we are free to use the most appropriate technol-ogy for the development of each microservice. A disadvantage introduced by this practice is that different technologies typically have different means of specifying contracts for the composition of services (e.g., interfaces in Java, orWSDL documents inWeb Services [20]).
+    * Unfortunately, the current answer is informal documentation.
+    * As an attempt to fix this problem, there are tools for the formal specification of message types for data exchange, which one can use to define service interfaces independently of specific technologies. Then, these technology-agnostic specifications can be either compiled to language-specific interfaces — e.g., compiling an interface to a Java type — or used to check for well-typedness of messages (wrt. interfaces and independently of the transport protocol).
+    * However, it is still unclear how to adapt tools to implement the mechanical checking (at compile or execution time) of messages for some widespread architectural styles for microservices, such as REST [30], where interfaces are constrained to a fixed set of operations and actions are expressed on dynamic resource paths.
+    * A first attempt at bridging the world of technology-agnostic interfaces based on operations and REST is presented in [61], but checking for the correctness of the binding information between the two is still left as a manual task to the programmer.
+    * Behavioural Specifications and Choreographies Having formally-defined interfaces in the form of an API is not enough to guarantee the compatibility of services.
+    * This is because, during execution, services may engage in sessions during which they perform message exchanges in a precise order. If two services engage in a session and start performing incompatible I/O, this can lead to various problems. Examples include: a client sending a message on a stream that was previously closed; deadlocks, when two services expect a message from one another without sending anything; or, a client trying to access an operation that is offered by a server only after a successful distributed authentication protocol with a third-party is performed.
+    * Behavioural types are types that can describe the behaviour of services and can be used to check that two (or more) services have compatible actions. Session types are a prime example of behavioural types [45,46].
+    * Session types have been successfully applied to many contexts already, ranging from parallel to distributed computing.
+    * However, no behavioural type theory is widely adopted in practice yet. This is mainly because behavioural types restrict the kind of behaviours that programmers can write for services, limiting their applicability. An important example of a feature with space for improvement is non-determinism. In many interesting protocols, like those for distributed agreement, execution is non-deterministic and depending on what happens at runtime, the participants have to react differently
+    * Behavioural interfaces are a hot topic right now and will likely play an important role in the future of microservices. We envision that they will also be useful for the development of automatic testing frameworks that check the communication behaviour of services.
+    * Choreographies are high-level descriptions of the communications that we want to happen in a system in contrast with the typical methodology of defining the behaviour of each service separately.
+    * Choreographies are used in some models for behavioural interfaces, but they actually originate from efforts at the W3C of defining a language that describes the global behaviour of service systems [40].
+    * In Chore-ographic Programming, the programmer uses choreographies to program service systems and then a compiler is used to automatically generate compliant implementations. This yields a correctness-by-construction methodology, guaranteeing important properties such as deadlock-freedom and lack of communication errors [15,17,63].
+    * A recent line of work suggests that a positive answer can be found by connecting behavioural types and choreographies to well-known logical models. A prominent example is a Curry-Howard correspondence between session types and the process model of π-calculus, given in [14] (linear logical propositions correspond to session types, and communications to proof normalization in linear logic). This result has propelled many other results, among which: a logical reconstruc-tion of behavioural types in classical linear logic that supports parametric polymorphism [83]; type theories for integrating higher-order process models with functional computation [79]; ini-tial ideas for algorithms for extracting choreographies from separate service programs [18]; a logical characterisation of choreography-based behavioural types [19]; and, explanations of how interactions among multiple services (multiparty sessions) are related to well-known techniques for logical reasoning [16,13].
+    * We can then conclude that formal methods based on well-known techniques seem to be a promising starting point for tackling the issue of writing correct microservice systems. This starting point gives us solid footing for exploring the more focused disciplines that we will need in the future, addressing problems like the description of coordination patterns among services. We envision that these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics. It is still unclear, however, how exactly these disciplines can be extended to naturally capture the practical sce-narios that we encounter in microservices.We believe that empirically investigating microservice programming will be beneficial in finding precise research directions in this regard.
+  * Trust and Security
+    * *Greater Surface Attack Area*: In monolithic architectures, application processes communicate via internal data structures or internal communication (for instance, socket or RMI). The attack surface is usually also constrained to a single OS. On the contrary, the microservices paradigm is characterised by applications that are broken down into services that interact with each other through APIs exposed to the network. APIs are independent of machine architectures and even programming languages. As a result, they are exposed to more potential attacks than traditional subroutines or functionalities of a large application, which only interacted with other parts of the same application.Moreover, application internals (the microservices) have now become accessible from the external world. Rephrasing, this means that microservices can in principle send the attack surface of a given application through the roof.
+    * Network Complexity
+    * Trust
+    * Heterogeneity
+    * *Heterogeneity*: The microservices paradigm brings heterogeneity (of distributed systems) to itsmaximum expression. Indeed, a microservices-based system can be characterised by: a large num-ber of autonomous entities that are not necessarily known in advance (again, trust issue); a large number of different administrative security domains, creating competition amongst providers of different services; a large number of interactions across different domains (through APIs); no common security infrastructure (different “Trusted Computing Base); and last but not least, no global system to enforce rules.
+* A specific arc has been given to the narrative, which necessarily emphasises some connections and some literature, and it is possibly too severe with other sources. For example, research contributions in the domain of the actor model [43] and software agents [65] have not been emphasised enough,
+
+
+
 **[@Erb12] "Concurrent Programming for Scalable Web Architectures"**
 
 * 2.3.5 Concurrency, Programming Languages and Distributed Systems
@@ -321,7 +350,7 @@ with more “abstract” entities.
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
 
-**[@Mon16] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
+**[@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
 
   * components of an application are autonnomous services that execute independently
   * communicate via message passing

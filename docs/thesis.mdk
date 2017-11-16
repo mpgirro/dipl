@@ -241,7 +241,7 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 ## Other Approaches and Concurrency Primitives
 
-# The Microservice Programming Paradigm: A Look at Analogies
+# The Microservice Paradigm: A Look at Analogies
 
 ## Data Abstraction
 
@@ -256,13 +256,31 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 ## SOLID design principles
 
+## Design by Contract and REST
+
+~LitNote
+bzgl REST:
+
+* see [Mon16b], section 7, "RESTful services"
+~
+
+### REpresentational State Transfer 
+
+### Pre- and Postconditions
+
+### Invariants and History-constraints
+
 ## Substitution and Behaviour
 
 * Ersetzbarkeit von Services (zB durch neue Version)
   * Wenn Schnittstellen gleich
   * Wenn Verhalten (nach außen) gleich/kompatibel
 
-## Delegation: The Object's Way of Knowledge Sharing
+## Delegation: Delegation: Sharing partial implementation
+
+~LitNote
+* see [@Sny93] "Essense of Objects"
+~
 
 ### Case Study: Delegation in JavaScript
 
@@ -292,7 +310,26 @@ Punkt 2 ist etwas überflüssig, aber kann man ja argumentieren. Punkt 3 und 4 s
 
 ## Flow-based View   
 
-## The Service as a Process Types
+## Process-, Behavioural-, and Session-Types
+
+~LitNote
+* "Behavioural types are types that can describe the behaviour of services and can be used to
+check that two (or more) services have compatible actions" [@Dra17a]
+* "Session types are a prime example of behavioural types" [@Dra17a]
+* "Session types have been successfully applied to many contexts already, ranging from parallel to distributed computing." [@Dra17a]
+
+zu Session Types: 
+
+* see "*Kohei Honda, Vasco Vasconcelos, and Makoto Kubo. Language primitives and type disciplines for structured communication-based programming. pages 22–138, 1998*"
+* see "*Kohei Honda, Nobuko Yoshida, and Marco Carbone. Multiparty asynchronous session types. Journal of the ACM,63(1):9, 2016. Also: POPL, 2008, pages 273–284*"
+~
+
+## Choreographies
+
+~LitNote
+* "Choreographies are high-level descriptions of the communications that we want to happen in a system in contrast with the typical methodology of defining the behaviour of each service separately" [@Dra17a]
+* see [@Mon13] "*Choreographic Programming*"
+~
 
 # The Microservice Concurrency Model: A Conceptual View
 
@@ -400,6 +437,12 @@ We created two prototypical impelementations simulating the descripated *smart f
 
 ### Jolie
 
+~LitNote
+* Jolie "natively" supports decorator pattern
+  * see https://www.reddit.com/r/programming/comments/5hrxh5/jolie_natively_supports_decorator_pattern_maybe/
+  * see http://fmontesi.github.io/2016/11/12/service-decorators.html
+~
+
 ### Distributed Erlang
 
 #### Scalability and Reliability
@@ -418,6 +461,16 @@ Predicition is very difficult, especially about the future.
   * Hier die Vision und die Gründe/Vorteile von einem neuen Paradigma beschreiben
   * Bsp der Datenbank-Services: 
     * Jeder MS sollte seine eigene DB haben. Kann man genau so mit zB Actors oder auch Threads handhaben. Aber beim Deployment gibt es hier Unterschiede. Beim starten eines neuen MS (= Program/Single-Executable-Artefact) ist es leicht auch eine neue DB zu starten (weil auch Programm). Über einen Mechanismus/Tool welches auf dieser konzeptionellen Ebene arbeitet (Programme im OS zu starten, zB Docker) lässt sich dies heute leicht automatisieren. Ein Thread (oder Actor/Active Obj/etc.) steht konzeptionell auf einer anderen Ebene. Es ist ein Konstrukt innerhalb des übergeordnetten Programms. Dh wenn ein neuer Thread erstellt wird ist dies in der Programmiersprache (oder Library/Framework) vorgesehen, aber die DB muss irgendwie extra über eine Interaktion mit dem unterliegenden OS (noch schwieriger in der Cloud, weil nicht umbedingt ein OS sichtbar/ansprechbar ist) gestartet werden. Java zB abstrahiert ja mit der JVM das OS so gut es geht weg (Plattformunabhängigkeit). Natürlich kann man mit dem System schon reden, aber es ist konzeptionell nicht vorgesehen dies als Standardmechanismus ständig zu verwenden. Die Datenbank muss anschließend auch noch irgendwie initialisiert werden, was zB wiederum das Laden eins Init-Scripts erforderlich macht. Dh das Deployment des Threads und das der Datenbank stehen auf konzeptionell unterschiedlichen Ebenen, ihr gemeinsames Deployment ist nicht vorgesehen und somit umständlich/schwierig. Bei MS ist dies konzeptionell auf die selbe Ebene gehoben. 
+* in [Dra17a] wir im Kapitel "Tomorrow" ein weiter Blick in zukünftige Möglichkeiten gegeben:
+  * connecting behavioural types and choreographies to well-known logical models
+  * a logical reconstruc- tion of behavioural types in classical linear logic that supports parametric polymorphism [83];
+  * type theories for integrating higher-order process models with functional computation [79];
+  * initial ideas for algorithms for extracting choreographies from separate service programs [18];
+  * a logical characterisation of choreography-based behavioural types [19]; 
+  * explanations of how interactions among multiple services (multiparty sessions) are related to well-known techniques for logical reasoning [16,13];
+  * formal methods based on well-known techniques seem to be a promising starting point for tackling the issue of writing correct microservice systems;
+  * these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics;
+  
 
 # Conclusion
 
