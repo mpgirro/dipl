@@ -8,6 +8,7 @@
     * Methodology used
     * Road Map
 * The Microservice Architecture Style
+    * Service-oriented Systems
     * Key Concepts
     * Architecture Properties
     * Architectural Elements
@@ -22,6 +23,7 @@
         * Failure is inevitable
         * Service Granularity: Size vs. Number of Services
         * Satisfaction of local vs. global Quality Properties
+        * Polyglot Programming
     * Patterns (Kapitel notwendig?)
         * Event-driven architecture
     * Development, Debugging and Maintenance
@@ -33,6 +35,7 @@
     * Event-Driven and Flow-Driven Programming
     * Logic and Constraint Programming
     * Role-based Programming
+    * Other Programming Paradigms
 * Models of Concurrent Computation
     * Basic Concepts in Concurrency
         * Execution Order and Nondeterminism
@@ -56,6 +59,12 @@
     * Delegation: The Object's Way of Knowledge Sharing
         * Case Study: Delegation in JavaScript
     * Message Passing: Avoiding Shared State
+    * Clients Request Services
+    * The Case of Actors vs Active Objects
+        * A Case for Actors
+        * A Case for Active Objects
+        * A Case against Actors and Active Objects
+        * A Conflation of Distinct Concepts
     * Event-based View
     * Flow-based View   
     * The Service as a Process Types
@@ -78,8 +87,10 @@
         * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
     * Do Sufficiently Concurrent Programming Languages need MSA?
         * Jolie
+        * Silo
         * Distributed Erlang
             * Scalability and Reliability
+        * Orco
         * Plattform and Middleware-based Approaches
             * XVSM/MozartSpaces
 * Outlook
