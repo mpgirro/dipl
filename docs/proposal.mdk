@@ -39,7 +39,7 @@ The microservice architecture style is open for any programming language or
 paradigm. Because the microservices are communication on a network level by
 sending messages (e.g. REST, sockets, etc.), the services themselfs may be
 written in different programming languages. As long as they expose the interface
-required by the architecture, they are useable components [@Mon16;@Dra17a].
+required by the architecture, they are useable components [@Mon16a;@Dra17a].
 
 Interesting enough, this architecture style shares some similarities with long
 established programming paradigms. Some examples are:
@@ -64,13 +64,17 @@ established programming paradigms. Some examples are:
 * In the functional programming paradigm, programs are written by combining 
   functions, the so-called *function composition*. In microservice archiectures, 
   as with service-oriented architectures (SOA) in general, functionallity is 
-  build by composing services [@Mon14a].
+  build by composing services [@Mon14].
 
 Many more conceptional resemblances can be pointed out and analysed. To get a
 basic ground to work upon, we therefore ask the first research question:
 
 > **RQ1**: Which conceptual similarities are microservice architectures sharing with programming 
   paradigms, such as object-oriented or functional programming?
+
+> **RQ1**: Which conceptual similarities are microservice architectures sharing with 
+  other well-established models in Computer Science, such as object-orientation or 
+  the functional paradigm?
 
 Not only can we draw connections to well-established programming paradigms. Each
 microservice is a dedicated program (and therefore a system process) itself, and
@@ -91,7 +95,7 @@ models. For example:
   objects are called [@Lav95]. In a microservice architecture, when using an API 
   gateway to manage requests to the services, the gateway acts like the active 
   object proxy, dispatching or buffering the request. This is called the *proxy 
-  circuit breaker pattern* [@Mon16].
+  circuit breaker pattern* [@Mon16a].
 
 We see, microservice architectures do not only have commonalities with
 programming paradigms, but also with models for concurrent programming.
@@ -211,7 +215,7 @@ concurrency research has been around for decades.
 As we have motivated in § [#sec-motivation], the microservice architecture style
 has many conceptual roots in various programming paradigms (especially object-
 orientation), but it also originates from service oriented architectures (SOA)
-in general [@Maz16;@Mon16]. SOA can be considered the "first generation" of
+in general [@Maz16;@Mon16a]. SOA can be considered the "first generation" of
 services, providing benefits like dynamism, modularity, distributed development
 and the integration of heterogenouse and legacy systems. Microservices can be
 considered "second generation" services, and therefore an evolution of SOA,
@@ -254,7 +258,7 @@ allow them to evolve separately [@Pet16].
 
 On the other hand, there is not only progress in concurrency evolution. The
 *Jolie* programming language calls itself the first of the kind of *service-
-oriented programming* paradigm [@Mon14a]. Originating in the pre-mircoservice
+oriented programming* paradigm [@Mon14]. Originating in the pre-mircoservice
 era, it builds upon the SOA concept of service *orchestration*, meaning the
 behavioural composition of services. Jolies primary focus is the concept of the
 *service*, therefore each idiomatic Jolie program defines one such. A program is
