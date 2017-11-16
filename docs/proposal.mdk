@@ -12,7 +12,7 @@ chead        :
 Toc depth    : 1
 Bibliography : dipl
 <!--Csl Style    : style/custom-style.csl-->
-Bib style    : style/myalpha.bst
+Bib style    : style/keynat.bst
 Logo         : False
 Draft        : True
 
