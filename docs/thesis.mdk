@@ -164,13 +164,15 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ### Design Concerns
 
-#### mart endpoints and dumb pipes (geklaut von M.Fowler)
+#### Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
 #### Failure is inevitable
 
 #### Service Granularity: Size vs. Number of Services
 
 #### Satisfaction of local vs. global Quality Properties
+
+#### Polyglot Programming
 
 ### Patterns (Kapitel notwendig?)
 
@@ -202,6 +204,10 @@ Debugging is like being the detective in a crime movie where you're also the mur
 ## Event-Driven and Flow-Driven Programming
 
 ## Logic and Constraint Programming
+
+## Role-based Programming
+
+## Other Programming Paradigms
 
 # Programming Services as a Paradigm 
 
@@ -261,6 +267,26 @@ Debugging is like being the detective in a crime movie where you're also the mur
 ### Case Study: Delegation in JavaScript
 
 ## Message Passing: Avoiding Shared State
+
+## Clients Request Services
+
+~LitNote
+In [@Sny93] steht zu den *essential concepts* von Objekten u.a. "**Clients request services from objects**". Die folgenden Unterpunkte sind gegeben:
+
+1. Clients issue requests
+2. Objects are encapsulated
+3. Requests identify operations
+4. Requests can identify objects
+
+Diese 4 Punkte kann ich am konkreten Bsp eines MS durchspielen:
+
+1. aufruft eines andere MS mittels REST call: einfach die REST URL angeben
+2. Encapsulation ist trivial zu argumentieren: jeder MS eigenes Program
+3. Die Operation wird identifiziert durch die REST Methode (PUT, GET, POST, DELETE) und den relativen Pfad (der hinter der Network-Addr.)
+4. Die Identification wird über die URL (den Teil mit der Network-Addr) gezeigt
+
+Punkt 2 ist etwas überflüssig, aber kann man ja argumentieren. Punkt 3 und 4 sind besser vertauscht zu zeigen
+~
 
 ## Event-based View
 
