@@ -717,7 +717,7 @@ FUNCTION {article}
   if$
   format.issn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -754,7 +754,7 @@ FUNCTION {book}
   format.date "year" output.check
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -772,7 +772,7 @@ FUNCTION {booklet}
   format.date output
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -811,7 +811,7 @@ FUNCTION {inbook}
   format.date "year" output.check
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -841,7 +841,7 @@ FUNCTION {incollection}
   if$
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -879,7 +879,7 @@ FUNCTION {inproceedings}
   if$
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
@@ -970,7 +970,7 @@ FUNCTION {proceedings}
   publisher output
   format.isbn output
   format.doi output
-  format.url output
+%  format.url output
   new.block
   note output
   fin.entry
