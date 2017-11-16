@@ -69,8 +69,8 @@ established programming paradigms. Some examples are:
 Many more conceptional resemblances can be pointed out and analysed. To get a
 basic ground to work upon, we therefore ask the first research question:
 
-> **RQ1**: Which commonalities are microservice architectures sharing with 
-  object-oriented and functional programming paradigms?
+> **RQ1**: Which conceptual similarities are microservice architectures sharing with programming 
+  paradigms, such as object-oriented or functional programming?
 
 Not only can we draw connections to well-established programming paradigms. Each
 microservice is a dedicated program (and therefore a system process) itself, and
@@ -124,11 +124,11 @@ being adapted so eagerly in the first place. We subsequently ask the question:
 
 The author expects that this work will result in an answer to the main research
 question of "*No: sufficiently concurrent programming languages do not need
-microservice architectures*". Many of the design principles are already
-established in other programming language principles, first of all object
+microservice architectures*". Many of their design principles are already
+established in other programming paradigms, first of all object
 oriented design. For all of them, concurrency models have been developed and are
-widely available for developers to use.  Therefore, in many of todays concurrent
-programming languages, microservice architectures are only used because the
+widely available for developers to use. Therefore, in many of todays software 
+systems, microservice architectures are used only because the
 languages concurrency models and primitives make it harder for developers to
 design, implement, debug and maintain - therefore ultimately *understand* - the
 software architectures that serve the same design goals as the corresponding
@@ -149,13 +149,16 @@ An expected conclusion of this work will therefore be, that microservice
 architectures will *not* be classified as a symptom to a problem that should
 have been already solved on a programming language level (as the thesis title
 might imply), but that they are merely a solution to the need for high
-scalability. On the other hand, many of todays software application having no
+scalability, and concurrency models should evolve to a point where they provide 
+decent solutions to this as well. 
+
+On the other hand, many of todays software application having no
 scalability problem, and yet being  developed in a microservice architecture,
 are consequently a side effect. Developers grasp for easier to understand
-concurrency in their architectures and microservices inherently force them to
-plan the *separation of concernces* in more detail than programming languages
-usually do, resulting in an easier to understand concurrency model in their
-application architectures.
+concurrency in their architectures and MSA inherently force them to
+plan the *separation of concernces* in more detail than the programming paradigms 
+in most languages often do, resulting in an easier to understand concurrency 
+model in their application architectures.
 
 # Methodology and Approach { #sec-methodology }
 
@@ -177,12 +180,12 @@ The methodology used to answer the given research questions outlined in §
   other, at least one available concurrency approach should have a high accordance 
   to the properties identified in RQ2.
 5. Based on the knowledge aquired through RQ1 and RQ2, a prototypical scenario has 
-  to be identified, which is suited to be implemented using a microservice 
+  to be formulated, which is suited to be implemented using a microservice 
   architecture.
 6. In both languages chosen in step 4, the identified scenario from step 5 should 
   be implemented: 
   * The implementation using the language where microservices are a common 
-    architecture style should also have a MSA. The application itself will 
+    architecture style should also use the MSA. The application itself will 
     therefore consist of multiple executable programs. Any microservice frameworks 
     or libraries may be used.
   * The other implementation should use only the concurrency models available to 
