@@ -11,6 +11,7 @@
     * Service-oriented Systems
     * Key Concepts
     * Architecture Properties
+        * Concurrency Beyond Multiple Cores
     * Architectural Elements
         * API Gateway: The Request Broker and Curcuit Breaker
             * Case Study: Hysterix and Akka
@@ -47,6 +48,7 @@
         * Case Study: the Clojure Concurrency Model
     * Event-driven Concurrency
         * Case Study: the JavaScript/node.js Concurrency Model
+    * Parallel Architecture
     * Concurrency Models and Distributed Systems Similarities
     * Other Approaches and Concurrency Primitives
 * The Microservice Paradigm: A Look at Analogies
@@ -91,11 +93,15 @@
     * Problems of Developers with Concurrency Models
         * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
     * Do Sufficiently Concurrent Programming Languages need MSA?
-        * Jolie
-        * Silo
-        * Distributed Erlang
-            * Scalability and Reliability
-        * Orco
+        * General Discussion
+        * Extensions to Mainstream Languages
+            * Distributed Erlang
+                * Scalability and Reliability
+            * C++ (new Operator)
+        * Dedicated Programming Languages
+            * Jolie
+            * Silo
+            * Orco
         * Plattform and Middleware-based Approaches
             * XVSM/MozartSpaces
 * Outlook

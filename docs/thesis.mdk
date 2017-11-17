@@ -16,7 +16,7 @@ chead        :
 
 Toc depth    : 3 
 Bibliography : dipl
-Bib style    : alpha
+Bib style    : style/keynat.bst
 Cite All     : False
 
 Package      : mathptmx
@@ -58,6 +58,7 @@ Epigraph {
   padding: 1ex;
 }
 
+<!-- TODO brauch ich das hier?
 @if html {
   Name Contents   : \/
 
@@ -65,6 +66,7 @@ Epigraph {
   Css           : webpaginated.css
   Script*       : webpaginated.js
 }
+-->
 @if not html {
   Name Contents   : Inhaltsverzeichnis
 }
@@ -73,6 +75,10 @@ Epigraph {
 }
 
 CSS Header      :
+  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
+  body.madoko {
+    font-family: "Crimson Text", serif;
+  }
   .madoko .math-rendering {
     color: black;
   }
@@ -83,18 +89,21 @@ CSS Header      :
     color: #0000EE;  
   }
 
-
-
-~ Begin HtmlOnly
 [TITLE]
-~ Begin SidePanel
+
+<!--
+~ HtmlOnly
+A PDF Version of this thesis is available at [max.irro.at/pub/thesis/dipl.pdf](http://max.irro.at/pub/thesis/dipl.pdf)
+~
+-->
+
 [TOC]
-~ End SidePanel
-~ End HtmlOnly
-<!-- We open an HTML class here, which we'll need to close at the end -->
-~ Begin MainPanel
+
 
 <!-- TODO hier müssen sachen wie titleseite, frontmatter etc eingefügt werden -->
+
+
+
 
 
 # Danksagung { -; toc:clear; }
@@ -144,41 +153,57 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 # The Microservice Architecture Style
 
+## Service-oriented Systems
+
 ## Key Concepts
 
-### Architecture Properties
+## Architecture Properties
 
-### Architectural Elements
+### Geographically Distributed Code: Concurrency Beyond Multiple Cores
 
-#### API Gateway: The Request Broker and Curcuit Breaker
+~LitNote
+* seet [@But14] was "geographically distributed code" bedeutet (im zusammenhang eines concurrency models); MSA haben dies wieder einmal inherent
+~
 
-##### Case Study: Hysterix and Akka
+### Resilience
 
-### Quality Issues
+## Architectural Elements
 
-#### Software Quality Attributes
+### Communication Channel ()
 
-##### Performance
+mostly HTTP
 
-###### Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
+### Database per Service
 
-### Design Concerns
+### API Gateway: The Request Broker and Curcuit Breaker
 
-#### Smart endpoints and dumb pipes (geklaut von M.Fowler)
+#### Case Study: Hysterix and Akka
 
-#### Failure is inevitable
+## Quality Issues
 
-#### Service Granularity: Size vs. Number of Services
+### Software Quality Attributes
 
-#### Satisfaction of local vs. global Quality Properties
+#### Performance
 
-#### Polyglot Programming
+##### Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
 
-### Patterns (Kapitel notwendig?)
+## Design Concerns
 
-#### Event-driven architecture
+### Smart endpoints and dumb pipes (geklaut von M.Fowler)
 
-### Development, Debugging and Maintenance
+### Failure is inevitable
+
+### Service Granularity: Size vs. Number of Services
+
+### Satisfaction of local vs. global Quality Properties
+
+### Polyglot Programming
+
+## Patterns (Kapitel notwendig?)
+
+### Event-driven architecture
+
+## Development, Debugging and Maintenance
 
 ~ Epigraph { caption: "Filipe Fortes" }
 Debugging is like being the detective in a crime movie where you're also the murderer.
@@ -236,6 +261,26 @@ Debugging is like being the detective in a crime movie where you're also the mur
 ## Event-driven Concurrency
 
 ### Case Study: the JavaScript/node.js Concurrency Model
+
+## Parallel Architecture
+
+~LitNote
+* siehe [@But14] zu den 4 Teilen:
+  * Bit-Level Parallelism
+  * Instruction-Level Parallelism
+  * Data Parallelism
+  * Task_level Parallelism (das ist das für mich wichtige)
+    * hier wird zwischen Shared-memory und Distributed-memory unterschieden, mit guter Erklärung
+~
+
+### Inter-process Communication
+
+~LitNote
+* [@But14]
+  * shared-memory: inter-process comm. through memory (faster)
+  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
+    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
+~
 
 ## Concurrency Models and Distributed Systems Similarities
 
@@ -478,5 +523,3 @@ Predicition is very difficult, especially about the future.
 
 <!-- TODO glossar, nomenclature, index -->
 
-<!-- We need to close the HTML class we opened right at the top -->
-~ End MainPanel
