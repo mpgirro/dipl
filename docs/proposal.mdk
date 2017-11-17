@@ -214,10 +214,10 @@ from 2016 and early 2017. On the other hand, programming paradigm and
 concurrency research has been around for decades.
 
 As we have motivated in § [#sec-motivation], the microservice architecture style
-has many conceptual roots in various programming paradigms (especially object-
-orientation), but it also originates from service oriented architectures (SOA)
-in general [@Maz16;@Mon16a]. SOA can be considered the "first generation" of
-services, providing benefits like dynamism, modularity, distributed development
+has many conceptual roots in various programming paradigms (especially 
+object-orientation), but it also originates from service oriented architectures 
+(SOA) in general [@Maz16;@Mon16a]. SOA can be considered the "first generation" 
+of services, providing benefits like dynamism, modularity, distributed development
 and the integration of heterogenouse and legacy systems. Microservices can be
 considered "second generation" services, and therefore an evolution of SOA,
 where each service is being developed with the focus on one single functionality
@@ -258,16 +258,17 @@ implicitely futures, and the object and concurrency structure are orthogonal, to
 allow them to evolve separately [@Pet16].
 
 On the other hand, there is not only progress in concurrency evolution. The
-*Jolie* programming language calls itself the first of the kind of *service-
-oriented programming* paradigm [@Mon14]. Originating in the pre-mircoservice
+*Jolie* programming language calls itself the first of the kind of 
+*service-oriented programming* paradigm [@Mon14]. Originating in the pre-mircoservice
 era, it builds upon the SOA concept of service *orchestration*, meaning the
 behavioural composition of services. Jolies primary focus is the concept of the
-*service*, therefore each idiomatic Jolie program defines one such. A program is
-a composition of a *behaviour* and a *deployment*. The behaviour implements the
-functionality of the service. However, no communication with the service is
-defined inside the behaviour. This is part of the deployment, where so-called
-*communication ports* regulate the access functionality the service offers (cf.
-inside- and outside-view of objects mentioned in § [#sec-motivation]).
+*service* as the basic building blocks, therefore each idiomatic Jolie program 
+defines at least one such. A service is a composition of a *behaviour* and a 
+*deployment*. The behaviour implements the functionality of the service. However, 
+no communication with the service is defined inside the behaviour. This is part 
+of the deployment, where so-called *communication ports* regulate the access 
+functionality the service offers (cf. inside- and outside-view of objects mentioned 
+in § [#sec-motivation]).
 
 Jolie is a prototype language where each component is essentially a
 microservice. Therefore, from a conceptual point of view, Jolie is a valuable
@@ -307,7 +308,6 @@ curricula and the master curricula, is given in alphabetical order:
 * VU Distributed Systems Engineering
 * VU Distributed Systems Technologies
 * VU Effiziente Programme
-* VL Einführung in das Programmieren
 * VU Fortgeschrittene funktionale Programmierung
 * VU Fortgeschrittene objektorientierte Programmierung
 * VU Funktionale Programmierung
