@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
 Bibliography : dipl
-Bib style    : abstract
+Bib Style    : style/keynat.bst
 Cite All     : True
 
 [BIB]

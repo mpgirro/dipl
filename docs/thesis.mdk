@@ -135,7 +135,12 @@ Having myself a bit of a crush on the Microservice Architecture Style, this did 
 [TOC=tables]
 ~
 
-# Introduction
+
+
+Introduction
+============
+
+
 
 ~ Epigraph { caption: "Lewis Carroll, Alice in Wonderland"}
 Begin at the beginning," the King said gravely, and go on till you come to the end: then stop.
@@ -151,68 +156,12 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Road Map
 
-# The Microservice Architecture Style
-
-## Service-oriented Systems
-
-## Key Concepts
-
-## Architecture Properties
-
-### Geographically Distributed Code: Concurrency Beyond Multiple Cores
-
-~LitNote
-* seet [@But14] was "geographically distributed code" bedeutet (im zusammenhang eines concurrency models); MSA haben dies wieder einmal inherent
-~
-
-### Resilience
-
-## Architectural Elements
-
-### Communication Channel ()
-
-mostly HTTP
-
-### Database per Service
-
-### API Gateway: The Request Broker and Curcuit Breaker
-
-#### Case Study: Hysterix and Akka
-
-## Quality Issues
-
-### Software Quality Attributes
-
-#### Performance
-
-##### Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
-
-## Design Concerns
-
-### Smart endpoints and dumb pipes (geklaut von M.Fowler)
-
-### Failure is inevitable
-
-### Service Granularity: Size vs. Number of Services
-
-### Satisfaction of local vs. global Quality Properties
-
-### Polyglot Programming
-
-## Patterns (Kapitel notwendig?)
-
-### Event-driven architecture
-
-## Development, Debugging and Maintenance
-
-~ Epigraph { caption: "Filipe Fortes" }
-Debugging is like being the detective in a crime movie where you're also the murderer.
-~
-
-* [DGL17]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
 
 
-# Programming Paradigms: A Selected Overview
+Programming Paradigms
+=====================
+
+
 
 ## Imperative, Structured and Procedual Programming
 
@@ -234,11 +183,12 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 ## Other Programming Paradigms
 
-# Programming Services as a Paradigm 
 
-(aka Commonalities between Programming Paradigms and Microservices)
 
-# Models of Concurrent Computation
+Models of Concurrent Computation
+================================
+
+
 
 ## Basic Concepts in Concurrency
 
@@ -286,7 +236,77 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 ## Other Approaches and Concurrency Primitives
 
-# The Microservice Paradigm: A Look at Analogies
+
+
+The Microservice Architecture Style
+===================================
+
+
+
+## Service-oriented Systems
+
+## Key Concepts
+
+## Architecture Properties
+
+### Geographically Distributed Code: Concurrency Beyond Multiple Cores
+
+~LitNote
+* seet [@But14] was "geographically distributed code" bedeutet (im zusammenhang eines concurrency models); MSA haben dies wieder einmal inherent
+~
+
+### Resilience
+
+## Architectural Elements
+
+### Communication Channel ()
+
+mostly HTTP
+
+### Database per Service
+
+### API Gateway: Request Broker and Curcuit Breaker
+
+#### Case Study: Hysterix and Akka
+
+## Quality Issues
+
+### Software Quality Attributes
+
+#### Performance
+
+##### Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
+
+## Design Concerns
+
+### Smart endpoints and dumb pipes (geklaut von M.Fowler)
+
+### Failure is inevitable
+
+### Service Granularity: Size vs. Number of Services
+
+### Satisfaction of local vs. global Quality Properties
+
+### Polyglot Programming
+
+## Patterns (Kapitel notwendig?)
+
+### Event-driven architecture
+
+## Development, Debugging and Maintenance
+
+~ Epigraph { caption: "Filipe Fortes" }
+Debugging is like being the detective in a crime movie where you're also the murderer.
+~
+
+* [DGL17]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
+
+
+
+Towards a (Micro)service-Oriented Paradigm: A Look at Analogies
+======================================================
+
+
 
 ## Data Abstraction
 
@@ -376,17 +396,39 @@ zu Session Types:
 * see [@Mon13] "*Choreographic Programming*"
 ~
 
-# The Microservice Concurrency Model: A Conceptual View
 
-## Concurrency Models for Service-oriented Programming
 
-## oncurrency based on Message Passing
+The Microservice Concurrency Model
+==================================
+
+
+
+## Immutable Messages
+
+### Asynchronouse Dataflow with Synchronous Messages
+
+## Message Processing and Transactional Memory
+
+jeder REST request (der von einem DB state abhängt) wird mit STM gekennzeichnet (zB `@Transactional` in Java)
+
+## Applicability for Concurrent Problems
+
+## Applicability for Parallel Problems
+
+## Resilient Code
+
+## Geographically Distributed Code
 
 ## Distributed Computation
 
 ## Concurrent Process Types for Services
 
-# Scenario-based Experiment
+
+
+Scenario-based Experiment
+=========================
+
+
 
 ## Scenario
 
@@ -466,7 +508,12 @@ We created two prototypical impelementations simulating the descripated *smart f
 
 ## Findings
 
-# Discussion
+
+
+Discussion
+==========
+
+
 
 ## Comparision of Attributes/Features/etc
 
@@ -496,7 +543,12 @@ We created two prototypical impelementations simulating the descripated *smart f
 
 #### XVSM/MozartSpaces
 
-# Outlook
+
+
+Outlook
+=======
+
+
 
 ~ Epigraph { caption: "Niels Bohr" }
 Predicition is very difficult, especially about the future.
@@ -517,7 +569,8 @@ Predicition is very difficult, especially about the future.
   * these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics;
   
 
-# Conclusion
+Conclusion
+==========
 
 [BIB]
 

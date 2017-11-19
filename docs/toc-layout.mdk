@@ -7,28 +7,7 @@
     * Scope of this Thesis
     * Methodology used
     * Road Map
-* The Microservice Architecture Style
-    * Service-oriented Systems
-    * Key Concepts
-    * Architecture Properties
-        * Concurrency Beyond Multiple Cores
-    * Architectural Elements
-        * API Gateway: The Request Broker and Curcuit Breaker
-            * Case Study: Hysterix and Akka
-    * Quality Issues
-        * Software Quality Attributes
-            * Performance
-                * Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
-    * Design Concerns
-        * Smart endpoints and dumb pipes (geklaut von M.Fowler)
-        * Failure is inevitable
-        * Service Granularity: Size vs. Number of Services
-        * Satisfaction of local vs. global Quality Properties
-        * Polyglot Programming
-    * Patterns (Kapitel notwendig?)
-        * Event-driven architecture
-    * Development, Debugging and Maintenance
-* Programming Paradigms: A Selected Overview
+* Programming Paradigms
     * Imperative, Structured and Procedual Programming
     * Object-oriented Programming
         * History of Objects: Simula and Smalltalk
@@ -49,22 +28,52 @@
     * Event-driven Concurrency
         * Case Study: the JavaScript/node.js Concurrency Model
     * Parallel Architecture
+        * Inter-process Communication
     * Concurrency Models and Distributed Systems Similarities
     * Other Approaches and Concurrency Primitives
-* The Microservice Paradigm: A Look at Analogies
+* The Microservice Architecture Style
+    * Service-oriented Systems
+    * Key Concepts
+    * Architecture Properties
+        * Geographically Distributed Code: Concurrency Beyond Multiple Cores
+        * Resilience
+    * Architectural Elements
+        * Communication Channel (mostly HTTP)
+        * Database per Service
+        * API Gateway: Request Broker and Curcuit Breaker
+            * Case Study: Hysterix and Akka
+    * Quality Issues
+        * Software Quality Attributes
+            * Performance
+                * Case Study: JSON in Service as a Performance factor (siehe [@OBM05] p.15)
+    * Design Concerns
+        * Smart endpoints and dumb pipes (geklaut von M.Fowler)
+        * Failure is inevitable
+        * Service Granularity: Size vs. Number of Services
+        * Satisfaction of local vs. global Quality Properties
+        * Polyglot Programming
+    * Patterns (Kapitel notwendig?)
+        * Event-driven architecture
+    * Development, Debugging and Maintenance
+* The Paradigms/Concepts Analogioes of MSA (statt: Towards a (Micro)service-Oriented Paradigm: A Look at Analogies)
     * Data Abstraction
         * Encapsulation
         * Information Hiding
     * Identity and Equality
     * SOLID design principles
+    * Message Passing: Avoiding Shared State
     * Design by Contract and REST
         * REpresentational State Transfer 
         * Pre- and Postconditions
         * Invariants and History-constraints
-    * Substitution and Behaviour
+    * Behavioural Tyes and Session Types
+        * Substitution and Behaviour
+        * Subtyping and SOA
+        * Behavioural Contracts
+        * Neutral Interface Technology vs Formal Specifications (Contracts)
+    * Choreographies
     * Delegation: Sharing partial implementation
         * Case Study: Delegation in JavaScript
-    * Message Passing: Avoiding Shared State
     * Clients Request Services
     * The Case of Actors vs Active Objects
         * A Case for Actors
@@ -73,11 +82,14 @@
         * A Conflation of Distinct Concepts
     * Event-based View
     * Flow-based View   
-    * Process-, Behavioural-, and Session-Types
-    * Choreographies
-* The Microservice Concurrency Model: A Conceptual View
-    * Concurrency Models for Service-oriented Programming
-    * Concurrency based on Message Passing
+* The Microservice Concurrency Model
+    * Immutable Messages
+        * Asynchronouse Dataflow with Synchronous Messages
+    * Message Processing and Transactional Memory
+    * Applicability for Concurrent Problems
+    * Applicability for Parallel Problems
+    * Resilient Code
+    * Geographically Distributed Code
     * Distributed Computation
     * Concurrent Process Types for Services
 * Scenario-based Experiment
@@ -92,8 +104,13 @@
     * Why Developers adopt MSA
     * Problems of Developers with Concurrency Models
         * Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
-    * Do Sufficiently Concurrent Programming Languages need MSA?
-        * General Discussion
+    * Mixing Concurrency Models
+    * Requirements on a Language/Model to be equally powerful as MSA
+        * By Nature of Problems (Concurrent/parallel/both)
+        * By Parallel Architecture
+        * Resilience against common Problems
+        * Geographical Distribution
+    * Alternatives to MSA
         * Extensions to Mainstream Languages
             * Distributed Erlang
                 * Scalability and Reliability

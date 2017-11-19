@@ -1,6 +1,6 @@
 
 Bibliography : dipl
-Bib style    : alpha
+Bib Style    : ../style/keynat.bst
 Cite All     : False
 
 CSS Header      :
@@ -8,9 +8,9 @@ CSS Header      :
     max-width: 98ex;
   }
 
+[TOC]
 
-
-**[@Als16] "A Systematic Mapping Study in Microservice Architecture"**
+# [@Als16] A Systematic Mapping Study in Microservice Architecture
 
   * Mache ich auch eine "Mapping Study"?
   * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
@@ -51,7 +51,7 @@ CSS Header      :
     * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
     * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format
 
-**[@Agh90] "Concurrent Object-Oriented Programming"**
+# [@Agh90] "Concurrent Object-Oriented Programming"
 
 * p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
 * p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
@@ -70,7 +70,7 @@ CSS Header      :
 * Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
 * Inherent Concurrency
 
-**[@Agh85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"**
+# [@Agh85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"
 
 * no consenus has emerged on a single model of concurrency
 * discussion on paradigm shift in [Pratt 83]
@@ -117,7 +117,7 @@ CSS Header      :
 * An actor language also provides a suitable basis for large-scale parallelism. Besides the
   ability to distribute the work required in the course of a computation, actor systems can be composed simply by passing messages between them. The internal workings of an actor system are not available to any other system
 
-**[@Bla13] "Object-oriented programming: Some history, and challenges for the next fifty years"**
+# [@Bla13] "Object-oriented programming: Some history, and challenges for the next fifty years"
 
 * [...] Alan Snyder of Hewlett Packard wrote an influential survey paper “The Essence of Objects”
 * In Snyder’s view, the essential concepts were as follows:
@@ -144,7 +144,7 @@ with more “abstract” entities.
 * Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
 * Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
 
-**[@Bri87] "Inheritance and Synchronization in Concurrent OOP"**
+# [@Bri87] "Inheritance and Synchronization in Concurrent OOP"
 
   * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
   * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
@@ -167,7 +167,32 @@ with more “abstract” entities.
   * There is no delegation proposed in the Actor model of [Agha 85].
   * Bild des Delegation Schemas seite 38 [so ein bild sollte ich vll auch haben, da eine gateway ist immer delegation]{.mind}
 
-**[@Dra17a] "Microservices: yesterday, today, and tomorrow"**
+# [@But14] Seven Concurrency Models in Seven Weeks: When Threads Unravel
+
+* A concurrent program has multiple logical threads of control. These threads may or may not run in parallel.
+* A parallel program potentially runs more quickly than a sequential program by executing different parts of the computation simultaneously (in parallel). It may or may not have more than one logical thread of control.
+*  In a shared-memory multiprocessor, each processor can access any memory location, and interprocessor communication is primarily through memory, as you can see in Figure 1, Shared memory, on page 5.
+* Figure 2, Distributed memory, on page 5 shows a distributed-memory system, where each processor has its own local memory and where interprocessor communication is primarily via the network.
+* Because communicating via memory is typically faster and simpler than doing so over the network, writing code for shared memory-multiprocessors is generally easier. But beyond a certain number of processors, shared memory becomes a bottleneck—to scale beyond that point, you’re going to have to tackle distributed memory. Distributed memory is also unavoidable if you want to write fault-tolerant systems that use multiple machines to cope with hardware failures.
+* Concurrency enables resilient, or fault-tolerant, software through indepen-dence and fault detection. Independence is important because a failure in one task should not be able to bring down another. And fault detection is critical so that when a task fails (because it crashes or becomes unresponsive, or because the hardware it’s running on dies), a separate task is notified so that it can take remedial action.
+* Sequential software can never be as resilient as concurrent software.
+* Threads and locks: Threads-and-locks programming has many well-under-stood problems, but it’s the technology that underlies many of the other models
+* Functional programming: ... excellent support for concurrency and parallelism. Because they eliminate mutable state, functional programs are intrinsically thread-safe and easily parallelized.
+* Actors: It can target both shared- and dis-tributed-memory architectures and facilitate geographical distribution
+* Communicating Sequential Processes (CSP) has much in common with the actor model, both being based on message passing. Its emphasis on the channels used for communication, rather than the entities between which communication takes place
+
+~ {color:red}
+* Each of these models has a different sweet spot. As you read through each chapter, bear the following questions in mind:
+  * Is this model applicable to solving concurrent problems, parallel problems, or both?
+  * Which parallel architecture or architectures can this model target?
+  * Does this model provide tools to help you write resilient or geographically distributed code?
+~
+
+* Threads
+  * Despite their well-known problems, threads and locks are still the default choice for writing much concurrent software
+  * Threads and locks are little more than a formalization of what the underlying hardware actually does. That’s both their great strength and their great weakness.
+
+# [@Dra17a] "Microservices: yesterday, today, and tomorrow"
 
   * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
   * modules of a monolith depend on said shared resources, they are not independently executable
@@ -295,7 +320,7 @@ with more “abstract” entities.
 
 
 
-**[@Erb12] "Concurrent Programming for Scalable Web Architectures"**
+# [@Erb12] "Concurrent Programming for Scalable Web Architectures"
 
 * 2.3.5 Concurrency, Programming Languages and Distributed Systems
   * we consider the strong relationship between concurrent programming, programming languages and distributed systems when building large architectures. Programming distributed systems introduces a set of additional challenges compared to regular programming. The “Fallacies of Distributed Computing” [RGO06] provide a good overview on some of the important pitfalls thatmust be addressed.
@@ -318,7 +343,7 @@ with more “abstract” entities.
   * Distributed Dataflow Programming
     * Declarative dataflow programming provides a concurrencymodel with inherent coordination, entirely hidden from the developer. Massively parallel data-centric computing frameworks such asMapReduce [Dea08] have shown the strong points of dataflow programming. However, programming abstractions likeMapReduce heavily constrain the expressiveness compared to pure, non-distributed dataflow languages. Thus, only a small amount of existing algorithms can be applied forMapReduce-based computations. Combining an expressive programmingmodel including dataflow concurrency with a scalable and fault-tolerant distributed execution engine represents a sweet spot for programming in the large.
 
-**[@Fra17] "Architecting microservices"**
+# [@Fra17] "Architecting microservices"
   * Fowler and Lewis define the microservice architectural style as an approach for developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API [15].
   * (RQ-1) has revealed that performance and maintainability are among the most investigated quality attributes, while possible research gaps could exist in the field of security, reliability and portability for MSA [13].
   * major barriers to cloud adoption there are security and vendor lock-in and quality assurance.
@@ -331,7 +356,7 @@ with more “abstract” entities.
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
-**[@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"**
+# [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
 
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
   * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
@@ -350,7 +375,7 @@ with more “abstract” entities.
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
 
-**[@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"**
+# [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
 
   * components of an application are autonnomous services that execute independently
   * communicate via message passing
@@ -388,7 +413,7 @@ with more “abstract” entities.
   * all internal services are subjects to potential communciation failures and overloads
   * choreography does not require central control. a critical feature for the scalability of MSA
 
-**[@OBM05] "Quality Attributes and Service-Oriented Architectures"**
+# [@OBM05] "Quality Attributes and Service-Oriented Architectures"
 
   * Software architecture is the bridge between mission/business goals and a software-intensive system.
   * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
@@ -498,7 +523,7 @@ with more “abstract” entities.
     * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
     * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
-**[@SRH17] "Microservices: Granularity vs. Performance"**
+# [@SRH17] "Microservices: Granularity vs. Performance"
 
   * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
   * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
