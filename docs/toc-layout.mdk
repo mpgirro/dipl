@@ -11,6 +11,7 @@
     * Imperative, Structured and Procedual Programming
     * Object-oriented Programming
         * History of Objects: Simula and Smalltalk
+        * Modular Programming
     * Functional Programming
     * Event-Driven and Flow-Driven Programming
     * Logic and Constraint Programming
@@ -19,6 +20,8 @@
 * Models of Concurrent Computation
     * Basic Concepts in Concurrency
         * Execution Order and Nondeterminism
+        * Concurrency at the Programming Language Level
+        * Concurrency at the Operating System Level
     * Threads, Locks and Shared State
         * Case Study: the Java Concurrency Model
     * Actors and Active Objects
