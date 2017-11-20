@@ -17,7 +17,7 @@ Don't give up on your dreams, keep on sleeping.
 ~ LitNote
 * <https://martinfowler.com/articles/microservices.html>
 
-* keywords for microservices challenges from [@AAE16]:
+* keywords for microservices challenges from [@Als16]:
   * Communication/Integration (API, REST, sockets, TCP, gateway, circuit breakers, load balancer, proxy)
   * Service discovery (API gateways, etc)
   * Performance ( QoS, performance, SLA, speed, simulation)
@@ -31,8 +31,8 @@ Don't give up on your dreams, keep on sleeping.
 
 # From the early days to Object-oriented design patterns [title from DGL17]
 
-* [@DGL17] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
-* [@DGL17] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
+* [@Dra17a] This spike of interest contributed to an increase in the number of existing software architecture patterns (or generally called styles), so that some form of classification was then required. This problem was tackled in one of the most notable works in the field, the book “Software Architecture: Perspectives on an Emerging Discipline” by Garlan and Shaw
+* [@Dra17a] The classic by Gamma et al. [36] covers the design of object-oriented software and how to translate it into code presenting a collection of recurring solutions, called patterns.
 
 # Service-level design principles
 
@@ -69,7 +69,7 @@ Case Study: Concurrency in ABCL/1 [@Yon86a]
 
 ~ LitNote
 * Microservices sind ja per Design Concurrent, da eigene Programme (Service = Component). Und wenn man MS skaliert (mehrere Instanten gleichzeitig startet) dann ist diese Component auch parallel. Also falls man auf mehreren Maschinen deployed
-* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@FL17]
+* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
 ~
 
 # MSA and the Unix Philosophy

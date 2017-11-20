@@ -404,7 +404,7 @@ with more “abstract” entities.
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
-# [@HB16] Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap
+# [@Has16] Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap
 
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
   * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
@@ -461,7 +461,7 @@ with more “abstract” entities.
   * all internal services are subjects to potential communciation failures and overloads
   * choreography does not require central control. a critical feature for the scalability of MSA
 
-# [@OBM05] Quality Attributes and Service-Oriented Architectures
+# [@OBr05] Quality Attributes and Service-Oriented Architectures
 
   * Software architecture is the bridge between mission/business goals and a software-intensive system.
   * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
@@ -571,7 +571,7 @@ with more “abstract” entities.
     * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
     * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
-# [@SRH17] Microservices: Granularity vs. Performance
+# [@Sha17a] Microservices: Granularity vs. Performance
 
   * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
   * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].

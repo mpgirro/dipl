@@ -21,7 +21,7 @@ CSS Header      :
 
 * <https://martinfowler.com/articles/microservices.html>
 
-* keywords for microservices challenges from [@AAE16]:
+* keywords for microservices challenges from [@Als16]:
   * Communication/Integration (API, REST, sockets, TCP, gateway, circuit breakers, load balancer, proxy)
   * Service discovery (API gateways, etc)
   * Performance ( QoS, performance, SLA, speed, simulation)
@@ -94,7 +94,7 @@ CSS Header      :
 
 ## Foundational Issues of concurrent systems
 
-* [@AH85] zu foundational issues in the design of programming languages for concurrent systems
+* [@Agh85] zu foundational issues in the design of programming languages for concurrent systems
   * shared resources: may chance their internal state while shared 
   * dynamic reconfiguration: dealw ith creation of new objects in the evolution of the system; must be a mechanism to for communicating the existance of such new objects or processes to already existing ones
     * in MSA ist genau das die kernaufgabe der gateway
@@ -145,12 +145,12 @@ CSS Header      :
 
 ## Active Objects vs MS (inkl Gateways)
 
-* [@LS95] definiert Active Object pattern als: "decouples method execution from method invocation in order to simplify synchronized access to a shared resource bymethods invoked in different threads of control"
+* [@Lav95] definiert Active Object pattern als: "decouples method execution from method invocation in order to simplify synchronized access to a shared resource bymethods invoked in different threads of control"
   * genau dass, was auch in MSA passiert. 1) der MS an sich, denn auch hier bietet die REST schnittstelle eine Entkoppelung
   * Weiters wird in dem Artikel noch diese Erklärung gebracht: "To illustrate the Active Object pattern, consider the design of a connection-oriented Gateway. A Gateway decouples cooperating components in a distributed system and allows them to interact without having direct dependencies among each other"
     * Wieder genau MSA: connection-oriented gateway; decouples cooperating components in DS; interact without direct dependencies
   * Im Artikel werden noch konkrete Beispiele (zB Input/Output Handler etc) gebracht -> gut für mehr Text
-* [@LS95] Use the Active Object pattern when
+* [@Lav95] Use the Active Object pattern when
   * The design and implementation of a concurrent program can be simplified
     * Mein these ist auch, dass MSA hinsichtlich Concurrency leichter zu erdenken sind als andere Modelle
   * Multiple threads of control require synchronized access to shared data
@@ -159,16 +159,16 @@ CSS Header      :
     * Bei einem REST-based (zB Spring) MS, kann ich mich nicht darauf verlassen, dass der erste REST aufruf auch der erste ist der ausgeführt wird (je nachdem was im internen Spring Concurrency Modell zuerst dran kommt)
   * The operations on a shared object are relatively coarse-grained
     * coarse-grained ist eine gewünschte Eigenschaft von MSA
-* [@LS95] The Active Object pattern offers the following benefit
+* [@Lav95] The Active Object pattern offers the following benefit
   * Enhance application concurrency while reducing synchronization complexity
     * Wieder genau MS
   * Leverage parallelism available from the hardware and software platform
     * Auch wieder MS, "inherente Parallelität" wie ich das gerne nenne, wenn die Hardware Multi-core bzw Multi-Maschine
-* [@LS95] The Active Object pattern has the following drawbacks
+* [@Lav95] The Active Object pattern has the following drawbacks
   * It potentially increases context switching, data movement, and synchronization overhead
   * It may be difficult to debug programs containing active objects due to the concurrency and non-determinism of the Scheduler 
 * Neue Service-oriented Languages bauen auf der Idee von Active Objects auf (und diese Sprachen bauen ja im Prinzip MS auf Sprachebene nach). **In welchen Quellen stand das?**
-* [@GB99] beschreibt aspekte von active objects:
+* [@Gue99] beschreibt aspekte von active objects:
   * Proactivity: an agent (= active object) has a goal; it does not simply act in response to messages from other agents (im gegensatz zum Actor model)
     * manche MS sind auch genau dafür da, während andere nur reaktiv sind (eine genaue unterscheidung gibts hier meines wissens nach in der literatur noch nicht)
   * Sociability: agents can interact by speaking different languages (hier ist was komisch-altes gemeint)
