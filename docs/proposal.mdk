@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
-Title        : Concurrent Programming and Microservice Architecture
-Subtitle     : Master Thesis Proposal
+Title        : Master Thesis Proposal
+Subtitle     : Concurrent Programming and the Microservice Architecture Style
 Title Note   : DRAFT, &date; (version 1.1)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
@@ -15,6 +15,21 @@ Bibliography : dipl
 Bib style    : style/keynat.bst
 Logo         : False
 Draft        : True
+
+CSS Header      :
+  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
+  body.madoko {
+    font-family: "Crimson Text", serif;
+  }
+  .madoko .math-rendering {
+    color: black;
+  }
+  hr.figureline.madoko {
+    display: none;
+  }
+  .toc a, .toc a:visited { 
+    color: #0000EE;  
+  }
 
 .LitNote { background-color: yellow }
 
