@@ -4,13 +4,23 @@ Bib Style    : ../style/keynat.bst
 Cite All     : False
 
 CSS Header      :
+  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
   body.madoko {
-    max-width: 98ex;
+    font-family: "Crimson Text", serif;
+  }
+  .madoko .math-rendering {
+    color: black;
+  }
+  hr.figureline.madoko {
+    display: none;
+  }
+  .toc a, .toc a:visited { 
+    color: #0000EE;  
   }
 
 [TOC]
 
-# [@Agh85] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"
+# [@Agh85] Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism
 
 * no consenus has emerged on a single model of concurrency
 * discussion on paradigm shift in [Pratt 83]
@@ -57,7 +67,7 @@ CSS Header      :
 * An actor language also provides a suitable basis for large-scale parallelism. Besides the
   ability to distribute the work required in the course of a computation, actor systems can be composed simply by passing messages between them. The internal workings of an actor system are not available to any other system
 
-# [@Agh90] "Concurrent Object-Oriented Programming"
+# [@Agh90] Concurrent Object-Oriented Programming
 
 * p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
 * p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
@@ -124,9 +134,9 @@ CSS Header      :
 * Current software de-velopment technology is not well suited to producing these large-scale systems, because of the lack of high-level structuring abstractions for complex communication behavior.
 * A recent trend in current research is to use behavioral type the-ory as the basis for new foundations, programming languages, and software development methods for communication-intensive distributed systems.
 * Behavioral type theory encompasses concepts such as inter-faces, communication protocols, contracts, and choreography. Roughly speaking, a behavioral type describes a software entity, such as an ob-ject, a communication channel, or a Web Service, in terms of the se-quences of operations that allow for a correct interaction among the involved entities.
-* Chapter 2 is devoted to the integration of behavioral types into Object-Oriented languages. Object-oriented languages are rele-Chapter 2 is devoted to the integration of behavioral types into Object-Oriented languages. Object-oriented languages are rele-vant for their widespread adoption in the current development of software, for the wealth and popularity of tools that are avail-able, and because objects nicely fit a distribution model to which behavioral types can be applied naturally. The integration can be achieved in different ways: either by enriching the languages with constructs (in particular, sessions) that call for a correspond-ing extension at the type level, or by amalgamating sessions and objects to the point that the objects themselves become the enti-ties for which a behavioral description is required, for example to specify the order in which methods must/can be invoked.
+* Chapter 2 is devoted to the integration of behavioral types into Object-Oriented languages. Object-oriented languages are rele-vant for their widespread adoption in the current development of software, for the wealth and popularity of tools that are avail-able, and because objects nicely fit a distribution model to which behavioral types can be applied naturally. The integration can be achieved in different ways: either by enriching the languages with constructs (in particular, sessions) that call for a correspond-ing extension at the type level, or by amalgamating sessions and objects to the point that the objects themselves become the enti-ties for which a behavioral description is required, for example to specify the order in which methods must/can be invoked.
 * The WSDL and UDDI standards are technologies currently en- abling the description of Web Service interfaces and the creation of Web Service repositories. Chapter 7 explores the potential of behavioral types, intended as abstract descriptions of Web Ser-vice behaviors, as natural generalizations of WSDL interfaces to realize sophisticated forms discovering, composition, and orches-tration of Web Services.
-* Chapter 8 illustrates the design-by-contract methodology for the development of possibly distributed, communicating systems. Ac-Chapter 8 illustrates the design-by-contract methodology for the development of possibly distributed, communicating systems. Ac-cording to this methodology, behavioral types are used for de-scribing, from a vantage point of view, the topology of the com-munication network, the communications that are supposed to occur, and in which order. Such global specifications serve multi-ple purposes: they are a valuable form of abstract specification of the overall behavior of a distributed system; they can be projected for describing the local behavior of the network participants to allow the modular type checking of complex systems; they enable the generation of monitors to verify, at runtime, that the partici-pants of a heterogeneous distributed system behave as expected, even if only some or none of them have been type checked against their supposed or claimed behavior.
+* Chapter 8 illustrates the design-by-contract methodology for the development of possibly distributed, communicating systems. Ac-cording to this methodology, behavioral types are used for de-scribing, from a vantage point of view, the topology of the com-munication network, the communications that are supposed to occur, and in which order. Such global specifications serve multi-ple purposes: they are a valuable form of abstract specification of the overall behavior of a distributed system; they can be projected for describing the local behavior of the network participants to allow the modular type checking of complex systems; they enable the generation of monitors to verify, at runtime, that the partici-pants of a heterogeneous distributed system behave as expected, even if only some or none of them have been type checked against their supposed or claimed behavior.
 * Session types can be seen as a special case of typestate, in which the ordered operations are the sends and receives on communication channels.
 * Delegation. Delegation, namely the act of communicating a channel as a message, works as in standard session types and it is modeled through the constructs:
 * Service Oriented Computing (SOC) is based on services, intended as autonomous and heterogeneous components that can be published and discovered via standard interface languages and publish/discovery pro-tocols.Web Services is the most prominent service-oriented technology: Web Services publish their interface expressed in the Web Service De-scription Language (WSDL), they are discovered through the UDDI protocol, and they are invoked using SOAP.
@@ -156,7 +166,7 @@ CSS Header      :
   * the third challenge is about reliability. To the best of our knowledge, all implemented choreography languages work on the as-sumption that communications will succeed (the network is “perfect”) and execution units never fail.
   * Therefore, the safety properties of chore-ographies are guaranteed only if these assumptions are not broken at runtime.
 
-# [@Bla13] "Object-oriented programming: Some history, and challenges for the next fifty years"
+# [@Bla13] Object-oriented programming: Some history, and challenges for the next fifty years
 
 * [...] Alan Snyder of Hewlett Packard wrote an influential survey paper “The Essence of Objects”
 * In Snyder’s view, the essential concepts were as follows:
@@ -183,7 +193,7 @@ with more “abstract” entities.
 * Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
 * Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
 
-# [@Bri87] "Inheritance and Synchronization in Concurrent OOP"
+# [@Bri87] Inheritance and Synchronization in Concurrent OOP
 
   * Knowledge sharing (or inheritance) is a mechanism intensively used in OOP. Its basic idea is the reuse of object descriptions.
   * The second advantage is the introduction of classification among objects. It is used to hierarchically (or almost hierarchically) structuring knowledge, and it makes knowledge searching more efficient [Touretzky 861.
@@ -231,7 +241,7 @@ with more “abstract” entities.
   * Despite their well-known problems, threads and locks are still the default choice for writing much concurrent software
   * Threads and locks are little more than a formalization of what the underlying hardware actually does. That’s both their great strength and their great weakness.
 
-# [@Dra17a] "Microservices: yesterday, today, and tomorrow"
+# [@Dra17a] Microservices: yesterday, today, and tomorrow
 
   * mainstream languages for development of server-side applications, like Java, C/C++, and Python, provide abstractions to break down the complexity of programs into modules. However, these languages are designed for the creation of single executable artefacts, also called monoliths
   * modules of a monolith depend on said shared resources, they are not independently executable
@@ -357,7 +367,7 @@ with more “abstract” entities.
     * *Heterogeneity*: The microservices paradigm brings heterogeneity (of distributed systems) to itsmaximum expression. Indeed, a microservices-based system can be characterised by: a large num-ber of autonomous entities that are not necessarily known in advance (again, trust issue); a large number of different administrative security domains, creating competition amongst providers of different services; a large number of interactions across different domains (through APIs); no common security infrastructure (different “Trusted Computing Base); and last but not least, no global system to enforce rules.
 * A specific arc has been given to the narrative, which necessarily emphasises some connections and some literature, and it is possibly too severe with other sources. For example, research contributions in the domain of the actor model [43] and software agents [65] have not been emphasised enough,
 
-# [@Erb12] "Concurrent Programming for Scalable Web Architectures"
+# [@Erb12] Concurrent Programming for Scalable Web Architectures
 
 * 2.3.5 Concurrency, Programming Languages and Distributed Systems
   * we consider the strong relationship between concurrent programming, programming languages and distributed systems when building large architectures. Programming distributed systems introduces a set of additional challenges compared to regular programming. The “Fallacies of Distributed Computing” [RGO06] provide a good overview on some of the important pitfalls thatmust be addressed.
@@ -380,7 +390,8 @@ with more “abstract” entities.
   * Distributed Dataflow Programming
     * Declarative dataflow programming provides a concurrencymodel with inherent coordination, entirely hidden from the developer. Massively parallel data-centric computing frameworks such asMapReduce [Dea08] have shown the strong points of dataflow programming. However, programming abstractions likeMapReduce heavily constrain the expressiveness compared to pure, non-distributed dataflow languages. Thus, only a small amount of existing algorithms can be applied forMapReduce-based computations. Combining an expressive programmingmodel including dataflow concurrency with a scalable and fault-tolerant distributed execution engine represents a sweet spot for programming in the large.
 
-# [@Fra17] "Architecting microservices"
+# [@Fra17] Architecting microservices
+
   * Fowler and Lewis define the microservice architectural style as an approach for developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API [15].
   * (RQ-1) has revealed that performance and maintainability are among the most investigated quality attributes, while possible research gaps could exist in the field of security, reliability and portability for MSA [13].
   * major barriers to cloud adoption there are security and vendor lock-in and quality assurance.
@@ -393,7 +404,7 @@ with more “abstract” entities.
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
-# [@HB16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
+# [@HB16] Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap
 
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
   * Despite the hype for microservitization , the state of the art still lacks consensus on the definition of microservices, their properties and their modelling techniques.
@@ -412,7 +423,7 @@ with more “abstract” entities.
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
 
-# [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
+# [@Mon16a] Circuit Breakers, Discovery, and API Gateways in Microservices
 
   * components of an application are autonnomous services that execute independently
   * communicate via message passing
@@ -450,7 +461,7 @@ with more “abstract” entities.
   * all internal services are subjects to potential communciation failures and overloads
   * choreography does not require central control. a critical feature for the scalability of MSA
 
-# [@OBM05] "Quality Attributes and Service-Oriented Architectures"
+# [@OBM05] Quality Attributes and Service-Oriented Architectures
 
   * Software architecture is the bridge between mission/business goals and a software-intensive system.
   * In this report, we use the term service-oriented architecture to mean an architectural approach for building systems or applications that use a set of services and not just a system that is built as a set of services.
@@ -560,7 +571,7 @@ with more “abstract” entities.
     * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
     * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
-# [@SRH17] "Microservices: Granularity vs. Performance"
+# [@SRH17] Microservices: Granularity vs. Performance
 
   * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
   * As service orientation thinking matures, there is now the con-struct of Microservice Architecures (MSA)[20], which have gained popularity with software development teams who have a need to be able to provide applications that can scale in response to emerging requirements[23].
@@ -586,9 +597,5 @@ with more “abstract” entities.
     * Finer-grained microservices result in a potential increase in the number of in-process method invocations. This is tolerable when the microservices lie within the same container, as the message passing is rapid and the probability that the service request is completed is high and wholly dependent upon the application in the container.
     * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
     * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
-
-
-
-
 
 [BIB]
