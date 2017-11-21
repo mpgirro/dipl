@@ -30,9 +30,9 @@
         * Case Study: the Clojure Concurrency Model
     * Event-driven Concurrency
         * Case Study: the JavaScript/node.js Concurrency Model
-    * Parallel Architecture
-        * Inter-process Communication
     * Concurrency Models and Distributed Systems Similarities
+        * Parallel Architecture
+            * Inter-process Communication
     * Other Approaches and Concurrency Primitives
 * The Microservice Architecture Style
     * Service-oriented Systems
