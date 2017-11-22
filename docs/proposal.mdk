@@ -19,7 +19,7 @@ Draft        : True
 CSS Header      :
   @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
   body.madoko {
-    font-family: "Crimson Text", serif;
+    font-family: "Crimson Text", Cambria, serif;
   }
   .madoko .math-rendering {
     color: black;
@@ -92,6 +92,9 @@ basic ground to work upon, we therefore ask the first research question:
   other well-established models in Computer Science, such as object-orientation or 
   the functional paradigm?
 
+> **RQ1**: Which conceptual similarities are microservices sharing with programming 
+  concepts, such as object-oriention?
+
 Not only can we draw connections to well-established programming paradigms. Each
 microservice is a dedicated program (and therefore a system process) itself, and
 each service is a component in the application architecture, so it is easy to
@@ -115,7 +118,7 @@ models. For example:
 
 We see, microservice architectures do not only have commonalities with
 programming paradigms, but also with models for concurrent programming.
-Therefore, a close look at the concurrency principles of this architecture style
+Therefore, a close look at the concurrency aspect of this architecture style
 is in order. Building on the knowledge of the previous questions, we ask:
 
 > **RQ2**: Which commonalities are microservice architecture design principles 
@@ -123,13 +126,19 @@ is in order. Building on the knowledge of the previous questions, we ask:
   programming concepts are especially convenient for the commonalities identified 
   in RQ1?
 
-> **RQ2**: Which concepts are convenient?
+> **RQ2**: Which concurrency concepts are convenient?
 
 > **RQ2a**: Which commonalities are microservice architecture design principles 
   sharing with concurrency models in general?
 
+> **RQ2a**: Which conceptial similarities is the microservice architecture style 
+  sharing with concurrency models in general?
+
 > **RQ2b**: Which concurrency and distributed programming concepts are especially 
   convenient for the commonalities identified in RQ1?
+
+> **RQ2b**: Based on the similarities from RQ1 and RQ2a, which concurrency models 
+  have the most resemblence to the microservice architecture style the most comparable 
 
 And finally, after we have analysed the conceptual commonalities and related
 concurrency concepts, we are interested in why microservice architectures are
