@@ -32,6 +32,7 @@ CSS Header      :
   }
 
 .LitNote { background-color: yellow }
+.Answer { color:red }
 
 @if not draft {
   LitNote { display: none }
@@ -58,7 +59,7 @@ written in different programming languages. As long as they expose the interface
 required by the architecture, they are useable components [@Mon16a;@Dra17a].
 
 Interesting enough, this architecture style shares some similarities with long
-established programming paradigms. Some examples are:
+established programming concepts. Some examples are:
 
 * If we use the definition given in [@Dra17a] "*A microservice is a cohesive, 
   independent process interacting via messages*", we can spot commonalities with 
@@ -85,6 +86,7 @@ established programming paradigms. Some examples are:
 Many more conceptional resemblances can be pointed out and analysed. To get a
 basic ground to work upon, we therefore ask the first research question:
 
+<!--
 > **RQ1**: Which conceptual similarities are microservice architectures sharing with programming 
   paradigms, such as object-oriented or functional programming?
 
@@ -94,6 +96,14 @@ basic ground to work upon, we therefore ask the first research question:
 
 > **RQ1**: Which conceptual similarities are microservices sharing with programming 
   concepts, such as object-oriention?
+-->
+
+> **RQ1**: Which conceptual similarities are microservices sharing with programming 
+  concepts, such as object-oriented design or SOA?
+
+~ Answer
+**Answer:** modularity, separation of concerns, factorization, binding and coupling, interfaces, design by contract, reusability, behavioural types, dynamic creation of instances, identity vs equality, identity-state-behaviour, specialisation and substitution, errors and exceptions
+~
 
 Not only can we draw connections to well-established programming paradigms. Each
 microservice is a dedicated program (and therefore a system process) itself, and
@@ -121,33 +131,62 @@ programming paradigms, but also with models for concurrent programming.
 Therefore, a close look at the concurrency aspect of this architecture style
 is in order. Building on the knowledge of the previous questions, we ask:
 
+<!--
 > **RQ2**: Which commonalities are microservice architecture design principles 
   sharing with concurrency models in general? Which concurrency and distributed 
   programming concepts are especially convenient for the commonalities identified 
   in RQ1?
+-->
 
 > **RQ2**: Which concurrency concepts are convenient?
 
+<!--
 > **RQ2a**: Which commonalities are microservice architecture design principles 
   sharing with concurrency models in general?
 
-> **RQ2a**: Which conceptial similarities is the microservice architecture style 
+> **RQ2a**: Which aspects have concurrency models in general in common with the microservice style?
+-->
+
+> **RQ2a**: Which conceptual similarities is the microservice architecture style 
   sharing with concurrency models in general?
 
+~ Answer
+**Answer**: concurrent computation, distributed memory, (immutable) message passing, no shared state, communication mechanism (in-memory or network, inter-process, between threads), threads of controll, dynamic creation of interfaces, probleme (races, deadlock), limitations (resources, bandwidth), synchronisation overhead, possibility of parallelization, monitoring, error propagation and fault handling
+~
+
+<!--
 > **RQ2b**: Which concurrency and distributed programming concepts are especially 
   convenient for the commonalities identified in RQ1?
+-->
 
 > **RQ2b**: Based on the similarities from RQ1 and RQ2a, which concurrency models 
-  have the most resemblence to the microservice architecture style the most comparable 
+  have the most resemblence to the microservice architecture style?
+
+~ Answer
+**Answer**: Actors, Active Objects, Event-driven, Kombinationen mit STM, Threads vs Process
+~
 
 And finally, after we have analysed the conceptual commonalities and related
 concurrency concepts, we are interested in why microservice architectures are
 being adapted so eagerly in the first place. We subsequently ask the question:
 
+<!--
 > **RQ3**: Do sufficiently concurrent programming languages need microservice 
-  architectures?
+  architectures, i.e. are there requirements on concurrent computation that 
+  classic concurrency models can not solve, but the microservice style can?
+-->
 
+> **RQ3**: Do sufficiently concurrent programming languages need microservice 
+  architectures, i.e. have MSA aspects regarding concurrent computation that 
+  languages facilitating classic concurrency models do not provide?
+
+~ Answer
+**Answer**: Diskussion bzgl. scalability, fault tolerance, resilience, geographically distributed code (braucht Middleware Lösung, zB wie in Distributed Erlang, oder neue Paradigmen wie in Jolie und ähnliche die mehrere Executables compilieren), polyglot programming (via VMs möglich, vgl. Mix aus Java/Scala/Groovy/Clojure auf der JVM)
+~
+
+<!--
 &pagebreak;
+-->
 
 # Expected Results { #expected-results }
 
@@ -161,7 +200,11 @@ systems, microservice architectures are used only because the
 languages concurrency models and primitives make it harder for developers to
 design, implement, debug and maintain - therefore ultimately *understand* - the
 software architectures that serve the same design goals as the corresponding
-microservice architecture does.
+microservice architecture does. 
+
+~ {color:blue}
+From a historical point of view, the MSA style was also a result from breaking apart monolithic applications that outreached their scalability limit. Yet the enthusiastic adoption of this style also suggests that developers welcomed the increase in clearity this architecture implicates, possibly because the traditional concepts of software construction (i.e. the object-oriented approach) in combination with their related concurrency techniques did not scale well regarding the complexity of the software system with an increase in the monolith's size. This would imply that todays concurrency language primitives, libraries or frameworks provide insufficient APIs for developers for large software systems
+~
 
 However, the author also expects that the only argument remaining in favour of
 microservice architectures will be that todays concurrent by design programming
@@ -207,7 +250,7 @@ The methodology used to answer the given research questions outlined in §
   concurrency constructs. For one of the languages, the MSA style should be a 
   common choice of architecture, despite the languages concurrent nature. For the 
   other, at least one available concurrency approach should have a high accordance 
-  to the properties identified in RQ2.
+  to the properties identified in RQ2a and should therefore be in the answer set of RQ2b.
 5. Based on the knowledge aquired through RQ1 and RQ2, a prototypical scenario has 
   to be formulated, which is suited to be implemented using a microservice 
   architecture.
@@ -215,7 +258,7 @@ The methodology used to answer the given research questions outlined in §
   be implemented: 
   * The implementation using the language where microservices are a common 
     architecture style should also use the MSA. The application itself will 
-    therefore consist of multiple executable programs. Any microservice frameworks 
+    therefore consist of multiple executable programs. Any microservice framework 
     or libraries may be used.
   * The other implementation should use only the concurrency models available to 
     the language, either as native constructs or via frameworks/libraries. The 
