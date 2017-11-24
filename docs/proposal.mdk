@@ -38,6 +38,8 @@ CSS Header      :
   LitNote { display: none }
 }
 
+sect: &#167;
+
 [TITLE]
 
 [TOC]
@@ -240,7 +242,7 @@ model in their application architectures.
 
 # Methodology and Approach { #sec-methodology }
 
-The methodology used to answer the given research questions outlined in § 
+The methodology used to answer the given research questions outlined in &sect; 
 [#sec-motivation] comprises the following steps:
 
 1. In a first round of literature review, information on both programming 
@@ -291,7 +293,7 @@ not yet fully caught up. Subsequently, we see many of the available literature
 from 2016 and early 2017. On the other hand, programming paradigm and
 concurrency research has been around for decades.
 
-As we have motivated in § [#sec-motivation], the microservice architecture style
+As we have motivated in &sect; [#sec-motivation], the microservice architecture style
 has many conceptual roots in various programming paradigms (especially 
 object-orientation), but it also originates from service oriented architectures 
 (SOA) in general [@Maz16;@Mon16a]. SOA can be considered the "first generation" 
@@ -345,7 +347,7 @@ defines at least one such. A service is a composition of a *behaviour* and a
 no communication with the service is defined inside the behaviour. This is part 
 of the deployment, where so-called *communication ports* regulate the access 
 functionality the service offers (cf. inside- and outside-view of objects mentioned 
-in § [#sec-motivation]).
+in &sect; [#sec-motivation]).
 
 Jolie is a prototype language where each component is essentially a
 microservice. Therefore, from a conceptual point of view, Jolie is a valuable
@@ -356,7 +358,7 @@ constructs and accompaning scientic literature), because it is an inherent prope
 
 <!--
 Therefore we think it does not make a suitable language candidate for our 
-experimental implementations (§ [#sec-methodology], item 4.).
+experimental implementations (&sect; [#sec-methodology], item 4.).
 -->
 
 # Relevance to the Curricula { #sec-relevance }
