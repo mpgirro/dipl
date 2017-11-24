@@ -12,7 +12,9 @@ chead        :
 Toc depth    : 1
 Bibliography : dipl
 <!--Csl Style    : style/custom-style.csl-->
+<!--
 Bib style    : style/keynat.bst
+-->
 Logo         : False
 Draft        : True
 
@@ -32,7 +34,9 @@ CSS Header      :
   }
 
 .LitNote { background-color: yellow }
-.Answer { color:red }
+.Answer { 
+  display: none;
+}
 
 @if not draft {
   LitNote { display: none }
@@ -186,8 +190,8 @@ We subsequently ask the question:
 -->
 
 > **RQ3**: Do sufficiently concurrent programming languages need microservice 
-  architectures, i.e. are there features of MSA regarding concurrent computation that 
-  languages facilitating classic concurrency models do not provide?
+  architectures, i.e. are there features of MSA regarding concurrent software design 
+  that languages facilitating classic concurrency models do not provide?
 
 ~ Answer
 **Answer**: Diskussion bzgl. scalability, fault tolerance, resilience, geographically distributed code (braucht Middleware Lösung, zB wie in Distributed Erlang, oder neue Paradigmen wie in Jolie und ähnliche die mehrere Executables compilieren), polyglot programming (via VMs möglich, vgl. Mix aus Java/Scala/Groovy/Clojure auf der JVM), live upgrades
@@ -239,6 +243,8 @@ concurrency in their architectures and MSA inherently force them to
 plan the *separation of concernces* in more detail than the programming paradigms 
 in most languages often do, resulting in an easier to understand concurrency 
 model in their application architectures.
+
+&pagebreak;
 
 # Methodology and Approach { #sec-methodology }
 
@@ -361,6 +367,8 @@ Therefore we think it does not make a suitable language candidate for our
 experimental implementations (&sect; [#sec-methodology], item 4.).
 -->
 
+&pagebreak;
+
 # Relevance to the Curricula { #sec-relevance }
 
 Both the microservice as well as the programming language and concurrency model
@@ -409,5 +417,7 @@ curricula and the master curricula, is given in alphabetical order:
 * UE Verteilte Systeme
 * VO Verteilte Systeme
 * VU Web Engineering
+
+&pagebreak;
 
 [BIB]
