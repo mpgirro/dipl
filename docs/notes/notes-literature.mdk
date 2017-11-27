@@ -18,6 +18,10 @@ CSS Header      :
     color: #0000EE;  
   }
 
+.important {
+  color:red
+}
+
 [TOC]
 
 # [@Agh85] Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism
@@ -404,6 +408,28 @@ with more “abstract” entities.
   * The state of the art does not seem to currently offer a ar- chitectural language for specifically describing and designing microservice architectures. The most promising languages for MSA are the ALs used to describe service-based architectures. Among the most relevant we have identified the following SoaML, SOMA, SOADL and StratusML
   * SOAML is an UML profile for modeling services on business and system levels, service contracts and interfaces, choreography, and more. SoaML metamodel extends the UML2 metamodel to support an explicit service modeling in distributed environments and can be used by most of UML tools.
 
+# [@Giv14] Object-Oriented Parallel Programming
+
+* [based on the observation that programming objects can be naturally interpreted as processes]{.important}.
+* that communicate by executing remote methods
+* Programming objects can be thought of as processes
+* the above program differs from the standard C++ only in the extension of the operator new.
+* new allocates objects on remote machines, using the address of the remote machine specified inside parentheses.
+* The construction of a new object on a remote machine creates a new process on that machine.
+* The introduction of processes, accessible by remote pointers, creates an object-oriented framework for parallel program- ming. Processes exchange information by executing meth- ods on remote objects rather than by passing messages.
+* Having defined processes as programming objects, it is now straightforward to derive new processes using previously defined processes. We illustrate process inheritance by extend- ing the example of the previous section.
+* In this paper we have shown that programming objects have a natural interpretation as processes
+
+# [@Gue99] From Active Objects to Autonomous Agents
+
+* p.68: Combining the agent concept and the object paradigm leads to the notion of agent-oriented program-ming -- Highlighted 21 May 2017
+* p.68: The concept of an active object—integrating an object and activity (namely a thread or process)—provides some degree of autonomy in that it does not rely on external resources for activation -- Highlighted 21 May 2017
+* p.68: Carl Hewitt introduced the active-object (or actor) concept to describe a set of entities that cooperate and communicate through message passing. This concept brings the benefits of object orientation (for example, modularity and encapsulation) to distributed environments and provides object-oriented languages with some of the characteristics of open systems -- Highlighted 21 May 2017
+* p.69: Active objects are monolithic and have procedural behavior. -- Highlighted 21 May 2017
+* p.69: An agent is not monolithic. -- Highlighted 21 May 2017
+* p.70: It can have several behaviors: communication, perception, deliberation, and so forth -- Highlighted 21 May 2017
+* p.70: An agent has a goal; it does not simply act in response to messages from other agents -- Highlighted 21 May 2017
+
 # [@Has16] Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap
 
   * Abstract—Migrating to microservices (microservitization) en-ables optimising the autonomy, replaceability, decentralised governance and traceability of software architectures.
@@ -422,6 +448,39 @@ with more “abstract” entities.
     * When does decomposing a microservice into more fine-grained ones achieve the required optimality for both trade-offs?
     * When does merging several fine-grained microser-vices into a coarse-grained one achieve the required optimality for both trade-offs?
     * When should the current level of granularity be kept without further merging or decomposition?
+
+# [@Lav95] Active Object -- An Object Behavioral Pattern for Concurrent Programming
+
+* The ActiveObject pattern decouples method execution from method invocation in order to simplify synchronized access to a shared resource bymethods invoked in different threads of control
+* To illustrate the Active Object pattern, consider the design of a connection-oriented Gateway. A Gateway decouples cooperating components in a distributed system and allows them to interact without having direct dependencies among each other
+* This pattern enables a method to execute in a different thread than the one that invoked the method originally. In contrast, passive objects execute in the same thread as the object that called a method on the passiv object.
+* The active object Gateway design resolves the following forces:
+  * Simplify flow control
+  * Simplifyconcurrent programming
+  * Take advantage of parallelism
+* Use the Active Object pattern when
+  * The design and implementation of a concurrent program can be simplified
+  * Multiple threads of control require synchronized access to shared data
+  * The order of method execution can differ from the order of method invocation
+  * The operations on a shared object are relatively coarse-grained
+* The Active Object pattern offers the following benefit
+  * Enhance application concurrency while reducing synchronization complexity
+  * Leverage parallelism available from the hardware and software platform
+* The Active Object pattern has the following drawbacks
+  * It potentially increases context switching, data movement, and synchronization overhead
+  * It may be difficult to debug programs containing active objects due to the concurrency and non-determinism of the Scheduler
+
+# [@Maz16] Towards Microservices and Beyond: An incoming Paradigm Shift in Distributed Computing
+
+* Object-oriented technologies are prominent in software development
+* A notable example is the Eiffel programming language [9], incorporating solid principles of OOP within a programming framework coordinated by the idea of design- by-contract, which aims at correctness-by-construction.
+* Component-wise each build- ing block is built as a microservice [11] embedding busi- ness capabilities in isolation. Every microservice can be reused, orchestrated, and aggregated with others [10]
+* The microservices architecture [4] is built on very simple principles:
+  - Bounded Context. First introduced in [5], this con- cept captures one of the key properties of microservice architecture: focus on business capabilities. Related functionalities are combined into a single business ca- pability which is then implemented as a service.
+  - Size; benefits in terms of service maintainability and extendability; Idiomatic use of microservices architecture suggests that if a service is too large, it should be refined into two or more services, thus pre-serving granularity andmaintaining focus on providing only a single business capability.
+  - Independency: concepts encourages loose cou- pling and high cohesion by stating that each service Independency. This concepts encourages loose cou- pling and high cohesion by stating that each service in microservice architectures is operationally indepen-dent from others, and the only form of communication between services is through their published interfaces.
+* Even though it is likely to conduct to a paradigm shift and a dramatic change in perception, it does not build on vacuum, and instead relates to well-established paradigms such as OO and SOA.
+* [...] focusing on the evolutionary aspects more than the revolutionary ones.
 
 # [@Mon16a] Circuit Breakers, Discovery, and API Gateways in Microservices
 
@@ -460,6 +519,34 @@ with more “abstract” entities.
   * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
   * all internal services are subjects to potential communciation failures and overloads
   * choreography does not require central control. a critical feature for the scalability of MSA
+
+alternativ habe ich bereits vorher einmal markiert scheinbar:
+
+* p.1:  Jolie, a language -- Highlighted 19 May 2017
+* p.1: inspired by Service-Oriented Architecture (SOA). The key difference between the two approaches lies in granularity. -- Highlighted 19 May 2017
+* p.1: a single executable artifact, called a monolith -- Highlighted 19 May 2017
+* p.1: Components can be deployed separate, -- Highlighted 19 May 2017
+* p.1: New versions of components can be gradually introduced in a system -- Highlighted 19 May 2017
+* p.1: Components can be more specialised -- Highlighted 19 May 2017
+* p.1: Scaling a microservice architecture does not imply a duplication of all its components -- Highlighted 19 May 2017
+* p.1: Interactions among microservices happen via message passing, which introduces the possibilities of communication failures and timeouts among components. -- Highlighted 19 May 2017
+* p.1: Services may become overloaded, because of too many concurrent client requests or resources being kept busy while waiting for replies from other services. This may easily trigger disastrous cascading failures. -- Highlighted 19 May 2017
+* p.1: Microservices can use different technologies, enabling specialisation to specific clients and tasks. -- Highlighted 19 May 2017
+* p.2: We also demonstrate how the solutions that carry novelty in the setting of microservices can be prototyped using constructs developed for service composition in Jolie [26], a native microservice programming language [20]. -- Highlighted 19 May 2017
+* p.2: Failure in an MSA is inevitable, and should be embraced with precaution rather than ignored. -- Highlighted 19 May 2017
+* p.2: The motto here is to fail fast: when a service becomes unresponsive, its invokers should stop waiting for it, assume the worst, and start dealing with the fact that the failing service may be unavailable -- Highlighted 19 May 2017
+* p.2: One of the most famous implementations of circuit breakers is provided by the Hystrix library [30] -- Highlighted 19 May 2017
+* p.2: Here, we make the (novel) observation that it makes sense to deploy a circuit breaker also in other places than just inside of clients -- Highlighted 19 May 2017
+* p.5: In practice, the location of a microservice may not be statically known at design time. -- Highlighted 19 May 2017
+* p.5: A service registry is a service that can be used by other components to retrieve binding information about other components -- Highlighted 19 May 2017
+* p.6: An MSA may need to serve different kinds of clients and user interfaces, such as those found in web browsers and various smart devices  -- Highlighted 19 May 2017
+* p.6: depending on the quality of its current network connection, a device may want to use an API that is more or less network intensive -- Highlighted 19 May 2017
+* p.6: It is a single entry point that provides access to many APIs -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security. -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security.Its position in the system is also ideal for adopting the proxy circuit breaker pattern, by equipping the API Gateway with circuit breakers for clients and/or services -- Highlighted 19 May 2017
+* p.7: However, MSAs are much more involved than other distributed applications where services are implemented as monoliths, because all internal components are subjects to potential communication failures and overloads -- Highlighted 19 May 2017
+* p.7: Circuit breakers have first been popularised in [35], where their role is discussed in the context of availability (resilience) for enterprise systems -- Highlighted 19 May 2017
+* p.7: Akka [22] provides a circuit breaker implementation that supports basic configuration parameters, such as call timeout, failure threshold and reset threshold. Hystrix [30] is much more flexible and is currently one of the reference solutions: -- Highlighted 19 May 2017
 
 # [@OBr05] Quality Attributes and Service-Oriented Architectures
 
@@ -571,6 +658,23 @@ with more “abstract” entities.
     * Modifiability is the ability to make changes to a system quickly and cost-effectively [Clements 02]. [sehr wichtig für MS an sich]{.mind}
     * SOA promotes loose coupling between service consumers and providers. Services are self-contained, modular, and accessed via cohesive interfaces. These characteristics contribute to the creation of loosely coupled SOAs where there are few, well-known dependencies between services. That fact tends to reduce the cost of modifying the implementation of services, hence increasing the system’s modifiability.
 
+# [@Pet16] OrcO: A Concurrency-First Approach to Objects
+
+* The Orc programming language [15, 22] enables a concur- rency-first style of programming, in which programmers start with a concurrent program, instead of adding concurrency only when it is required.
+* For instance, in pure active object systems concurrency can only exist between ob- jects so a new object must be introduced to add concurrency even if that object will be adversely coupled to other objects.
+* OrcO objects are designed to be orthogonal to concurrency, allowing the concurrent structure and the object structure of a program to evolve independently.
+* Orc is pervasively concurrent, because it replaces conventional sequential control structures with concurrency combinators.
+* object boundaries are not used to structure concurrency and con- currency within objects is the same as concurrency among objects.
+* One example of a superposed computation is logging in a web server. For each request, the server instantiates a Handler and calls its handle method
+* ProActive and Asynchronous Sequential Processes provide transparent futures
+* Emerald [4, 5], like OrcO, enables concurrency both be- tween and within objects. Like many active object languages, all concurrency in Emerald is provided by a single sequential process attached to each object.
+* The parallel actor monitor is allowed to dispatch messages to execute concurrently with other messages in the same actor.
+* Oz [35] provides concur- rent object-oriented programming in a constraint logic pro- gramming language. All variables in Oz—including fields— are logic variables and assignment is bidirectional unification.
+
+# [@Ray03] The Art of UNIX Programming
+
+* Chapter 1: "Rule of Composition: Design programs to be connected with other programs; siehe http://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html#id2877684
+
 # [@Sha17a] Microservices: Granularity vs. Performance
 
   * Service Oriented Architecture (SOA, and subsequently ""web services"[3, 6]), is a natural fit for "everything-as-a-service", but it is also practical to decompose software applications into discrete services as it can help bridge the comprehension gap between users requirements and design specifications, whilst also improving software design by moving away from more inflexible, monolithic architectures[14, 25].
@@ -598,8 +702,33 @@ with more “abstract” entities.
     * Once the messages broach the boundaries of containers to make requests to external microservices, additional vulnerabilities threaten the successful completion of the request, not least the variables introduced by a network connection.
     * As such, the issue of performance is not wholly restricted by latency through increased network traffic, but it is also influenced by additional risks from external communication mechanisms.
 
-# [@Xu16] CAOPLE: A Programming Language for Microservices SaaS
+# [@Sny93] The Essence of Objects: Concepts and Terms
 
+* New Objects can be created : vgl mit µS, hier können auch neue Services erzeugt werden, um zu skalieren (wenn entsprechend implementiert, daher im allgemeinen schwerer!)
+* Active Objects "can initiate computation spontaneously, without being requested to do so by a client, AO is a concurrent process" --> in etwa so wie µS
+* Objects can share implementations : wenn mehrere µS von der selben Codebase gestartet werden, tun sie das auch, haben eigenen State, aber "identical state format"
+* Objects can share partial implementation : inheritence eher schwierig, aber delegation in µS ganz normal, so auch bei Objekten
+* Dynamic Binding : nur eine Idee, aber kann man da einen Vergleich zu API Gateways ziehen, die zur Laufzeit den tatsächlichen Service an den weitergereicht wird (oder das dann selber entsprechende Antwort bei nicht existenz produziert) ziehen?
+
+# [@Vin07] Concurrency with Erlang
+
+* p.1: It’s not an exaggeration to say that writing correct multithreaded programs is beyond many programmers’ technical abilities. -- Highlighted 18 May 2017
+* p.1: One of the primary reasons concurrency is so hard is that popular imperative programming languages such as Java and C++ essentially require state to be shared among threads. -- Highlighted 18 May 2017
+* p.1: Programmers writing multithreaded applica  tions in languages like Java and C++ spend much   of their time determining what state is shared   among threads and how best to protect its integri  ty within the running application. Finding all the   shared state isn’t always easy.  -- Highlighted 18 May 2017
+* p.1: Assuming the pro  grammer can even find it, he or she must then pos  sess the skills, experience, and patience necessary   to determine the best way to serialize access to it -- Highlighted 18 May 2017
+* p.1: If locking is too coarse-grained, the application tends toward single-threading -- Highlighted 18 May 2017
+* p.1: Such applications make poor use of multicore CPUs and tend to be slow. If locking is too fine-grained, on the other hand, the chances for deadlock increase greatly as different threads are increasingly likely to obtain locks in different orders -- Highlighted 18 May 2017
+* p.1:  Idioms, patterns, and frameworks can help out partially, but they introduce restrictions and trade-offs of their own. -- Highlighted 18 May 2017
+* p.1: One way to avoid the problems with shared state is to simply avoid it, but that’s impractical in a language like C++ or Java. Doing so requires a combination of libraries or frameworks such as those based on actor models and message passing -- Highlighted 18 May 2017
+* p.1: A better way to avoid shared state is to switch to a programming language specifically designed to do exactly that. Erlang is one such language. -- Highlighted 18 May 2017
+* p.2: They required their language to help them build highly concurrent, fault-tolerant, highly available, and distributed services that supported live upgrades and ran with virtually zero downtime. -- Highlighted 18 May 2017
+* p.2: In fact, it’s so hard that even if you’ve done it before, you can still very easily get it wrong. Consequently, when building a new system, most developers tend to focus first on the nonreplicated, nonreliable version, seriously considering the really hard failover and load-balancing parts only after they get that working. -- Highlighted 18 May 2017
+* p.2: Erlang is a functional language that wholly embraces the “shared nothing” concept -- Highlighted 18 May 2017
+* p.2: Because Erlang variables are immutable, they don’t need concurrency protection -- Highlighted 18 May 2017
+* p.2: Avoiding shared variables allows for higher degrees of program parallelization, assuming threads aren’t too heavyweight. Erlang “processes,” which are essentially user-space threads rather than Unix processes or kernel threads, communicate only via message passing -- Highlighted 18 May 2017
+* p.4: Locks, condition variables, and other traditional multithreading constructs simply aren't necessary in any of this code. -- Highlighted 18 May 2017
+
+# [@Xu16] CAOPLE: A Programming Language for Microservices SaaS
 
 * developing applications in the microservices architecture presents three main challenges: 
   * (a) how to program systems that consists of a large number of services running in paral-lel and distributed over a cluster of computers; 
@@ -629,5 +758,31 @@ with more “abstract” entities.
   * Prevention of Data Race: As mentioned in Section 3.2, an agent’s state variables can only be modified by the agent itself. Because each agent is one thread, this prevents write-write type of data race.
   * Deployment Mechanism: An automated deployment mechanism is one of the key features of container technology.
   * Control of Communication Security: Only the message/event associated with performing a public action or the value of a public state variable are observable by other agents in the environment. To support the control of communication security, an action statement can specify a restriction on the target agents that the event is to be deliv-ered to.
+
+# [@Yon86] Object-oriented concurrent programming ABCL/1
+
+* Parallelism is ubiquitous in our problem domains.
+* by using various metaphors found in such systems
+* Each object in our computation model has its own (autonomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate.Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and constraints.
+* When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message.
+* Thus message passing takes place in a point-to-point (object-to-object)fashion.No message can be broadcast.
+* [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
+* This assumption was not made in the Actor model of computa-tion. Without this, however, it is difficult to model even simple things as objects.
+
+# [@Yon14] My Early Education and Concurrent Objects
+
+* Carl and his group member were interested in
+  –finding a universal model for concurrent computation, and
+  –the abstraction and simulation of activities for almost all entities which interact with each other and are able to move around in physical spaces.
+* The entire research group was convinced that the basic entities in the model should be process- or procedure-like things that mutually interact with message passing. Message passing is required to be asynchronous in the sense that an entity can send a message to another entity anytime, even when the destination entity is not ready or able to receive the message.
+* However, these notions of objects did not deal with message transmissions which take place among objects. Of course, the interactions among objects were called message passing, but they were merely meant to be dynamically dispatched method calls (or procedure calls). A more restricted formal cal-culus of modeling message passing objects was proposed by Robin Milner [7].
+* In our approach, the domain to be modeled/designed/implemented is represented as a collection of concurrent objects, and the interaction of the domain components is represented as concurrent message passing among such concurrent objects.
+* an intuitive characterization of concurrent objects (COs) below. Each CO
+  – has a globally unique identity/name,
+  – may have a protected, yet updatable local memory,
+  – has a set of procedures that manipulates the memory,
+  – receives a message that activates one of the procedures,
+  – has a single FIFO queue for arrived messages, and
+  – has autonomous thread(s) of control.
 
 [BIB]
