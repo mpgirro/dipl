@@ -305,7 +305,7 @@ mostly HTTP
 
 ### Event-driven architecture
 
-## Development, Debugging and Maintenance
+## Development, Testing, Debugging and Maintenance
 
 ~ Epigraph { caption: "Filipe Fortes" }
 Debugging is like being the detective in a crime movie where you're also the murderer.
@@ -313,6 +313,8 @@ Debugging is like being the detective in a crime movie where you're also the mur
 
 * [@Dra17a]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
 
+* Service Component Test http://microservices.io/patterns/testing/service-component-test.html
+* Service Integration Contract Test http://microservices.io/patterns/testing/service-integration-contract-test.html
 
 
 Towards a (Micro)service-Oriented Paradigm: A Look at Analogies
@@ -552,6 +554,12 @@ Discussion
 #### Scalability and Reliability
 
 ### Plattform and Middleware-based Approaches
+
+#### Virtual Machines
+
+~ LitNote
+* see [@Xu16] zu CAOPLE and VMs
+~
 
 #### XVSM/MozartSpaces
 
