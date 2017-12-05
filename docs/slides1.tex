@@ -1,0 +1,206 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\newcommand\mydots{\hbox to 1em{.\hss.\hss.}}
+
+\title[Your Short Title]{Concurrent Programming\\and the Microservice Architecture Style}
+\author{Maximilian Irro}
+\date{Seminar für DiplomandInnen\\4.12.2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\section{Timeline of the Microservice concept}
+
+\begin{frame}{Timeline of the Microservice concept}
+
+\begin{itemize}
+  \item 2012 (?) first mention of the term “Microservice”
+  \item 2014 Whitepaper by Fowler and Lewis
+  \item 2015 Academia gets interested
+  \item 2016, 2017 Explosion of publications
+\end{itemize}
+
+\end{frame}
+
+\section{Definitions}
+
+\begin{frame}{Definitions}
+
+\pause
+
+"A \textbf{microservice} (MS) is a cohesive, independent process interacting via messages"
+
+\pause
+\vskip 1cm
+
+"A \textbf{microservice architecture} (MSA) is a distributed application where all its components are microservices"
+
+\vskip 2cm
+
+\tiny{[Dragoni, Nicola, et al. "Microservices: yesterday, today, and tomorrow."Present and Ulterior Software Engineering. Springer, Cham, 2017. 195-216.]}
+
+\end{frame}
+
+\section{Characteristics of Microservices}
+
+\begin{frame}{Characteristics of Microservices (1)}
+
+  \begin{itemize}
+    \item Services as building blocks
+    \item Focus on business capability
+    \item Multiple executable artifacts
+    \item Communication via messages
+    \item Lightweight communication (e.g. REST, “dumb” message broker)
+    \item No-shared state, only accessible via API
+    \item High cohesion, loose coupling
+    \item etc…
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Characteristics of Microservices (2)}
+    \begin{columns}[T] % the "c" option specifies center vertical alignment
+    \begin{column}[T]{5.5cm} % each column can also be its own environment
+    	\textbf{Microservices}
+    	\begin{itemize}
+        \item Services are building blocks
+        \item Identity (PID, network-address), state, behavior
+        \item Communication via messages
+        \item Interfaces, design by contract
+        \item Encapsulation, data-hiding
+        \item High cohesion, loose coupling
+        \item …
+      	\end{itemize}
+    \end{column}
+    \pause
+    \begin{column}[T]{5.5cm} % alternative top-align that's better for graphics
+		\textbf{Objects}
+    	\begin{itemize}
+        \item Services are building blocks
+        \item Identity (memory-address), state, behavior
+        \item Communication via messages
+        \item Interfaces, design by contract
+        \item Encapsulation, data-hiding
+        \item High cohesion, loose coupling
+        \item …
+      	\end{itemize}
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Characteristics of Microservices (cont.)}
+
+  \begin{itemize}
+    \item MSA consists of multiple processes 
+    \item Message passing is inter-process communication
+    \item Application is a distributed system
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Are MS just Distributed Objects?}
+
+  \begin{itemize}
+    \item Distributed Objects based on idea of 
+
+    \begin{itemize}
+      \item Putting objects into processes
+      \item Transparent in-process/remote communication
+    \end{itemize}
+    
+    \pause
+    
+    \item MS make remote method invocation (e.g. REST call) explicit
+    \begin{itemize}
+      \item Different API granularity
+    \end{itemize}
+
+  \end{itemize}
+  
+  \vskip 2cm
+
+\tiny{[Waldo, Jim, et al. "A Note on Distributed Computing."International Workshop on Mobile Object Systems. Springer, Berlin, Heidelberg, 1996.]}
+
+\end{frame}
+
+\begin{frame}{Concurrency and Microservices}
+
+  \begin{itemize}
+    \item Threads vs Processes
+	\pause 
+    \item Concurrency Models often look similar to Distributed Systems Architecture
+	\pause
+    \item ``[\mydots] expect to see a return of distributed programming with increasingly fine-grained distributed systems that will make systems look more and more like classic concurrent system''
+
+  \end{itemize}
+  
+  \vskip 2cm
+
+\tiny{[Jan Stenberg. „Concurrent and Distributed Programming in the Future“. 2017. https://www.infoq.com/news/2017/03/distributed-programming-qcon]}
+
+\end{frame}
+
+\begin{frame}{Special Interest Aspects of MSA}
+
+  \begin{itemize}
+    \item Geographically distributed code
+    \item Explicit parallelization (via deployment)
+    \item Fault tolerance, resilience, self-healing
+    \item Scalability
+    \item Independent replacement and upgradability
+    \item Decentralized data management (no shared memory)
+    \item Polyglot programming, polyglot persistence
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Roadmap}
+
+  \begin{itemize}
+    \item Conceptual similarities between MS and OO, SOA, etc.
+    \item Identify concurrency model(s) resembling MSA
+    \item Practically demonstrate and compare with prototypical scenario
+    \item Argue if ``sufficiently concurrent'' programming languages need MSA? 
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Actors (Akka implementation)}
+
+  \begin{itemize}
+    \item Objects encapsulate state and behavior
+    \item (Asynchronous) message passing, immutable messages
+    \item Isolated mutable state, no global state
+    \item Distributed by default
+    \item Fault tolerance (supervision hierarchy)
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
+

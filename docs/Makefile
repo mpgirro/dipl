@@ -12,6 +12,9 @@ references:
 journal:
 	madoko --pdf journal.mdk
 
+slides:
+	pdflatex -halt-on-error -output-directory out slides1.tex
+
 all: proposal thesis references journal
 
 clean:
