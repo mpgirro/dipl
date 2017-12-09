@@ -574,6 +574,14 @@ Outlook
 Predicition is very difficult, especially about the future.
 ~
 
+In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, we want to argue that instead of a rivalry, both approaches should instead be combined to define a new style of programming. 
+One the one hand, we analyzed microservices for their core concepts and found that their natural characteristics implied a high form of isolation. Combined with an asynchronouse communication mechanism, they become highly decoupled and the resulting architecture enjoys the principles of Actor based concurrency combined with the feature of distribution and mobility that agent based systems defined long ago. Yet programming a microservice architecture results in a significant overhead in terms of complexity, maintainability, etc. 
+On the other hand, we discussed the classic concurrency models of actors, and found that if it gets extended by additional concepts, such as it is done in existing implementations today, the resulting artifacts yield similar benefits as the microservice approach to. For these implementations are integrated into many mainstream programming languages, they are naturally available to developers to use without increasing complexity and related software development concerns as microservices architectures do. It seems programming concurrency is still unnatural or at least not loved by programmers. The microservice apporach seems to let them better think and plan the separation of concerns inside their software architecture in a divide an conquer way that concurrency primitives of programming languages do.
+
+On this observaton we want to motivate that it seems to be a good idea to integrate the concepts of the service as a principle component into programming languages (like objects) is a good approach. In fact, this is done in some projects already. As the most promising one, we see Jolie. This approach allows developers to write microservice styled programm architectures in a single codebase, while in principle they write software with and actor-based concurrency and distribution approach as we discussed in this thesis.
+
+**Und dann noch weiteren blabla, aber das ist doch schon mal ein guter Ansatz das anzugehen, und den Outlook mit diesem Thema doch drinnen zu haben!**   
+
 * "Programming Services as a new Paradigm"
   * Hier die Vision und die Gründe/Vorteile von einem neuen Paradigma beschreiben
   * Bsp der Datenbank-Services: 
