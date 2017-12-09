@@ -95,7 +95,7 @@ CSS Header      :
 * Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
 * Inherent Concurrency
 
-# [@Akka] Akka documentation
+# [@Akka17] Akka documentation
 
 * Terminology, Concepts of:
   * Concurrency vs. Parallelism
