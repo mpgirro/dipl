@@ -1,0 +1,12 @@
+# [@Pet16] OrcO: A Concurrency-First Approach to Objects
+
+* The Orc programming language [15, 22] enables a concur- rency-first style of programming, in which programmers start with a concurrent program, instead of adding concurrency only when it is required.
+* For instance, in pure active object systems concurrency can only exist between ob- jects so a new object must be introduced to add concurrency even if that object will be adversely coupled to other objects.
+* OrcO objects are designed to be orthogonal to concurrency, allowing the concurrent structure and the object structure of a program to evolve independently.
+* Orc is pervasively concurrent, because it replaces conventional sequential control structures with concurrency combinators.
+* object boundaries are not used to structure concurrency and con- currency within objects is the same as concurrency among objects.
+* One example of a superposed computation is logging in a web server. For each request, the server instantiates a Handler and calls its handle method
+* ProActive and Asynchronous Sequential Processes provide transparent futures
+* Emerald [4, 5], like OrcO, enables concurrency both be- tween and within objects. Like many active object languages, all concurrency in Emerald is provided by a single sequential process attached to each object.
+* The parallel actor monitor is allowed to dispatch messages to execute concurrently with other messages in the same actor.
+* Oz [35] provides concur- rent object-oriented programming in a constraint logic pro- gramming language. All variables in Oz—including fields— are logic variables and assignment is bidirectional unification.

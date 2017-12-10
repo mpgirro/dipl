@@ -1,0 +1,9 @@
+# [@Gue99] From Active Objects to Autonomous Agents
+
+* p.68: Combining the agent concept and the object paradigm leads to the notion of agent-oriented program-ming -- Highlighted 21 May 2017
+* p.68: The concept of an active object—integrating an object and activity (namely a thread or process)—provides some degree of autonomy in that it does not rely on external resources for activation -- Highlighted 21 May 2017
+* p.68: Carl Hewitt introduced the active-object (or actor) concept to describe a set of entities that cooperate and communicate through message passing. This concept brings the benefits of object orientation (for example, modularity and encapsulation) to distributed environments and provides object-oriented languages with some of the characteristics of open systems -- Highlighted 21 May 2017
+* p.69: Active objects are monolithic and have procedural behavior. -- Highlighted 21 May 2017
+* p.69: An agent is not monolithic. -- Highlighted 21 May 2017
+* p.70: It can have several behaviors: communication, perception, deliberation, and so forth -- Highlighted 21 May 2017
+* p.70: An agent has a goal; it does not simply act in response to messages from other agents -- Highlighted 21 May 2017

@@ -1,0 +1,40 @@
+# [@Als16] A Systematic Mapping Study in Microservice Architecture
+
+  * Mache ich auch eine "Mapping Study"?
+  * The microservices architecture has become a dominant architectural style choice in the service oriented software industry. Microservices is a style of architecture which puts the emphasis on dividing the system into small and lightweight services that are purposely built to perform a very cohesive business function, and is an evolution of the traditional service oriented architecture style
+  * a distributed application where all its modules are microservices
+  * commonly agreed benefits:
+    * increase in agility
+    * developer productivity
+    * resilience
+    * scalability* reliability
+    * maintainability
+    * separation of concerns
+    * ease of development
+  * Even though microservices have emerged from the software industry and have been the focus of practitioners in the last decade[28][22], academic researchers have not kept with the pace
+  * Relevante keywords (werden auch für mich irgendwie relevant sein)
+    * Communication/Integration
+    * Service discovery
+    * Performance
+    * Fault-tolerance
+    * Security
+    * Tracing and Logging
+    * Application Performance Monitoring* Deploying operations
+  * Quality Attributes:
+    * Scalability: expandable, evolutionary
+    * Interestingly, it has been noticed that there was no distinction between component diagrams and container diagrams in the literature
+    * Maintainability: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Deployment: expandable, adaptability, changeability, flexible implementation, dynamically changing
+    * Health management: resilience, reliability, disaster recovery, no single point of failure
+    * Modularity: single responsibility, reduce complexity, separate business concern, specialization, customizable
+    * Manageability: self-managed, decentralized management, audibility
+    * Performance: response times, transaction duration, throughput, efficiency
+    * Reusability: pluggable
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Independence: reducing complexity, isolation, loose coupling , decouple, distributed, containerization, autonomy
+    * Technology heterogeneity: portability, freedom to choose a lot of technologies or programming languages
+    * Agility: iterative, incremental, continuous delivery
+    * Security
+    * Load balancing: workload intensity distribution
+    * Organizational alignment: cross-functional team, reduce the conflict between developers and testers
+    * Open interface: microservices should provide an open description of their APIs, GUIs and communication messages format

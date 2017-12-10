@@ -1,0 +1,65 @@
+# [@Mon16a] Circuit Breakers, Discovery, and API Gateways in Microservices
+
+  * components of an application are autonnomous services that execute independently
+  * communicate via message passing
+  * message passing introduces the possiilities of communnication failures and timeouts among components
+    * vgl.: im Actor Model ist die Zustellung von Nachrichten garantiert
+  * inspired by SOA
+  * key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)
+  * components can e deployed separately
+  * new versions can be gradually introduced into a system  
+    * vgl. Subtyping Idee
+  * Components can be more specialized, since they can be written in different techologies
+  * services may become overloaded (too many concurrent client requests) or resources kept busy
+  * this may easily trigger disastrous cascading failures
+  * failure in an MSA is inevitale and should embraced with precaution rather than ignored
+  * Failing service may have other services depending on it (what if it becomes unresponsive?)
+    * -> circuit breaker pattern; fail fast
+    * mit Circuit Breaker State Diagram p.2 !
+  * Circuit Breaker: 
+    * Hysterix Library
+    * Server-side Circuit Breaker
+    * Client-side Circuit Breaker
+    * Proxy Circuit Breaker
+      * introduces Network bottle neck
+  * Service Discovery
+    * Location of MS may not be statically known at design time
+    * using Service registry
+      * adopted from SOA
+      * = a service that can be used y other components to retrieve ending information about other components
+      * in SOA, service discovery part of enterprise service bus
+      * in MSA, service discovery as non-standard custom implementations
+    * Gateways:
+      * single entry point for many APIs
+      * since it is an entry point, it is natural to equip it with e.g. service discovery load-balancing, monitoring, security, etc
+  * "being essentially distributed, microservices is founded on the well-known mechanism of message passing"
+  * all internal services are subjects to potential communciation failures and overloads
+  * choreography does not require central control. a critical feature for the scalability of MSA
+
+alternativ habe ich bereits vorher einmal markiert scheinbar:
+
+* p.1:  Jolie, a language -- Highlighted 19 May 2017
+* p.1: inspired by Service-Oriented Architecture (SOA). The key difference between the two approaches lies in granularity. -- Highlighted 19 May 2017
+* p.1: a single executable artifact, called a monolith -- Highlighted 19 May 2017
+* p.1: Components can be deployed separate, -- Highlighted 19 May 2017
+* p.1: New versions of components can be gradually introduced in a system -- Highlighted 19 May 2017
+* p.1: Components can be more specialised -- Highlighted 19 May 2017
+* p.1: Scaling a microservice architecture does not imply a duplication of all its components -- Highlighted 19 May 2017
+* p.1: Interactions among microservices happen via message passing, which introduces the possibilities of communication failures and timeouts among components. -- Highlighted 19 May 2017
+* p.1: Services may become overloaded, because of too many concurrent client requests or resources being kept busy while waiting for replies from other services. This may easily trigger disastrous cascading failures. -- Highlighted 19 May 2017
+* p.1: Microservices can use different technologies, enabling specialisation to specific clients and tasks. -- Highlighted 19 May 2017
+* p.2: We also demonstrate how the solutions that carry novelty in the setting of microservices can be prototyped using constructs developed for service composition in Jolie [26], a native microservice programming language [20]. -- Highlighted 19 May 2017
+* p.2: Failure in an MSA is inevitable, and should be embraced with precaution rather than ignored. -- Highlighted 19 May 2017
+* p.2: The motto here is to fail fast: when a service becomes unresponsive, its invokers should stop waiting for it, assume the worst, and start dealing with the fact that the failing service may be unavailable -- Highlighted 19 May 2017
+* p.2: One of the most famous implementations of circuit breakers is provided by the Hystrix library [30] -- Highlighted 19 May 2017
+* p.2: Here, we make the (novel) observation that it makes sense to deploy a circuit breaker also in other places than just inside of clients -- Highlighted 19 May 2017
+* p.5: In practice, the location of a microservice may not be statically known at design time. -- Highlighted 19 May 2017
+* p.5: A service registry is a service that can be used by other components to retrieve binding information about other components -- Highlighted 19 May 2017
+* p.6: An MSA may need to serve different kinds of clients and user interfaces, such as those found in web browsers and various smart devices  -- Highlighted 19 May 2017
+* p.6: depending on the quality of its current network connection, a device may want to use an API that is more or less network intensive -- Highlighted 19 May 2017
+* p.6: It is a single entry point that provides access to many APIs -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security. -- Highlighted 19 May 2017
+* p.6: Since an API Gateway is an entry point for the MSA, it is natural to equip it with, e.g., service discovery, load balancing, monitoring, and security.Its position in the system is also ideal for adopting the proxy circuit breaker pattern, by equipping the API Gateway with circuit breakers for clients and/or services -- Highlighted 19 May 2017
+* p.7: However, MSAs are much more involved than other distributed applications where services are implemented as monoliths, because all internal components are subjects to potential communication failures and overloads -- Highlighted 19 May 2017
+* p.7: Circuit breakers have first been popularised in [35], where their role is discussed in the context of availability (resilience) for enterprise systems -- Highlighted 19 May 2017
+* p.7: Akka [22] provides a circuit breaker implementation that supports basic configuration parameters, such as call timeout, failure threshold and reset threshold. Hystrix [30] is much more flexible and is currently one of the reference solutions: -- Highlighted 19 May 2017

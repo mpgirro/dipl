@@ -1,0 +1,7 @@
+# [@Sny93] The Essence of Objects: Concepts and Terms
+
+* New Objects can be created : vgl mit µS, hier können auch neue Services erzeugt werden, um zu skalieren (wenn entsprechend implementiert, daher im allgemeinen schwerer!)
+* Active Objects "can initiate computation spontaneously, without being requested to do so by a client, AO is a concurrent process" --> in etwa so wie µS
+* Objects can share implementations : wenn mehrere µS von der selben Codebase gestartet werden, tun sie das auch, haben eigenen State, aber "identical state format"
+* Objects can share partial implementation : inheritence eher schwierig, aber delegation in µS ganz normal, so auch bei Objekten
+* Dynamic Binding : nur eine Idee, aber kann man da einen Vergleich zu API Gateways ziehen, die zur Laufzeit den tatsächlichen Service an den weitergereicht wird (oder das dann selber entsprechende Antwort bei nicht existenz produziert) ziehen?

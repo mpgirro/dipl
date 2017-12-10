@@ -1,0 +1,24 @@
+# [@But14] Seven Concurrency Models in Seven Weeks: When Threads Unravel
+
+* A concurrent program has multiple logical threads of control. These threads may or may not run in parallel.
+* A parallel program potentially runs more quickly than a sequential program by executing different parts of the computation simultaneously (in parallel). It may or may not have more than one logical thread of control.
+*  In a shared-memory multiprocessor, each processor can access any memory location, and interprocessor communication is primarily through memory, as you can see in Figure 1, Shared memory, on page 5.
+* Figure 2, Distributed memory, on page 5 shows a distributed-memory system, where each processor has its own local memory and where interprocessor communication is primarily via the network.
+* Because communicating via memory is typically faster and simpler than doing so over the network, writing code for shared memory-multiprocessors is generally easier. But beyond a certain number of processors, shared memory becomes a bottleneck—to scale beyond that point, you’re going to have to tackle distributed memory. Distributed memory is also unavoidable if you want to write fault-tolerant systems that use multiple machines to cope with hardware failures.
+* Concurrency enables resilient, or fault-tolerant, software through indepen-dence and fault detection. Independence is important because a failure in one task should not be able to bring down another. And fault detection is critical so that when a task fails (because it crashes or becomes unresponsive, or because the hardware it’s running on dies), a separate task is notified so that it can take remedial action.
+* Sequential software can never be as resilient as concurrent software.
+* Threads and locks: Threads-and-locks programming has many well-under-stood problems, but it’s the technology that underlies many of the other models
+* Functional programming: ... excellent support for concurrency and parallelism. Because they eliminate mutable state, functional programs are intrinsically thread-safe and easily parallelized.
+* Actors: It can target both shared- and dis-tributed-memory architectures and facilitate geographical distribution
+* Communicating Sequential Processes (CSP) has much in common with the actor model, both being based on message passing. Its emphasis on the channels used for communication, rather than the entities between which communication takes place
+
+~ {color:red}
+* Each of these models has a different sweet spot. As you read through each chapter, bear the following questions in mind:
+  * Is this model applicable to solving concurrent problems, parallel problems, or both?
+  * Which parallel architecture or architectures can this model target?
+  * Does this model provide tools to help you write resilient or geographically distributed code?
+~
+
+* Threads
+  * Despite their well-known problems, threads and locks are still the default choice for writing much concurrent software
+  * Threads and locks are little more than a formalization of what the underlying hardware actually does. That’s both their great strength and their great weakness.

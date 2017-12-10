@@ -1,0 +1,111 @@
+# [@Akka17] Akka documentation
+
+* Terminology, Concepts of:
+  * Concurrency vs. Parallelism
+  * Asynchronous vs. Synchronous
+  * Non-blocking vs. Blocking
+  * Deadlock vs. Starvation vs. Live-lock
+  * Race Condition
+  * Non-blocking Guarantees (Progress Conditions)
+    * Wait-freedom
+    * Lock-freedom
+    * Obstruction-freedom
+* Actor Systems
+  * Actors are objects which encapsulate state and behavior, they communicate exclusively by exchanging messages
+  * [An ActorSystem is a heavyweight structure that will allocate 1…N Threads, so create one per logical application]{.important}
+  * The quintessential feature of actor systems is that tasks are split up and delegated until they become small enough to be handled in one piece
+  * In doing so, not only is the task itself clearly structured, but the resulting actors can be reasoned about in terms of which messages they should process, how they should react normally and how failure should be handled
+  * Compare this to layered software design which easily devolves into defensive programming with the aim of not leaking any failure out: if the problem is communicated to the right person, a better solution can be found than if trying to keep everything “under the carpet”.
+  * Now, the difficulty in designing such a system is how to decide who should supervise what. There is of course no single best solution, but there are a few guidelines which might be helpful:
+    * If one actor manages the work another actor is doing, e.g. by passing on sub-tasks, then the manager should supervise the child. The reason is that the manager knows which kind of failures are expected and how to handle them.
+    * If one actor carries very important data (i.e. its state shall not be lost if avoidable), this actor should source out any possibly dangerous sub-tasks to children it supervises and handle failures of these children as appropriate. Depending on the nature of the requests, it may be best to create a new child for each request, which simplifies state management for collecting the replies. [This is known as the “Error Kernel Pattern” from Erlang]{.important}.
+    * If one actor depends on another actor for carrying out its duty, it should watch that other actor’s liveness and act upon receiving a termination notice. This is different from supervision, as the watching party has no influence on the supervisor strategy, and it should be noted that a functional dependency alone is not a criterion for deciding where to place a certain child actor in the hierarchy.
+  * The actor system as a collaborating ensemble of actors is the natural unit for managing shared facilities like scheduling services, configuration, logging, etc. Several actor systems with different configuration may co-exist within the same JVM without problems, there is no global shared state within Akka itself. Couple this with the transparent communication between actor systems—within one node or across a network connection—to see that actor systems themselves can be used as building blocks in a functional hierarchy
+  * Actor Best Practices
+    * process events and generate responses (or more requests) in an event-driven manner. Actors should not block (i.e. passively wait while occupying a Thread) on some external entity—which might be a lock, a network socket, etc.—unless it is unavoidable; in the latter case see below.
+    * Do not pass mutable objects between actors. In order to ensure that, prefer immutable messages. If the encapsulation of actors is broken by exposing their mutable state to the outside, you are back in normal Java concurrency land with all the drawbacks.
+    * Actors are made to be containers for behavior and state, embracing this means to not routinely send behavior within messages (which may be tempting using Scala closures). One of the risks is to accidentally share mutable state between actors, and this violation of the actor model unfortunately breaks all the properties which make programming in actors such a nice experience.
+    * Top-level actors are the innermost part of your Error Kernel, so create them sparingly and prefer truly hierarchical systems. This has benefits with respect to fault-handling (both considering the granularity of configuration and the performance) and it also reduces the strain on the guardian actor, which is a single point of contention if over-used
+  * actors are represented to the outside using actor references, which are objects that can be passed around freely and without restriction. [This split into inner and outer object enables transparency for all the desired operations: restarting an actor without needing to update references elsewhere, placing the actual actor object on remote hosts, sending messages to actors in completely different applications. But the most important aspect is that it is not possible to look inside an actor and get hold of its state from the outside, unless the actor unwisely publishes this information itself.]{.important}
+  * State
+    * These data are what make an actor valuable, and they must be protected from corruption by other actors. The good news is that Akka actors conceptually each have their own light-weight thread, which is completely shielded from the rest of the system. [This means that instead of having to synchronize access using locks you can just write your actor code without worrying about concurrency at all.]{.important}
+    * Because the internal state is vital to an actor’s operations, having inconsistent state is fatal. Thus, when the actor fails and is restarted by its supervisor, the state will be created from scratch, like upon first creating the actor. This is to enable the ability of self-healing of the system.
+  * Behaviour
+    * Every time a message is processed, it is matched against the current behavior of the actor. Behavior means a function which defines the actions to be taken in reaction to the message at that point in time, say forward a request if the client is authorized, deny it otherwise. This behavior may change over time, e.g. because different clients obtain authorization over time, or because the actor may go into an “out-of-service” mode and later come back. These changes are achieved by either encoding them in state variables which are read from the behavior logic, or the function itself may be swapped out at runtime, see the become and unbecome operations. However, the initial behavior defined during construction of the actor object is special in the sense that a restart of the actor will reset its behavior to this initial one.
+  * Mailbox
+    * Enqueuing happens in the time-order of send operations, which means that messages sent from different actors may not have a defined order at runtime due to the apparent randomness of distributing actors across threads. Sending multiple messages to the same target from the same actor, on the other hand, will enqueue them in the same order.
+    * An important feature in which Akka differs from some other actor model implementations is that the current behavior must always handle the next dequeued message, there is no scanning the mailbox for the next matching one. Failure to handle a message will typically be treated as a failure, unless this behavior is overridden.
+  * Supervision and Monitoring
+    * [dependency relationship between actors: the supervisor delegates tasks to subordinates and therefore must respond to their failures]{.important}
+    * Depending on the nature of the work to be supervised and the nature of the failure, the supervisor has a choice of the following four options:
+      1. Resume the subordinate, keeping its accumulated internal state
+      2. Restart the subordinate, clearing out its accumulated internal state
+      3. Stop the subordinate permanently
+      4. Escalate the failure, thereby failing itself
+    * It is important to always view an actor as part of a supervision hierarchy, which explains the existence of the fourth choice (as a supervisor also is subordinate to another supervisor higher up) and has implications on the first three: resuming an actor resumes all its subordinates, restarting an actor entails restarting all its subordinates (but see below for more details), similarly terminating an actor will also terminate all its subordinates
+    * [Akka implements a specific form called “parental supervision”. Actors can only be created by other actors—where the top-level actor is provided by the library—and each created actor is supervised by its parent. This restriction makes the formation of actor supervision hierarchies implicit and encourages sound design decisions. It should be noted that this also guarantees that actors cannot be orphaned or attached to supervisors from the outside, which might otherwise catch them unawares. In addition, this yields a natural and clean shutdown procedure for (sub-trees of) actor applications.]{.important} [in MSA werden die MS idR schon von außen (vom menschen - oder einem deployment tool erzeugt, dh es kann hier sehrwohl zu "unsound decisions" kommenbat)]{.mind}
+  * What Restarting Means
+    * When presented with an actor which failed while processing a certain message, causes for the failure fall into three categories:
+      * Systematic (i.e. programming) error for the specific message received
+      * (Transient) failure of some external resource used during processing the message
+      * Corrupt internal state of the actor
+    * Unless the failure is specifically recognizable, the third cause cannot be ruled out, which leads to the conclusion that the internal state needs to be cleared out. If the supervisor decides that its other children or itself is not affected by the corruption—e.g. because of conscious application of the error kernel pattern—it is therefore best to restart the child
+  * What Lifecycle Monitoring Means
+    * Lifecycle Monitoring in Akka is usually referred to as DeathWatch
+    * In contrast to the special relationship between parent and child described above, each actor may monitor any other actor. Since actors emerge from creation fully alive and restarts are not visible outside of the affected supervisors, the only state change available for monitoring is the transition from alive to dead. [Monitoring is thus used to tie one actor to another so that it may react to the other actor’s termination, in contrast to supervision which reacts to failure.]{.important}
+  * Actor References, Paths and Addresses
+    * describes how actors are identified and located within a possibly distributed actor system. It ties into the central idea that Actor Systems form intrinsic supervision hierarchies as well as that [communication between actors is transparent with respect to their placement across multiple network nodes.]{.important}
+    * several different types of actor references that are supported depending on the configuration of the actor system:
+      * pureley local
+      * local (networking inside the same JVM)
+      * remote (reachable using remote communication, i.e. sending messages to them will serialize the messages transparently and send them to the remote JVM.)
+      * others more special and not so interrestingly
+  * Location Transparency
+    * Distributed by Default
+      * Everything in Akka is designed to work in a distributed setting: all interactions of actors use purely message passing and everything is asynchronous. This effort has been undertaken to ensure that all functions are available equally when running within a single JVM or on a cluster of hundreds of machines. The key for enabling this is to go from remote to local by way of optimization instead of trying to go from local to remote by way of generalization. See this classic paper for a detailed discussion on why the second approach is bound to fail.
+  * Ways in which Transparency is Broken
+    * distributed execution poses some restrictions on what is possible
+    * all messages sent over the wire must be serializable
+    * everything needs to be aware of all interactions being fully asynchronous, which in a computer network might mean that it may take several minutes for a message to reach its recipient (depending on configuration). [It also means that the probability for a message to be lost is much higher than within one JVM, where it is close to zero (still: no hard guarantee!).]{.important}
+  * Peer-to-Peer vs. Client-Server
+    * The design of remoting is driven by two (related) design decisions
+      1. Communication between involved systems is symmetric: if a system A can connect to a system B then system B must also be able to connect to system A independently.
+      2. role of the communicating systems are symmetric in regards to connection patterns: there is no system that only accepts connections, and there is no system that only initiates connections.
+    * [The consequence of these decisions is that it is not possible to safely create pure client-server setups with predefined roles (violates assumption 2)]{.important}. For client-server setups it is better to use HTTP or Akka I/O.
+    * Important: Using [setups involving Network Address Translation, Load Balancers or Docker containers violates assumption 1]{.important}, unless additional steps are taken in the network configuration to allow symmetric communication between involved systems. In such situations Akka can be configured to bind to a different network address than the one used for establishing connections between Akka nodes
+  * Marking Points for Scaling Up with Routers
+    * In addition to being able to run different parts of an actor system on different nodes of a cluster, it is also possible to scale up onto more cores by multiplying actor sub-trees which support parallelization. 
+    * The clones can then be routed to in different fashions, e.g. round-robin
+  * Akka and the Java Memory Model
+    * TODO
+  * Message Delivery Reliability
+    * Akka helps you build reliable applications which make use of multiple processor cores in one machine (“scaling up”) or distributed across a computer network (“scaling out”)
+    * The key abstraction to make this work is that all interactions between your code units—actors—happen via message passing
+    * The basic mechanism for communication is the same whether sending to an actor on the local JVM or to a remote actor, but of course there will be observable differences in the latency of delivery (possibly also depending on the bandwidth of the network link and the message size) and the reliability
+    * In case of a remote message send there are obviously more steps involved which means that more can go wrong. 
+    * Another aspect is that local sending will just pass a reference to the message inside the same JVM, without any restrictions on the underlying object which is sent, whereas a remote transport will place a limit on the message size.
+    * Writing your actors such that every interaction could possibly be remote is the safe, pessimistic bet. It means to only rely on those properties which are always guaranteed and which are discussed in detail below
+    * General Rules
+      * at-most-once delivery, i.e. no guaranteed delivery
+      * message ordering per sender–receiver pair
+      * The first rule is typically found also in other actor implementations while the second is specific to Akka.
+    * Discussion: Why No Guaranteed Delivery?
+      * At the core of the problem lies the question what exactly this guarantee shall mean:
+        1. The message is sent out on the network?
+        2. The message is received by the other host?
+        3. The message is put into the target actor’s mailbox?
+        4. The message is starting to be processed by the target actor?
+        5. The message is processed successfully by the target actor? 
+      * Along those same lines goes the reasoning in [Nobody Needs Reliable Messaging](https://www.infoq.com/articles/no-reliable-messaging). The only meaningful way for a sender to know whether an interaction was successful is by receiving a business-level acknowledgement message, which is not something Akka could make up on its own (neither are we writing a “do what I mean” framework nor would you want us to).
+      * Akka embraces distributed computing and makes the fallibility of communication explicit through message passing, therefore it does not try to lie and emulate a leaky abstraction. This is a model that has been used with great success in Erlang and requires the users to design their applications around it. You can read more about this approach in the [Erlang documentation (section 10.9 and 10.10)](http://erlang.org/faq/academic.html), Akka follows it closely.
+    * Higher-level abstractions
+      * Messaging Patterns
+        * As discussed above a straight-forward answer to the requirement of reliable delivery is an explicit ACK–RETRY protocol. In its simplest form this requires
+          * a way to identify individual messages to correlate message with acknowledgement
+          * a retry mechanism which will resend messages if not acknowledged in time
+          * a way for the receiver to detect and discard duplicates
+        * The third becomes necessary by virtue of the acknowledgements not being guaranteed to arrive either. An ACK-RETRY protocol with business-level acknowledgements is supported by At-Least-Once Delivery of the Akka Persistence module. Duplicates can be detected by tracking the identifiers of messages sent via At-Least-Once Delivery. Another way of implementing the third part would be to make processing the messages idempotent on the level of the business logic.
+      * Event Sourcing
+        * Event sourcing (and sharding) is what makes large websites scale to billions of users, and the idea is quite simple: when a component (think actor) processes a command it will generate a list of events representing the effect of the command. These events are stored in addition to being applied to the component’s state. The nice thing about this scheme is that events only ever are appended to the storage, nothing is ever mutated; this enables perfect replication and scaling of consumers of this event stream (i.e. other components may consume the event stream as a means to replicate the component’s state on a different continent or to react to changes). If the component’s state is lost—due to a machine failure or by being pushed out of a cache—it can easily be reconstructed by replaying the event stream (usually employing snapshots to speed up the process). Event sourcing is supported by Akka Persistence.
+      * Mailbox with Explicit Acknowledgement
+        * By implementing a custom mailbox type it is possible to retry message processing at the receiving actor’s end in order to handle temporary failures. This pattern is mostly useful in the local communication context where delivery guarantees are otherwise sufficient to fulfill the application’s requirements.

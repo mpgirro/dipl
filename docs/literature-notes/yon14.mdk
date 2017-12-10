@@ -1,0 +1,15 @@
+# [@Yon14] My Early Education and Concurrent Objects
+
+* Carl and his group member were interested in
+  –finding a universal model for concurrent computation, and
+  –the abstraction and simulation of activities for almost all entities which interact with each other and are able to move around in physical spaces.
+* The entire research group was convinced that the basic entities in the model should be process- or procedure-like things that mutually interact with message passing. Message passing is required to be asynchronous in the sense that an entity can send a message to another entity anytime, even when the destination entity is not ready or able to receive the message.
+* However, these notions of objects did not deal with message transmissions which take place among objects. Of course, the interactions among objects were called message passing, but they were merely meant to be dynamically dispatched method calls (or procedure calls). A more restricted formal cal-culus of modeling message passing objects was proposed by Robin Milner [7].
+* In our approach, the domain to be modeled/designed/implemented is represented as a collection of concurrent objects, and the interaction of the domain components is represented as concurrent message passing among such concurrent objects.
+* an intuitive characterization of concurrent objects (COs) below. Each CO
+  – has a globally unique identity/name,
+  – may have a protected, yet updatable local memory,
+  – has a set of procedures that manipulates the memory,
+  – receives a message that activates one of the procedures,
+  – has a single FIFO queue for arrived messages, and
+  – has autonomous thread(s) of control.

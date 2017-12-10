@@ -1,0 +1,11 @@
+# [@Giv14] Object-Oriented Parallel Programming
+
+* [based on the observation that programming objects can be naturally interpreted as processes]{.important}.
+* that communicate by executing remote methods
+* Programming objects can be thought of as processes
+* the above program differs from the standard C++ only in the extension of the operator new.
+* new allocates objects on remote machines, using the address of the remote machine specified inside parentheses.
+* The construction of a new object on a remote machine creates a new process on that machine.
+* The introduction of processes, accessible by remote pointers, creates an object-oriented framework for parallel program- ming. Processes exchange information by executing meth- ods on remote objects rather than by passing messages.
+* Having defined processes as programming objects, it is now straightforward to derive new processes using previously defined processes. We illustrate process inheritance by extend- ing the example of the previous section.
+* In this paper we have shown that programming objects have a natural interpretation as processes

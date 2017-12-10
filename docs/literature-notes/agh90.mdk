@@ -1,0 +1,18 @@
+# [@Agh90] Concurrent Object-Oriented Programming
+
+* p.126: Concurrency abstracts away some of the details in an execution, allowing us to concentrate on conceptual issues without having to be concerned with a particular order of execution which may result from the quirks of a given system. -- Highlighted 19 May 2017
+* p.126: Objects can be defined as entities which encapsula.te data and operations into a single computational unit.  -- Highlighted 19 May 2017
+* p.126: hree common patterns of parallelism in problems have been found in practice (For example, see [8, 131). First, pipeline concurrency involves the enumeration of potential solutions and the concurrent testing of these solutions as they are enumerated. Second, divide and conquer concurrency involves the concurrent elaboration of different subproblems and the joining of (some or all) of their solutions in order to obtain a solution to the overall problem. In divide and conquer concurrency, there is no interaction between the procedures solving the subproblems.  -- Highlighted 19 May 2017
+* The term Actor was introduced by Carl Hewitt at MIT in the early 1970s
+* p.127: Divide-and-conquer concurrency algorithms can often be expressed as functions.  -- Highlighted 19 May 2017
+* p.128: n cooperative problem solving concurrency, intermediate results arestored in objects and shared by pass-ing messages between objects. -- Highlighted 19 May 2017
+* p.128: Another example of coopera-tive problem solving is blackboardsystems which allow collaborationbetween agents through a sharedwork space. -- Highlighted 19 May 2017
+* p.128: Actors are self-contained, interactive, independent componentsof a computing system that communicate by asynchronous message passing.  -- Highlighted 19 May 2017
+* p.128: Each time an actor processes a communication, it also computes its behavior in response to the next communication it may process.  -- Highlighted 19 May 2017
+* p.128: In other cases, the behavior may change. The change in the behavior may represent a simple change of state variables, such as change in the balance of an account, or it may represent changes in the operations (methods) which are carried out in response to messages. -- Highlighted 19 May 2017
+* p.128: Concurrent computations can be visualized in terms of event diagrams (see Figure 5). These diagrams were developed to model the behavior of actor systems. -- Highlighted 19 May 2017
+* p.130: A customer can be sent a reply message when a request is completed, or a complaint message if it is not possible to successfully complete the reqluest. -- Highlighted 19 May 2017
+* p.132: Although actors take a functionalview of an object’s internal behavior at any given point in time, actors can represent shared history-sensitive ob-jects.  -- Highlighted 19 May 2017
+* p.132: We call such a merge afair merge. Afair merge is complete because itmerges message:; from every senderand may not ignore any sender inde-finitely and it is indeterminate be-cause no particular order is specifiedfor messages sent to the same objectby different objects.  -- Highlighted 19 May 2017
+* Using a semantics of fair merge, one can reason about the eventual behavior of a concurrent program; reasoning about eventual properties of a concurrent system is analogous to reasoning about fixed points in a recursion in sequential programming.
+* Inherent Concurrency

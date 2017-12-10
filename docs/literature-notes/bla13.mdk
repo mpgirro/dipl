@@ -1,0 +1,26 @@
+# [@Bla13] Object-oriented programming: Some history, and challenges for the next fifty years
+
+* [...] Alan Snyder of Hewlett Packard wrote an influential survey paper “The Essence of Objects”
+* In Snyder’s view, the essential concepts were as follows:
+  - An object embodies an abstraction.
+  - Objects provide services.
+  - Clients issue requests for those services.
+  - Objects are encapsulated.
+  - Requests identify operations.
+  - Requests can identify objects.
+  - New objects can be created.
+  - The same operation on distinct objects can have different implementations and observably different behaviour.
+  - Objects can be classified in terms of their services (interface hierarchy).
+  - Objects can share implementations.
+    – Objects can share a common implementation (multiple instances).
+    – Objects can share partial implementations (implementation inheritance or delegation).
+* Snyder does mention “Active Objects” as an “associated concept,” that is, an idea “associated with the notion of objects, but not essential to it.” The idea that classes can serve as modules does not appear at all.
+* Dan Ingalls’ sweeping 1981 Byte article “Design Principles behind Smalltalk” [27]
+* In 2002, Dahl wrote [14]:
+  The most important new concept of Simula 67 is surely the idea of data structures with associated operators . . . called objects. There is an important difference, except in trivial cases, between
+  - the inside view of an object, understood in terms of local variables, possibly initialising operations establishing an
+invariant, and implemented procedures operating on the variables maintaining the invariant, and
+  - the outside view, as presented by the remotely accessible procedures, including some generating mechanism, dealing
+with more “abstract” entities.
+* Simula’s “quasi-parallelism” was a sweet-spot in 1961: it allowed programmers to think about concurrency while ignoring synchronisation. Because another task could execute only when explicitly resumed, programmers could be confident that their data would not change “out from under them” at unexpected times
+* Hewitt’s Actor model [37] built on this idea, as did Emerald [16], in which every object could potentially contain a process. Other languages, like Erlang, have made the process the main focus of the language rather than the object [38].
