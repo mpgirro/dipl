@@ -63,8 +63,8 @@ Epigraph {
   Name Contents   : \/
 
   Section Depth : 1
-  Css           : webpaginated.css
-  Script*       : webpaginated.js
+  Css           : style/webpaginated.css
+  Script*       : style/webpaginated.js
 }
 -->
 @if not html {
