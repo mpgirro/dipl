@@ -57,8 +57,8 @@
         * Polyglot Programming
     * Patterns (Kapitel notwendig?)
         * Event-driven architecture
-    * Development, Debugging and Maintenance
-* The Paradigms/Concepts Analogioes of MSA (statt: Towards a (Micro)service-Oriented Paradigm: A Look at Analogies)
+    * Development, Testing, Debugging and Maintenance
+* The Microservice: The Architectural Building Block, and a Look at it's Analogies 
     * Data Abstraction
         * Encapsulation
         * Information Hiding
@@ -123,6 +123,7 @@
             * Silo
             * Orco
         * Plattform and Middleware-based Approaches
+            * Virtual Machines
             * XVSM/MozartSpaces
 * Outlook
     * Services as First-Class Citizens
