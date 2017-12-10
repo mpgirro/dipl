@@ -1,0 +1,29 @@
+# [@Bar97] A Formal Model of Concurrency for Distributed Object-Oriented Systems
+
+* It is widely accepted that object-oriented constructions can be used as a pertinent basis for the support of dis-tributed systems consisting of concurrently executing ob-jects that communicate and interoperate among them.
+* In this context, distributed object systems are represented from a process-oriented perspective which uses the process as the basic modelling structure. 
+* This point of view allows us to model concurrent objects as a collection of interacting processes, each of them describing a pattern of behaviour
+* A distributed system consists of a collection of compo-nents that cooperate to function as an integrated system [7].
+* Moreover, components can be seen as a collection of con-current and distributed entities which communicate and in-teroperate among them.
+* In this paper we deal with object-oriented systems and give a formal model of concurrent objects. The concept of concurrency is essential to distribution and, at the same time, allows us to see a set of interacting objects as a collec-tion of concurrent processes whose behaviour can be ob-served by means of all their possible interactions.
+* We have selected Milner’s n-calculus [17, 18, 16] as an appropriate formalisation of concurrency that can be used to characterise specific features of object-oriented sys-tems. This selection has been based on the following issues:
+    1. The n-calculus is a well-defined process algebra that can be used to describe and analyse process systems.
+    2. It allows mobility of communication channels, in-cludes an operational semantics, and can be extended to a higher-order calculus [23] where not only channels but whole processes can be transferred.
+* In this paper we deal with a collection of essential features of the object paradigm [2, 291: object identity, behaviour, classification, interaction, concurrency, composition and inheritance.
+* Objects as Processes
+    * As previously stated, our object model represents objects as processes. Actually, the concept of process can be de-fined as “behaviour pattern of objects” 191 or “machine for performing actions” [8]
+    * These definitions certainly fit in with the idea of object -encapsulation of services and state [19]- and, in the context of concurrent object-oriented languages, the term “process” is sometimes used to capture the higher-level notion of a concurrently execut-ing object [21,291.
+    * To give a first intuitive example (not complete), we will focus on the basic understanding of objects consisting of properties, state, behaviour and interaction [5,26, 311.
+* Behaviour Pattern
+    * A distributed system is a concurrent system in which processes communicate by message passing2 [l]. This paradigm allows different schemes of interprocess interac-tion depending on how sending and receiving primitives are combined.
+* interaction
+    * Our client-server communication model allows an ob-ject to invoke operations of another object. This in-teraction is supposed to be determined, in the sense that the invocation must be directed to one and only one destination object. For this to be true, the input names used by objects to localise their operations must be uniquely borne in the system [16].
+* Distribution Transparency
+    * There are several issues d special relevance when talk-ing about the communication model of distributed systems: components may be sprea,d across different locations (re-moteness), they can migrate dynamically to other nodes (mobility), they can be heterogeneous, they may fail inde-pendently of the others, etic. Each of these concems incor-porates an additional complexity to the interaction mecha-nism between objects.
+* inheritance
+    * In this section we deal with the notion of inheritance as an incremental modification mechanism [4, 251.
+    * The behaviour of an object is defined by its class (be-haviour pattern).
+* Conclusions
+    * The notion of process certainly fits in with the idea of object as a machine for performing actions. Therefore, an object system can be represented by a set of concur-rent communicating processes.
+    * We have characterised the basic constructions of the object paradigm. Class processes behave as an un-bounded resource of objects. Object processes define behaviour templates in terms of operations which fol-low a request-reply structure.
+    * 
