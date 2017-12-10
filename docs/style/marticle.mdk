@@ -9,13 +9,6 @@ Package       : [T1] fontenc
 Package       : setspace
 <!--Package       : fancyhdr-->
 
-<!-- this stuff is thesis specific -->
-Bibliography : dipl
-Bib Style    : ../style/keynat.bst
-Cite All     : False
-
-
-
 Tex Header    :
   \parindent=0pt
   \parskip 1ex

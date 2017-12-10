@@ -1,5 +1,9 @@
 [INCLUDE=style/marticle]
 
+Bibliography : dipl
+Bib Style    : style/keynat.bst
+Cite All     : False
+
 [TOC]
 
 [INCLUDE=literature-notes/agh85]
