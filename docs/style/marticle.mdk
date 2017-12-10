@@ -9,6 +9,13 @@ Package       : [T1] fontenc
 Package       : setspace
 <!--Package       : fancyhdr-->
 
+<!-- this stuff is thesis specific -->
+Bibliography : dipl
+Bib Style    : ../style/keynat.bst
+Cite All     : False
+
+
+
 Tex Header    :
   \parindent=0pt
   \parskip 1ex
@@ -24,6 +31,20 @@ Tex Header    :
   %\renewcommand{\headrulewidth}{0.4pt}
   %\renewcommand{\footrulewidth}{0.4pt}
 
+CSS Header      :
+  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
+  body.madoko {
+    font-family: "Crimson Text", serif;
+  }
+  .madoko .math-rendering {
+    color: black;
+  }
+  hr.figureline.madoko {
+    display: none;
+  }
+  .toc a, .toc a:visited { 
+    color: #0000EE;  
+  }
 
 .LitNote { 
   background-color: LightGray;
@@ -42,4 +63,7 @@ Tex Header    :
 .Todo { 
   background-color: Aqua; 
   padding: 1ex;
+}
+.important {
+  color:red
 }
