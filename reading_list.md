@@ -13,6 +13,7 @@
 - [ ] [Microservices in GO](http://microservicesingo.com) + [book-code auf GitHub](https://github.com/mattkanwisher/microservices-book-code)
 - [ ] [Service Design Patterns: Fundamental Design Solutions for SOAP/WSDL and RESTful Web Services](https://martinfowler.com/books/sdp.html) by Robert Daigneau
     - Zitat-Quelle für [TolerantReader Pattern](https://martinfowler.com/bliki/TolerantReader.html)
+- [ ] *Martin Abadi and Luca Cardelli. A Theory of Objects. Springer-Verlag, 1996.* (**kann das ebook nicht besorgen**)
 
 ## TU Bibliothek
 
