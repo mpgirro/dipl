@@ -12,10 +12,15 @@ references:
 journal:
 	madoko --pdf journal.mdk
 
-slides:
+literature:
+	madoko notes-literature.mdk
+
+slides1:
 	pdflatex -halt-on-error -output-directory out slides1.tex
 
-all: proposal thesis references journal
+slides: slides1
+
+all: proposal thesis references journal slides
 
 clean:
 	rm -r out/
