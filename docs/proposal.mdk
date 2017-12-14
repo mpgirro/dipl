@@ -2,7 +2,7 @@
 
 Title        : Master Thesis Proposal
 Subtitle     : Concurrent Programming and the Microservice Architecture Style
-Title Note   : DRAFT, &date; (version 1.1)
+Title Note   : DRAFT, &date; (version 1.2)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
 
@@ -45,6 +45,10 @@ CSS Header      :
 sect: &#167;
 
 [TITLE]
+
+~ Abstract {color:red}
+Nach einem Meeting mit Puntigam am 2017-12-13 habe ich zwar die Anweisung bekommen das Proposal hier vorerst einmal nicht anzupassen, aber über den neuen schwerpunkt haben wir dennoch geredet, den ich hier schlussendlich verankert haben will/brauche. Konkret wird der Schwerpunkt sein vom Actor Model zu sprechen (bzw von Distributed Actors), und von event-driven microservice architectures (reactive MSA). Wichtige neue Literatur hierfür wird sein [@Kar09], [@Hal12], [@Bon16] möglicherweise auch [@Hal09], [@Ber14], [@Hal10], [@Wal96], [@], [@], [@],
+~
 
 [TOC]
 
@@ -183,9 +187,7 @@ knowledge aquired in RQ1 and RQ2a, we are interrested in:
   convenient for the commonalities identified in RQ1?
 -->
 
-> **RQ2b**: Demonstrated on prototypical scenario implementations in two 
-  programming languages, which concurrency model has the most resemblance 
-  to the microservice architecture style?
+> **RQ2b**: Demonstrated on two exemplary applications implementing the same scenario, which  concurrency model has the most resemblance to the microservice architecture style?
 
 ~ Answer
 **Answer**: Hängt primär von der gewählten Kommunikationsstrategie (Kanal + 
@@ -209,12 +211,14 @@ We subsequently ask the question:
   architectures, i.e. are there features of MSA regarding concurrent software design 
   that languages facilitating classic concurrency models do not provide?
 
+> **RQ3**: Do programming languages facilitating libraries/frameworks/language constructs with sufficiently advanced actor semantics need (event-driven) microservice architectures, i.e. are there features of MSA regarding concurrent and distributed software design that the actor sematics do not or can not provide?
+
 ~ Answer
 **Answer**: Diskussion bzgl. scalability, fault tolerance, resilience, 
-geographically distributed code (braucht Middleware Lösung, zB wie in Distributed 
+geographically distributed code/mobility (braucht Middleware Lösung, zB wie in Distributed 
 Erlang, oder neue Paradigmen wie in Jolie und ähnliche die mehrere Executables 
 compilieren), polyglot programming (via VMs möglich, vgl. Mix aus 
-Java/Scala/Groovy/Clojure auf der JVM), live upgrades
+Java/Scala/Groovy/Clojure auf der JVM), live upgrades, 
 ~
 
 <!--
