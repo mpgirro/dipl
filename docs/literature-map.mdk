@@ -1,0 +1,37 @@
+[INCLUDE=style/marticle]
+
+Bibliography : dipl
+Bib Style    : style/keynat.bst
+Cite All     : False
+
+~ Abstract
+In diesem Dokument sammle ich grundlegende Literatur die zu gewissen Themen/Kapiteln wichtig ist und ich somit verwenden sollte, *insofern* der Themenkomplex/Kapitel es in die finale Thesis schafft.
+~
+
+[TOC]
+
+
+# Concurrency and Distributed Programming
+
+In diesem Kapitel geht es allgemein um den Zusammenhang von Concurrency bzw Concurrent Programming und Distributed Programming/Systems
+
+* Concurrency and distribution in object-oriented programming [@Bri98]
+
+# Distributed Systems 
+
+* Distributed Systems: Concepts and Design [@Cou05]
+    : scheint eine Art Standard-Bibel zu sein
+
+# Event-driven Architecture
+
+* Programming Without a Call Stack – Event-driven Architectures [@Hoh06]
+    : scheint kein Peer-Reviewed Article zu sein, aber trotzdem guter Inhalt
+
+# Distributed Agents
+
+* A Virtual Machine for Distributed Agent-Oriented Programming [@Zho08]
+    : Über die VM von CAOPLE
+
+
+
+[BIB]
