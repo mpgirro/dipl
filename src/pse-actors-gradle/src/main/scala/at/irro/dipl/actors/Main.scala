@@ -1,4 +1,4 @@
-package io.github.vigoo.example
+package at.irro.dipl.actors
 
 object Main extends App {
     println("Hello world")

@@ -21,7 +21,7 @@ def scalaMinor = "8"
 def akkaVersion = "2.4.11"
 
 group 'at.irro.dipl'
-mainClassName = "at.irro.dipl.pse-actors.Main"
+mainClassName = "at.irro.dipl.actors.Main"
 
 repositories {
     mavenCentral()
