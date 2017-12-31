@@ -1,5 +1,0 @@
-rootProject.name = 'pse-microservices'
-
-include 'app-crawler'
-include 'app-indexer'
-include 'app-searcher'
