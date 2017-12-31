@@ -1,4 +1,4 @@
-# gradle-multi-project-example
+# Podcast Search Engine: Backend (Microservice Edition)
 
 Basic gradle template with subprojects, deployable to Heroku as separate dyno processes.
 
@@ -48,6 +48,7 @@ However, `./gradlew run` will run applications in lexicographical order.
 Instead, explicitly specify which subproject to run:
 
 ```
-$ ./gradlew template-core:run
-$ ./gradlew template-server:run
+$ ./gradlew app-crawler:run
+$ ./gradlew app-indexer:run
+$ ./gradlew app-searcher:run
 ```
