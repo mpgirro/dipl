@@ -10,6 +10,12 @@ In diesem Dokument sammle ich grundlegende Literatur die zu gewissen Themen/Kapi
 
 [TOC]
 
+# Actors
+
+* Actors - A Model of Concurrent Computation in Distributed Systems [@Agh85]
+    : Die Diss von Agha. Da bereits im Titel auf DS bezogen, sicherlich ein wertvolle Quelle
+* The Development of Erlang [@Arm97]
+    : Actors ohne Erlang beschreiben geht wohl schlecht
 
 # Concurrency and Distributed Programming
 
@@ -21,6 +27,8 @@ In diesem Kapitel geht es allgemein um den Zusammenhang von Concurrency bzw Conc
 
 * Distributed Systems: Concepts and Design [@Cou05]
     : scheint eine Art Standard-Bibel zu sein
+* Introduction to Reliable and Secure Distributed Programming (2nd ed) [@Cac11]
+    : großes allgemeines Buch, aber Kapitel 1 und 2 haben grundlegenden Blabla zu Concurrency and Distributed Programming. Führt die Konzepte von *process* und *link* ein. Enthält Erklärungen zu Crashes, Recovery, Safty and Liveness, Process and Messages, Link Failures, Perfect Links, Timing Assumptions (Sync, Async), Failure Detection, etc. **Alles Konzepte die ich ggf anreißen sollte/werde!**
 
 # Event-driven Architecture
 
@@ -32,6 +40,16 @@ In diesem Kapitel geht es allgemein um den Zusammenhang von Concurrency bzw Conc
 * A Virtual Machine for Distributed Agent-Oriented Programming [@Zho08]
     : Über die VM von CAOPLE
 
+# Microservice
 
+* Verification in the Age of Microservices [@Pan17]
+    : wegen isolation und inherenter distribution kein Reasoning über Behaviour (vgl wie geht das bei Actors?). Kapitelüberschriften lassen auf brauchbaren Inhalt schließen
+
+# Search Engine
+
+* The anatomy of a large-scale hypertextual Web search engine [@Brin98]
+    : Das Originalpaper über Google! Brauche ich umbedingt für die Suchmaschine
+* Podcast search- user goals and retrieval technologies [@Bes10]
+    : Allgemeine Referenz auf die ich mich beziehen kann, warum es bei einer Podcast Search Engine geht. Geht nicht auf neuere Standards ein wie SimpleChapters, etc
 
 [BIB]
