@@ -1,4 +1,4 @@
-rootProject.name = 'pse-microservices'
+rootProject.name = 'microservices'
 
 include 'app-crawler'
 include 'app-indexer'

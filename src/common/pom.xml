@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.irro.pse.lib</groupId>
-    <artifactId>pse-lib</artifactId>
+    <groupId>at.irro.dipl</groupId>
+    <artifactId>common</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>pse-lib</name>
+    <name>pse-common</name>
 
     <!-- TODO soll ich hier einen gemeinsames über-package für actors/msa/lib/ui machen? 
     <parent>
@@ -26,7 +26,7 @@
     </prerequisites>
 
     <build>
-        <finalName>pse-lib</finalName>
+        <finalName>pse-common</finalName>
         <resources>
             <resource>
                 <directory>src/main/java</directory>

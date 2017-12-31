@@ -20,7 +20,7 @@ def scalaMajor = "2.11"
 def scalaMinor = "8"
 def akkaVersion = "2.4.11"
 
-group 'at.irro.dipl'
+group 'at.irro.dipl.actors'
 mainClassName = "at.irro.dipl.actors.Main"
 
 repositories {
