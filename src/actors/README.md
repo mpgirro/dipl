@@ -1,4 +1,4 @@
-# # Podcast Search Engine: Backend (Akka Edition)
+# Podcast Search Engine: Backend (Akka Edition)
 
 This is a sample Scala project built with Gradle, using Akka.
  
