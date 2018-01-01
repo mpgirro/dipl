@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+//apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
+
+ext {
+  log4jVersion = '2.9.1'
+}
+
+group = "at.irro.dipl.common"
+mainClassName = "at.irro.dipl.common.CommonApp"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  mavenLocal()
+  mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+  maven {
+        url 'https://maven.icosillion.com/artifactory/open-source/'
+    }
+}
+
+dependencies {
+//  compile 'com.google.guava:guava:23.6-jre' // Google Core Libraries for Java
+
+  testImplementation 'junit:junit:4.12'
+
+  compile "joda-time:joda-time:2.2"
+  compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+  compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+
+  compile 'com.icosillion.podengine:podengine:2.2'
+
+}
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+//    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1' 
+  }
+}
+
+
+run.doFirst {
+  // Environment variables go here.
+}
+
