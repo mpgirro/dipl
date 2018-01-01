@@ -116,6 +116,9 @@ TODO
 
 # Abstract { -; toc:clear; }
 
+In recent time, a new architectural style called *microservice architecture* gain popularity in the scientific community and industrial applications. In this time, applications are composed of small independent and isolated components called *microservices* communicating via lightweigt communication mechanism. This inherent distributed components result in an concurrent nature of the overall application. In this thesis, we explore the interrelations of the microservice architecture style with programming concurrent applications. We argue that the microservice components have much similarity to the actor model, and that many of todays actor implementations are extensions of the theoretical actor model by characteristics shared by the principle ideas behind microservices. It remains to ask if microservice architectures have aspects exalted to those of actor-based software architectures, or else actor-based concurrent could would/should/could have been the answer to the needs that lead to microservices in the first place. 
+We test our findings on the implementations of the architecture of a domain specific search engine.
+
 # Kurzfassung { -; toc:clear; }
 
 # Preface
