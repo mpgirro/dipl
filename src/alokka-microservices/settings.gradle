@@ -1,4 +1,4 @@
-rootProject.name = 'alokka.microservices'
+rootProject.name = 'alokka-microservices'
 
 include 'app-crawler'
 include 'app-indexer'
