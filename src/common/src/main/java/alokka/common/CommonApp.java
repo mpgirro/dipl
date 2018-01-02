@@ -1,4 +1,4 @@
-package at.irro.dipl.common;
+package alokka.common;
 
 import com.icosillion.podengine.models.*;
 
