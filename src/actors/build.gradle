@@ -20,8 +20,8 @@ def scalaMajor = "2.11"
 def scalaMinor = "8"
 def akkaVersion = "2.4.11"
 
-group 'alokka.actors'
-mainClassName = "alokka.actors.AlokkaApp"
+group 'alokka.actor'
+mainClassName = "alokka.actor.AlokkaApp"
 
 repositories {
     mavenCentral()
