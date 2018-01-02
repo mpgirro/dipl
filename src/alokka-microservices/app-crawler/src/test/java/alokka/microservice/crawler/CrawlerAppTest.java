@@ -1,4 +1,4 @@
-package alokka.microservice.indexer;
+package alokka.microservice.crawler;
 
 import org.junit.After;
 import org.junit.Before;
