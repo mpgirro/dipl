@@ -1,4 +1,4 @@
-package io.github.vigoo.example
+package alokka.actor;
 
 import org.specs2.mutable._
 
