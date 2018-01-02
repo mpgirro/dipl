@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName = 'at.irro.dipl.microservices.crawler.CrawlerApp'
+mainClassName = 'alokka.microservice.crawler.CrawlerApp'
 
 dependencies {
 }

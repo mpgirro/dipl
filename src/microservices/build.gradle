@@ -27,7 +27,7 @@ subprojects {
   apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
   apply plugin: 'java'
 
-  group = "at.irro.dipl.${rootProject.name}"
+  group = "alokka.${rootProject.name}"
 
   dependencies {
     implementation 'com.google.guava:guava:23.0'

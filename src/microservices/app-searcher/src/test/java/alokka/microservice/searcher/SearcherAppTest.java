@@ -1,10 +1,10 @@
-package at.irro.dipl.microservices.indexer;
+package alokka.microservice.searcher;
 
 import org.junit.After;
 import org.junit.Before;
 
 
-public class IndexerAppTest {
+public class SearcherAppTest {
 
   @Before
   public void setUp() throws Exception {

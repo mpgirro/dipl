@@ -1,4 +1,4 @@
-package at.irro.dipl.microservices.crawler;
+package alokka.microservice.indexer;
 
 public class CrawlerApp {
 

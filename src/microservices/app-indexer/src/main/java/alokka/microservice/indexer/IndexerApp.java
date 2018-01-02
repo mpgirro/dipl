@@ -1,4 +1,4 @@
-package at.irro.dipl.microservices.indexer;
+package alokka.microservice.indexer;
 
 public class IndexerApp {
 

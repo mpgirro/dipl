@@ -1,4 +1,4 @@
-package at.irro.dipl.microservices.searcher;
+package alokka.microservice.searcher;
 
 public class SearcherApp {
 
