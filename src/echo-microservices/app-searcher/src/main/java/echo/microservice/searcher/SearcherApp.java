@@ -1,4 +1,4 @@
-package alokka.microservice.searcher;
+package echo.microservice.searcher;
 
 public class SearcherApp {
 

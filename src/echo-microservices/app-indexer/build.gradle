@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName = 'alokka.microservice.indexer.IndexerApp'
+mainClassName = 'echo.microservice.indexer.IndexerApp'
 
 dependencies {
 }

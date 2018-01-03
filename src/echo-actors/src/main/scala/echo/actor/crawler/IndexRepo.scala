@@ -1,7 +1,7 @@
-package alokka.actor.crawler
+package echo.actor.crawler
 
 import akka.actor.{Actor, ActorLogging}
-import alokka.actor.protocol.IndexProtocol._
+import echo.actor.protocol.IndexProtocol._
 
 import scala.collection.mutable.ListBuffer
 

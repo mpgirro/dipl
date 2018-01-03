@@ -1,4 +1,4 @@
-package alokka.actor.protocol
+package echo.actor.protocol
 
 import scala.collection.mutable.ListBuffer
 

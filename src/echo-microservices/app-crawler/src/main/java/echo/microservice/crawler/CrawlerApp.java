@@ -1,4 +1,4 @@
-package alokka.microservice.crawler;
+package echo.microservice.crawler;
 
 public class CrawlerApp {
 

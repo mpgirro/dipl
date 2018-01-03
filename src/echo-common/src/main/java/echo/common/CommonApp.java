@@ -1,4 +1,4 @@
-package alokka.common;
+package echo.common;
 
 import com.icosillion.podengine.models.*;
 

@@ -1,4 +1,4 @@
-package alokka.microservice.indexer;
+package echo.microservice.indexer;
 
 public class IndexerApp {
 

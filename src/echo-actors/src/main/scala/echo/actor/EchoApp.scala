@@ -1,11 +1,11 @@
-package irro.echo.actor
+package echo.actor
 
 import akka.actor.{Actor, ActorSystem, Props}
-import irro.echo.actor.crawler.{CrawlerActor, IndexRepo}
-import irro.echo.actor.indexer.IndexerActor
-import irro.echo.actor.protocol.CrawlerProtocol.CrawlFeed
-import irro.echo.actor.protocol.SearchProtocol.SearchQuery
-import irro.echo.actor.searcher.SearcherActor
+import echo.actor.crawler.{CrawlerActor, IndexRepo}
+import echo.actor.indexer.IndexerActor
+import echo.actor.protocol.CrawlerProtocol.CrawlFeed
+import echo.actor.protocol.SearchProtocol.SearchQuery
+import echo.actor.searcher.SearcherActor
 ;
 
 object EchoApp extends App {

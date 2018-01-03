@@ -1,10 +1,10 @@
-package alokka.actor.searcher
+package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import alokka.actor.protocol.IndexProtocol.{IndexMessage, QueryIndexForPodcast, SearchResultForPodcastEpisodes}
-import alokka.actor.protocol.SearchProtocol.SearchQuery
+import echo.actor.protocol.IndexProtocol.{IndexMessage, QueryIndexForPodcast, SearchResultForPodcastEpisodes}
+import echo.actor.protocol.SearchProtocol.SearchQuery
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._

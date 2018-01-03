@@ -1,8 +1,8 @@
-package alokka.actor.crawler
+package echo.actor.crawler
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import alokka.actor.protocol.CrawlerProtocol.CrawlFeed
-import alokka.actor.protocol.IndexProtocol.{AddPodcastToIndex, ProcessPodcastFeedData}
+import echo.actor.protocol.CrawlerProtocol.CrawlFeed
+import echo.actor.protocol.IndexProtocol.{AddPodcastToIndex, ProcessPodcastFeedData}
 
 
 class CrawlerActor (val indexer : ActorRef) extends Actor with ActorLogging {

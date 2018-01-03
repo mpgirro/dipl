@@ -1,4 +1,4 @@
-package alokka.actor.protocol
+package echo.actor.protocol
 
 object CrawlerProtocol {
   trait CrawlerMessage

@@ -1,7 +1,7 @@
-package alokka.actor.indexer
+package echo.actor.indexer
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import alokka.actor.protocol.IndexProtocol._
+import echo.actor.protocol.IndexProtocol._
 
 class IndexerActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
 

@@ -1,4 +1,4 @@
-package alokka.microservice.indexer;
+package echo.microservice.indexer;
 
 import org.junit.After;
 import org.junit.Before;
