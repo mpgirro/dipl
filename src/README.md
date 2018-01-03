@@ -1,10 +1,10 @@
-# Podcast Search Engine (PSE)
+# Echo: Podcast Search Engine
 
-* pse-actors
-    : The Scala backed-implementation of PSE, based on a distributed actors architecture using Akka
-* pse-microservices
-    : The Java backed-implementation of PSE, based on a Microservice Architecture
-* pse-lib
-    : The library for common PSE tasks (feed-parsing, tokenization, etc), used by pse-actors and pse-microservices
-* pse-ui
-    : The Angular frontend for the PSE, used by both pse-actors and pse-microservices
+* [echo-actors](echo-actors/)
+    : The Scala backed-implementation of Echo, based on a distributed actors architecture using Akka
+* [echo-microservices](echo-microservices/)
+    : The Java backed-implementation of Echo, based on a microservice architecture
+* [echo-common](echo-common/)
+    : The library for common Echo tasks (feed-parsing, tokenization, etc), used by echo-actors and echo-microservices
+* [echo-frontend](echo-frontend/)
+    : The Angular frontend for the Echo, used by both echo-actors and echo-microservices

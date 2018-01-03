@@ -1,4 +1,4 @@
-# Podcast Search Engine: Backend (Microservice Edition)
+# Echo: Backend (Microservice Edition)
 
 Basic gradle template with subprojects, deployable to Heroku as separate dyno processes.
 
