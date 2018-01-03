@@ -1,4 +1,4 @@
-package alokka.actor;
+package echo.actor;
 
 import org.specs2.mutable._
 

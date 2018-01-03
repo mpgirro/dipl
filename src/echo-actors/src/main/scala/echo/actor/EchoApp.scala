@@ -1,19 +1,19 @@
-package alokka.actor
+package irro.echo.actor
 
 import akka.actor.{Actor, ActorSystem, Props}
-import alokka.actor.crawler.{CrawlerActor, IndexRepo}
-import alokka.actor.indexer.IndexerActor
-import alokka.actor.protocol.CrawlerProtocol.CrawlFeed
-import alokka.actor.protocol.SearchProtocol.SearchQuery
-import alokka.actor.searcher.SearcherActor
+import irro.echo.actor.crawler.{CrawlerActor, IndexRepo}
+import irro.echo.actor.indexer.IndexerActor
+import irro.echo.actor.protocol.CrawlerProtocol.CrawlFeed
+import irro.echo.actor.protocol.SearchProtocol.SearchQuery
+import irro.echo.actor.searcher.SearcherActor
 ;
 
-object AlokkaApp extends App {
+object EchoApp extends App {
 
-  println("Alokka (actor-backend) started...")
+  println("Echo (actor-backend) started...")
 
   // create the system and actor
-  val system = ActorSystem("AlokkaSystem")
+  val system = ActorSystem("EchoSystem")
   
   val indexRepo = system.actorOf(Props[IndexRepo], name = "indexRepo")
   val indexer = system.actorOf(Props(classOf[IndexerActor], indexRepo), name = "indexer")
