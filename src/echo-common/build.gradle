@@ -52,7 +52,7 @@ dependencies {
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
+  gradleVersion = '4.4.1'
 }
 
 run.doFirst {
