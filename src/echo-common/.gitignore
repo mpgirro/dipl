@@ -104,3 +104,9 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+
+# lucene index directory, will be created when using CLI test application
+index/
+
+# if stored some feeds locally for testing
+feeds/

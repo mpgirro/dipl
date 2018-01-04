@@ -5,7 +5,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-//    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1' 
+//    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
     }
 }
 
@@ -48,11 +48,20 @@ dependencies {
   compile 'com.icosillion.podengine:podengine:2.2'
   compile 'rome:rome:1.0' // TODO replace with rome:2.0 once it is out
 
+    compile 'org.apache.lucene:lucene-core:7.2.0'
+    compile 'org.apache.lucene:lucene-analyzers-common:7.2.0'
+
+    compile 'org.apache.solr:solr-solrj:7.2.0' // TODO solr support is only experimental and not suitable for the scope of the thesis
+
 }
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
 task wrapper(type: Wrapper) {
   gradleVersion = '4.4.1'
+}
+
+run {
+    standardInput = System.in
 }
 
 run.doFirst {
