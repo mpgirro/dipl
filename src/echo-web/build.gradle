@@ -20,7 +20,7 @@ buildscript {
 
 defaultTasks += 'FastOptJS'
 
-group 'echo.frontend'
+group 'echo.web'
 version '1.0-SNAPSHOT'
 description = ''
 

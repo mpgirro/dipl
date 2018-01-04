@@ -1,4 +1,4 @@
-package echo.frontend
+package echo.web
 
 object EchoApp {
   def main(args: Array[String]): Unit = {

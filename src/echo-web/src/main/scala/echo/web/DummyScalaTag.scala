@@ -1,4 +1,4 @@
-package echo.frontend
+package echo.web
 
 import scala.scalajs.js.annotation.JSExport
 import scalatags.Text.all._
