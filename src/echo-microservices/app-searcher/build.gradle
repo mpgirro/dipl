@@ -1,5 +1,14 @@
 apply plugin: 'application'
 
+sourceCompatibility=1.8
+targetCompatibility=1.8
+assert System.properties['java.specification.version'] == '1.8'
+
+group = 'echo.microservices.searcher'
+version = '0.0.1-SNAPSHOT'
+
+description = ''
+
 mainClassName = 'echo.microservice.searcher.SearcherApp'
 
 dependencies {

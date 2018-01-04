@@ -1,12 +1,11 @@
 apply plugin: 'idea'
 
-ext {
-  log4jVersion = '2.9.1'
-}
-
 buildscript {
   repositories {
+    mavenLocal()
     jcenter()
+    maven { url "http://repo.spring.io/plugins-release" }
+    maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
     classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2' 
@@ -16,8 +15,12 @@ buildscript {
 allprojects {
   repositories {
     mavenLocal()
-    mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+    jcenter()
   }
+}
+
+ext {
+  log4jVersion = '2.9.1'
 }
 
 apply from: file('gradle/check.gradle')
@@ -44,4 +47,9 @@ subprojects {
 
 //  apply from: file("$rootProject.projectDir/gradle/heroku/stage.gradle")
 
+}
+
+// Generating gradle wrapper so people don't have to have the Gradle version preinstalled
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
 }
