@@ -51,5 +51,11 @@ In diesem Kapitel geht es allgemein um den Zusammenhang von Concurrency bzw Conc
     : Das Originalpaper über Google! Brauche ich umbedingt für die Suchmaschine
 * Podcast search- user goals and retrieval technologies [@Bes10]
     : Allgemeine Referenz auf die ich mich beziehen kann, warum es bei einer Podcast Search Engine geht. Geht nicht auf neuere Standards ein wie SimpleChapters, etc
+* Agent Space Architecture for Search Engines [@Cho04]
+    : Über die Architektur von Suchmaschinen; die Notwendigkeit für Parallel and Distributed Computing; "we propose a new agent and network based architecture for parallel and distributed computing"; "**Search engine represents a challenging application for parallel and distributed processing, which is used as a test case to implement and to test our proposed architecture.**"; gute quelle um zu begründen wieso ich gerade eine Suchmaschine gebaut habe!; außerdem sind Space based technologien (um die es hier geht) ein verwandtes thema zu concurrency; [vom überfliegen her ist das eine sehr wertvolle quelle!]{color:red} 
+* Effective page refresh policies for Web crawlers [@Cho03]
+    : hier steht drinnen wie ich meinen update-zyclus machen kann; ziemlich viel math
+* Mercator: A scalable, extensible Web crawler [@Hey99]
+    : über die architectur und weiteres bzgl parallele web crawler; das was ich als "nachschauen ob ich im feed was geändert hat" wird dort als "content-seen test" bezeichnet, und methoden werden beschrieben (für mich brauchbar?); außerdem wir der "URL-seen test" beschrieben, wird auch bei mir mit feeds die parameter nehmen (für das content-plattform statistik zeugs) die für mich irrelevant sind; beschreibt auch crawler traps
 
 [BIB]
