@@ -15,6 +15,8 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
 //apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
+apply plugin: 'maven-publish'
+
 sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
@@ -54,6 +56,14 @@ dependencies {
 
     compile 'org.apache.solr:solr-solrj:7.2.0' // TODO solr support is only experimental and not suitable for the scope of the thesis
 
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
