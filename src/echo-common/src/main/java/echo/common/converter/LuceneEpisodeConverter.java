@@ -20,6 +20,8 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
     public Document toIndexDocument(EpisodeDocument episode) {
         final Document doc = new Document();
 
+        doc.add(new StringField("doc_type", "episode", Field.Store.YES));
+
         doc.add(new TextField("title", episode.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", episode.getLink(), Field.Store.YES));
 

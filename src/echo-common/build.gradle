@@ -49,6 +49,7 @@ dependencies {
   compile 'rome:rome:1.0' // TODO replace with rome:2.0 once it is out
 
     compile 'org.apache.lucene:lucene-core:7.2.0'
+    compile 'org.apache.lucene:lucene-queryparser:7.2.0'
     compile 'org.apache.lucene:lucene-analyzers-common:7.2.0'
 
     compile 'org.apache.solr:solr-solrj:7.2.0' // TODO solr support is only experimental and not suitable for the scope of the thesis

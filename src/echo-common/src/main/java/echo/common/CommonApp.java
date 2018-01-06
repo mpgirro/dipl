@@ -4,10 +4,13 @@ import com.icosillion.podengine.models.*;
 
 import com.icosillion.podengine.exceptions.InvalidFeedException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
+import echo.common.dto.document.Document;
 import echo.common.dto.document.EpisodeDocument;
 import echo.common.dto.document.PodcastDocument;
 import echo.common.index.IndexCommitter;
 import echo.common.index.LuceneCommitter;
+import echo.common.search.IndexSearcher;
+import echo.common.search.LuceneSearcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +33,7 @@ public class CommonApp {
     private static final boolean CREATE_INDEX = true; // will re-create index on every start (for testing)
 
     private IndexCommitter committer;
+    private IndexSearcher searcher;
 
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
@@ -42,6 +46,7 @@ public class CommonApp {
     public CommonApp() throws IOException {
 
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
+        this.searcher = new LuceneSearcher(INDEX_PATH);
 
         // save the usages, for easy recall
         usageMap.put("index",         "feed [feed [feed]]");
@@ -54,7 +59,7 @@ public class CommonApp {
         out.println();
         out.println();
         out.println("-------------------------------------------------------------------------------");
-        out.println("> Hello Echo:Common interactive Test-App");
+        out.println("> Welcome to Echo:Common interactive Test-App");
 
         while (!shutdown) {
             out.print("> ");
@@ -89,8 +94,7 @@ public class CommonApp {
             }
         }
 
-        out.println("Bye Echo:CommonApp!");
-        out.println("-------------------------------------------------------------------------------");
+        out.println("Bye!");
     }
 
     private boolean isCmd(String input, String cmd){
@@ -117,8 +121,7 @@ public class CommonApp {
     }
 
     private void help(){
-        out.println("This is an interactive REPL to explore the semantic dataset of TU linked data");
-        out.println("The following commands are available:");
+        out.println("This is an interactive REPL providing direct access to following search engine functions:");
         out.println();
         for( String key : usageMap.keySet().stream().sorted().collect(Collectors.toList())){
             out.println(key+" "+usageMap.get(key));
@@ -141,7 +144,7 @@ public class CommonApp {
             out.println("Processing feed: " + feed);
 
             //Download and parse the Cortex RSS feed
-            Podcast podcast = new Podcast(new URL(feed));
+            final Podcast podcast = new Podcast(new URL(feed));
             out.println("Podcast: " + podcast.getTitle() + " <" + podcast.getLink().toExternalForm() + ">");
 
             final PodcastDocument podcastDoc = new PodcastDocument();
@@ -152,7 +155,7 @@ public class CommonApp {
             podcastDoc.setLanguage(podcast.getLanguage());
             podcastDoc.setGenerator(podcast.getGenerator());
 
-            committer.commit(podcastDoc);
+            committer.addDocument(podcastDoc);
 
             //Display Feed Details
             //System.out.printf("💼 %s has %d episodes!\n", podcast.getTitle(), podcast.getEpisodes().size());
@@ -169,33 +172,40 @@ public class CommonApp {
                 episodeDoc.setGuid(episode.getGUID());
                 episodeDoc.setDescription(episode.getDescription());
 
-                committer.commit(episodeDoc);
+                this.committer.addDocument(episodeDoc);
             }
         }
+
+        this.committer.commit();
 
         out.println("all done");
     }
 
     private void search(String[] querys){
-        throw new UnsupportedOperationException("CommonApp.search() not yet implemented");
-    }
-
-    /* TODO delete
-    public static void main(String[] args) throws IOException, InvalidFeedException, MalformedFeedException {
-
-        //Download and parse the Cortex RSS feed
-        //Podcast podcast = new Podcast(new URL("http://freakshow.fm/feed/m4a/"));
-        Podcast podcast = new Podcast(new URL("https://feeds.metaebene.me/freakshow/m4a"));
-
-        //Display Feed Details
-        System.out.printf("💼 %s has %d episodes!\n", podcast.getTitle(), podcast.getEpisodes().size());
-
-        //List all episodes
-        for (Episode episode : podcast.getEpisodes()) {
-            System.out.println("- " + episode.getTitle());
+        final String query = String.join(" ", querys);
+        final Document[] results = this.searcher.search(query);
+        out.println("Found "+results.length+" results for query '" + query + "'");
+        out.println("Results:");
+        for(Document doc : results){
+            out.println();
+            if(doc instanceof PodcastDocument){
+                final PodcastDocument pDoc = (PodcastDocument) doc;
+                out.println(pDoc.getTitle());
+                out.println(pDoc.getLanguage());
+                out.println(pDoc.getDescription());
+                out.println(pDoc.getLink());
+            } else if( doc instanceof EpisodeDocument){
+                final EpisodeDocument eDoc = (EpisodeDocument) doc;
+                out.println(eDoc.getTitle());
+                if(eDoc.getPubDate() != null){
+                    out.println(eDoc.getPubDate().toString());
+                }
+                out.println(eDoc.getDescription());
+                out.println(eDoc.getLink());
+            } else {
+                throw new RuntimeException("Forgot to support new Echo Document type: "+doc.getClass());
+            }
         }
-
     }
-    */
 
 }
