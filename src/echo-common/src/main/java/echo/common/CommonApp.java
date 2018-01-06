@@ -48,10 +48,10 @@ public class CommonApp {
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
         this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
 
-        // auto destroy on close
+        // auto-destroy on exit
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            committer.destroy();
             searcher.destroy();
+            committer.destroy();
         }));
 
         // save the usages, for easy recall
@@ -96,8 +96,9 @@ public class CommonApp {
                 } else {
                     usage(cmd);
                 }
-            } else if(isCmd(cmd,"index-search-test")){
+            } else if(isCmd(cmd,"test-index-search")){
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
+                searcher.refresh(); // I need to manually refresh here, otherwise there will be no results because auto-refresh has not triggered yet
                 search(new String[]{"Sendung"});
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
@@ -165,7 +166,7 @@ public class CommonApp {
             podcastDoc.setLanguage(podcast.getLanguage());
             podcastDoc.setGenerator(podcast.getGenerator());
 
-            committer.addDocument(podcastDoc);
+            committer.add(podcastDoc);
 
             //Display Feed Details
             //System.out.printf("💼 %s has %d episodes!\n", podcast.getTitle(), podcast.getEpisodes().size());
@@ -182,7 +183,7 @@ public class CommonApp {
                 episodeDoc.setGuid(episode.getGUID());
                 episodeDoc.setDescription(episode.getDescription());
 
-                this.committer.addDocument(episodeDoc);
+                this.committer.add(episodeDoc);
             }
         }
 

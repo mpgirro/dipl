@@ -33,14 +33,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class LuceneSearcher implements echo.common.search.IndexSearcher{
 
-    private ScheduledExecutorService scheduledExecutor;
-
-//   private IndexWriter indexWriter; // only needed for initialization, and no reference is needed (to avoid closing it by accident)
-    private SearcherManager searcherManager;
-    private Future maybeRefreshFuture;
-    private Analyzer analyzer;
-    private MultiFieldQueryParser queryParser;
-
+    private final SearcherManager searcherManager;
+    private final Analyzer analyzer;
+    private final MultiFieldQueryParser queryParser;
+    private final ScheduledExecutorService scheduledExecutor;
+    private final Future maybeRefreshFuture;
     private final DocumentConverter podcastConverter;
     private final DocumentConverter episodeConverter;
 
@@ -51,27 +48,21 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
      */
     public LuceneSearcher(final IndexWriter indexWriter) throws IOException{
 
- //       scheduledExecutor = Executors.newScheduledThreadPool(3);
-        searcherManager = new SearcherManager(indexWriter, null);
+        this.searcherManager = new SearcherManager(indexWriter, null);
 
-        /*
-        maybeRefreshFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
+        this.analyzer = new StandardAnalyzer();
+        this.queryParser = new MultiFieldQueryParser(
+            new String[] {"title", "description", "link"},
+            this.analyzer);
+
+        this.scheduledExecutor = Executors.newScheduledThreadPool(1);
+        this.maybeRefreshFuture = this.scheduledExecutor.scheduleWithFixedDelay(() -> {
             try {
                 searcherManager.maybeRefresh();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }, 0, 5, TimeUnit.SECONDS);
-        */
-
-        // log.info("Using Lucene Default Similarity");
-        //indexSearcher.setSimilarity(new ClassicSimilarity());
-
-        this.analyzer = new StandardAnalyzer();
-        this.queryParser = new MultiFieldQueryParser(
-            new String[] {"title", "description"},
-            analyzer);
-
 
         this.podcastConverter = new LucenePodcastConverter();
         this.episodeConverter = new LuceneEpisodeConverter();
@@ -85,8 +76,8 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
 
             final Query query = this.queryParser.parse(queryStr);
 
-            searcherManager.maybeRefreshBlocking();
-            indexSearcher = searcherManager.acquire();
+//            searcherManager.maybeRefreshBlocking();
+            indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
 //            log.info("Searching for query: "+query.toString());
@@ -109,18 +100,27 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
         } finally {
             if (indexSearcher != null) {
                 try {
-                    searcherManager.release(indexSearcher);
+                    this.searcherManager.release(indexSearcher);
                 } catch (IOException e) { e.printStackTrace(); }
             }
         }
     }
 
     @Override
+    public void refresh(){
+        try {
+            this.searcherManager.maybeRefreshBlocking();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void destroy() {
         try {
-//            this.indexWriter.close(); // TODO this should better be closed by the
-            maybeRefreshFuture.cancel(false);
+            this.maybeRefreshFuture.cancel(false);
             this.searcherManager.close();
+            this.scheduledExecutor.shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }
