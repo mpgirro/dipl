@@ -57,6 +57,7 @@ public class CoreApp {
         // save the usages, for easy recall
         usageMap.put("index",             "feed [feed [feed]]");
         usageMap.put("search",            "query [query [query]]");
+        usageMap.put("test-index",        "");
         usageMap.put("test-index-search", "");
         usageMap.put("help",              "");
         usageMap.put("quit, q, exit",     "");
@@ -93,6 +94,16 @@ public class CoreApp {
                 } else {
                     usage(cmd);
                 }
+            } else if(isCmd(cmd,"test-index")){
+                index(new String[]{
+                    "https://feeds.metaebene.me/freakshow/m4a",
+                    "http://www.fanboys.fm/episodes.mp3.rss",
+                    "http://falter-radio.libsyn.com/rss",
+                    "http://revolutionspodcast.libsyn.com/rss/",
+                    "https://feeds.metaebene.me/forschergeist/m4a",
+                    "http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss", // Ganz offen gesagt feed
+                });
+
             } else if(isCmd(cmd,"test-index-search")){
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
                 searcher.refresh(); // I need to manually refresh here, otherwise there will be no results because auto-refresh has not triggered yet
@@ -198,12 +209,14 @@ public class CoreApp {
             out.println();
             if(doc instanceof PodcastDocument){
                 final PodcastDocument pDoc = (PodcastDocument) doc;
+                out.println("[Podcast]");
                 out.println(pDoc.getTitle());
                 out.println(pDoc.getLanguage());
                 out.println(pDoc.getDescription());
                 out.println(pDoc.getLink());
             } else if( doc instanceof EpisodeDocument){
                 final EpisodeDocument eDoc = (EpisodeDocument) doc;
+                out.println("[Episode]");
                 out.println(eDoc.getTitle());
                 if(eDoc.getPubDate() != null){
                     out.println(eDoc.getPubDate().toString());
@@ -213,7 +226,9 @@ public class CoreApp {
             } else {
                 throw new RuntimeException("Forgot to support new Echo Document type: "+doc.getClass());
             }
+            out.println("\n---");
         }
+        out.println();
     }
 
 }
