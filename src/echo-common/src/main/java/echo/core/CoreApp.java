@@ -27,7 +27,7 @@ import static java.lang.System.out;
 /**
  * @author Maximilian Irro
  */
-public class CommonApp {
+public class CoreApp {
 
     private static final String INDEX_PATH = "./index";
     private static final boolean CREATE_INDEX = true; // will re-create index on every start (for testing)
@@ -39,11 +39,11 @@ public class CommonApp {
     private Map<String,String> usageMap = new HashMap();
 
     public static void main(String[] args) throws IOException, InvalidFeedException, MalformedFeedException {
-        final CommonApp app = new CommonApp();
+        final CoreApp app = new CoreApp();
         app.repl();
     }
 
-    public CommonApp() throws IOException {
+    public CoreApp() throws IOException {
 
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
         this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
