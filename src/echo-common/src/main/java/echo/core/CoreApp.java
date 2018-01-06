@@ -63,10 +63,7 @@ public class CoreApp {
     }
 
     private void repl() throws IOException, InvalidFeedException, MalformedFeedException {
-        out.println();
-        out.println();
-        out.println("-------------------------------------------------------------------------------");
-        out.println("> Welcome to Echo:Common interactive Test-App");
+        out.println("> Welcome to Echo:Core interactive exploration App!");
 
         while (!shutdown) {
             out.print("> ");
@@ -105,7 +102,7 @@ public class CoreApp {
             }
         }
 
-        out.println("Bye!");
+        out.println("Bye!\n");
     }
 
     private boolean isCmd(String input, String cmd){
