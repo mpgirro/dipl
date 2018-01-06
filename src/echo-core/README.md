@@ -1,1 +1,1 @@
-# Echo: Common Library
+# Echo: Core Library
