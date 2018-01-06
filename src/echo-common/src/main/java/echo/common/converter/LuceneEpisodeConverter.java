@@ -12,16 +12,26 @@ import org.apache.lucene.document.TextField;
 public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,org.apache.lucene.document.Document> {
 
     @Override
-    public EpisodeDocument toEchoDocument(Document doc) {
-        throw new UnsupportedOperationException("LuceneEpisodeConverter.toEchoDocument() not yet implemented");
+    public EpisodeDocument toEchoDocument(Document lDoc) {
+
+        final EpisodeDocument eDoc = new EpisodeDocument();
+
+        eDoc.setTitle(lDoc.get("title"));
+        eDoc.setLink(lDoc.get("link"));
+
+ //       eDoc.setPubDate(TODO);
+        eDoc.setGuid(lDoc.get("guid"));
+        eDoc.setDescription(lDoc.get("description"));
+
+        return eDoc;
     }
 
     @Override
     public Document toIndexDocument(EpisodeDocument episode) {
+
         final Document doc = new Document();
 
         doc.add(new StringField("doc_type", "episode", Field.Store.YES));
-
         doc.add(new TextField("title", episode.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", episode.getLink(), Field.Store.YES));
 

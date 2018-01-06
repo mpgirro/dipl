@@ -10,35 +10,59 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Maximilian Irro
  */
 public class LuceneSearcher implements echo.common.search.IndexSearcher{
 
-    private IndexReader indexReader;
-    private org.apache.lucene.search.IndexSearcher indexSearcher;
+    private ScheduledExecutorService scheduledExecutor;
+
+//   private IndexWriter indexWriter; // only needed for initialization, and no reference is needed (to avoid closing it by accident)
+    private SearcherManager searcherManager;
+    private Future maybeRefreshFuture;
     private Analyzer analyzer;
     private MultiFieldQueryParser queryParser;
 
     private final DocumentConverter podcastConverter;
     private final DocumentConverter episodeConverter;
 
-    public LuceneSearcher(final String indexPath) throws IOException{
+    /**
+     *
+     * @param indexWriter has to be the same indexWriter used by the Indexer, if search should be performed at the same time as indexing
+     * @throws IOException
+     */
+    public LuceneSearcher(final IndexWriter indexWriter) throws IOException{
 
-        // log.info("Using index: " + FSDirectory.open(Paths.get(index)).getDirectory().toAbsolutePath().toString());
-        this.indexReader= DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
+ //       scheduledExecutor = Executors.newScheduledThreadPool(3);
+        searcherManager = new SearcherManager(indexWriter, null);
 
-        this.indexSearcher = new org.apache.lucene.search.IndexSearcher(indexReader);
+        /*
+        maybeRefreshFuture = scheduledExecutor.scheduleWithFixedDelay(() -> {
+            try {
+                searcherManager.maybeRefresh();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, 0, 5, TimeUnit.SECONDS);
+        */
 
         // log.info("Using Lucene Default Similarity");
         //indexSearcher.setSimilarity(new ClassicSimilarity());
@@ -56,45 +80,47 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
     @Override
     public Document[] search(String queryStr) {
 
+        IndexSearcher indexSearcher = null;
         try {
 
             final Query query = this.queryParser.parse(queryStr);
 
-            /*
-            final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
-            booleanQueryBuilder.add(query, BooleanClause.Occur.SHOULD);
+            searcherManager.maybeRefreshBlocking();
+            indexSearcher = searcherManager.acquire();
+            indexSearcher.setSimilarity(new ClassicSimilarity());
 
-            booleanQueryBuilder.add(query2, BooleanClause.Occur.MUST);
-            booleanQueryBuilder.add(query3, BooleanClause.Occur.MUST);
-            booleanQueryBuilder.add(query4, BooleanClause.Occur.MUST);
+//            log.info("Searching for query: "+query.toString());
 
-            query = booleanQueryBuilder.build();
-
-            //Query query = new TermQuery(new Term(field, queryString));
-            */
-
-//        log.info("Searching for: " + query.toString(field));
-
-            System.out.println("SearchIndex has currentl "+indexReader.numDocs()+" documents");
-
-            final ScoreDoc[] hits = this.indexSearcher.search(query, 1000).scoreDocs;
-
-            final Document[] results = new Document[hits.length];
-            for(int i = 0; i < hits.length; i++){
-                results[i] = this.toEchoDocument(this.indexSearcher.doc(hits[i].doc));
+            final TopDocs topDocs = indexSearcher.search(query, 1);
+            if(topDocs.totalHits > 0){
+                final ScoreDoc[] hits = indexSearcher.search(query, 1000).scoreDocs;
+                final Document[] results = new Document[hits.length];
+                for(int i = 0; i < hits.length; i++){
+                    results[i] = this.toEchoDocument(indexSearcher.doc(hits[i].doc));
+                }
+                return results;
+            } else {
+                return new Document[0];
             }
-            return results;
+
         } catch (IOException | ParseException e) {
             e.printStackTrace();
             return new Document[0];
+        } finally {
+            if (indexSearcher != null) {
+                try {
+                    searcherManager.release(indexSearcher);
+                } catch (IOException e) { e.printStackTrace(); }
+            }
         }
-
     }
 
     @Override
-    public void close() {
+    public void destroy() {
         try {
-            this.indexReader.close();
+//            this.indexWriter.close(); // TODO this should better be closed by the
+            maybeRefreshFuture.cancel(false);
+            this.searcherManager.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,7 +131,7 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
         // TODO this is not too pretty yet, should have used Scala for this library already...
         if(doc.get("doc_type").equals("podcast")) {
             return this.podcastConverter.toEchoDocument(doc);
-        } else if(doc.get("doc_type").equals("podcast")) {
+        } else if(doc.get("doc_type").equals("episode")) {
             return this.episodeConverter.toEchoDocument(doc);
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));

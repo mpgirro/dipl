@@ -9,6 +9,6 @@ public interface IndexSearcher {
 
     Document[] search(String query);
 
-    void close();
+    void destroy();
 
 }

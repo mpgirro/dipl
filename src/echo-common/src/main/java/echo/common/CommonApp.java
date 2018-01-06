@@ -46,13 +46,20 @@ public class CommonApp {
     public CommonApp() throws IOException {
 
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
-        this.searcher = new LuceneSearcher(INDEX_PATH);
+        this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
+
+        // auto destroy on close
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            committer.destroy();
+            searcher.destroy();
+        }));
 
         // save the usages, for easy recall
-        usageMap.put("index",         "feed [feed [feed]]");
-        usageMap.put("search",        "query [query [query]]");
-        usageMap.put("help",          "");
-        usageMap.put("quit, q, exit", "");
+        usageMap.put("index",             "feed [feed [feed]]");
+        usageMap.put("search",            "query [query [query]]");
+        usageMap.put("test-index-search", "");
+        usageMap.put("help",              "");
+        usageMap.put("quit, q, exit",     "");
     }
 
     private void repl() throws IOException, InvalidFeedException, MalformedFeedException {
@@ -83,12 +90,15 @@ public class CommonApp {
                 } else {
                     usage(cmd);
                 }
-            } else if (isCmd(cmd,"search")){
+            } else if (isCmd(cmd,"search")) {
                 if (commands.length > 1) {
                     search(Arrays.copyOfRange(commands, 1, commands.length));
                 } else {
                     usage(cmd);
                 }
+            } else if(isCmd(cmd,"index-search-test")){
+                index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
+                search(new String[]{"Sendung"});
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
             }
