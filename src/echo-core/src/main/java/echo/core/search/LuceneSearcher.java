@@ -27,8 +27,10 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     private final SearcherManager searcherManager;
     private final Analyzer analyzer;
     private final MultiFieldQueryParser queryParser;
+    /*
     private final ScheduledExecutorService scheduledExecutor;
     private final Future maybeRefreshFuture;
+    */
     private final DocumentConverter podcastConverter;
     private final DocumentConverter episodeConverter;
 
@@ -46,6 +48,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             new String[] {"title", "description", "link"},
             this.analyzer);
 
+        /* TODO this should be better done manually by the actors/microservices
         this.scheduledExecutor = Executors.newScheduledThreadPool(1);
         this.maybeRefreshFuture = this.scheduledExecutor.scheduleWithFixedDelay(() -> {
             try {
@@ -54,6 +57,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
                 e.printStackTrace();
             }
         }, 0, 5, TimeUnit.SECONDS);
+        */
 
         this.podcastConverter = new LucenePodcastConverter();
         this.episodeConverter = new LuceneEpisodeConverter();
@@ -109,9 +113,9 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     @Override
     public void destroy() {
         try {
-            this.maybeRefreshFuture.cancel(false);
+//            this.maybeRefreshFuture.cancel(false);
             this.searcherManager.close();
-            this.scheduledExecutor.shutdown();
+//            this.scheduledExecutor.shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }

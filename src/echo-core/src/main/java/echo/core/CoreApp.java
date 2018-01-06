@@ -201,6 +201,9 @@ public class CoreApp {
     }
 
     private void search(String[] querys){
+
+        searcher.refresh(); // ensure there is data accessible to us in the index
+
         final String query = String.join(" ", querys);
         final Document[] results = this.searcher.search(query);
         out.println("Found "+results.length+" results for query '" + query + "'");
