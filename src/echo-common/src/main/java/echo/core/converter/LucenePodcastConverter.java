@@ -1,6 +1,6 @@
-package echo.common.converter;
+package echo.core.converter;
 
-import echo.common.dto.document.PodcastDocument;
+import echo.core.dto.document.PodcastDocument;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

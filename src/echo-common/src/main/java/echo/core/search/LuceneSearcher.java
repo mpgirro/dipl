@@ -1,28 +1,19 @@
-package echo.common.search;
+package echo.core.search;
 
-import echo.common.converter.DocumentConverter;
-import echo.common.converter.LuceneEpisodeConverter;
-import echo.common.converter.LucenePodcastConverter;
-import echo.common.dto.document.Document;
-import echo.common.dto.document.EpisodeDocument;
-import echo.common.dto.document.PodcastDocument;
+import echo.core.converter.DocumentConverter;
+import echo.core.converter.LuceneEpisodeConverter;
+import echo.core.converter.LucenePodcastConverter;
+import echo.core.dto.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Maximilian Irro
  */
-public class LuceneSearcher implements echo.common.search.IndexSearcher{
+public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
     private final SearcherManager searcherManager;
     private final Analyzer analyzer;
@@ -126,7 +117,7 @@ public class LuceneSearcher implements echo.common.search.IndexSearcher{
         }
     }
 
-    private echo.common.dto.document.Document toEchoDocument(final org.apache.lucene.document.Document doc) {
+    private echo.core.dto.document.Document toEchoDocument(final org.apache.lucene.document.Document doc) {
 
         // TODO this is not too pretty yet, should have used Scala for this library already...
         if(doc.get("doc_type").equals("podcast")) {

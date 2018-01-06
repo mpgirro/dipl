@@ -1,16 +1,16 @@
-package echo.common;
+package echo.core;
 
 import com.icosillion.podengine.models.*;
 
 import com.icosillion.podengine.exceptions.InvalidFeedException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
-import echo.common.dto.document.Document;
-import echo.common.dto.document.EpisodeDocument;
-import echo.common.dto.document.PodcastDocument;
-import echo.common.index.IndexCommitter;
-import echo.common.index.LuceneCommitter;
-import echo.common.search.IndexSearcher;
-import echo.common.search.LuceneSearcher;
+import echo.core.dto.document.Document;
+import echo.core.dto.document.EpisodeDocument;
+import echo.core.dto.document.PodcastDocument;
+import echo.core.index.IndexCommitter;
+import echo.core.index.LuceneCommitter;
+import echo.core.search.IndexSearcher;
+import echo.core.search.LuceneSearcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;

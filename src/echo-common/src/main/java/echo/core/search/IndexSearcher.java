@@ -1,6 +1,6 @@
-package echo.common.search;
+package echo.core.search;
 
-import echo.common.dto.document.Document;
+import echo.core.dto.document.Document;
 
 /**
  * @author Maximilian Irro

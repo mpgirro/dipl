@@ -1,7 +1,6 @@
-package echo.common.dto.document;
+package echo.core.dto.document;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * @author Maximilian Irro

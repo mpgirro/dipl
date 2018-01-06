@@ -19,11 +19,11 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-group = "echo.common"
+group = "echo.core"
 version '1.0-SNAPSHOT'
 description = ''
 
-mainClassName = "echo.common.CommonApp"
+mainClassName = "echo.core.CommonApp"
 
 ext {
   log4jVersion = '2.9.1'
