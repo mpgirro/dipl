@@ -4,8 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.protocol.IndexProtocol.{IndexMessage, QueryIndexForPodcast, SearchResultForPodcastEpisodes}
-import echo.actor.protocol.SearchProtocol.SearchQuery
+import echo.actor.protocol.Protocol._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -17,6 +16,7 @@ class SearcherActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
+        /*
         case SearchQuery(query) => {
             log.info("Received SearchQuery('"+query+"') message")
 
@@ -24,8 +24,8 @@ class SearcherActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
             implicit val timeout = Timeout(5 seconds)
 
             log.info("Sending QueryIndexForPodcast('"+query+"') message")
-            val future = indexRepo ? QueryIndexForPodcast(query)
-            val response = Await.result(future, timeout.duration).asInstanceOf[IndexMessage]
+            val future = indexRepo ? SearchIndex(query)
+            val response = Await.result(future, timeout.duration).asInstanceOf[SearchReply] // TODO hier habe ich als typ IndexMessage, muss ggf ans neue protocoll angepasst werden
             response match {
 
                 case SearchResultForPodcastEpisodes(podcast, list) => {
@@ -38,5 +38,12 @@ class SearcherActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
                 }
             }
         }
+        */
+
+        case SearchRequest(query: String) => {
+            // TODO
+        }
+
+
     }
 }

@@ -4,8 +4,8 @@ import akka.actor.{Actor, ActorSystem, Props}
 import akka.event.Logging
 import echo.actor.crawler.CrawlerActor
 import echo.actor.indexer.IndexerActor
-import echo.actor.protocol.CrawlerProtocol.CrawlFeed
-import echo.actor.protocol.SearchProtocol.SearchQuery
+import .CrawlFeed
+import .SearchQuery
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.IndexStore
 
