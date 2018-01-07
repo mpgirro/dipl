@@ -21,16 +21,18 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-// Scala and Akka versions
-def scalaMajor = "2.12"
-def scalaMinor = "4"
-def akkaVersion = "2.5.8"
-
 group 'echo.actor'
 version '1.0-SNAPSHOT'
 description = ''
 
 mainClassName = "echo.actor.EchoApp"
+
+ext {
+    scalaMajor = '2.12'
+    scalaMinor = '4'
+    akkaVersion = "2.5.8"
+    logbackVersion = '1.2.3'
+}
 
 repositories {
     mavenLocal()
@@ -44,6 +46,9 @@ dependencies {
         [group: 'org.scala-lang', name: 'scala-library', version: "$scalaMajor.$scalaMinor"],
         [group: 'com.typesafe.akka', name: "akka-actor_$scalaMajor", version: akkaVersion],
     )
+
+    compile "com.typesafe.akka:akka-slf4j_$scalaMajor:$akkaVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
 
     compile 'echo.core:echo-core:1.0-SNAPSHOT'
 

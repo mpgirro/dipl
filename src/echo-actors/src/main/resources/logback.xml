@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60 seconds">
+
+    <!--
+        The logback configuration manual is online at
+        http://logback.qos.ch/manual/configuration.html.
+        Logback tries to read a configuration file named logback.groovy,
+        logback-test.xml or logback.xml (in that order) from the classpath.
+        Use -Dlogback.configurationFile=/path/to/config.xml to set a different
+        path or filename.
+    -->
+
+    <!-- Console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <encoder>
+            <!--<pattern>%-5level %logger{36} - %msg%n</pattern>-->
+            <pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
+        </encoder>
+        <!-- Only log level INFO and above -->
+    </appender>
+
+    <!--
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <append>false</append>
+        <file>MozartSpaces.log</file>
+        <encoder>
+              <pattern>%date %-5level [%thread] %logger{10} - %msg%n</pattern>
+        </encoder>
+      </appender>
+    -->
+
+    <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
+
+
+    <root level="WARN">
+        <appender-ref ref="stdout"/>
+        <!-- appender-ref ref="file"/ -->
+    </root>
+
+    <logger name="echo.actor" level="INFO"
+            additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!--
+        Log levels and their ordering: TRACE < DEBUG < INFO < WARN < ERROR
+        Additional values for "level" in the configuration:
+        * ALL, OFF
+        * INHERITED or NULL (not for root)
+    -->
+
+    <!--
+        Logging with multiple MozartSpaces instances on the same machine:
+
+        To have separate logback configuration files for different MozartSpaces
+        instances you can set the configuration file name with a system property:
+        java -Dlogback.configurationFile=/path/to/config.xml MozartSpacesApp
+
+        To have separated log files for different MozartSpaces instances (with
+        the same logback configuration) you can use variable substitution in the
+        configuration file, e.g., in the FileAppender configuration section. See
+        http://logback.qos.ch/manual/joran.html#variableSubstitution for details.
+     -->
+</configuration>

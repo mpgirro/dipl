@@ -1,11 +1,14 @@
-package echo.actor.crawler
+package echo.actor.store
 
 import akka.actor.{Actor, ActorLogging}
+import akka.event.Logging
 import echo.actor.protocol.IndexProtocol._
 
 import scala.collection.mutable.ListBuffer
 
-class IndexRepo extends Actor with ActorLogging {
+class IndexStore extends Actor {
+
+    val log = Logging(context.system, classOf[IndexStore])
 
   val index = scala.collection.mutable.HashMap.empty[String, ListBuffer[String]]
 

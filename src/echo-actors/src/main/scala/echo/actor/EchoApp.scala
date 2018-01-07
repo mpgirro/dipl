@@ -1,11 +1,13 @@
 package echo.actor
 
 import akka.actor.{Actor, ActorSystem, Props}
-import echo.actor.crawler.{CrawlerActor, IndexRepo}
+import akka.event.Logging
+import echo.actor.crawler.CrawlerActor
 import echo.actor.indexer.IndexerActor
 import echo.actor.protocol.CrawlerProtocol.CrawlFeed
 import echo.actor.protocol.SearchProtocol.SearchQuery
 import echo.actor.searcher.SearcherActor
+import echo.actor.store.IndexStore
 ;
 
 object EchoApp extends App {
@@ -14,8 +16,8 @@ object EchoApp extends App {
 
   // create the system and actor
   val system = ActorSystem("EchoSystem")
-  
-  val indexRepo = system.actorOf(Props[IndexRepo], name = "indexRepo")
+
+  val indexRepo = system.actorOf(Props[IndexStore], name = "indexRepo")
   val indexer = system.actorOf(Props(classOf[IndexerActor], indexRepo), name = "indexer")
   val searcher = system.actorOf(Props(classOf[SearcherActor], indexRepo), name = "searcher")
   val crawler = system.actorOf(Props(classOf[CrawlerActor], indexer), name = "crawler")

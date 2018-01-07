@@ -28,33 +28,42 @@ description = ''
 mainClassName = "echo.core.CoreApp"
 
 ext {
-  log4jVersion = '2.9.1'
+//    log4jVersion = '2.9.1'
+    slf4jVersion = '1.7.25'
+    logbackVersion = '1.2.3'
+    luceneVersion = "7.2.0"
 }
 
 repositories {
-  mavenLocal()
-  jcenter()
-  maven { url 'https://maven.icosillion.com/artifactory/open-source/' }
+    mavenLocal()
+    jcenter()
+    maven { url 'https://maven.icosillion.com/artifactory/open-source/' }
 }
 
 dependencies {
 //  compile 'com.google.guava:guava:23.6-jre' // Google Core Libraries for Java
 
-  testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
-  compile "joda-time:joda-time:2.9.9"
-  compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
-  compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
-  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    //compile "org.slf4j:slf4j-simple:$slf4jVersion"
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "ch.qos.logback:logback-core:$logbackVersion"
 
-  compile 'com.icosillion.podengine:podengine:2.2'
-  compile 'rome:rome:1.0' // TODO replace with rome:2.0 once it is out
+    compile 'com.icosillion.podengine:podengine:2.2'
 
-    compile 'org.apache.lucene:lucene-core:7.2.0'
-    compile 'org.apache.lucene:lucene-queryparser:7.2.0'
-    compile 'org.apache.lucene:lucene-analyzers-common:7.2.0'
+    compile "org.apache.lucene:lucene-core:$luceneVersion"
+    compile "org.apache.lucene:lucene-queryparser:$luceneVersion"
+    compile "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
 
-    compile 'org.apache.solr:solr-solrj:7.2.0' // TODO solr support is only experimental and not suitable for the scope of the thesis
+    /*
+    compile "joda-time:joda-time:2.9.9"
+    compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    compile 'rome:rome:1.0' // TODO replace with rome:2.0 once it is out
+    compile "org.apache.solr:solr-solrj:$luceneVersion" // TODO solr support is only experimental and not suitable for the scope of the thesis
+    */
 
 }
 

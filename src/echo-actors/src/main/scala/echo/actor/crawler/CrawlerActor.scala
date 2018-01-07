@@ -1,11 +1,14 @@
 package echo.actor.crawler
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.event.Logging
 import echo.actor.protocol.CrawlerProtocol.CrawlFeed
 import echo.actor.protocol.IndexProtocol.{AddPodcastToIndex, ProcessPodcastFeedData}
 
 
-class CrawlerActor (val indexer : ActorRef) extends Actor with ActorLogging {
+class CrawlerActor (val indexer : ActorRef) extends Actor {
+
+    val log = Logging(context.system, classOf[CrawlerActor])
 
   override def receive: Receive = {
 

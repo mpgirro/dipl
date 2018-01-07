@@ -1,9 +1,13 @@
 package echo.actor.indexer
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.event.Logging
+import echo.actor.crawler.CrawlerActor
 import echo.actor.protocol.IndexProtocol._
 
-class IndexerActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
+class IndexerActor (val indexRepo : ActorRef) extends Actor {
+
+    val log = Logging(context.system, classOf[IndexerActor])
 
   override def receive: Receive = {
 

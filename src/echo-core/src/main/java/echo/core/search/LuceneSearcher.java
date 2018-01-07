@@ -12,6 +12,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -23,6 +25,8 @@ import java.util.concurrent.TimeUnit;
  * @author Maximilian Irro
  */
 public class LuceneSearcher implements echo.core.search.IndexSearcher{
+
+    private static final Logger log = LoggerFactory.getLogger(LuceneSearcher.class);
 
     private final SearcherManager searcherManager;
     private final Analyzer analyzer;
@@ -75,7 +79,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
-//            log.info("Searching for query: "+query.toString());
+            log.debug("Searching for query: "+query.toString());
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if(topDocs.totalHits > 0){
