@@ -3,6 +3,7 @@ package echo.actor.store
 import akka.actor.{Actor, ActorLogging}
 import akka.event.Logging
 import echo.actor.protocol.IndexProtocol._
+import echo.actor.protocol.SearchProtocol.NoResultsFound
 
 import scala.collection.mutable.ListBuffer
 
@@ -38,8 +39,15 @@ class IndexStore extends Actor with ActorLogging {
             log.info("Received QueryIndexForPodcast('"+podcast+"') message")
             if(index.contains(podcast)){
                 sender ! SearchResultForPodcastEpisodes(podcast,index(podcast))
+
+                // TODO
+                // search index
+                // sender ! SearchResultsFound(query,results)
             } else {
                 log.warning("No Podcast matching query: '"+podcast+"' found in the index")
+
+                // TODO
+                //sender ! NoResultsFound(query)
             }
         }
 
