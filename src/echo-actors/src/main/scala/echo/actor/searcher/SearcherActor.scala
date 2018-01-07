@@ -5,12 +5,13 @@ import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.protocol.Protocol._
+import echo.core.dto.document.Document
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class SearcherActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
+class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
 //    val log = Logging(context.system, classOf[SearcherActor])
 
@@ -41,9 +42,27 @@ class SearcherActor (val indexRepo : ActorRef) extends Actor with ActorLogging {
         */
 
         case SearchRequest(query: String) => {
-            // TODO
-        }
+            log.info("Received SearchQuery for query: " + query)
 
+            // TODO for now, we will pass the query 1:1 to the indexRepo; later we will have to do some query processing and additional scoring/data aggregation (show-images, etc)
+            implicit val timeout = Timeout(5 seconds)
+
+            log.info("Sending QueryIndexForPodcast('"+query+"') message")
+            val future = indexStore ? SearchIndex(query)
+            val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult] // TODO hier habe ich als typ IndexMessage, muss ggf ans neue protocoll angepasst werden
+            response match {
+
+                case IndexResultsFound(query: String, results: Array[Document]) => {
+                    log.info("Received " + results.length + " results from index for query '" + query + "'")
+                    sender ! SearchResults(results)
+                }
+
+                case NoIndexResultsFound(query: String) => {
+                    log.info("Received NO results from index for query '" + query + "'")
+                    sender ! SearchResults(Array.empty)
+                }
+            }
+        }
 
     }
 }

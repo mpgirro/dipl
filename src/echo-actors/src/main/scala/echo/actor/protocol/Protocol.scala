@@ -60,7 +60,7 @@ object Protocol {
     /* Crawler -> DirectoryStore
      *
      */
-    case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, feedStatus: FeedStatus)
+    case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
     /* Crawler -> Indexer
      * the podcastDocId has to be there (even for new feeds)
@@ -78,18 +78,22 @@ object Protocol {
      */
     case class IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String)
 
-    case class IndexStoreAddPodcast(podcast: Document)      // Indexer -> IndexStore
-    case class IndexStoreUpdatePodcast(podcast: Document)   // Indexer -> IndexStore
-
-    case class IndexStoreAddEpisode(episode: Document)      // Indexer -> IndexStore
-    case class IndexStoreUpdateEpisode(episode: Document)   // Indexer -> IndexStore
+    // Indexer -> IndexStore
+    case class IndexStoreAddPodcast(podcast: Document)
+    case class IndexStoreUpdatePodcast(podcast: Document)
+    case class IndexStoreAddEpisode(episode: Document)
+    case class IndexStoreUpdateEpisode(episode: Document)
 
 
     case class SearchRequest(query: String)                 // User -> Searcher
+    case class SearchResults(results: Array[Document])      // Searcher -> User
+
     case class SearchIndex(query: String)                   // Searcher -> IndexStore
 
-    case class SearchResultsFound(query: String, results: Array[Document])  // IndexStore -> Searcher
-    case class NoSearchResultsFound(query: String)                          // IndexStore -> Searcher
+    // IndexStore -> Searcher
+    trait IndexResult
+    case class IndexResultsFound(query: String, results: Array[Document]) extends IndexResult
+    case class NoIndexResultsFound(query: String) extends IndexResult
 
 
 }

@@ -4,10 +4,13 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.crawler.CrawlerActor
 import echo.actor.protocol.Protocol._
+import echo.core.parse.{FeedParser, PodEngineFeedParser}
 
 class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
 //    val log = Logging(context.system, classOf[IndexerActor])
+
+    val feedParser: FeedParser = new PodEngineFeedParser()
 
     override def receive: Receive = {
 
@@ -57,6 +60,19 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * - extract episode data, and send a IndexEpisodeData **for each episode separately**
              * - a SAX parser would be best for performance. the podcast data could be processed directly, and episode messages generated on the fly when encountering the specific xml-tags
              */
+
+            log.info("Received IndexFeedData for feed: " + feedUrl)
+
+            // TODO this is all highly test code
+            val podcastDocument = feedParser.parseFeed(feedData)
+
+            indexStore ! IndexStoreAddPodcast(podcastDocument)
+
+            val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
+            for(episode <- episodes){
+                indexStore ! IndexStoreAddEpisode(episode)
+            }
+
         }
 
         case IndexPodcastData(podcastDocId: String, podcastFeedData: String) => {
@@ -65,6 +81,8 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * => indexStore ! IndexStoreAddPodcast(podcastDoc)
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
+
+            log.info("Received IndexPodcastData for podcastDocId: " + podcastDocId)
         }
 
         case IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String) => {
@@ -82,6 +100,8 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * indexStore ! IndexStoreAddEpisode(episodeDoc)
              * indexStore ! IndexStoreUpdateEpisode(episodeDoc)
              */
+
+            log.info("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
 

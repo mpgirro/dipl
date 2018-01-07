@@ -50,10 +50,10 @@ class IndexStore extends Actor with ActorLogging {
 
             val results = indexSearcher.search(query)
             if(results.length > 0){
-                sender ! SearchResultsFound(query,results)
+                sender ! IndexResultsFound(query,results)
             } else {
                 log.warning("No Podcast matching query: '"+query+"' found in the index")
-                sender ! NoSearchResultsFound(query)
+                sender ! NoIndexResultsFound(query)
             }
 
         }

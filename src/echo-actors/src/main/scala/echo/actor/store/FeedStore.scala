@@ -8,8 +8,11 @@ import akka.event.Logging
   */
 class FeedStore extends Actor with ActorLogging {
 
-    override def receive: Receive => {
-        // TODO
+    override def receive: Receive = {
+
+        case _ => {
+            // TODO
+        }
     }
 
 }

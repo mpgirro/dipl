@@ -1,14 +1,19 @@
 package echo.actor
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.event.Logging
+import akka.util.Timeout
+import akka.pattern.ask
 import echo.actor.crawler.CrawlerActor
 import echo.actor.indexer.IndexerActor
-import .CrawlFeed
-import .SearchQuery
+import echo.actor.protocol.Protocol.{FetchNewFeed, ProposeNewFeed, SearchRequest, SearchResults}
 import echo.actor.searcher.SearcherActor
-import echo.actor.store.IndexStore
+import echo.actor.store.{DirectoryStore, IndexStore}
+import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.language.postfixOps
 import scala.io.StdIn
 ;
 
@@ -25,33 +30,21 @@ object EchoApp extends App {
     // create the system and actor
     val system = ActorSystem("EchoSystem")
 
-    val indexRepo = system.actorOf(Props[IndexStore], name = "indexRepo")
-    val indexer = system.actorOf(Props(classOf[IndexerActor], indexRepo), name = "indexer")
-    val searcher = system.actorOf(Props(classOf[SearcherActor], indexRepo), name = "searcher")
+    val indexStore = system.actorOf(Props[IndexStore], name = "indexStore")
+    val indexer = system.actorOf(Props(classOf[IndexerActor], indexStore), name = "indexer")
+
+    val searcher = system.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher")
+    //val searcher = system.actorOf(Props(new SearcherActor(indexStore)), name = "searcher")
+
     val crawler = system.actorOf(Props(classOf[CrawlerActor], indexer), name = "crawler")
-
-    /*
-    crawler ! CrawlFeed("someFeedUrl/Freakshow")
-    crawler ! CrawlFeed("someFeedUrl/NotSafeForWork")
-    crawler ! CrawlFeed("someFeedUrl/MethodischInkorrekt")
-
-    // wait a while so the whole crawling/indexing/repo saving is done
-    Thread.sleep(2000)
-
-    searcher ! SearchQuery("Freakshow")
-
-    // wait again to allow search process to finish
-    Thread.sleep(1000)
-
-    system.terminate()
-    */
+    val directoryStore = system.actorOf(Props(classOf[DirectoryStore], crawler), name = "directoryStore")
 
     repl()
 
     system.terminate()
     System.exit(0)
 
-    def repl(): Unit = {
+    private def repl() {
 
         while(!shutdown){
             val input = StdIn.readLine()
@@ -60,9 +53,26 @@ object EchoApp extends App {
                     case "help" :: _ => help()
                     case q@("q" | "quit" | "exit") :: _ => shutdown = true
                     case "index" :: Nil => usage("index")
-                    case "index" :: feeds => feeds.foreach(f => crawler ! CrawlFeed(f))
+                    case "index" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
                     case "search" :: Nil => usage("search")
-                    case "search" :: query => searcher ! SearchQuery(query.mkString(" "))
+                    case "search" :: query => {
+                        implicit val timeout = Timeout(5 seconds)
+                        val future = searcher ? SearchRequest(query.mkString(" "))
+                        val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
+                        response match {
+
+                            case SearchResults(results) => {
+                                println("Results:")
+                                for (doc <- results) {
+                                    println()
+                                    printDoc(doc)
+                                    println("\n---")
+                                }
+                                println()
+                            }
+
+                        }
+                    }
                     case _  => usage("")
                 }
             }
@@ -70,7 +80,7 @@ object EchoApp extends App {
         }
     }
 
-    def usage(cmd: String): Unit = {
+    private def usage(cmd: String) {
         if (usageMap.contains(cmd)) {
             val args = usageMap.get(cmd)
             println("Command parsing error")
@@ -85,7 +95,7 @@ object EchoApp extends App {
         }
     }
 
-    private def help() = {
+    private def help() {
         println("This is an interactive REPL providing a CLI to the search engine. Functions are:")
         println()
         for ( (k,v) <- usageMap ) {
@@ -94,6 +104,26 @@ object EchoApp extends App {
         println()
         println("Feel free to play around!")
         println()
+    }
+
+    private def printDoc(doc: Document) {
+        doc match {
+            case pDoc: PodcastDocument => {
+                println("[Podcast]")
+                println(pDoc.getTitle)
+                println(pDoc.getLanguage)
+                println(pDoc.getDescription)
+                println(pDoc.getLink)
+            }
+            case eDoc: EpisodeDocument => {
+                println("[Episode]")
+                println(eDoc.getTitle)
+                if (eDoc.getPubDate != null) println(eDoc.getPubDate.toString)
+                println(eDoc.getDescription)
+                println(eDoc.getLink)
+            }
+            case _ => throw new RuntimeException("Forgot to support new Echo Document type: " + doc.getClass)
+        }
     }
 
 }
