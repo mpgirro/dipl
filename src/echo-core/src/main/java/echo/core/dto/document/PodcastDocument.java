@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
  */
 public class PodcastDocument implements Document {
 
+    private String docId;
+
     private String title;
     private String link;
     private String description;
@@ -17,6 +19,14 @@ public class PodcastDocument implements Document {
     // TODO atom elements
 
     // TODO itunes elements
+
+    public String getDocId(){
+        return this.docId;
+    }
+
+    public void setDocId(String docId){
+        this.docId = docId;
+    }
 
     public String getTitle() {
         return title;
@@ -92,7 +102,8 @@ public class PodcastDocument implements Document {
     @Override
     public String toString() {
         return "PodcastDocument{" +
-            "title='" + title + '\'' +
+            "docId='" + docId + '\'' +
+            ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", description='" + description + '\'' +
             ", lastBuildDate=" + lastBuildDate +

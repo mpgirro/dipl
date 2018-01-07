@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
  */
 public class EpisodeDocument implements Document {
 
+    private String docId;
+
     private String title;
     private String link;
     private LocalDateTime pubDate;
@@ -23,6 +25,14 @@ public class EpisodeDocument implements Document {
     // TODO psc:chapters
 
     // TODO fyyd
+
+    public String getDocId(){
+        return this.docId;
+    }
+
+    public void setDocId(String docId){
+        this.docId = docId;
+    }
 
     public String getTitle() {
         return title;
@@ -98,7 +108,8 @@ public class EpisodeDocument implements Document {
     @Override
     public String toString() {
         return "EpisodeDocument{" +
-            "title='" + title + '\'' +
+            "docId='" + docId + '\'' +
+            ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", pubDate=" + pubDate +
             ", guid='" + guid + '\'' +

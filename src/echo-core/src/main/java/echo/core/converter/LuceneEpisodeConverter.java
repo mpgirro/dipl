@@ -31,6 +31,7 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
 
         final Document doc = new Document();
 
+        doc.add(new StringField("doc_id", episode.getDocId(), Field.Store.YES));
         doc.add(new StringField("doc_type", "episode", Field.Store.YES));
         doc.add(new TextField("title", episode.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", episode.getLink(), Field.Store.YES));

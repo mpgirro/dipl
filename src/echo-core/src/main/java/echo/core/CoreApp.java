@@ -114,6 +114,7 @@ public class CoreApp {
         }
 
         out.println("Bye!\n");
+        System.exit(0);
     }
 
     private boolean isCmd(String input, String cmd){

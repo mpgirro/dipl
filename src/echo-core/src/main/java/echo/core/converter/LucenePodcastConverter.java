@@ -31,6 +31,7 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
 
         final Document doc = new Document();
 
+        doc.add(new StringField("doc_id", podcast.getDocId(), Field.Store.YES));
         doc.add(new StringField("doc_type", "podcast", Field.Store.YES));
         doc.add(new TextField("title", podcast.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", podcast.getLink(), Field.Store.YES));
