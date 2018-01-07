@@ -2,8 +2,8 @@ package echo.actor.protocol
 
 object SearchProtocol {
 
-  trait SearchMessage
+    trait SearchMessage
 
-  case class SearchQuery(query : String)
+    case class SearchQuery(query : String)
 
 }
