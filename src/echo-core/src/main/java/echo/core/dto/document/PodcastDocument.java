@@ -1,6 +1,7 @@
 package echo.core.dto.document;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author Maximilian Irro
@@ -20,10 +21,12 @@ public class PodcastDocument implements Document {
 
     // TODO itunes elements
 
+    @Override
     public String getDocId(){
         return this.docId;
     }
 
+    @Override
     public void setDocId(String docId){
         this.docId = docId;
     }

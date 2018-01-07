@@ -16,7 +16,7 @@ public abstract class DocumentConverter<E extends Document, I> {
 
     public abstract E toEchoDocument(I indexDoc);
 
-    public abstract I toIndexDocument(E echoDoc);
+    public abstract I toEntityDocument(E echoDoc);
 
     public List<E> toEchoList(List<I> indexList){
         return indexList.stream()
@@ -24,9 +24,9 @@ public abstract class DocumentConverter<E extends Document, I> {
             .collect(Collectors.toList());
     }
 
-    public List<I> toIndexList(List<E> echoList){
+    public List<I> toEntityList(List<E> echoList){
         return echoList.stream()
-            .map(this::toIndexDocument)
+            .map(this::toEntityDocument)
             .collect(Collectors.toList());
     }
 

@@ -27,7 +27,7 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
     }
 
     @Override
-    public Document toIndexDocument(EpisodeDocument episode) {
+    public Document toEntityDocument(EpisodeDocument episode) {
 
         final Document doc = new Document();
 

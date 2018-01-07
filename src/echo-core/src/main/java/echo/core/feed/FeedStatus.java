@@ -9,7 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum FeedStatus {
 
-    HTTP_403("HTTP_403");
+    SUCCESS("success"),
+    HTTP_403("http_403");
 
     private String name;
 

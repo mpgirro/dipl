@@ -26,10 +26,12 @@ public class EpisodeDocument implements Document {
 
     // TODO fyyd
 
+    @Override
     public String getDocId(){
         return this.docId;
     }
 
+    @Override
     public void setDocId(String docId){
         this.docId = docId;
     }

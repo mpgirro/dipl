@@ -27,7 +27,7 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
     }
 
     @Override
-    public Document toIndexDocument(PodcastDocument podcast) {
+    public Document toEntityDocument(PodcastDocument podcast) {
 
         final Document doc = new Document();
 
