@@ -1,10 +1,10 @@
 # Echo: Podcast Search Engine
 
 * [echo-actors](echo-actors/)
-    : The Scala backend-implementation of Echo, based on a distributed actors architecture using Akka
+    : The Scala implementation of the Echo engine, based on a distributed actors architecture using Akka
 * [echo-microservices](echo-microservices/)
-    : The Java backend-implementation of Echo, based on a microservice architecture
+    : The Java implementation of the Echo engine, based on a microservice architecture
 * [echo-core](echo-core/)
-    : The library for core Echo tasks (feed-parsing, tokenization, etc), used by echo-actors and echo-microservices
-* [echo-frontend](echo-frontend/)
-    : The web-frontend for the Echo, used by both echo-actors and echo-microservices
+    : The library for core Echo tasks (feed-parsing, searching, etc), used by echo-actors and echo-microservices
+* [echo-web](echo-web/)
+    : The web-frontend for the Echo, used by both [echo-actors](echo-actors/) and [echo-microservices](echo-microservices/)
