@@ -1,10 +1,5 @@
 package echo.core;
 
-import com.icosillion.podengine.models.*;
-
-import com.icosillion.podengine.exceptions.InvalidFeedException;
-import com.icosillion.podengine.exceptions.MalformedFeedException;
-import echo.core.converter.DocumentConverter;
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
 import echo.core.dto.document.Document;
@@ -50,7 +45,7 @@ public class CoreApp {
     private final PodEnginePodcastConverter podcastConverter;
     private final PodEngineEpisodeConverter episodeConverter;
 
-    public static void main(String[] args) throws IOException, InvalidFeedException, MalformedFeedException {
+    public static void main(String[] args) throws IOException {
         final CoreApp app = new CoreApp();
         app.repl();
     }
@@ -79,7 +74,7 @@ public class CoreApp {
         usageMap.put("quit, q, exit",     "");
     }
 
-    private void repl() throws IOException, InvalidFeedException, MalformedFeedException {
+    private void repl() throws IOException {
         out.println("> Welcome to Echo:Core interactive exploration App!");
 
         while (!shutdown) {
@@ -167,7 +162,7 @@ public class CoreApp {
         out.println();
     }
 
-    private void index(String[] feeds) throws MalformedURLException, MalformedFeedException, InvalidFeedException {
+    private void index(String[] feeds) throws MalformedURLException {
 
         for(String feed : feeds){
             out.println("Processing feed: " + feed);
