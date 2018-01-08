@@ -6,7 +6,7 @@ import akka.util.Timeout
 import akka.pattern.ask
 import echo.actor.crawler.CrawlerActor
 import echo.actor.indexer.IndexerActor
-import echo.actor.protocol.Protocol.{FetchNewFeed, ProposeNewFeed, SearchRequest, SearchResults}
+import echo.actor.protocol.Protocol._
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.{DirectoryStore, IndexStore}
 import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
@@ -75,6 +75,7 @@ object EchoApp extends App {
 
                         }
                     }
+                    case "print-database" :: _ => directoryStore ! DebugPrintAllDatabase
                     case _  => usage("")
                 }
             }

@@ -12,37 +12,6 @@ import scala.collection.mutable.ListBuffer
   */
 object Protocol {
 
-    /*
-    trait CrawlerMessage
-
-    case class CrawlFeed(feed : String) extends CrawlerMessage
-
-
-    trait IndexMessage
-
-    case class ProcessPodcastFeedData(feedData : String) extends IndexMessage
-    case class ProcessEpisodeFeedData(feedRef : String, episodeData : String) extends IndexMessage
-
-    case class AddPodcastToIndex(podcast : String) extends IndexMessage
-    case class AddEpisodeToIndex(podcast : String, episode : String) extends IndexMessage
-
-    case class QueryIndexForPodcast(query : String) extends IndexMessage
-    case class SearchResultForPodcastEpisodes(query : String, answer : ListBuffer[String]) extends IndexMessage
-
-
-    trait SearchMessage
-
-    case class SearchQuery(query: String) // send from User to SearcherActor
-    case class SearchIndex(query: String) // send from SearcherActor to IndexStore
-
-
-    trait SearchReply
-
-    case class SearchResultsFound(query: String, results: Array[Document])
-    case class NoSearchResultsFound(query: String)
-    */
-
-
     case class ProposeNewFeed(feedUrl: String) // sent from User to FeedStore
 
     /* DirectoryStore -> Crawler
@@ -99,5 +68,7 @@ object Protocol {
     case class IndexResultsFound(query: String, results: Array[Document]) extends IndexResult
     case class NoIndexResultsFound(query: String) extends IndexResult
 
+    // These are maintenance methods, I use during development
+    case class DebugPrintAllDatabase()    // User -> DirectoryStore
 
 }

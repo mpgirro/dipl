@@ -17,7 +17,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case ProposeNewFeed(feedUrl: String) => {
+        case ProposeNewFeed(feedUrl) => {
             log.info("Received msg proposing a new feed: " + feedUrl)
             if(database.contains(feedUrl)){
                 // TODO remove the auto update
@@ -32,7 +32,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             }
         }
 
-        case FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus) => {
+        case FeedStatusUpdate(feedUrl, timestamp, status) => {
 
             if(database.contains(feedUrl)){
                 val entry = database(feedUrl)
@@ -63,6 +63,14 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             } else {
                 log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: %s", podcastDocId)
             }
+        }
+
+        case DebugPrintAllDatabase => {
+
+            for( (k,v) <- database){
+                println("docId: "+k+"\t"+v)
+            }
+
         }
 
 
