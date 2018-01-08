@@ -22,7 +22,9 @@ public class PodEngineEpisodeConverter extends DocumentConverter<EpisodeDocument
         try {
             doc.setTitle(episode.getTitle());
             doc.setLink(episode.getLink().toExternalForm());
-            doc.setPubDate(LocalDateTime.ofInstant(episode.getPubDate().toInstant(), ZoneId.systemDefault()));
+            if(episode.getPubDate() != null){
+                doc.setPubDate(LocalDateTime.ofInstant(episode.getPubDate().toInstant(), ZoneId.systemDefault()));
+            }
             doc.setGuid(episode.getGUID());
             doc.setDescription(episode.getDescription());
         } catch (MalformedFeedException e) {

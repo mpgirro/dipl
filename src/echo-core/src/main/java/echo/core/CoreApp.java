@@ -4,6 +4,9 @@ import com.icosillion.podengine.models.*;
 
 import com.icosillion.podengine.exceptions.InvalidFeedException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
+import echo.core.converter.DocumentConverter;
+import echo.core.converter.PodEngineEpisodeConverter;
+import echo.core.converter.PodEnginePodcastConverter;
 import echo.core.dto.document.Document;
 import echo.core.dto.document.EpisodeDocument;
 import echo.core.dto.document.PodcastDocument;
@@ -38,6 +41,9 @@ public class CoreApp {
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
 
+    private final PodEnginePodcastConverter podcastConverter;
+    private final PodEngineEpisodeConverter episodeConverter;
+
     public static void main(String[] args) throws IOException, InvalidFeedException, MalformedFeedException {
         final CoreApp app = new CoreApp();
         app.repl();
@@ -53,6 +59,9 @@ public class CoreApp {
             searcher.destroy();
             committer.destroy();
         }));
+
+        this.podcastConverter = new PodEnginePodcastConverter();
+        this.episodeConverter = new PodEngineEpisodeConverter();
 
         // save the usages, for easy recall
         usageMap.put("index",             "feed [feed [feed]]");
@@ -167,14 +176,8 @@ public class CoreApp {
             final Podcast podcast = new Podcast(new URL(feed));
             out.println("Podcast: " + podcast.getTitle() + " <" + podcast.getLink().toExternalForm() + ">");
 
-            final PodcastDocument podcastDoc = new PodcastDocument();
+            final PodcastDocument podcastDoc = podcastConverter.toEchoDocument(podcast);
             podcastDoc.setDocId(feed);
-            podcastDoc.setTitle(podcast.getTitle());
-            podcastDoc.setLink(podcast.getLink().toExternalForm());
-            podcastDoc.setDescription(podcast.getDescription());
-            //podcastDoc.setLastBuildDate(podcast.getLastBuildDate()); // TODO
-            podcastDoc.setLanguage(podcast.getLanguage());
-            podcastDoc.setGenerator(podcast.getGenerator());
 
             committer.add(podcastDoc);
 
@@ -186,13 +189,8 @@ public class CoreApp {
                 //System.out.println("- " + episode.getTitle());
                 out.println("  Episode: " + episode.getTitle());
 
-                final EpisodeDocument episodeDoc = new EpisodeDocument();
+                final EpisodeDocument episodeDoc = episodeConverter.toEchoDocument(episode);
                 episodeDoc.setDocId(episode.getGUID()); // TODO verifiy good GUID!
-                episodeDoc.setTitle(episode.getTitle());
-                episodeDoc.setLink(episode.getLink().toExternalForm());
-                //episodeDoc.setPubDate(episode.getPubDate()); // TODO
-                episodeDoc.setGuid(episode.getGUID());
-                episodeDoc.setDescription(episode.getDescription());
 
                 this.committer.add(episodeDoc);
             }

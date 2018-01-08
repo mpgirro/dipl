@@ -22,7 +22,9 @@ public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument
             doc.setTitle(podcast.getTitle());
             doc.setLink(podcast.getLink().toExternalForm());
             doc.setDescription(podcast.getDescription());
-            doc.setLastBuildDate(LocalDateTime.ofInstant(podcast.getLastBuildDate().toInstant(), ZoneId.systemDefault()));
+            if(podcast.getLastBuildDate() != null){
+                doc.setLastBuildDate(LocalDateTime.ofInstant(podcast.getLastBuildDate().toInstant(), ZoneId.systemDefault()));
+            }
             doc.setLanguage(podcast.getLanguage());
             doc.setGenerator(podcast.getGenerator());
         } catch (MalformedFeedException e) {
