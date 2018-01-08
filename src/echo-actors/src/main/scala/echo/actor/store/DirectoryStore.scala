@@ -18,7 +18,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case ProposeNewFeed(feedUrl) => {
-            log.info("Received msg proposing a new feed: " + feedUrl)
+            log.debug("Received msg proposing a new feed: " + feedUrl)
             if(database.contains(feedUrl)){
                 // TODO remove the auto update
                 log.info("Feed already in directory; will send an update request to crawler")
@@ -35,42 +35,46 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
         case FeedStatusUpdate(feedUrl, timestamp, status) => {
 
             if(database.contains(feedUrl)){
+                log.debug("Received FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
                 val entry = database(feedUrl)
                 val newEntry = (timestamp, status, entry._3)
-                database.updated(feedUrl, newEntry)
-                log.info("Received FeedStatusUpdate: %s for %s", newEntry, feedUrl)
+
+                // note: database.updated(...) does not work for some reason
+                database.remove(feedUrl)
+                database += (feedUrl -> newEntry)
             } else {
-                log.error("Received a FeedStatusUpdate for an unknown feed: " + feedUrl)
+                log.error("Received UNKNOWN FEED FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
             }
 
         }
 
         case UpdatePodcastMetadata(docId: String, doc: PodcastDocument) => {
             // TODO I do not simulate podcasts in the DB yet
-            log.warning("Received UpdatePodcastMetadata('%s')", docId)
-            throw new UnsupportedOperationException("DirectoryStore does not yet support message UpdatePodcastMetadata")
+            log.warning("Received UpdatePodcastMetadata({},{})", docId, doc)
+            //throw new UnsupportedOperationException("DirectoryStore does not yet support message UpdatePodcastMetadata")
         }
 
         case UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDocument) => {
             // TODO
             if(database.contains(podcastDocId)){
-                log.info("Received UpdateEpisodeMetadata for podcast with docId: %s", podcastDocId)
+                log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, doc)
                 val entry = database(podcastDocId)
                 val episodes = entry._3
                 episodes += doc.getDocId
                 val newEntry = (entry._1, entry._2, episodes)
-                database.updated(podcastDocId, newEntry)
+
+                database.remove(podcastDocId)
+                database += (podcastDocId -> newEntry)
             } else {
                 log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: %s", podcastDocId)
             }
         }
 
         case DebugPrintAllDatabase => {
-
+            log.debug("Received DebugPrintAllDatabase")
             for( (k,v) <- database){
                 println("docId: "+k+"\t"+v)
             }
-
         }
 
 

@@ -12,6 +12,8 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
     val feedParser: FeedParser = new PodEngineFeedParser()
 
+    private var directoryStore: ActorRef = _
+
     override def receive: Receive = {
 
         /*
@@ -35,14 +37,19 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
             // TODO this is all highly test code
             val podcastDocument = feedParser.parseFeed(feedData)
+
+            // TODO try-catch for Feedparseerror here, send update
+            // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+
             podcastDocument.setDocId(podcastDocId)
 
             /* TODO
              * here I should send an update for the podcast data to the directoryStore (relational DB)
              * In order to do this, I need the ActorRef for directoryStore, which results in a circular
              * dependency. How am I supposed to solve this?
-             * directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
+             *
              */
+            directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
 
             // send the document to the lucene index
             indexStore ! IndexStoreAddPodcast(podcastDocument)
@@ -52,7 +59,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                 episode.setDocId(episode.getGuid) // TODO verify good GUID!
 
                 // TODO send episode data to directoryStore, once the circular dependency is solved
-                // directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
+                directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
 
                 indexStore ! IndexStoreAddEpisode(episode)
             }
@@ -86,6 +93,11 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              */
 
             log.debug("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
+        }
+
+        case ActorRefDirectoryStoreActor(ref) => {
+            log.debug("Received ActorRefDirectoryStoreActor")
+            directoryStore = ref;
         }
 
 

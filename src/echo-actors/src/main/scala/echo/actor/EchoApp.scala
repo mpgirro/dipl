@@ -23,22 +23,24 @@ object EchoApp extends App {
     var shutdown = false
     val usageMap = Map(
         "propose" -> "feed [feed [feed]]",
-        "search" -> "query [query [query]]"
+        "search" -> "query [query [query]]",
+        "print-database" -> "",
+        "test-index" -> ""
     )
-
-    println("Echo (actor-backend) started...")
 
     // create the system and actor
     val system = ActorSystem("EchoSystem")
 
     val indexStore = system.actorOf(Props[IndexStore], name = "indexStore")
     val indexer = system.actorOf(Props(classOf[IndexerActor], indexStore), name = "indexer")
-
     val searcher = system.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher")
-    //val searcher = system.actorOf(Props(new SearcherActor(indexStore)), name = "searcher")
-
     val crawler = system.actorOf(Props(classOf[CrawlerActor], indexer), name = "crawler")
     val directoryStore = system.actorOf(Props(classOf[DirectoryStore], crawler), name = "directoryStore")
+
+    // pass around references not provided by constructors due to circular dependencies
+    crawler ! ActorRefDirectoryStoreActor(directoryStore)
+    indexer ! ActorRefDirectoryStoreActor(directoryStore)
+
 
     repl()
 
@@ -47,7 +49,10 @@ object EchoApp extends App {
 
     private def repl() {
 
+        println("> Welcome to Echo:Actor Engine interactive exploration App!")
+
         while(!shutdown){
+            print("> ")
             val input = StdIn.readLine()
             def exec(commands: Array[String]): Unit = {
                 commands.toList match {
@@ -76,11 +81,21 @@ object EchoApp extends App {
                         }
                     }
                     case "print-database" :: _ => directoryStore ! DebugPrintAllDatabase
+                    case "test-index" :: _ => {
+                        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/freakshow/m4a")
+                        directoryStore ! ProposeNewFeed("http://www.fanboys.fm/episodes.mp3.rss")
+                        directoryStore ! ProposeNewFeed("http://falter-radio.libsyn.com/rss")
+                        directoryStore ! ProposeNewFeed("http://revolutionspodcast.libsyn.com/rss/")
+                        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
+                        directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
+                    }
                     case _  => usage("")
                 }
             }
             exec(input.split(" "))
         }
+
+        println("Bye!\n")
     }
 
     private def usage(cmd: String) {

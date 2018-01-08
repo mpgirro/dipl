@@ -14,6 +14,8 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
     //val log = Logging(context.system, classOf[CrawlerActor])
 
+    private var directoryStore: ActorRef = _
+
     override def receive: Receive = {
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
@@ -26,12 +28,12 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
                 // reply to the DirectoryStore
                 // TODO better to directly address directoryStore once I have the actorRef
-                sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
             } catch {
                 case e: IOException => {
                     log.error("Could not download feed from: feedUrl")
                     // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
-                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
         }
@@ -45,14 +47,19 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
                 // reply to the DirectoryStore
                 // TODO better to directly address directoryStore once I have the actorRef
-                sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
             } catch {
                 case e: IOException => {
                     log.error("Could not download feed from: feedUrl")
                     // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
-                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
+        }
+
+        case ActorRefDirectoryStoreActor(ref) => {
+            log.debug("Received ActorRefDirectoryStoreActor")
+            directoryStore = ref;
         }
 
 

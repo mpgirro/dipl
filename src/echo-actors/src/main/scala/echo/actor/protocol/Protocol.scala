@@ -2,6 +2,7 @@ package echo.actor.protocol
 
 import java.time.LocalDateTime
 
+import akka.actor.ActorRef
 import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 import echo.core.feed.FeedStatus
 
@@ -67,6 +68,14 @@ object Protocol {
     trait IndexResult
     case class IndexResultsFound(query: String, results: Array[Document]) extends IndexResult
     case class NoIndexResultsFound(query: String) extends IndexResult
+
+    // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
+    case class ActorRefDirectoryStoreActor(ref: ActorRef)
+    case class ActorRefCrawlerActor(ref: ActorRef)
+    case class ActorRefIndexerActor(ref: ActorRef)
+    case class ActorRefFeedStoreActor(ref: ActorRef)
+    case class ActorRefIndexStoreActor(ref: ActorRef)
+    case class ActorRefSearcherActor(ref: ActorRef)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllDatabase()    // User -> DirectoryStore
