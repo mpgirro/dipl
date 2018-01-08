@@ -9,8 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum FeedStatus {
 
+    NEVER_CHECKED("never_checked"),
     SUCCESS("success"),
-    HTTP_403("http_403");
+    HTTP_403("http_403"),
+    PARSE_ERROR("parse_error");
 
     private String name;
 
