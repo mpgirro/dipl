@@ -15,36 +15,6 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
     override def receive: Receive = {
 
         /*
-        case ProcessPodcastFeedData(feedData) => {
-            log.info("Received ProcessPodcastFeedData('"+feedData+"') message")
-
-            // TODO parse the feed data
-            val podcast = feedData.split("/").last // TODO dummy to extract some data to index
-
-            // TODO send messages to IndexRepo with the data to add/update to the index
-            log.info("Sending AddPodcastToIndex('"+podcast+"') to IndexRepo")
-            indexStore ! AddPodcastToIndex(podcast)
-
-            // TODO generate some random episode data to have to process them too
-            log.info("Sending ProcessEpisodeFeedData(...) to self:Indexer")
-            self ! ProcessEpisodeFeedData(podcast,podcast+"-Episode-#1")
-            self ! ProcessEpisodeFeedData(podcast,podcast+"-Episode-#2")
-            self ! ProcessEpisodeFeedData(podcast,podcast+"-Episode-#3")
-        }
-
-        case ProcessEpisodeFeedData(feedRef, episode) => {
-            log.info("Received ProcessEpisodeFeedData('"+feedRef+"','"+episode+"') message")
-
-            // TODO this is a dummy processing of the episode data
-            log.info("Sending AddEpisodeToIndex('"+feedRef+"','"+episode+"') to IndexRepo")
-            indexStore ! AddEpisodeToIndex(feedRef, episode)
-        }
-        */
-
-
-
-
-        /*
          * received from Crawler
          */
         case IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String], feedData: String) => {
@@ -61,17 +31,29 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * - a SAX parser would be best for performance. the podcast data could be processed directly, and episode messages generated on the fly when encountering the specific xml-tags
              */
 
-            log.info("Received IndexFeedData for feed: " + feedUrl)
+            log.debug("Received IndexFeedData for feed: " + feedUrl)
 
             // TODO this is all highly test code
             val podcastDocument = feedParser.parseFeed(feedData)
             podcastDocument.setDocId(podcastDocId)
 
+            /* TODO
+             * here I should send an update for the podcast data to the directoryStore (relational DB)
+             * In order to do this, I need the ActorRef for directoryStore, which results in a circular
+             * dependency. How am I supposed to solve this?
+             * directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
+             */
+
+            // send the document to the lucene index
             indexStore ! IndexStoreAddPodcast(podcastDocument)
 
             val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
             for(episode <- episodes){
                 episode.setDocId(episode.getGuid) // TODO verify good GUID!
+
+                // TODO send episode data to directoryStore, once the circular dependency is solved
+                // directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
+
                 indexStore ! IndexStoreAddEpisode(episode)
             }
 
@@ -84,7 +66,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
 
-            log.info("Received IndexPodcastData for podcastDocId: " + podcastDocId)
+            log.debug("Received IndexPodcastData for podcastDocId: " + podcastDocId)
         }
 
         case IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String) => {
@@ -103,7 +85,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * indexStore ! IndexStoreUpdateEpisode(episodeDoc)
              */
 
-            log.info("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
+            log.debug("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
 

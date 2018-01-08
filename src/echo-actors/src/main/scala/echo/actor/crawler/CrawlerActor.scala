@@ -1,16 +1,14 @@
 package echo.actor.crawler
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.IOException
 import java.net.URL
 import java.time.LocalDateTime
+import java.util.Scanner
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.protocol.Protocol._
 import echo.core.feed.FeedStatus
-
-import scala.collection.mutable.ArrayBuffer
-
 
 class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
@@ -18,59 +16,50 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        /*
-        case CrawlFeed(feed) => {
-            log.info("Received CrawlFeed('"+feed+"') message")
-            val podcastName = feed.split("/").last // TODO generate some data and pretend it is the feed data
-
-            log.info("Sending ProcessPodcastFeedData('"+podcastName+"') to Indexer")
-            indexer ! ProcessPodcastFeedData(podcastName)
-        }
-        */
-
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
 
-            log.info("Received FetchNewFeed for feed: " + feedUrl)
+            log.debug("Received FetchNewFeed for feed: " + feedUrl)
+            try {
+                val feedData = download(feedUrl)
 
-            // TODO
-            val feedData = download(feedUrl)
-            indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
+                indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
 
-            // reply to the DirectoryStore
-            sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.SUCCESS)
+                // reply to the DirectoryStore
+                // TODO better to directly address directoryStore once I have the actorRef
+                sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+            } catch {
+                case e: IOException => {
+                    log.error("Could not download feed from: feedUrl")
+                    // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
+                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
+            }
         }
 
         case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String]) => {
 
-            log.info("Received FetchUpdateFeed for feed: " + feedUrl)
+            log.debug("Received FetchUpdateFeed for feed: " + feedUrl)
+            try {
+                val feedData = download(feedUrl)
+                indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
 
-            // TODO
-            val feedData = download(feedUrl)
-            indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
-
-            // reply to the DirectoryStore
-            sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.SUCCESS)
+                // reply to the DirectoryStore
+                // TODO better to directly address directoryStore once I have the actorRef
+                sender ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+            } catch {
+                case e: IOException => {
+                    log.error("Could not download feed from: feedUrl")
+                    // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
+                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
+            }
         }
 
 
     }
 
     // TODO this method must be updated to do all the pro crawling stuff (best using a decent HTTP client lib)
-    private def download(feedUrl: String): String = {
-        val url = new URL(feedUrl)
-        val in = new BufferedReader(new InputStreamReader(url.openStream))
-        val buffer = new ArrayBuffer[String]()
-        var inputLine = in.readLine
-        while (inputLine != null) {
-            if (!inputLine.trim.equals("")) {
-                buffer += inputLine.trim
-            }
-            inputLine = in.readLine
-        }
-        in.close
-
-        return buffer.toList.mkString("")
-    }
+    private def download(feedUrl: String): String = return new Scanner(new URL(feedUrl).openStream, "UTF-8").useDelimiter("\\A").next
 
 
 

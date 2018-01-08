@@ -15,8 +15,6 @@ class IndexStore extends Actor with ActorLogging {
     val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
     val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
-//    val index = scala.collection.mutable.HashMap.empty[String, ListBuffer[String]]
-
     override def receive: Receive = {
 
         case IndexStoreAddPodcast(podcast)  => {

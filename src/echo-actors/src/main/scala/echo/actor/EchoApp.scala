@@ -10,6 +10,7 @@ import echo.actor.protocol.Protocol.{FetchNewFeed, ProposeNewFeed, SearchRequest
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.{DirectoryStore, IndexStore}
 import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.util.DocumentFormatter
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -21,7 +22,7 @@ object EchoApp extends App {
 
     var shutdown = false
     val usageMap = Map(
-        "index" -> "feed [feed [feed]]",
+        "propose" -> "feed [feed [feed]]",
         "search" -> "query [query [query]]"
     )
 
@@ -52,8 +53,8 @@ object EchoApp extends App {
                 commands.toList match {
                     case "help" :: _ => help()
                     case q@("q" | "quit" | "exit") :: _ => shutdown = true
-                    case "index" :: Nil => usage("index")
-                    case "index" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
+                    case "propose" :: Nil => usage("propose")
+                    case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
                     case "search" :: Nil => usage("search")
                     case "search" :: query => {
                         implicit val timeout = Timeout(5 seconds)
@@ -62,11 +63,12 @@ object EchoApp extends App {
                         response match {
 
                             case SearchResults(results) => {
+                                println("Found "+results.length+" results for query '" + query.mkString(" ") + "'");
                                 println("Results:")
                                 for (doc <- results) {
                                     println()
-                                    printDoc(doc)
-                                    println("\n---")
+                                    println(new DocumentFormatter().format(doc))
+                                    println()
                                 }
                                 println()
                             }
@@ -104,26 +106,6 @@ object EchoApp extends App {
         println()
         println("Feel free to play around!")
         println()
-    }
-
-    private def printDoc(doc: Document) {
-        doc match {
-            case pDoc: PodcastDocument => {
-                println("[Podcast]")
-                println(pDoc.getTitle)
-                println(pDoc.getLanguage)
-                println(pDoc.getDescription)
-                println(pDoc.getLink)
-            }
-            case eDoc: EpisodeDocument => {
-                println("[Episode]")
-                println(eDoc.getTitle)
-                if (eDoc.getPubDate != null) println(eDoc.getPubDate.toString)
-                println(eDoc.getDescription)
-                println(eDoc.getLink)
-            }
-            case _ => throw new RuntimeException("Forgot to support new Echo Document type: " + doc.getClass)
-        }
     }
 
 }

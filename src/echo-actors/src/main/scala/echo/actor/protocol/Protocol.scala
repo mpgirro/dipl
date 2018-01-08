@@ -2,7 +2,7 @@ package echo.actor.protocol
 
 import java.time.LocalDateTime
 
-import echo.core.dto.document.Document
+import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 import echo.core.feed.FeedStatus
 
 import scala.collection.mutable.ListBuffer
@@ -61,6 +61,10 @@ object Protocol {
      *
      */
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
+
+    // Indexer -> DirectoryStore
+    case class UpdatePodcastMetadata(docId: String, doc: PodcastDocument)
+    case class UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDocument)
 
     /* Crawler -> Indexer
      * the podcastDocId has to be there (even for new feeds)
