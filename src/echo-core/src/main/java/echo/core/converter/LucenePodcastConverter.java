@@ -6,6 +6,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
+import java.time.LocalDateTime;
+
 /**
  * @author Maximilian Irro
  */
@@ -16,10 +18,13 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
 
         final PodcastDocument pDoc = new PodcastDocument();
 
+        pDoc.setDocId(lDoc.get("doc_id"));
         pDoc.setTitle(lDoc.get("title"));
         pDoc.setLink(lDoc.get("link"));
         pDoc.setDescription(lDoc.get("description"));
- //       pDoc.setLastBuildDate(TODO);
+        if(lDoc.get("last_build_date") != null){
+            pDoc.setLastBuildDate(LocalDateTime.parse(lDoc.get("last_build_date")));
+        }
         pDoc.setLanguage(lDoc.get("language"));
         pDoc.setGenerator(lDoc.get("generator"));
 
@@ -36,10 +41,9 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
         doc.add(new TextField("title", podcast.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", podcast.getLink(), Field.Store.YES));
         doc.add(new TextField("description", podcast.getDescription(), Field.Store.YES));
-
-        // TODO
-        //doc.add(new StringField("lastBuildDate", podcast.getLastBuildDate().toString(), Field.Store.YES));
-
+        if(podcast.getLastBuildDate() != null){
+            doc.add(new StringField("last_build_date", podcast.getLastBuildDate().toString(), Field.Store.YES));
+        }
         doc.add(new StringField("language", podcast.getLanguage(), Field.Store.YES));
         if(podcast.getGenerator() != null){
             // TODO know to be found as null in:

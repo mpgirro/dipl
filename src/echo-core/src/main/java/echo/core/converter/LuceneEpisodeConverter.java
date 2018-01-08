@@ -6,6 +6,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
+import java.time.LocalDateTime;
+
 /**
  * @author Maximilian Irro
  */
@@ -16,10 +18,12 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
 
         final EpisodeDocument eDoc = new EpisodeDocument();
 
+        eDoc.setDocId(lDoc.get("doc_id"));
         eDoc.setTitle(lDoc.get("title"));
         eDoc.setLink(lDoc.get("link"));
-
- //       eDoc.setPubDate(TODO);
+        if(lDoc.get("pub_date") != null){
+            eDoc.setPubDate(LocalDateTime.parse(lDoc.get("pub_date")));
+        }
         eDoc.setGuid(lDoc.get("guid"));
         eDoc.setDescription(lDoc.get("description"));
 
@@ -35,10 +39,9 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
         doc.add(new StringField("doc_type", "episode", Field.Store.YES));
         doc.add(new TextField("title", episode.getTitle(), Field.Store.YES));
         doc.add(new TextField("link", episode.getLink(), Field.Store.YES));
-
-        // TODO
-        //doc.add(new StringField("pubDate", episode.getPubDate().toString(), Field.Store.YES));
-
+        if(episode.getPubDate() != null){
+            doc.add(new StringField("pub_date", episode.getPubDate().toString(), Field.Store.YES));
+        }
         doc.add(new StringField("guid", episode.getGuid(), Field.Store.YES));
         doc.add(new TextField("description", episode.getDescription(), Field.Store.YES));
 

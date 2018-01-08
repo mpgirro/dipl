@@ -31,7 +31,7 @@ ext {
 //    log4jVersion = '2.9.1'
     slf4jVersion = '1.7.25'
     logbackVersion = '1.2.3'
-    luceneVersion = "7.2.0"
+    luceneVersion = '7.2.0'
 }
 
 repositories {
@@ -55,6 +55,8 @@ dependencies {
     compile "org.apache.lucene:lucene-core:$luceneVersion"
     compile "org.apache.lucene:lucene-queryparser:$luceneVersion"
     compile "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
+
+    compile "org.jsoup:jsoup:1.11.2"
 
     /*
     compile "joda-time:joda-time:2.9.9"

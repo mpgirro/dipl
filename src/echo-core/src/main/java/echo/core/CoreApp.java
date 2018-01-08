@@ -14,6 +14,7 @@ import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
 import echo.core.search.IndexSearcher;
 import echo.core.search.LuceneSearcher;
+import echo.core.util.DocumentFormatter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -211,28 +212,9 @@ public class CoreApp {
         out.println("Results:");
         for(Document doc : results){
             out.println();
-            if(doc instanceof PodcastDocument){
-                final PodcastDocument pDoc = (PodcastDocument) doc;
-                out.println("[Podcast]");
-                out.println(pDoc.getTitle());
-                out.println(pDoc.getLanguage());
-                out.println(pDoc.getDescription());
-                out.println(pDoc.getLink());
-            } else if( doc instanceof EpisodeDocument){
-                final EpisodeDocument eDoc = (EpisodeDocument) doc;
-                out.println("[Episode]");
-                out.println(eDoc.getTitle());
-                if(eDoc.getPubDate() != null){
-                    out.println(eDoc.getPubDate().toString());
-                }
-                out.println(eDoc.getDescription());
-                out.println(eDoc.getLink());
-            } else {
-                throw new RuntimeException("Forgot to support new Echo Document type: "+doc.getClass());
-            }
-            out.println("\n---");
+            out.println(new DocumentFormatter().format(doc));
+            out.println();
         }
-        out.println();
     }
 
 }
