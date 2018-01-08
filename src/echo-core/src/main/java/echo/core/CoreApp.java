@@ -168,6 +168,7 @@ public class CoreApp {
             out.println("Podcast: " + podcast.getTitle() + " <" + podcast.getLink().toExternalForm() + ">");
 
             final PodcastDocument podcastDoc = new PodcastDocument();
+            podcastDoc.setDocId(feed);
             podcastDoc.setTitle(podcast.getTitle());
             podcastDoc.setLink(podcast.getLink().toExternalForm());
             podcastDoc.setDescription(podcast.getDescription());
@@ -186,6 +187,7 @@ public class CoreApp {
                 out.println("  Episode: " + episode.getTitle());
 
                 final EpisodeDocument episodeDoc = new EpisodeDocument();
+                episodeDoc.setDocId(episode.getGUID()); // TODO verifiy good GUID!
                 episodeDoc.setTitle(episode.getTitle());
                 episodeDoc.setLink(episode.getLink().toExternalForm());
                 //episodeDoc.setPubDate(episode.getPubDate()); // TODO

@@ -65,11 +65,13 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
             // TODO this is all highly test code
             val podcastDocument = feedParser.parseFeed(feedData)
+            podcastDocument.setDocId(podcastDocId)
 
             indexStore ! IndexStoreAddPodcast(podcastDocument)
 
             val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
             for(episode <- episodes){
+                episode.setDocId(episode.getGuid) // TODO verify good GUID!
                 indexStore ! IndexStoreAddEpisode(episode)
             }
 

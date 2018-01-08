@@ -48,6 +48,7 @@ class IndexStore extends Actor with ActorLogging {
         case SearchIndex(query: String) => {
             log.info("Received SearchIndex('"+query+"') message")
 
+            indexSearcher.refresh()
             val results = indexSearcher.search(query)
             if(results.length > 0){
                 sender ! IndexResultsFound(query,results)
