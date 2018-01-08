@@ -8,6 +8,7 @@ import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
 import echo.core.dto.document.EpisodeDocument;
 import echo.core.dto.document.PodcastDocument;
+import echo.core.exception.FeedParsingException;
 
 /**
  * @author Maximilian Irro
@@ -23,7 +24,7 @@ public class PodEngineFeedParser implements FeedParser {
     }
 
     @Override
-    public PodcastDocument parseFeed(String xmlData) {
+    public PodcastDocument parseFeed(String xmlData) throws FeedParsingException {
 
         Podcast podcast = null;
         try {
@@ -36,11 +37,11 @@ public class PodEngineFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDocument parseEpisode(String xmlData) {
+    public EpisodeDocument parseEpisode(String xmlData) throws FeedParsingException {
         throw new UnsupportedOperationException("PodEngineFeedParser.parseEpisode not yet implemented");
     }
 
-    public EpisodeDocument[] extractEpisodes(String xmlData){
+    public EpisodeDocument[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
             return podcast.getEpisodes().stream()
@@ -48,8 +49,8 @@ public class PodEngineFeedParser implements FeedParser {
                 .toArray(EpisodeDocument[]::new);
         } catch (MalformedFeedException e) {
             e.printStackTrace();
+            throw new FeedParsingException("PodEngine could not parse the feed", e);
         }
-        return new EpisodeDocument[0];
     }
 
 }

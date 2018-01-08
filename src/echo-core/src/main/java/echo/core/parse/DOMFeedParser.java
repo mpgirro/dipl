@@ -2,6 +2,7 @@ package echo.core.parse;
 
 import echo.core.dto.document.EpisodeDocument;
 import echo.core.dto.document.PodcastDocument;
+import echo.core.exception.FeedParsingException;
 
 /**
  * @author Maximilian Irro
@@ -14,12 +15,12 @@ public class DOMFeedParser implements FeedParser {
      */
 
     @Override
-    public PodcastDocument parseFeed(String xmlData) {
+    public PodcastDocument parseFeed(String xmlData) throws FeedParsingException {
         throw new UnsupportedOperationException("DOMFeedParser.parseFeed not yet implemented");
     }
 
     @Override
-    public EpisodeDocument parseEpisode(String xmlData) {
+    public EpisodeDocument parseEpisode(String xmlData) throws FeedParsingException {
         throw new UnsupportedOperationException("DOMFeedParser.parseEpisode not yet implemented");
     }
 

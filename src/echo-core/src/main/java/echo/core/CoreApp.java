@@ -10,8 +10,11 @@ import echo.core.converter.PodEnginePodcastConverter;
 import echo.core.dto.document.Document;
 import echo.core.dto.document.EpisodeDocument;
 import echo.core.dto.document.PodcastDocument;
+import echo.core.exception.FeedParsingException;
 import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
+import echo.core.parse.FeedParser;
+import echo.core.parse.PodEngineFeedParser;
 import echo.core.search.IndexSearcher;
 import echo.core.search.LuceneSearcher;
 import echo.core.util.DocumentFormatter;
@@ -24,6 +27,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.lang.System.out;
@@ -36,6 +40,7 @@ public class CoreApp {
     private static final String INDEX_PATH = "./index";
     private static final boolean CREATE_INDEX = true; // will re-create index on every start (for testing)
 
+    private FeedParser feedParser;
     private IndexCommitter committer;
     private IndexSearcher searcher;
 
@@ -52,6 +57,7 @@ public class CoreApp {
 
     public CoreApp() throws IOException {
 
+        this.feedParser = new PodEngineFeedParser();
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
         this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
 
@@ -163,37 +169,29 @@ public class CoreApp {
 
     private void index(String[] feeds) throws MalformedURLException, MalformedFeedException, InvalidFeedException {
 
-        /* remember, some useful feed urls are:
-         * - https://feeds.metaebene.me/freakshow/m4a
-         * - http://www.fanboys.fm/episodes.mp3.rss
-         * - http://falter-radio.libsyn.com/rss
-         * - http://revolutionspodcast.libsyn.com/rss/
-         */
-
         for(String feed : feeds){
             out.println("Processing feed: " + feed);
 
-            //Download and parse the Cortex RSS feed
-            final Podcast podcast = new Podcast(new URL(feed));
-            out.println("Podcast: " + podcast.getTitle() + " <" + podcast.getLink().toExternalForm() + ">");
+            try {
+                final String feedData = download(feed);
 
-            final PodcastDocument podcastDoc = podcastConverter.toEchoDocument(podcast);
-            podcastDoc.setDocId(feed);
+                final PodcastDocument podcastDoc = this.feedParser.parseFeed(feedData);
+                podcastDoc.setDocId(feed);
 
-            committer.add(podcastDoc);
+                this.committer.add(podcastDoc);
 
-            //Display Feed Details
-            //System.out.printf("💼 %s has %d episodes!\n", podcast.getTitle(), podcast.getEpisodes().size());
+                final EpisodeDocument[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
+                for (EpisodeDocument episode : episodes) {
+                    out.println("  Episode: " + episode.getTitle());
 
-            //List all episodes
-            for (Episode episode : podcast.getEpisodes()) {
-                //System.out.println("- " + episode.getTitle());
-                out.println("  Episode: " + episode.getTitle());
+                    episode.setDocId(episode.getGuid()); // TODO verifiy good GUID!
 
-                final EpisodeDocument episodeDoc = episodeConverter.toEchoDocument(episode);
-                episodeDoc.setDocId(episode.getGUID()); // TODO verifiy good GUID!
-
-                this.committer.add(episodeDoc);
+                    this.committer.add(episode);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (FeedParsingException e) {
+                e.printStackTrace();
             }
         }
 
@@ -215,6 +213,14 @@ public class CoreApp {
             out.println(new DocumentFormatter().format(doc));
             out.println();
         }
+    }
+
+    private String download(String feedUrl) throws IOException {
+
+        return new Scanner(new URL(feedUrl).openStream(), "UTF-8")
+            .useDelimiter("\\A")
+            .next();
+
     }
 
 }
