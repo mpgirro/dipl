@@ -10,6 +10,8 @@ import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
 import echo.core.parse.FeedParser;
 import echo.core.parse.PodEngineFeedParser;
+import echo.core.parse.api.API;
+import echo.core.parse.api.FyydAPI;
 import echo.core.search.IndexSearcher;
 import echo.core.search.LuceneSearcher;
 import echo.core.util.DocumentFormatter;
@@ -42,8 +44,10 @@ public class CoreApp {
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
 
-    private final PodEnginePodcastConverter podcastConverter;
-    private final PodEngineEpisodeConverter episodeConverter;
+    private final PodEnginePodcastConverter podcastConverter = new PodEnginePodcastConverter();
+    private final PodEngineEpisodeConverter episodeConverter = new PodEngineEpisodeConverter();
+
+    private final API fyydAPI = new FyydAPI();
 
     public static void main(String[] args) throws IOException {
         final CoreApp app = new CoreApp();
@@ -62,9 +66,6 @@ public class CoreApp {
             committer.destroy();
         }));
 
-        this.podcastConverter = new PodEnginePodcastConverter();
-        this.episodeConverter = new PodEngineEpisodeConverter();
-
         // save the usages, for easy recall
         usageMap.put("index",             "feed [feed [feed]]");
         usageMap.put("search",            "query [query [query]]");
@@ -72,6 +73,7 @@ public class CoreApp {
         usageMap.put("test-index-search", "");
         usageMap.put("help",              "");
         usageMap.put("quit, q, exit",     "");
+        usageMap.put("print-fyyd-feeds",  "count");
     }
 
     private void repl() throws IOException {
@@ -119,6 +121,16 @@ public class CoreApp {
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
                 searcher.refresh(); // I need to manually refresh here, otherwise there will be no results because auto-refresh has not triggered yet
                 search(new String[]{"Sendung"});
+            } else if (isCmd(cmd,"print-fyyd-feeds")) {
+                if (commands.length == 2) {
+                    final int count = Integer.valueOf(commands[1]);
+                    out.println("These are "+count+" feed URLs from fyyd.de");
+                    for(String feed : fyydAPI.getFeedUrls(count)){
+                        out.println("\t"+feed);
+                    }
+                } else {
+                    usage(cmd);
+                }
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
             }
