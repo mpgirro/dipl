@@ -1,9 +1,13 @@
 package echo.actor.indexer
 
+import java.time.LocalDateTime
+
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.crawler.CrawlerActor
 import echo.actor.protocol.Protocol._
+import echo.core.exception.FeedParsingException
+import echo.core.feed.FeedStatus
 import echo.core.parse.{FeedParser, PodEngineFeedParser}
 
 class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
@@ -39,34 +43,50 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              */
 
             log.debug("Received IndexFeedData for feed: " + feedUrl)
+            try {
+                // TODO this is all highly test code
+                val podcastDocument = feedParser.parseFeed(feedData)
+                if(podcastDocument != null){
+                    // TODO try-catch for Feedparseerror here, send update
+                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-            // TODO this is all highly test code
-            val podcastDocument = feedParser.parseFeed(feedData)
+                    podcastDocument.setDocId(podcastDocId)
 
-            // TODO try-catch for Feedparseerror here, send update
-            // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                    /* TODO
+                     * here I should send an update for the podcast data to the directoryStore (relational DB)
+                     * In order to do this, I need the ActorRef for directoryStore, which results in a circular
+                     * dependency. How am I supposed to solve this?
+                     *
+                     */
+                    directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
 
-            podcastDocument.setDocId(podcastDocId)
+                    // send the document to the lucene index
+                    indexStore ! IndexStoreAddPodcast(podcastDocument)
 
-            /* TODO
-             * here I should send an update for the podcast data to the directoryStore (relational DB)
-             * In order to do this, I need the ActorRef for directoryStore, which results in a circular
-             * dependency. How am I supposed to solve this?
-             *
-             */
-            directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
 
-            // send the document to the lucene index
-            indexStore ! IndexStoreAddPodcast(podcastDocument)
+                    val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
+                    if(episodes != null){
+                        for(episode <- episodes){
+                            episode.setDocId(episode.getGuid) // TODO verify good GUID!
 
-            val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
-            for(episode <- episodes){
-                episode.setDocId(episode.getGuid) // TODO verify good GUID!
+                            // TODO send episode data to directoryStore, once the circular dependency is solved
+                            directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
 
-                // TODO send episode data to directoryStore, once the circular dependency is solved
-                directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
+                            indexStore ! IndexStoreAddEpisode(episode)
+                        }
+                    } else {
+                        log.warning("Parsing generated a null-List[EpisodeDocument] for feed: {}", feedUrl)
+                    }
 
-                indexStore ! IndexStoreAddEpisode(episode)
+                } else {
+                    log.warning("Parsing generated a null-PodcastDocument for feed: {}", feedUrl)
+                }
+            } catch {
+                case e: FeedParsingException => {
+                    log.error("FeedParsingException occured while processing feed: {}", feedUrl)
+                    //log.error("FeedParsingException: {}", e)
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                }
             }
 
         }

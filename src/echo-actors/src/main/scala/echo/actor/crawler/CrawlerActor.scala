@@ -28,7 +28,7 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
 
-            log.debug("Received FetchNewFeed for feed: {}", feedUrl)
+            log.info("Received FetchNewFeed for feed: {}", feedUrl)
             try {
                 val feedData = download(feedUrl)
 
@@ -47,20 +47,17 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
         case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String]) => {
 
-            log.debug("Received FetchUpdateFeed for feed: {}", feedUrl)
-            try {
-                val feedData = download(feedUrl)
-
+            log.info("Received FetchUpdateFeed for feed: {}", feedUrl)
+            val feedData = download(feedUrl)
+            if(feedData != null){
                 // send downloaded data to Indexer for processing
                 indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
 
                 // send status to DirectoryStore
                 directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-            } catch {
-                case e: IOException => {
-                    log.error("Could not download feed from: {}", feedUrl)
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                }
+            } else {
+                log.error("Could not download feed from: {}", feedUrl)
+                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
             }
         }
 
@@ -79,7 +76,20 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
     }
 
     // TODO this method must be updated to do all the pro crawling stuff (best using a decent HTTP client lib)
-    private def download(feedUrl: String): String = return new Scanner(new URL(feedUrl).openStream, "UTF-8").useDelimiter("\\A").next
+    private def download(feedUrl: String): String = {
+        try {
+            val scanner = new Scanner(new URL(feedUrl).openStream, "UTF-8").useDelimiter("\\A")
+            if(scanner.hasNext){
+                return scanner.next
+            }
+        } catch {
+            case e: IOException => {
+                log.error("Exception while loading feed: {} ; reason: {}", feedUrl, e.getMessage)
+                return null;
+            }
+        }
+        return null;
+    }
 
 
 

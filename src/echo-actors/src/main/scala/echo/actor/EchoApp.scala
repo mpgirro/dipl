@@ -20,13 +20,13 @@ import scala.io.StdIn
 
 object EchoApp extends App {
 
-    var shutdown = false
+    private var shutdown = false
     val usageMap = Map(
         "propose" -> "feed [feed [feed]]",
         "search" -> "query [query [query]]",
-        "print-database" -> "",
+        "print database" -> "",
         "test-index" -> "",
-        "cawl-fyyd" -> "count"
+        "crawl fyyd" -> "count"
     )
 
     // create the system and actor
@@ -59,41 +59,25 @@ object EchoApp extends App {
                 commands.toList match {
                     case "help" :: _ => help()
                     case q@("q" | "quit" | "exit") :: _ => shutdown = true
-                    case "propose" :: Nil => usage("propose")
+
+                    case "propose" :: Nil   => usage("propose")
                     case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
-                    case "search" :: Nil => usage("search")
-                    case "search" :: query => {
-                        implicit val timeout = Timeout(5 seconds)
-                        val future = searcher ? SearchRequest(query.mkString(" "))
-                        val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
-                        response match {
 
-                            case SearchResults(results) => {
-                                println("Found "+results.length+" results for query '" + query.mkString(" ") + "'");
-                                println("Results:")
-                                for (doc <- results) {
-                                    println()
-                                    println(new DocumentFormatter().format(doc))
-                                    println()
-                                }
-                                println()
-                            }
+                    case "search" :: Nil    => usage("search")
+                    case "search" :: query  => search(query)
 
-                        }
-                    }
-                    case "print-database" :: _ => directoryStore ! DebugPrintAllDatabase
-                    case "test-index" :: _ => {
-                        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/freakshow/m4a")
-                        directoryStore ! ProposeNewFeed("http://www.fanboys.fm/episodes.mp3.rss")
-                        directoryStore ! ProposeNewFeed("http://falter-radio.libsyn.com/rss")
-                        directoryStore ! ProposeNewFeed("http://revolutionspodcast.libsyn.com/rss/")
-                        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
-                        directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
-                    }
-                    case "cawl-fyyd" :: Nil => usage("cawl-fyyd")
-                    case "cawl-fyyd" :: count :: Nil => crawler ! CrawlFyyd(count.toInt)
-                    case "cawl-fyyd" :: count :: _ => usage("cawl-fyyd")
-                    case _  => usage("")
+                    case "print" :: "database" :: Nil   => directoryStore ! DebugPrintAllDatabase
+                    case "print" :: "database" :: _     => usage("print database")
+                    case "print" :: _ => help()
+
+                    case "test" :: "index" :: _ => testIndex()
+                    case "test" :: _            => help()
+
+                    case "crawl" :: "fyyd" :: Nil           => usage("crawl-fyyd")
+                    case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
+                    case "crawl" :: "fyyd" :: count :: _    => usage("crawl-fyyd")
+
+                    case _  => help()
                 }
             }
             exec(input.split(" "))
@@ -126,6 +110,34 @@ object EchoApp extends App {
         println()
         println("Feel free to play around!")
         println()
+    }
+
+    private def search(query: List[String]): Unit = {
+        implicit val timeout = Timeout(5 seconds)
+        val future = searcher ? SearchRequest(query.mkString(" "))
+        val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
+        response match {
+
+            case SearchResults(results) => {
+                println("Found "+results.length+" results for query '" + query.mkString(" ") + "'");
+                println("Results:")
+                for (doc <- results) {
+                    println()
+                    println(new DocumentFormatter().format(doc))
+                    println()
+                }
+                println()
+            }
+        }
+    }
+
+    private def testIndex(): Unit ={
+        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/freakshow/m4a")
+        directoryStore ! ProposeNewFeed("http://www.fanboys.fm/episodes.mp3.rss")
+        directoryStore ! ProposeNewFeed("http://falter-radio.libsyn.com/rss")
+        directoryStore ! ProposeNewFeed("http://revolutionspodcast.libsyn.com/rss/")
+        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
+        directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
     }
 
 }
