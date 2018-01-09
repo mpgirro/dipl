@@ -21,11 +21,11 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             log.debug("Received msg proposing a new feed: " + feedUrl)
             if(database.contains(feedUrl)){
                 // TODO remove the auto update
-                log.info("Feed already in directory; will send an update request to crawler")
+                log.debug("Feed already in directory; will send an update request to crawler: {}", feedUrl)
                 val entry = database(feedUrl)
                 crawler ! FetchUpdateFeed(feedUrl, feedUrl, entry._3.toArray)
             } else {
-                log.info("Feed not yet known; will be passed to crawler")
+                log.debug("Feed not yet known; will be passed to crawler: {}", feedUrl)
                 val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String]())
                 database += (feedUrl -> entry)
                 crawler ! FetchNewFeed(feedUrl, feedUrl)
@@ -50,7 +50,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
         case UpdatePodcastMetadata(docId: String, doc: PodcastDocument) => {
             // TODO I do not simulate podcasts in the DB yet
-            log.warning("Received UpdatePodcastMetadata({},{})", docId, doc)
+            //log.warning("Received UpdatePodcastMetadata({},{})", docId, doc)
             //throw new UnsupportedOperationException("DirectoryStore does not yet support message UpdatePodcastMetadata")
         }
 

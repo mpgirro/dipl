@@ -18,27 +18,27 @@ class IndexStore extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case IndexStoreAddPodcast(podcast)  => {
-            log.info("Adding " + podcast)
+            log.debug("Adding " + podcast)
             indexCommitter.add(podcast)
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
 
         case IndexStoreUpdatePodcast(podcast) => {
             // TODO
-            log.info("Updating " + podcast)
+            log.debug("Updating " + podcast)
             indexCommitter.update(podcast)
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
 
         case IndexStoreAddEpisode(episode) => {
-            log.info("Adding " + episode)
+            log.debug("Adding " + episode)
             indexCommitter.add(episode)
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
 
         case IndexStoreUpdateEpisode(episode) => {
             // TODO
-            log.info("Updating " + episode)
+            log.debug("Updating " + episode)
             indexCommitter.update(episode)
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
