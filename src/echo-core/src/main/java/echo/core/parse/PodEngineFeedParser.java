@@ -41,12 +41,15 @@ public class PodEngineFeedParser implements FeedParser {
     public EpisodeDocument[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            return podcast.getEpisodes().stream()
-                .map( e -> episodeConverter.toEchoDocument(e))
-                .toArray(EpisodeDocument[]::new);
+            if(podcast.getEpisodes() != null){
+                return podcast.getEpisodes().stream()
+                    .map( e -> episodeConverter.toEchoDocument(e))
+                    .toArray(EpisodeDocument[]::new);
+            }
         } catch (MalformedFeedException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
+        return null;
     }
 
 }
