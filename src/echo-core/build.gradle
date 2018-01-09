@@ -50,13 +50,13 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$logbackVersion"
     compile "ch.qos.logback:logback-core:$logbackVersion"
 
-    compile 'com.icosillion.podengine:podengine:2.2'
-
     compile "org.apache.lucene:lucene-core:$luceneVersion"
     compile "org.apache.lucene:lucene-queryparser:$luceneVersion"
     compile "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
 
-    compile "org.jsoup:jsoup:1.11.2"
+    compile 'com.icosillion.podengine:podengine:2.2'    // podcast feed parser
+    compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
+    compile 'com.google.code.gson:gson:2.8.2'           // gson parser
 
     /*
     compile "joda-time:joda-time:2.9.9"
