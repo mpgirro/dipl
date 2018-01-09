@@ -20,7 +20,9 @@ public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument
         final PodcastDocument doc = new PodcastDocument();
         try {
             doc.setTitle(podcast.getTitle());
-            doc.setLink(podcast.getLink().toExternalForm());
+            if(podcast.getLink() != null){
+                doc.setLink(podcast.getLink().toExternalForm());
+            }
             doc.setDescription(podcast.getDescription());
             if(podcast.getLastBuildDate() != null){
                 doc.setLastBuildDate(LocalDateTime.ofInstant(podcast.getLastBuildDate().toInstant(), ZoneId.systemDefault()));
