@@ -25,7 +25,7 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
 
             log.info("Sending SearchIndex('"+query+"') message")
             val future = indexStore ? SearchIndex(query)
-            val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult] // TODO hier habe ich als typ IndexMessage, muss ggf ans neue protocoll angepasst werden
+            val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
             response match {
 
                 case IndexResultsFound(query: String, results: Array[Document]) => {

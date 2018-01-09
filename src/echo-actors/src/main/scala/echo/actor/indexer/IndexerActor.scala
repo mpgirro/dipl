@@ -16,6 +16,11 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
+        case ActorRefDirectoryStoreActor(ref) => {
+            log.debug("Received ActorRefDirectoryStoreActor")
+            directoryStore = ref;
+        }
+
         /*
          * received from Crawler
          */
@@ -73,7 +78,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
 
-            log.debug("Received IndexPodcastData for podcastDocId: " + podcastDocId)
+            log.error("Received IndexPodcastData for podcastDocId: " + podcastDocId)
         }
 
         case IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String) => {
@@ -92,12 +97,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              * indexStore ! IndexStoreUpdateEpisode(episodeDoc)
              */
 
-            log.debug("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
-        }
-
-        case ActorRefDirectoryStoreActor(ref) => {
-            log.debug("Received ActorRefDirectoryStoreActor")
-            directoryStore = ref;
+            log.error("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
 

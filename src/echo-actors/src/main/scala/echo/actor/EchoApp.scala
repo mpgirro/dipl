@@ -25,7 +25,8 @@ object EchoApp extends App {
         "propose" -> "feed [feed [feed]]",
         "search" -> "query [query [query]]",
         "print-database" -> "",
-        "test-index" -> ""
+        "test-index" -> "",
+        "cawl-fyyd" -> "count"
     )
 
     // create the system and actor
@@ -89,6 +90,9 @@ object EchoApp extends App {
                         directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
                         directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
                     }
+                    case "cawl-fyyd" :: Nil => usage("cawl-fyyd")
+                    case "cawl-fyyd" :: count :: Nil => crawler ! CrawlFyyd(count.toInt)
+                    case "cawl-fyyd" :: count :: _ => usage("cawl-fyyd")
                     case _  => usage("")
                 }
             }

@@ -80,4 +80,9 @@ object Protocol {
     // These are maintenance methods, I use during development
     case class DebugPrintAllDatabase()    // User -> DirectoryStore
 
+    // User -> Crawler
+    // TODO: automatic: Crawler -> Crawler on a regular basis
+    trait CrawlExternalDirectory
+    case class CrawlFyyd(count: Int) extends CrawlExternalDirectory
+
 }

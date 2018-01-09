@@ -9,6 +9,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.protocol.Protocol._
 import echo.core.feed.FeedStatus
+import echo.core.parse.api.FyydAPI
 
 class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
@@ -16,23 +17,29 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
     private var directoryStore: ActorRef = _
 
+    val fyydAPI: FyydAPI = new FyydAPI();
+
     override def receive: Receive = {
+
+        case ActorRefDirectoryStoreActor(ref) => {
+            log.debug("Received ActorRefDirectoryStoreActor")
+            directoryStore = ref;
+        }
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
 
-            log.debug("Received FetchNewFeed for feed: " + feedUrl)
+            log.debug("Received FetchNewFeed for feed: {}", feedUrl)
             try {
                 val feedData = download(feedUrl)
 
+                // send downloaded data to Indexer for processing
                 indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
 
-                // reply to the DirectoryStore
-                // TODO better to directly address directoryStore once I have the actorRef
+                // send status to DirectoryStore
                 directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
             } catch {
                 case e: IOException => {
-                    log.error("Could not download feed from: feedUrl")
-                    // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
+                    log.error("Could not download feed from: {}", feedUrl)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
@@ -40,28 +47,34 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
         case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String]) => {
 
-            log.debug("Received FetchUpdateFeed for feed: " + feedUrl)
+            log.debug("Received FetchUpdateFeed for feed: {}", feedUrl)
             try {
                 val feedData = download(feedUrl)
+
+                // send downloaded data to Indexer for processing
                 indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
 
-                // reply to the DirectoryStore
-                // TODO better to directly address directoryStore once I have the actorRef
+                // send status to DirectoryStore
                 directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
             } catch {
                 case e: IOException => {
-                    log.error("Could not download feed from: feedUrl")
-                    // TODO send FeedStatusUpdate once we have the actorRef (cyclic dependency and such...)
+                    log.error("Could not download feed from: {}", feedUrl)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
         }
 
-        case ActorRefDirectoryStoreActor(ref) => {
-            log.debug("Received ActorRefDirectoryStoreActor")
-            directoryStore = ref;
-        }
+        case CrawlFyyd(count) => {
+            log.debug("Received CrawlFyyd({})", count)
+            val feeds = fyydAPI.getFeedUrls(count);
+            log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
 
+            log.debug("Proposing these feeds to the internal directory now")
+            val it = feeds.iterator()
+            while(it.hasNext){
+                directoryStore ! ProposeNewFeed(it.next())
+            }
+        }
 
     }
 
