@@ -27,7 +27,7 @@
     <!--
     <appender name="file" class="ch.qos.logback.core.FileAppender">
         <append>false</append>
-        <file>MozartSpaces.log</file>
+        <file>Echo.log</file>
         <encoder>
               <pattern>%date %-5level [%thread] %logger{10} - %msg%n</pattern>
         </encoder>
@@ -47,11 +47,6 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="echo.actors" level="DEBUG"
-            additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
     <root level="ERROR">
         <appender-ref ref="STDOUT" />
     </root>
@@ -63,16 +58,4 @@
         * INHERITED or NULL (not for root)
     -->
 
-    <!--
-        Logging with multiple MozartSpaces instances on the same machine:
-
-        To have separate logback configuration files for different MozartSpaces
-        instances you can set the configuration file name with a system property:
-        java -Dlogback.configurationFile=/path/to/config.xml MozartSpacesApp
-
-        To have separated log files for different MozartSpaces instances (with
-        the same logback configuration) you can use variable substitution in the
-        configuration file, e.g., in the FileAppender configuration section. See
-        http://logback.qos.ch/manual/joran.html#variableSubstitution for details.
-     -->
 </configuration>

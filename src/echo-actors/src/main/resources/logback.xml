@@ -15,7 +15,7 @@
         <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
             <!--<pattern>%-5level %logger{36} - %msg%n</pattern>-->
-            <pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
+            <pattern>[%highlight(%level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
         <!-- Only log level INFO and above -->
     </appender>
@@ -23,20 +23,29 @@
     <!--
     <appender name="file" class="ch.qos.logback.core.FileAppender">
         <append>false</append>
-        <file>MozartSpaces.log</file>
+        <file>Echo.log</file>
         <encoder>
-              <pattern>%date %-5level [%thread] %logger{10} - %msg%n</pattern>
+              <pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
       </appender>
     -->
 
     <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
 
+    <configuration>
+        <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+        <!-- etc -->
+    </configuration>
 
     <root level="WARN">
         <appender-ref ref="stdout"/>
         <!-- appender-ref ref="file"/ -->
     </root>
+
+    <logger name="echo.actor" level="INFO"
+            additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
 
     <logger name="echo.actor" level="INFO"
             additivity="false">
@@ -54,16 +63,4 @@
         * INHERITED or NULL (not for root)
     -->
 
-    <!--
-        Logging with multiple MozartSpaces instances on the same machine:
-
-        To have separate logback configuration files for different MozartSpaces
-        instances you can set the configuration file name with a system property:
-        java -Dlogback.configurationFile=/path/to/config.xml MozartSpacesApp
-
-        To have separated log files for different MozartSpaces instances (with
-        the same logback configuration) you can use variable substitution in the
-        configuration file, e.g., in the FileAppender configuration section. See
-        http://logback.qos.ch/manual/joran.html#variableSubstitution for details.
-     -->
 </configuration>
