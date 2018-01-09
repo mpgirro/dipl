@@ -4,6 +4,8 @@ import com.icosillion.podengine.exceptions.DateFormatException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import com.icosillion.podengine.models.Podcast;
 import echo.core.dto.document.PodcastDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ import java.time.ZoneId;
  * @author Maximilian Irro
  */
 public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument,Podcast> {
+
+    private static final Logger log = LoggerFactory.getLogger(PodEnginePodcastConverter.class);
 
     @Override
     public PodcastDocument toEchoDocument(Podcast podcast) {
@@ -29,12 +33,9 @@ public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument
             }
             doc.setLanguage(podcast.getLanguage());
             doc.setGenerator(podcast.getGenerator());
-        } catch (MalformedFeedException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (DateFormatException e) {
-            e.printStackTrace();
+        } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
+            log.error("Exception during converting PodEnginePodcast to PodcastDocument; reason: {}", e.getMessage());
+            //e.printStackTrace();
         }
 
         return doc;

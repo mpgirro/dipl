@@ -25,15 +25,12 @@ public class PodEngineFeedParser implements FeedParser {
 
     @Override
     public PodcastDocument parseFeed(String xmlData) throws FeedParsingException {
-
-        Podcast podcast = null;
         try {
-            podcast = new Podcast(xmlData);
+            final Podcast podcast = new Podcast(xmlData);
+            return (PodcastDocument) podcastConverter.toEchoDocument(podcast);
         } catch (MalformedFeedException e) {
-            e.printStackTrace();
+            throw new FeedParsingException("PodEngine could not parse the feed", e);
         }
-
-        return (PodcastDocument) podcastConverter.toEchoDocument(podcast);
     }
 
     @Override
@@ -48,8 +45,7 @@ public class PodEngineFeedParser implements FeedParser {
                 .map( e -> episodeConverter.toEchoDocument(e))
                 .toArray(EpisodeDocument[]::new);
         } catch (MalformedFeedException e) {
-            e.printStackTrace();
-            throw new FeedParsingException("PodEngine could not parse the feed", e);
+            throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
     }
 
