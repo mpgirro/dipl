@@ -18,14 +18,12 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
 
         final EpisodeDocument eDoc = new EpisodeDocument();
 
-        eDoc.setDocId(lDoc.get("doc_id"));
-        eDoc.setTitle(lDoc.get("title"));
-        eDoc.setLink(lDoc.get("link"));
-        if(lDoc.get("pub_date") != null){
-            eDoc.setPubDate(LocalDateTime.parse(lDoc.get("pub_date")));
-        }
-        eDoc.setGuid(lDoc.get("guid"));
-        eDoc.setDescription(lDoc.get("description"));
+        if(lDoc.get("doc_id")      != null){ eDoc.setDocId(lDoc.get("doc_id")); }
+        if(lDoc.get("title")       != null){ eDoc.setTitle(lDoc.get("title")); }
+        if(lDoc.get("link")        != null){ eDoc.setLink(lDoc.get("link")); }
+        if(lDoc.get("pub_date")    != null){ eDoc.setPubDate(LocalDateTime.parse(lDoc.get("pub_date"))); }
+        if(lDoc.get("guid")        != null){ eDoc.setGuid(lDoc.get("guid")); }
+        if(lDoc.get("description") != null){ eDoc.setDescription(lDoc.get("description")); }
 
         return eDoc;
     }
@@ -34,16 +32,14 @@ public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,or
     public Document toEntityDocument(EpisodeDocument episode) {
 
         final Document doc = new Document();
-
-        doc.add(new StringField("doc_id", episode.getDocId(), Field.Store.YES));
         doc.add(new StringField("doc_type", "episode", Field.Store.YES));
-        doc.add(new TextField("title", episode.getTitle(), Field.Store.YES));
-        doc.add(new TextField("link", episode.getLink(), Field.Store.YES));
-        if(episode.getPubDate() != null){
-            doc.add(new StringField("pub_date", episode.getPubDate().toString(), Field.Store.YES));
-        }
-        doc.add(new StringField("guid", episode.getGuid(), Field.Store.YES));
-        doc.add(new TextField("description", episode.getDescription(), Field.Store.YES));
+
+        if(episode.getDocId()       != null){ doc.add(new StringField("doc_id", episode.getDocId(), Field.Store.YES)); }
+        if(episode.getTitle()       != null){ doc.add(new TextField("title", episode.getTitle(), Field.Store.YES)); }
+        if(episode.getLink()        != null){ doc.add(new TextField("link", episode.getLink(), Field.Store.YES)); }
+        if(episode.getPubDate()     != null){ doc.add(new StringField("pub_date", episode.getPubDate().toString(), Field.Store.YES)); }
+        if(episode.getGuid()        != null){ doc.add(new StringField("guid", episode.getGuid(), Field.Store.YES)); }
+        if(episode.getDescription() != null){ doc.add(new TextField("description", episode.getDescription(), Field.Store.YES)); }
 
         return doc;
     }
