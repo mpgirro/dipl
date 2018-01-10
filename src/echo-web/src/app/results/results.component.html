@@ -1,0 +1,40 @@
+<div class="pure-g">
+  <div class="pure-u-1-2">
+      <p>
+          here should be displayed some results, if there are some
+        </p>
+
+        <form class="pure-form pure-form-aligned">
+            <input [(ngModel)]="query" 
+                   type="text" class="pure-input-1 pure-input-rounded"
+                   placeholder="search for...">
+        </form>
+        
+        <ul>
+          <li *ngFor="let result of results" 
+              (click)="onSelect(result)" 
+              [class.selected]="result === selectedResult">
+            
+              <p>{{result.title}}</p>
+              <p><a href="{{result.link}}">{{result.link}}</a></p>
+              <p>{{result.description}}</p>
+        
+          </li>
+        </ul>
+  </div>
+  <div class="pure-u-1-2">
+      <div *ngIf="selectedResult">
+
+          <h2>Details: {{ selectedResult.title}}</h2>
+          <p><a href="{{result.link}}">{{result.link}}</a></p>
+          <p>{{result.description}}</p>
+        
+        </div>
+  </div>
+</div>
+
+
+
+
+
+
