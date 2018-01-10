@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false" scanPeriod="60 seconds">
 
+    <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
     <!--
-        The logback configuration manual is online at
-        http://logback.qos.ch/manual/configuration.html.
-        Logback tries to read a configuration file named logback.groovy,
-        logback-test.xml or logback.xml (in that order) from the classpath.
-        Use -Dlogback.configurationFile=/path/to/config.xml to set a different
-        path or filename.
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>90</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <charset>utf-8</charset>
+                <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
+            </encoder>
+        </appender>
+
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <appender-ref ref="FILE"/>
+        </appender>
     -->
 
     <!-- Console output -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <!--<pattern>%-5level %logger{36} - %msg%n</pattern>-->
             <pattern>[%highlight(%level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
-        <!-- Only log level INFO and above -->
     </appender>
 
     <!--
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <append>false</append>
-        <file>Echo.log</file>
+        <file>echo-actors.log</file>
         <encoder>
               <pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
@@ -37,23 +45,13 @@
         <!-- etc -->
     </configuration>
 
-    <root level="WARN">
-        <appender-ref ref="stdout"/>
-        <!-- appender-ref ref="file"/ -->
-    </root>
+    <logger name="echo.actor" level="INFO" />
+    <logger name="echo.core" level="WARN" />
+    <logger name="ch.qos.logback" level="WARN"/>
 
-    <logger name="echo.actor" level="INFO"
-            additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <logger name="echo.actor" level="INFO"
-            additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <root level="ERROR">
-        <appender-ref ref="STDOUT" />
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <!-- appender-ref ref="FILE"/ -->
     </root>
 
     <!--
