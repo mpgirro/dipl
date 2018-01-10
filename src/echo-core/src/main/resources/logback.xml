@@ -1,54 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false" scanPeriod="60 seconds">
 
+    <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
     <!--
-        The logback configuration manual is online at
-        http://logback.qos.ch/manual/configuration.html.
-        Logback tries to read a configuration file named logback.groovy,
-        logback-test.xml or logback.xml (in that order) from the classpath.
-        Use -Dlogback.configurationFile=/path/to/config.xml to set a different
-        path or filename.
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>echo-core.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>90</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <charset>utf-8</charset>
+                <Pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] - %msg%n</Pattern>
+            </encoder>
+        </appender>
+
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <appender-ref ref="FILE"/>
+        </appender>
     -->
 
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-        <!--
-            encoders are assigned the type
-            ch.qos.logback.classic.encoder.PatternLayoutEncoder by default
-        -->
+    <!-- Console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            <!--
-                The pattern layout configuration is explained at
-                http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout
-             -->
+            <pattern>[%highlight(%level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!--
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <append>false</append>
-        <file>Echo.log</file>
-        <encoder>
-              <pattern>%date %-5level [%thread] %logger{10} - %msg%n</pattern>
-        </encoder>
-      </appender>
-    -->
-
     <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
 
+    <configuration>
+        <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+        <!-- etc -->
+    </configuration>
 
-    <root level="WARN">
-        <appender-ref ref="stdout"/>
-        <!-- appender-ref ref="file"/ -->
-    </root>
+    <logger name="echo.core" level="INFO" />
+    <logger name="ch.qos.logback" level="WARN"/>
 
-    <logger name="echo.core" level="INFO"
-            additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <root level="ERROR">
-        <appender-ref ref="STDOUT" />
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <!-- appender-ref ref="FILE"/ -->
     </root>
 
     <!--

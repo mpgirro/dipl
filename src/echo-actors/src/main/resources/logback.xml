@@ -5,12 +5,12 @@
     <!--
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>echo-actors.%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>90</maxHistory>
             </rollingPolicy>
             <encoder>
                 <charset>utf-8</charset>
-                <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
+                <Pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</Pattern>
             </encoder>
         </appender>
 
@@ -27,16 +27,6 @@
             <pattern>[%highlight(%level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <!--
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <append>false</append>
-        <file>echo-actors.log</file>
-        <encoder>
-              <pattern>[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{sourceThread}] [%X{akkaSource}] - %msg%n</pattern>
-        </encoder>
-      </appender>
-    -->
 
     <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
 
