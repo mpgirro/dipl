@@ -1,21 +1,20 @@
 package echo.actor
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.event.Logging
-import akka.util.Timeout
+import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
+import akka.util.Timeout
 import echo.actor.crawler.CrawlerActor
+import echo.actor.gateway.GatewayActor
 import echo.actor.indexer.IndexerActor
 import echo.actor.protocol.Protocol._
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.{DirectoryStore, IndexStore}
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 import echo.core.util.DocumentFormatter
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.language.postfixOps
 import scala.io.StdIn
+import scala.language.postfixOps
 ;
 
 object EchoApp extends App {
@@ -37,6 +36,7 @@ object EchoApp extends App {
     val searcher = system.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher")
     val crawler = system.actorOf(Props(classOf[CrawlerActor], indexer), name = "crawler")
     val directoryStore = system.actorOf(Props(classOf[DirectoryStore], crawler), name = "directoryStore")
+    val gateway = system.actorOf(Props(classOf[GatewayActor], searcher), name = "gateway")
 
     // pass around references not provided by constructors due to circular dependencies
     crawler ! ActorRefDirectoryStoreActor(directoryStore)

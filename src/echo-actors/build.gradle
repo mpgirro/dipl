@@ -30,7 +30,8 @@ mainClassName = "echo.actor.EchoApp"
 ext {
     scalaMajor = '2.12'
     scalaMinor = '4'
-    akkaVersion = "2.5.8"
+    akkaVersion = '2.5.8'
+    akkaHttpVersion = '10.0.11'
     logbackVersion = '1.2.3'
 }
 
@@ -48,6 +49,10 @@ dependencies {
     )
 
     compile "com.typesafe.akka:akka-slf4j_$scalaMajor:$akkaVersion"
+    compile "com.typesafe.akka:akka-stream_$scalaMajor:$akkaVersion"
+    compile "com.typesafe.akka:akka-http_$scalaMajor:$akkaHttpVersion"
+    compile "com.typesafe.akka:akka-http-spray-json_$scalaMajor:$akkaHttpVersion"
+
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 
     compile 'echo.core:echo-core:1.0-SNAPSHOT'
