@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.crawler.CrawlerActor
-import echo.actor.protocol.Protocol._
+import echo.actor.protocol.ActorMessages._
 import echo.core.exception.FeedParsingException
 import echo.core.feed.FeedStatus
 import echo.core.parse.{FeedParser, PodEngineFeedParser}

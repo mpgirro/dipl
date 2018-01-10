@@ -3,30 +3,23 @@ package echo.actor.gateway
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
-import akka.http.scaladsl.server.Directives.{complete, get, parameter, path}
+import akka.http.scaladsl.server.Directives.{complete, get, parameter, path, _}
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.settings.{ParserSettings, RoutingSettings}
 import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
-import com.typesafe.config.ConfigFactory
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
-import spray.json.{DefaultJsonProtocol, JsonFormat}
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.settings.{ParserSettings, RoutingSettings}
-import akka.stream.scaladsl.Flow
 import akka.util.Timeout
-import echo.actor.protocol.Protocol.{SearchRequest, SearchResults}
+import com.typesafe.config.ConfigFactory
+import echo.actor.protocol.ActorMessages.{SearchRequest, SearchResults}
 import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 import spray.json.{DefaultJsonProtocol, JsonFormat}
-import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.duration._
-import scala.language.postfixOps
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 /**
   * @author Maximilian Irro
@@ -36,10 +29,10 @@ import scala.concurrent.{Await, Future}
 case class ResultDoc(title: String, link: String, description: String)
 
 // Required to protect against JSON Hijacking for Older Browsers: Always return JSON with an Object on the outside
-case class ArrayWrapper[T](wrappedArray: T)
+case class ArrayWrapper[T](results: T)
 
 // collect your json format instances into a support trait:
-trait JsonSupport extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport with DefaultJsonProtocol {
+trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     implicit val resultFormat = jsonFormat3(ResultDoc)
     implicit def arrayWrapper[T: JsonFormat] = jsonFormat1(ArrayWrapper.apply[T])
 }
@@ -84,7 +77,7 @@ class GatewayActor (val searcher : ActorRef)  extends Actor with ActorLogging wi
 
     override def receive: Receive = {
         case _ => {
-            log.warning("GatewayActor does not handle any messages at the moment")
+            log.warning("GatewayActor does not handle any Actor-messages yet")
         }
     }
 

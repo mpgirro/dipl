@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * @author Maximilian Irro
   */
-object Protocol {
+object ActorMessages {
 
     case class ProposeNewFeed(feedUrl: String) // sent from User to FeedStore
 

@@ -6,7 +6,7 @@ import akka.util.Timeout
 import echo.actor.crawler.CrawlerActor
 import echo.actor.gateway.GatewayActor
 import echo.actor.indexer.IndexerActor
-import echo.actor.protocol.Protocol._
+import echo.actor.protocol.ActorMessages._
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.{DirectoryStore, IndexStore}
 import echo.core.util.DocumentFormatter

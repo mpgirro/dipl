@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.protocol.Protocol._
+import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.Document
 
 import scala.concurrent.{Await, Future}

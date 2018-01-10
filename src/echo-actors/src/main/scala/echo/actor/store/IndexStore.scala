@@ -2,7 +2,7 @@ package echo.actor.store
 
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
-import echo.actor.protocol.Protocol._
+import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.Document
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.search.{IndexSearcher, LuceneSearcher}
