@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { Result } from './result';
 import { ResultWrapper } from './resultwrapper';
-import { RESULTS } from './mock-results'; // TODO delete
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of'; // TODO brauch ich eh nimma, oder?
