@@ -26,14 +26,14 @@ import scala.language.postfixOps
   */
 
 // needed for marshalling
-case class ResultDoc(title: String, link: String, description: String)
+case class ResultDoc(title: String, link: String, description: String, pubDate: String, itunesImage: String)
 
 // Required to protect against JSON Hijacking for Older Browsers: Always return JSON with an Object on the outside
 case class ArrayWrapper[T](results: T)
 
 // collect your json format instances into a support trait:
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-    implicit val resultFormat = jsonFormat3(ResultDoc)
+    implicit val resultFormat = jsonFormat5(ResultDoc)
     implicit def arrayWrapper[T: JsonFormat] = jsonFormat1(ArrayWrapper.apply[T])
 }
 
@@ -63,8 +63,16 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
                         val foundDocs = search(query)
                         val results: Array[ResultDoc] = foundDocs.map(d => {
                             d match {
-                                case pDoc: PodcastDocument => ResultDoc(pDoc.getTitle, pDoc.getLink, pDoc.getDescription)
-                                case eDoc: EpisodeDocument => ResultDoc(eDoc.getTitle, eDoc.getLink, eDoc.getDescription)
+                                case pDoc: PodcastDocument => {
+                                    val pubDate = { if (pDoc.getPubDate != null) pDoc.getPubDate.toString else "" }
+                                    val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage else "" }
+                                    ResultDoc(pDoc.getTitle, pDoc.getLink, pDoc.getDescription, pubDate, itunesImage)
+                                }
+                                case eDoc: EpisodeDocument => {
+                                    val pubDate = { if (eDoc.getPubDate != null) eDoc.getPubDate.toString else "" }
+                                    val itunesImage = { if (eDoc.getItunesImage != null) eDoc.getItunesImage else "" }
+                                    ResultDoc(eDoc.getTitle, eDoc.getLink, eDoc.getDescription, pubDate, itunesImage)
+                                }
                             }
                         })
 

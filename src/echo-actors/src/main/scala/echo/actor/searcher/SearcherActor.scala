@@ -1,5 +1,7 @@
 package echo.actor.searcher
 
+import java.util.concurrent.TimeoutException
+
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.Logging
 import akka.pattern.ask
@@ -21,23 +23,32 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
             log.info("Received SearchRequest for query: " + query)
 
             // TODO for now, we will pass the query 1:1 to the indexRepo; later we will have to do some query processing and additional scoring/data aggregation (show-images, etc)
-            implicit val timeout = Timeout(5 seconds)
+            implicit val timeout = Timeout(10 seconds)
 
             log.info("Sending SearchIndex('"+query+"') message")
             val future = indexStore ? SearchIndex(query)
-            val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
-            response match {
+            try{
+                val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
+                response match {
 
-                case IndexResultsFound(query: String, results: Array[Document]) => {
-                    log.info("Received " + results.length + " results from index for query '" + query + "'")
-                    sender ! SearchResults(results)
+                    case IndexResultsFound(query: String, results: Array[Document]) => {
+                        log.info("Received " + results.length + " results from index for query '" + query + "'")
+                        sender ! SearchResults(results)
+                    }
+
+                    case NoIndexResultsFound(query: String) => {
+                        log.info("Received NO results from index for query '" + query + "'")
+                        sender ! SearchResults(Array.empty)
+                    }
                 }
-
-                case NoIndexResultsFound(query: String) => {
-                    log.info("Received NO results from index for query '" + query + "'")
-                    sender ! SearchResults(Array.empty)
+            } catch {
+                case e: TimeoutException => {
+                    log.error("Timeout waiting for answer from indexStore")
+                    //self.forward(SearchRequest(query))
                 }
             }
+
+
         }
 
     }
