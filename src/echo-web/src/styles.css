@@ -1,11 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css?family=Merriweather');
 
 body {
     color: #000;
-    font-family: Merriweather, Helvetica, sans-serif;
+    font-family: "Gill Sans", Helvetica, sans-serif;
     font-size: 14px;
     max-width: 500px;
     margin: 0 auto;
     padding: 16px;
+}
+
+.pure-u-1, .pure-u-1-1 {
+    font-family: "Gill Sans", Helvetica, sans-serif !important;
 }
