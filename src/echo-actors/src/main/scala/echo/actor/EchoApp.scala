@@ -123,7 +123,7 @@ object EchoApp extends App {
                 println("Results:")
                 for (doc <- results) {
                     println()
-                    println(new DocumentFormatter().format(doc))
+                    println(DocumentFormatter.cliFormat(doc))
                     println()
                 }
                 println()
