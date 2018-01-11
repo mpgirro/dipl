@@ -25,15 +25,15 @@ public class PodEngineEpisodeConverter extends DocumentConverter<EpisodeDocument
 
         final EpisodeDocument doc = new EpisodeDocument();
         try {
-            doc.setTitle(episode.getTitle());
-            if(episode.getLink() != null){
-                doc.setLink(episode.getLink().toExternalForm());
+            if(episode.getTitle()       != null){ doc.setTitle(episode.getTitle()); }
+            if(episode.getLink()        != null){ doc.setLink(episode.getLink().toExternalForm()); }
+            if(episode.getPubDate()     != null){ doc.setPubDate(LocalDateTime.ofInstant(episode.getPubDate().toInstant(), ZoneId.systemDefault())); }
+            if(episode.getGUID()        != null){ doc.setGuid(episode.getGUID()); }
+            if(episode.getDescription() != null){ doc.setDescription(episode.getDescription()); }
+            if(episode.getITunesInfo()  != null){
+                if(episode.getITunesInfo().getImageString() != null){ doc.setItunesImage(episode.getITunesInfo().getImageString()); }
+                if(episode.getITunesInfo().getDuration()    != null){ doc.setItunesDuration(episode.getITunesInfo().getDuration()); }
             }
-            if(episode.getPubDate() != null){
-                doc.setPubDate(LocalDateTime.ofInstant(episode.getPubDate().toInstant(), ZoneId.systemDefault()));
-            }
-            doc.setGuid(episode.getGUID());
-            doc.setDescription(episode.getDescription());
         } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
             log.error("Exception during converting PodEngineEpisode to EpisodeDocument; reason: {}", e.getMessage());
             //e.printStackTrace();

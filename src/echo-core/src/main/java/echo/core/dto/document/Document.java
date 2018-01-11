@@ -11,6 +11,9 @@ import java.io.Serializable;
  */
 public interface Document extends Serializable {
 
+    String getEchoId();
+    void setEchoId(String echoId);
+
     String getDocId();
     void setDocId(String docId);
 

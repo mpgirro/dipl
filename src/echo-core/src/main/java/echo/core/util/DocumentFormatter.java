@@ -18,9 +18,8 @@ public class DocumentFormatter {
             final PodcastDocument pDoc = (PodcastDocument) doc;
             appendString(builder, "[Podcast]");
             appendString(builder, pDoc.getTitle());
-            appendString(builder, pDoc.getLanguage());
-            if(pDoc.getLastBuildDate() != null){
-                appendString(builder, "Last built: " + pDoc.getLastBuildDate());
+            if(pDoc.getPubDate() != null){
+                builder.append(pDoc.getPubDate());
             }
             appendString(builder, Jsoup.parse(pDoc.getDescription()).text());
             appendString(builder, pDoc.getLink());
@@ -30,6 +29,9 @@ public class DocumentFormatter {
             appendString(builder, eDoc.getTitle());
             if(eDoc.getPubDate() != null){
                 appendString(builder, eDoc.getPubDate().toString());
+            }
+            if(eDoc.getItunesDuration() != null){
+                appendString(builder, "Duration: "+eDoc.getItunesDuration().toString());
             }
             appendString(builder, Jsoup.parse(eDoc.getDescription()).text());
             appendString(builder, eDoc.getLink());

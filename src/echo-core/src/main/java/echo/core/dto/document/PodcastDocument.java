@@ -8,18 +8,33 @@ import java.util.Date;
  */
 public class PodcastDocument implements Document {
 
+    private String echoId;
     private String docId;
 
     private String title;
     private String link;
     private String description;
+    private LocalDateTime pubDate;
     private LocalDateTime lastBuildDate;
     private String language;
     private String generator;
 
+    private String itunesImage;
+    private String itunesCategory;
+
     // TODO atom elements
 
     // TODO itunes elements
+
+    @Override
+    public String getEchoId() {
+        return this.echoId;
+    }
+
+    @Override
+    public void setEchoId(String echoId) {
+        this.echoId = echoId;
+    }
 
     @Override
     public String getDocId(){
@@ -55,6 +70,14 @@ public class PodcastDocument implements Document {
         this.description = description;
     }
 
+    public LocalDateTime getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(LocalDateTime pubDate) {
+        this.pubDate = pubDate;
+    }
+
     public LocalDateTime getLastBuildDate() {
         return lastBuildDate;
     }
@@ -77,6 +100,22 @@ public class PodcastDocument implements Document {
 
     public void setGenerator(String generator) {
         this.generator = generator;
+    }
+
+    public String getItunesImage() {
+        return itunesImage;
+    }
+
+    public void setItunesImage(String itunesImage) {
+        this.itunesImage = itunesImage;
+    }
+
+    public String getItunesCategory() {
+        return itunesCategory;
+    }
+
+    public void setItunesCategory(String itunesCategory) {
+        this.itunesCategory = itunesCategory;
     }
 
     /* TODO do I need these?
@@ -105,13 +144,17 @@ public class PodcastDocument implements Document {
     @Override
     public String toString() {
         return "PodcastDocument{" +
-            "docId='" + docId + '\'' +
+            "echoId='" + echoId + '\'' +
+            ", docId='" + docId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", description='" + description + '\'' +
+            ", pubDate=" + pubDate +
             ", lastBuildDate=" + lastBuildDate +
             ", language='" + language + '\'' +
             ", generator='" + generator + '\'' +
+            ", itunesImage='" + itunesImage + '\'' +
+            ", itunesCategory='" + itunesCategory + '\'' +
             '}';
     }
 }

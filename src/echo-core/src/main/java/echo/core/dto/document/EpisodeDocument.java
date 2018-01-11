@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
  */
 public class EpisodeDocument implements Document {
 
+    private String echoId;
     private String docId;
 
     private String title;
@@ -15,6 +16,9 @@ public class EpisodeDocument implements Document {
     private String guid;
     private boolean guidIsPermaLink;
     private String description;
+
+    private String itunesImage;
+    private String itunesDuration;
 
     // TODO atom elements
 
@@ -25,6 +29,17 @@ public class EpisodeDocument implements Document {
     // TODO psc:chapters
 
     // TODO fyyd
+
+
+    @Override
+    public String getEchoId() {
+        return this.echoId;
+    }
+
+    @Override
+    public void setEchoId(String echoId) {
+        this.echoId = echoId;
+    }
 
     @Override
     public String getDocId(){
@@ -84,6 +99,22 @@ public class EpisodeDocument implements Document {
         this.description = description;
     }
 
+    public String getItunesImage() {
+        return itunesImage;
+    }
+
+    public void setItunesImage(String itunesImage) {
+        this.itunesImage = itunesImage;
+    }
+
+    public String getItunesDuration() {
+        return itunesDuration;
+    }
+
+    public void setItunesDuration(String itunesDuration) {
+        this.itunesDuration = itunesDuration;
+    }
+
     /* TODO do I need these?
     @Override
     public boolean equals(Object o) {
@@ -110,13 +141,17 @@ public class EpisodeDocument implements Document {
     @Override
     public String toString() {
         return "EpisodeDocument{" +
-            "docId='" + docId + '\'' +
+            "echoId='" + echoId + '\'' +
+            ", docId='" + docId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", pubDate=" + pubDate +
             ", guid='" + guid + '\'' +
             ", guidIsPermaLink=" + guidIsPermaLink +
             ", description='" + description + '\'' +
+            ", itunesImage='" + itunesImage + '\'' +
+            ", itunesDuration='" + itunesDuration + '\'' +
             '}';
     }
+
 }
