@@ -217,7 +217,7 @@ public class CoreApp {
         out.println("Results:");
         for(Document doc : results){
             out.println();
-            out.println(new DocumentFormatter().format(doc));
+            out.println(DocumentFormatter.cliFormat(doc));
             out.println();
         }
     }
