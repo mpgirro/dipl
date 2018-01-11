@@ -6,24 +6,23 @@
       </p>
       -->
       <div class="pure-form">
-        <input [(ngModel)]="query" 
-        type="text" class="pure-input-1 pure-input-rounded"
-        placeholder="every podcast leaves an echo. you've just got to find it...">
-    
-        <button (click)="this.search()">search</button>
-    </div>
+        <input #searchBox id="search-box"
+          (keyup.enter)="search(searchBox.value)"
+          type="text" class="pure-input-1 pure-input-rounded"
+          placeholder="every podcast leaves an echo. you've just got to find it...">
+      </div>
           
-          <ul class="results">
-            <li *ngFor="let result of results" 
-                (click)="onSelect(result)" 
-                [class.selected]="result === selectedResult">
+      <ul class="results">
+        <li *ngFor="let result of results" 
+            (click)="onSelect(result)" 
+            [class.selected]="result === selectedResult">
               
-                <span><b>{{result.title}}</b></span>
-                <span><a href="{{result.link}}">{{result.link}}</a></span>
-                <span>{{result.description}}</span>
+          <p><b>{{result.title}}</b></p>
+          <p>{{result.description}}</p>
+          <p><a href="{{result.link}}">{{result.link}}</a></p>
           
-            </li>
-          </ul>
+        </li>
+      </ul>
     </div>
 
   </div>

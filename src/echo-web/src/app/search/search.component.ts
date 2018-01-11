@@ -9,7 +9,6 @@ import { SearchService } from '../search.service';
 })
 export class SearchComponent implements OnInit {
 
-  query: string;
   results: Result[];
   selectedResult: Result;
 
@@ -22,8 +21,8 @@ export class SearchComponent implements OnInit {
     this.selectedResult = result;
   } 
 
-  search(): void {
-    this.searchService.search(this.query)
+  search(query: string): void {
+    this.searchService.search(query)
       .subscribe(response => this.results = response.results);
   }
 
