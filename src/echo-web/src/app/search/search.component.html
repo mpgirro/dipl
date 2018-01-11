@@ -25,7 +25,8 @@
                 <h5 class="mt-0">{{result.title}}</h5>
                 <p class="mb-1">
                   <span class="oi oi-calendar"></span>
-                  {{result.pubDate}}</p>
+                  {{result.pubDate | date: 'd MMM yyyy' }}
+                </p>
                 <p class="mb-1" [innerHTML]="result.description"></p>
                 <p><a href="{{result.link}}">{{result.link}}</a></p>
               </div>
