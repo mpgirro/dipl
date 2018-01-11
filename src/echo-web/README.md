@@ -25,3 +25,16 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+## CORS proxy error
+
+There is some weired error because the backend is not bound to `localhost:4200` as `ng serve` expects. A config for this is in `proxy.config.json`.
+
+Run therefore with:
+
+```
+ng serve --proxy-config proxy.config.json
+```
+
+More info, see [Proxy To Backend](https://github.com/angular/angular-cli/blob/master/docs/documentation/stories/proxy.md)

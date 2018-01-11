@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Result } from '../result';
-import { RESULTS } from '../mock-results';
+import { SearchService } from '../search.service';
 
 @Component({
   selector: 'app-results',
@@ -10,11 +10,10 @@ import { RESULTS } from '../mock-results';
 export class ResultsComponent implements OnInit {
 
   query: string;
-//  results: Result[];
-  results: Result[] = RESULTS;
+  results: Result[];
   selectedResult: Result;
 
-  constructor() { }
+  constructor(private searchService: SearchService) { }
 
   ngOnInit() {
   }
@@ -22,5 +21,11 @@ export class ResultsComponent implements OnInit {
   onSelect(result: Result): void {
     this.selectedResult = result;
   } 
+
+  search(): void {
+    this.searchService.search(this.query)
+      //.subscribe(response => this.results = response.results); // TODO so schaut das dann im HTTP wrapper aus
+      .subscribe(response => this.results = response.results);
+  }
 
 }
