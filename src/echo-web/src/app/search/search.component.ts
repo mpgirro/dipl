@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Result } from '../result';
 import { SearchService } from '../search.service';
 
+import { IconsModule } from '../icons/icons.module';
+
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
