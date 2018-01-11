@@ -37,7 +37,7 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     implicit def arrayWrapper[T: JsonFormat] = jsonFormat1(ArrayWrapper.apply[T])
 }
 
-class GatewayActor (val searcher : ActorRef)  extends Actor with ActorLogging with JsonSupport{
+class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging with JsonSupport{
 
     val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
     val GATEWAY_PORT = ConfigFactory.load().getInt("echo.gateway.port")
@@ -51,9 +51,14 @@ class GatewayActor (val searcher : ActorRef)  extends Actor with ActorLogging wi
         implicit val parserSettings = ParserSettings(actorSystem)
 
         val route: Route =
-            path("search") {
+            path("api") {
+                complete(StatusCodes.MethodNotAllowed)
+            } ~
+            path("api" / "search") {
                 get {
                     parameter("query") { (query) =>
+
+                        log.info("Received HTTP request /search?query={}", query)
 
                         val foundDocs = search(query)
                         val results: Array[ResultDoc] = foundDocs.map(d => {
