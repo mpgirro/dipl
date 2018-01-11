@@ -3,6 +3,7 @@ package echo.actor
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import echo.actor.crawler.CrawlerActor
 import echo.actor.gateway.GatewayActor
 import echo.actor.indexer.IndexerActor
@@ -24,14 +25,15 @@ object EchoApp extends App {
         "propose" -> "feed [feed [feed]]",
         "search" -> "query [query [query]]",
         "print database" -> "",
-        "test-index" -> "",
+        "test index" -> "",
         "crawl fyyd" -> "count"
     )
 
     // create the system and actor
-    val system = ActorSystem("EchoSystem")
+    val system = ActorSystem("EchoSystem", ConfigFactory.load)
+//    val system = ActorSystem("EchoSystem")
 
-    val indexStore = system.actorOf(Props[IndexStore], name = "indexStore")
+    val indexStore = system.actorOf(Props[IndexStore].withDispatcher("echo.index-store.dispatcher"), name = "indexStore")
     val indexer = system.actorOf(Props(classOf[IndexerActor], indexStore), name = "indexer")
     val searcher = system.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher")
     val crawler = system.actorOf(Props(classOf[CrawlerActor], indexer), name = "crawler")

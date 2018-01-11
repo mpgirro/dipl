@@ -64,17 +64,17 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
                         val results: Array[ResultDoc] = foundDocs.map(d => {
                             d match {
                                 case pDoc: PodcastDocument => {
-                                    val pubDate = { if (pDoc.getPubDate != null) pDoc.getPubDate.toString else "" }
-                                    val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage else "" }
+                                    val pubDate = { if (pDoc.getPubDate != null) pDoc.getPubDate.toString else "<unknown>" }
+                                    val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage else "<unknown>" }
                                     ResultDoc(pDoc.getTitle, pDoc.getLink, pDoc.getDescription, pubDate, itunesImage)
                                 }
                                 case eDoc: EpisodeDocument => {
-                                    val pubDate = { if (eDoc.getPubDate != null) eDoc.getPubDate.toString else "" }
-                                    val itunesImage = { if (eDoc.getItunesImage != null) eDoc.getItunesImage else "" }
+                                    val pubDate = { if (eDoc.getPubDate != null) eDoc.getPubDate.toString else "<unknown>" }
+                                    val itunesImage = { if (eDoc.getItunesImage != null) eDoc.getItunesImage else "<unknown>" }
                                     ResultDoc(eDoc.getTitle, eDoc.getLink, eDoc.getDescription, pubDate, itunesImage)
                                 }
                             }
-                        })
+                        }).map(d => {println(d); d})
 
                         complete(StatusCodes.OK, ArrayWrapper(results))
                     }
