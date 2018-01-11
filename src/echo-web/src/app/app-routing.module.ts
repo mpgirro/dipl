@@ -8,7 +8,7 @@ import { EpisodeDetailComponent }      from './episode-detail/episode-detail.com
 const routes: Routes = [
   { path: 'results', component: ResultsComponent },
   { path: 'search', component: SearchComponent },
-  { path: '', redirectTo: '/results', pathMatch: 'full' },
+ // { path: '', redirectTo: '/search', pathMatch: 'full' },
   { path: 'p/:id', component: PodcastDetailComponent },
   { path: 'e/:id', component: EpisodeDetailComponent }
 ];
