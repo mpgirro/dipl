@@ -1,28 +1,33 @@
-<div class="pure-g">
-    <div class="pure-u-1-1">
+
       <!--
       <p>
           <i>every podcast leaves an echo. you've just got to find it...</i>
       </p>
       -->
-      <div class="pure-form">
+      <div class="input-group input-group my-5">
         <input #searchBox id="search-box"
           (keyup.enter)="search(searchBox.value)"
-          type="text" class="pure-input-1 pure-input-rounded"
-          placeholder="every podcast leaves an echo. you've just got to find it...">
+          type="text" class="form-control"
+          placeholder="every podcast leaves an echo. find it...">
       </div>
           
-      <ul class="results">
+      <ul class="list-group">
+
         <li *ngFor="let result of results" 
             (click)="onSelect(result)" 
-            [class.selected]="result === selectedResult">
-              
-          <p><b>{{result.title}}</b></p>
-          <p>{{result.description}}</p>
-          <p><a href="{{result.link}}">{{result.link}}</a></p>
-          
+            class="list-group-item list-group-item-action mb-5" >
+
+            <div class="media">
+              <img class="mr-3"
+                   src="{{result.itunesImage}}" 
+                   alt="Generic placeholder image">
+              <div class="media-body">
+                <h5 class="mt-0">{{result.title}}</h5>
+                <p class="mb-1">{{result.pubDate}}</p>
+                <p class="mb-1" [innerHTML]="result.description"></p>
+                <p><a href="{{result.link}}">{{result.link}}</a></p>
+              </div>
+            </div>
+           
         </li>
       </ul>
-    </div>
-
-  </div>

@@ -1,23 +1,18 @@
-.selected {
-    background-color: #CFD8DC !important;
-    color: white;
-  }
 
-  .results {
-    list-style-type: none;
-    -webkit-padding-start: 0;
-  }
-  .results li {
-    cursor: pointer;
-    margin: .5em;
-    padding: .3em 0;
-  }
+.list-group-item, .list-group-item-action {
+  border: none;
+  color: black;
+}
 
-  .results li.selected:hover {
-    background-color: #BBD8DC !important;
-    color: white;
-  }
-  .results li:hover {
-    background-color: #BBD8DC;
-    left: .1em;
-  }
+.media-body > h5.mt-0 {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+img.mr-3 {
+  width: 64px;
+}
+
+#search-box {
+  border-radius: 0;
+}
