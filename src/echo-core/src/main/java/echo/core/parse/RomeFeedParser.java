@@ -55,7 +55,7 @@ public class RomeFeedParser implements FeedParser {
             if(itunesFeedInfo.getImage() != null){
                 doc.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
             }
-            doc.setItunesCategory(String.join(" & ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+            doc.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
 
             // here I process the feed specific atom Links
             final List<Link> atomLinks = getAtomLinks(syndFeed);

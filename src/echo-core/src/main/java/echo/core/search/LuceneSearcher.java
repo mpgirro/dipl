@@ -7,6 +7,7 @@ import echo.core.dto.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
@@ -49,7 +50,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
         this.analyzer = new StandardAnalyzer();
         this.queryParser = new MultiFieldQueryParser(
-            new String[] {"title", "description", "link"},
+            new String[] {"title", "description", "link", "website_data"},
             this.analyzer);
 
         /* TODO this should be better done manually by the actors/microservices
@@ -94,8 +95,9 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             }
 
         } catch (IOException | ParseException e) {
+            log.error("Lucene Index has encountered an error searching for: {}", queryStr);
             e.printStackTrace();
-            return new Document[0];
+            return new Document[0]; // TODO throw a custom exception, and do not return anything
         } finally {
             if (indexSearcher != null) {
                 try {
@@ -103,6 +105,39 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
                 } catch (IOException e) { e.printStackTrace(); }
             }
         }
+    }
+
+    @Override
+    public Document findByEchoId(String id){
+        IndexSearcher indexSearcher = null;
+        try {
+
+            final Query query = new TermQuery(new Term("doc_id", id));
+            indexSearcher = this.searcherManager.acquire();
+            indexSearcher.setSimilarity(new ClassicSimilarity());
+
+            log.debug("Searching for query: "+query.toString());
+
+            final TopDocs topDocs = indexSearcher.search(query, 1);
+            if(topDocs.totalHits > 1){
+                log.error("Searcher found multiple documents for unique doc_id {}", id);
+            }
+            if(topDocs.totalHits == 1){
+                final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
+                return this.toEchoDocument(indexSearcher.doc(hits[0].doc));
+            }
+        } catch (IOException e) {
+            log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
+            e.printStackTrace();
+        } finally {
+            if (indexSearcher != null) {
+                try {
+                    this.searcherManager.release(indexSearcher);
+                } catch (IOException e) { e.printStackTrace(); }
+            }
+        }
+
+        return null; // TODO throw a custom exception, and do not return anything
     }
 
     @Override

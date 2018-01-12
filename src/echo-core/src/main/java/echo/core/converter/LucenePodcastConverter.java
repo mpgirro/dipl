@@ -30,6 +30,8 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
         if(lDoc.get("itunes_image")    != null){ pDoc.setItunesImage(lDoc.get("itunes_image")); }
         if(lDoc.get("itunes_category") != null){ pDoc.setItunesCategory(lDoc.get("itunes_category")); }
 
+        // note: we do not retrieve websiteData
+
         return pDoc;
     }
 
@@ -50,6 +52,8 @@ public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,or
         if(podcast.getGenerator()      != null){ doc.add(new TextField("generator", podcast.getGenerator(), Field.Store.YES)); }
         if(podcast.getItunesImage()    != null){ doc.add(new TextField("itunes_image", podcast.getItunesImage(), Field.Store.YES)); }
         if(podcast.getItunesCategory() != null){ doc.add(new TextField("itunes_category", podcast.getItunesCategory(), Field.Store.YES)); }
+
+        if(podcast.getWebsiteData()    != null){ doc.add(new TextField("website_data", podcast.getWebsiteData(), Field.Store.NO)); }
 
         return doc;
     }
