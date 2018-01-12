@@ -43,7 +43,7 @@ object EchoApp extends App {
     // pass around references not provided by constructors due to circular dependencies
     crawler ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefDirectoryStoreActor(directoryStore)
-
+    indexer ! ActorRefCrawlerActor(crawler)
 
     repl()
 
@@ -140,6 +140,7 @@ object EchoApp extends App {
         directoryStore ! ProposeNewFeed("http://revolutionspodcast.libsyn.com/rss/")
         directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
         directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
+        directoryStore ! ProposeNewFeed("http://atp.fm/episodes?format=rss")
     }
 
 }

@@ -61,6 +61,15 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
             }
         }
 
+        case FetchWebsite(echoId: String, url: String) => {
+            log.info("Received FetchUpdateFeed({},{},{})", echoId, url)
+
+            val websiteData = download(url)
+            if(websiteData != null){
+                indexer ! IndexWebsiteData(echoId, websiteData)
+            }
+        }
+
         case CrawlFyyd(count) => {
             log.debug("Received CrawlFyyd({})", count)
             val feeds = fyydAPI.getFeedUrls(count);

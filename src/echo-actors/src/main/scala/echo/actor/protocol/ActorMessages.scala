@@ -26,6 +26,8 @@ object ActorMessages {
      */
     case class FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String])
 
+    // Indexer -> Crawler
+    case class FetchWebsite(echoId: String, url: String)
 
     /* Crawler -> DirectoryStore
      *
@@ -42,6 +44,9 @@ object ActorMessages {
      */
     case class IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String], feedData: String)
 
+    // Crawler -> Indexer
+    case class IndexWebsiteData(echoId: String, websiteData: String)
+
     /* Index -> Index
      *
      */
@@ -57,6 +62,7 @@ object ActorMessages {
     case class IndexStoreUpdatePodcast(podcast: Document)
     case class IndexStoreAddEpisode(episode: Document)
     case class IndexStoreUpdateEpisode(episode: Document)
+    case class IndexSoreUpdateDocumentWebsiteData(echoId: String, websiteData: String) // used for all document types
 
 
     case class SearchRequest(query: String)                 // User -> Searcher

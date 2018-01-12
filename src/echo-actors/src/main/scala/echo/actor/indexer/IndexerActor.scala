@@ -8,21 +8,29 @@ import echo.actor.crawler.CrawlerActor
 import echo.actor.protocol.ActorMessages._
 import echo.core.exception.FeedParsingException
 import echo.core.feed.FeedStatus
-import echo.core.parse.{FeedParser, PodEngineFeedParser}
+import echo.core.parse.{FeedParser, PodEngineFeedParser, RomeFeedParser}
 
 class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
 //    val log = Logging(context.system, classOf[IndexerActor])
 
-    val feedParser: FeedParser = new PodEngineFeedParser()
+    //val feedParser: FeedParser = new PodEngineFeedParser()
+    val feedParser: FeedParser = new RomeFeedParser()
 
     private var directoryStore: ActorRef = _
+    private var crawler: ActorRef = _
+
+    private var mockEchoIdGenerator = 0
 
     override def receive: Receive = {
 
         case ActorRefDirectoryStoreActor(ref) => {
             log.debug("Received ActorRefDirectoryStoreActor")
             directoryStore = ref;
+        }
+        case ActorRefCrawlerActor(ref) => {
+            log.debug("Received ActorRefCrawlerActor")
+            crawler = ref;
         }
 
         /*
@@ -50,6 +58,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
+                    podcastDocument.setEchoId(podcastDocId)
                     podcastDocument.setDocId(podcastDocId)
 
                     /* TODO
@@ -63,16 +72,34 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     // send the document to the lucene index
                     indexStore ! IndexStoreAddPodcast(podcastDocument)
 
+                    // request that the website will get added to the index as well
+                    if(podcastDocument.getLink != null) {
+                        crawler ! FetchWebsite(podcastDocument.getEchoId, podcastDocument.getLink)
+                    }
 
-                    val episodes = feedParser.asInstanceOf[PodEngineFeedParser].extractEpisodes(feedData)
+
+                    val episodes = feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData)
                     if(episodes != null){
                         for(episode <- episodes){
-                            episode.setDocId(episode.getGuid) // TODO verify good GUID!
+
+                            val fakeGUID = "FAKE-GUID-" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                            episode.setEchoId(fakeGUID)
+                            episode.setDocId(fakeGUID) // TODO verify good GUID!
 
                             // TODO send episode data to directoryStore, once the circular dependency is solved
                             directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
 
                             indexStore ! IndexStoreAddEpisode(episode)
+
+
+                            if(episode.getItunesImage != null || episode.getItunesImage.eq("")){
+                                // TODO send message to use podcast image
+                            }
+
+                            // request that the website will get added to the index as well
+                            if(episode.getLink != null) {
+                                crawler ! FetchWebsite(episode.getEchoId, episode.getLink)
+                            }
                         }
                     } else {
                         log.warning("Parsing generated a null-List[EpisodeDocument] for feed: {}", feedUrl)
@@ -118,6 +145,11 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
              */
 
             log.error("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
+        }
+
+        case IndexWebsiteData(echoId: String, websiteData: String) => {
+            // TODO we don't to any processing of raw website source code yet
+            indexStore ! IndexSoreUpdateDocumentWebsiteData(echoId, websiteData)
         }
 
 
