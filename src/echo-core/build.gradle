@@ -57,13 +57,14 @@ dependencies {
     compile 'com.icosillion.podengine:podengine:2.2'    // podcast feed parser
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
     compile 'com.google.code.gson:gson:2.8.2'           // gson parser
+    compile 'com.rometools:rome:1.9.0'
+    compile 'com.rometools:rome-modules:1.9.0'
 
     /*
     compile "joda-time:joda-time:2.9.9"
     compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
-    compile 'rome:rome:1.0' // TODO replace with rome:2.0 once it is out
     compile "org.apache.solr:solr-solrj:$luceneVersion" // TODO solr support is only experimental and not suitable for the scope of the thesis
     */
 

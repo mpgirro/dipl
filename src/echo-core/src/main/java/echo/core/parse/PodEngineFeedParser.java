@@ -49,7 +49,7 @@ public class PodEngineFeedParser implements FeedParser {
         } catch (MalformedFeedException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
-        return null;
+        return new EpisodeDocument[0];
     }
 
 }
