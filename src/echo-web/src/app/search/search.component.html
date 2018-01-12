@@ -31,7 +31,12 @@
                   
                 </p>
                 <p class="mb-1" [innerHTML]="result.description"></p>
-                <p><a href="{{result.link}}">{{result.link}}</a></p>
+                <p>
+                  <a href="{{result.link}}">
+                    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+                    {{result.link}}
+                  </a>
+                </p>
               </div>
             </div>
            
