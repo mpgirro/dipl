@@ -44,6 +44,7 @@ object EchoApp extends App {
     crawler ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefCrawlerActor(crawler)
+    directoryStore ! ActorRefIndexStoreActor(indexStore)
 
     repl()
 

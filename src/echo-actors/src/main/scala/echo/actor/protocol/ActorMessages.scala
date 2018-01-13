@@ -64,6 +64,12 @@ object ActorMessages {
     case class IndexStoreUpdateEpisode(episode: Document)
     case class IndexSoreUpdateDocumentWebsiteData(echoId: String, websiteData: String) // used for all document types
 
+    // DirectoryStore -> IndexStore
+    case class IndexStoreUpdateEpisodeAddItunesImage(echoId: String, itunesImage: String)
+
+    // Index -> DirectoryStore
+    case class UsePodcastItunesImage(echoId: String)
+
 
     case class SearchRequest(query: String)                 // User -> Searcher
     case class SearchResults(results: Array[Document])      // Searcher -> User

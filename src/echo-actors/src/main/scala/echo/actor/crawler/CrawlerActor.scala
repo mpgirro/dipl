@@ -37,7 +37,7 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case ActorRefDirectoryStoreActor(ref) => {
-            log.debug("Received ActorRefDirectoryStoreActor")
+            log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref;
         }
 

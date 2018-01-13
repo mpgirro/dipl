@@ -3,7 +3,7 @@ package echo.actor.store
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.Document
+import echo.core.dto.document.{Document, EpisodeDocument}
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.search.{IndexSearcher, LuceneSearcher}
 
@@ -52,12 +52,31 @@ class IndexStore extends Actor with ActorLogging {
             if(doc != null){
                 doc.setWebsiteData(websiteData)
                 indexCommitter.update(doc)
+                indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
             } else {
                 log.error("Could not retrieve from index: echoId={}", echoId)
             }
-            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
 
+        case IndexStoreUpdateEpisodeAddItunesImage(echoId,itunesImage) => {
+            log.debug("Received IndexStoreUpdateEpisodeAddItunesImage({},{})", echoId, itunesImage)
+
+            indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
+            indexSearcher.refresh()
+
+            val doc = indexSearcher.findByEchoId(echoId);
+            if(doc != null){
+                if(doc.isInstanceOf[EpisodeDocument]){
+                    doc.asInstanceOf[EpisodeDocument].setItunesImage(itunesImage)
+                    indexCommitter.update(doc)
+                    indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
+                } else {
+                    log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
+                }
+            } else {
+                log.error("Could not retrieve from index: echoId={}", echoId)
+            }
+        }
 
         case SearchIndex(query: String) => {
             log.info("Received SearchIndex('{}') message", query)

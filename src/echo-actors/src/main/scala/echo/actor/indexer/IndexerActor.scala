@@ -53,13 +53,13 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
             log.debug("Received IndexFeedData for feed: " + feedUrl)
             try {
                 // TODO this is all highly test code
-                val podcastDocument = feedParser.parseFeed(feedData)
-                if(podcastDocument != null){
+                val podcast = feedParser.parseFeed(feedData)
+                if(podcast != null){
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    podcastDocument.setEchoId(podcastDocId)
-                    podcastDocument.setDocId(podcastDocId)
+                    podcast.setEchoId(podcastDocId)
+                    podcast.setDocId(podcastDocId)
 
                     /* TODO
                      * here I should send an update for the podcast data to the directoryStore (relational DB)
@@ -67,14 +67,14 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                      * dependency. How am I supposed to solve this?
                      *
                      */
-                    directoryStore ! UpdatePodcastMetadata(podcastDocId, podcastDocument)
+                    directoryStore ! UpdatePodcastMetadata(podcastDocId, podcast)
 
                     // send the document to the lucene index
-                    indexStore ! IndexStoreAddPodcast(podcastDocument)
+                    indexStore ! IndexStoreAddPodcast(podcast)
 
                     // request that the website will get added to the index as well
-                    if(podcastDocument.getLink != null) {
-                        crawler ! FetchWebsite(podcastDocument.getEchoId, podcastDocument.getLink)
+                    if(podcast.getLink != null) {
+                        crawler ! FetchWebsite(podcast.getEchoId, podcast.getLink)
                     }
 
 
@@ -92,8 +92,10 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                             indexStore ! IndexStoreAddEpisode(episode)
 
 
-                            if(episode.getItunesImage != null || episode.getItunesImage.eq("")){
-                                // TODO send message to use podcast image
+                            // if no iTunes artwork is set for this episode, communicate that the one of the while Podcast should be used
+                            if(episode.getItunesImage == null || episode.getItunesImage.eq("")){
+                                log.debug("Episodes itunesImage is not set; sending message so that the Podcast's image will be used instead")
+                                directoryStore ! UsePodcastItunesImage(episode.getEchoId)
                             }
 
                             // request that the website will get added to the index as well

@@ -3,6 +3,7 @@ package echo.actor.store
 import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import echo.actor.EchoApp.indexStore
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.{EpisodeDocument, PodcastDocument}
 import echo.core.feed.FeedStatus
@@ -10,12 +11,20 @@ import echo.core.feed.FeedStatus
 /**
   * @author Maximilian Irro
   */
+
 class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
-    // k: feedUrl, v: (timestamp,status,[episodeIds])
-    val database = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String])]
+    // k: feedUrl, v: (timestamp,status,[episodeIds], itunesImage)
+    val database = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], String)]
+
+    private var indexStore: ActorRef = _
 
     override def receive: Receive = {
+
+        case ActorRefIndexStoreActor(indexStore) => {
+            log.debug("Received ActorRefIndexStoreActor(_)")
+            this.indexStore = indexStore
+        }
 
         case ProposeNewFeed(feedUrl) => {
             log.debug("Received msg proposing a new feed: " + feedUrl)
@@ -26,7 +35,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 crawler ! FetchUpdateFeed(feedUrl, feedUrl, entry._3.toArray)
             } else {
                 log.debug("Feed not yet known; will be passed to crawler: {}", feedUrl)
-                val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String]())
+                val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), "")
                 database += (feedUrl -> entry)
                 crawler ! FetchNewFeed(feedUrl, feedUrl)
             }
@@ -37,7 +46,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             if(database.contains(feedUrl)){
                 log.debug("Received FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
                 val entry = database(feedUrl)
-                val newEntry = (timestamp, status, entry._3)
+                val newEntry = (timestamp, status, entry._3, entry._4)
 
                 // note: database.updated(...) does not work for some reason
                 database.remove(feedUrl)
@@ -49,9 +58,14 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
         }
 
         case UpdatePodcastMetadata(docId: String, doc: PodcastDocument) => {
-            // TODO I do not simulate podcasts in the DB yet
-            //log.warning("Received UpdatePodcastMetadata({},{})", docId, doc)
-            //throw new UnsupportedOperationException("DirectoryStore does not yet support message UpdatePodcastMetadata")
+            log.debug("Received UpdatePodcastMetadata({},{})", docId, doc)
+
+            // TODO for now, we only set the itunesImage in the fake database
+            if(database.contains(docId)){
+                val e = database(docId)
+                val newEntry = (e._1,e._2,e._3,doc.getItunesImage)
+                database += (docId -> newEntry)
+            }
         }
 
         case UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDocument) => {
@@ -61,12 +75,29 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 val entry = database(podcastDocId)
                 val episodes = entry._3
                 episodes += doc.getDocId
-                val newEntry = (entry._1, entry._2, episodes)
+                val newEntry = (entry._1, entry._2, episodes, entry._4)
 
                 database.remove(podcastDocId)
                 database += (podcastDocId -> newEntry)
             } else {
                 log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: %s", podcastDocId)
+            }
+        }
+
+        // this is the case when an Episode has no iTunesImage URL set in the feed.
+        // then we should set the image url of the whole podcast
+        case UsePodcastItunesImage(echoId) => {
+            log.info("Received UsePodcastItunesImage({})", echoId)
+            var found = false
+
+            for((_,(_,_,episodes,itunesImage)) <- database){
+                if(episodes.contains(echoId)){
+                    indexStore ! IndexStoreUpdateEpisodeAddItunesImage(echoId,itunesImage)
+                }
+            }
+
+            if(found){
+                log.info("Did not find echoId={} in the database (could not set its itunesImage therefore)", echoId)
             }
         }
 
