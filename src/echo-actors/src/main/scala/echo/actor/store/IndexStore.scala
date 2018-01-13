@@ -44,7 +44,7 @@ class IndexStore extends Actor with ActorLogging {
         }
 
         case IndexSoreUpdateDocumentWebsiteData(echoId, websiteData) => {
-            log.debug("Received IndexSoreUpdateDocumentWebsiteData({},{})", echoId, websiteData)
+            log.debug("Received IndexSoreUpdateDocumentWebsiteData({},_)", echoId)
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
