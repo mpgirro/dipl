@@ -22,6 +22,8 @@ public class PodcastDocument implements Document {
     private String itunesImage;
     private String itunesCategory;
 
+    private String websiteData;
+
     // TODO atom elements
 
     // TODO itunes elements
@@ -116,6 +118,16 @@ public class PodcastDocument implements Document {
 
     public void setItunesCategory(String itunesCategory) {
         this.itunesCategory = itunesCategory;
+    }
+
+    @Override
+    public String getWebsiteData() {
+        return websiteData;
+    }
+
+    @Override
+    public void setWebsiteData(String websiteData) {
+        this.websiteData = websiteData;
     }
 
     /* TODO do I need these?

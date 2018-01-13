@@ -20,6 +20,8 @@ public class EpisodeDocument implements Document {
     private String itunesImage;
     private String itunesDuration;
 
+    private String websiteData;
+
     // TODO atom elements
 
     // TODO itunes elements
@@ -113,6 +115,16 @@ public class EpisodeDocument implements Document {
 
     public void setItunesDuration(String itunesDuration) {
         this.itunesDuration = itunesDuration;
+    }
+
+    @Override
+    public String getWebsiteData() {
+        return websiteData;
+    }
+
+    @Override
+    public void setWebsiteData(String websiteData) {
+        this.websiteData = websiteData;
     }
 
     /* TODO do I need these?

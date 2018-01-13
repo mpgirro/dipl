@@ -17,4 +17,7 @@ public interface Document extends Serializable {
     String getDocId();
     void setDocId(String docId);
 
+    String getWebsiteData();
+    void setWebsiteData(String websiteData);
+
 }
