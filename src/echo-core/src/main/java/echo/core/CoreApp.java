@@ -21,11 +21,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.System.out;
 
@@ -108,14 +111,15 @@ public class CoreApp {
                     usage(cmd);
                 }
             } else if(isCmd(cmd,"test-index")){
-                index(new String[]{
-                    "https://feeds.metaebene.me/freakshow/m4a",
-                    "http://www.fanboys.fm/episodes.mp3.rss",
-                    "http://falter-radio.libsyn.com/rss",
-                    "http://revolutionspodcast.libsyn.com/rss/",
-                    "https://feeds.metaebene.me/forschergeist/m4a",
-                    "http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss", // Ganz offen gesagt feed
-                });
+
+                final String fileName = "../feeds.txt";
+
+                //read file into stream, try-with-resources
+                try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+                    stream.forEach(this::index);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             } else if(isCmd(cmd,"test-index-search")){
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
@@ -174,36 +178,36 @@ public class CoreApp {
         out.println();
     }
 
-    private void index(String[] feeds) throws MalformedURLException {
+    private void index(String feed) {
+        out.println("Processing feed: " + feed);
+
+        try {
+            final String feedData = download(feed);
+
+            final PodcastDocument podcastDoc = this.feedParser.parseFeed(feedData);
+            podcastDoc.setDocId(feed);
+
+            this.committer.add(podcastDoc);
+
+            final EpisodeDocument[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
+            for (EpisodeDocument episode : episodes) {
+                out.println("  Episode: " + episode.getTitle());
+
+                episode.setDocId(episode.getGuid()); // TODO verifiy good GUID!
+
+                this.committer.add(episode);
+            }
+        } catch (IOException | FeedParsingException e) {
+            e.printStackTrace();
+        }
+        this.committer.commit();
+    }
+
+    private void index(String[] feeds) {
 
         for(String feed : feeds){
-            out.println("Processing feed: " + feed);
-
-            try {
-                final String feedData = download(feed);
-
-                final PodcastDocument podcastDoc = this.feedParser.parseFeed(feedData);
-                podcastDoc.setDocId(feed);
-
-                this.committer.add(podcastDoc);
-
-                final EpisodeDocument[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
-                for (EpisodeDocument episode : episodes) {
-                    out.println("  Episode: " + episode.getTitle());
-
-                    episode.setDocId(episode.getGuid()); // TODO verifiy good GUID!
-
-                    this.committer.add(episode);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (FeedParsingException e) {
-                e.printStackTrace();
-            }
+            index(feed);
         }
-
-        this.committer.commit();
-
         out.println("all done");
     }
 

@@ -14,7 +14,7 @@ import echo.core.util.DocumentFormatter
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.io.StdIn
+import scala.io.{Source, StdIn}
 import scala.language.postfixOps
 ;
 
@@ -71,7 +71,7 @@ object EchoApp extends App {
 
                     case "print" :: "database" :: Nil   => directoryStore ! DebugPrintAllDatabase
                     case "print" :: "database" :: _     => usage("print database")
-                    case "print" :: _ => help()
+                    case "print" :: _                   => help()
 
                     case "test" :: "index" :: _ => testIndex()
                     case "test" :: _            => help()
@@ -135,13 +135,10 @@ object EchoApp extends App {
     }
 
     private def testIndex(): Unit ={
-        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/freakshow/m4a")
-        directoryStore ! ProposeNewFeed("http://www.fanboys.fm/episodes.mp3.rss")
-        directoryStore ! ProposeNewFeed("http://falter-radio.libsyn.com/rss")
-        directoryStore ! ProposeNewFeed("http://revolutionspodcast.libsyn.com/rss/")
-        directoryStore ! ProposeNewFeed("https://feeds.metaebene.me/forschergeist/m4a")
-        directoryStore ! ProposeNewFeed("http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss")
-        directoryStore ! ProposeNewFeed("http://atp.fm/episodes?format=rss")
+        val filename = "../feeds.txt"
+        for (feed <- Source.fromFile(filename).getLines) {
+            directoryStore ! ProposeNewFeed(feed)
+        }
     }
 
 }
