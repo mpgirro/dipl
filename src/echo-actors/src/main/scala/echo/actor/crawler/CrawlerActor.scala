@@ -6,12 +6,7 @@ import java.time.LocalDateTime
 import java.util.Scanner
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.event.Logging
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.headers.Location
-import akka.http.scaladsl.model._
-import akka.stream.{ActorMaterializer, ActorMaterializerSettings, Materializer}
-import akka.util.ByteString
+import akka.http.scaladsl.server.Directives._
 import echo.actor.protocol.ActorMessages._
 import echo.core.feed.FeedStatus
 import echo.core.parse.api.FyydAPI

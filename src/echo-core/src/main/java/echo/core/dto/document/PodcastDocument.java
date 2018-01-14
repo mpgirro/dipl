@@ -28,6 +28,18 @@ public class PodcastDocument implements Document {
 
     // TODO itunes elements
 
+    public PodcastDocument() {
+
+    }
+
+    public PodcastDocument(String echoId, String title, String link, String description, String itunesImage) {
+        this.echoId = echoId;
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.itunesImage = itunesImage;
+    }
+
     @Override
     public String getEchoId() {
         return this.echoId;

@@ -94,7 +94,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
                             // if no iTunes artwork is set for this episode, communicate that the one of the while Podcast should be used
                             if(episode.getItunesImage == null || episode.getItunesImage.eq("")){
-                                log.debug("Episodes itunesImage is not set; sending message so that the Podcast's image will be used instead")
+                                log.debug("Episodes itunesImage is not set -> sending message so that the Podcast's image will be used instead")
                                 directoryStore ! UsePodcastItunesImage(episode.getEchoId)
                             }
 

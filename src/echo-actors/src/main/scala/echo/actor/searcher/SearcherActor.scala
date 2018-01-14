@@ -33,6 +33,21 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
 
                     case IndexResultsFound(query: String, results: Array[Document]) => {
                         log.info("Received " + results.length + " results from index for query '" + query + "'")
+
+
+                        // TODO remove <img> tags from description, I suspect it to cause troubles
+                        // TODO this should probably better done while indexing! (so only has to be done one time instead of every retrieval
+                        for(d <- results){
+                            import org.jsoup.Jsoup
+                            import org.jsoup.nodes.Document
+                            import org.jsoup.safety.Whitelist
+                            val soupDoc = Jsoup.parse(d.getDescription)
+                            soupDoc.select("img").remove
+                            // if not removed, the cleaner will drop the <div> but leave the inner text
+                            val clean = Jsoup.clean(soupDoc.body.html, Whitelist.basic)
+                            d.setDescription(clean)
+                        }
+
                         sender ! SearchResults(results)
                     }
 

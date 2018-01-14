@@ -58,10 +58,10 @@ object ActorMessages {
     case class IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String)
 
     // Indexer -> IndexStore
-    case class IndexStoreAddPodcast(podcast: Document)
-    case class IndexStoreUpdatePodcast(podcast: Document)
-    case class IndexStoreAddEpisode(episode: Document)
-    case class IndexStoreUpdateEpisode(episode: Document)
+    case class IndexStoreAddPodcast(podcast: PodcastDocument)
+    case class IndexStoreUpdatePodcast(podcast: PodcastDocument)
+    case class IndexStoreAddEpisode(episode: EpisodeDocument)
+    case class IndexStoreUpdateEpisode(episode: EpisodeDocument)
     case class IndexSoreUpdateDocumentWebsiteData(echoId: String, websiteData: String) // used for all document types
 
     // DirectoryStore -> IndexStore
@@ -71,7 +71,7 @@ object ActorMessages {
     case class UsePodcastItunesImage(echoId: String)
 
 
-    case class SearchRequest(query: String)                 // User -> Searcher
+    case class SearchRequest(query: String)                 // Gateway(= Web) -> Searcher
     case class SearchResults(results: Array[Document])      // Searcher -> User
 
     case class SearchIndex(query: String)                   // Searcher -> IndexStore
@@ -88,6 +88,16 @@ object ActorMessages {
     case class ActorRefFeedStoreActor(ref: ActorRef)
     case class ActorRefIndexStoreActor(ref: ActorRef)
     case class ActorRefSearcherActor(ref: ActorRef)
+
+    // Gateway -> DirectoryStore
+    case class GetPodcast(echoId: String)
+    case class GetEpisode(echoId: String)
+
+    // DirectoryStore -> Gateway
+    trait DirectoryResult
+    case class PodcastResult(podcast: PodcastDocument) extends DirectoryResult
+    case class EpisodeResult(episode: EpisodeDocument) extends DirectoryResult
+    case class NoDocumentFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllDatabase()    // User -> DirectoryStore

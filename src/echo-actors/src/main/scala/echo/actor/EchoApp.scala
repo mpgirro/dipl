@@ -22,11 +22,13 @@ object EchoApp extends App {
 
     private var shutdown = false
     val usageMap = Map(
-        "propose" -> "feed [feed [feed]]",
-        "search" -> "query [query [query]]",
+        "propose"        -> "feed [feed [feed]]",
+        "search"         -> "query [query [query]]",
         "print database" -> "",
-        "test index" -> "",
-        "crawl fyyd" -> "count"
+        "test index"     -> "",
+        "crawl fyyd"     -> "count",
+        "get podcast"    -> "<echoId>",
+        "get episode"    -> "<echoId>"
     )
 
     // create the system and actor
@@ -43,8 +45,10 @@ object EchoApp extends App {
     // pass around references not provided by constructors due to circular dependencies
     crawler ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefDirectoryStoreActor(directoryStore)
+    gateway ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefCrawlerActor(crawler)
     directoryStore ! ActorRefIndexStoreActor(indexStore)
+
 
     repl()
 
@@ -76,9 +80,17 @@ object EchoApp extends App {
                     case "test" :: "index" :: _ => testIndex()
                     case "test" :: _            => help()
 
-                    case "crawl" :: "fyyd" :: Nil           => usage("crawl-fyyd")
+                    case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
                     case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
-                    case "crawl" :: "fyyd" :: count :: _    => usage("crawl-fyyd")
+                    case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
+
+                    case "get" :: "podcast" :: Nil           => usage("get podcast")
+                    case "get" :: "podcast" :: echoId :: Nil => getPodcast(echoId)
+                    case "get" :: "podcast" :: echoId :: _   => usage("get podcast")
+
+                    case "get" :: "episode" :: Nil           => usage("get episode")
+                    case "get" :: "episode" :: echoId :: Nil => getEpisode(echoId)
+                    case "get" :: "episode" :: echoId :: _   => usage("get episode")
 
                     case _  => help()
                 }
@@ -138,6 +150,36 @@ object EchoApp extends App {
         val filename = "../feeds.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(feed)
+        }
+    }
+
+    private def getPodcast(echoId: String) = {
+        implicit val timeout = Timeout(5 seconds)
+        val future = directoryStore ? GetPodcast(echoId)
+        val response = Await.result(future, timeout.duration).asInstanceOf[DirectoryResult]
+        response match {
+            case PodcastResult(podcast) => {
+                println(DocumentFormatter.cliFormat(podcast))
+            }
+
+            case NoDocumentFound(unknownId: String) => {
+                println("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
+            }
+        }
+    }
+
+    private def getEpisode(echoId: String) = {
+        implicit val timeout = Timeout(5 seconds)
+        val future = directoryStore ? GetEpisode(echoId)
+        val response = Await.result(future, timeout.duration).asInstanceOf[DirectoryResult]
+        response match {
+            case EpisodeResult(episode) => {
+                println(DocumentFormatter.cliFormat(episode))
+            }
+
+            case NoDocumentFound(unknownId: String) => {
+                println("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
+            }
         }
     }
 

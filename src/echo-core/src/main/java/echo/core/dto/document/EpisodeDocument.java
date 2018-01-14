@@ -32,6 +32,17 @@ public class EpisodeDocument implements Document {
 
     // TODO fyyd
 
+    public EpisodeDocument() {
+
+    }
+
+    public EpisodeDocument(String echoId, String title, String link, String description, String itunesImage) {
+        this.echoId = echoId;
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.itunesImage = itunesImage;
+    }
 
     @Override
     public String getEchoId() {
