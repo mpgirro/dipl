@@ -53,18 +53,22 @@ public class EpisodeDocument implements Document {
         this.docId = docId;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getLink() {
         return link;
     }
 
+    @Override
     public void setLink(String link) {
         this.link = link;
     }
@@ -93,10 +97,12 @@ public class EpisodeDocument implements Document {
         this.guidIsPermaLink = guidIsPermaLink;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }

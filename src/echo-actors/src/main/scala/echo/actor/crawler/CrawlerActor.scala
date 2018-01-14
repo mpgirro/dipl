@@ -77,7 +77,7 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
         }
 
         case FetchWebsite(echoId: String, url: String) => {
-            log.info("Received FetchWebsite({},{})", echoId, url)
+            log.debug("Received FetchWebsite({},{})", echoId, url)
 
             val websiteData = download(url)
             if(websiteData != null){

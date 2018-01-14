@@ -61,20 +61,31 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
                         log.info("Received HTTP request /search?query={}", query)
 
                         val foundDocs = search(query)
+
+                        for(f <- foundDocs){
+                            println(f)
+                        }
+
                         val results: Array[ResultDoc] = foundDocs.map(d => {
                             d match {
                                 case pDoc: PodcastDocument => {
+                                    val title = { if(pDoc.getTitle != null) pDoc.getTitle else "<NOT SET>"}
+                                    val link = { if(pDoc.getLink != null) pDoc.getLink else "<NOT SET>"}
+                                    val description = { if(pDoc.getDescription != null) pDoc.getDescription else "<NOT SET>"}
                                     val pubDate = { if (pDoc.getPubDate != null) pDoc.getPubDate.toString else "" }
                                     val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage else "" }
-                                    ResultDoc(pDoc.getTitle, pDoc.getLink, pDoc.getDescription, pubDate, itunesImage)
+                                    ResultDoc(title, link, description, pubDate, itunesImage)
                                 }
                                 case eDoc: EpisodeDocument => {
+                                    val title = { if(eDoc.getTitle != null) eDoc.getTitle else "<NOT SET>"}
+                                    val link = { if(eDoc.getLink != null) eDoc.getLink else "<NOT SET>"}
+                                    val description = { if(eDoc.getDescription != null) eDoc.getDescription else "<NOT SET>"}
                                     val pubDate = { if (eDoc.getPubDate != null) eDoc.getPubDate.toString else "" }
                                     val itunesImage = { if (eDoc.getItunesImage != null) eDoc.getItunesImage else "" }
-                                    ResultDoc(eDoc.getTitle, eDoc.getLink, eDoc.getDescription, pubDate, itunesImage)
+                                    ResultDoc(title, link, description, pubDate, itunesImage)
                                 }
                             }
-                        }).map(d => {println(d); d})
+                        })//.map(d => {println(d); d})
 
                         complete(StatusCodes.OK, ArrayWrapper(results))
                     }

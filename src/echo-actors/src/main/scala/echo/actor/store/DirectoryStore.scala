@@ -87,7 +87,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
         // this is the case when an Episode has no iTunesImage URL set in the feed.
         // then we should set the image url of the whole podcast
         case UsePodcastItunesImage(echoId) => {
-            log.info("Received UsePodcastItunesImage({})", echoId)
+            log.debug("Received UsePodcastItunesImage({})", echoId)
             var found = false
 
             for((_,(_,_,episodes,itunesImage)) <- database){
