@@ -1,17 +1,4 @@
 
-.list-group-item, .list-group-item-action {
-  border: none;
-  color: black;
-  padding: 0px;
-}
-
-.list-group-item:first-child, .list-group-item-action:first-child {
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-
 .media-body > h5.mt-0 {
   font-size: 1.1rem;
   font-weight: bold;

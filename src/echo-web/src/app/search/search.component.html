@@ -10,16 +10,15 @@
           type="text" class="form-control"
           placeholder="every podcast leaves an echo. find it...">
       </div>
-          
-      <ul class="list-group">
 
-        <li *ngFor="let result of results" 
-            (click)="onSelect(result)" 
-            class="list-group-item list-group-item-action mb-5" >
+      <ul class="list-unstyled">
 
-            <div class="media">
+        <li *ngFor="let result of results"
+            (click)="onSelect(result)"
+            class="media mb-5" >
+
               <img class="mr-3"
-                   src="{{result.itunesImage}}" 
+                   src="{{result.itunesImage}}"
                    alt="Generic placeholder image">
               <div class="media-body">
                 <h5 class="mt-0">{{result.title}}</h5>
@@ -27,8 +26,19 @@
                   <small class="text-muted">
                       <span class="oi oi-calendar"></span>
                       {{result.pubDate | date: 'd MMM yyyy' }}
+
+                      <fa [name]="calendar-alt"></fa>
+                      <fa [name]="'rocket'"></fa>
+<!-- rendered -->
+<fa>
+  <i class="fa fa-rocket"></i>
+</fa>
+
+<i fa [name]="'rocket'"></i>
+<!-- rendered -->
+<i fa class="fa fa-rocket"></i>
                   </small>
-                  
+
                 </p>
                 <p class="mb-1" [innerHTML]="result.description"></p>
                 <p>
@@ -38,7 +48,7 @@
                   </a>
                 </p>
               </div>
-            </div>
-           
+
+
         </li>
       </ul>
