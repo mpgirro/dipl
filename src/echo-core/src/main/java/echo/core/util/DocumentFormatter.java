@@ -1,8 +1,8 @@
 package echo.core.util;
 
-import echo.core.dto.document.Document;
-import echo.core.dto.document.EpisodeDocument;
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.DTO;
+import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.document.PodcastDTO;
 import org.jsoup.*;
 
 /**
@@ -12,10 +12,10 @@ public class DocumentFormatter {
 
     final StringBuilder builder = new StringBuilder();
 
-    public static String cliFormat(Document doc){
+    public static String cliFormat(DTO doc){
         final StringBuilder builder = new StringBuilder();
-        if(doc instanceof PodcastDocument){
-            final PodcastDocument pDoc = (PodcastDocument) doc;
+        if(doc instanceof PodcastDTO){
+            final PodcastDTO pDoc = (PodcastDTO) doc;
             appendString(builder, "[Podcast]");
             appendString(builder, pDoc.getTitle());
             if(pDoc.getPubDate() != null){
@@ -23,8 +23,8 @@ public class DocumentFormatter {
             }
             appendString(builder, Jsoup.parse(pDoc.getDescription()).text());
             appendString(builder, pDoc.getLink());
-        } else if( doc instanceof EpisodeDocument){
-            final EpisodeDocument eDoc = (EpisodeDocument) doc;
+        } else if( doc instanceof EpisodeDTO){
+            final EpisodeDTO eDoc = (EpisodeDTO) doc;
             appendString(builder, "[Episode]");
             appendString(builder, eDoc.getTitle());
             if(eDoc.getPubDate() != null){
@@ -36,22 +36,22 @@ public class DocumentFormatter {
             appendString(builder, Jsoup.parse(eDoc.getDescription()).text());
             appendString(builder, eDoc.getLink());
         } else {
-            throw new RuntimeException("Forgot to support new Echo Document type: "+doc.getClass());
+            throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
         }
         return builder.toString();
     }
 
-    public static Document stripHTML(Document doc){
-        if(doc instanceof PodcastDocument){
-            final PodcastDocument pDoc = (PodcastDocument) doc;
+    public static DTO stripHTML(DTO doc){
+        if(doc instanceof PodcastDTO){
+            final PodcastDTO pDoc = (PodcastDTO) doc;
             pDoc.setDescription(Jsoup.parse(pDoc.getDescription()).text());
             return pDoc;
-        } else if( doc instanceof EpisodeDocument){
-            final EpisodeDocument eDoc = (EpisodeDocument) doc;
+        } else if( doc instanceof EpisodeDTO){
+            final EpisodeDTO eDoc = (EpisodeDTO) doc;
             eDoc.setDescription(Jsoup.parse(eDoc.getDescription()).text());
             return eDoc;
         } else {
-            throw new RuntimeException("Forgot to support new Echo Document type: "+doc.getClass());
+            throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
         }
     }
 

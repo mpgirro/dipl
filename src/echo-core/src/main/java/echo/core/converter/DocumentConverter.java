@@ -1,32 +1,35 @@
 package echo.core.converter;
 
-import echo.core.dto.document.Document;
+import echo.core.dto.document.DTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This is the generic converter between Echo {@link echo.core.dto.document.Document}'s
+ * This is the generic converter between Echo {@link echo.core.dto.document.DTO}'s
  * and documents of type I of the specific search index (e.g. org.apache.lucene.document.Document
  * or org.apache.solr.common.SolrInputDocument)
  *
+ * To convert index documents to a reduced form with only the information used
+ * to display search results, use converters extending {@link echo.core.converter.ResultConverter}
+ *
  * @author Maximilian Irro
  */
-public abstract class DocumentConverter<E extends Document, I> {
+public abstract class DocumentConverter<E extends DTO, I> {
 
-    public abstract E toEchoDocument(I indexDoc);
+    public abstract E toDTO(I indexDoc);
 
-    public abstract I toEntityDocument(E echoDoc);
+    public abstract I toIndex(E echoDoc);
 
-    public List<E> toEchoList(List<I> indexList){
+    public List<E> toDTOList(List<I> indexList){
         return indexList.stream()
-            .map(this::toEchoDocument)
+            .map(this::toDTO)
             .collect(Collectors.toList());
     }
 
-    public List<I> toEntityList(List<E> echoList){
+    public List<I> toIndexList(List<E> echoList){
         return echoList.stream()
-            .map(this::toEntityDocument)
+            .map(this::toIndex)
             .collect(Collectors.toList());
     }
 

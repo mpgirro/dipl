@@ -6,8 +6,8 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import echo.core.dto.document.EpisodeDocument;
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.document.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -20,7 +20,6 @@ import org.xml.sax.InputSource;
 import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,13 +32,13 @@ public class RomeFeedParser implements FeedParser {
     private static final Logger log = LoggerFactory.getLogger(RomeFeedParser.class);
 
     @Override
-    public PodcastDocument parseFeed(String xmlData) throws FeedParsingException {
+    public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed syndFeed = input.build(inputSource);
 
-            final PodcastDocument doc = new PodcastDocument();
+            final PodcastDTO doc = new PodcastDTO();
 
             doc.setTitle(syndFeed.getTitle());
             doc.setLink(syndFeed.getLink());
@@ -89,19 +88,19 @@ public class RomeFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDocument parseEpisode(String xmlData) throws FeedParsingException {
+    public EpisodeDTO parseEpisode(String xmlData) throws FeedParsingException {
         throw new UnsupportedOperationException("RomeFeedParser.parseEpisode not yet implemented");
     }
 
-    public EpisodeDocument[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed syndFeed = input.build(inputSource);
 
-            final List<EpisodeDocument> results = new LinkedList<>();
+            final List<EpisodeDTO> results = new LinkedList<>();
             for(SyndEntry e : syndFeed.getEntries()){
-                final EpisodeDocument doc = new EpisodeDocument();
+                final EpisodeDTO doc = new EpisodeDTO();
 
                 doc.setTitle(e.getTitle());
                 doc.setLink(e.getLink());
@@ -125,7 +124,7 @@ public class RomeFeedParser implements FeedParser {
 
                 results.add(doc);
             }
-            return results.toArray(new EpisodeDocument[0]);
+            return results.toArray(new EpisodeDTO[0]);
         } catch (FeedException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed (trying to extract the episodes)", e);
         }

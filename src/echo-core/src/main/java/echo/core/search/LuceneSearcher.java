@@ -3,7 +3,7 @@ package echo.core.search;
 import echo.core.converter.DocumentConverter;
 import echo.core.converter.LuceneEpisodeConverter;
 import echo.core.converter.LucenePodcastConverter;
-import echo.core.dto.document.Document;
+import echo.core.dto.document.DTO;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -17,10 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Maximilian Irro
@@ -69,7 +65,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     }
 
     @Override
-    public Document[] search(String queryStr) {
+    public DTO[] search(String queryStr) {
 
         IndexSearcher indexSearcher = null;
         try {
@@ -85,19 +81,19 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if(topDocs.totalHits > 0){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1000).scoreDocs;
-                final Document[] results = new Document[hits.length];
+                final DTO[] results = new DTO[hits.length];
                 for(int i = 0; i < hits.length; i++){
-                    results[i] = this.toEchoDocument(indexSearcher.doc(hits[i].doc));
+                    results[i] = this.toDTO(indexSearcher.doc(hits[i].doc));
                 }
                 return results;
             } else {
-                return new Document[0];
+                return new DTO[0];
             }
 
         } catch (IOException | ParseException e) {
             log.error("Lucene Index has encountered an error searching for: {}", queryStr);
             e.printStackTrace();
-            return new Document[0]; // TODO throw a custom exception, and do not return anything
+            return new DTO[0]; // TODO throw a custom exception, and do not return anything
         } finally {
             if (indexSearcher != null) {
                 try {
@@ -108,7 +104,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     }
 
     @Override
-    public Document findByEchoId(String id){
+    public DTO findByEchoId(String id){
         IndexSearcher indexSearcher = null;
         try {
 
@@ -124,7 +120,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             }
             if(topDocs.totalHits == 1){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return this.toEchoDocument(indexSearcher.doc(hits[0].doc));
+                return this.toDTO(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
@@ -160,13 +156,13 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         }
     }
 
-    private echo.core.dto.document.Document toEchoDocument(final org.apache.lucene.document.Document doc) {
+    private DTO toDTO(final org.apache.lucene.document.Document doc) {
 
         // TODO this is not too pretty yet, should have used Scala for this library already...
         if(doc.get("doc_type").equals("podcast")) {
-            return this.podcastConverter.toEchoDocument(doc);
+            return this.podcastConverter.toDTO(doc);
         } else if(doc.get("doc_type").equals("episode")) {
-            return this.episodeConverter.toEchoDocument(doc);
+            return this.episodeConverter.toDTO(doc);
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }

@@ -2,9 +2,10 @@ package echo.core;
 
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.dto.document.Document;
-import echo.core.dto.document.EpisodeDocument;
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.DTO;
+import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.document.IndexResult;
+import echo.core.dto.document.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
@@ -19,7 +20,6 @@ import echo.core.util.DocumentFormatter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -184,13 +184,13 @@ public class CoreApp {
         try {
             final String feedData = download(feed);
 
-            final PodcastDocument podcastDoc = this.feedParser.parseFeed(feedData);
+            final PodcastDTO podcastDoc = this.feedParser.parseFeed(feedData);
             podcastDoc.setDocId(feed);
 
             this.committer.add(podcastDoc);
 
-            final EpisodeDocument[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
-            for (EpisodeDocument episode : episodes) {
+            final EpisodeDTO[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
+            for (EpisodeDTO episode : episodes) {
                 out.println("  Episode: " + episode.getTitle());
 
                 episode.setDocId(episode.getGuid()); // TODO verifiy good GUID!
@@ -216,10 +216,10 @@ public class CoreApp {
         searcher.refresh(); // ensure there is data accessible to us in the index
 
         final String query = String.join(" ", querys);
-        final Document[] results = this.searcher.search(query);
+        final DTO[] results = this.searcher.search(query);
         out.println("Found "+results.length+" results for query '" + query + "'");
         out.println("Results:");
-        for(Document doc : results){
+        for(DTO doc : results){
             out.println();
             out.println(DocumentFormatter.cliFormat(doc));
             out.println();

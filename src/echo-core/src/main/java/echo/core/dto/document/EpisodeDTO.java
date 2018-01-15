@@ -1,26 +1,24 @@
 package echo.core.dto.document;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author Maximilian Irro
  */
-public class PodcastDocument implements Document {
+public class EpisodeDTO implements DTO {
 
     private String echoId;
     private String docId;
 
     private String title;
     private String link;
-    private String description;
     private LocalDateTime pubDate;
-    private LocalDateTime lastBuildDate;
-    private String language;
-    private String generator;
+    private String guid;
+    private boolean guidIsPermaLink;
+    private String description;
 
     private String itunesImage;
-    private String itunesCategory;
+    private String itunesDuration;
 
     private String websiteData;
 
@@ -28,11 +26,17 @@ public class PodcastDocument implements Document {
 
     // TODO itunes elements
 
-    public PodcastDocument() {
+    // TODO content:encoded
+
+    // TODO psc:chapters
+
+    // TODO fyyd
+
+    public EpisodeDTO() {
 
     }
 
-    public PodcastDocument(String echoId, String title, String link, String description, String itunesImage) {
+    public EpisodeDTO(String echoId, String title, String link, String description, String itunesImage) {
         this.echoId = echoId;
         this.title = title;
         this.link = link;
@@ -80,6 +84,30 @@ public class PodcastDocument implements Document {
         this.link = link;
     }
 
+    public LocalDateTime getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(LocalDateTime pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public boolean isGuidIsPermaLink() {
+        return guidIsPermaLink;
+    }
+
+    public void setGuidIsPermaLink(boolean guidIsPermaLink) {
+        this.guidIsPermaLink = guidIsPermaLink;
+    }
+
     @Override
     public String getDescription() {
         return description;
@@ -90,38 +118,6 @@ public class PodcastDocument implements Document {
         this.description = description;
     }
 
-    public LocalDateTime getPubDate() {
-        return pubDate;
-    }
-
-    public void setPubDate(LocalDateTime pubDate) {
-        this.pubDate = pubDate;
-    }
-
-    public LocalDateTime getLastBuildDate() {
-        return lastBuildDate;
-    }
-
-    public void setLastBuildDate(LocalDateTime lastBuildDate) {
-        this.lastBuildDate = lastBuildDate;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getGenerator() {
-        return generator;
-    }
-
-    public void setGenerator(String generator) {
-        this.generator = generator;
-    }
-
     public String getItunesImage() {
         return itunesImage;
     }
@@ -130,12 +126,12 @@ public class PodcastDocument implements Document {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesCategory() {
-        return itunesCategory;
+    public String getItunesDuration() {
+        return itunesDuration;
     }
 
-    public void setItunesCategory(String itunesCategory) {
-        this.itunesCategory = itunesCategory;
+    public void setItunesDuration(String itunesDuration) {
+        this.itunesDuration = itunesDuration;
     }
 
     @Override
@@ -158,9 +154,9 @@ public class PodcastDocument implements Document {
             return false;
         }
 
-        PodcastDocument d = (PodcastDocument) o;
+        EpisodeDTO d = (EpisodeDTO) o;
 
-        if ( ! PodcastDocument.equals(id, PodcastDocument.id)) return false;
+        if ( ! EpisodeDTO.equals(id, EpisodeDTO.id)) return false;
 
         return true;
     }
@@ -173,18 +169,18 @@ public class PodcastDocument implements Document {
 
     @Override
     public String toString() {
-        return "PodcastDocument{" +
+        return "EpisodeDTO{" +
             "echoId='" + echoId + '\'' +
             ", docId='" + docId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
-            ", description='" + description + '\'' +
             ", pubDate=" + pubDate +
-            ", lastBuildDate=" + lastBuildDate +
-            ", language='" + language + '\'' +
-            ", generator='" + generator + '\'' +
+            ", guid='" + guid + '\'' +
+            ", guidIsPermaLink=" + guidIsPermaLink +
+            ", description='" + description + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
+            ", itunesDuration='" + itunesDuration + '\'' +
             '}';
     }
+
 }

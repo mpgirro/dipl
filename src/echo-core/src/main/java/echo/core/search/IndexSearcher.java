@@ -1,15 +1,16 @@
 package echo.core.search;
 
-import echo.core.dto.document.Document;
+import echo.core.dto.document.DTO;
+import echo.core.dto.document.IndexResult;
 
 /**
  * @author Maximilian Irro
  */
 public interface IndexSearcher {
 
-    Document[] search(String query);
+    DTO[] search(String query);
 
-    Document findByEchoId(String id);
+    DTO findByEchoId(String id);
 
     void refresh();
 

@@ -3,7 +3,7 @@ package echo.core.converter;
 import com.icosillion.podengine.exceptions.DateFormatException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import com.icosillion.podengine.models.Podcast;
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.PodcastDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,14 +15,14 @@ import java.util.Arrays;
 /**
  * @author Maximilian Irro
  */
-public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument,Podcast> {
+public class PodEnginePodcastConverter extends DocumentConverter<PodcastDTO,Podcast> {
 
     private static final Logger log = LoggerFactory.getLogger(PodEnginePodcastConverter.class);
 
     @Override
-    public PodcastDocument toEchoDocument(Podcast podcast) {
+    public PodcastDTO toDTO(Podcast podcast) {
 
-        final PodcastDocument doc = new PodcastDocument();
+        final PodcastDTO doc = new PodcastDTO();
         try {
             if(podcast.getTitle()         != null){ doc.setTitle(podcast.getTitle()); }
             if(podcast.getLink()          != null){ doc.setLink(podcast.getLink().toExternalForm()); }
@@ -34,7 +34,7 @@ public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument
             if(podcast.getCategories()    != null){ doc.setItunesCategory(String.join(" & ", Arrays.asList(podcast.getCategories()))); }
             if(podcast.getITunesInfo()    != null){ doc.setItunesImage(podcast.getITunesInfo().getImageString()); }
         } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
-            log.error("Exception during converting PodEnginePodcast to PodcastDocument; reason: {}", e.getMessage());
+            log.error("Exception during converting PodEnginePodcast to PodcastDTO; reason: {}", e.getMessage());
             //e.printStackTrace();
         }
 
@@ -42,8 +42,8 @@ public class PodEnginePodcastConverter extends DocumentConverter<PodcastDocument
     }
 
     @Override
-    public Podcast toEntityDocument(PodcastDocument doc) {
-        throw new UnsupportedOperationException("PodEnginePodcastConverter.toEntityDocument is not available, due to PodEngine library restrictions");
+    public Podcast toIndex(PodcastDTO doc) {
+        throw new UnsupportedOperationException("PodEnginePodcastConverter.toEntity is not available, due to PodEngine library restrictions");
     }
 
 }

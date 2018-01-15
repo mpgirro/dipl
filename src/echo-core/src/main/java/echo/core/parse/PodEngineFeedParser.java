@@ -1,13 +1,12 @@
 package echo.core.parse;
 
 import com.icosillion.podengine.exceptions.MalformedFeedException;
-import com.icosillion.podengine.models.Episode;
 import com.icosillion.podengine.models.Podcast;
 import echo.core.converter.DocumentConverter;
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.dto.document.EpisodeDocument;
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.document.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 /**
@@ -24,32 +23,32 @@ public class PodEngineFeedParser implements FeedParser {
     }
 
     @Override
-    public PodcastDocument parseFeed(String xmlData) throws FeedParsingException {
+    public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            return (PodcastDocument) podcastConverter.toEchoDocument(podcast);
+            return (PodcastDTO) podcastConverter.toDTO(podcast);
         } catch (MalformedFeedException e) {
             throw new FeedParsingException("PodEngine could not parse the feed", e);
         }
     }
 
     @Override
-    public EpisodeDocument parseEpisode(String xmlData) throws FeedParsingException {
+    public EpisodeDTO parseEpisode(String xmlData) throws FeedParsingException {
         throw new UnsupportedOperationException("PodEngineFeedParser.parseEpisode not yet implemented");
     }
 
-    public EpisodeDocument[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
             if(podcast.getEpisodes() != null){
                 return podcast.getEpisodes().stream()
-                    .map( e -> episodeConverter.toEchoDocument(e))
-                    .toArray(EpisodeDocument[]::new);
+                    .map( e -> episodeConverter.toDTO(e))
+                    .toArray(EpisodeDTO[]::new);
             }
         } catch (MalformedFeedException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
-        return new EpisodeDocument[0];
+        return new EpisodeDTO[0];
     }
 
 }

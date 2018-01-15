@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  * @author Maximilian Irro
  */
-public interface Document extends Serializable {
+public interface DTO extends Serializable {
 
     String getEchoId();
     void setEchoId(String echoId);

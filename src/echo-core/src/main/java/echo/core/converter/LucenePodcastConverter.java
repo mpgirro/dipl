@@ -1,6 +1,6 @@
 package echo.core.converter;
 
-import echo.core.dto.document.PodcastDocument;
+import echo.core.dto.document.PodcastDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -11,32 +11,32 @@ import java.time.LocalDateTime;
 /**
  * @author Maximilian Irro
  */
-public class LucenePodcastConverter extends DocumentConverter<PodcastDocument,org.apache.lucene.document.Document> {
+public class LucenePodcastConverter extends DocumentConverter<PodcastDTO,org.apache.lucene.document.Document> {
 
     @Override
-    public PodcastDocument toEchoDocument(Document lDoc) {
+    public PodcastDTO toDTO(Document lDoc) {
 
-        final PodcastDocument pDoc = new PodcastDocument();
+        final PodcastDTO dto = new PodcastDTO();
 
-        if(lDoc.get("echo_id")         != null){ pDoc.setDocId(lDoc.get("echo_id")); }
-        if(lDoc.get("doc_id")          != null){ pDoc.setDocId(lDoc.get("doc_id")); }
-        if(lDoc.get("title")           != null){ pDoc.setTitle(lDoc.get("title")); }
-        if(lDoc.get("link")            != null){ pDoc.setLink(lDoc.get("link")); }
-        if(lDoc.get("description")     != null){ pDoc.setDescription(lDoc.get("description")); }
-        if(lDoc.get("pub_date")        != null){ pDoc.setLastBuildDate(LocalDateTime.parse(lDoc.get("pub_date"))); }
-        if(lDoc.get("last_build_date") != null){ pDoc.setLastBuildDate(LocalDateTime.parse(lDoc.get("last_build_date"))); }
-        if(lDoc.get("language")        != null){ pDoc.setLanguage(lDoc.get("language")); }
-        if(lDoc.get("generator")       != null){ pDoc.setGenerator(lDoc.get("generator")); }
-        if(lDoc.get("itunes_image")    != null){ pDoc.setItunesImage(lDoc.get("itunes_image")); }
-        if(lDoc.get("itunes_category") != null){ pDoc.setItunesCategory(lDoc.get("itunes_category")); }
+        if(lDoc.get("echo_id")         != null){ dto.setDocId(lDoc.get("echo_id")); }
+        if(lDoc.get("doc_id")          != null){ dto.setDocId(lDoc.get("doc_id")); }
+        if(lDoc.get("title")           != null){ dto.setTitle(lDoc.get("title")); }
+        if(lDoc.get("link")            != null){ dto.setLink(lDoc.get("link")); }
+        if(lDoc.get("description")     != null){ dto.setDescription(lDoc.get("description")); }
+        if(lDoc.get("pub_date")        != null){ dto.setLastBuildDate(LocalDateTime.parse(lDoc.get("pub_date"))); }
+        if(lDoc.get("last_build_date") != null){ dto.setLastBuildDate(LocalDateTime.parse(lDoc.get("last_build_date"))); }
+        if(lDoc.get("language")        != null){ dto.setLanguage(lDoc.get("language")); }
+        if(lDoc.get("generator")       != null){ dto.setGenerator(lDoc.get("generator")); }
+        if(lDoc.get("itunes_image")    != null){ dto.setItunesImage(lDoc.get("itunes_image")); }
+        if(lDoc.get("itunes_category") != null){ dto.setItunesCategory(lDoc.get("itunes_category")); }
 
         // note: we do not retrieve websiteData
 
-        return pDoc;
+        return dto;
     }
 
     @Override
-    public Document toEntityDocument(PodcastDocument podcast) {
+    public Document toIndex(PodcastDTO podcast) {
 
         final Document doc = new Document();
         doc.add(new StringField("doc_type", "podcast", Field.Store.YES));

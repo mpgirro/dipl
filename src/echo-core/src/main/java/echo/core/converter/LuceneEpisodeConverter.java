@@ -1,6 +1,7 @@
 package echo.core.converter;
 
-import echo.core.dto.document.EpisodeDocument;
+import echo.core.dto.document.DTO;
+import echo.core.dto.document.EpisodeDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -11,30 +12,30 @@ import java.time.LocalDateTime;
 /**
  * @author Maximilian Irro
  */
-public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDocument,org.apache.lucene.document.Document> {
+public class LuceneEpisodeConverter extends DocumentConverter<EpisodeDTO,org.apache.lucene.document.Document> {
 
     @Override
-    public EpisodeDocument toEchoDocument(Document lDoc) {
+    public EpisodeDTO toDTO(Document lDoc) {
 
-        final EpisodeDocument eDoc = new EpisodeDocument();
+        final EpisodeDTO dto = new EpisodeDTO();
 
-        if(lDoc.get("echo_id")         != null){ eDoc.setDocId(lDoc.get("echo_id")); }
-        if(lDoc.get("doc_id")          != null){ eDoc.setDocId(lDoc.get("doc_id")); }
-        if(lDoc.get("title")           != null){ eDoc.setTitle(lDoc.get("title")); }
-        if(lDoc.get("link")            != null){ eDoc.setLink(lDoc.get("link")); }
-        if(lDoc.get("pub_date")        != null){ eDoc.setPubDate(LocalDateTime.parse(lDoc.get("pub_date"))); }
-        if(lDoc.get("guid")            != null){ eDoc.setGuid(lDoc.get("guid")); }
-        if(lDoc.get("description")     != null){ eDoc.setDescription(lDoc.get("description")); }
-        if(lDoc.get("itunes_image")    != null){ eDoc.setItunesImage(lDoc.get("itunes_image")); }
-        if(lDoc.get("itunes_duration") != null){ eDoc.setItunesDuration(lDoc.get("itunes_duration")); }
+        if(lDoc.get("echo_id")         != null){ dto.setDocId(lDoc.get("echo_id")); }
+        if(lDoc.get("doc_id")          != null){ dto.setDocId(lDoc.get("doc_id")); }
+        if(lDoc.get("title")           != null){ dto.setTitle(lDoc.get("title")); }
+        if(lDoc.get("link")            != null){ dto.setLink(lDoc.get("link")); }
+        if(lDoc.get("pub_date")        != null){ dto.setPubDate(LocalDateTime.parse(lDoc.get("pub_date"))); }
+        if(lDoc.get("guid")            != null){ dto.setGuid(lDoc.get("guid")); }
+        if(lDoc.get("description")     != null){ dto.setDescription(lDoc.get("description")); }
+        if(lDoc.get("itunes_image")    != null){ dto.setItunesImage(lDoc.get("itunes_image")); }
+        if(lDoc.get("itunes_duration") != null){ dto.setItunesDuration(lDoc.get("itunes_duration")); }
 
         // note: we do not retrieve websiteData
 
-        return eDoc;
+        return dto;
     }
 
     @Override
-    public Document toEntityDocument(EpisodeDocument episode) {
+    public Document toIndex(EpisodeDTO episode) {
 
         final Document doc = new Document();
         doc.add(new StringField("doc_type", "episode", Field.Store.YES));
