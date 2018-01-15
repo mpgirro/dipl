@@ -3,10 +3,9 @@ package echo.actor.gateway.routes
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import echo.core.dto.document.PodcastDocument
 import org.slf4j.Logger
 import echo.actor.gateway.json.JsonSupport
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 
 /**
   * @author Maximilian Irro
@@ -25,7 +24,7 @@ class PodcastRoutes(log: LoggingAdapter) extends JsonSupport {
                     complete(StatusCodes.NotImplemented)
                 } ~
                     post {
-                        entity(as[PodcastDocument]) { podcastForCreate =>
+                        entity(as[PodcastDTO]) { podcastForCreate =>
                             /*
                             complete {
                                 // TODO create podcast
@@ -61,7 +60,7 @@ class PodcastRoutes(log: LoggingAdapter) extends JsonSupport {
                         complete(StatusCodes.NotImplemented)
                     } ~
                         put {
-                            entity(as[PodcastDocument]) { podcastForUpdate =>
+                            entity(as[PodcastDTO]) { podcastForUpdate =>
                                 /*
                                 complete {
                                     // TODO update podcast with echoId

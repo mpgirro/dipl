@@ -3,18 +3,16 @@ package echo.actor.gateway.routes
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import echo.actor.gateway.{ArrayWrapper, ResultDoc}
-import echo.core.dto.document.{EpisodeDocument, PodcastDocument}
 import org.slf4j.Logger
 
-
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 import echo.actor.gateway.json.JsonSupport
+import echo.actor.gateway.{ArrayWrapper, ResultDoc}
 
 /**
   * @author Maximilian Irro
   */
-class SearchRoutes(log: LoggingAdapter, search: String => Array[Document]) extends JsonSupport {
+class SearchRoutes(log: LoggingAdapter, search: String => Array[DTO]) extends JsonSupport {
 
     val route = logRequestResult("SearchRoutes") {
         pathPrefix("search"){
@@ -31,7 +29,7 @@ class SearchRoutes(log: LoggingAdapter, search: String => Array[Document]) exten
 
                     val results: Array[ResultDoc] = foundDocs.map(d => {
                         d match {
-                            case pDoc: PodcastDocument => {
+                            case pDoc: PodcastDTO => {
                                 val title       = { if(pDoc.getTitle        != null) pDoc.getTitle            else "<TITLE NOT SET>"}
                                 val link        = { if(pDoc.getLink         != null) pDoc.getLink             else "<LINK NOT SET>"}
                                 val description = { if(pDoc.getDescription  != null) pDoc.getDescription      else "<DESCRIPTION NOT SET>"}
@@ -39,7 +37,7 @@ class SearchRoutes(log: LoggingAdapter, search: String => Array[Document]) exten
                                 val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage      else "" }
                                 ResultDoc(title, link, description, pubDate, itunesImage)
                             }
-                            case eDoc: EpisodeDocument => {
+                            case eDoc: EpisodeDTO => {
                                 val title       = { if(eDoc.getTitle        != null) eDoc.getTitle            else "<TITLE NOT SET>"}
                                 val link        = { if(eDoc.getLink         != null) eDoc.getLink             else "<LINK NOT SET>"}
                                 val description = { if(eDoc.getDescription  != null) eDoc.getDescription      else "<DESCRIPTION NOT SET>"}

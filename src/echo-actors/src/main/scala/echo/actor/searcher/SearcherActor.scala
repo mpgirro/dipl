@@ -7,7 +7,7 @@ import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.Document
+import echo.core.dto.document.{DTO}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -31,7 +31,7 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
                 val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
                 response match {
 
-                    case IndexResultsFound(query: String, results: Array[Document]) => {
+                    case IndexResultsFound(query: String, results: Array[DTO]) => {
                         log.info("Received " + results.length + " results from index for query '" + query + "'")
 
 

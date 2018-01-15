@@ -1,14 +1,14 @@
 package echo.actor.gateway.json
 
-import echo.core.dto.document.EpisodeDocument
+import echo.core.dto.document.EpisodeDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**
   * @author Maximilian Irro
   */
 object EpisodeJsonProtocol extends DefaultJsonProtocol {
-    implicit object EpisodeJsonFormat extends RootJsonFormat[EpisodeDocument] {
-        def write(p: EpisodeDocument) = JsObject(
+    implicit object EpisodeJsonFormat extends RootJsonFormat[EpisodeDTO] {
+        def write(p: EpisodeDTO) = JsObject(
             "echoId"      -> Option(p.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
             "title"       -> Option(p.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"        -> Option(p.getLink).map(value => JsString(value)).getOrElse(JsNull),
@@ -18,8 +18,8 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue) = {
             value.asJsObject.getFields("echoId", "title", "link", "description", "itunesImage") match {
                 case Seq(JsString(echoId), JsString(title), JsString(link), JsString(description), JsString(itunesImage)) =>
-                    new EpisodeDocument(echoId, title, link, description, itunesImage)
-                case _ => throw new DeserializationException("EpisodeDocument expected")
+                    new EpisodeDTO(echoId, title, link, description, itunesImage)
+                case _ => throw new DeserializationException("EpisodeDTO expected")
             }
         }
     }

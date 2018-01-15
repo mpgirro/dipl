@@ -3,15 +3,14 @@ package echo.actor.gateway.routes
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{complete, get, _}
-import echo.core.dto.document.EpisodeDocument
 import org.slf4j.Logger
 import echo.actor.gateway.json.JsonSupport
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 
 /**
   * @author Maximilian Irro
   */
-class EpisodeRoutes(log: LoggingAdapter, getEpisode: String => EpisodeDocument) extends JsonSupport {
+class EpisodeRoutes(log: LoggingAdapter, getEpisode: String => EpisodeDTO) extends JsonSupport {
 
     val route = logRequestResult("EpisodeRoutes") {
         pathPrefix("episode"){
@@ -25,7 +24,7 @@ class EpisodeRoutes(log: LoggingAdapter, getEpisode: String => EpisodeDocument) 
                     complete(StatusCodes.NotImplemented)
                 } ~
                     post {
-                        entity(as[EpisodeDocument]) { podcastForCreate =>
+                        entity(as[EpisodeDTO]) { podcastForCreate =>
                             /*
                             complete {
                                 // TODO create podcast
@@ -68,7 +67,7 @@ class EpisodeRoutes(log: LoggingAdapter, getEpisode: String => EpisodeDocument) 
                         }
                     } ~
                         put {
-                            entity(as[EpisodeDocument]) { podcastForUpdate =>
+                            entity(as[EpisodeDTO]) { podcastForUpdate =>
                                 /*
                                 complete {
                                     // TODO update podcast with echoId

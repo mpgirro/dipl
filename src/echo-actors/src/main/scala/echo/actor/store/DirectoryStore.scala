@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.EchoApp.indexStore
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{EpisodeDTO, PodcastDTO}
 import echo.core.feed.FeedStatus
 
 /**
@@ -18,7 +18,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
     val podcastDB = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], String)]
 
     // echoId -> (itunesImage)
-    val episodeDB = scala.collection.mutable.Map.empty[String, EpisodeDocument]
+    val episodeDB = scala.collection.mutable.Map.empty[String, EpisodeDTO]
 
     private var indexStore: ActorRef = _
 
@@ -60,7 +60,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
         }
 
-        case UpdatePodcastMetadata(docId: String, doc: PodcastDocument) => {
+        case UpdatePodcastMetadata(docId: String, doc: PodcastDTO) => {
             log.debug("Received UpdatePodcastMetadata({},{})", docId, doc)
 
             // TODO for now, we only set the itunesImage in the fake database
@@ -71,7 +71,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             }
         }
 
-        case UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDocument) => {
+        case UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDTO) => {
             // TODO
             if(podcastDB.contains(podcastDocId)){
                 log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, doc)

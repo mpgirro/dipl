@@ -16,7 +16,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.routes.{EpisodeRoutes, PodcastRoutes, SearchRoutes}
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNumber, JsObject, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 import scala.concurrent.duration._
@@ -151,7 +151,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         }
     }
 
-    private def search(query: String): Array[Document] = {
+    private def search(query: String): Array[DTO] = {
         implicit val timeout = Timeout(5 seconds)
         val future = searcher ? SearchRequest(query)
         val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
@@ -163,9 +163,9 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         }
     }
 
-    private def getPodcast(echoId: String): PodcastDocument = {
+    private def getPodcast(echoId: String): PodcastDTO = {
 
-        var result: PodcastDocument = null
+        var result: PodcastDTO = null
 
         implicit val timeout = Timeout(5 seconds)
         val future = directoryStore ? GetPodcast(echoId)
@@ -183,9 +183,9 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         return result;
     }
 
-    private def getEpisode(echoId: String): EpisodeDocument = {
+    private def getEpisode(echoId: String): EpisodeDTO = {
 
-        var result: EpisodeDocument = null
+        var result: EpisodeDTO = null
 
         implicit val timeout = Timeout(5 seconds)
         val future = directoryStore ? GetEpisode(echoId)

@@ -3,7 +3,7 @@ package echo.actor.store
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{Document, EpisodeDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO}
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.search.{IndexSearcher, LuceneSearcher}
 
@@ -66,8 +66,8 @@ class IndexStore extends Actor with ActorLogging {
 
             val doc = indexSearcher.findByEchoId(echoId);
             if(doc != null){
-                if(doc.isInstanceOf[EpisodeDocument]){
-                    doc.asInstanceOf[EpisodeDocument].setItunesImage(itunesImage)
+                if(doc.isInstanceOf[EpisodeDTO]){
+                    doc.asInstanceOf[EpisodeDTO].setItunesImage(itunesImage)
                     indexCommitter.update(doc)
                     indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
                 } else {

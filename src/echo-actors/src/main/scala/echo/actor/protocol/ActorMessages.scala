@@ -3,7 +3,7 @@ package echo.actor.protocol
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 import echo.core.feed.FeedStatus
 
 import scala.collection.mutable.ListBuffer
@@ -35,8 +35,8 @@ object ActorMessages {
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
     // Indexer -> DirectoryStore
-    case class UpdatePodcastMetadata(docId: String, doc: PodcastDocument)
-    case class UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDocument)
+    case class UpdatePodcastMetadata(docId: String, doc: PodcastDTO)
+    case class UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDTO)
 
     /* Crawler -> Indexer
      * the podcastDocId has to be there (even for new feeds)
@@ -58,10 +58,10 @@ object ActorMessages {
     case class IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String)
 
     // Indexer -> IndexStore
-    case class IndexStoreAddPodcast(podcast: PodcastDocument)
-    case class IndexStoreUpdatePodcast(podcast: PodcastDocument)
-    case class IndexStoreAddEpisode(episode: EpisodeDocument)
-    case class IndexStoreUpdateEpisode(episode: EpisodeDocument)
+    case class IndexStoreAddPodcast(podcast: PodcastDTO)
+    case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
+    case class IndexStoreAddEpisode(episode: EpisodeDTO)
+    case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
     case class IndexSoreUpdateDocumentWebsiteData(echoId: String, websiteData: String) // used for all document types
 
     // DirectoryStore -> IndexStore
@@ -72,13 +72,13 @@ object ActorMessages {
 
 
     case class SearchRequest(query: String)                 // Gateway(= Web) -> Searcher
-    case class SearchResults(results: Array[Document])      // Searcher -> User
+    case class SearchResults(results: Array[DTO])           // Searcher -> User
 
     case class SearchIndex(query: String)                   // Searcher -> IndexStore
 
     // IndexStore -> Searcher
     trait IndexResult
-    case class IndexResultsFound(query: String, results: Array[Document]) extends IndexResult
+    case class IndexResultsFound(query: String, results: Array[DTO]) extends IndexResult
     case class NoIndexResultsFound(query: String) extends IndexResult
 
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
@@ -95,8 +95,8 @@ object ActorMessages {
 
     // DirectoryStore -> Gateway
     trait DirectoryResult
-    case class PodcastResult(podcast: PodcastDocument) extends DirectoryResult
-    case class EpisodeResult(episode: EpisodeDocument) extends DirectoryResult
+    case class PodcastResult(podcast: PodcastDTO) extends DirectoryResult
+    case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
     case class NoDocumentFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development
