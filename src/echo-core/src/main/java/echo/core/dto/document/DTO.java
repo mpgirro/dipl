@@ -1,6 +1,7 @@
 package echo.core.dto.document;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * This is the placeholder type for Documents to be stored in a search index by an
@@ -23,8 +24,14 @@ public interface DTO extends Serializable {
     String getLink();
     void setLink(String link);
 
+    LocalDateTime getPubDate();
+    void setPubDate(LocalDateTime pubDate);
+
     String getDescription();
     void setDescription(String description);
+
+    String getItunesImage();
+    void setItunesImage(String itunesImage);
 
     String getWebsiteData();
     void setWebsiteData(String websiteData);

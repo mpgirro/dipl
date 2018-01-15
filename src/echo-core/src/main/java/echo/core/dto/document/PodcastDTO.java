@@ -89,10 +89,12 @@ public class PodcastDTO implements DTO {
         this.description = description;
     }
 
+    @Override
     public LocalDateTime getPubDate() {
         return pubDate;
     }
 
+    @Override
     public void setPubDate(LocalDateTime pubDate) {
         this.pubDate = pubDate;
     }
@@ -121,10 +123,12 @@ public class PodcastDTO implements DTO {
         this.generator = generator;
     }
 
+    @Override
     public String getItunesImage() {
         return itunesImage;
     }
 
+    @Override
     public void setItunesImage(String itunesImage) {
         this.itunesImage = itunesImage;
     }
