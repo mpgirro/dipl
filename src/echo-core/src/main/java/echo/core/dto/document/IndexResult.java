@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
  */
 public class IndexResult {
 
+    private String docType;
     private String echoId;
-    private String type;
     private String title;
     private String link;
     private LocalDateTime pubDate;
@@ -19,14 +19,22 @@ public class IndexResult {
 
     }
 
-    public IndexResult(String echoId, String type, String title, String link, LocalDateTime pubDate, String description, String itunesImage) {
+    public IndexResult(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage) {
+        this.docType = docType;
         this.echoId = echoId;
-        this.type = type;
         this.title = title;
         this.link = link;
         this.pubDate = pubDate;
         this.description = description;
         this.itunesImage = itunesImage;
+    }
+
+    public String getDocType() {
+        return this.docType;
+    }
+
+    public void setDocType(String docType){
+        this.docType = docType;
     }
 
     public String getEchoId() {
@@ -35,14 +43,6 @@ public class IndexResult {
 
     public void setEchoId(String echoId) {
         this.echoId = echoId;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public void setType(String type){
-        this.type = type;
     }
 
     public String getTitle() {

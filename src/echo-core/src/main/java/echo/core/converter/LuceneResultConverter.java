@@ -21,9 +21,9 @@ public class LuceneResultConverter extends ResultConverter<Document> {
         if(doc.get("doc_type") != null){
             final String type = doc.get("doc_type");
             if(type.equals("podcast")){
-                dto.setType("podcast");
+                dto.setDocType("podcast");
             } else if(type.equals("episode")){
-                dto.setType("episode");
+                dto.setDocType("episode");
             } else {
                 throw new RuntimeException("I forgot to support a new document type : " + type);
             }
