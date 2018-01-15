@@ -1,18 +1,20 @@
 package echo.actor.gateway.routes
 
+import scala.collection.JavaConverters._
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import org.slf4j.Logger
-
-import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
-import echo.actor.gateway.json.JsonSupport
-import echo.actor.gateway.{ArrayWrapper, ResultDoc}
+import echo.core.dto.document.{DTO, EpisodeDTO, IndexResult, PodcastDTO}
+import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
+import echo.core.converter.ResultConverter
 
 /**
   * @author Maximilian Irro
   */
 class SearchRoutes(log: LoggingAdapter, search: String => Array[DTO]) extends JsonSupport {
+
+    val resultConverter = new ResultConverter()
 
     val route = logRequestResult("SearchRoutes") {
         pathPrefix("search"){
@@ -23,10 +25,20 @@ class SearchRoutes(log: LoggingAdapter, search: String => Array[DTO]) extends Js
 
                     val foundDocs = search(query)
 
+                    /*
                     for(f <- foundDocs){
                         println(f)
                     }
+                    */
 
+                    val results: Array[IndexResult] = asScalaBuffer(resultConverter.toResultList(seqAsJavaList(foundDocs))).toArray
+                    //val results: Array[IndexResult] = resultConverter.toResultList(seqAsJavaList(foundDocs))
+                    //val results: java.util.List[IndexResult] = resultConverter.toResultList(scala.collection.JavaConverters.seqAsJavaList(foundDocs.toSeq))
+                    //val results: Array[IndexResult] = resultConverter.toResultList(foundDocs.toSeq)
+
+
+
+                    /*
                     val results: Array[ResultDoc] = foundDocs.map(d => {
                         d match {
                             case pDoc: PodcastDTO => {
@@ -47,6 +59,7 @@ class SearchRoutes(log: LoggingAdapter, search: String => Array[DTO]) extends Js
                             }
                         }
                     })
+                    */
 
 
                     complete(ArrayWrapper(results))

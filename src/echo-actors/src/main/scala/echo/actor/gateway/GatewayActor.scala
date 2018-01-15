@@ -28,11 +28,11 @@ import scala.language.postfixOps
   */
 
 
+// TODO
 // needed for marshalling
-case class ResultDoc(title: String, link: String, description: String, pubDate: String, itunesImage: String)
+//case class ResultDoc(title: String, link: String, description: String, pubDate: String, itunesImage: String)
 
-// Required to protect against JSON Hijacking for Older Browsers: Always return JSON with an Object on the outside
-case class ArrayWrapper[T](results: T)
+
 
 class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging with JsonSupport {
 
