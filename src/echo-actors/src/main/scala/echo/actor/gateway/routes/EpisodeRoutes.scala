@@ -11,7 +11,7 @@ import echo.core.dto.document.{Document, EpisodeDocument, PodcastDocument}
 /**
   * @author Maximilian Irro
   */
-class EpisodeRoutes(log: LoggingAdapter) extends JsonSupport {
+class EpisodeRoutes(log: LoggingAdapter, getEpisode: String => EpisodeDocument) extends JsonSupport {
 
     val route = logRequestResult("EpisodeRoutes") {
         pathPrefix("episode"){
@@ -44,22 +44,28 @@ class EpisodeRoutes(log: LoggingAdapter) extends JsonSupport {
                         */
 
                         /*
-                                    // debugging helper
-                                    logRequest("GET-EPISODE") {
-                                        // use in-scope marshaller to create completer function
-                                        completeWith(instanceOf[EpisodeDocument]) { completer =>
-                                            // custom
-                                            val episode = getEpisode(episodeId)
-                                            if(episode != null){
-                                                complete(StatusCodes.OK, episode)
-                                            } else {
-                                                complete(StatusCodes.NotFound)
-                                            }
-                                        }
-                                    }
-                                    */
-
-                        complete(StatusCodes.NotImplemented)
+                        logRequest("GET-EPISODE") {
+                            // use in-scope marshaller to create completer function
+                            completeWith(instanceOf[EpisodeDocument]) { completer =>
+                                // custom
+                                log.info("GET /api/episode/{}", echoId)
+                                val episode = getEpisode(echoId)
+                                if (episode != null) {
+                                    complete(StatusCodes.OK, episode)
+                                } else {
+                                    complete(StatusCodes.NotFound)
+                                }
+                            }
+                        }
+                        */
+                        log.info("GET /api/episode/{}", echoId)
+                        val episode = getEpisode(echoId)
+                        if (episode != null) {
+                            println(episode)
+                            complete(StatusCodes.OK, episode)
+                        } else {
+                            complete(StatusCodes.NotFound)
+                        }
                     } ~
                         put {
                             entity(as[EpisodeDocument]) { podcastForUpdate =>

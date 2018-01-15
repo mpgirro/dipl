@@ -54,13 +54,11 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
 
         val searchRouter = new SearchRoutes(log, search)
         val podcastRouter = new PodcastRoutes(log)
-        val episodeRouter = new EpisodeRoutes(log)
+        val episodeRouter = new EpisodeRoutes(log, getEpisode)
 
         val route: Route =
             pathPrefix("api") {
-                searchRouter.route ~
-                    podcastRouter.route ~
-                    episodeRouter.route
+                searchRouter.route ~ podcastRouter.route ~ episodeRouter.route
             } ~
                 pathPrefix("healthcheck") {
                     get {
@@ -190,7 +188,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         var result: EpisodeDocument = null
 
         implicit val timeout = Timeout(5 seconds)
-        val future = directoryStore ? GetPodcast(echoId)
+        val future = directoryStore ? GetEpisode(echoId)
         val response = Await.result(future, timeout.duration).asInstanceOf[DirectoryResult]
         response match {
 
