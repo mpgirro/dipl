@@ -7,6 +7,10 @@ http://feeds.soundcloud.com/users/soundcloud:users:325487962/sounds.rss
 http://viertausendhertz.de/feed/podcast/systemfehler
 http://viertausendhertz.de/feed/podcast/mikrodilettanten
 http://atp.fm/episodes?format=rss
+http://feeds.stownpodcast.org/stownpodcast
 http://static.orf.at/podcast/oe3/oe3_fruehstueck.xml
 http://feeds.serialpodcast.org/serialpodcast
 http://feeds.feedburner.com/pod-save-america
+http://feeds.gimletmedia.com/crimetownshow
+http://feed.thisamericanlife.org/talpodcast
+http://feeds.99percentinvisible.org/99percentinvisible
