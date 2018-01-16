@@ -4,6 +4,8 @@ import echo.core.dto.document.DTO;
 import echo.core.dto.document.EpisodeDTO;
 import echo.core.dto.document.IndexResult;
 import echo.core.dto.document.PodcastDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
  */
 public class ResultConverter {
 
+    private static final Logger log = LoggerFactory.getLogger(ResultConverter.class);
+
     public IndexResult toResult(DTO dto) {
 
         final IndexResult result = new IndexResult();
@@ -32,6 +36,7 @@ public class ResultConverter {
         } else if (dto instanceof EpisodeDTO){
             result.setDocType("episode");
         } else {
+            log.warn("I forgot to support a new DTO type: {}", dto.getClass());
             throw new RuntimeException("I forgot to support a new document type : " + dto.getClass());
         }
         if(dto.getDocId()       != null){ result.setEchoId(dto.getDocId()); } // TODO change to echo_id

@@ -107,17 +107,20 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             }
 
             final ScoreDoc[] hits = indexSearcher.search(query, MAX_RESULT_COUNT).scoreDocs;
-            final DTO[] results = new DTO[hits.length];
+
 
             // calculate search window based on page and size
             // ensure that paging does not exceed amount of found results
             final int windowStart = (p-1)*s;
             int windowEnd;
-            if((p*s) > topDocs.totalHits){
+            if((p*s)-1 > topDocs.totalHits){
                 windowEnd = (int) topDocs.totalHits;
             } else {
                 windowEnd = (p*s)-1;
             }
+
+            int windowSize = windowEnd - windowStart;
+            final DTO[] results = new DTO[windowSize];
 
             for(int i = windowStart; i < windowEnd; i++){
                 results[i] = this.toDTO(indexSearcher.doc(hits[i].doc));
