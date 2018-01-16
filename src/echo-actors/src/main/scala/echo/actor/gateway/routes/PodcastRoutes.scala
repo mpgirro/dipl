@@ -10,7 +10,7 @@ import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
 /**
   * @author Maximilian Irro
   */
-class PodcastRoutes(log: LoggingAdapter) extends JsonSupport {
+class PodcastRoutes(log: LoggingAdapter, getPodcast: String => PodcastDTO) extends JsonSupport {
 
     val route = logRequestResult("PodcastRoutes") {
         pathPrefix("podcast"){
@@ -35,7 +35,14 @@ class PodcastRoutes(log: LoggingAdapter) extends JsonSupport {
 
                         // TODO get podcast with echoId
 
-                        complete(StatusCodes.NotImplemented)
+                        log.info("GET /api/podcast/{}", echoId)
+                        val podcast = getPodcast(echoId)
+                        if (podcast != null) {
+                            //println(episode)
+                            complete(StatusCodes.OK, podcast)
+                        } else {
+                            complete(StatusCodes.NotFound)
+                        }
                     } ~
                         put {
                             entity(as[PodcastDTO]) { podcastForUpdate =>

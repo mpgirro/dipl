@@ -14,13 +14,15 @@ import echo.core.feed.FeedStatus
 
 class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
-    // feedUrl -> (timestamp, status, [episodeIds], itunesImage)
-    val podcastDB = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], String)]
+    // feedUrl -> (timestamp, status, [episodeIds], PodcastDTO)
+    val podcastDB = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], PodcastDTO)]
 
-    // echoId -> (itunesImage)
+    // echoId -> (EpisodeDTO)
     val episodeDB = scala.collection.mutable.Map.empty[String, EpisodeDTO]
 
     private var indexStore: ActorRef = _
+
+    private var mockEchoIdGenerator = 0 // TODO replace with real ID gen
 
     override def receive: Receive = {
 
@@ -31,16 +33,19 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
         case ProposeNewFeed(feedUrl) => {
             log.debug("Received msg proposing a new feed: " + feedUrl)
-            if(podcastDB.contains(feedUrl)){
+
+            val fakePodcastId = "fakePc" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+
+            if(podcastDB.contains(fakePodcastId)){
                 // TODO remove the auto update
                 log.debug("Feed already in directory; will send an update request to crawler: {}", feedUrl)
-                val entry = podcastDB(feedUrl)
-                crawler ! FetchUpdateFeed(feedUrl, feedUrl, entry._3.toArray)
+                val (_,_,episodes,_) = podcastDB(fakePodcastId)
+                crawler ! FetchUpdateFeed(feedUrl, fakePodcastId, episodes.toArray)
             } else {
                 log.debug("Feed not yet known; will be passed to crawler: {}", feedUrl)
-                val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), "")
-                podcastDB += (feedUrl -> entry)
-                crawler ! FetchNewFeed(feedUrl, feedUrl)
+                val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), null)
+                podcastDB += (fakePodcastId -> entry)
+                crawler ! FetchNewFeed(feedUrl, fakePodcastId)
             }
         }
 
@@ -48,8 +53,8 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
             if(podcastDB.contains(feedUrl)){
                 log.debug("Received FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
-                val entry = podcastDB(feedUrl)
-                val newEntry = (timestamp, status, entry._3, entry._4)
+                val (_, _, episodes, podcast) = podcastDB(feedUrl)
+                val newEntry = (timestamp, status, episodes, podcast)
 
                 // note: database.updated(...) does not work for some reason
                 podcastDB.remove(feedUrl)
@@ -60,30 +65,29 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
         }
 
-        case UpdatePodcastMetadata(docId: String, doc: PodcastDTO) => {
-            log.debug("Received UpdatePodcastMetadata({},{})", docId, doc)
+        case UpdatePodcastMetadata(docId: String, podcast: PodcastDTO) => {
+            log.debug("Received UpdatePodcastMetadata({},{})", docId, podcast)
 
             // TODO for now, we only set the itunesImage in the fake database
             if(podcastDB.contains(docId)){
-                val e = podcastDB(docId)
-                val newEntry = (e._1,e._2,e._3,doc.getItunesImage)
+                val (timestamp, status, episodes, _) = podcastDB(docId)
+                val newEntry = (timestamp, status, episodes, podcast)
                 podcastDB += (docId -> newEntry)
             }
         }
 
-        case UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDTO) => {
+        case UpdateEpisodeMetadata(podcastDocId: String, episode: EpisodeDTO) => {
             // TODO
             if(podcastDB.contains(podcastDocId)){
-                log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, doc)
-                val entry = podcastDB(podcastDocId)
-                val episodes = entry._3
-                episodes += doc.getDocId
-                val newEntry = (entry._1, entry._2, episodes, entry._4)
+                log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, episode)
+                val (timestamp, status, episodes, podcast) = podcastDB(podcastDocId)
+                episodes += episode.getDocId
+                val newEntry = (timestamp, status, episodes, podcast)
 
                 podcastDB.remove(podcastDocId)
                 podcastDB += (podcastDocId -> newEntry)
             } else {
-                log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: %s", podcastDocId)
+                log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: {}", podcastDocId)
             }
 
             /* TODO we just overwrite everything here
@@ -94,7 +98,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 episodeEntry = doc;
             }
             */
-            episodeDB += (doc.getDocId -> doc)
+            episodeDB += (episode.getDocId -> episode)
         }
 
         // this is the case when an Episode has no iTunesImage URL set in the feed.
@@ -103,9 +107,9 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             log.debug("Received UsePodcastItunesImage({})", echoId)
             var found = false
 
-            for((_,(_,_,episodes,itunesImage)) <- podcastDB){
+            for((_,(_,_,episodes,podcast)) <- podcastDB){
                 if(episodes.contains(echoId)){
-                    indexStore ! IndexStoreUpdateEpisodeAddItunesImage(echoId,itunesImage)
+                    indexStore ! IndexStoreUpdateEpisodeAddItunesImage(echoId,podcast.getItunesImage)
                 }
             }
 
@@ -119,9 +123,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             log.debug("Received GetPodcast('{}')", echoId)
 
             if(podcastDB.contains(echoId)){
-                // TODO
-                throw new UnsupportedOperationException("GetPodcast(_) not yet supported!")
-                //sender ! PodcastResult(podcastDB(echoId))
+                sender ! PodcastResult(podcastDB(echoId)._4)
             } else {
                 log.error("Database does not contain Podcast with echoId={}", echoId)
                 sender ! NoDocumentFound(echoId)

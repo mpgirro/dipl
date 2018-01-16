@@ -43,7 +43,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         implicit val parserSettings = ParserSettings(actorSystem)
 
         val searchRouter = new SearchRoutes(log, search)
-        val podcastRouter = new PodcastRoutes(log)
+        val podcastRouter = new PodcastRoutes(log, getPodcast)
         val episodeRouter = new EpisodeRoutes(log, getEpisode)
 
         val route: Route =
