@@ -26,14 +26,6 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-
-
-// TODO
-// needed for marshalling
-//case class ResultDoc(title: String, link: String, description: String, pubDate: String, itunesImage: String)
-
-
-
 class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging with JsonSupport {
 
     val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
@@ -66,72 +58,6 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
                     }
                 } ~
                 complete(StatusCodes.MethodNotAllowed)
-
-        /*
-        val route: Route =
-            path("api") {
-                complete(StatusCodes.MethodNotAllowed)
-            } ~
-            path("api" / "search") {
-                get {
-                    parameter("query") { (query) =>
-
-                        log.info("Received HTTP request /search?query={}", query)
-
-                        val foundDocs = search(query)
-
-                        for(f <- foundDocs){
-                            println(f)
-                        }
-
-                        val results: Array[ResultDoc] = foundDocs.map(d => {
-                            d match {
-                                case pDoc: PodcastDocument => {
-                                    val title       = { if(pDoc.getTitle        != null) pDoc.getTitle            else "<TITLE NOT SET>"}
-                                    val link        = { if(pDoc.getLink         != null) pDoc.getLink             else "<LINK NOT SET>"}
-                                    val description = { if(pDoc.getDescription  != null) pDoc.getDescription      else "<DESCRIPTION NOT SET>"}
-                                    val pubDate     = { if (pDoc.getPubDate     != null) pDoc.getPubDate.toString else "" }
-                                    val itunesImage = { if (pDoc.getItunesImage != null) pDoc.getItunesImage      else "" }
-                                    ResultDoc(title, link, description, pubDate, itunesImage)
-                                }
-                                case eDoc: EpisodeDocument => {
-                                    val title       = { if(eDoc.getTitle        != null) eDoc.getTitle            else "<TITLE NOT SET>"}
-                                    val link        = { if(eDoc.getLink         != null) eDoc.getLink             else "<LINK NOT SET>"}
-                                    val description = { if(eDoc.getDescription  != null) eDoc.getDescription      else "<DESCRIPTION NOT SET>"}
-                                    val pubDate     = { if (eDoc.getPubDate     != null) eDoc.getPubDate.toString else "" }
-                                    val itunesImage = { if (eDoc.getItunesImage != null) eDoc.getItunesImage      else "" }
-                                    ResultDoc(title, link, description, pubDate, itunesImage)
-                                }
-                            }
-                        })
-
-                        complete(StatusCodes.OK, ArrayWrapper(results))
-                    }
-                }
-            } ~
-            path("api" / "podcast" / Segment) { podcastId =>
-                get {
-                        val podcast = getPodcast(podcastId)
-                        if(podcast != null){
-                            complete(StatusCodes.OK, podcast)
-                        } else {
-                            complete(StatusCodes.NotFound)
-                        }
-                    }
-            } ~
-            path("api" / "episode" / Segment) { episodeId =>
-                get {
-                        val episode = getEpisode(episodeId)
-                        if(episode != null){
-                            complete(StatusCodes.OK, episode)
-                        } else {
-                            complete(StatusCodes.NotFound)
-                        }
-                    }
-            } ~
-            complete(StatusCodes.MethodNotAllowed)
-            */
-
 
         val routeFlow: Flow[HttpRequest, HttpResponse, NotUsed] = Route.handlerFlow(route)
         val fServerBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routeFlow, GATEWAY_HOST, GATEWAY_PORT)
