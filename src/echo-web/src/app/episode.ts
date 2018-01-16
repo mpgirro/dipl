@@ -6,4 +6,5 @@ export class Episode {
   description: string;
   pubDate: string;
   itunesImage: string;
+  itunesDuration: string;
 }
