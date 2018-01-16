@@ -7,6 +7,7 @@ import echo.core.dto.document.EpisodeDTO;
 import echo.core.dto.document.IndexResult;
 import echo.core.dto.document.PodcastDTO;
 import echo.core.exception.FeedParsingException;
+import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
 import echo.core.parse.FeedParser;
@@ -52,7 +53,7 @@ public class CoreApp {
 
     private final API fyydAPI = new FyydAPI();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         final CoreApp app = new CoreApp();
         app.repl();
     }
@@ -79,7 +80,7 @@ public class CoreApp {
         usageMap.put("print-fyyd-feeds",  "count");
     }
 
-    private void repl() throws IOException {
+    private void repl() throws Exception {
         out.println("> Welcome to Echo:Core interactive exploration App!");
 
         while (!shutdown) {
@@ -211,12 +212,12 @@ public class CoreApp {
         out.println("all done");
     }
 
-    private void search(String[] querys){
+    private void search(String[] querys) throws SearchException {
 
         searcher.refresh(); // ensure there is data accessible to us in the index
 
         final String query = String.join(" ", querys);
-        final DTO[] results = this.searcher.search(query);
+        final DTO[] results = this.searcher.search(query, 1, 100);
         out.println("Found "+results.length+" results for query '" + query + "'");
         out.println("Results:");
         for(DTO doc : results){
