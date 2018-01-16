@@ -11,11 +11,11 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObje
 object IndexResultJsonProtocol extends DefaultJsonProtocol {
     implicit object IndexResultJsonFormat extends RootJsonFormat[IndexResult] {
         def write(r: IndexResult) = JsObject(
-            "docType"     -> Option(r.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "docType"     -> Option(r.getDocType).map(value => JsString(value)).getOrElse(JsNull),
             "echoId"      -> Option(r.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
             "title"       -> Option(r.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"        -> Option(r.getLink).map(value => JsString(value)).getOrElse(JsNull),
-            "pubDate"     -> Option(r.getPubDate.toString).map(value => JsString(value)).getOrElse(JsNull),
+            "pubDate"     -> Option(r.getPubDate).map(value => JsString(value.toString)).getOrElse(JsNull),
             "description" -> Option(r.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage" -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
         )
