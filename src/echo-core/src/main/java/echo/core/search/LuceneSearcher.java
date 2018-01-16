@@ -4,6 +4,7 @@ import echo.core.converter.DocumentConverter;
 import echo.core.converter.LuceneEpisodeConverter;
 import echo.core.converter.LucenePodcastConverter;
 import echo.core.dto.document.DTO;
+import echo.core.exception.SearchException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -24,6 +25,8 @@ import java.io.IOException;
 public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
     private static final Logger log = LoggerFactory.getLogger(LuceneSearcher.class);
+
+    private static final int MAX_RESULT_COUNT = 1000;
 
     private final SearcherManager searcherManager;
     private final Analyzer analyzer;
@@ -64,13 +67,27 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         this.episodeConverter = new LuceneEpisodeConverter();
     }
 
+    /**
+     *
+     * @param q query of the search
+     * @param p page of the search window
+     * @param s size of the search window
+     * @return
+     * @throws SearchException if the end of the requested search window (p x s) exceeds the maximum size of retrieved
+     *                         documents, or if it exceeds the size of the found documents
+     */
     @Override
-    public DTO[] search(String queryStr) {
+    public DTO[] search(String q, int p, int s) throws SearchException {
+
+        // ensure that we are within boundries of our search window
+        if( (p*s) > MAX_RESULT_COUNT){
+            throw new SearchException("Request search range (p x s) exceeds maximum search window s of " + MAX_RESULT_COUNT);
+        }
 
         IndexSearcher indexSearcher = null;
         try {
 
-            final Query query = this.queryParser.parse(queryStr);
+            final Query query = this.queryParser.parse(q);
 
 //            searcherManager.maybeRefreshBlocking();
             indexSearcher = this.searcherManager.acquire();
@@ -79,19 +96,36 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             log.debug("Searching for query: "+query.toString());
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
-            if(topDocs.totalHits > 0){
-                final ScoreDoc[] hits = indexSearcher.search(query, 1000).scoreDocs;
-                final DTO[] results = new DTO[hits.length];
-                for(int i = 0; i < hits.length; i++){
-                    results[i] = this.toDTO(indexSearcher.doc(hits[i].doc));
-                }
-                return results;
-            } else {
+
+            if(topDocs.totalHits == 0){
                 return new DTO[0];
             }
 
+
+            if( p > 1 && (p*s) > topDocs.totalHits ){
+                throw new SearchException("Request search range (p x s) exceeds amount of found results: " + topDocs.totalHits);
+            }
+
+            final ScoreDoc[] hits = indexSearcher.search(query, MAX_RESULT_COUNT).scoreDocs;
+            final DTO[] results = new DTO[hits.length];
+
+            // calculate search window based on page and size
+            // ensure that paging does not exceed amount of found results
+            final int windowStart = (p-1)*s;
+            int windowEnd;
+            if((p*s) > topDocs.totalHits){
+                windowEnd = (int) topDocs.totalHits;
+            } else {
+                windowEnd = (p*s)-1;
+            }
+
+            for(int i = windowStart; i < windowEnd; i++){
+                results[i] = this.toDTO(indexSearcher.doc(hits[i].doc));
+            }
+            return results;
+
         } catch (IOException | ParseException e) {
-            log.error("Lucene Index has encountered an error searching for: {}", queryStr);
+            log.error("Lucene Index has encountered an error searching for: {}", q);
             e.printStackTrace();
             return new DTO[0]; // TODO throw a custom exception, and do not return anything
         } finally {
