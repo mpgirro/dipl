@@ -60,7 +60,6 @@ object EchoApp extends App {
         println("> Welcome to Echo:Actor Engine interactive exploration App!")
 
         while(!shutdown){
-            print("> ")
             val input = StdIn.readLine()
             def exec(commands: Array[String]): Unit = {
                 commands.toList match {

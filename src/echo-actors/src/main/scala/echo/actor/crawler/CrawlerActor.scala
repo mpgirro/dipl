@@ -37,19 +37,22 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
         }
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
-
             log.info("Received FetchNewFeed({})", feedUrl)
+
             try {
                 val feedData = download(feedUrl)
+                if(feedData != null){
+                    // send downloaded data to Indexer for processing
+                    indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
 
-                // send downloaded data to Indexer for processing
-                indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
-
-                // send status to DirectoryStore
-                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    // send status to DirectoryStore
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                } else {
+                    log.error("Received NULL from downloading feed content from URL: {}", feedUrl)
+                }
             } catch {
                 case e: IOException => {
-                    log.error("Could not download feed from: {}", feedUrl)
+                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", feedUrl, e.getMessage)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
@@ -57,26 +60,45 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
 
         case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String]) => {
 
-            log.info("Received FetchUpdateFeed({})", feedUrl)
-            val feedData = download(feedUrl)
-            if(feedData != null){
-                // send downloaded data to Indexer for processing
-                indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
+            // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
 
-                // send status to DirectoryStore
-                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-            } else {
-                log.error("Could not download feed from: {}", feedUrl)
-                directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+            log.info("Received FetchUpdateFeed({})", feedUrl)
+            try {
+                val feedData = download(feedUrl)
+                if(feedData != null){
+                    // send downloaded data to Indexer for processing
+                    indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
+
+                    // send status to DirectoryStore
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                } else {
+                    log.error("Received NULL from downloading feed (update) content from URL: {}", feedUrl)
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
+            } catch {
+                case e: IOException => {
+                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", feedUrl, e.getMessage)
+                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
             }
+
         }
 
-        case FetchWebsite(echoId: String, url: String) => {
+        case (echoId: String, url: String) => {
             log.debug("Received FetchWebsite({},{})", echoId, url)
 
-            val websiteData = download(url)
-            if(websiteData != null){
-                indexer ! IndexWebsiteData(echoId, websiteData)
+            try{
+                val websiteData = download(url)
+                if(websiteData != null){
+                    indexer ! IndexWebsiteData(echoId, websiteData)
+                } else {
+                    log.error("Received NULL from downloading content from URL: {}", url)
+                }
+            } catch {
+                case e: IOException => {
+                    log.error("IO Exception trying to download content from URL: {} [reason: {}]", url, e.getMessage)
+                    directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
             }
         }
 
@@ -134,7 +156,9 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
       * @example get("http://www.example.com/getInfo")
       * @example get("http://www.example.com/getInfo", 5000)
       * @example get("http://www.example.com/getInfo", 5000, 5000)
+      * @throws IOException
       */
+    @throws(classOf[IOException])
     private def download(url: String,
                          connectTimeout: Int = 5000,
                          readTimeout: Int = 5000,
@@ -187,13 +211,11 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
                 return scanner.next
             }
         } catch {
-            case e: IOException => {
-                log.error("Exception while loading src from URL: {} [reason: {}]", url, e.getMessage)
-                return null;
-            }
             case e: SocketTimeoutException => {
                 log.error("Timout while loading src from URL: {} [reason: {}]", url, e.getMessage)
-                return null;
+            }
+            case e: java.lang.StackOverflowError => {
+                log.error("StackOverflowError trying to download: {}", url)
             }
         }
         return null;

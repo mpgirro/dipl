@@ -6,6 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.Logging
 import echo.actor.crawler.CrawlerActor
 import echo.actor.protocol.ActorMessages._
+import echo.core.dto.document.{EpisodeDTO, PodcastDTO}
 import echo.core.exception.FeedParsingException
 import echo.core.feed.FeedStatus
 import echo.core.parse.{FeedParser, PodEngineFeedParser, RomeFeedParser}
@@ -53,7 +54,9 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
             log.debug("Received IndexFeedData for feed: " + feedUrl)
             try {
                 // TODO this is all highly test code
+
                 val podcast = feedParser.parseFeed(feedData)
+
                 if(podcast != null){
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
@@ -77,8 +80,8 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                         crawler ! FetchWebsite(podcast.getEchoId, podcast.getLink)
                     }
 
-
                     val episodes = feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData)
+
                     if(episodes != null){
                         for(episode <- episodes){
 
@@ -104,11 +107,11 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                             }
                         }
                     } else {
-                        log.warning("Parsing generated a null-List[EpisodeDocument] for feed: {}", feedUrl)
+                        log.warning("Parsing generated a NULL-List[EpisodeDocument] for feed: {}", feedUrl)
                     }
 
                 } else {
-                    log.warning("Parsing generated a null-PodcastDocument for feed: {}", feedUrl)
+                    log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
                 }
             } catch {
                 case e: FeedParsingException => {
@@ -116,6 +119,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     //log.error("FeedParsingException: {}", e)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
                 }
+                case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
             }
 
         }

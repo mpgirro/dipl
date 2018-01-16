@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.{DTO, EpisodeDTO}
+import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.search.{IndexSearcher, LuceneSearcher}
 
@@ -82,13 +83,22 @@ class IndexStore extends Actor with ActorLogging {
             log.info("Received SearchIndex('{}') message", query)
 
             indexSearcher.refresh()
-            val results = indexSearcher.search(query)
-            if(results.length > 0){
-                sender ! IndexResultsFound(query,results)
-            } else {
-                log.warning("No Podcast matching query: '"+query+"' found in the index")
-                sender ! NoIndexResultsFound(query)
+            try {
+                val results = indexSearcher.search(query, 1, 100) // TODO get page and size as arguments from message!
+                if(results.length > 0){
+                    sender ! IndexResultsFound(query,results)
+                } else {
+                    log.warning("No Podcast matching query: '"+query+"' found in the index")
+                    sender ! NoIndexResultsFound(query)
+                }
+            } catch {
+                case e: SearchException => {
+                    log.error("Error trying to search the index [reason: {}]", e.getMessage)
+                    sender ! NoIndexResultsFound(query) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
+                }
             }
+
+
 
         }
 
