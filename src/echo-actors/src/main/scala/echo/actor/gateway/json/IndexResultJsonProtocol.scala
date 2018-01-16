@@ -22,7 +22,16 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue) = {
             value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "itunesImage") match {
                 case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(description), JsString(itunesImage)) =>
-                    new IndexResult(docType, echoId, title, link, LocalDateTime.parse(pubDate), description, itunesImage)
+                    val result = new IndexResult()
+                    result.setDocType(docType)
+                    result.setEchoId(echoId)
+                    result.setTitle(title)
+                    result.setLink(link)
+                    result.setPubDate(LocalDateTime.parse(pubDate))
+                    result.setDescription(description)
+                    result.setItunesImage(itunesImage)
+                    result
+                    //new IndexResult(docType, echoId, title, link, LocalDateTime.parse(pubDate), description, itunesImage)
                 case _ => throw new DeserializationException("IndexResult expected")
             }
         }
