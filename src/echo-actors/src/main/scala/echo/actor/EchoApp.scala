@@ -128,7 +128,7 @@ object EchoApp extends App {
 
     private def search(query: List[String]): Unit = {
         implicit val timeout = Timeout(10 seconds)
-        val future = searcher ? SearchRequest(query.mkString(" "))
+        val future = searcher ? SearchRequest(query.mkString(" "), 1, 100)
         val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
         response match {
 

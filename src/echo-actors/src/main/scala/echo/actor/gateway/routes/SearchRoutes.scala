@@ -12,18 +12,18 @@ import echo.core.converter.ResultConverter
 /**
   * @author Maximilian Irro
   */
-class SearchRoutes(log: LoggingAdapter, search: String => Array[DTO]) extends JsonSupport {
+class SearchRoutes(log: LoggingAdapter, search: (String,Int,Int) => Array[DTO]) extends JsonSupport {
 
     val resultConverter = new ResultConverter()
 
     val route = logRequestResult("SearchRoutes") {
         pathPrefix("search"){
             get {
-                parameter("query") { (query) =>
+                parameter("query", "page" ? "1", "size" ? "20") { (query, page, size) =>
 
-                    log.info("Received HTTP request /search?query={}", query)
+                    log.info("Received HTTP request /search?query={}&page={}&size={}", query, page.toInt, size.toInt)
 
-                    val foundDocs = search(query)
+                    val foundDocs = search(query, page.toInt, size.toInt)
                     val results: Array[IndexResult] = asScalaBuffer(resultConverter.toResultList(seqAsJavaList(foundDocs))).toArray
 
                     /*

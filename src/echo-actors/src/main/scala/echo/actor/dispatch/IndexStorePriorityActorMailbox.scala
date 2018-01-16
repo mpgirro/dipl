@@ -12,7 +12,7 @@ import echo.actor.protocol.ActorMessages._
 class IndexStorePriorityActorMailbox(settings: ActorSystem.Settings, config: Config) extends UnboundedPriorityMailbox(
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
-        case SearchIndex(_) => 0
+        case SearchIndex(_,_,_) => 0
         case IndexStoreAddPodcast(_) => 1
         case IndexStoreAddEpisode(_) => 1
         case IndexStoreUpdatePodcast(_) => 2

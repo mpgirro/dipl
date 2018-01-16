@@ -75,9 +75,9 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         }
     }
 
-    private def search(query: String): Array[DTO] = {
+    private def search(query: String, page: Int, size: Int): Array[DTO] = {
         implicit val timeout = Timeout(5 seconds)
-        val future = searcher ? SearchRequest(query)
+        val future = searcher ? SearchRequest(query, page, size)
         val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
         response match {
 

@@ -71,10 +71,10 @@ object ActorMessages {
     case class UsePodcastItunesImage(echoId: String)
 
 
-    case class SearchRequest(query: String)                 // Gateway(= Web) -> Searcher
+    case class SearchRequest(query: String, page: Int, size: Int)                 // Gateway(= Web) -> Searcher
     case class SearchResults(results: Array[DTO])           // Searcher -> User
 
-    case class SearchIndex(query: String)                   // Searcher -> IndexStore
+    case class SearchIndex(query: String, page: Int, size: Int)                   // Searcher -> IndexStore
 
     // IndexStore -> Searcher
     trait IndexResult

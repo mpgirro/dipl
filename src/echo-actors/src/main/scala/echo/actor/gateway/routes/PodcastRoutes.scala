@@ -16,66 +16,39 @@ class PodcastRoutes(log: LoggingAdapter) extends JsonSupport {
         pathPrefix("podcast"){
             pathEndOrSingleSlash {
                 get {
-                    /*
-                    complete {
-                        // TODO get all Podcasts
-                    }
-                    */
+
+                    // TODO get all Podcasts
+
                     complete(StatusCodes.NotImplemented)
                 } ~
                     post {
                         entity(as[PodcastDTO]) { podcastForCreate =>
-                            /*
-                            complete {
-                                // TODO create podcast
-                            }
-                            */
+
+                            // TODO create new podcast
+
                             complete(StatusCodes.NotImplemented)
                         }
                     }
             } ~
                 pathPrefix(Segment) { echoId =>
                     get {
-                        /*
-                        complete {
-                            // TODO get podcast with echoId
-                        }
-                        */
-                        /*
-                     // debugging helper
-                     logRequest("GET-PODCAST") {
-                         // use in-scope marshaller to create completer function
-                         completeWith(instanceOf[PodcastDocument]) { completer =>
-                             // custom
-                             val podcast = getPodcast(podcastId)
-                             if(podcast != null){
-                                 complete(StatusCodes.OK, podcast)
-                             } else {
-                                 complete(StatusCodes.NotFound)
-                             }
-                         }
-                     }
-                     */
+
+                        // TODO get podcast with echoId
 
                         complete(StatusCodes.NotImplemented)
                     } ~
                         put {
                             entity(as[PodcastDTO]) { podcastForUpdate =>
-                                /*
-                                complete {
-                                    // TODO update podcast with echoId
-                                }
-                                */
+
+                                // TODO update podcast with echoId
+
                                 complete(StatusCodes.NotImplemented)
                             }
                         } ~
                         delete {
+
                             // TODO delete podcast -  I guess this should not be supported?
-                            /*
-                            onSuccess(hotelService.deleteHotel(id)) { _ =>
-                                complete(NoContent)
-                            }
-                            */
+
                             complete(StatusCodes.NotImplemented)
                         }
                 }
