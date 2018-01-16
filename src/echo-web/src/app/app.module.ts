@@ -14,7 +14,9 @@ import { EpisodeService } from './episode.service';
 import { EpisodeDetailComponent } from './episode-detail/episode-detail.component';
 
 import { AppRoutingModule } from './/app-routing.module';
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http';
+
+import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { HttpClientModule } from '@angular/common/http'
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    Angular2FontawesomeModule
   ],
   providers: [SearchService, PodcastService, EpisodeService],
   bootstrap: [AppComponent]

@@ -11,6 +11,7 @@ export class SearchComponent implements OnInit {
 
   results: Result[];
   selectedResult: Result;
+  query: string;
 
   constructor(private searchService: SearchService) { }
 
@@ -19,9 +20,10 @@ export class SearchComponent implements OnInit {
 
   onSelect(result: Result): void {
     this.selectedResult = result;
-  } 
+  }
 
   search(query: string): void {
+    this.query = query;
     this.searchService.search(query)
       .subscribe(response => this.results = response.results);
   }

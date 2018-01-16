@@ -20,7 +20,7 @@ export class SearchService {
       // if not search term, return empty result array.
       return of(new ResultWrapper());
     }
-    console.log("requesting search result from backend for query: " + query)
+    console.log('requesting search result from backend for query: ' + query);
     return this.http.get<ResultWrapper>(`/api/search?query=${query}`).pipe(
       tap(_ => console.log(`found results matching "${query}"`)),
       catchError(this.handleError<ResultWrapper>('search', new ResultWrapper()))
@@ -40,7 +40,7 @@ export class SearchService {
       console.error(error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
-      //this.log(`${operation} failed: ${error.message}`);
+      // this.log(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

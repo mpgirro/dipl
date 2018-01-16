@@ -11,6 +11,12 @@
           placeholder="every podcast leaves an echo. find it...">
       </div>
 
+      <!--
+      <div *ngIf="query">
+        <p>Search results for '{{query}}':</p>
+      </div>
+      -->
+
       <ul class="list-unstyled">
 
         <li *ngFor="let result of results"
@@ -21,22 +27,32 @@
                    src="{{result.itunesImage}}"
                    alt="Generic placeholder image">
               <div class="media-body">
-                <h5 class="mt-0">{{result.title}}</h5>
+
+                <h5 class="mt-0">
+                  <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}">{{result.title}}</a>
+                  <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}">{{result.title}}</a>
+                </h5>
                 <p class="mb-1">
+
                   <small class="text-muted">
+                    <span *ngIf="result.pubDate">
                       <span class="oi oi-calendar"></span>
-                      {{result.pubDate | date: 'd MMM yyyy' }}
+                      <span class="mr-2">{{result.pubDate | date: 'd MMM yyyy' }}</span>
+                    </span>
 
-                      <fa [name]="calendar-alt"></fa>
-                      <fa [name]="'rocket'"></fa>
-<!-- rendered -->
-<fa>
-  <i class="fa fa-rocket"></i>
-</fa>
+                    <span class="badge badge-secondary text-uppercase">{{result.docType}}</span>
 
-<i fa [name]="'rocket'"></i>
-<!-- rendered -->
-<i fa class="fa fa-rocket"></i>
+                    <fa [name]="calendar-alt"></fa>
+                    <fa [name]="'rocket'"></fa>
+                    <!-- rendered -->
+                    <fa>
+                      <i class="fa fa-rocket"></i>
+                    </fa>
+
+                    <i fa [name]="'rocket'"></i>
+                    <!-- rendered -->
+                    <i fa class="fa fa-rocket"></i>
+
                   </small>
 
                 </p>
@@ -47,6 +63,8 @@
                     {{result.link}}
                   </a>
                 </p>
+
+
               </div>
 
 
