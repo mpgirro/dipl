@@ -1,0 +1,32 @@
+<div class="text-center my-5">
+  <img src="{{podcast.itunesImage}}"
+       alt="Generic placeholder image"
+       style="max-width: 70%; height: auto;">
+</div>
+
+
+<h1 class="h5 my-3">
+  {{podcast.title}}
+</h1>
+
+<div class="mb-3">
+  <small class="text-muted">
+    <span *ngIf="podcast.pubDate">
+      <span class="oi oi-calendar"></span>
+      <span class="mr-2">{{podcast.pubDate | date: 'd MMM yyyy' }}</span>
+    </span>
+  </small>
+</div>
+
+<p class="mb-1"
+   [innerHTML]="podcast.description">
+</p>
+
+<p class="my-3">
+  <a href="{{podcast.link}}">
+    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+    {{podcast.link}}
+  </a>
+</p>
+
+<button class="my-3" (click)="goBack()">go back</button>
