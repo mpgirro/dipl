@@ -3,9 +3,8 @@ package echo.actor.gateway
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
-import akka.http.scaladsl.server.Directives.{complete, get, parameter, path, _}
+import akka.http.scaladsl.server.Directives.{complete, get, _}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.settings.{ParserSettings, RoutingSettings}
 import akka.pattern.ask
@@ -17,7 +16,6 @@ import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.routes.{EpisodeRoutes, PodcastRoutes, SearchRoutes}
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsNumber, JsObject, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

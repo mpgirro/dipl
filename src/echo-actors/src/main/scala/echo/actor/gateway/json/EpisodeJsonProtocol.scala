@@ -1,5 +1,7 @@
 package echo.actor.gateway.json
 
+import java.time.LocalDateTime
+
 import echo.core.dto.document.EpisodeDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -8,20 +10,22 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObje
   */
 object EpisodeJsonProtocol extends DefaultJsonProtocol {
     implicit object EpisodeJsonFormat extends RootJsonFormat[EpisodeDTO] {
-        def write(p: EpisodeDTO) = JsObject(
-            "echoId"      -> Option(p.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
-            "title"       -> Option(p.getTitle).map(value => JsString(value)).getOrElse(JsNull),
-            "link"        -> Option(p.getLink).map(value => JsString(value)).getOrElse(JsNull),
-            "description" -> Option(p.getDescription).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesImage" -> Option(p.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
+        def write(e: EpisodeDTO) = JsObject(
+            "echoId"      -> Option(e.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "title"       -> Option(e.getTitle).map(value => JsString(value)).getOrElse(JsNull),
+            "link"        -> Option(e.getLink).map(value => JsString(value)).getOrElse(JsNull),
+            "pubDate"     -> Option(e.getPubDate).map(value => JsString(value.toString)).getOrElse(JsNull),
+            "description" -> Option(e.getDescription).map(value => JsString(value)).getOrElse(JsNull),
+            "itunesImage" -> Option(e.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
         )
         def read(value: JsValue) = {
-            value.asJsObject.getFields("echoId", "title", "link", "description", "itunesImage") match {
-                case Seq(JsString(echoId), JsString(title), JsString(link), JsString(description), JsString(itunesImage)) => {
+            value.asJsObject.getFields("echoId", "title", "link", "pubDate", "description", "itunesImage") match {
+                case Seq(JsString(echoId), JsString(title), JsString(link),  JsString(pubDate), JsString(description), JsString(itunesImage)) => {
                     val episode = new EpisodeDTO()
                     episode.setEchoId(echoId)
                     episode.setTitle(title)
                     episode.setLink(link)
+                    episode.setPubDate(LocalDateTime.parse(pubDate))
                     episode.setDescription(description)
                     episode.setItunesImage(itunesImage)
                     episode

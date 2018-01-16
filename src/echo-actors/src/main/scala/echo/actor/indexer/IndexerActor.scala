@@ -82,7 +82,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     if(episodes != null){
                         for(episode <- episodes){
 
-                            val fakeGUID = "FAKE-GUID-" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                            val fakeGUID = "fake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
                             episode.setEchoId(fakeGUID)
                             episode.setDocId(fakeGUID) // TODO verify good GUID!
 
