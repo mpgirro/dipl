@@ -133,11 +133,11 @@ object EchoApp extends App {
         response match {
 
             case SearchResults(results) => {
-                println("Found "+results.length+" results for query '" + query.mkString(" ") + "'");
+                println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'");
                 println("Results:")
-                for (doc <- results) {
+                for (result <- results.getResults) {
                     println()
-                    println(DocumentFormatter.cliFormat(doc))
+                    println(DocumentFormatter.cliFormat(result))
                     println()
                 }
                 println()

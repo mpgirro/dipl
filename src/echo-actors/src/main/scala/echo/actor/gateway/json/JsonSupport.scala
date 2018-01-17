@@ -13,8 +13,9 @@ case class ArrayWrapper[T](results: T)
 
 // collect your json format instances into a support trait:
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-    implicit def arrayWrapper[T: JsonFormat] = jsonFormat1(ArrayWrapper.apply[T])
+    implicit def arrayWrapper[T: JsonFormat] = jsonFormat1(ArrayWrapper.apply[T]) // TODO unsued?
     implicit val resultFormat = IndexResultJsonProtocol.IndexResultJsonFormat
     implicit val podcastFormat = PodcastJsonProtocol.PodcastJsonFormat
     implicit val episodeFormat = EpisodeJsonProtocol.EpisodeJsonFormat
+    implicit val resultWrapperFormat = ResultWrapperJsonProtocol.ResultWrapperJsonFormat
 }

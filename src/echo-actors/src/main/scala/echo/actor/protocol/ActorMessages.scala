@@ -3,7 +3,7 @@ package echo.actor.protocol
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
+import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
 import echo.core.feed.FeedStatus
 
 import scala.collection.mutable.ListBuffer
@@ -72,13 +72,13 @@ object ActorMessages {
 
 
     case class SearchRequest(query: String, page: Int, size: Int)                 // Gateway(= Web) -> Searcher
-    case class SearchResults(results: Array[DTO])           // Searcher -> User
+    case class SearchResults(results: ResultWrapperDTO)                           // Searcher -> User
 
     case class SearchIndex(query: String, page: Int, size: Int)                   // Searcher -> IndexStore
 
     // IndexStore -> Searcher
     trait IndexResult
-    case class IndexResultsFound(query: String, results: Array[DTO]) extends IndexResult
+    case class IndexResultsFound(query: String, results: ResultWrapperDTO) extends IndexResult
     case class NoIndexResultsFound(query: String) extends IndexResult
 
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies

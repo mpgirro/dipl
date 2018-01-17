@@ -5,16 +5,16 @@ import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import org.slf4j.Logger
-import echo.core.dto.document.{DTO, EpisodeDTO, IndexResult, PodcastDTO}
+import echo.core.dto.document._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.core.converter.ResultConverter
 
 /**
   * @author Maximilian Irro
   */
-class SearchRoutes(log: LoggingAdapter, search: (String,Int,Int) => Array[DTO]) extends JsonSupport {
+class SearchRoutes(log: LoggingAdapter, search: (String,Int,Int) => ResultWrapperDTO) extends JsonSupport {
 
-    val resultConverter = new ResultConverter()
+    //val resultConverter = new ResultConverter()
 
     val route = logRequestResult("SearchRoutes") {
         pathPrefix("search"){
@@ -23,8 +23,11 @@ class SearchRoutes(log: LoggingAdapter, search: (String,Int,Int) => Array[DTO]) 
 
                     log.info("Received HTTP request /search?query={}&page={}&size={}", query, page.toInt, size.toInt)
 
+                    /*
                     val foundDocs = search(query, page.toInt, size.toInt)
                     val results: Array[IndexResult] = asScalaBuffer(resultConverter.toResultList(seqAsJavaList(foundDocs))).toArray
+                    */
+                    val results = search(query, page.toInt, size.toInt)
 
                     /*
                     for(r <- results){
@@ -32,7 +35,8 @@ class SearchRoutes(log: LoggingAdapter, search: (String,Int,Int) => Array[DTO]) 
                     }
                     */
 
-                    complete(ArrayWrapper(results))
+                    complete(results)
+                    //complete(ArrayWrapper(results))
                 }
             }
 

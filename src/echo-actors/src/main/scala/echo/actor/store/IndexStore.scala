@@ -85,8 +85,8 @@ class IndexStore extends Actor with ActorLogging {
             indexSearcher.refresh()
             try {
                 val results = indexSearcher.search(query, page, size) // TODO get page and size as arguments from message!
-                if(results.length > 0){
-                    sender ! IndexResultsFound(query,results)
+                if(results.getTotalHits > 0){
+                    sender ! IndexResultsFound(query,results) // TODO results ist jetzt ein ResultWrapperDTO
                 } else {
                     log.warning("No Podcast matching query: '"+query+"' found in the index")
                     sender ! NoIndexResultsFound(query)
