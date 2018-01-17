@@ -2,6 +2,7 @@ package echo.core.util;
 
 import echo.core.dto.document.DTO;
 import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.document.IndexResult;
 import echo.core.dto.document.PodcastDTO;
 import org.jsoup.*;
 
@@ -37,6 +38,35 @@ public class DocumentFormatter {
             appendString(builder, eDoc.getLink());
         } else {
             throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
+        }
+        return builder.toString();
+    }
+
+    public static String cliFormat(IndexResult result){
+        final StringBuilder builder = new StringBuilder();
+        if(result.getDocType().equals("podcast")){
+            appendString(builder, "[Podcast]");
+            appendString(builder, result.getTitle());
+            if(result.getPubDate() != null){
+                builder.append(result.getPubDate());
+            }
+            appendString(builder, Jsoup.parse(result.getDescription()).text());
+            appendString(builder, result.getLink());
+        } else if(result.getDocType().equals("episode")){
+            appendString(builder, "[Episode]");
+            appendString(builder, result.getTitle());
+            if(result.getPubDate() != null){
+                appendString(builder, result.getPubDate().toString());
+            }
+            /* TODO
+            if(result.getItunesDuration() != null){
+                appendString(builder, "Duration: "+result.getItunesDuration().toString());
+            }
+            */
+            appendString(builder, Jsoup.parse(result.getDescription()).text());
+            appendString(builder, result.getLink());
+        } else {
+            throw new RuntimeException("Forgot to support new Echo DTO type: "+result.getClass());
         }
         return builder.toString();
     }

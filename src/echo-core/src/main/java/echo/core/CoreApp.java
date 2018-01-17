@@ -2,10 +2,7 @@ package echo.core;
 
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.dto.document.DTO;
-import echo.core.dto.document.EpisodeDTO;
-import echo.core.dto.document.IndexResult;
-import echo.core.dto.document.PodcastDTO;
+import echo.core.dto.document.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
@@ -217,10 +214,10 @@ public class CoreApp {
         searcher.refresh(); // ensure there is data accessible to us in the index
 
         final String query = String.join(" ", querys);
-        final DTO[] results = this.searcher.search(query, 1, 100);
-        out.println("Found "+results.length+" results for query '" + query + "'");
+        final ResultWrapperDTO results = this.searcher.search(query, 1, 100);
+        out.println("Found "+results.getTotalHits()+" results for query '" + query + "'");
         out.println("Results:");
-        for(DTO doc : results){
+        for(IndexResult doc : results.getResults()){
             out.println();
             out.println(DocumentFormatter.cliFormat(doc));
             out.println();
