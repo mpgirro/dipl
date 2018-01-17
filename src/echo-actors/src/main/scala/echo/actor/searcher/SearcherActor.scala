@@ -22,13 +22,13 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
     override def receive: Receive = {
 
         case SearchRequest(query,page,size) => {
-            log.info("Received SearchRequest for query: " + query)
+            log.info("Received SearchRequest('{}',{},{})", query, page, size)
 
             // TODO for now, we will pass the query 1:1 to the indexRepo; later we will have to do some query processing and additional scoring/data aggregation (show-images, etc)
             implicit val timeout = Timeout(10 seconds)
 
-            log.info("Sending SearchIndex('"+query+"') message")
-            val future = indexStore ? SearchIndex(query,page,size)
+            log.info("Sending SearchIndex('{}',{},{}) message", query, page, size)
+            val future = indexStore ? SearchIndex(query, page, size)
             try{
                 val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
                 response match {

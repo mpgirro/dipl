@@ -124,7 +124,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
                 return resultWrapper;
             }
 
-            if( p > 1 && (p*s) > topDocs.totalHits ){
+            if( p > 1 && (p*s) >= topDocs.totalHits-1 ){
                 throw new SearchException("Request search range (p x s) exceeds amount of found results: " + topDocs.totalHits);
             }
 
