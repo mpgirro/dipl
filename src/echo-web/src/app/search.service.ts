@@ -11,17 +11,24 @@ import { catchError, map, tap } from 'rxjs/operators';
 @Injectable()
 export class SearchService {
 
-  private searchUrl = '/api/search';  // URL to web api
+  private searchUrl = '/api/search?';  // URL to web api
 
   constructor(private http: HttpClient) { }
 
-  search(query: string): Observable<ResultWrapper> {
+  search(query: string, page: int, size: int): Observable<ResultWrapper> {
     if (!query.trim()) {
       // if not search term, return empty result array.
       return of(new ResultWrapper());
     }
-    console.log('requesting search result from backend for query: ' + query);
-    return this.http.get<ResultWrapper>(`/api/search?query=${query}`).pipe(
+
+    const q = 'query=' + query;
+    const p = (page) ? `&page=${page}` : '';
+    const s = (size) ? `&size=${size}` : '';
+
+    const request = this.searchUrl + q + p + s;
+
+    console.log('sending search request: ' + request);
+    return this.http.get<ResultWrapper>(request).pipe(
       tap(_ => console.log(`found results matching "${query}"`)),
       catchError(this.handleError<ResultWrapper>('search', new ResultWrapper()))
     );

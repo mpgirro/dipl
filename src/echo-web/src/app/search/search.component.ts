@@ -12,6 +12,9 @@ import {ResultWrapper} from '../resultwrapper';
 })
 export class SearchComponent implements OnInit {
 
+  DEFAULT_SIZE = 20;
+  currSize: int;
+
   currPage: int;
   maxPage: int;
   totalHits: int;
@@ -28,8 +31,21 @@ export class SearchComponent implements OnInit {
     const q = this.route.snapshot.queryParamMap.get('query');
     const p = this.route.snapshot.queryParamMap.get('page');
     const s = this.route.snapshot.queryParamMap.get('size');
+
+    if (!p) {
+      this.currPage = 1;
+    } else {
+      this.currPage = p;
+    }
+
+    if (!s) {
+      this.currSize = this.DEFAULT_SIZE;
+    } else {
+      this.currSize = s;
+    }
+
     // if (!q.trim()) {
-    this.foo(q, p, s);
+    this.foo(q, this.currPage, this.currSize);
     // }
   }
 
@@ -43,18 +59,18 @@ export class SearchComponent implements OnInit {
       const q = query;
 
       // use a juggling-check (==) to test for both null and undefined
-      const p = (page == null) ? 1 : page;
-      const s = (size == null) ? 20 : size;
+      const p = (page == null) ? this.currPage : page;
+      const s = (size == null) ? this.currSize : size;
 
       console.log('GET /search for: query=' + q + ', page=' + p + ', size=' + s)
       this.query = q; // TODO hier wird scheinbar das textfeld in der UI nicht richtig befüllt, wenn man die seite nur per URL param aufruft
       this.searchService.search(q, p, s)
         .subscribe(response => {
 
-          this.currPage = response.currPage;
-          this.maxPage = response.maxPage;
+          this.currPage  = response.currPage;
+          this.maxPage   = response.maxPage;
           this.totalHits = response.totalHits;
-          this.results = response.results;
+          this.results   = response.results;
           console.log('Received resultWrapper');
           console.log('currPage=' + this.currPage);
           console.log('maxPage=' + this.maxPage);
@@ -66,29 +82,26 @@ export class SearchComponent implements OnInit {
 
   }
 
-  search(query: string, page: int, size: int): void {
+  search(query: string): void {
     // this.router.navigate(['/search?query=']);
     /*
     this.route.navigate( [
       'SearchComponent', { query: query
       }]);
       */
-    console.log('received search request: query=' + query + ' & page=' + page + ' & and size=' + size);
+    console.log('received search request: query=' + query + ' & page=' + this.currPage + ' & and size=' + this.currSize);
 
     if (this.query !== query) {
 
-      const p = (page == null) ? 1 : page;
-      const s = (size == null) ? 20 : size;
-
       const navigationExtras = {
-        queryParams: { 'query': query, 'page' : p, 'size': s }
+        queryParams: { 'query': query, 'page' : this.currPage, 'size': this.currSize }
       };
 
       // Navigate to the search page with extras
       // TODO do this only if we are not already on this page
       this.router.navigate(['/search'], navigationExtras);
 
-      this.foo(query, p, s);
+      this.foo(query, this.currPage, this.currSize);
     }
 
 
