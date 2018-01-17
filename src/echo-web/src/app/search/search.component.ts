@@ -32,35 +32,22 @@ export class SearchComponent implements OnInit {
     const p = this.route.snapshot.queryParamMap.get('page');
     const s = this.route.snapshot.queryParamMap.get('size');
 
-    if (!p) {
-      this.currPage = 1;
-    } else {
-      this.currPage = p;
-    }
+    this.currPage = (p) ? p : 1;
+    this.currSize = (s) ? s : this.DEFAULT_SIZE;
 
-    if (!s) {
-      this.currSize = this.DEFAULT_SIZE;
-    } else {
-      this.currSize = s;
-    }
-
-    // if (!q.trim()) {
-    this.foo(q, this.currPage, this.currSize);
-    // }
+    this.search(q);
   }
 
   onSelect(result: Result): void {
     this.selectedResult = result;
   }
 
-  foo(query: string, page: int, size: int): void {
+  search(query: string): void {
 
     if (query) {
       const q = query;
-
-      // use a juggling-check (==) to test for both null and undefined
-      const p = (page == null) ? this.currPage : page;
-      const s = (size == null) ? this.currSize : size;
+      const p = this.currPage;
+      const s = this.currSize;
 
       console.log('GET /search for: query=' + q + ', page=' + p + ', size=' + s)
       this.query = q; // TODO hier wird scheinbar das textfeld in der UI nicht richtig befüllt, wenn man die seite nur per URL param aufruft
@@ -82,36 +69,30 @@ export class SearchComponent implements OnInit {
 
   }
 
-  search(query: string): void {
-    // this.router.navigate(['/search?query=']);
-    /*
-    this.route.navigate( [
-      'SearchComponent', { query: query
-      }]);
-      */
-    console.log('received search request: query=' + query + ' & page=' + this.currPage + ' & and size=' + this.currSize);
+  onEnter(query: string): void {
+
+    // TODO set the currPage via the paging-navbar
+    this.currPage = (this.currPage) ? this.currPage : 1;
+
+    console.log('onEnter: query=' + query + ' & page=' + this.currPage + ' & and size=' + this.currSize);
 
     if (this.query !== query) {
+
+      this.currPage = 1; // query has changed, so we need to reset the page counter!
 
       const navigationExtras = {
         queryParams: { 'query': query, 'page' : this.currPage, 'size': this.currSize }
       };
 
       // Navigate to the search page with extras
-      // TODO do this only if we are not already on this page
       this.router.navigate(['/search'], navigationExtras);
 
-      this.foo(query, this.currPage, this.currSize);
+      this.search(query);
+    } else {
+
+      // TODO here we need to do stuff if the query has NOT changed, but the page-pointer was changed in the paging-navbar
+
     }
-
-
-
-    // TODO delete code afterwars, and do it on load instead
-    /*
-    this.query = query;
-    this.searchService.search(query)
-      .subscribe(response => this.results = response.results);
-      */
   }
 
 }
