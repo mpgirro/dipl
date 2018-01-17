@@ -132,8 +132,9 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
             resultWrapper.setCurrPage(p);
 
-            final Double dMaxPage = ((double)topDocs.totalHits)/s;
-            final int maxPage = new BigDecimal(dMaxPage).setScale(2, RoundingMode.CEILING).intValue();
+            final double dMaxPage = ((double)topDocs.totalHits) / ((double) s);
+            // final int maxPage = new BigDecimal(dMaxPage).setScale(2, RoundingMode.CEILING).intValue();
+            final int maxPage = (int) Math.ceil(dMaxPage);
             if(maxPage == 0 && resultWrapper.getCurrPage() == 1){
                 resultWrapper.setMaxPage(1);
             } else {
