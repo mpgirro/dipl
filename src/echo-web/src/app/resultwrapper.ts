@@ -1,9 +1,9 @@
 import { Result } from './result';
 
 export class ResultWrapper {
-    currPage: int;
-    maxPage: int;
-    totalHits: int;
+    currPage: number;
+    maxPage: number;
+    totalHits: number;
     results: Result[];
 
     constructor() {

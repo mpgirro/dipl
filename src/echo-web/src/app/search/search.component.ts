@@ -13,13 +13,13 @@ import {ResultWrapper} from '../resultwrapper';
 export class SearchComponent implements OnInit {
 
   DEFAULT_SIZE = 20;
-  currSize: int;
+  currSize: number;
 
-  currPage: int;
-  maxPage: int;
-  pages: int[];
+  currPage: number;
+  maxPage: number;
+  pages: number[];
 
-  totalHits: int;
+  totalHits: number;
 
   results: Result[];
   selectedResult: Result;
@@ -34,8 +34,8 @@ export class SearchComponent implements OnInit {
     const p = this.route.snapshot.queryParamMap.get('p');
     const s = this.route.snapshot.queryParamMap.get('s');
 
-    this.currPage = (p) ? p : 1;
-    this.currSize = (s) ? s : this.DEFAULT_SIZE;
+    this.currPage = (p) ? Number(p) : 1;
+    this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
 
     this.search(q);
   }

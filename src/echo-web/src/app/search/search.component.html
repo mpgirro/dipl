@@ -85,7 +85,7 @@
 
             <li *ngIf="currPage > 1" class="page-item">
               <a class="page-link"
-                 href="/search?query={{query}}&page={{currPage-1}}&size={{currSize}}"
+                 href="/search?q={{query}}&p={{currPage-1}}&s={{currSize}}"
                  aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
@@ -95,12 +95,12 @@
             <li *ngFor="let page of pages"
                 class="page-item"
                 [class.active]="page === currPage">
-              <a class="page-link" href="/search?query={{query}}&page={{page}}&size={{currSize}}">{{page}}</a>
+              <a class="page-link" href="/search?q={{query}}&p={{page}}&s={{currSize}}">{{page}}</a>
             </li>
 
             <li *ngIf="currPage < maxPage" class="page-item">
               <a class="page-link"
-                 href="/search?query={{query}}&page={{currPage+1}}&size={{currSize}}"
+                 href="/search?q={{query}}&p={{currPage+1}}&s={{currSize}}"
                  aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
