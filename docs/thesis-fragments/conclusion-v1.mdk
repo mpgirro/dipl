@@ -1,0 +1,15 @@
+
+Ein paar Gedanken, sehr salopp und schlecht hingeschrieben:
+
+
+
+When exposing actor system functions to the outside, e.g. via HTTP/REST, we see in the Actor Engine that the code needed for only a small subset of the overall functionality is way larger than the internal actor system messages. 
+
+In theory, we could do all actor communication via REST (via Akka HTTP e.g.). On the one hand, this would only lead to every actor being a Microservices, with all that is required for it (discussion!), and on the other hand, the amount of additional code also would lead to a major increase in the codebase.
+
+While actor based systems do take a lot of management overhead from the user/programmer, Microservices on the other always require the user to mind these concerncs for every microservice codebase. Frameworks may ease the amount of work to be done, yet they tend to be very large and sophisticated, and therefore microservices tend to become quite large programms to (at least as compiled artifacts).
+
+In generell, we argue that distributed concurrent programming (via actors) tend to lead to much smaller and therefore more maintainable codebases than microservice architectures do, for the Actor Frameworks hide much more cross cutting concerns from the user, than microservice architecture ever could, due to their total openness. This of course means that Actor Frameworks naturally have to be more restrictive than a microservice architecture approach would be.
+
+
+--> hier irgendwie drauf rauslaufen, dass zB Jolie im Prinzip eh Microservices compiled, aber dadurch das es so low level in der Programmiersprache verankert ist, kann der Compiler wieder vieles von dem machen, was Actor Frameworks auch tun/sicherstellen. Im Prinzip ist auf diesem Level kein/kaum Unterschied mehr zwischen Actors und MS.
