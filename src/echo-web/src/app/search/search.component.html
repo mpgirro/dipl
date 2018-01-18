@@ -6,9 +6,10 @@
       -->
       <div class="input-group input-group my-5">
         <input #searchBox id="search-box"
-          (keyup.enter)="onEnter(searchBox.value)"
-          type="text" class="form-control"
-          placeholder="every podcast leaves an echo. find it...">
+               [(ngModel)]="query"
+               (keyup.enter)="onEnter(searchBox.value)"
+               type="text" class="form-control"
+               placeholder="every podcast leaves an echo. find it...">
       </div>
 
       <!--
@@ -32,11 +33,12 @@
               <img class="mr-3"
                    src="{{result.itunesImage}}"
                    alt="Generic placeholder image">
+
               <div class="media-body">
 
                 <h5 class="mt-0">
-                  <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}">{{result.title}}</a>
-                  <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}">{{result.title}}</a>
+                  <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}" class="result-h">{{result.title}}</a>
+                  <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}" class="result-h">{{result.title}}</a>
                 </h5>
                 <p class="mb-1">
 

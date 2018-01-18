@@ -81,7 +81,7 @@ export class SearchComponent implements OnInit {
 
     console.log('onEnter: query=' + query + ' & page=' + this.currPage + ' & and size=' + this.currSize);
 
-    if (this.query !== query) {
+
 
       this.currPage = 1; // query has changed, so we need to reset the page counter!
 
@@ -93,11 +93,7 @@ export class SearchComponent implements OnInit {
       this.router.navigate(['/search'], navigationExtras);
 
       this.search(query);
-    } else {
 
-      // TODO here we need to do stuff if the query has NOT changed, but the page-pointer was changed in the paging-navbar
-
-    }
   }
 
 }

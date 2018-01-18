@@ -12,8 +12,6 @@ import { EpisodeService } from '../episode.service';
 })
 export class EpisodeDetailComponent implements OnInit {
 
-  // @Input() echoId: string;
-
   @Input() episode: Episode;
 
   constructor(private route: ActivatedRoute,
