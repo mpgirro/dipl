@@ -178,6 +178,7 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
             conn.connect
 
             var redirect = false;
+            var notFound = false;
 
             // normally, 3xx is redirect
             val status = conn.getResponseCode;
@@ -186,10 +187,15 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
                 case HttpURLConnection.HTTP_MOVED_TEMP => redirect = true;
                 case HttpURLConnection.HTTP_MOVED_PERM => redirect = true;
                 case HttpURLConnection.HTTP_SEE_OTHER  => redirect = true;
+                case HttpURLConnection.HTTP_NOT_FOUND  => notFound = true;
+            }
+
+            // if we've got a 404, there is no point going on
+            if (notFound) {
+                return null;
             }
 
             if (redirect) {
-
                 // get redirect url from "location" header field
                 val newUrl = conn.getHeaderField("Location");
 
