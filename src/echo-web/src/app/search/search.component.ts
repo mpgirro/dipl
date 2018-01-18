@@ -17,6 +17,8 @@ export class SearchComponent implements OnInit {
 
   currPage: int;
   maxPage: int;
+  pages: int[];
+
   totalHits: int;
 
   results: Result[];
@@ -58,6 +60,9 @@ export class SearchComponent implements OnInit {
           this.maxPage   = response.maxPage;
           this.totalHits = response.totalHits;
           this.results   = response.results;
+
+          this.pages = Array(this.maxPage).fill().map((x, i) => i + 1);
+
           console.log('Received resultWrapper');
           console.log('currPage=' + this.currPage);
           console.log('maxPage=' + this.maxPage);
