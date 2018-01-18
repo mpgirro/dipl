@@ -30,9 +30,9 @@ export class SearchComponent implements OnInit {
               private searchService: SearchService) { }
 
   ngOnInit() {
-    const q = this.route.snapshot.queryParamMap.get('query');
-    const p = this.route.snapshot.queryParamMap.get('page');
-    const s = this.route.snapshot.queryParamMap.get('size');
+    const q = this.route.snapshot.queryParamMap.get('q');
+    const p = this.route.snapshot.queryParamMap.get('p');
+    const s = this.route.snapshot.queryParamMap.get('s');
 
     this.currPage = (p) ? p : 1;
     this.currSize = (s) ? s : this.DEFAULT_SIZE;
@@ -51,7 +51,6 @@ export class SearchComponent implements OnInit {
       const p = this.currPage;
       const s = this.currSize;
 
-      console.log('GET /search for: query=' + q + ', page=' + p + ', size=' + s)
       this.query = q; // TODO hier wird scheinbar das textfeld in der UI nicht richtig befüllt, wenn man die seite nur per URL param aufruft
       this.searchService.search(q, p, s)
         .subscribe(response => {
@@ -62,37 +61,25 @@ export class SearchComponent implements OnInit {
           this.results   = response.results;
 
           this.pages = Array(this.maxPage).fill().map((x, i) => i + 1);
-
-          console.log('Received resultWrapper');
-          console.log('currPage=' + this.currPage);
-          console.log('maxPage=' + this.maxPage);
-          console.log('totalHits=' + this.totalHits);
-          console.log('results.length=' + this.results.length);
         });
-
     }
-
   }
 
   onEnter(query: string): void {
 
     // TODO set the currPage via the paging-navbar
-    this.currPage = (this.currPage) ? this.currPage : 1;
+    // this.currPage = (this.currPage) ? this.currPage : 1;
 
-    console.log('onEnter: query=' + query + ' & page=' + this.currPage + ' & and size=' + this.currSize);
+    this.currPage = 1; // query has changed, so we need to reset the page counter!
 
+    const navigationExtras = {
+      queryParams: { 'q': query, 'p' : this.currPage, 's': this.currSize }
+    };
 
+    // Navigate to the search page with extras
+    this.router.navigate(['/search'], navigationExtras);
 
-      this.currPage = 1; // query has changed, so we need to reset the page counter!
-
-      const navigationExtras = {
-        queryParams: { 'query': query, 'page' : this.currPage, 'size': this.currSize }
-      };
-
-      // Navigate to the search page with extras
-      this.router.navigate(['/search'], navigationExtras);
-
-      this.search(query);
+    this.search(query);
 
   }
 

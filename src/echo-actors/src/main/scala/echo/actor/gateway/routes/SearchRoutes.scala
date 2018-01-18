@@ -25,7 +25,7 @@ class SearchRoutes(search: (String,Int,Int) => ResultWrapperDTO)(implicit val co
     val route =
         pathPrefix("search"){
             get {
-                parameters('query, 'page.?, 'size.?) { (query, page, size) =>
+                parameters('q, 'p.?, 's.?) { (query, page, size) =>
 
                     val p: Int = page match {
                         case Some(x) => x.toInt
@@ -36,7 +36,7 @@ class SearchRoutes(search: (String,Int,Int) => ResultWrapperDTO)(implicit val co
                         case None    => DEFAULT_SIZE
                     }
 
-                    log.info("Received HTTP request /search?query={}&page={}&size={}", query, p, s)
+                    log.info("Received HTTP request /search?q={}&p={}&s={}", query, p, s)
 
                     val results = search(query, p, s)
 

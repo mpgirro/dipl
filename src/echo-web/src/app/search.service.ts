@@ -21,9 +21,9 @@ export class SearchService {
       return of(new ResultWrapper());
     }
 
-    const q = 'query=' + query;
-    const p = (page) ? `&page=${page}` : '';
-    const s = (size) ? `&size=${size}` : '';
+    const q = 'q=' + query;
+    const p = (page) ? `&p=${page}` : '';
+    const s = (size) ? `&s=${size}` : '';
 
     const request = this.searchUrl + q + p + s;
 
