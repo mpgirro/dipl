@@ -51,10 +51,15 @@ public class RomeFeedParser implements FeedParser {
 
             final Module itunesFeedModule = syndFeed.getModule("http://www.itunes.com/dtds/podcast-1.0.dtd");
             final FeedInformation itunesFeedInfo = (FeedInformation) itunesFeedModule;
-            if(itunesFeedInfo.getImage() != null){
-                doc.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
+            if(itunesFeedInfo != null){
+                if(itunesFeedInfo.getImage() != null){
+                    doc.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
+                }
+
+                doc.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+            } else {
+                log.debug("No iTunes Namespace elements found in Podcast");
             }
-            doc.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
 
             // here I process the feed specific atom Links
             final List<Link> atomLinks = getAtomLinks(syndFeed);
@@ -122,7 +127,7 @@ public class RomeFeedParser implements FeedParser {
                         doc.setItunesDuration(itunesEntryInfo.getDuration().toString());
                     }
                 } else {
-                    log.debug("No iTunes Namespace elements found");
+                    log.debug("No iTunes Namespace elements found in Episode");
                 }
 
                 results.add(doc);
