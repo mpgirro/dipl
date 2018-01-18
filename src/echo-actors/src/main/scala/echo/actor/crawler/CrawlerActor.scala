@@ -6,12 +6,9 @@ import java.time.LocalDateTime
 import java.util.Scanner
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.http.scaladsl.server.Directives._
 import echo.actor.protocol.ActorMessages._
-import echo.core.feed.FeedStatus
+import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class CrawlerActor extends Actor with ActorLogging {
 
@@ -21,14 +18,6 @@ class CrawlerActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
 
     val fyydAPI: FyydAPI = new FyydAPI();
-
-    /*
-    import akka.pattern.pipe
-    import context.dispatcher
-
-    final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(context.system))
-    val http = Http(context.system)
-    */
 
     override def receive: Receive = {
 

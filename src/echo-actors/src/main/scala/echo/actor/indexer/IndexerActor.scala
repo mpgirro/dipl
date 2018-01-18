@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.protocol.ActorMessages._
 import echo.core.exception.FeedParsingException
-import echo.core.feed.FeedStatus
+import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 
 class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
