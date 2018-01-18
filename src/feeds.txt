@@ -20,3 +20,8 @@ http://viertausendhertz.de/feed/podcast/elementarfragen
 http://mythpodcast.libsyn.com/rss
 http://criticalrolepodcast.geekandsundry.com/feed/
 http://adventurezone.libsyn.com/rss
+https://www.wrint.de/feed/podcast
+https://daringfireball.net/thetalkshow/rss
+https://www.hoaxilla.de/podcast/hoaxilla.xml
+http://blog.richter.fm/category/podcast/derweisheit/feed
+http://chaosradio.ccc.de/chaosradio-latest.rss
