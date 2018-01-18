@@ -188,6 +188,7 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
                 case HttpURLConnection.HTTP_MOVED_PERM => redirect = true;
                 case HttpURLConnection.HTTP_SEE_OTHER  => redirect = true;
                 case HttpURLConnection.HTTP_NOT_FOUND  => notFound = true;
+                case _ => log.warning("Unhandeled status received from download: {}", status)
             }
 
             // if we've got a 404, there is no point going on
