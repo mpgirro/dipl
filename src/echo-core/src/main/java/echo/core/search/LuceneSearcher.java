@@ -124,10 +124,6 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
                 return resultWrapper;
             }
 
-            if( p > 1 && (p*s) >= topDocs.totalHits-1 ){
-                throw new SearchException("Request search range (p x s) exceeds amount of found results: " + topDocs.totalHits);
-            }
-
             final ScoreDoc[] hits = indexSearcher.search(query, MAX_RESULT_COUNT).scoreDocs;
 
             resultWrapper.setCurrPage(p);
@@ -146,17 +142,19 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             // ensure that paging does not exceed amount of found results
             final int windowStart = (p-1)*s;
             int windowEnd;
-            if((p*s)-1 > topDocs.totalHits){
+            if((p*s) > topDocs.totalHits){
                 windowEnd = (int) topDocs.totalHits;
             } else {
-                windowEnd = (p*s)-1;
+                windowEnd = (p*s);
             }
 
             int windowSize = windowEnd - windowStart;
             final IndexResult[] results = new IndexResult[windowSize];
 
+            int j = 0;
             for(int i = windowStart; i < windowEnd; i++){
-                results[i] = this.resultConverter.toResult(this.toDTO(indexSearcher.doc(hits[i].doc)));
+                results[j] = this.resultConverter.toResult(this.toDTO(indexSearcher.doc(hits[i].doc)));
+                j += 1;
             }
 
             resultWrapper.setResults(results);
