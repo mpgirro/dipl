@@ -80,12 +80,12 @@ public class RomeFeedParser implements FeedParser {
                     // TODO
                 } else if(atomLink.getRel().equals("hub")){
                     // TODO
-                } else if(atomLink.getRel().equals("rel=search")){
+                } else if(atomLink.getRel().equals("search")){
                     // TODO
-                } else if(atomLink.getRel().equals("rel=via")){
+                } else if(atomLink.getRel().equals("via")){
                     // TODO
                 } else {
-                    log.warn("Came across an <atom:link> with a relation I do not handle: rel={}", atomLink.getRel());
+                    log.warn("Came across an <atom:link> with a relation I do not handle: '{}'", atomLink.getRel());
                 }
             }
 
