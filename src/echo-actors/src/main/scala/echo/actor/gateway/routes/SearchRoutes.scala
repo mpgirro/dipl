@@ -17,7 +17,6 @@ import echo.core.converter.ResultConverter
   */
 class SearchRoutes(search: (String,Int,Int) => ResultWrapperDTO)(implicit val context: ActorContext) extends JsonSupport {
 
-    //val resultConverter = new ResultConverter()
     val log = Logging(context.system, classOf[SearchRoutes])
 
     val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
@@ -37,29 +36,12 @@ class SearchRoutes(search: (String,Int,Int) => ResultWrapperDTO)(implicit val co
                         case None    => DEFAULT_SIZE
                     }
 
-                    /*
-                    val p = Option(page).map(v => v.toInt).getOrElse(1)
-                    val s = Option(size).map(v => v.toInt).getOrElse(20)
-                    */
-
-
-                    println(s"Received HTTP request /search?query=$query&page=$p&size=$s") //  -- (p=$p and s=$s)
                     log.info("Received HTTP request /search?query={}&page={}&size={}", query, p, s)
 
-                    /*
-                    val foundDocs = search(query, page.toInt, size.toInt)
-                    val results: Array[IndexResult] = asScalaBuffer(resultConverter.toResultList(seqAsJavaList(foundDocs))).toArray
-                    */
                     val results = search(query, p, s)
 
-                    /*
-                    for(r <- results){
-                        println(r)
-                    }
-                    */
-
                     complete(results)
-                    //complete(ArrayWrapper(results))
+
                 }
             }
 
