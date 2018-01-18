@@ -3,7 +3,6 @@ package echo.actor.store
 import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import echo.actor.EchoApp.indexStore
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.document.{EpisodeDTO, PodcastDTO}
 import echo.core.feed.FeedStatus
