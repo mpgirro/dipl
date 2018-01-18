@@ -109,7 +109,17 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
             for((_,(_,_,episodes,podcast)) <- podcastDB){
                 if(episodes.contains(echoId)){
+
+                    // first ('cause concurrency 'n stuff) we send along the notification to update the image in the index
                     indexStore ! IndexStoreUpdateEpisodeAddItunesImage(echoId,podcast.getItunesImage)
+
+                    // then we update the info in our own local database
+                    if(episodeDB.contains(echoId)){
+                        val episode = episodeDB(echoId)
+                        episode.setItunesImage(podcast.getItunesImage)
+                    } else {
+                        log.error("Episode echoId={} was found as a member of a podcast, but is not present in the Episode table")
+                    }
                 }
             }
 
