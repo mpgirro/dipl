@@ -1,13 +1,12 @@
 package echo.core.converter;
 
-import echo.core.dto.document.DTO;
-import echo.core.dto.document.EpisodeDTO;
-import echo.core.dto.document.IndexResult;
-import echo.core.dto.document.PodcastDTO;
+import echo.core.dto.DTO;
+import echo.core.dto.EpisodeDTO;
+import echo.core.dto.IndexResult;
+import echo.core.dto.PodcastDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 

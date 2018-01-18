@@ -1,6 +1,4 @@
-package echo.core.dto.document;
-
-import java.util.List;
+package echo.core.dto;
 
 /**
  * @author Maximilian Irro

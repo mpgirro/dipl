@@ -1,12 +1,12 @@
 package echo.core.converter;
 
-import echo.core.dto.document.DTO;
+import echo.core.dto.DTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This is the generic converter between Echo {@link echo.core.dto.document.DTO}'s
+ * This is the generic converter between Echo {@link DTO}'s
  * and documents of type I of the specific search index (e.g. org.apache.lucene.document.Document
  * or org.apache.solr.common.SolrInputDocument)
  *

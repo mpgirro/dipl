@@ -3,7 +3,7 @@ package echo.actor.store
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{DTO, EpisodeDTO}
+import echo.core.dto.EpisodeDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.search.{IndexSearcher, LuceneSearcher}

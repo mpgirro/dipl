@@ -1,4 +1,4 @@
-package echo.core.parse;
+package echo.core.parse.rss;
 
 import com.rometools.modules.atom.modules.AtomLinkModule;
 import com.rometools.modules.itunes.FeedInformation;
@@ -6,8 +6,8 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import echo.core.dto.document.EpisodeDTO;
-import echo.core.dto.document.PodcastDTO;
+import echo.core.dto.EpisodeDTO;
+import echo.core.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 import com.rometools.rome.feed.synd.SyndFeed;

@@ -15,7 +15,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.routes.{EpisodeRoutes, PodcastRoutes, SearchRoutes}
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

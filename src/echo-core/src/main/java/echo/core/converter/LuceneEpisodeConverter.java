@@ -1,7 +1,6 @@
 package echo.core.converter;
 
-import echo.core.dto.document.DTO;
-import echo.core.dto.document.EpisodeDTO;
+import echo.core.dto.EpisodeDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

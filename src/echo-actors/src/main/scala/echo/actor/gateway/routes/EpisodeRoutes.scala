@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{complete, get, _}
 import org.slf4j.Logger
 import echo.actor.gateway.json.JsonSupport
-import echo.core.dto.document.{DTO, EpisodeDTO, PodcastDTO}
+import echo.core.dto.{DTO, EpisodeDTO, PodcastDTO}
 
 /**
   * @author Maximilian Irro

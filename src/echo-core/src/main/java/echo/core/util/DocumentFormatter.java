@@ -1,9 +1,9 @@
 package echo.core.util;
 
-import echo.core.dto.document.DTO;
-import echo.core.dto.document.EpisodeDTO;
-import echo.core.dto.document.IndexResult;
-import echo.core.dto.document.PodcastDTO;
+import echo.core.dto.DTO;
+import echo.core.dto.EpisodeDTO;
+import echo.core.dto.IndexResult;
+import echo.core.dto.PodcastDTO;
 import org.jsoup.*;
 
 /**

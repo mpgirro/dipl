@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{EpisodeDTO, PodcastDTO}
+import echo.core.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.feed.FeedStatus
 
 /**

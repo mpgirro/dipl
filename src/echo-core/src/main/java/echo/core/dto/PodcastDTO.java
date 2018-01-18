@@ -1,4 +1,4 @@
-package echo.core.dto.document;
+package echo.core.dto;
 
 import java.time.LocalDateTime;
 

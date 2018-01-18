@@ -7,7 +7,7 @@ import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.document.{DTO, ResultWrapperDTO}
+import echo.core.dto.{DTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 

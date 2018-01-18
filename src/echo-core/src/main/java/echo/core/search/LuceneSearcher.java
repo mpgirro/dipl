@@ -4,10 +4,9 @@ import echo.core.converter.DocumentConverter;
 import echo.core.converter.LuceneEpisodeConverter;
 import echo.core.converter.LucenePodcastConverter;
 import echo.core.converter.ResultConverter;
-import echo.core.dto.document.DTO;
-import echo.core.dto.document.DTOResultWrapperDTO;
-import echo.core.dto.document.IndexResult;
-import echo.core.dto.document.ResultWrapperDTO;
+import echo.core.dto.DTO;
+import echo.core.dto.IndexResult;
+import echo.core.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -22,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * @author Maximilian Irro

@@ -8,9 +8,9 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.config.ConfigFactory
-import echo.core.dto.document._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.core.converter.ResultConverter
+import echo.core.dto.ResultWrapperDTO
 
 /**
   * @author Maximilian Irro
