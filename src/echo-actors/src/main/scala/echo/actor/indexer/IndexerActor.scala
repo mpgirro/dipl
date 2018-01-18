@@ -61,8 +61,6 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    val fakePodcastId = "fakePc" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
-
                     podcast.setEchoId(podcastDocId)
                     podcast.setDocId(podcastDocId)
 
@@ -87,7 +85,7 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
                     if(episodes != null){
                         for(episode <- episodes){
 
-                            val fakeEpisodeId = "fakeEp" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                            val fakeEpisodeId = "episode-fake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
                             episode.setEchoId(fakeEpisodeId)
                             episode.setDocId(fakeEpisodeId) // TODO verify good GUID!
 

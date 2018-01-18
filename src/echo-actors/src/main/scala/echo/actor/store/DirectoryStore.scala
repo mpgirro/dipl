@@ -14,11 +14,15 @@ import echo.core.feed.FeedStatus
 
 class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
 
-    // feedUrl -> (timestamp, status, [episodeIds], PodcastDTO)
+    // podcastId -> (timestamp, status, [episodeIds], PodcastDTO)
     val podcastDB = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], PodcastDTO)]
 
-    // echoId -> (EpisodeDTO)
+    // episodeId -> (EpisodeDTO)
     val episodeDB = scala.collection.mutable.Map.empty[String, EpisodeDTO]
+
+    // TODO for now, podcasts only have one single feed
+    // podcastId -> FeedURLs
+    val feedDB = scala.collection.mutable.Map.empty[String, String]
 
     private var indexStore: ActorRef = _
 
@@ -34,7 +38,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
         case ProposeNewFeed(feedUrl) => {
             log.debug("Received msg proposing a new feed: " + feedUrl)
 
-            val fakePodcastId = "fakePc" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+            val fakePodcastId = "podcast-fake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
 
             if(podcastDB.contains(fakePodcastId)){
                 // TODO remove the auto update
@@ -43,26 +47,46 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 crawler ! FetchUpdateFeed(feedUrl, fakePodcastId, episodes.toArray)
             } else {
                 log.debug("Feed not yet known; will be passed to crawler: {}", feedUrl)
-                val entry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), null)
-                podcastDB += (fakePodcastId -> entry)
+
+                // create a new entry in PodcastDB
+                val podcastEntry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), null)
+                podcastDB += (fakePodcastId -> podcastEntry)
+
+                // create a new entry in FeedDB
+                val feedEntry = feedUrl
+                feedDB += (fakePodcastId -> feedEntry)
+
+                // do this at the end, to be sure that the database contains already the entries!
+                // TODO hier bin ich vielleicht zu abhängig davon das die werte schon in der datenbank stehen!
                 crawler ! FetchNewFeed(feedUrl, fakePodcastId)
             }
         }
 
         case FeedStatusUpdate(feedUrl, timestamp, status) => {
 
-            if(podcastDB.contains(feedUrl)){
-                log.debug("Received FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
-                val (_, _, episodes, podcast) = podcastDB(feedUrl)
-                val newEntry = (timestamp, status, episodes, podcast)
+            var success = false;
 
-                // note: database.updated(...) does not work for some reason
-                podcastDB.remove(feedUrl)
-                podcastDB += (feedUrl -> newEntry)
-            } else {
-                log.error("Received UNKNOWN FEED FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
+            for( (podcastId,f) <- feedDB){
+                if(f.equals(feedUrl)){
+                    log.debug("Received FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
+                    if(podcastDB.contains(podcastId)){
+                        val (_, _, episodes, podcast) = podcastDB(podcastId)
+                        val newEntry = (timestamp, status, episodes, podcast)
+
+                        // note: database.updated(...) does not work for some reason
+                        podcastDB.remove(podcastId)
+                        podcastDB += (podcastId -> newEntry)
+
+                        success = true
+                    } else {
+                        log.error(s"Found a Podcast id=$podcastId in FeedDB, but it could not be found in PodcastDB")
+                    }
+                }
             }
 
+            if(!success){
+                log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", feedUrl, timestamp, status)
+            }
         }
 
         case UpdatePodcastMetadata(docId: String, podcast: PodcastDTO) => {
@@ -73,6 +97,8 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 val (timestamp, status, episodes, _) = podcastDB(docId)
                 val newEntry = (timestamp, status, episodes, podcast)
                 podcastDB += (docId -> newEntry)
+            } else {
+                log.error("Received a UpdatePodcastMetadata for an unknown podcast document claiming docId: {}", docId)
             }
         }
 
