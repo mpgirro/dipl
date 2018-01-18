@@ -13,10 +13,11 @@ import echo.core.parse.api.FyydAPI
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
+class CrawlerActor extends Actor with ActorLogging {
 
     //val log = Logging(context.system, classOf[CrawlerActor])
 
+    private var indexer: ActorRef = _
     private var directoryStore: ActorRef = _
 
     val fyydAPI: FyydAPI = new FyydAPI();
@@ -30,6 +31,11 @@ class CrawlerActor (val indexer: ActorRef) extends Actor with ActorLogging {
     */
 
     override def receive: Receive = {
+
+        case ActorRefIndexerActor(ref) => {
+            log.debug("Received ActorRefIndexerActor(_)")
+            indexer = ref;
+        }
 
         case ActorRefDirectoryStoreActor(ref) => {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
