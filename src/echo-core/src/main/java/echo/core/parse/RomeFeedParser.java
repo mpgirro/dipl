@@ -114,12 +114,15 @@ public class RomeFeedParser implements FeedParser {
 
                 final Module itunesEntryModule = e.getModule("http://www.itunes.com/dtds/podcast-1.0.dtd");
                 final EntryInformation itunesEntryInfo = (EntryInformation) itunesEntryModule;
-
-                if(itunesEntryInfo.getImage() != null){
-                    doc.setItunesImage(itunesEntryInfo.getImage().toExternalForm());
-                }
-                if(itunesEntryInfo.getDuration() != null){
-                    doc.setItunesDuration(itunesEntryInfo.getDuration().toString());
+                if(itunesEntryInfo != null){
+                    if(itunesEntryInfo.getImage() != null){
+                        doc.setItunesImage(itunesEntryInfo.getImage().toExternalForm());
+                    }
+                    if(itunesEntryInfo.getDuration() != null){
+                        doc.setItunesDuration(itunesEntryInfo.getDuration().toString());
+                    }
+                } else {
+                    log.debug("No iTunes Namespace elements found");
                 }
 
                 results.add(doc);
