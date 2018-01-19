@@ -3,24 +3,24 @@ package echo.actor.gateway.service
 import javax.ws.rs.Path
 
 import akka.actor.{ActorContext, ActorRef}
-import akka.event.{Logging, LoggingAdapter}
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.{Directives, Route, StandardRoute}
+import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.protocol.ActorMessages.{EpisodeResult, GetEpisode, NoDocumentFound}
-import echo.core.dto.EpisodeDTO
+import echo.actor.protocol.ActorMessages._
+import echo.core.dto.{EpisodeDTO, PodcastDTO}
 import io.swagger.annotations._
 
 /**
   * @author Maximilian Irro
   */
 
-@Path("/api/episode")  // @Path annotation required for Swagger
-@Api(value = "/api/episode",
+@Path("/api/podcast")  // @Path annotation required for Swagger
+@Api(value = "/api/podcast",
      produces = "application/json")
-class EpisodeService(log: LoggingAdapter,
+class PodcastService(log: LoggingAdapter,
                      internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -32,19 +32,21 @@ class EpisodeService(log: LoggingAdapter,
 
     implicit val timeout = internalTimeout
 
-    val route = pathPrefix("episode") { pathEndOrSingleSlash { getAllEpisodes ~ postEpisode } } ~
-                    pathPrefix("episode" / Segment) { id => getEpisode(id) ~ putEpisode(id) ~ deleteEpisode(id) }
+    val route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
+                    pathPrefix("podcast" / Segment) { id =>
+                        pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~ getEpisodesByPodcast(id)
+                    }
 
 
     def setDirectoryStoreActorRef(directoryStore: ActorRef) = this.directoryStore = directoryStore
 
 
-    @ApiOperation(value = "Get list of all Episodes",
-                  nickname = "getAllEpisodes",
+    @ApiOperation(value = "Get list of all Podcasts",
+                  nickname = "getAllPodcasts",
                   httpMethod = "GET",
                   response = classOf[EpisodeDTO],
                   responseContainer = "Set")
-    def getAllEpisodes: Route = get {
+    def getAllPodcasts: Route = get {
         /*
         complete {
             //(userRepository ? UserRepository.GetUsers).mapTo[Set[UserRepository.User]]
@@ -53,18 +55,30 @@ class EpisodeService(log: LoggingAdapter,
         complete(StatusCodes.NotImplemented)
     }
 
-    @ApiOperation(value = "Get episode",
-                  nickname = "getEpisode",
+    @ApiOperation(value = "Get podcast",
+                  nickname = "getPodcast",
                   httpMethod = "GET",
-                  response = classOf[EpisodeDTO])
-    def getEpisode(id: String): Route = get {
+                  response = classOf[PodcastDTO])
+    def getPodcast(id: String): Route = get {
 
-        log.info("GET /api/episode/{}", id)
+        log.info("GET /api/podcast/{}", id)
 
-        onSuccess(directoryStore ? GetEpisode(id)) {
-            case EpisodeResult(episode)     => complete(StatusCodes.OK, episode)
+        onSuccess(directoryStore ? GetPodcast(id)) {
+            case PodcastResult(podcast)     => complete(StatusCodes.OK, podcast)
             case NoDocumentFound(unknownId) => {
-                log.error("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
+                log.error("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
+                complete(StatusCodes.NotFound)
+            }
+        }
+    }
+
+    def getEpisodesByPodcast(id: String): Route = get {
+        log.info("GET /api/podcast/{}/episodes", id)
+
+        onSuccess(directoryStore ? GetEpisodesByPodcast(id)) {
+            case EpisodesByPodcastResult(episodes)  => complete(StatusCodes.OK, episodes)
+            case NoDocumentFound(unknownId)         => {
+                log.error("DirectoryStore responded that there are not Episodes for Podcast with echoId={}", unknownId)
                 complete(StatusCodes.NotFound)
             }
         }
@@ -78,8 +92,8 @@ class EpisodeService(log: LoggingAdapter,
         new ApiResponse(code = 201, message = "User created"),
         new ApiResponse(code = 409, message = "User already exists")
     ))
-    def postEpisode: Route = post {
-        entity(as[EpisodeDTO]) { episode =>
+    def postPodcast: Route = post {
+        entity(as[PodcastDTO]) { podcast =>
 
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
@@ -92,8 +106,8 @@ class EpisodeService(log: LoggingAdapter,
         }
     }
 
-    def putEpisode(id: String): Route = put {
-        entity(as[EpisodeDTO]) { episode =>
+    def putPodcast(id: String): Route = put {
+        entity(as[PodcastDTO]) { podcast =>
 
             // TODO update podcast with echoId
 
@@ -101,7 +115,7 @@ class EpisodeService(log: LoggingAdapter,
         }
     }
 
-    def deleteEpisode(id: String): Route = delete {
+    def deletePodcast(id: String): Route = delete {
 
         // TODO delete podcast -  I guess this should not be supported?
 

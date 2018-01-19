@@ -92,11 +92,13 @@ object ActorMessages {
     // Gateway -> DirectoryStore
     case class GetPodcast(echoId: String)
     case class GetEpisode(echoId: String)
+    case class GetEpisodesByPodcast(echoId: String)
 
     // DirectoryStore -> Gateway
     trait DirectoryResult
     case class PodcastResult(podcast: PodcastDTO) extends DirectoryResult
     case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
+    case class EpisodesByPodcastResult(episodes: Array[EpisodeDTO]) extends DirectoryResult
     case class NoDocumentFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development

@@ -175,6 +175,29 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
             }
         }
 
+        case GetEpisodesByPodcast(podcastId) => {
+            log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
+
+            if(podcastDB.contains(podcastId)){
+
+                val (_,_,episodes,_) = podcastDB(podcastId)
+                var results = scala.collection.mutable.ArrayBuffer.empty[EpisodeDTO]
+
+                for(episodeId <- episodes){
+                    if(episodeDB.contains(episodeId)){
+                        results += episodeDB(episodeId)
+                    } else {
+                        log.error(s"Podcast Table entry for podcast=$podcastId references an Episode with echoId=$episodeId , but Episode Table has no entry for this id")
+                    }
+                }
+
+                sender ! EpisodesByPodcastResult(results.toArray)
+            } else {
+                log.error("Database does not contain Podcast with echoId={}", podcastId)
+                sender ! NoDocumentFound(podcastId)
+            }
+        }
+
         case DebugPrintAllDatabase => {
             log.debug("Received DebugPrintAllDatabase")
             for( (k,v) <- podcastDB){
