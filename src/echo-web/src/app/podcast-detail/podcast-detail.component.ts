@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Podcast } from '../podcast';
+import { Episode } from '../episode';
 import { PodcastService } from '../podcast.service';
 
 @Component({
@@ -12,7 +13,9 @@ import { PodcastService } from '../podcast.service';
 })
 export class PodcastDetailComponent implements OnInit {
 
+  // TODO warum habe ich hier @Input davor stehen?
   @Input() podcast: Podcast;
+  @Input() episodes: Array<Episode>;
 
   constructor(private route: ActivatedRoute,
               private podcastService: PodcastService,
@@ -27,6 +30,8 @@ export class PodcastDetailComponent implements OnInit {
     // this.echoId = id;
     this.podcastService.get(id)
       .subscribe(podcast => this.podcast = podcast);
+    this.podcastService.getEpisodes(id)
+      .subscribe(episodes => this.episodes = episodes);
   }
 
   goBack(): void {

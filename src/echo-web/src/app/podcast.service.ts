@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Podcast } from './podcast';
+import { Episode } from './episode';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
-import {Episode} from './episode';
 
 @Injectable()
 export class PodcastService {
@@ -16,7 +16,15 @@ export class PodcastService {
     console.log('requesting get podcast from backend with echoId: ' + echoId);
     return this.http.get<Podcast>(`/api/podcast/${echoId}`).pipe(
       tap(_ => console.log(`found podcast matching "${echoId}"`)),
-      catchError(this.handleError<Podcast>('search', new Podcast()))
+      catchError(this.handleError<Podcast>('podcast', new Podcast()))
+    );
+  }
+
+  getEpisodes(echoId: string): Observable<Array<Episode>> {
+    console.log(`GET /api/podcast/${echoId}/episodes`);
+    return this.http.get<Array<Episode>>(`/api/podcast/${echoId}/episodes`).pipe(
+      tap(_ => console.log(`found episodes for podcast matching "${echoId}"`)),
+      catchError(this.handleError<Array<Episode>>('podcast/episodes', new Array<Episode>()))
     );
   }
 

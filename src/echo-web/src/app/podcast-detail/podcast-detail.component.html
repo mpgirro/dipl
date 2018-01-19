@@ -31,3 +31,21 @@
     {{podcast.link}}
   </a>
 </p>
+
+
+<table class="table table-sm table-hover">
+  <thead>
+  <tr>
+    <th scope="col">Title</th>
+    <th scope="col">Date</th>
+    <th scope="col">Duration</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let episode of episodes">
+    <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
+    <td>{{episode.pubDate | date: 'd.MM.yyyy'}}</td>
+    <td>{{episode.itunesDuration}}</td>
+  </tr>
+  </tbody>
+</table>
