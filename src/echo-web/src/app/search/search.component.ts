@@ -60,7 +60,8 @@ export class SearchComponent implements OnInit {
           this.totalHits = response.totalHits;
           this.results   = response.results;
 
-          this.pages = Array(this.maxPage).fill().map((x, i) => i + 1);
+          this.pages = new Array(this.maxPage).fill(0 ).map((x, i) => i + 1);
+
         });
     }
   }
