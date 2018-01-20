@@ -36,9 +36,9 @@
 <table class="table table-sm table-hover">
   <thead>
   <tr>
-    <th scope="col">Title</th>
-    <th scope="col">Date</th>
-    <th scope="col">Duration</th>
+    <th scope="col" style="width:70%;">Title</th>
+    <th scope="col" style="width:15%;">Date</th>
+    <th scope="col" style="width:15%;">Duration</th>
   </tr>
   </thead>
   <tbody>
@@ -49,3 +49,20 @@
   </tr>
   </tbody>
 </table>
+
+<ul class="list-unstyled">
+  <li class="media mb-5"
+      *ngFor="let episode of episodes">
+
+    <img class="episode-thumb mr-3"
+         src="{{episode.itunesImage}}"
+         alt="Generic placeholder image">
+
+    <div class="media-body">
+      <h5 class="mt-0">
+        {{episode.title}}
+      </h5>
+      <p class="mb-1">{{episode.description}}</p>
+    </div>
+  </li>
+</ul>
