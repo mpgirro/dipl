@@ -31,7 +31,30 @@ export class PodcastDetailComponent implements OnInit {
     this.podcastService.get(id)
       .subscribe(podcast => this.podcast = podcast);
     this.podcastService.getEpisodes(id)
-      .subscribe(episodes => this.episodes = episodes);
+      .subscribe(episodes => {
+
+        // reverse sort by date
+        episodes.sort((a: Episode, b: Episode) => {
+          if (a.pubDate > b.pubDate) {
+            return -1;
+          } else if (a.pubDate < b.pubDate) {
+            return 1;
+          } else {
+
+            // in case they are the same, sort by name
+            if (a.title < b.title) {
+              return -1;
+            } else if (a.title > b.title) {
+              return 1;
+            } else {
+              return 0;
+            }
+
+          }
+        });
+
+        this.episodes = episodes;
+      });
   }
 
   goBack(): void {
