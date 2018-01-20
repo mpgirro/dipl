@@ -41,28 +41,41 @@
     <th scope="col" style="width:15%;">Duration</th>
   </tr>
   </thead>
-  <tbody>
-  <tr *ngFor="let episode of episodes">
-    <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
-    <td>{{episode.pubDate | date: 'd.MM.yyyy'}}</td>
-    <td>{{episode.itunesDuration}}</td>
-  </tr>
+
+  <tbody >
+
+  <ng-container *ngFor="let episode of episodes">
+    <tr class="clickable"
+        data-toggle="collapse"
+        [attr.data-target]="'#group-of-rows-'+ episode.echoId"
+        aria-expanded="false"
+        [attr.aria-controls]="'group-of-rows-'+ episode.echoId">
+      <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
+      <td>{{episode.pubDate | date: 'd.MM.yyyy'}}</td>
+      <td>{{episode.itunesDuration}}</td>
+    </tr>
+
+    <tr class="collapse"
+        [attr.id]="'group-of-rows-'+ episode.echoId">
+
+      <td colspan="3">
+        <div class="media my-2">
+          <img class="episode-thumb mr-3"
+               src="{{episode.itunesImage}}"
+               alt="Generic placeholder image">
+
+          <div class="media-body">
+            <h5 class="mt-0">
+              {{episode.title}}
+            </h5>
+            <p class="mb-1" [innerHTML]="episode.description"></p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+  </ng-container>
+
   </tbody>
+
 </table>
-
-<ul class="list-unstyled">
-  <li class="media mb-5"
-      *ngFor="let episode of episodes">
-
-    <img class="episode-thumb mr-3"
-         src="{{episode.itunesImage}}"
-         alt="Generic placeholder image">
-
-    <div class="media-body">
-      <h5 class="mt-0">
-        {{episode.title}}
-      </h5>
-      <p class="mb-1">{{episode.description}}</p>
-    </div>
-  </li>
-</ul>
