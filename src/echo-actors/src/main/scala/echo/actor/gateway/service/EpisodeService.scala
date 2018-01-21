@@ -3,9 +3,9 @@ package echo.actor.gateway.service
 import javax.ws.rs.Path
 
 import akka.actor.{ActorContext, ActorRef}
-import akka.event.{Logging, LoggingAdapter}
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.{Directives, Route, StandardRoute}
+import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
@@ -42,7 +42,7 @@ class EpisodeService(log: LoggingAdapter,
     @ApiOperation(value = "Get list of all Episodes",
                   nickname = "getAllEpisodes",
                   httpMethod = "GET",
-                  response = classOf[EpisodeDTO],
+                  response = classOf[Set[EpisodeDTO]],
                   responseContainer = "Set")
     def getAllEpisodes: Route = get {
         /*

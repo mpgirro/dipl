@@ -37,7 +37,7 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
         case ProposeNewFeed(feedUrl) => {
             log.debug("Received msg proposing a new feed: " + feedUrl)
 
-            val fakePodcastId = "podcast-fake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+            val fakePodcastId = "pfake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
 
             if(podcastDB.contains(fakePodcastId)){
                 // TODO remove the auto update
@@ -163,6 +163,17 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
                 log.error("Database does not contain Podcast with echoId={}", echoId)
                 sender ! NoDocumentFound(echoId)
             }
+        }
+
+        case GetAllPodcasts => {
+            log.debug("Received GetAllPodcasts()")
+
+            var results = scala.collection.mutable.ArrayBuffer.empty[PodcastDTO]
+            for((_,_,_,podcast: PodcastDTO) <- podcastDB.values){
+                results += podcast
+            }
+
+            sender ! AllPodcastsResult(results.toArray)
         }
 
         case GetEpisode(echoId) => {

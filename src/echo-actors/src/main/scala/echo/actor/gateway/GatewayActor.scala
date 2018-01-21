@@ -7,20 +7,17 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives.{complete, get, _}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.settings.{ParserSettings, RoutingSettings}
-import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 import akka.util.Timeout
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.gateway.routes.{EpisodeRoutes, PodcastRoutes, SearchRoutes}
 import echo.actor.gateway.service.{EpisodeService, PodcastService, SearchService}
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 /**
@@ -51,24 +48,16 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         implicit val routingSettings = RoutingSettings(actorSystem)
         implicit val parserSettings = ParserSettings(actorSystem)
 
-        // val searchRouter = new SearchRoutes(search)               // TODO replace by a service
-        // val podcastRouter = new PodcastRoutes(log, getPodcast)    // TODO replace by a service
-        // val episodeRouter = new EpisodeRoutes(log, getEpisode) // TODO delete
-
-
         /*
         def assets = pathPrefix("swagger") {
             getFromResourceDirectory("swagger") ~ pathSingleSlash(get(redirect("index.html", StatusCodes.PermanentRedirect))) }
         */
-
-        //assets ~ new EpisodeService(directoryStore, internalTimeout).route
 
         val route: Route = cors() (
             pathPrefix("swagger") {
                 getFromResourceDirectory("swagger") ~ pathSingleSlash(get(redirect("index.html", StatusCodes.PermanentRedirect)))
             } ~
             pathPrefix("api") {
-                //searchRouter.route ~ podcastRouter.route ~ episodeRouter.route
                 searchService.route ~ podcastService.route ~ episodeService.route
             } ~
             pathPrefix("healthcheck") {
@@ -100,59 +89,4 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         }
     }
 
-    /*
-    private def search(query: String, page: Int, size: Int): ResultWrapperDTO = {
-
-        val future = searcher ? SearchRequest(query, page, size)
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[SearchResults]
-        response match {
-
-            case SearchResults(results) => {
-                return results
-            }
-        }
-    }
-    */
-
-    /*
-    private def getPodcast(echoId: String): PodcastDTO = {
-
-        var result: PodcastDTO = null
-
-        val future = directoryStore ? GetPodcast(echoId)
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
-        response match {
-
-            case PodcastResult(podcast) => {
-                result = podcast
-            }
-
-            case NoDocumentFound(unknownId) => {
-                log.error("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
-            }
-        }
-        return result;
-    }
-    */
-
-    /*
-    private def getEpisode(echoId: String): EpisodeDTO = {
-
-        var result: EpisodeDTO = null
-
-        val future = directoryStore ? GetEpisode(echoId)
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
-        response match {
-
-            case EpisodeResult(episode) => {
-                result = episode
-            }
-
-            case NoDocumentFound(unknownId) => {
-                log.error("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
-            }
-        }
-        return result;
-    }
-    */
 }

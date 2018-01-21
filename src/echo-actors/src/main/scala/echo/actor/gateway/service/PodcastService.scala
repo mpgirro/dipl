@@ -8,7 +8,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.gateway.json.JsonSupport
+import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.{EpisodeDTO, PodcastDTO}
 import io.swagger.annotations._
@@ -44,7 +44,7 @@ class PodcastService(log: LoggingAdapter,
     @ApiOperation(value = "Get list of all Podcasts",
                   nickname = "getAllPodcasts",
                   httpMethod = "GET",
-                  response = classOf[EpisodeDTO],
+                  response = classOf[ArrayWrapper[Set[PodcastDTO]]],
                   responseContainer = "Set")
     def getAllPodcasts: Route = get {
         /*
@@ -52,7 +52,13 @@ class PodcastService(log: LoggingAdapter,
             //(userRepository ? UserRepository.GetUsers).mapTo[Set[UserRepository.User]]
         }
         */
-        complete(StatusCodes.NotImplemented)
+        log.info("GET /api/podcast")
+
+        onSuccess(directoryStore ? GetAllPodcasts) {
+            case AllPodcastsResult(results)  => {
+                complete(StatusCodes.OK, ArrayWrapper(results))
+            }
+        }
     }
 
     @ApiOperation(value = "Get podcast",

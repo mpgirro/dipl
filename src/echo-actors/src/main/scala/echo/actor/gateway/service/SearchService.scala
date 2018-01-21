@@ -54,7 +54,7 @@ class SearchService (log: LoggingAdapter,
                 case None    => DEFAULT_SIZE
             }
 
-            //log.info("Received HTTP request /search?q={}&p={}&s={}", query, p, s)
+            log.info("GET /api/search/?q={}&p=&s=", query, page, size)
 
             onSuccess(searcher ? SearchRequest(query, p, s)) {
                 case SearchResults(results) => complete(StatusCodes.OK, results)
