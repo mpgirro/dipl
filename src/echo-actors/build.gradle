@@ -3,7 +3,7 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:0.9.0'
@@ -21,11 +21,11 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-group 'echo.actor'
+group 'net.irro.echo'
 version '1.0-SNAPSHOT'
 description = ''
 
-mainClassName = "echo.actor.EchoApp"
+mainClassName = 'echo.actor.EchoApp'
 
 ext {
     scalaMajor = '2.12'
@@ -89,7 +89,7 @@ tasks.withType(ScalaCompile) {
 
 // ScalaStyle config, by putting it to the project subdirectory, IDEA will automatically use it
 scalaStyle {
-    configLocation = "$rootDir/project/scalastyle_config.xml"
+    configLocation = "project/scalastyle_config.xml"
     includeTestSourceDirectory = true
     source = "src/main/scala"
     testSource = "src/test/scala"
@@ -97,7 +97,7 @@ scalaStyle {
 
 // Run ScalaStyle with the tests
 check {
-    dependsOn "scalaStyle"
+//    dependsOn "scalaStyle" // TODO re-activate this
 }
 
 // specs2 console logging

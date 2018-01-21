@@ -11,8 +11,14 @@ buildscript {
   }
 }
 
+defaultTasks 'ngServe'
+
 apply plugin: 'com.moowork.node'
 apply plugin: 'com.wiredforcode.spawn'
+
+group 'net.irro.echo'
+version '1.0-SNAPSHOT'
+description = ''
 
 node {
     version = '9.3.0'
@@ -22,7 +28,6 @@ node {
     // If false, it will try to use globally installed node.
     download = false
 
-    // TODO unused?
     nodeModulesDir = file("./node_modules")
 }
 
@@ -55,78 +60,4 @@ ngE2E.finalizedBy stopNgServe
 test.dependsOn('ngTest')
 
 check.dependsOn('ngLint')
-*/
-
-
-
-
-
-
-
-
-
-
-
-/*
-task build(type: NpmTask) {
-  args = ['run', 'build']
-}
-
-build.dependsOn(npm_install)
-
-task webpack(type: NodeTask, dependsOn: 'npmInstall') {
-    script = project.file('node_modules/.bin/webpack')
-    args = ['--display-error-details']
-}
-
-task serve(type: NodeTask, dependsOn: 'webpack') {
-    script = project.file('node_modules/.bin/webpack-dev-server')
-    args = ['--content-base', 'src']
-}
-*/
-
-/*
-task buildClientDev(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'build'
-    description = 'Compile client side assets for development'
-    args = ['run', 'buildDev']
-}
-
-task buildClient(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'build'
-    description = 'Compile client side assets for production'
-    args = ['run', 'build']
-}
-
-task buildClientWatch(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'application'
-    description = 'Builds and watches the client side assets for rebuilding'
-    args = ['run', 'buildWatch']
-}
-
-task clientTest(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'verification'
-    description = 'Executes client side unit tests'
-    args = ['run', 'test']
-}
-
-task clientIntegrationTest(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'verification'
-    description = 'Executes client side integration tests'
-    args = ['run', 'e2e']
-}
-
-bootRun.dependsOn(buildClientDev)
-
-war.dependsOn(buildClient)
-
-test.dependsOn(clientTest)
-
-integrationTest.dependsOn(clientIntegrationTest)
-*/
-
-/*
-clean {
-    delete fileTree(dir: "src/main/webapp")
-}
 */
