@@ -1,0 +1,132 @@
+import com.wiredforcode.gradle.spawn.*
+
+buildscript {
+  repositories {
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'http://dl.bintray.com/vermeulen-mp/gradle-plugins' }
+  }
+  dependencies {
+    classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
+  }
+}
+
+apply plugin: 'com.moowork.node'
+apply plugin: 'com.wiredforcode.spawn'
+
+node {
+    version = '9.3.0'
+    npmVersion = '5.6.0'
+
+    // If true, it will download node using above parameters.
+    // If false, it will try to use globally installed node.
+    download = false
+
+    // TODO unused?
+    nodeModulesDir = file("./node_modules")
+}
+
+task startNgServe(type: SpawnProcessTask, dependsOn: 'npmInstall') {
+  command "node_modules/@angular/cli/bin/ng serve"
+  ready 'webpack: bundle is now VALID.'
+}
+
+task stopNgServe(type: KillProcessTask)
+
+task ngLint(type: Exec, dependsOn: 'npmInstall') {
+  commandLine 'node_modules/@angular/cli/bin/ng', 'lint'
+}
+
+task ngTest(type: Exec, dependsOn: 'npmInstall') {
+  commandLine 'node_modules/@angular/cli/bin/ng', 'test', '--watch=false'
+}
+
+task ngServe(type: Exec, dependsOn: 'npmInstall') {
+  commandLine 'node_modules/@angular/cli/bin/ng', 'serve', '--proxy-config=proxy.config.json'
+}
+
+task ngE2E(type: Exec, dependsOn: ['npmInstall', 'startNgServe']) {
+  commandLine 'node_modules/@angular/cli/bin/ng', 'e2e'
+}
+
+/* these should go too...but they dont..
+ngE2E.finalizedBy stopNgServe
+
+test.dependsOn('ngTest')
+
+check.dependsOn('ngLint')
+*/
+
+
+
+
+
+
+
+
+
+
+
+/*
+task build(type: NpmTask) {
+  args = ['run', 'build']
+}
+
+build.dependsOn(npm_install)
+
+task webpack(type: NodeTask, dependsOn: 'npmInstall') {
+    script = project.file('node_modules/.bin/webpack')
+    args = ['--display-error-details']
+}
+
+task serve(type: NodeTask, dependsOn: 'webpack') {
+    script = project.file('node_modules/.bin/webpack-dev-server')
+    args = ['--content-base', 'src']
+}
+*/
+
+/*
+task buildClientDev(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'build'
+    description = 'Compile client side assets for development'
+    args = ['run', 'buildDev']
+}
+
+task buildClient(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'build'
+    description = 'Compile client side assets for production'
+    args = ['run', 'build']
+}
+
+task buildClientWatch(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'application'
+    description = 'Builds and watches the client side assets for rebuilding'
+    args = ['run', 'buildWatch']
+}
+
+task clientTest(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'verification'
+    description = 'Executes client side unit tests'
+    args = ['run', 'test']
+}
+
+task clientIntegrationTest(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'verification'
+    description = 'Executes client side integration tests'
+    args = ['run', 'e2e']
+}
+
+bootRun.dependsOn(buildClientDev)
+
+war.dependsOn(buildClient)
+
+test.dependsOn(clientTest)
+
+integrationTest.dependsOn(clientIntegrationTest)
+*/
+
+/*
+clean {
+    delete fileTree(dir: "src/main/webapp")
+}
+*/
