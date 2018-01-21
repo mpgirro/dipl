@@ -14,7 +14,7 @@ import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.routes.{EpisodeRoutes, PodcastRoutes, SearchRoutes}
-import echo.actor.gateway.service.{EpisodeService, PodcastService}
+import echo.actor.gateway.service.{EpisodeService, PodcastService, SearchService}
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
@@ -38,6 +38,8 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
 
     implicit val internalTimeout = Timeout(5 seconds)
 
+    val searchService = new SearchService(log, internalTimeout)
+    searchService.setSearcherActorRef(searcher)
     val podcastService = new PodcastService(log, internalTimeout)
     val episodeService = new EpisodeService(log, internalTimeout)
 
@@ -49,7 +51,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         implicit val routingSettings = RoutingSettings(actorSystem)
         implicit val parserSettings = ParserSettings(actorSystem)
 
-        val searchRouter = new SearchRoutes(search)               // TODO replace by a service
+        // val searchRouter = new SearchRoutes(search)               // TODO replace by a service
         // val podcastRouter = new PodcastRoutes(log, getPodcast)    // TODO replace by a service
         // val episodeRouter = new EpisodeRoutes(log, getEpisode) // TODO delete
 
@@ -67,7 +69,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
             } ~
             pathPrefix("api") {
                 //searchRouter.route ~ podcastRouter.route ~ episodeRouter.route
-                searchRouter.route ~ podcastService.route ~ episodeService.route
+                searchService.route ~ podcastService.route ~ episodeService.route
             } ~
             pathPrefix("healthcheck") {
                 get {
@@ -98,6 +100,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
         }
     }
 
+    /*
     private def search(query: String, page: Int, size: Int): ResultWrapperDTO = {
 
         val future = searcher ? SearchRequest(query, page, size)
@@ -109,6 +112,7 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
             }
         }
     }
+    */
 
     /*
     private def getPodcast(echoId: String): PodcastDTO = {
