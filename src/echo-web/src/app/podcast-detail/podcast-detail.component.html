@@ -44,79 +44,45 @@
 </p>
 
 
-<!--
-<div class="list-group">
-
-  <ng-container *ngFor="let episode of episodes">
-    <a class="list-group-item list-group-item-action flex-column align-items-start clickable">
-
-
-      <div role="tab" [attr.id]="'collapseListItemHeading-'+ episode.echoId">
-
-
-
-      </div>
-
-    </a>
-
-    <div class="collapse" role="tabpanel"
-         [attr.id]="'collapseListItem-'+ episode.echoId"
-         [attr.aria-labelledby]="'collapseListGroupHeading'+ episode.echoId">
-
-      <div class="media">
-        <img class="episode-thumb mr-3"
-             src="{{episode.itunesImage}}"
-             alt="Generic placeholder image">
-        <div class="media-body">
-          <p class="mb-1" [innerHTML]="episode.description"></p>
-        </div>
-      </div>
-
-    </div>
-
-  </ng-container>
-
-
-
-</div>
--->
-
-
 <div id="episode-table">
   <div class="panel list-group">
 
     <ng-container *ngFor="let episode of episodes">
 
-      <a href="/e/{{episode.echoId}}"
-         class="list-group-item"
-         data-toggle="collapse"
-         [attr.data-target]="'#collapseListItem-'+ episode.echoId"
-         data-parent="#episode-table">
+      <div class="list-group-item list-group-item-action">
 
-        <h6 class="mb-1">{{episode.title}}</h6>
+        <div data-toggle="collapse"
+             [attr.data-target]="'#collapseListItem-'+ episode.echoId"
+             data-parent="#episode-table">
 
-        <small class="text-muted">
-          <span *ngIf="episode.pubDate">
-              <span class="oi oi-calendar"></span>
-              <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
-          </span>
-          <span *ngIf="episode.itunesDuration">
-            <span class="oi oi-timer"></span>
-            <span class="mr-2">{{episode.itunesDuration}}</span>
-          </span>
-        </small>
-      </a>
+          <h6 class="mb-1">
+            <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
+          </h6>
+          <small class="text-muted">
+            <span *ngIf="episode.pubDate">
+                <span class="oi oi-calendar"></span>
+                <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
+            </span>
+            <span *ngIf="episode.itunesDuration">
+              <span class="oi oi-timer"></span>
+              <span class="mr-2">{{episode.itunesDuration}}</span>
+            </span>
+          </small>
 
-      <div class="collapse my-4"
-           [attr.id]="'collapseListItem-'+ episode.echoId">
+        </div>
 
-        <div class="media  my-3">
-          <img class="episode-thumb mr-3"
-               src="{{episode.itunesImage}}"
-               alt="Generic placeholder image">
-          <div class="media-body">
-            <p [innerHTML]="episode.description"></p>
+        <div class="collapse pt-4"
+             [attr.id]="'collapseListItem-'+ episode.echoId">
+
+          <div class="media">
+            <img class="episode-thumb mr-3"
+                 src="{{episode.itunesImage}}"
+                 alt="Generic placeholder image">
+            <div class="media-body">
+              <p [innerHTML]="episode.description"></p>
+            </div>
           </div>
+
         </div>
 
       </div>
