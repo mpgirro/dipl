@@ -1,0 +1,12 @@
+.media-body > h5.mt-0 {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+img.mr-3 {
+  width: 64px;
+}
+
+.podcast-h {
+  color:black;
+}

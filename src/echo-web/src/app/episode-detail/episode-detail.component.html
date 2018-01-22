@@ -1,7 +1,18 @@
 
-<button type="button" class="btn btn-light mb-3" (click)="goBack()"><span aria-hidden="true">&laquo;</span> back</button>
+<nav class="navbar navbar-expand px-0">
+  <button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/search">Search</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
+    </li>
+  </ul>
+</nav>
 
-<div class="text-center mb-5">
+
+<div class="text-center my-5">
   <img class="w-75"
        src="{{episode.itunesImage}}"
        alt="Generic placeholder image">

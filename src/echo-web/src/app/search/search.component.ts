@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { Result } from '../result';
 import { SearchService } from '../search.service';
 import {of} from 'rxjs/observable/of';

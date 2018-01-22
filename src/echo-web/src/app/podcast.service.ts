@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Podcast } from './podcast';
 import { Episode } from './episode';
+import { ArrayWrapper } from './arraywrapper';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
 
@@ -16,7 +17,7 @@ export class PodcastService {
     console.log('requesting get podcast from backend with echoId: ' + echoId);
     return this.http.get<Podcast>(`/api/podcast/${echoId}`).pipe(
       tap(_ => console.log(`found podcast matching "${echoId}"`)),
-      catchError(this.handleError<Podcast>('podcast', new Podcast()))
+      catchError(this.handleError<Podcast>('getPodcast', new Podcast()))
     );
   }
 
@@ -24,7 +25,15 @@ export class PodcastService {
     console.log(`GET /api/podcast/${echoId}/episodes`);
     return this.http.get<Array<Episode>>(`/api/podcast/${echoId}/episodes`).pipe(
       tap(_ => console.log(`found episodes for podcast matching "${echoId}"`)),
-      catchError(this.handleError<Array<Episode>>('podcast/episodes', new Array<Episode>()))
+      catchError(this.handleError<Array<Episode>>('getPodcastEpisodes', new Array<Episode>()))
+    );
+  }
+
+  getAll(): Observable<ArrayWrapper<Podcast>> {
+    console.log(`GET /api/podcast`);
+    return this.http.get<ArrayWrapper<Podcast>>(`/api/podcast`).pipe(
+      tap(_ => console.log(`found all podcasts`)),
+      catchError(this.handleError<ArrayWrapper<Podcast>>('allPodcasts', new ArrayWrapper<Podcast>()))
     );
   }
 

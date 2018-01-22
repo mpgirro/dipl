@@ -1,0 +1,67 @@
+
+<nav class="navbar navbar-expand px-0">
+  <button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/search">Search</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
+    </li>
+  </ul>
+</nav>
+
+
+<h1 class="h5 my-5">
+  Podcast Directory
+</h1>
+
+<ul class="list-group list-group-flush">
+
+  <li *ngFor="let podcast of podcasts"
+      class="list-group-item">
+
+    <div class="media">
+      <div class="media my-2">
+        <img class="episode-thumb mr-3"
+             src="{{podcast.itunesImage}}"
+             alt="Generic placeholder image">
+
+        <div class="media-body">
+          <h5 class="mt-0">
+            <a routerLink="/p/{{podcast.echoId}}" class="podcast-h">{{podcast.title}}</a>
+          </h5>
+          <p class="mb-1" [innerHTML]="podcast.description"></p>
+        </div>
+      </div>
+
+    </div>
+
+  </li>
+
+</ul>
+
+<!--
+<div>
+
+  <div class="card p-1 my-2"
+       *ngFor="let podcast of podcasts">
+
+    <div class="media my-2">
+      <img class="episode-thumb mr-3"
+           src="{{podcast.itunesImage}}"
+           alt="Generic placeholder image">
+
+      <div class="media-body">
+        <h5 class="mt-0">
+          <a routerLink="/p/{{podcast.echoId}}" class="podcast-h">{{podcast.title}}</a>
+        </h5>
+        <p class="mb-1" [innerHTML]="podcast.description"></p>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+-->
