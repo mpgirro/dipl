@@ -13,7 +13,7 @@
 
 
 <div class="text-center my-5">
-  <img class="w-75"
+  <img class="w-100"
        src="{{podcast.itunesImage}}"
        alt="Generic placeholder image">
 </div>
@@ -23,6 +23,14 @@
   {{podcast.title}}
 </h1>
 
+<p class="my-3">
+  <a href="{{podcast.link}}">
+    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+    {{podcast.link}}
+  </a>
+</p>
+
+<!--
 <div class="mb-3">
   <small class="text-muted">
     <span *ngIf="podcast.pubDate">
@@ -31,21 +39,142 @@
     </span>
   </small>
 </div>
+-->
 
 <p class="mb-1"
    [innerHTML]="podcast.description">
 </p>
 
-<p class="my-3">
-  <a href="{{podcast.link}}">
-    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
-    {{podcast.link}}
-  </a>
-</p>
 
 
+<div>
+
+  <!-- Nav tabs -->
+  <nav class="navbar navbar-expand px-0 mt-5">
+    <span class="navbar-text">
+      <h5 class="my-4">Episodes</h5>
+    </span>
+    <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="episodes-table-tab" data-toggle="tab" href="#episodes-table" role="tab" aria-controls="episodes-table" aria-selected="false">Table</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="episodes-listgroup-tab" data-toggle="tab" href="#episodes-listgroup" role="tab" aria-controls="episodes-listgroup" aria-selected="true">List</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Tab panes -->
+  <div class="tab-content" id="episodesTabContent">
+    <div class="tab-pane fade show active" id="episodes-table" role="tabpanel" aria-labelledby="episodes-table-tab">
+      <table class="table table-sm table-hover">
+        <thead>
+        <tr>
+          <th scope="col" style="width:70%;">Title</th>
+          <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-calendar"></span></small><span class="sr-only">Date</span></th>
+          <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-timer"></span></small><span class="sr-only">Duration</span></th>
+        </tr>
+        </thead>
+
+        <tbody >
+
+        <ng-container *ngFor="let episode of episodes">
+          <tr class="clickable"
+              data-toggle="collapse"
+              [attr.data-target]="'#group-of-rows-'+ episode.echoId"
+              aria-expanded="false"
+              [attr.aria-controls]="'group-of-rows-'+ episode.echoId">
+            <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
+            <td class="text-right">
+              <small *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</small>
+            </td>
+            <td class="text-right">
+              <small *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</small>
+            </td>
+          </tr>
+
+          <tr class="collapse"
+              [attr.id]="'group-of-rows-'+ episode.echoId">
+
+            <td colspan="3">
+              <div class="media my-2">
+                <img class="episode-thumb mr-3"
+                     src="{{episode.itunesImage}}"
+                     alt="Generic placeholder image">
+
+                <div class="media-body">
+                  <h5 class="mt-0">
+                    {{episode.title}}
+                  </h5>
+                  <p class="mb-1" [innerHTML]="episode.description"></p>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+        </ng-container>
+
+        </tbody>
+
+      </table>
+    </div>
+
+    <div class="tab-pane fade" id="episodes-listgroup" role="tabpanel" aria-labelledby="episodes-listgroup-tab">
+      <div class="list-group list-group-flush">
+
+        <ng-container *ngFor="let episode of episodes">
+
+          <div class="list-group-item list-group-item-action">
+
+            <div data-toggle="collapse"
+                 [attr.data-target]="'#collapseListItem-'+ episode.echoId"
+                 data-parent="#episode-table">
+
+              <h6 class="mb-1">
+                <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
+              </h6>
+              <small class="text-muted">
+            <span *ngIf="episode.pubDate">
+                <span class="oi oi-calendar"></span>
+                <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
+            </span>
+                <span *ngIf="episode.itunesDuration">
+              <span class="oi oi-timer"></span>
+              <span class="mr-2">{{episode.itunesDuration}}</span>
+            </span>
+              </small>
+
+            </div>
+
+            <div class="collapse pt-4"
+                 [attr.id]="'collapseListItem-'+ episode.echoId">
+
+              <div class="media">
+                <img class="episode-thumb mr-3"
+                     src="{{episode.itunesImage}}"
+                     alt="Generic placeholder image">
+                <div class="media-body">
+                  <p [innerHTML]="episode.description"></p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<!--
 <div id="episode-table">
-  <div class="panel list-group">
+  <div class="list-group list-group-flush">
 
     <ng-container *ngFor="let episode of episodes">
 
@@ -91,7 +220,7 @@
 
   </div>
 </div>
-
+-->
 
 
 <!--
