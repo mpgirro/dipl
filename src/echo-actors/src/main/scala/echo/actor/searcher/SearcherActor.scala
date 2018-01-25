@@ -3,10 +3,11 @@ package echo.actor.searcher
 import java.util.concurrent.TimeoutException
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.event.Logging
+import akka.event.{Logging, LoggingReceive}
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.protocol.ActorMessages._
+import echo.actor.protocol.ActorMessages.{IndexResultsFound, _}
+import echo.actor.searcher.SearcherActor.IndexRetrievalTimeout
 import echo.core.dto.{DTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -14,6 +15,10 @@ import org.jsoup.safety.Whitelist
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.language.postfixOps
+
+object SearcherActor {
+    case object IndexRetrievalTimeout
+}
 
 class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
@@ -24,15 +29,9 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
         case SearchRequest(query,page,size) => {
             log.info("Received SearchRequest('{}',{},{})", query, page, size)
 
-            // TODO for now, we will pass the query 1:1 to the indexRepo; later we will have to do some query processing and additional scoring/data aggregation (show-images, etc)
-            implicit val timeout = Timeout(10 seconds)
-
-            log.info("Sending SearchIndex('{}',{},{}) message", query, page, size)
-            val future = indexStore ? SearchIndex(query, page, size)
-            try{
-                val response = Await.result(future, timeout.duration).asInstanceOf[IndexResult]
-                response match {
-
+            val originalSender = sender
+            context.actorOf(Props(new Actor() {
+                def receive = LoggingReceive {
                     case IndexResultsFound(query: String, results: ResultWrapperDTO) => {
                         log.info("Received " + results.getTotalHits + " results from index for query '" + query + "'")
 
@@ -48,22 +47,31 @@ class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging 
                             })
                         })
 
-                        sender ! SearchResults(results)
+                        sendResponseAndShutdown(SearchResults(results))
                     }
-
                     case NoIndexResultsFound(query: String) => {
                         log.info("Received NO results from index for query '" + query + "'")
-                        sender ! SearchResults(new ResultWrapperDTO)
+                        sendResponseAndShutdown(SearchResults(new ResultWrapperDTO))
                     }
+                    case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
                 }
-            } catch {
-                case e: TimeoutException => {
-                    log.error("Timeout waiting for answer from indexStore")
-                    //self.forward(SearchRequest(query))
+
+                def sendResponseAndShutdown(response: Any) = {
+                    originalSender ! response
+                    log.debug("Stopping context capturing actor")
+                    context.stop(self)
                 }
-            }
 
+                log.info("Sending SearchIndex('{}',{},{}) message", query, page, size)
 
+                indexStore ! SearchIndex(query, page, size)
+
+                import context.dispatcher
+                val timeoutMessager = context.system.scheduler.
+                    scheduleOnce(5 seconds) {
+                        self ! IndexRetrievalTimeout
+                    }
+            }))
         }
 
     }
