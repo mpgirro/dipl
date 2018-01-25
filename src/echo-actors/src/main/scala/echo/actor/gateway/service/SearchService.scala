@@ -10,7 +10,8 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.protocol.ActorMessages.{IndexResult, SearchRequest, SearchResults}
+import echo.actor.protocol.ActorMessages.{IndexResult, NoIndexResultsFound, SearchRequest, SearchResults}
+import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import io.swagger.annotations.{Api, ApiOperation}
 
 import scala.concurrent.Await
@@ -54,13 +55,18 @@ class SearchService (log: LoggingAdapter,
                 case None    => DEFAULT_SIZE
             }
 
-            log.info("GET /api/search/?q={}&p=&s=", query, page, size)
+            log.info("GET /api/search/?q={}&p=&s=", query, p, s)
 
             onSuccess(searcher ? SearchRequest(query, p, s)) {
-                case SearchResults(results) => complete(StatusCodes.OK, results)
-                case _ => {
+                case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
+                case NoIndexResultsFound(_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
+                case IndexRetrievalTimeout  => {
                     log.error("Timeout during search in SearchService")
-                    complete(StatusCodes.InternalServerError)
+                    complete(StatusCodes.RequestTimeout)                            // 408 search took too long
+                }
+                case _ => {
+                    log.error("Received unhandled message on search request")
+                    complete(StatusCodes.InternalServerError)                       // 500 generic server side error
                 }
             }
 
