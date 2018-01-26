@@ -34,6 +34,8 @@ class EchoMaster extends Actor with ActorLogging {
         "get episode"    -> "<echoId>"
     )
 
+    implicit val internalTimeout = Timeout(5 seconds)
+
     private val indexStore = context.watch(context.actorOf(Props[IndexStore].withDispatcher("echo.index-store.dispatcher"), "indexStore"))
     private val indexer = context.watch(context.actorOf(Props[IndexerActor], name = "indexer"))
     private val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
@@ -134,29 +136,22 @@ class EchoMaster extends Actor with ActorLogging {
     }
 
     private def help() {
-        println("This is an interactive REPL providing a CLI to the search engine. Functions are:")
-        println()
+        println("This is an interactive REPL providing a CLI to the search engine. Functions are:\n")
         for ( (k,v) <- usageMap ) {
             println(k + "\t" + v)
         }
-        println()
-        println("Feel free to play around!")
-        println()
+        println("\nFeel free to play around!\n")
     }
 
     private def search(query: List[String]): Unit = {
-        implicit val timeout = Timeout(10 seconds)
         val future = searcher ? SearchRequest(query.mkString(" "), 1, 100)
-        val response = Await.result(future, timeout.duration).asInstanceOf[SearchResults]
+        val response = Await.result(future, internalTimeout.duration).asInstanceOf[SearchResults]
         response match {
-
             case SearchResults(results) => {
                 println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'");
                 println("Results:")
                 for (result <- results.getResults) {
-                    println()
-                    println(DocumentFormatter.cliFormat(result))
-                    println()
+                    println(s"\n${DocumentFormatter.cliFormat(result)}\n")
                 }
                 println()
             }
@@ -171,32 +166,20 @@ class EchoMaster extends Actor with ActorLogging {
     }
 
     private def getPodcast(echoId: String) = {
-        implicit val timeout = Timeout(5 seconds)
         val future = directoryStore ? GetPodcast(echoId)
-        val response = Await.result(future, timeout.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
         response match {
-            case PodcastResult(podcast) => {
-                println(DocumentFormatter.cliFormat(podcast))
-            }
-
-            case NoDocumentFound(unknownId: String) => {
-                println("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
-            }
+            case PodcastResult(podcast)     => println(DocumentFormatter.cliFormat(podcast))
+            case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Podcast with echoId=$unknownId")
         }
     }
 
     private def getEpisode(echoId: String) = {
-        implicit val timeout = Timeout(5 seconds)
         val future = directoryStore ? GetEpisode(echoId)
-        val response = Await.result(future, timeout.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
         response match {
-            case EpisodeResult(episode) => {
-                println(DocumentFormatter.cliFormat(episode))
-            }
-
-            case NoDocumentFound(unknownId: String) => {
-                println("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
-            }
+            case EpisodeResult(episode)     => println(DocumentFormatter.cliFormat(episode))
+            case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")
         }
     }
 }

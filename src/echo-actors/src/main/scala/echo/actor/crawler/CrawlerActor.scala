@@ -32,7 +32,7 @@ class CrawlerActor extends Actor with ActorLogging {
         }
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {
-            log.info("Received FetchNewFeed({})", feedUrl)
+            log.info("Received FetchNewFeed('{}')", feedUrl)
 
             try {
                 val feedData = download(feedUrl)
