@@ -39,16 +39,20 @@ class EchoMaster extends Actor with ActorLogging {
     private val searcher = context.watch(context.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher"))
     private val crawler = context.watch(context.actorOf(Props[CrawlerActor].withDispatcher("echo.crawler.dispatcher"), name = "crawler"))
     private val directoryStore = context.watch(context.actorOf(Props(classOf[DirectoryStore], crawler), name = "directoryStore"))
-    private val gateway = context.watch(context.actorOf(Props(classOf[GatewayActor], searcher), name = "gateway"))
+    private val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
 
     // pass around references not provided by constructors due to circular dependencies
     crawler ! ActorRefIndexerActor(indexer)
     crawler ! ActorRefDirectoryStoreActor(directoryStore)
 
     indexer ! ActorRefDirectoryStoreActor(directoryStore)
-    gateway ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefCrawlerActor(crawler)
+
+    gateway ! ActorRefSearcherActor(searcher)
+    gateway ! ActorRefDirectoryStoreActor(directoryStore)
+
     directoryStore ! ActorRefIndexStoreActor(indexStore)
+
 
     log.info("EchoMaster up and running")
 

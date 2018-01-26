@@ -23,7 +23,7 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging with JsonSupport {
+class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
     val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
     val GATEWAY_PORT = ConfigFactory.load().getInt("echo.gateway.port")
@@ -31,12 +31,12 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
     // TODO see https://github.com/ArchDev/akka-http-rest/blob/master/src/main/scala/me/archdev/restapi/http/HttpRoute.scala
     val SECRET_KEY = ConfigFactory.load().getString("echo.gateway.secret-key")
 
+    private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _
 
     implicit val internalTimeout = Timeout(5 seconds)
 
     val searchService = new SearchService(log, internalTimeout)
-    searchService.setSearcherActorRef(searcher)
     val podcastService = new PodcastService(log, internalTimeout)
     val episodeService = new EpisodeService(log, internalTimeout)
 
@@ -76,14 +76,17 @@ class GatewayActor (val searcher : ActorRef) extends Actor with ActorLogging wit
     }
 
     override def receive: Receive = {
-
+        case ActorRefSearcherActor(ref) => {
+            log.debug("Received ActorRefSearcherActor(_)")
+            searcher = ref
+            searchService.setSearcherActorRef(searcher)
+        }
         case ActorRefDirectoryStoreActor(ref) => {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref;
+            directoryStore = ref
             podcastService.setDirectoryStoreActorRef(ref)
             episodeService.setDirectoryStoreActorRef(ref)
         }
-
         case _ => {
             log.warning("GatewayActor does not handle any Actor-messages yet")
         }
