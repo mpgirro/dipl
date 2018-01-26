@@ -36,7 +36,7 @@ class EchoMaster extends Actor with ActorLogging {
 
     private val indexStore = context.watch(context.actorOf(Props[IndexStore].withDispatcher("echo.index-store.dispatcher"), "indexStore"))
     private val indexer = context.watch(context.actorOf(Props[IndexerActor], name = "indexer"))
-    private val searcher = context.watch(context.actorOf(Props(classOf[SearcherActor], indexStore), name = "searcher"))
+    private val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
     private val crawler = context.watch(context.actorOf(Props[CrawlerActor].withDispatcher("echo.crawler.dispatcher"), name = "crawler"))
     private val directoryStore = context.watch(context.actorOf(Props(classOf[DirectoryStore], crawler), name = "directoryStore"))
     private val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
@@ -48,6 +48,8 @@ class EchoMaster extends Actor with ActorLogging {
     indexer ! ActorRefIndexStoreActor(indexStore)
     indexer ! ActorRefDirectoryStoreActor(directoryStore)
     indexer ! ActorRefCrawlerActor(crawler)
+
+    searcher ! ActorRefIndexStoreActor(indexStore)
 
     gateway ! ActorRefSearcherActor(searcher)
     gateway ! ActorRefDirectoryStoreActor(directoryStore)

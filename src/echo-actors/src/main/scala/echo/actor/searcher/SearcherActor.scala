@@ -5,11 +5,18 @@ import echo.actor.protocol.ActorMessages._
 
 import scala.language.postfixOps
 
-class SearcherActor (val indexStore : ActorRef) extends Actor with ActorLogging {
+class SearcherActor extends Actor with ActorLogging {
 
 //    val log = Logging(context.system, classOf[SearcherActor])
 
+    private var indexStore: ActorRef = _
+
     override def receive: Receive = {
+
+        case ActorRefIndexStoreActor(ref) => {
+            log.debug("Received ActorRefIndexStoreActor")
+            indexStore = ref
+        }
 
         case SearchRequest(query,page,size) => {
             log.info("Received SearchRequest('{}',{},{})", query, page, size)
