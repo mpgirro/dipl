@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
 //    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.13'
     }
 }
 
@@ -16,9 +17,10 @@ apply plugin: 'idea'
 apply plugin: 'application'
 //apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
 apply plugin: 'maven-publish'
+apply plugin: 'net.ltgt.apt' // required by mapstruct
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 assert System.properties['java.specification.version'] == '1.8'
 
 group = 'net.irro.echo'
@@ -26,6 +28,14 @@ version '1.0-SNAPSHOT'
 description = ''
 
 mainClassName = 'echo.core.CoreApp'
+
+
+compileJava {
+    options.compilerArgs = [
+        '-Amapstruct.suppressGeneratorTimestamp=true',
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+    ]
+}
 
 ext {
 //    log4jVersion = '2.9.1'
@@ -37,13 +47,14 @@ ext {
 repositories {
     mavenLocal()
     jcenter()
+    mavenLocal()
     maven { url 'https://maven.icosillion.com/artifactory/open-source/' }
 }
 
 dependencies {
 //  compile 'com.google.guava:guava:23.6-jre' // Google Core Libraries for Java
 
-    testImplementation 'junit:junit:4.12'
+//    testImplementation 'junit:junit:4.12'
 
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     //compile "org.slf4j:slf4j-simple:$slf4jVersion"
@@ -59,6 +70,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'           // gson parser
     compile 'com.rometools:rome:1.9.0'
     compile 'com.rometools:rome-modules:1.9.0'
+
+    compile 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
+    testCompile 'org.testng:testng:6.10', 'org.easytesting:fest-assert:1.4'
+    apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
 
     /*
     compile "joda-time:joda-time:2.9.9"

@@ -21,6 +21,8 @@ public class PodcastDTO implements DTO {
     private String itunesImage;
     private String itunesCategory;
 
+    private int episodeCount;
+
     private String websiteData;
 
     // TODO atom elements
@@ -141,6 +143,14 @@ public class PodcastDTO implements DTO {
         this.itunesCategory = itunesCategory;
     }
 
+    public int getEpisodeCount() {
+        return episodeCount;
+    }
+
+    public void setEpisodeCount(int episodeCount) {
+        this.episodeCount = episodeCount;
+    }
+
     @Override
     public String getWebsiteData() {
         return websiteData;
@@ -188,6 +198,7 @@ public class PodcastDTO implements DTO {
             ", generator='" + generator + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
             ", itunesCategory='" + itunesCategory + '\'' +
+            ", episodeCount=" + episodeCount + '\'' +
             '}';
     }
 }

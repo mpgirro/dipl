@@ -4,12 +4,17 @@ import echo.core.converter.DocumentConverter;
 import echo.core.converter.LuceneEpisodeConverter;
 import echo.core.converter.LucenePodcastConverter;
 import echo.core.converter.ResultConverter;
+import echo.core.converter.mapper.EpisodeMapper;
+import echo.core.converter.mapper.LuceneMapper;
+import echo.core.converter.mapper.PodcastMapper;
+import echo.core.converter.mapper.ResultMapper;
 import echo.core.dto.DTO;
 import echo.core.dto.IndexResult;
 import echo.core.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -38,9 +43,9 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     private final ScheduledExecutorService scheduledExecutor;
     private final Future maybeRefreshFuture;
     */
-    private final DocumentConverter podcastConverter;
-    private final DocumentConverter episodeConverter;
-    private final ResultConverter resultConverter;
+    //private final DocumentConverter podcastConverter;
+    //private final DocumentConverter episodeConverter;
+    //private final ResultConverter resultConverter;
 
     /**
      *
@@ -67,9 +72,9 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         }, 0, 5, TimeUnit.SECONDS);
         */
 
-        this.podcastConverter = new LucenePodcastConverter();
-        this.episodeConverter = new LuceneEpisodeConverter();
-        this.resultConverter = new ResultConverter();
+        //this.podcastConverter = new LucenePodcastConverter();
+        //this.episodeConverter = new LuceneEpisodeConverter();
+        //this.resultConverter = new ResultConverter();
     }
 
     /**
@@ -150,7 +155,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
             int j = 0;
             for(int i = windowStart; i < windowEnd; i++){
-                results[j] = this.resultConverter.toResult(this.toDTO(indexSearcher.doc(hits[i].doc)));
+                results[j] = toResult(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
@@ -223,16 +228,24 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         }
     }
 
-    private DTO toDTO(final org.apache.lucene.document.Document doc) {
 
-        // TODO this is not too pretty yet, should have used Scala for this library already...
+    private DTO toDTO(Document doc) {
         if(doc.get("doc_type").equals("podcast")) {
-            return this.podcastConverter.toDTO(doc);
+            return PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc);
         } else if(doc.get("doc_type").equals("episode")) {
-            return this.episodeConverter.toDTO(doc);
+            return EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc);
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }
+    }
 
+    private IndexResult toResult(Document doc){
+        if(doc.get("doc_type").equals("podcast")) {
+            return ResultMapper.INSTANCE.podcastDtoToIndexResult(PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc));
+        } else if(doc.get("doc_type").equals("episode")) {
+            return ResultMapper.INSTANCE.episodeDtoToIndexResult(EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc));
+        } else {
+            throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
+        }
     }
 }
