@@ -8,13 +8,14 @@ import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 
-class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
+class IndexerActor extends Actor with ActorLogging {
 
 //    val log = Logging(context.system, classOf[IndexerActor])
 
     //val feedParser: FeedParser = new PodEngineFeedParser()
     val feedParser: FeedParser = new RomeFeedParser()
 
+    private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
@@ -22,13 +23,17 @@ class IndexerActor (val indexStore : ActorRef) extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
+        case ActorRefIndexStoreActor(ref) => {
+            log.debug("Received ActorRefIndexStoreActor")
+            indexStore = ref
+        }
         case ActorRefDirectoryStoreActor(ref) => {
             log.debug("Received ActorRefDirectoryStoreActor")
-            directoryStore = ref;
+            directoryStore = ref
         }
         case ActorRefCrawlerActor(ref) => {
             log.debug("Received ActorRefCrawlerActor")
-            crawler = ref;
+            crawler = ref
         }
 
         /*
