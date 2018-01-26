@@ -16,26 +16,26 @@ public class DocumentFormatter {
     public static String cliFormat(DTO doc){
         final StringBuilder builder = new StringBuilder();
         if(doc instanceof PodcastDTO){
-            final PodcastDTO pDoc = (PodcastDTO) doc;
+            final PodcastDTO podcast = (PodcastDTO) doc;
             appendString(builder, "[Podcast]");
-            appendString(builder, pDoc.getTitle());
-            if(pDoc.getPubDate() != null){
-                builder.append(pDoc.getPubDate());
+            appendString(builder, podcast.getTitle());
+            if(podcast.getPubDate() != null){
+                builder.append(podcast.getPubDate());
             }
-            appendString(builder, Jsoup.parse(pDoc.getDescription()).text());
-            appendString(builder, pDoc.getLink());
+            appendString(builder, Jsoup.parse(podcast.getDescription()).text());
+            appendString(builder, podcast.getLink());
         } else if( doc instanceof EpisodeDTO){
-            final EpisodeDTO eDoc = (EpisodeDTO) doc;
+            final EpisodeDTO episode = (EpisodeDTO) doc;
             appendString(builder, "[Episode]");
-            appendString(builder, eDoc.getTitle());
-            if(eDoc.getPubDate() != null){
-                appendString(builder, eDoc.getPubDate().toString());
+            appendString(builder, episode.getTitle());
+            if(episode.getPubDate() != null){
+                appendString(builder, episode.getPubDate().toString());
             }
-            if(eDoc.getItunesDuration() != null){
-                appendString(builder, "Duration: "+eDoc.getItunesDuration().toString());
+            if(episode.getItunesDuration() != null){
+                appendString(builder, "Duration: "+episode.getItunesDuration().toString());
             }
-            appendString(builder, Jsoup.parse(eDoc.getDescription()).text());
-            appendString(builder, eDoc.getLink());
+            appendString(builder, Jsoup.parse(episode.getDescription()).text());
+            appendString(builder, episode.getLink());
         } else {
             throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
         }
@@ -73,13 +73,13 @@ public class DocumentFormatter {
 
     public static DTO stripHTML(DTO doc){
         if(doc instanceof PodcastDTO){
-            final PodcastDTO pDoc = (PodcastDTO) doc;
-            pDoc.setDescription(Jsoup.parse(pDoc.getDescription()).text());
-            return pDoc;
+            final PodcastDTO podcast = (PodcastDTO) doc;
+            podcast.setDescription(Jsoup.parse(podcast.getDescription()).text());
+            return podcast;
         } else if( doc instanceof EpisodeDTO){
-            final EpisodeDTO eDoc = (EpisodeDTO) doc;
-            eDoc.setDescription(Jsoup.parse(eDoc.getDescription()).text());
-            return eDoc;
+            final EpisodeDTO episode = (EpisodeDTO) doc;
+            episode.setDescription(Jsoup.parse(episode.getDescription()).text());
+            return episode;
         } else {
             throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
         }

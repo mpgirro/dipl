@@ -38,25 +38,25 @@ public class RomeFeedParser implements FeedParser {
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed syndFeed = input.build(inputSource);
 
-            final PodcastDTO doc = new PodcastDTO();
+            final PodcastDTO podcast = new PodcastDTO();
 
-            doc.setTitle(syndFeed.getTitle());
-            doc.setLink(syndFeed.getLink());
-            doc.setDescription(syndFeed.getDescription());
+            podcast.setTitle(syndFeed.getTitle());
+            podcast.setLink(syndFeed.getLink());
+            podcast.setDescription(syndFeed.getDescription());
             if(syndFeed.getPublishedDate() != null){
-                doc.setPubDate(LocalDateTime.ofInstant(syndFeed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
+                podcast.setPubDate(LocalDateTime.ofInstant(syndFeed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
             }
-            doc.setLanguage(syndFeed.getLanguage());
-            doc.setGenerator(syndFeed.getGenerator());
+            podcast.setLanguage(syndFeed.getLanguage());
+            podcast.setGenerator(syndFeed.getGenerator());
 
             final Module itunesFeedModule = syndFeed.getModule("http://www.itunes.com/dtds/podcast-1.0.dtd");
             final FeedInformation itunesFeedInfo = (FeedInformation) itunesFeedModule;
             if(itunesFeedInfo != null){
                 if(itunesFeedInfo.getImage() != null){
-                    doc.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
+                    podcast.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
                 }
 
-                doc.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+                podcast.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
             } else {
                 log.debug("No iTunes Namespace elements found in Podcast");
             }
@@ -82,14 +82,16 @@ public class RomeFeedParser implements FeedParser {
                     // TODO
                 } else if(atomLink.getRel().equals("search")){
                     // TODO
-                } else if(atomLink.getRel().equals("via")){
+                } else if(atomLink.getRel().equals("via")) {
+                    // TODO
+                } else if(atomLink.getRel().equals("related")){
                     // TODO
                 } else {
                     log.warn("Came across an <atom:link> with a relation I do not handle: '{}'", atomLink.getRel());
                 }
             }
 
-            return doc;
+            return podcast;
 
         } catch (FeedException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed", e);
@@ -109,32 +111,32 @@ public class RomeFeedParser implements FeedParser {
 
             final List<EpisodeDTO> results = new LinkedList<>();
             for(SyndEntry e : syndFeed.getEntries()){
-                final EpisodeDTO doc = new EpisodeDTO();
+                final EpisodeDTO episode = new EpisodeDTO();
 
-                doc.setTitle(e.getTitle());
-                doc.setLink(e.getLink());
+                episode.setTitle(e.getTitle());
+                episode.setLink(e.getLink());
                 if(e.getPublishedDate() != null){
-                    doc.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
+                    episode.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
                 //doc.setGuid(TODO);
                 if(e.getDescription() != null){
-                    doc.setDescription(e.getDescription().getValue());
+                    episode.setDescription(e.getDescription().getValue());
                 }
 
                 final Module itunesEntryModule = e.getModule("http://www.itunes.com/dtds/podcast-1.0.dtd");
                 final EntryInformation itunesEntryInfo = (EntryInformation) itunesEntryModule;
                 if(itunesEntryInfo != null){
                     if(itunesEntryInfo.getImage() != null){
-                        doc.setItunesImage(itunesEntryInfo.getImage().toExternalForm());
+                        episode.setItunesImage(itunesEntryInfo.getImage().toExternalForm());
                     }
                     if(itunesEntryInfo.getDuration() != null){
-                        doc.setItunesDuration(itunesEntryInfo.getDuration().toString());
+                        episode.setItunesDuration(itunesEntryInfo.getDuration().toString());
                     }
                 } else {
                     log.debug("No iTunes Namespace elements found in Episode");
                 }
 
-                results.add(doc);
+                results.add(episode);
             }
             return results.toArray(new EpisodeDTO[0]);
         } catch (FeedException e) {
