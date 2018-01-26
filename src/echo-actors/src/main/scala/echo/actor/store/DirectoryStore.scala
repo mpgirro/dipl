@@ -11,7 +11,7 @@ import echo.core.model.feed.FeedStatus
   * @author Maximilian Irro
   */
 
-class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
+class DirectoryStore extends Actor with ActorLogging {
 
     // podcastId -> (timestamp, status, [episodeIds], PodcastDTO)
     val podcastDB = scala.collection.mutable.Map.empty[String, (LocalDateTime,FeedStatus,scala.collection.mutable.Set[String], PodcastDTO)]
@@ -23,15 +23,20 @@ class DirectoryStore (val crawler : ActorRef) extends Actor with ActorLogging {
     // podcastId -> FeedURLs
     val feedDB = scala.collection.mutable.Map.empty[String, String]
 
+    private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 
     private var mockEchoIdGenerator = 0 // TODO replace with real ID gen
 
     override def receive: Receive = {
 
-        case ActorRefIndexStoreActor(indexStore) => {
+        case ActorRefCrawlerActor(ref) => {
+            log.debug("Received ActorRefCrawlerActor(_)")
+            crawler = ref
+        }
+        case ActorRefIndexStoreActor(ref) => {
             log.debug("Received ActorRefIndexStoreActor(_)")
-            this.indexStore = indexStore
+            indexStore = ref
         }
 
         case ProposeNewFeed(feedUrl) => {
