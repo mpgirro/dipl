@@ -1,19 +1,13 @@
 package echo.core.converter.mapper;
 
-import echo.core.dto.IndexResult;
 import echo.core.dto.PodcastDTO;
 import echo.core.model.persistence.Podcast;
-
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

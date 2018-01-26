@@ -10,9 +10,6 @@ import java.util.stream.Collectors;
  * and documents of type I of the specific search index (e.g. org.apache.lucene.document.Document
  * or org.apache.solr.common.SolrInputDocument)
  *
- * To convert index documents to a reduced form with only the information used
- * to display search results, use converters extending {@link echo.core.converter.ResultConverter}
- *
  * @author Maximilian Irro
  */
 public abstract class DocumentConverter<E extends DTO, I> {

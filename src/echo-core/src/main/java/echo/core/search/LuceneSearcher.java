@@ -1,11 +1,6 @@
 package echo.core.search;
 
-import echo.core.converter.DocumentConverter;
-import echo.core.converter.LuceneEpisodeConverter;
-import echo.core.converter.LucenePodcastConverter;
-import echo.core.converter.ResultConverter;
 import echo.core.converter.mapper.EpisodeMapper;
-import echo.core.converter.mapper.LuceneMapper;
 import echo.core.converter.mapper.PodcastMapper;
 import echo.core.converter.mapper.ResultMapper;
 import echo.core.dto.DTO;
@@ -19,8 +14,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.*;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +34,6 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     private final SearcherManager searcherManager;
     private final Analyzer analyzer;
     private final MultiFieldQueryParser queryParser;
-    /*
-    private final ScheduledExecutorService scheduledExecutor;
-    private final Future maybeRefreshFuture;
-    */
-    //private final DocumentConverter podcastConverter;
-    //private final DocumentConverter episodeConverter;
-    //private final ResultConverter resultConverter;
 
     /**
      *
@@ -60,21 +48,6 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         this.queryParser = new MultiFieldQueryParser(
             new String[] {"title", "description", "link", "website_data"},
             this.analyzer);
-
-        /* TODO this should be better done manually by the actors/microservices
-        this.scheduledExecutor = Executors.newScheduledThreadPool(1);
-        this.maybeRefreshFuture = this.scheduledExecutor.scheduleWithFixedDelay(() -> {
-            try {
-                searcherManager.maybeRefresh();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }, 0, 5, TimeUnit.SECONDS);
-        */
-
-        //this.podcastConverter = new LucenePodcastConverter();
-        //this.episodeConverter = new LuceneEpisodeConverter();
-        //this.resultConverter = new ResultConverter();
     }
 
     /**
@@ -114,7 +87,6 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
             final Query query = this.queryParser.parse(q);
 
-//            searcherManager.maybeRefreshBlocking();
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
@@ -131,7 +103,6 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             resultWrapper.setCurrPage(p);
 
             final double dMaxPage = ((double)topDocs.totalHits) / ((double) s);
-            // final int maxPage = new BigDecimal(dMaxPage).setScale(2, RoundingMode.CEILING).intValue();
             final int maxPage = (int) Math.ceil(dMaxPage);
             if(maxPage == 0 && resultWrapper.getCurrPage() == 1){
                 resultWrapper.setMaxPage(1);
@@ -220,9 +191,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     @Override
     public void destroy() {
         try {
-//            this.maybeRefreshFuture.cancel(false);
             this.searcherManager.close();
-//            this.scheduledExecutor.shutdown();
         } catch (IOException e) {
             e.printStackTrace();
         }

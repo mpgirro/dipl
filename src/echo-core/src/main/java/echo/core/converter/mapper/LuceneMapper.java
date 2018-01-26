@@ -9,7 +9,6 @@ import org.apache.lucene.document.TextField;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
