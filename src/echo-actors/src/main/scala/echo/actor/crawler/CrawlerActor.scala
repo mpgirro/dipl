@@ -12,23 +12,21 @@ import echo.core.parse.api.FyydAPI
 
 class CrawlerActor extends Actor with ActorLogging {
 
-    //val log = Logging(context.system, classOf[CrawlerActor])
-
     private var indexer: ActorRef = _
     private var directoryStore: ActorRef = _
 
-    val fyydAPI: FyydAPI = new FyydAPI();
+    private val fyydAPI: FyydAPI = new FyydAPI()
 
     override def receive: Receive = {
 
         case ActorRefIndexerActor(ref) => {
             log.debug("Received ActorRefIndexerActor(_)")
-            indexer = ref;
+            indexer = ref
         }
 
         case ActorRefDirectoryStoreActor(ref) => {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref;
+            directoryStore = ref
         }
 
         case FetchNewFeed(feedUrl: String, podcastDocId: String) => {

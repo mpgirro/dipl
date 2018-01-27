@@ -10,10 +10,7 @@ import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 
 class IndexerActor extends Actor with ActorLogging {
 
-//    val log = Logging(context.system, classOf[IndexerActor])
-
-    //val feedParser: FeedParser = new PodEngineFeedParser()
-    val feedParser: FeedParser = new RomeFeedParser()
+    private val feedParser: FeedParser = new RomeFeedParser()
 
     private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _

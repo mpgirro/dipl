@@ -7,8 +7,6 @@ import scala.language.postfixOps
 
 class SearcherActor extends Actor with ActorLogging {
 
-//    val log = Logging(context.system, classOf[SearcherActor])
-
     private var indexStore: ActorRef = _
 
     override def receive: Receive = {

@@ -25,20 +25,20 @@ import scala.language.postfixOps
   */
 class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
-    val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
-    val GATEWAY_PORT = ConfigFactory.load().getInt("echo.gateway.port")
+    private val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
+    private val GATEWAY_PORT = ConfigFactory.load().getInt("echo.gateway.port")
 
     // TODO see https://github.com/ArchDev/akka-http-rest/blob/master/src/main/scala/me/archdev/restapi/http/HttpRoute.scala
-    val SECRET_KEY = ConfigFactory.load().getString("echo.gateway.secret-key")
+    private val SECRET_KEY = ConfigFactory.load().getString("echo.gateway.secret-key")
 
     private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _
 
     implicit val internalTimeout = Timeout(5 seconds)
 
-    val searchService = new SearchService(log, internalTimeout)
-    val podcastService = new PodcastService(log, internalTimeout)
-    val episodeService = new EpisodeService(log, internalTimeout)
+    private val searchService = new SearchService(log, internalTimeout)
+    private val podcastService = new PodcastService(log, internalTimeout)
+    private val episodeService = new EpisodeService(log, internalTimeout)
 
     override def preStart = {
 

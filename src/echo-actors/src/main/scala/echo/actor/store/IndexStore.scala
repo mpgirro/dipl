@@ -10,11 +10,10 @@ import echo.core.search.{IndexSearcher, LuceneSearcher}
 
 class IndexStore extends Actor with ActorLogging {
 
-//    val log = Logging(context.system, classOf[IndexStore])
-    val INDEX_PATH = ConfigFactory.load().getString("echo.index")
+    private val INDEX_PATH = ConfigFactory.load().getString("echo.index")
 
-    val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
-    val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
+    private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
+    private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
     override def receive: Receive = {
 
