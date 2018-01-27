@@ -45,7 +45,7 @@ object ActorMessages {
     case class IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String], feedData: String)
 
     // Crawler -> Indexer
-    case class IndexWebsiteData(echoId: String, websiteData: String)
+    case class IndexWebsiteData(echoId: String, html: String)
 
     /* Index -> Index
      *

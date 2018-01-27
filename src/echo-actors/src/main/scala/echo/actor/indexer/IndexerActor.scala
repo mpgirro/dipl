@@ -152,9 +152,13 @@ class IndexerActor extends Actor with ActorLogging {
             log.error("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
-        case IndexWebsiteData(echoId: String, websiteData: String) => {
+        case IndexWebsiteData(echoId: String, html: String) => {
             // TODO we don't to any processing of raw website source code yet
-            indexStore ! IndexSoreUpdateDocumentWebsiteData(echoId, websiteData)
+
+            import org.jsoup.Jsoup
+            val readableText = Jsoup.parse(html).text()
+
+            indexStore ! IndexSoreUpdateDocumentWebsiteData(echoId, readableText)
         }
 
 
