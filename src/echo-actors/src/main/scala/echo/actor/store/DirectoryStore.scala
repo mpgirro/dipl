@@ -1,8 +1,10 @@
 package echo.actor.store
 
 import java.time.LocalDateTime
+import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.devskiller.friendly_id.Url62
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
@@ -42,7 +44,19 @@ class DirectoryStore extends Actor with ActorLogging {
         case ProposeNewFeed(feedUrl) => {
             log.debug("Received msg proposing a new feed: " + feedUrl)
 
-            val fakePodcastId = "pfake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+            //val fakePodcastId = "pfake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+            val fakePodcastId = Url62.encode(UUID.randomUUID())
+
+            /*
+            Url62.create
+            // 7NLCAyd6sKR7kDHxgAWFPG
+
+            Url62.decode("7NLCAyd6sKR7kDHxgAWFPG")
+            // c3587ec5-0976-497f-8374-61e0c2ea3da5
+
+            Url62.encode(UUID.fromString("c3587ec5-0976-497f-8374-61e0c2ea3da5"))
+            */
+
 
             if(podcastDB.contains(fakePodcastId)){
                 // TODO remove the auto update

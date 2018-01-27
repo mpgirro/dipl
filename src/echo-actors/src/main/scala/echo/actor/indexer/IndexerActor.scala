@@ -1,8 +1,10 @@
 package echo.actor.indexer
 
 import java.time.LocalDateTime
+import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.devskiller.friendly_id.Url62
 import echo.actor.protocol.ActorMessages._
 import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
@@ -84,7 +86,10 @@ class IndexerActor extends Actor with ActorLogging {
                     if(episodes != null){
                         for(episode <- episodes){
 
-                            val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                            //val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                            val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
+
+
                             episode.setEchoId(fakeEpisodeId)
                             episode.setDocId(fakeEpisodeId) // TODO verify good GUID!
 
