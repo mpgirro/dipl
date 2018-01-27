@@ -41,7 +41,7 @@ class CrawlerActor extends Actor with ActorLogging {
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                 } else {
-                    log.error("Received NULL from downloading feed content from URL: {}", feedUrl)
+                    log.error("Received NULL trying to download (new) feed from URL: {}", feedUrl)
                 }
             } catch {
                 case e: IOException => {
@@ -65,7 +65,7 @@ class CrawlerActor extends Actor with ActorLogging {
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                 } else {
-                    log.error("Received NULL from downloading feed (update) content from URL: {}", feedUrl)
+                    log.error("Received NULL trying to download feed (update)from URL: {}", feedUrl)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             } catch {
@@ -85,7 +85,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 if(websiteData != null){
                     indexer ! IndexWebsiteData(echoId, websiteData)
                 } else {
-                    log.error("Received NULL from downloading content from URL: {}", url)
+                    log.error("Received NULL trying to download website data for URL: {}", url)
                 }
             } catch {
                 case e: IOException => {
