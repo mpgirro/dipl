@@ -5,7 +5,7 @@
     <div class="list-group-item list-group-item-action px-0">
 
       <div data-toggle="collapse"
-           [attr.data-target]="'#collapseListItem-'+ episode.echoId"
+           [attr.data-target]="'#collapseGroupListItem-'+ episode.echoId"
            data-parent="#episode-table">
 
         <h6 class="mb-1">
@@ -25,7 +25,7 @@
       </div>
 
       <div class="collapse pt-4"
-           [attr.id]="'collapseListItem-'+ episode.echoId">
+           [attr.id]="'collapseGroupListItem-'+ episode.echoId">
         <app-episode-teaser [episode]="episode"></app-episode-teaser>
       </div>
 

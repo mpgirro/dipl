@@ -4,7 +4,7 @@
       *ngFor="let episode of episodes">
 
     <a aria-expanded="true" data-toggle="collapse"
-       [attr.href]="'#group-of-rows-'+ episode.echoId" >
+       [attr.href]="'#listTableItem-'+ episode.echoId" >
       {{episode.title}}
     </a>
 
@@ -16,8 +16,10 @@
             </small>
           </span>
 
-    <div aria-expanded="true" class="collapse" [attr.id]="'group-of-rows-'+ episode.echoId">
-      <app-episode-teaser [episode]="episode"></app-episode-teaser>
+    <div aria-expanded="true" class="collapse" [attr.id]="'listTableItem-'+ episode.echoId">
+      <div class="mt-5">
+        <app-episode-teaser [episode]="episode"></app-episode-teaser>
+      </div>
     </div>
   </li>
 
