@@ -77,7 +77,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
         }
 
-        case (echoId: String, url: String) => {
+        case FetchWebsite(echoId: String, url: String) => {
             log.debug("Received FetchWebsite({},{})", echoId, url)
 
             try{
