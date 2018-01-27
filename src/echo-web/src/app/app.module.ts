@@ -21,6 +21,7 @@ import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory
 import { EpisodeTeaserComponent } from './episode-teaser/episode-teaser.component';
 import { EpisodeTableComponent } from './episode-table/episode-table.component';
 import { EpisodeListgroupComponent } from './episode-listgroup/episode-listgroup.component';
+import { EpisodeTablelistComponent } from './episode-tablelist/episode-tablelist.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { EpisodeListgroupComponent } from './episode-listgroup/episode-listgroup
     PodcastDirectoryComponent,
     EpisodeTeaserComponent,
     EpisodeTableComponent,
-    EpisodeListgroupComponent
+    EpisodeListgroupComponent,
+    EpisodeTablelistComponent
   ],
   imports: [
     BrowserModule,
