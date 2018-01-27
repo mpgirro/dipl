@@ -1,27 +1,41 @@
-<table class="table table-hover">
+<table class="table">
   <thead>
   <tr>
     <th scope="col" style="width:70%;">Title</th>
     <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-calendar"></span></small><span class="sr-only">Date</span></th>
     <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-timer"></span></small><span class="sr-only">Duration</span></th>
+    <th><!-- for the nav symbol --></th>
   </tr>
   </thead>
 
   <tbody >
 
   <ng-container *ngFor="let episode of episodes">
+    <!--
     <tr class="clickable"
         data-toggle="collapse"
         [attr.data-target]="'#group-of-rows-'+ episode.echoId"
         aria-expanded="false"
         [attr.aria-controls]="'group-of-rows-'+ episode.echoId">
-      <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
+        -->
+    <tr>
+      <td>
+        <!--<a href="/e/{{episode.echoId}}">{{episode.title}}</a>-->
+
+        <a data-toggle="collapse"
+           aria-expanded="false"
+           [attr.aria-controls]="'group-of-rows-'+ episode.echoId"
+           [attr.href]="'#group-of-rows-'+ episode.echoId">
+          {{episode.title}}
+        </a>
+      </td>
       <td class="text-right"><small *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</small></td>
       <td class="text-right"><small *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</small></td>
+      <td><small><a href="/e/{{episode.echoId}}"><span class="oi oi-chevron-right"></span></a></small></td>
     </tr>
 
     <tr class="collapse" [attr.id]="'group-of-rows-'+ episode.echoId">
-      <td colspan="3"><app-episode-teaser [episode]="episode"></app-episode-teaser></td>
+      <td colspan="4"><app-episode-teaser [episode]="episode"></app-episode-teaser></td>
     </tr>
   </ng-container>
 
