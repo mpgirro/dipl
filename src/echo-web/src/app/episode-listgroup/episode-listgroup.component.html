@@ -1,0 +1,36 @@
+<div class="list-group list-group-flush">
+
+  <ng-container *ngFor="let episode of episodes">
+
+    <div class="list-group-item list-group-item-action">
+
+      <div data-toggle="collapse"
+           [attr.data-target]="'#collapseListItem-'+ episode.echoId"
+           data-parent="#episode-table">
+
+        <h6 class="mb-1">
+          <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
+        </h6>
+        <small class="text-muted">
+                <span *ngIf="episode.pubDate">
+                  <span class="oi oi-calendar"></span>
+                  <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
+                </span>
+          <span *ngIf="episode.itunesDuration">
+                  <span class="oi oi-timer"></span>
+                  <span class="mr-2">{{episode.itunesDuration}}</span>
+                </span>
+        </small>
+
+      </div>
+
+      <div class="collapse pt-4"
+           [attr.id]="'collapseListItem-'+ episode.echoId">
+        <app-episode-teaser [episode]="episode"></app-episode-teaser>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

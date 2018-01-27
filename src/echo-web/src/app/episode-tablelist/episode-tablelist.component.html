@@ -1,0 +1,24 @@
+<ul class="list-group">
+
+  <li class="list-group-item"
+      *ngFor="let episode of episodes">
+
+    <a aria-expanded="true" data-toggle="collapse"
+       [attr.href]="'#group-of-rows-'+ episode.echoId" >
+      {{episode.title}}
+    </a>
+
+    <span class="float-right">
+            <small class="text-muted">
+              <span class="px-2" *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</span>
+              <span class="px-2" *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</span>
+              <a href="/e/{{episode.echoId}}"><span class="oi oi-chevron-right"></span></a>
+            </small>
+          </span>
+
+    <div aria-expanded="true" class="collapse" [attr.id]="'group-of-rows-'+ episode.echoId">
+      <app-episode-teaser [episode]="episode"></app-episode-teaser>
+    </div>
+  </li>
+
+</ul>

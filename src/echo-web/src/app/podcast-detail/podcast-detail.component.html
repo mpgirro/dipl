@@ -50,15 +50,20 @@
   <nav class="navbar navbar-expand px-0 mt-5">
     <span class="navbar-text"><h5 class="my-4">Episodes</h5></span>
     <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
-      <li class="nav-item"><a class="nav-link active" id="episodes-table-tab" data-toggle="tab" href="#episodes-table" role="tab" aria-controls="episodes-table" aria-selected="false">Table</a></li>
-      <li class="nav-item"><a class="nav-link" id="episodes-listgroup-tab" data-toggle="tab" href="#episodes-listgroup" role="tab" aria-controls="episodes-listgroup" aria-selected="true">List</a></li>
+      <li class="nav-item"><a class="nav-link active" id="episodes-tablelist-tab" data-toggle="tab" href="#episodes-tablelist" role="tab" aria-controls="episodes-tablelist" aria-selected="false">Table List</a></li>
+      <li class="nav-item"><a class="nav-link"        id="episodes-table-tab"     data-toggle="tab" href="#episodes-table"     role="tab" aria-controls="episodes-table"     aria-selected="true">Table</a></li>
+      <li class="nav-item"><a class="nav-link"        id="episodes-listgroup-tab" data-toggle="tab" href="#episodes-listgroup" role="tab" aria-controls="episodes-listgroup" aria-selected="true">List Group</a></li>
     </ul>
   </nav>
 
   <!-- Tab panes -->
   <div class="tab-content" id="episodesTabContent">
-    <div class="tab-pane fade show active" id="episodes-table" role="tabpanel" aria-labelledby="episodes-table-tab">
+    <div class="tab-pane fade show active" id="episodes-tablelist" role="tabpanel" aria-labelledby="episodes-tablelist-tab">
+      <app-episode-tablelist [episodes]="episodes"></app-episode-tablelist>
+    </div>
+    <div class="tab-pane fade" id="episodes-table" role="tabpanel" aria-labelledby="episodes-table-tab">
 
+      <app-episode-table [episodes]="episodes"></app-episode-table>
       <!--
       <table class="table table-sm table-hover">
         <thead>
@@ -92,6 +97,7 @@
       </table>
       -->
 
+      <!--
       <ul class="list-group">
 
         <li class="list-group-item"
@@ -116,10 +122,13 @@
         </li>
 
       </ul>
+      -->
 
     </div>
 
     <div class="tab-pane fade" id="episodes-listgroup" role="tabpanel" aria-labelledby="episodes-listgroup-tab">
+      <app-episode-listgroup [episodes]="episodes"></app-episode-listgroup>
+      <!--
       <div class="list-group list-group-flush">
 
         <ng-container *ngFor="let episode of episodes">
@@ -156,6 +165,7 @@
         </ng-container>
 
       </div>
+      -->
     </div>
   </div>
 
