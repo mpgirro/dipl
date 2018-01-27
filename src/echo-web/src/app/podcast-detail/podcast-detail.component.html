@@ -1,13 +1,10 @@
 
-<nav class="navbar navbar-expand px-0">
-  <button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>
+<nav class="navbar navbar-expand navbar-light bg-light px-0">
+  <!--<button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>-->
+  <a class="navbar-brand" href="#">Echo</a>
   <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/search">Search</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
-    </li>
+    <li class="nav-item"><a class="nav-link" routerLink="/search">Search</a></li>
+    <li class="nav-item"><a class="nav-link" routerLink="/podcast-directory">Directory</a></li>
   </ul>
 </nav>
 
@@ -51,16 +48,10 @@
 
   <!-- Nav tabs -->
   <nav class="navbar navbar-expand px-0 mt-5">
-    <span class="navbar-text">
-      <h5 class="my-4">Episodes</h5>
-    </span>
+    <span class="navbar-text"><h5 class="my-4">Episodes</h5></span>
     <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="episodes-table-tab" data-toggle="tab" href="#episodes-table" role="tab" aria-controls="episodes-table" aria-selected="false">Table</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="episodes-listgroup-tab" data-toggle="tab" href="#episodes-listgroup" role="tab" aria-controls="episodes-listgroup" aria-selected="true">List</a>
-      </li>
+      <li class="nav-item"><a class="nav-link active" id="episodes-table-tab" data-toggle="tab" href="#episodes-table" role="tab" aria-controls="episodes-table" aria-selected="false">Table</a></li>
+      <li class="nav-item"><a class="nav-link" id="episodes-listgroup-tab" data-toggle="tab" href="#episodes-listgroup" role="tab" aria-controls="episodes-listgroup" aria-selected="true">List</a></li>
     </ul>
   </nav>
 
@@ -69,11 +60,11 @@
     <div class="tab-pane fade show active" id="episodes-table" role="tabpanel" aria-labelledby="episodes-table-tab">
       <table class="table table-sm table-hover">
         <thead>
-        <tr>
-          <th scope="col" style="width:70%;">Title</th>
-          <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-calendar"></span></small><span class="sr-only">Date</span></th>
-          <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-timer"></span></small><span class="sr-only">Duration</span></th>
-        </tr>
+          <tr>
+            <th scope="col" style="width:70%;">Title</th>
+            <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-calendar"></span></small><span class="sr-only">Date</span></th>
+            <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-timer"></span></small><span class="sr-only">Duration</span></th>
+          </tr>
         </thead>
 
         <tbody >
@@ -85,33 +76,13 @@
               aria-expanded="false"
               [attr.aria-controls]="'group-of-rows-'+ episode.echoId">
             <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
-            <td class="text-right">
-              <small *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</small>
-            </td>
-            <td class="text-right">
-              <small *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</small>
-            </td>
+            <td class="text-right"><small *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</small></td>
+            <td class="text-right"><small *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</small></td>
           </tr>
 
-          <tr class="collapse"
-              [attr.id]="'group-of-rows-'+ episode.echoId">
-
-            <td colspan="3">
-              <div class="media my-2">
-                <img class="episode-thumb mr-3"
-                     src="{{episode.itunesImage}}"
-                     alt="Generic placeholder image">
-
-                <div class="media-body">
-                  <h5 class="mt-0">
-                    {{episode.title}}
-                  </h5>
-                  <p class="mb-1" [innerHTML]="episode.description"></p>
-                </div>
-              </div>
-            </td>
+          <tr class="collapse" [attr.id]="'group-of-rows-'+ episode.echoId">
+            <td colspan="3"><app-episode-teaser [episode]="episode"></app-episode-teaser></td>
           </tr>
-
         </ng-container>
 
         </tbody>
@@ -134,30 +105,21 @@
                 <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
               </h6>
               <small class="text-muted">
-            <span *ngIf="episode.pubDate">
-                <span class="oi oi-calendar"></span>
-                <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
-            </span>
+                <span *ngIf="episode.pubDate">
+                  <span class="oi oi-calendar"></span>
+                  <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
+                </span>
                 <span *ngIf="episode.itunesDuration">
-              <span class="oi oi-timer"></span>
-              <span class="mr-2">{{episode.itunesDuration}}</span>
-            </span>
+                  <span class="oi oi-timer"></span>
+                  <span class="mr-2">{{episode.itunesDuration}}</span>
+                </span>
               </small>
 
             </div>
 
             <div class="collapse pt-4"
                  [attr.id]="'collapseListItem-'+ episode.echoId">
-
-              <div class="media">
-                <img class="episode-thumb mr-3"
-                     src="{{episode.itunesImage}}"
-                     alt="Generic placeholder image">
-                <div class="media-body">
-                  <p [innerHTML]="episode.description"></p>
-                </div>
-              </div>
-
+              <app-episode-teaser [episode]="episode"></app-episode-teaser>
             </div>
 
           </div>
@@ -169,109 +131,3 @@
   </div>
 
 </div>
-
-
-
-<!--
-<div id="episode-table">
-  <div class="list-group list-group-flush">
-
-    <ng-container *ngFor="let episode of episodes">
-
-      <div class="list-group-item list-group-item-action">
-
-        <div data-toggle="collapse"
-             [attr.data-target]="'#collapseListItem-'+ episode.echoId"
-             data-parent="#episode-table">
-
-          <h6 class="mb-1">
-            <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
-          </h6>
-          <small class="text-muted">
-            <span *ngIf="episode.pubDate">
-                <span class="oi oi-calendar"></span>
-                <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
-            </span>
-            <span *ngIf="episode.itunesDuration">
-              <span class="oi oi-timer"></span>
-              <span class="mr-2">{{episode.itunesDuration}}</span>
-            </span>
-          </small>
-
-        </div>
-
-        <div class="collapse pt-4"
-             [attr.id]="'collapseListItem-'+ episode.echoId">
-
-          <div class="media">
-            <img class="episode-thumb mr-3"
-                 src="{{episode.itunesImage}}"
-                 alt="Generic placeholder image">
-            <div class="media-body">
-              <p [innerHTML]="episode.description"></p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </ng-container>
-
-  </div>
-</div>
--->
-
-
-<!--
-<table class="table table-sm table-hover">
-  <thead>
-  <tr>
-    <th scope="col" style="width:70%;">Title</th>
-    <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-calendar"></span></small><span class="sr-only">Date</span></th>
-    <th scope="col" style="text-align:center; width:15%;"><small><span class="oi oi-timer"></span></small><span class="sr-only">Duration</span></th>
-  </tr>
-  </thead>
-
-  <tbody >
-
-  <ng-container *ngFor="let episode of episodes">
-    <tr class="clickable"
-        data-toggle="collapse"
-        [attr.data-target]="'#group-of-rows-'+ episode.echoId"
-        aria-expanded="false"
-        [attr.aria-controls]="'group-of-rows-'+ episode.echoId">
-      <td><a href="/e/{{episode.echoId}}">{{episode.title}}</a></td>
-      <td class="text-right">
-        <small *ngIf="episode.pubDate">{{episode.pubDate | date: 'd.MM.yyyy'}}</small>
-      </td>
-      <td class="text-right">
-        <small *ngIf="episode.itunesDuration">{{episode.itunesDuration}}</small>
-      </td>
-    </tr>
-
-    <tr class="collapse"
-        [attr.id]="'group-of-rows-'+ episode.echoId">
-
-      <td colspan="3">
-        <div class="media my-2">
-          <img class="episode-thumb mr-3"
-               src="{{episode.itunesImage}}"
-               alt="Generic placeholder image">
-
-          <div class="media-body">
-            <h5 class="mt-0">
-              {{episode.title}}
-            </h5>
-            <p class="mb-1" [innerHTML]="episode.description"></p>
-          </div>
-        </div>
-      </td>
-    </tr>
-
-  </ng-container>
-
-  </tbody>
-
-</table>
--->

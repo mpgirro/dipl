@@ -1,0 +1,12 @@
+<div class="media my-2">
+  <img class="episode-thumb mr-3"
+       src="{{episode.itunesImage}}"
+       alt="Generic placeholder image">
+
+  <div class="media-body">
+    <h5 class="mt-0">
+      {{episode.title}}
+    </h5>
+    <p class="mb-1" [innerHTML]="episode.description"></p>
+  </div>
+</div>
