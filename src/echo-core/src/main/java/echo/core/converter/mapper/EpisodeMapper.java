@@ -20,7 +20,6 @@ public interface EpisodeMapper {
 
     @Mappings( {
         @Mapping(source = "echoId", target = "echoId"),
-        @Mapping(target = "docId", ignore = true),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
         @Mapping(source = "pubDate", target = "pubDate"),
@@ -57,8 +56,7 @@ public interface EpisodeMapper {
 
         final EpisodeDTO dto = new EpisodeDTO();
 
-        if(doc.get("echo_id")         != null){ dto.setDocId(doc.get("echo_id")); }
-        if(doc.get("doc_id")          != null){ dto.setDocId(doc.get("doc_id")); }
+        if(doc.get("echo_id")         != null){ dto.setEchoId(doc.get("echo_id")); }
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
         if(doc.get("pub_date")        != null){ dto.setPubDate(LocalDateTimeMapper.asLocalDateTime(doc.get("pub_date"))); }

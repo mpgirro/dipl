@@ -151,7 +151,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         IndexSearcher indexSearcher = null;
         try {
 
-            final Query query = new TermQuery(new Term("doc_id", id));
+            final Query query = new TermQuery(new Term("echo_id", id));
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
@@ -159,7 +159,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if(topDocs.totalHits > 1){
-                log.error("Searcher found multiple documents for unique doc_id {}", id);
+                log.error("Searcher found multiple documents for unique echo_id {}", id);
             }
             if(topDocs.totalHits == 1){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;

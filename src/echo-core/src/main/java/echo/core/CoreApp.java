@@ -186,7 +186,7 @@ public class CoreApp {
             final String feedData = download(feed);
 
             final PodcastDTO podcastDoc = this.feedParser.parseFeed(feedData);
-            podcastDoc.setDocId(feed);
+            podcastDoc.setEchoId(feed);
 
             this.committer.add(podcastDoc);
 
@@ -194,7 +194,7 @@ public class CoreApp {
             for (EpisodeDTO episode : episodes) {
                 out.println("  Episode: " + episode.getTitle());
 
-                episode.setDocId(episode.getGuid()); // TODO verifiy good GUID!
+                episode.setEchoId(episode.getGuid()); // TODO verifiy good GUID!
 
                 this.committer.add(episode);
             }

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 public class EpisodeDTO implements DTO {
 
     private String echoId;
-    private String docId;
 
     private String title;
     private String link;
@@ -52,16 +51,6 @@ public class EpisodeDTO implements DTO {
     @Override
     public void setEchoId(String echoId) {
         this.echoId = echoId;
-    }
-
-    @Override
-    public String getDocId(){
-        return this.docId;
-    }
-
-    @Override
-    public void setDocId(String docId){
-        this.docId = docId;
     }
 
     @Override
@@ -175,7 +164,6 @@ public class EpisodeDTO implements DTO {
     public String toString() {
         return "EpisodeDTO{" +
             "echoId='" + echoId + '\'' +
-            ", docId='" + docId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", pubDate=" + pubDate +
