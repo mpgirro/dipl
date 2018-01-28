@@ -35,10 +35,12 @@ class PodcastDaoImpl extends PodcastDao {
     }
 
     def getAll: List[Podcast] = {
-        entityManager.createQuery("FROM podcast", classOf[Podcast]).getResultList.asScala.toList
+        entityManager.createQuery("FROM Podcast", classOf[Podcast]).getResultList.asScala.toList
     }
 
     def getByLanguage(language : String): List[Podcast] = {
-        entityManager.createQuery("FROM podcast WHERE language = :language", classOf[Podcast]).setParameter("language", language).getResultList.asScala.toList
+        entityManager.createQuery("FROM Podcast WHERE language = :language", classOf[Podcast])
+            .setParameter("language", language)
+            .getResultList.asScala.toList
     }
 }

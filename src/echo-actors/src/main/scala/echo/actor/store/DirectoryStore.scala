@@ -118,7 +118,7 @@ class DirectoryStore extends Actor with ActorLogging {
                     podcastEntity.setEchoId(fakePodcastId)
                     podcastEntity.setDescription("Test Podcast Entry for feed: " + feedUrl)
                     podcastDao.save(podcastEntity)
-                    println(podcastDao.getAll)
+                    //println(podcastDao.getAll)
                     //podcastEntity = podcastRepository.save(podcastEntity)
                     //log.info("Saved podcast entity, it got ID: {}", podcastEntity.getId)
                 } else {

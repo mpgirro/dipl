@@ -7,6 +7,9 @@ buildscript {
     }
     dependencies {
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:0.9.0'
+        classpath 'org.liquibase:liquibase-gradle-plugin:1.2.4'
+        classpath 'com.h2database:h2:1.4.196'
+        //classpath 'org.yaml:snakeyaml:1.15'
     }
 }
 
@@ -16,6 +19,7 @@ apply plugin: 'scala'
 apply plugin: 'scalaStyle'
 apply plugin: 'project-report'
 apply plugin: 'application'
+apply plugin: 'org.liquibase.gradle'
 
 sourceCompatibility=1.8
 targetCompatibility=1.8
@@ -55,12 +59,26 @@ dependencies {
 
     compile "ch.qos.logback:logback-classic:$logbackVersion"
 
-    compile 'echo.core:echo-core:1.0-SNAPSHOT'
+    compile 'net.irro.echo:echo-core:1.0-SNAPSHOT'
 
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
 
     compile "com.github.swagger-akka-http:swagger-akka-http_$scalaMajor:0.11.2"
     compile "ch.megard:akka-http-cors_$scalaMajor:0.2.2"
+
+    compile 'com.devskiller.friendly-id:friendly-id:1.0.0'
+
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compile group: 'org.springframework', name: 'spring-context', version: '5.0.3.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.0.3.RELEASE'
+    //compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.0.Beta1'  // note: not needed when using Spring-Data JPA --> produces an error
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'
+    compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
+
+    //testCompile 'com.h2database:h2:1.4.196' // TODO only use H2 in test phase
+    compile 'com.h2database:h2:1.4.196'
+
+    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.5.3'
 
     testCompile(
         [group: 'junit', name: 'junit', version: '4.12'],
@@ -113,4 +131,25 @@ task wrapper(type: Wrapper) {
 
 run {
     standardInput = System.in
+}
+
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'src/main/resources/db/liquibase/master.xml'
+            //url 'jdbc:h2:mem:echo;FILE_LOCK=NO'
+            url 'jdbc:h2:mem:echo;DATABASE_TO_UPPER=false'
+            username 'sa'
+            password ''
+            /*
+            changeLogParameters([ myToken: 'myvalue',
+                                  second: 'secondValue'])
+            */
+        }
+    }
+
+    // runList = project.ext.runList
+    // runList = 'main'
+    runList = 'main'
 }
