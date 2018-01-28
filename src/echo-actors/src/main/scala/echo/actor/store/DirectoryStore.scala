@@ -182,7 +182,7 @@ class DirectoryStore extends Actor with ActorLogging {
             if(podcastDB.contains(podcastDocId)){
                 log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, episode)
                 val (timestamp, status, episodes, podcast) = podcastDB(podcastDocId)
-                episodes += episode.getDocId
+                episodes += episode.getEchoId
                 val newEntry = (timestamp, status, episodes, podcast)
 
                 podcastDB.remove(podcastDocId)
@@ -199,7 +199,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 episodeEntry = doc;
             }
             */
-            episodeDB += (episode.getDocId -> episode)
+            episodeDB += (episode.getEchoId -> episode)
         }
 
         // this is the case when an Episode has no iTunesImage URL set in the feed.

@@ -63,7 +63,6 @@ class IndexerActor extends Actor with ActorLogging {
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
                     podcast.setEchoId(podcastDocId)
-                    podcast.setDocId(podcastDocId)
 
                     /* TODO
                      * here I should send an update for the podcast data to the directoryStore (relational DB)
@@ -91,7 +90,6 @@ class IndexerActor extends Actor with ActorLogging {
 
 
                             episode.setEchoId(fakeEpisodeId)
-                            episode.setDocId(fakeEpisodeId) // TODO verify good GUID!
 
                             // TODO send episode data to directoryStore, once the circular dependency is solved
                             directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
