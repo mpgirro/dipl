@@ -2,10 +2,7 @@ package echo.core.model.persistence;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 /**
@@ -16,18 +13,34 @@ import javax.persistence.Table;
 public class Episode implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "echo_id")
     private String echoId;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "link")
     private String link;
-    private LocalDateTime pubDate;
-    private String guid;
-    private Boolean guidIsPermaLink;
+
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "pub_date")
+    private LocalDateTime pubDate;
+
+    @Column(name = "guid")
+    private String guid;
+
+    @Column(name = "guid_is_permalink")
+    private Boolean guidIsPermaLink;
+
+    @Column(name = "itunes_image")
     private String itunesImage;
+
+    @Column(name = "itunes_duration")
     private String itunesDuration;
 
     public Long getId() {
@@ -62,6 +75,14 @@ public class Episode implements Serializable {
         this.link = link;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public LocalDateTime getPubDate() {
         return pubDate;
     }
@@ -84,14 +105,6 @@ public class Episode implements Serializable {
 
     public void setGuidIsPermaLink(Boolean guidIsPermaLink) {
         this.guidIsPermaLink = guidIsPermaLink;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getItunesImage() {

@@ -2,10 +2,7 @@ package echo.core.model.persistence;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 /**
@@ -16,21 +13,40 @@ import javax.persistence.Table;
 public class Podcast implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "echo_id")
     private String echoId;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "link")
     private String link;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "pub_date")
     private LocalDateTime pubDate;
+
+    @Column(name = "last_build_date")
     private LocalDateTime lastBuildDate;
+
+    @Column(name = "language")
     private String language;
+
+    @Column(name = "generator")
     private String generator;
 
+    @Column(name = "itunes_image")
     private String itunesImage;
+
+    @Column(name = "itunes_category")
     private String itunesCategory;
 
+    @Column(name = "episode_count")
     private int episodeCount;
 
     public Long getId() {
