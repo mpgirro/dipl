@@ -34,6 +34,7 @@ public interface EpisodeMapper {
     List<EpisodeDTO> episodesToEpisodesDtos(List<Episode> episodes);
 
     @Mappings( {
+        @Mapping(target = "id", ignore = true),
         @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),

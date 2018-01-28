@@ -37,6 +37,7 @@ public interface PodcastMapper {
     List<PodcastDTO> podcastsToPodcastDtos(List<Podcast> podcasts);
 
     @Mappings( {
+        @Mapping(target = "id", ignore = true),
         @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
