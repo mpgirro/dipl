@@ -66,8 +66,8 @@ public interface PodcastMapper {
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
         if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
-        if(doc.get("pub_date")        != null){ dto.setLastBuildDate(LocalDateTimeMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
-        if(doc.get("last_build_date") != null){ dto.setLastBuildDate(LocalDateTimeMapper.INSTANCE.asLocalDateTime(doc.get("last_build_date"))); }
+        if(doc.get("pub_date")        != null){ dto.setLastBuildDate(LocalDateTimeMapper.asLocalDateTime(doc.get("pub_date"))); }
+        if(doc.get("last_build_date") != null){ dto.setLastBuildDate(LocalDateTimeMapper.asLocalDateTime(doc.get("last_build_date"))); }
         if(doc.get("language")        != null){ dto.setLanguage(doc.get("language")); }
         if(doc.get("generator")       != null){ dto.setGenerator(doc.get("generator")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }

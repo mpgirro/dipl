@@ -10,13 +10,11 @@ import java.time.format.DateTimeParseException;
  */
 public class LocalDateTimeMapper {
 
-    static LocalDateTimeMapper INSTANCE = Mappers.getMapper( LocalDateTimeMapper.class );
-
-    public String asString(LocalDateTime localDateTime) {
+    public static String asString(LocalDateTime localDateTime) {
         return localDateTime != null ? localDateTime.toString() : null;
     }
 
-    public LocalDateTime asLocalDateTime(String localDateTime) {
+    public static LocalDateTime asLocalDateTime(String localDateTime) {
         try {
             return localDateTime!=null ? LocalDateTime.parse(localDateTime) : null;
         } catch (DateTimeParseException e) {

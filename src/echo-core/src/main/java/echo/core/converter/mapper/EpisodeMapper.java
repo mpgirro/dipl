@@ -61,7 +61,7 @@ public interface EpisodeMapper {
         if(doc.get("doc_id")          != null){ dto.setDocId(doc.get("doc_id")); }
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
-        if(doc.get("pub_date")        != null){ dto.setPubDate(LocalDateTimeMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
+        if(doc.get("pub_date")        != null){ dto.setPubDate(LocalDateTimeMapper.asLocalDateTime(doc.get("pub_date"))); }
         if(doc.get("guid")            != null){ dto.setGuid(doc.get("guid")); }
         if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }

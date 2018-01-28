@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses=LocalDateTimeMapper.class)
+@Mapper
 public interface LuceneMapper {
 
     LuceneMapper INSTANCE = Mappers.getMapper( LuceneMapper.class );
@@ -33,8 +33,8 @@ public interface LuceneMapper {
         if(podcast.getTitle()          != null){ doc.add(new TextField("title", podcast.getTitle(), Field.Store.YES)); }
         if(podcast.getLink()           != null){ doc.add(new TextField("link", podcast.getLink(), Field.Store.YES)); }
         if(podcast.getDescription()    != null){ doc.add(new TextField("description", podcast.getDescription(), Field.Store.YES)); }
-        if(podcast.getPubDate()        != null){ doc.add(new StringField("pub_date", LocalDateTimeMapper.INSTANCE.asString(podcast.getPubDate()), Field.Store.YES)); }
-        if(podcast.getLastBuildDate()  != null){ doc.add(new StringField("last_build_date", LocalDateTimeMapper.INSTANCE.asString(podcast.getLastBuildDate()), Field.Store.YES)); }
+        if(podcast.getPubDate()        != null){ doc.add(new StringField("pub_date", LocalDateTimeMapper.asString(podcast.getPubDate()), Field.Store.YES)); }
+        if(podcast.getLastBuildDate()  != null){ doc.add(new StringField("last_build_date", LocalDateTimeMapper.asString(podcast.getLastBuildDate()), Field.Store.YES)); }
         if(podcast.getLanguage()       != null){ doc.add(new StringField("language", podcast.getLanguage(), Field.Store.YES)); }
         if(podcast.getGenerator()      != null){ doc.add(new TextField("generator", podcast.getGenerator(), Field.Store.YES)); }
         if(podcast.getItunesImage()    != null){ doc.add(new TextField("itunes_image", podcast.getItunesImage(), Field.Store.YES)); }
