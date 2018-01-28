@@ -2,17 +2,19 @@ package echo.actor.store
 
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.inject.Named
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
+import echo.actor.directory.orm.PodcastDao
 import echo.actor.protocol.ActorMessages._
 import echo.core.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
+import echo.core.model.persistence.Podcast
 
 /**
   * @author Maximilian Irro
   */
-
 class DirectoryStore extends Actor with ActorLogging {
 
     // podcastId -> (timestamp, status, [episodeIds], PodcastDTO)
@@ -29,6 +31,46 @@ class DirectoryStore extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
 
     private var mockEchoIdGenerator = 0 // TODO replace with real ID gen
+
+    /*
+    @Autowired
+    var podcastRepository: PodcastRepository = null
+    */
+    import org.springframework.context.support.ClassPathXmlApplicationContext
+
+    /*
+    val springAppContext = new ClassPathXmlApplicationContext("application-context.xml")
+    val podcastRepository: PodcastRepository = springAppContext.getBean("podcastRepository").asInstanceOf[PodcastRepository]
+    */
+
+    /*
+    val factory: RepositoryFactorySupport = … // Instantiate factory here
+    val podcastRepository: PodcastRepository = factory.getRepository(classOf[PodcastRepository]);
+    */
+
+    /*
+    import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
+    import org.springframework.data.repository.core.support.RepositoryProxyPostProcessor
+    import org.springframework.orm.jpa.JpaTransactionManager
+    import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource
+    import org.springframework.transaction.interceptor.TransactionInterceptor
+
+    val emf = Persistence.createEntityManagerFactory("echo.core.model.persistence")
+    val em = emf.createEntityManager
+
+    val xactManager = new JpaTransactionManager(emf)
+    val factory = new JpaRepositoryFactory(emf.createEntityManager)
+
+    factory.addRepositoryProxyPostProcessor(new RepositoryProxyPostProcessor() {
+        def postProcess(factory: ProxyFactory): Unit = {
+            factory.addAdvice(new TransactionInterceptor(xactManager, new AnnotationTransactionAttributeSource))
+
+
+        }
+    })
+    */
+    val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
+    val podcastDao: PodcastDao = appCtx.getBean(classOf[PodcastDao])
 
     override def receive: Receive = {
 
@@ -69,6 +111,21 @@ class DirectoryStore extends Actor with ActorLogging {
                 // create a new entry in PodcastDB
                 val podcastEntry = (LocalDateTime.now(), FeedStatus.NEVER_CHECKED, scala.collection.mutable.Set[String](), null)
                 podcastDB += (fakePodcastId -> podcastEntry)
+
+                // - - - - - - - - - - -
+                if(podcastDao != null){
+                    var podcastEntity = new Podcast
+                    podcastEntity.setEchoId(fakePodcastId)
+                    podcastEntity.setDescription("Test Podcast Entry for feed: " + feedUrl)
+                    podcastDao.save(podcastEntity)
+                    println(podcastDao.getAll)
+                    //podcastEntity = podcastRepository.save(podcastEntity)
+                    //log.info("Saved podcast entity, it got ID: {}", podcastEntity.getId)
+                } else {
+                    log.error("podcastDao is NULL!")
+                }
+
+                // - - - - - - - - - - -
 
                 // create a new entry in FeedDB
                 val feedEntry = feedUrl
