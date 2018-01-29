@@ -2,7 +2,7 @@ package echo.actor.gateway.json
 
 import java.time.LocalDateTime
 
-import echo.core.dto.EpisodeDTO
+import echo.core.model.dto.EpisodeDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**

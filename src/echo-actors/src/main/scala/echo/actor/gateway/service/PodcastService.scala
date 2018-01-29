@@ -10,7 +10,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.{EpisodeDTO, PodcastDTO}
+import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import io.swagger.annotations._
 
 /**

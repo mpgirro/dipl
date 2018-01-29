@@ -1,6 +1,6 @@
 package echo.actor.directory.orm
 
-import echo.core.model.persistence.Podcast
+import echo.core.model.domain.Podcast
 
 /**
   * @author Maximilian Irro

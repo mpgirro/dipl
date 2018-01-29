@@ -1,7 +1,7 @@
 package echo.actor.gateway.json
 
 import echo.actor.gateway.json.IndexResultJsonProtocol.IndexResultJsonFormat
-import echo.core.dto.{IndexResult, ResultWrapperDTO}
+import echo.core.model.dto.{IndexResult, ResultWrapperDTO}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
 import spray.json.CollectionFormats
 import scala.collection.JavaConverters._

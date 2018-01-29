@@ -3,7 +3,7 @@ package echo.actor.protocol
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.model.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
 import echo.core.model.feed.FeedStatus
 
 import scala.collection.mutable.ListBuffer

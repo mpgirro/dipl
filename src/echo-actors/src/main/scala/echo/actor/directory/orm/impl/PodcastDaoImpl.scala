@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.{Propagation, Transactional}
 import javax.persistence._
 
 import echo.actor.directory.orm.PodcastDao
-import echo.core.model.persistence.Podcast
+import echo.core.model.domain.Podcast
 
 import scala.collection.JavaConverters._
 

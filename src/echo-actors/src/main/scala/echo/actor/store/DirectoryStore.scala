@@ -8,9 +8,9 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
 import echo.actor.directory.orm.PodcastDao
 import echo.actor.protocol.ActorMessages._
-import echo.core.dto.{EpisodeDTO, PodcastDTO}
+import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
-import echo.core.model.persistence.Podcast
+import echo.core.model.domain.Podcast
 
 /**
   * @author Maximilian Irro

@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import echo.actor.protocol.ActorMessages.{IndexResultsFound, NoIndexResultsFound, SearchResults}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.dto.ResultWrapperDTO
+import echo.core.model.dto.ResultWrapperDTO
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 
