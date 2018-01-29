@@ -10,7 +10,7 @@ buildscript {
     }
 }
 
-defaultTasks 'clean build'
+defaultTasks 'clean build publishToMavenLocal'
 
 apply plugin: 'java'
 apply plugin: 'idea'

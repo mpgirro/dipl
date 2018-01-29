@@ -5,8 +5,8 @@ import com.icosillion.podengine.models.Podcast;
 import echo.core.converter.DocumentConverter;
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 /**

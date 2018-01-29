@@ -1,98 +1,91 @@
-package echo.core.model.persistence;
+package echo.core.model.dto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import javax.persistence.*;
-
 
 /**
  * @author Maximilian Irro
  */
-@Entity
-@Table(name = "podcast")
-public class Podcast implements Serializable {
+public class PodcastDTO implements DTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(name = "echo_id")
     private String echoId;
 
-    @Column(name = "title")
     private String title;
-
-    @Column(name = "link")
     private String link;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "pub_date")
     private LocalDateTime pubDate;
-
-    @Column(name = "last_build_date")
     private LocalDateTime lastBuildDate;
-
-    @Column(name = "language")
     private String language;
-
-    @Column(name = "generator")
     private String generator;
 
-    @Column(name = "itunes_image")
     private String itunesImage;
-
-    @Column(name = "itunes_category")
     private String itunesCategory;
 
-    @Column(name = "episode_count")
     private int episodeCount;
 
-    public Long getId() {
-        return id;
+    private String websiteData;
+
+    // TODO atom elements
+
+    // TODO itunes elements
+
+    public PodcastDTO() {
+
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public PodcastDTO(String echoId, String title, String link, String description, String itunesImage) {
+        this.echoId = echoId;
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.itunesImage = itunesImage;
     }
 
+    @Override
     public String getEchoId() {
-        return echoId;
+        return this.echoId;
     }
 
+    @Override
     public void setEchoId(String echoId) {
         this.echoId = echoId;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getLink() {
         return link;
     }
 
+    @Override
     public void setLink(String link) {
         this.link = link;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public LocalDateTime getPubDate() {
         return pubDate;
     }
 
+    @Override
     public void setPubDate(LocalDateTime pubDate) {
         this.pubDate = pubDate;
     }
@@ -121,10 +114,12 @@ public class Podcast implements Serializable {
         this.generator = generator;
     }
 
+    @Override
     public String getItunesImage() {
         return itunesImage;
     }
 
+    @Override
     public void setItunesImage(String itunesImage) {
         this.itunesImage = itunesImage;
     }
@@ -146,10 +141,42 @@ public class Podcast implements Serializable {
     }
 
     @Override
+    public String getWebsiteData() {
+        return websiteData;
+    }
+
+    @Override
+    public void setWebsiteData(String websiteData) {
+        this.websiteData = websiteData;
+    }
+
+    /* TODO do I need these?
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PodcastDTO d = (PodcastDTO) o;
+
+        if ( ! PodcastDTO.equals(id, PodcastDTO.id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+    */
+
+    @Override
     public String toString() {
-        return "Podcast{" +
-            "id=" + id + '\'' +
-            ", echoId='" + echoId + '\'' +
+        return "PodcastDTO{" +
+            "echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", description='" + description + '\'' +
@@ -159,7 +186,7 @@ public class Podcast implements Serializable {
             ", generator='" + generator + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
             ", itunesCategory='" + itunesCategory + '\'' +
-            ", episodeCount=" + episodeCount +
+            ", episodeCount=" + episodeCount + '\'' +
             '}';
     }
 }

@@ -1,7 +1,7 @@
 package echo.core.converter.mapper;
 
-import echo.core.dto.EpisodeDTO;
-import echo.core.model.persistence.Episode;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.domain.Episode;
 import org.apache.lucene.document.Document;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

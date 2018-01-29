@@ -1,7 +1,7 @@
 package echo.core.converter.mapper;
 
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.PodcastDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

@@ -6,8 +6,8 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 import com.rometools.rome.feed.synd.SyndFeed;

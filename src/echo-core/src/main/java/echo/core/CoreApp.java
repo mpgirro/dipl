@@ -2,10 +2,10 @@ package echo.core;
 
 import echo.core.converter.PodEngineEpisodeConverter;
 import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.IndexResult;
-import echo.core.dto.PodcastDTO;
-import echo.core.dto.ResultWrapperDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.IndexResult;
+import echo.core.model.dto.PodcastDTO;
+import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;

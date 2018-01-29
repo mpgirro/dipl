@@ -3,7 +3,7 @@ package echo.core.converter;
 import com.icosillion.podengine.exceptions.DateFormatException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import com.icosillion.podengine.models.Podcast;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.PodcastDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

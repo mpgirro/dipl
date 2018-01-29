@@ -1,7 +1,7 @@
 package echo.core.search;
 
-import echo.core.dto.DTO;
-import echo.core.dto.ResultWrapperDTO;
+import echo.core.model.dto.DTO;
+import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 
 /**

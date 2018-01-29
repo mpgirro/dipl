@@ -1,7 +1,7 @@
 package echo.core.converter.mapper;
 
-import echo.core.dto.PodcastDTO;
-import echo.core.model.persistence.Podcast;
+import echo.core.model.dto.PodcastDTO;
+import echo.core.model.domain.Podcast;
 import org.apache.lucene.document.Document;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

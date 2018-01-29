@@ -1,8 +1,8 @@
 package echo.core.converter.mapper;
 
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.IndexResult;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.IndexResult;
+import echo.core.model.dto.PodcastDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

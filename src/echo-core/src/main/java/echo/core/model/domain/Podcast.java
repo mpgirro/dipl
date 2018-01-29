@@ -1,4 +1,4 @@
-package echo.core.model.persistence;
+package echo.core.model.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,8 +9,8 @@ import javax.persistence.*;
  * @author Maximilian Irro
  */
 @Entity
-@Table(name = "episode")
-public class Episode implements Serializable {
+@Table(name = "podcast")
+public class Podcast implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,17 +31,23 @@ public class Episode implements Serializable {
     @Column(name = "pub_date")
     private LocalDateTime pubDate;
 
-    @Column(name = "guid")
-    private String guid;
+    @Column(name = "last_build_date")
+    private LocalDateTime lastBuildDate;
 
-    @Column(name = "guid_is_permalink")
-    private Boolean guidIsPermaLink;
+    @Column(name = "language")
+    private String language;
+
+    @Column(name = "generator")
+    private String generator;
 
     @Column(name = "itunes_image")
     private String itunesImage;
 
-    @Column(name = "itunes_duration")
-    private String itunesDuration;
+    @Column(name = "itunes_category")
+    private String itunesCategory;
+
+    @Column(name = "episode_count")
+    private int episodeCount;
 
     public Long getId() {
         return id;
@@ -91,20 +97,28 @@ public class Episode implements Serializable {
         this.pubDate = pubDate;
     }
 
-    public String getGuid() {
-        return guid;
+    public LocalDateTime getLastBuildDate() {
+        return lastBuildDate;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setLastBuildDate(LocalDateTime lastBuildDate) {
+        this.lastBuildDate = lastBuildDate;
     }
 
-    public Boolean getGuidIsPermaLink() {
-        return guidIsPermaLink;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setGuidIsPermaLink(Boolean guidIsPermaLink) {
-        this.guidIsPermaLink = guidIsPermaLink;
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getGenerator() {
+        return generator;
+    }
+
+    public void setGenerator(String generator) {
+        this.generator = generator;
     }
 
     public String getItunesImage() {
@@ -115,27 +129,37 @@ public class Episode implements Serializable {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesDuration() {
-        return itunesDuration;
+    public String getItunesCategory() {
+        return itunesCategory;
     }
 
-    public void setItunesDuration(String itunesDuration) {
-        this.itunesDuration = itunesDuration;
+    public void setItunesCategory(String itunesCategory) {
+        this.itunesCategory = itunesCategory;
+    }
+
+    public int getEpisodeCount() {
+        return episodeCount;
+    }
+
+    public void setEpisodeCount(int episodeCount) {
+        this.episodeCount = episodeCount;
     }
 
     @Override
     public String toString() {
-        return "Episode{" +
+        return "Podcast{" +
             "id=" + id + '\'' +
             ", echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
-            ", pubDate=" + pubDate +
-            ", guid='" + guid + '\'' +
-            ", guidIsPermaLink=" + guidIsPermaLink +
             ", description='" + description + '\'' +
+            ", pubDate=" + pubDate +
+            ", lastBuildDate=" + lastBuildDate +
+            ", language='" + language + '\'' +
+            ", generator='" + generator + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesDuration='" + itunesDuration + '\'' +
+            ", itunesCategory='" + itunesCategory + '\'' +
+            ", episodeCount=" + episodeCount +
             '}';
     }
 }

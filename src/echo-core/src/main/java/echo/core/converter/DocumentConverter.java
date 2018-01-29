@@ -1,6 +1,6 @@
 package echo.core.converter;
 
-import echo.core.dto.DTO;
+import echo.core.model.dto.DTO;
 
 import java.util.List;
 import java.util.stream.Collectors;

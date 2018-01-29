@@ -1,7 +1,7 @@
 package echo.core.parse.rss;
 
-import echo.core.dto.EpisodeDTO;
-import echo.core.dto.PodcastDTO;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 /**
