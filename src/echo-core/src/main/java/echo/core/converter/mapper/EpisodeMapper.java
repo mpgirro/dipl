@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Maximilian Irro
  */
-@Mapper
+@Mapper(uses={DateMapper.class})
 public interface EpisodeMapper {
 
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );
@@ -44,7 +44,7 @@ public interface EpisodeMapper {
         @Mapping(source = "itunesImage", target = "itunesImage"),
         @Mapping(source = "itunesDuration", target = "itunesDuration")
     } )
-    Episode episodeDtoToEpisode(Episode episodeDto);
+    Episode episodeDtoToEpisode(EpisodeDTO episodeDto);
 
     List<Episode> episodeDtosToEpisodes(List<EpisodeDTO> episodeDtos);
 
@@ -59,7 +59,7 @@ public interface EpisodeMapper {
         if(doc.get("echo_id")         != null){ dto.setEchoId(doc.get("echo_id")); }
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
-        if(doc.get("pub_date")        != null){ dto.setPubDate(LocalDateTimeMapper.asLocalDateTime(doc.get("pub_date"))); }
+        if(doc.get("pub_date")        != null){ dto.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
         if(doc.get("guid")            != null){ dto.setGuid(doc.get("guid")); }
         if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }
