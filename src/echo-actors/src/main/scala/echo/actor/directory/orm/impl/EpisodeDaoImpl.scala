@@ -3,7 +3,7 @@ package echo.actor.directory.orm.impl
 import javax.persistence.{EntityManager, NoResultException}
 
 import echo.actor.directory.orm.EpisodeDao
-import echo.core.model.domain.Episode
+import echo.core.model.domain.{Episode, Podcast}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.{Propagation, Transactional}
@@ -45,6 +45,12 @@ class EpisodeDaoImpl extends EpisodeDao {
 
     def getAll: List[Episode] = {
         entityManager.createQuery("FROM Episode", classOf[Episode]).getResultList.asScala.toList
+    }
+
+    def getAllByPodcast(podcast: Podcast): List[Episode] = {
+        entityManager.createQuery("FROM Episode WHERE podcast=:podcast", classOf[Episode])
+            .setParameter("podcast", podcast)
+            .getResultList.asScala.toList
     }
 
 }

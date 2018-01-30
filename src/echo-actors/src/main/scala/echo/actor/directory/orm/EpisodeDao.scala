@@ -1,6 +1,6 @@
 package echo.actor.directory.orm
 
-import echo.core.model.domain.Episode
+import echo.core.model.domain.{Episode, Podcast}
 
 /**
   * @author Maximilian Irro
@@ -14,5 +14,7 @@ trait EpisodeDao {
     def findByEchoId(echoId: String): Option[Episode]
 
     def getAll: List[Episode]
+
+    def getAllByPodcast(podcast: Podcast): List[Episode]
 
 }

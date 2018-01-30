@@ -13,6 +13,8 @@ trait FeedDao {
 
     def findByEchoId(echoId: String): Option[Feed]
 
+    def findByUrl(url: String): Option[Feed]
+
     def getAll: List[Feed]
 
 }

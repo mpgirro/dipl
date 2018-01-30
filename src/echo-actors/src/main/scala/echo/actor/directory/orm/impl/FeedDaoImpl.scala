@@ -42,6 +42,16 @@ class FeedDaoImpl extends FeedDao {
         }
     }
 
+    def findByUrl(url: String): Option[Feed] = {
+        try {
+            Some(entityManager.createQuery("FROM Feed WHERE url = :url", classOf[Feed])
+                .setParameter("url", url)
+                .getSingleResult)
+        } catch {
+            case e: NoResultException => None
+        }
+    }
+
     def getAll: List[Feed] = {
         entityManager.createQuery("FROM Feed", classOf[Feed]).getResultList.asScala.toList
     }
