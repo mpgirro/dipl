@@ -10,7 +10,7 @@ import java.net.URL;
  */
 public class UrlMapper {
 
-    static UrlMapper INSTANCE = Mappers.getMapper( UrlMapper.class );
+    public static UrlMapper INSTANCE = new UrlMapper();
 
     public String asString(URL url) {
         return url != null ? url.toExternalForm() : null;

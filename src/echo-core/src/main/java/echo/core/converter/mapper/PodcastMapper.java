@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses=UrlMapper.class)
+@Mapper(uses={UrlMapper.class, DateMapper.class})
 public interface PodcastMapper {
 
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
@@ -48,7 +48,7 @@ public interface PodcastMapper {
         @Mapping(source = "itunesImage", target = "itunesImage"),
         @Mapping(source = "itunesCategory", target = "itunesCategory")
     } )
-    Podcast podcastDtoToPodcast(Podcast podcastDto);
+    Podcast podcastDtoToPodcast(PodcastDTO podcastDto);
 
     List<Podcast> podcastDtosToPodcasts(List<PodcastDTO> podcastDtos);
 
@@ -64,8 +64,10 @@ public interface PodcastMapper {
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
         if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
-        if(doc.get("pub_date")        != null){ dto.setLastBuildDate(LocalDateTimeMapper.asLocalDateTime(doc.get("pub_date"))); }
-        if(doc.get("last_build_date") != null){ dto.setLastBuildDate(LocalDateTimeMapper.asLocalDateTime(doc.get("last_build_date"))); }
+        if(doc.get("pub_date")        != null){ dto.setLastBuildDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
+        if(doc.get("last_build_date") != null){ dto.setLastBuildDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("last_build_date"))); }
+        //if(doc.get("pub_date")        != null){ dto.setLastBuildDate(DateMapper.asZonedDateTime(doc.get("pub_date"))); }
+        //if(doc.get("last_build_date") != null){ dto.setLastBuildDate(DateMapper.asZonedDateTime(doc.get("last_build_date"))); }
         if(doc.get("language")        != null){ dto.setLanguage(doc.get("language")); }
         if(doc.get("generator")       != null){ dto.setGenerator(doc.get("generator")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }

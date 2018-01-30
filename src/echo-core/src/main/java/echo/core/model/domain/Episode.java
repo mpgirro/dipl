@@ -1,15 +1,15 @@
 package echo.core.model.domain;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import javax.persistence.*;
-
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * @author Maximilian Irro
  */
 @Entity
-@Table(name = "episode")
+@Table(name = "episode",
+    indexes = {@Index(name = "idx_echo_id",  columnList="echo_id", unique = true)})
 public class Episode implements Serializable {
 
     @Id
@@ -29,7 +29,7 @@ public class Episode implements Serializable {
     private String description;
 
     @Column(name = "pub_date")
-    private LocalDateTime pubDate;
+    private Timestamp pubDate;
 
     @Column(name = "guid")
     private String guid;
@@ -42,6 +42,10 @@ public class Episode implements Serializable {
 
     @Column(name = "itunes_duration")
     private String itunesDuration;
+
+    @ManyToOne
+    @JoinColumn(name="podcast_id")
+    private Podcast podcast;
 
     public Long getId() {
         return id;
@@ -83,11 +87,11 @@ public class Episode implements Serializable {
         this.description = description;
     }
 
-    public LocalDateTime getPubDate() {
+    public Timestamp getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(LocalDateTime pubDate) {
+    public void setPubDate(Timestamp pubDate) {
         this.pubDate = pubDate;
     }
 
@@ -121,6 +125,14 @@ public class Episode implements Serializable {
 
     public void setItunesDuration(String itunesDuration) {
         this.itunesDuration = itunesDuration;
+    }
+
+    public Podcast getPodcast() {
+        return podcast;
+    }
+
+    public void setPodcast(Podcast podcast) {
+        this.podcast = podcast;
     }
 
     @Override

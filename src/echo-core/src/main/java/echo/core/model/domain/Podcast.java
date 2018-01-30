@@ -1,15 +1,20 @@
 package echo.core.model.domain;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Set;
+
+//import org.hibernate.annotations.Cascade;
+//import org.hibernate.annotations.CascadeType;
 
 
 /**
  * @author Maximilian Irro
  */
 @Entity
-@Table(name = "podcast")
+@Table(name = "podcast",
+    indexes = {@Index(name = "idx_echo_id",  columnList="echo_id", unique = true)})
 public class Podcast implements Serializable {
 
     @Id
@@ -29,10 +34,10 @@ public class Podcast implements Serializable {
     private String description;
 
     @Column(name = "pub_date")
-    private LocalDateTime pubDate;
+    private Timestamp pubDate;
 
     @Column(name = "last_build_date")
-    private LocalDateTime lastBuildDate;
+    private Timestamp lastBuildDate;
 
     @Column(name = "language")
     private String language;
@@ -48,6 +53,14 @@ public class Podcast implements Serializable {
 
     @Column(name = "episode_count")
     private int episodeCount;
+
+    @OneToMany(mappedBy="podcast")
+//   @Cascade(CascadeType.DELETE)
+    private Set<Episode> episodes;
+
+    @OneToMany(mappedBy="podcast")
+//    @Cascade(CascadeType.DELETE)
+    private Set<Feed> feeds;
 
     public Long getId() {
         return id;
@@ -89,19 +102,19 @@ public class Podcast implements Serializable {
         this.description = description;
     }
 
-    public LocalDateTime getPubDate() {
+    public Timestamp getPubDate() {
         return pubDate;
     }
 
-    public void setPubDate(LocalDateTime pubDate) {
+    public void setPubDate(Timestamp pubDate) {
         this.pubDate = pubDate;
     }
 
-    public LocalDateTime getLastBuildDate() {
+    public Timestamp getLastBuildDate() {
         return lastBuildDate;
     }
 
-    public void setLastBuildDate(LocalDateTime lastBuildDate) {
+    public void setLastBuildDate(Timestamp lastBuildDate) {
         this.lastBuildDate = lastBuildDate;
     }
 
@@ -143,6 +156,22 @@ public class Podcast implements Serializable {
 
     public void setEpisodeCount(int episodeCount) {
         this.episodeCount = episodeCount;
+    }
+
+    public Set<Episode> getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(Set<Episode> episodes) {
+        this.episodes = episodes;
+    }
+
+    public Set<Feed> getFeeds() {
+        return feeds;
+    }
+
+    public void setFeeds(Set<Feed> feeds) {
+        this.feeds = feeds;
     }
 
     @Override
