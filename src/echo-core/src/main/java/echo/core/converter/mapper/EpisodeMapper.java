@@ -9,6 +9,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -32,6 +33,8 @@ public interface EpisodeMapper {
 
     List<EpisodeDTO> episodesToEpisodesDtos(List<Episode> episodes);
 
+    List<EpisodeDTO> episodesToEpisodesDtos(Set<Episode> episodes);
+
     @Mappings( {
         @Mapping(target = "id", ignore = true),
         @Mapping(source = "echoId", target = "echoId"),
@@ -46,7 +49,7 @@ public interface EpisodeMapper {
     } )
     Episode episodeDtoToEpisode(EpisodeDTO episodeDto);
 
-    List<Episode> episodeDtosToEpisodes(List<EpisodeDTO> episodeDtos);
+    Set<Episode> episodeDtosToEpisodes(List<EpisodeDTO> episodeDtos);
 
     default EpisodeDTO luceneDocumentToEpisodeDto(Document doc){
 
