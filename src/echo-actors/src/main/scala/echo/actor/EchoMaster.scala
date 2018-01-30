@@ -40,7 +40,7 @@ class EchoMaster extends Actor with ActorLogging {
     private val indexer = context.watch(context.actorOf(Props[IndexerActor], name = "indexer"))
     private val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
     private val crawler = context.watch(context.actorOf(Props[CrawlerActor].withDispatcher("echo.crawler.dispatcher"), name = "crawler"))
-    private val directoryStore = context.watch(context.actorOf(Props[DirectoryStore], name = "directoryStore"))
+    private val directoryStore = context.watch(context.actorOf(Props[DirectoryStore].withDispatcher("echo.directory.dispatcher"), name = "directoryStore"))
     private val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
 
     // pass around references not provided by constructors due to circular dependencies
