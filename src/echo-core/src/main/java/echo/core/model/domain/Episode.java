@@ -43,7 +43,7 @@ public class Episode implements Serializable {
     @Column(name = "itunes_duration")
     private String itunesDuration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
 

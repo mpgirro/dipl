@@ -3,6 +3,7 @@ package echo.core.model.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 //import org.hibernate.annotations.Cascade;
@@ -56,11 +57,11 @@ public class Podcast implements Serializable {
 
     @OneToMany(mappedBy="podcast")
 //   @Cascade(CascadeType.DELETE)
-    private Set<Episode> episodes;
+    private Set<Episode> episodes = new HashSet<>();
 
     @OneToMany(mappedBy="podcast")
 //    @Cascade(CascadeType.DELETE)
-    private Set<Feed> feeds;
+    private Set<Feed> feeds = new HashSet<>();
 
     public Long getId() {
         return id;
