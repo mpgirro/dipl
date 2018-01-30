@@ -7,10 +7,14 @@ buildscript {
     }
     dependencies {
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:0.9.0'
-        classpath 'org.liquibase:liquibase-gradle-plugin:1.2.4'
+        //classpath 'org.liquibase:liquibase-gradle-plugin:1.2.4'
         classpath 'com.h2database:h2:1.4.196'
         //classpath 'org.yaml:snakeyaml:1.15'
     }
+}
+
+plugins {
+    id 'org.liquibase.gradle' version '1.2.4'
 }
 
 defaultTasks 'run'
@@ -19,7 +23,7 @@ apply plugin: 'scala'
 apply plugin: 'scalaStyle'
 apply plugin: 'project-report'
 apply plugin: 'application'
-apply plugin: 'org.liquibase.gradle'
+//apply plugin: 'org.liquibase.gradle'
 
 sourceCompatibility=1.8
 targetCompatibility=1.8
@@ -76,8 +80,8 @@ dependencies {
     compile 'com.devskiller.friendly-id:friendly-id:1.0.0'
 
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
-    compile group: 'org.springframework', name: 'spring-context', version: '5.0.3.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.14.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '1.11.10.RELEASE'
     //compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.0.Beta1'  // note: not needed when using Spring-Data JPA --> produces an error
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'

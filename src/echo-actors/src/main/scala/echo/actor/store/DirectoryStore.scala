@@ -6,11 +6,13 @@ import java.util.UUID
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
 import echo.actor.directory.orm.{EpisodeDao, FeedDao, PodcastDao}
+import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
 import echo.actor.protocol.ActorMessages._
 import echo.core.converter.mapper.{DateMapper, EpisodeMapper, PodcastMapper}
 import echo.core.model.domain.{Episode, Feed, Podcast}
 import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
+import org.springframework.context.support.ClassPathXmlApplicationContext
 
 import scala.collection.JavaConverters._
 
@@ -38,7 +40,7 @@ class DirectoryStore extends Actor with ActorLogging {
     @Autowired
     var podcastRepository: PodcastRepository = null
     */
-    import org.springframework.context.support.ClassPathXmlApplicationContext
+
 
     /*
     val springAppContext = new ClassPathXmlApplicationContext("application-context.xml")
@@ -57,7 +59,7 @@ class DirectoryStore extends Actor with ActorLogging {
     import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource
     import org.springframework.transaction.interceptor.TransactionInterceptor
 
-    val emf = Persistence.createEntityManagerFactory("echo.core.model.persistence")
+    val emf = Persistence.createEntityManagerFactory("echo.core.model.domain")
     val em = emf.createEntityManager
 
     val xactManager = new JpaTransactionManager(emf)
@@ -76,6 +78,43 @@ class DirectoryStore extends Actor with ActorLogging {
     val episodeDao: EpisodeDao = appCtx.getBean(classOf[EpisodeDao])
     val feedDao: FeedDao = appCtx.getBean(classOf[FeedDao])
 
+
+
+
+    /*
+    def transactionManager(emf: EntityManagerFactory): PlatformTransactionManager = {
+        val transactionManager = new JpaTransactionManager
+        transactionManager.setEntityManagerFactory(emf)
+        transactionManager
+    }
+    */
+
+    /*
+    val emf = Persistence.createEntityManagerFactory("echo.core.model.domain", testProperties)
+    val em = emf.createEntityManager
+    */
+
+    /*
+    // Bind the same EntityManger used to create the Repository to the thread
+    TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+
+    try
+        podcastRepository.save(someInstance) // Done in a transaction using 1 EntityManger
+
+    finally {
+        // Make sure to unbind when done with the repository instance
+        TransactionSynchronizationManager.unbindResource(getEntityManagerFactory)
+    }
+    */
+
+    val repositoryFactory = new RepositoryFactoryBuilder().createFactory
+
+    // Create the repository proxy instance
+    val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
+
+
+    //val podcastRepository: PodcastRepository = appCtx.getBean(classOf[PodcastRepository])
+
     override def receive: Receive = {
 
         case ActorRefCrawlerActor(ref) => {
@@ -91,7 +130,7 @@ class DirectoryStore extends Actor with ActorLogging {
             log.debug("Received msg proposing a new feed: " + feedUrl)
 
             //val fakePodcastId = "pfake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
-            val fakePodcastId = Url62.encode(UUID.randomUUID())
+
 
             /*
             Url62.create
@@ -129,19 +168,26 @@ class DirectoryStore extends Actor with ActorLogging {
             // TODO check of feed is known yet
             // TODO handle known and unknown
 
-            val podcastEntity = new Podcast
-            podcastEntity.setEchoId(fakePodcastId)
-            podcastDao.save(podcastEntity)
+            feedDao.findByUrl(feedUrl).map(feed => {
+                log.info("Proposed feed is already in database: {}", feedUrl)
+            }).getOrElse({
 
-            val feedEntity = new Feed
-            feedEntity.setPodcast(podcastEntity)
-            feedEntity.setUrl(feedUrl)
-            feedEntity.setLastChecked(DateMapper.INSTANCE.asTimestamp(LocalDateTime.now()))
-            feedEntity.setLastStatus(FeedStatus.NEVER_CHECKED)
-            feedDao.save(feedEntity)
+                val fakePodcastId = Url62.encode(UUID.randomUUID())
 
-            crawler ! FetchNewFeed(feedUrl, fakePodcastId)
+                // TODO for now we create 1 podcast for 1 feed, but in generall a new feed can be another of an already known podcast
+                val podcastEntity = new Podcast
+                podcastEntity.setEchoId(fakePodcastId)
+                podcastDao.save(podcastEntity)
 
+                val feedEntity = new Feed
+                feedEntity.setPodcast(podcastEntity)
+                feedEntity.setUrl(feedUrl)
+                feedEntity.setLastChecked(DateMapper.INSTANCE.asTimestamp(LocalDateTime.now()))
+                feedEntity.setLastStatus(FeedStatus.NEVER_CHECKED)
+                feedDao.save(feedEntity)
+
+                crawler ! FetchNewFeed(feedUrl, fakePodcastId)
+            })
         }
 
         case FeedStatusUpdate(feedUrl, timestamp, status) => {
@@ -315,20 +361,7 @@ class DirectoryStore extends Actor with ActorLogging {
         }
 
         case GetAllPodcasts => {
-            log.debug("Received GetAllPodcasts()")
-
-            /*
-            var results = scala.collection.mutable.ArrayBuffer.empty[PodcastDTO]
-            for((_,_,_,podcast: PodcastDTO) <- podcastDB.values){
-                results += podcast
-            }
-
-            sender ! AllPodcastsResult(results.toArray)
-            */
-
-            val podcasts = podcastDao.getAll
-            val podcastDTOs = podcasts.map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
-            sender ! AllPodcastsResult(podcastDTOs.toArray)
+            getAllPodcasts(sender)
         }
 
         case GetEpisode(echoId) => {
@@ -389,11 +422,42 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case DebugPrintAllDatabase => {
             log.debug("Received DebugPrintAllDatabase")
+            /*
             for( (k,v) <- podcastDB){
                 println("docId: "+k+"\t"+v)
             }
+            */
+            println("------------------------")
+            println("All Podcasts in database")
+            podcastDao.getAll.map(p => println(p.getTitle))
+            println("------------------------")
         }
 
 
+    }
+
+    //@Transactional(readOnly=true) // TODO causes this compile errors?
+    def getAllPodcasts(sender: ActorRef): Unit = {
+        log.debug("Received GetAllPodcasts()")
+
+        /*
+        var results = scala.collection.mutable.ArrayBuffer.empty[PodcastDTO]
+        for((_,_,_,podcast: PodcastDTO) <- podcastDB.values){
+            results += podcast
+        }
+
+        sender ! AllPodcastsResult(results.toArray)
+        */
+
+
+        val podcasts = podcastRepository.findAll()
+        val podcastDTOs = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
+        sender ! AllPodcastsResult(podcastDTOs.asScala.toArray)
+
+        /*
+        val podcasts = podcastDao.getAll
+        val podcastDTOs = podcasts.map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+        sender ! AllPodcastsResult(podcastDTOs.toArray)
+        */
     }
 }
