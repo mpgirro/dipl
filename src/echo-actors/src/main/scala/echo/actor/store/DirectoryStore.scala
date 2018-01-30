@@ -193,6 +193,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdateEpisodeMetadata(podcastDocId: String, episode: EpisodeDTO) => {
             // TODO
+
             if(podcastDB.contains(podcastDocId)){
                 log.debug("Received UpdateEpisodeMetadata({},{})", podcastDocId, episode)
                 val (timestamp, status, episodes, podcast) = podcastDB(podcastDocId)
@@ -236,6 +237,7 @@ class DirectoryStore extends Actor with ActorLogging {
         case UsePodcastItunesImage(echoId) => {
             log.debug("Received UsePodcastItunesImage({})", echoId)
             var found = false
+
 
             for((_,(_,_,episodes,podcast)) <- podcastDB){
                 if(episodes.contains(echoId)){
@@ -295,22 +297,39 @@ class DirectoryStore extends Actor with ActorLogging {
         case GetAllPodcasts => {
             log.debug("Received GetAllPodcasts()")
 
+            /*
             var results = scala.collection.mutable.ArrayBuffer.empty[PodcastDTO]
             for((_,_,_,podcast: PodcastDTO) <- podcastDB.values){
                 results += podcast
             }
 
             sender ! AllPodcastsResult(results.toArray)
+            */
+
+            val podcasts = podcastDao.getAll
+            val podcastDTOs = podcasts.map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            sender ! AllPodcastsResult(podcastDTOs.toArray)
         }
 
         case GetEpisode(echoId) => {
             log.debug("Received GetEpisode('{}')", echoId)
+
+            /*
             if(episodeDB.contains(echoId)){
                 sender ! EpisodeResult(episodeDB(echoId))
             } else {
                 log.error("Database does not contain Episode with echoId={}", echoId)
                 sender ! NoDocumentFound(echoId)
             }
+            */
+
+            episodeDao.findByEchoId(echoId).map(e => {
+                val episode = EpisodeMapper.INSTANCE.episodeToEpisodeDto(e)
+                sender ! EpisodeResult(episode)
+            }).getOrElse({
+                log.error("Database does not contain Episode with echoId={}", echoId)
+                sender ! NoDocumentFound(echoId)
+            })
         }
 
         case GetEpisodesByPodcast(podcastId) => {
