@@ -13,47 +13,68 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-@Repository("feedDao")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-class FeedDaoImpl extends FeedDao {
-
-    @Autowired
-    var entityManager: EntityManager = _
+class FeedDaoImpl(private val em: EntityManager) extends FeedDao {
 
     def save(feed: Feed): Feed = {
-        Option(feed.getId)
-            .map(id => entityManager.merge(feed))
-            .getOrElse(entityManager.persist(feed))
-        entityManager.flush()
-        return feed
+        val tx = em.getTransaction
+        tx.begin
+        try {
+            Option(feed.getId)
+                .map(id => em.merge(feed))
+                .getOrElse(em.persist(feed))
+            em.flush()
+            feed
+        } finally {
+            tx.commit
+        }
     }
 
     def find(id: Long): Option[Feed] = {
-        Option(entityManager.find(classOf[Feed], id))
+        val tx = em.getTransaction
+        tx.begin
+        try {
+            Option(em.find(classOf[Feed], id))
+        } finally {
+            tx.commit
+        }
     }
 
     def findByEchoId(echoId: String): Option[Feed] = {
+        val tx = em.getTransaction
+        tx.begin
         try {
-            Some(entityManager.createQuery("FROM Feed WHERE echoId = :id", classOf[Feed])
+            Some(em.createQuery("FROM Feed WHERE echoId = :id", classOf[Feed])
                 .setParameter("id", echoId)
                 .getSingleResult)
         } catch {
             case e: NoResultException => None
+        } finally {
+            tx.commit
         }
     }
 
     def findByUrl(url: String): Option[Feed] = {
+        val tx = em.getTransaction
+        tx.begin
         try {
-            Some(entityManager.createQuery("FROM Feed WHERE url = :url", classOf[Feed])
+            Some(em.createQuery("FROM Feed WHERE url = :url", classOf[Feed])
                 .setParameter("url", url)
                 .getSingleResult)
         } catch {
             case e: NoResultException => None
+        } finally {
+            tx.commit
         }
     }
 
     def getAll: List[Feed] = {
-        entityManager.createQuery("FROM Feed", classOf[Feed]).getResultList.asScala.toList
+        val tx = em.getTransaction
+        tx.begin
+        try {
+            em.createQuery("FROM Feed", classOf[Feed]).getResultList.asScala.toList
+        } finally {
+            tx.commit
+        }
     }
 
 }
