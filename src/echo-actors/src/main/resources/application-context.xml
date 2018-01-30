@@ -33,7 +33,7 @@
             <map>
                 <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
                 <entry key="hibernate.connection.charSet" value="UTF-8"/>
-                <entry key="hibernate.hbm2ddl.auto" value="create"/>
+                <!--<entry key="hibernate.hbm2ddl.auto" value="create"/>-->
                 <entry key="hibernate.show.sql" value="true"/>
             </map>
         </property>
@@ -49,12 +49,12 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <!--
+
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
         <property name="dataSource" ref="dataSource" />
         <property name="changeLog" value="classpath:db/liquibase/master.xml" />
         <property name="contexts" value="test, production" />
     </bean>
-    -->
+
 
 </beans>

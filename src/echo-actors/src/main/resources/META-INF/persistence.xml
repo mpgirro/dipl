@@ -8,12 +8,13 @@
         <!--<non-jta-data-source>DefaultDS</non-jta-data-source>-->
         <class>echo.core.model.domain.Podcast</class>
         <class>echo.core.model.domain.Episode</class>
+        <class>echo.core.model.domain.Feed</class>
         <properties>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
             <!-- <property name="hibernate.connection.url" value="jdbc:h2:/Users/max/volumes/echo/db;AUTO_SERVER=TRUE;MVCC=true" /> -->
             <property name="hibernate.connection.url" value="jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+            <!--<property name="hibernate.hbm2ddl.auto" value="create-drop" />-->
             <property name="hibernate.show_sql" value="false" />
             <property name="javax.persistence.validation.mode" value="NONE" />
         </properties>

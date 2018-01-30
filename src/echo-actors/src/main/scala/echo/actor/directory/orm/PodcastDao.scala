@@ -7,9 +7,11 @@ import echo.core.model.domain.Podcast
   */
 trait PodcastDao {
 
-    def save(podcast: Podcast): Unit
+    def save(podcast: Podcast): Podcast
 
     def find(id: Long): Option[Podcast]
+
+    def findByEchoId(echoId: String): Option[Podcast]
 
     def getAll: List[Podcast]
 

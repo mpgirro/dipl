@@ -6,5 +6,7 @@
 
     <include file="changelog/1_init_sequence.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2_create_podcast.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/3_create_episode.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/4_create_feed.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

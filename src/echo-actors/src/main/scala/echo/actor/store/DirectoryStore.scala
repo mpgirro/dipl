@@ -6,11 +6,12 @@ import javax.inject.Named
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
-import echo.actor.directory.orm.PodcastDao
+import echo.actor.directory.orm.{EpisodeDao, FeedDao, PodcastDao}
 import echo.actor.protocol.ActorMessages._
+import echo.core.converter.mapper.{DateMapper, EpisodeMapper, PodcastMapper}
 import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
-import echo.core.model.domain.Podcast
+import echo.core.model.domain.{Episode, Feed, Podcast}
 
 /**
   * @author Maximilian Irro
@@ -71,6 +72,8 @@ class DirectoryStore extends Actor with ActorLogging {
     */
     val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
     val podcastDao: PodcastDao = appCtx.getBean(classOf[PodcastDao])
+    val episodeDao: EpisodeDao = appCtx.getBean(classOf[EpisodeDao])
+    val feedDao: FeedDao = appCtx.getBean(classOf[FeedDao])
 
     override def receive: Receive = {
 
@@ -113,18 +116,16 @@ class DirectoryStore extends Actor with ActorLogging {
                 podcastDB += (fakePodcastId -> podcastEntry)
 
                 // - - - - - - - - - - -
-                if(podcastDao != null){
-                    var podcastEntity = new Podcast
-                    podcastEntity.setEchoId(fakePodcastId)
-                    podcastEntity.setDescription("Test Podcast Entry for feed: " + feedUrl)
-                    podcastDao.save(podcastEntity)
-                    //println(podcastDao.getAll)
-                    //podcastEntity = podcastRepository.save(podcastEntity)
-                    //log.info("Saved podcast entity, it got ID: {}", podcastEntity.getId)
-                } else {
-                    log.error("podcastDao is NULL!")
-                }
+                var podcastEntity = new Podcast
+                podcastEntity.setEchoId(fakePodcastId)
+                podcastEntity = podcastDao.save(podcastEntity)
 
+                var feedEntity = new Feed
+                feedEntity.setPodcast(podcastEntity)
+                feedEntity.setUrl(feedUrl)
+                feedEntity.setLastChecked(DateMapper.INSTANCE.asTimestamp(LocalDateTime.now()))
+                feedEntity.setLastStatus(FeedStatus.NEVER_CHECKED)
+                feedEntity = feedDao.save(feedEntity)
                 // - - - - - - - - - - -
 
                 // create a new entry in FeedDB
@@ -175,6 +176,19 @@ class DirectoryStore extends Actor with ActorLogging {
             } else {
                 log.error("Received a UpdatePodcastMetadata for an unknown podcast document claiming docId: {}", docId)
             }
+
+            /* * * * * * * * * * * * * * * * * * *
+             * TODO this is the new database code
+             * * * * * * * * * * * * * * * * * * */
+            val update: Podcast = podcastDao.findByEchoId(docId).map(p => {
+                val updatedPodcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcast)
+                updatedPodcast.setId(p.getId)
+                updatedPodcast
+            }).getOrElse({
+                log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", docId)
+                PodcastMapper.INSTANCE.podcastDtoToPodcast(podcast)
+            })
+            podcastDao.save(update)
         }
 
         case UpdateEpisodeMetadata(podcastDocId: String, episode: EpisodeDTO) => {
@@ -191,15 +205,30 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("Received a UpdateEpisodeMetadata for an unknown podcast document claiming docId: {}", podcastDocId)
             }
 
-            /* TODO we just overwrite everything here
-            var episodeEntry: EpisodeDocument = null
-            if(episodeDB.contains((doc.getDocId))){
-                episodeEntry = episodeDB(doc.getDocId)
-            } else {
-                episodeEntry = doc;
-            }
-            */
             episodeDB += (episode.getEchoId -> episode)
+
+            /* * * * * * * * * * * * * * * * * * *
+             * TODO this is the new database code
+             * * * * * * * * * * * * * * * * * * */
+            podcastDao.findByEchoId(podcastDocId).map(p => {
+                val update: Episode = episodeDao.findByEchoId(episode.getEchoId).map(e => {
+                    val updatedEpisode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episode)
+                    updatedEpisode.setId(e.getId)
+                    updatedEpisode
+                }).getOrElse({
+                    EpisodeMapper.INSTANCE.episodeDtoToEpisode(episode)
+                })
+                update.setPodcast(p)
+                /* TODO do we need to do something here regarding owner stuff?
+                p.getEpisodes.add(update)
+                podcastDao.save(p)
+                */
+                episodeDao.save(update)
+            }).getOrElse({
+                log.error("No Podcast found in database with echoId={}", podcastDocId)
+            })
+
+
         }
 
         // this is the case when an Episode has no iTunesImage URL set in the feed.
@@ -224,6 +253,18 @@ class DirectoryStore extends Actor with ActorLogging {
                 }
             }
 
+            episodeDao.findByEchoId(echoId).map(e => {
+                val p = e.getPodcast
+                if(p != null){
+                    e.setItunesImage(p.getItunesImage)
+                    episodeDao.save(e)
+                } else {
+                    log.error("e.getPodcast produced null!")
+                }
+            }).getOrElse(
+                log.error(s"No Episode found with echoId=$echoId")
+            )
+
             if(found){
                 log.info("Did not find echoId={} in the database (could not set its itunesImage therefore)", echoId)
             }
@@ -233,12 +274,22 @@ class DirectoryStore extends Actor with ActorLogging {
         case GetPodcast(echoId) => {
             log.debug("Received GetPodcast('{}')", echoId)
 
+            /*
             if(podcastDB.contains(echoId)){
                 sender ! PodcastResult(podcastDB(echoId)._4)
             } else {
                 log.error("Database does not contain Podcast with echoId={}", echoId)
                 sender ! NoDocumentFound(echoId)
             }
+            */
+
+            podcastDao.findByEchoId(echoId).map(p => {
+                val podcast = PodcastMapper.INSTANCE.podcastToPodcastDto(p)
+                sender ! PodcastResult(podcast)
+            }).getOrElse({
+                log.error("Database does not contain Podcast with echoId={}", echoId)
+                sender ! NoDocumentFound(echoId)
+            })
         }
 
         case GetAllPodcasts => {

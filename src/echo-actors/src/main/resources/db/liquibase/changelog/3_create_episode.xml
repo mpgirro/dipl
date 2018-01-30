@@ -10,17 +10,17 @@
 
     <property name="autoIncrement" value="true" dbms="mysql,h2,postgresql,oracle"/>
 
-    <changeSet id="2" author="mpgirro">
+    <changeSet id="3" author="mpgirro">
 
         <preConditions onFail="CONTINUE">
             <not>
-                <tableExists schemaName="public" tableName="podcast" />
+                <tableExists schemaName="public" tableName="episode" />
             </not>
         </preConditions>
 
-        <comment>Create the Podcast Table</comment>
+        <comment>Create the Episode Table</comment>
 
-        <createTable tableName="podcast">
+        <createTable tableName="episode">
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -31,42 +31,31 @@
             <column name="link" type="text"/>
             <column name="description" type="text"/>
             <column name="pub_date" type="timestamp"/>
-            <column name="last_build_date" type="timestamp"/>
-            <column name="language" type="text"/>
-            <column name="generator" type="text"/>
+            <column name="guid" type="text"/>
+            <column name="guid_is_permalink" type="bit"/>
             <column name="itunes_image" type="text"/>
-            <column name="itunes_category" type="text"/>
-            <column name="episode_count" type="int"/>
+            <column name="itunes_duration" type="text"/>
+            <column name="podcast_id" type="bigint"/>
         </createTable>
 
-        <createIndex indexName="idx_podcast_echo_id"
-                     tableName="podcast"
+        <createIndex indexName="idx_episode_echo_id"
+                     tableName="episode"
                      unique="true">
             <column name="echo_id" type="varchar(255)"/>
         </createIndex>
 
-
-        <!--
-        <addForeignKeyConstraint baseColumnNames="authority_name"
-                                 baseTableName="user_authority"
-                                 constraintName="fk_authority_name"
-                                 referencedColumnNames="name"
-                                 referencedTableName="authority"/>
-
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="user_authority"
-                                 constraintName="fk_user_id"
+        <addForeignKeyConstraint baseColumnNames="podcast_id"
+                                 baseTableName="episode"
+                                 constraintName="fk_episode_podcast_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="ermma_user"/>
-        -->
+                                 referencedTableName="podcast"/>
 
         <loadData encoding="UTF-8"
-                  file="classpath:db/liquibase/csv/podcast.csv"
+                  file="classpath:db/liquibase/csv/episode.csv"
                   separator=";"
-                  tableName="podcast" />
+                  tableName="episode" />
 
-        <dropDefaultValue tableName="podcast" columnName="pub_date" columnDataType="datetime"/>
-        <dropDefaultValue tableName="podcast" columnName="last_build_date" columnDataType="datetime"/>
+        <dropDefaultValue tableName="episode" columnName="pub_date" columnDataType="datetime"/>
 
     </changeSet>
 

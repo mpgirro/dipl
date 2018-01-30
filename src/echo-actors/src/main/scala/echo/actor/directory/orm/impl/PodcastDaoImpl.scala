@@ -21,17 +21,26 @@ class PodcastDaoImpl extends PodcastDao {
     @Autowired
     var entityManager: EntityManager = _
 
-    def save(podcast: Podcast): Unit = {
-        if(entityManager == null){
-            println("the @Autowired entityManager is NULL!")
-        }
+    def save(podcast: Podcast): Podcast = {
         Option(podcast.getId)
             .map(id => entityManager.merge(podcast))
             .getOrElse(entityManager.persist(podcast))
+        entityManager.flush()
+        return podcast
     }
 
     def find(id: Long): Option[Podcast] = {
         Option(entityManager.find(classOf[Podcast], id))
+    }
+
+    def findByEchoId(echoId: String): Option[Podcast] = {
+        try {
+            Some(entityManager.createQuery("FROM Podcast WHERE echoId = :id", classOf[Podcast])
+                .setParameter("id", echoId)
+                .getSingleResult)
+        } catch {
+            case e: NoResultException => None
+        }
     }
 
     def getAll: List[Podcast] = {
