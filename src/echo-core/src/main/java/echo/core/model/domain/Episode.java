@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "episode",
-    indexes = {@Index(name = "idx_echo_id",  columnList="echo_id", unique = true)})
+    indexes = {@Index(name = "idx_episode_echo_id",  columnList="echo_id", unique = true)})
 public class Episode implements Serializable {
 
     @Id
@@ -43,7 +43,7 @@ public class Episode implements Serializable {
     @Column(name = "itunes_duration")
     private String itunesDuration;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
 

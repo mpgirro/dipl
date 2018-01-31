@@ -1,5 +1,6 @@
 package echo.core.converter.mapper;
 
+import echo.core.model.domain.Podcast;
 import echo.core.model.dto.EpisodeDTO;
 import echo.core.model.domain.Episode;
 import org.apache.lucene.document.Document;
@@ -14,13 +15,15 @@ import java.util.Set;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={DateMapper.class})
+@Mapper(uses={PodcastMapper.class, DateMapper.class})
 public interface EpisodeMapper {
 
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );
 
     @Mappings( {
+        @Mapping(source = "id", target = "id"),
         @Mapping(source = "echoId", target = "echoId"),
+        @Mapping(source = "podcast.id", target = "podcastId"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
         @Mapping(source = "pubDate", target = "pubDate"),
@@ -36,8 +39,9 @@ public interface EpisodeMapper {
     List<EpisodeDTO> episodesToEpisodesDtos(Set<Episode> episodes);
 
     @Mappings( {
-        @Mapping(target = "id", ignore = true),
+        @Mapping(source = "id", target = "id"),
         @Mapping(source = "echoId", target = "echoId"),
+        @Mapping(source = "podcastId", target = "podcast"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
         @Mapping(source = "pubDate", target = "pubDate"),
@@ -50,6 +54,15 @@ public interface EpisodeMapper {
     Episode episodeDtoToEpisode(EpisodeDTO episodeDto);
 
     Set<Episode> episodeDtosToEpisodes(List<EpisodeDTO> episodeDtos);
+
+    default Podcast podcastFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+        Podcast podcast = new Podcast();
+        podcast.setId(id);
+        return podcast;
+    }
 
     default EpisodeDTO luceneDocumentToEpisodeDto(Document doc){
 

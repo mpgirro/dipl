@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
  */
 public class EpisodeDTO implements DTO {
 
+    private Long id;
     private String echoId;
+    private Long podcastId;
 
     private String title;
     private String link;
@@ -43,6 +45,14 @@ public class EpisodeDTO implements DTO {
         this.itunesImage = itunesImage;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String getEchoId() {
         return this.echoId;
@@ -51,6 +61,14 @@ public class EpisodeDTO implements DTO {
     @Override
     public void setEchoId(String echoId) {
         this.echoId = echoId;
+    }
+
+    public Long getPodcastId() {
+        return podcastId;
+    }
+
+    public void setPodcastId(Long podcastId) {
+        this.podcastId = podcastId;
     }
 
     @Override
@@ -163,15 +181,17 @@ public class EpisodeDTO implements DTO {
     @Override
     public String toString() {
         return "EpisodeDTO{" +
-            "echoId='" + echoId + '\'' +
-            ", title='" + title + '\'' +
-            ", link='" + link + '\'' +
+            "id='" + id +
+            ", echoId='" + echoId +
+            ", podcastId=" + podcastId +
+            ", title='" + title +
+            ", link='" + link +
             ", pubDate=" + pubDate +
-            ", guid='" + guid + '\'' +
+            ", guid='" + guid +
             ", guidIsPermaLink=" + guidIsPermaLink +
-            ", description='" + description + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
-            ", itunesDuration='" + itunesDuration + '\'' +
+            ", description='" + description +
+            ", itunesImage='" + itunesImage +
+            ", itunesDuration='" + itunesDuration +
             '}';
     }
 

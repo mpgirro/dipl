@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
  */
 public class PodcastDTO implements DTO {
 
+    private Long id;
     private String echoId;
 
     private String title;
@@ -38,6 +39,14 @@ public class PodcastDTO implements DTO {
         this.link = link;
         this.description = description;
         this.itunesImage = itunesImage;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
@@ -176,17 +185,18 @@ public class PodcastDTO implements DTO {
     @Override
     public String toString() {
         return "PodcastDTO{" +
-            "echoId='" + echoId + '\'' +
-            ", title='" + title + '\'' +
-            ", link='" + link + '\'' +
-            ", description='" + description + '\'' +
+            "id='" + id +
+            ", echoId='" + echoId +
+            ", title='" + title +
+            ", link='" + link +
+            ", description='" + description +
             ", pubDate=" + pubDate +
             ", lastBuildDate=" + lastBuildDate +
-            ", language='" + language + '\'' +
-            ", generator='" + generator + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
-            ", episodeCount=" + episodeCount + '\'' +
+            ", language='" + language +
+            ", generator='" + generator +
+            ", itunesImage='" + itunesImage +
+            ", itunesCategory='" + itunesCategory +
+            ", episodeCount=" + episodeCount +
             '}';
     }
 }

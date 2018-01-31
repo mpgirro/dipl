@@ -15,7 +15,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "podcast",
-    indexes = {@Index(name = "idx_echo_id",  columnList="echo_id", unique = true)})
+    indexes = {@Index(name = "idx_podcast_echo_id",  columnList="echo_id", unique = true)})
 public class Podcast implements Serializable {
 
     @Id
@@ -55,11 +55,13 @@ public class Podcast implements Serializable {
     @Column(name = "episode_count")
     private int episodeCount;
 
-    @OneToMany(mappedBy="podcast")
+    @OneToMany(fetch=FetchType.LAZY,
+               mappedBy="podcast")
 //   @Cascade(CascadeType.DELETE)
     private Set<Episode> episodes = new HashSet<>();
 
-    @OneToMany(mappedBy="podcast")
+    @OneToMany(fetch=FetchType.LAZY,
+               mappedBy="podcast")
 //    @Cascade(CascadeType.DELETE)
     private Set<Feed> feeds = new HashSet<>();
 

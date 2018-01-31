@@ -27,7 +27,7 @@ public class Feed implements Serializable {
     @Column(name = "last_status")
     private FeedStatus lastStatus;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
 

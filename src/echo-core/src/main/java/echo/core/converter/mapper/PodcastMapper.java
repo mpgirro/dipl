@@ -19,6 +19,7 @@ public interface PodcastMapper {
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
     @Mappings( {
+        @Mapping(source = "id", target = "id"),
         @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
@@ -36,7 +37,7 @@ public interface PodcastMapper {
     List<PodcastDTO> podcastsToPodcastDtos(List<Podcast> podcasts);
 
     @Mappings( {
-        @Mapping(target = "id", ignore = true),
+        @Mapping(source = "id", target = "id"),
         @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
@@ -46,7 +47,9 @@ public interface PodcastMapper {
         @Mapping(source = "language", target = "language"),
         @Mapping(source = "generator", target = "generator"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(source = "itunesCategory", target = "itunesCategory")
+        @Mapping(source = "itunesCategory", target = "itunesCategory"),
+        @Mapping(target = "episodes", ignore = true),
+        @Mapping(target = "feeds", ignore = true)
     } )
     Podcast podcastDtoToPodcast(PodcastDTO podcastDto);
 
