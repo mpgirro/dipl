@@ -10,9 +10,28 @@ import java.time.ZonedDateTime;
  */
 public class FeedDTO {
 
+    private Long id;
+    private Long podcastId;
+
     private String url;
     private LocalDateTime lastChecked;
     private FeedStatus lastStatus;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getPodcastId() {
+        return podcastId;
+    }
+
+    public void setPodcastId(Long podcastId) {
+        this.podcastId = podcastId;
+    }
 
     public String getUrl() {
         return url;
@@ -41,7 +60,9 @@ public class FeedDTO {
     @Override
     public String toString() {
         return "FeedDTO{" +
-            "url='" + url + '\'' +
+            "id='" + id +
+            ", podcastId=" + podcastId +
+            ", url='" + url +
             ", lastChecked=" + lastChecked +
             ", lastStatus=" + lastStatus +
             '}';
