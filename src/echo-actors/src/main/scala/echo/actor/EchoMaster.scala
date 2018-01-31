@@ -37,7 +37,7 @@ class EchoMaster extends Actor with ActorLogging {
     implicit val internalTimeout = Timeout(5 seconds)
 
     private val indexStore = context.watch(context.actorOf(Props[IndexStore].withDispatcher("echo.index-store.dispatcher"), "indexStore"))
-    private val indexer = context.watch(context.actorOf(Props[IndexerActor], name = "indexer"))
+    private val indexer = context.watch(context.actorOf(Props[IndexerActor].withDispatcher("echo.parser.dispatcher"), name = "indexer"))
     private val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
     private val crawler = context.watch(context.actorOf(Props[CrawlerActor].withDispatcher("echo.crawler.dispatcher"), name = "crawler"))
     private val directoryStore = context.watch(context.actorOf(Props[DirectoryStore].withDispatcher("echo.directory.dispatcher"), name = "directoryStore"))
