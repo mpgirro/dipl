@@ -3,33 +3,20 @@ package echo.actor.store
 import java.sql.{Connection, DriverManager}
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.persistence.EntityManager
+import javax.transaction.Transactional
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
-import echo.actor.directory.repository.{EpisodeRepository, FeedRepository, PodcastRepository, RepositoryFactoryBuilder}
+import echo.actor.directory.repository.RepositoryFactoryBuilder
+import echo.actor.directory.service.{EpisodeService, FeedService, PodcastService}
 import echo.actor.protocol.ActorMessages._
-import echo.core.converter.mapper.{DateMapper, EpisodeMapper, PodcastMapper}
-import echo.core.model.domain.{Episode, Feed, Podcast}
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
-import org.springframework.context.support.ClassPathXmlApplicationContext
-import javax.persistence.{EntityManager, EntityManagerFactory, EntityTransaction}
-
-import org.springframework.orm.jpa.EntityManagerHolder
-import org.springframework.transaction.support.TransactionSynchronizationManager
-import javax.transaction.Transactional
-
-import echo.actor.directory.orm.{EpisodeDao, FeedDao, PodcastDao}
-import echo.actor.directory.orm.impl.{EpisodeDaoImpl, FeedDaoImpl, PodcastDaoImpl}
-import echo.actor.directory.service.{EpisodeService, FeedService, PodcastService}
-import liquibase.changelog.DatabaseChangeLog
-import liquibase.{Contexts, LabelExpression, Liquibase}
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
-import liquibase.integration.spring.SpringLiquibase
 import liquibase.resource.ClassLoaderResourceAccessor
-import org.springframework.orm.jpa.EntityManagerHolder
-import org.springframework.transaction.support.TransactionSynchronizationManager
+import liquibase.{Contexts, LabelExpression, Liquibase}
 
 import scala.collection.JavaConverters._
 import scala.io.Source
@@ -55,24 +42,6 @@ class DirectoryStore extends Actor with ActorLogging {
         val transactionManager = new JpaTransactionManager
         transactionManager.setEntityManagerFactory(emf)
         transactionManager
-    }
-    */
-
-    /*
-    val emf = Persistence.createEntityManagerFactory("echo.core.model.domain", testProperties)
-    val em = emf.createEntityManager
-    */
-
-    /*
-    // Bind the same EntityManger used to create the Repository to the thread
-    TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-
-    try
-        podcastRepository.save(someInstance) // Done in a transaction using 1 EntityManger
-
-    finally {
-        // Make sure to unbind when done with the repository instance
-        TransactionSynchronizationManager.unbindResource(getEntityManagerFactory)
     }
     */
 
@@ -170,54 +139,6 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO check of feed is known yet
         // TODO handle known and unknown
 
-        /*
-        Option(feedRepository.findOneByUrl(url)).map(feed => {
-            log.info("Proposed feed is already in database: {}", url)
-        }).getOrElse({
-
-            val fakePodcastId = Url62.encode(UUID.randomUUID())
-
-            // TODO for now we create 1 podcast for 1 feed, but in generall a new feed can be another of an already known podcast
-            val podcastEntity = new Podcast
-            podcastEntity.setEchoId(fakePodcastId)
-            savePodcast(podcastEntity)
-            //podcastRepository.save(podcastEntity)
-
-            val feedEntity = new Feed
-            feedEntity.setPodcast(podcastEntity)
-            feedEntity.setUrl(url)
-            feedEntity.setLastChecked(DateMapper.INSTANCE.asTimestamp(LocalDateTime.now()))
-            feedEntity.setLastStatus(FeedStatus.NEVER_CHECKED)
-            saveFeed(feedEntity)
-            //feedRepository.save(feedEntity)
-
-            crawler ! FetchNewFeed(url, fakePodcastId)
-        })
-        */
-
-        /*
-        feedDao.findByUrl(url).map(feed => {
-            log.info("Proposed feed is already in database: {}", url)
-        }).getOrElse({
-
-            val fakePodcastId = Url62.encode(UUID.randomUUID())
-
-            // TODO for now we create 1 podcast for 1 feed, but in generall a new feed can be another of an already known podcast
-            val podcastEntity = new Podcast
-            podcastEntity.setEchoId(fakePodcastId)
-            podcastDao.save(podcastEntity)
-
-            val feedEntity = new Feed
-            feedEntity.setPodcast(podcastEntity)
-            feedEntity.setUrl(url)
-            feedEntity.setLastChecked(DateMapper.INSTANCE.asTimestamp(LocalDateTime.now()))
-            feedEntity.setLastStatus(FeedStatus.NEVER_CHECKED)
-            feedDao.save(feedEntity)
-
-            crawler ! FetchNewFeed(url, fakePodcastId)
-        })
-        */
-
         val tx = em.getTransaction
         tx.begin
 
@@ -230,7 +151,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
             var podcast = new PodcastDTO
             podcast.setEchoId(fakePodcastId)
-            podcast.setTitle("NOT YET DOWNLOADED AND PARSED")
+            podcast.setTitle("<NOT YET PARSED>")
             podcast = podcastService.save(podcast)
 
             var feed = new FeedDTO
@@ -251,27 +172,6 @@ class DirectoryStore extends Actor with ActorLogging {
     def updateFeed(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
 
-        /*
-        Option(feedRepository.findOneByUrl(url)).map(feed => {
-            feed.setLastChecked(DateMapper.INSTANCE.asTimestamp(timestamp))
-            feed.setLastStatus(status)
-            saveFeed(feed)
-            //feedRepository.save(feed)
-        }).getOrElse({
-            log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
-        })
-        */
-
-        /*
-        feedDao.findByUrl(url).map(feed => {
-            feed.setLastChecked(DateMapper.INSTANCE.asTimestamp(timestamp))
-            feed.setLastStatus(status)
-            feedDao.save(feed)
-        }).getOrElse({
-            log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
-        })
-        */
-
         val tx = em.getTransaction
         tx.begin
 
@@ -290,32 +190,6 @@ class DirectoryStore extends Actor with ActorLogging {
     @Transactional
     def updatePodcast(podcastId: String, podcastDTO: PodcastDTO): Unit = {
         log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcastDTO)
-
-        /*
-        val update: Podcast = Option(podcastRepository.findOneByEchoId(podcastId)).map(p => {
-            val updatedPodcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-            updatedPodcast.setId(p.getId)
-            updatedPodcast
-        }).getOrElse({
-            log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
-            PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-        })
-        savePodcast(update)
-        //podcastRepository.save(update)
-        */
-
-        /*
-        val update: Podcast = podcastDao.findByEchoId(podcastId).map(p => {
-            val updatedPodcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-            updatedPodcast.setId(p.getId)
-            updatedPodcast
-        }).getOrElse({
-            log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
-            PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-        })
-        podcastDao.save(update)
-        */
-
 
         val tx = em.getTransaction
         tx.begin
@@ -336,47 +210,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
     @Transactional
     def updateEpisode(podcastId: String, episodeDTO: EpisodeDTO): Unit = {
-
-        /*
-        Option(podcastRepository.findOneByEchoId(podcastId)).map(p => {
-            val update: Episode = Option(episodeRepository.findOneByEchoId(episodeDTO.getEchoId)).map(e => {
-                val updatedEpisode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
-                updatedEpisode.setId(e.getId)
-                updatedEpisode
-            }).getOrElse({
-                EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
-            })
-            update.setPodcast(p)
-            /* TODO do we need to do something here regarding owner stuff?
-            p.getEpisodes.add(update)
-            podcastDao.save(p)
-            */
-            saveEpisode(update)
-            //episodeRepository.save(update)
-        }).getOrElse({
-            log.error("No Podcast found in database with echoId={}", podcastId)
-        })
-        */
-
-        /*
-        podcastDao.findByEchoId(podcastId).map(p => {
-            val update: Episode = episodeDao.findByEchoId(episodeDTO.getEchoId).map(e => {
-                val updatedEpisode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
-                updatedEpisode.setId(e.getId)
-                updatedEpisode
-            }).getOrElse({
-                EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
-            })
-            update.setPodcast(p)
-            /* TODO do we need to do something here regarding owner stuff?
-            p.getEpisodes.add(update)
-            podcastDao.save(p)
-            */
-            episodeDao.save(update)
-        }).getOrElse({
-            log.error("No Podcast found in database with echoId={}", podcastId)
-        })
-        */
+        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episodeDTO)
 
         val tx = em.getTransaction
         tx.begin
@@ -403,35 +237,6 @@ class DirectoryStore extends Actor with ActorLogging {
     def setEpisodesItunesImageToPodcast(episodeId: String): Unit = {
         log.debug("Received UsePodcastItunesImage({})", episodeId)
 
-        /*
-        Option(episodeRepository.findOneByEchoId(episodeId)).map(e => {
-            val p = e.getPodcast
-            if(p != null){
-                e.setItunesImage(p.getItunesImage)
-                saveEpisode(e)
-                //episodeRepository.save(e)
-            } else {
-                log.error("e.getPodcast produced null!")
-            }
-        }).getOrElse(
-            log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
-        )
-        */
-
-        /*
-        episodeDao.findByEchoId(episodeId).map(e => {
-            val p = e.getPodcast
-            if(p != null){
-                e.setItunesImage(p.getItunesImage)
-                episodeDao.save(e)
-            } else {
-                log.error("e.getPodcast produced null!")
-            }
-        }).getOrElse(
-            log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
-        )
-        */
-
         val tx = em.getTransaction
         tx.begin
 
@@ -455,26 +260,6 @@ class DirectoryStore extends Actor with ActorLogging {
     def getPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
 
-        /*
-        Option(podcastRepository.findOneByEchoId(podcastId)).map(p => {
-            val podcast = PodcastMapper.INSTANCE.podcastToPodcastDto(p)
-            sender ! PodcastResult(podcast)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
-        */
-
-        /*
-        podcastDao.findByEchoId(podcastId).map(p => {
-            val podcast = PodcastMapper.INSTANCE.podcastToPodcastDto(p)
-            sender ! PodcastResult(podcast)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
-        */
-
         val tx = em.getTransaction
         tx.begin
 
@@ -492,18 +277,6 @@ class DirectoryStore extends Actor with ActorLogging {
     def getAllPodcasts: Unit = {
         log.debug("Received GetAllPodcasts()")
 
-        /*
-        val podcasts = podcastRepository.findAll()
-        val podcastDTOs = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
-        sender ! AllPodcastsResult(podcastDTOs.asScala.toArray)
-        */
-
-        /*
-        val podcasts = podcastDao.getAll
-        val podcastDTOs = podcasts.map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
-        sender ! AllPodcastsResult(podcastDTOs.toArray)
-        */
-
         val tx = em.getTransaction
         tx.begin
 
@@ -517,26 +290,6 @@ class DirectoryStore extends Actor with ActorLogging {
     @Transactional
     def getEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
-
-        /*
-        Option(episodeRepository.findOneByEchoId(episodeId)).map(e => {
-            val episode = EpisodeMapper.INSTANCE.episodeToEpisodeDto(e)
-            sender ! EpisodeResult(episode)
-        }).getOrElse({
-            log.error("Database does not contain Episode with echoId={}", episodeId)
-            sender ! NoDocumentFound(episodeId)
-        })
-        */
-
-        /*
-        episodeDao.findByEchoId(episodeId).map(e => {
-            val episode = EpisodeMapper.INSTANCE.episodeToEpisodeDto(e)
-            sender ! EpisodeResult(episode)
-        }).getOrElse({
-            log.error("Database does not contain Episode with echoId={}", episodeId)
-            sender ! NoDocumentFound(episodeId)
-        })
-        */
 
         val tx = em.getTransaction
         tx.begin
@@ -555,30 +308,6 @@ class DirectoryStore extends Actor with ActorLogging {
     @Transactional
     def getEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
-
-        /*
-        Option(podcastRepository.findOneByEchoId(podcastId)).map(p => {
-            val episodes = episodeRepository.findAllByPodcast(p)
-            //val episodes = p.getEpisodes
-            val episodeDTOs = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
-            sender ! EpisodesByPodcastResult(episodeDTOs.asScala.toArray)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
-        */
-
-        /*
-        podcastDao.findByEchoId(podcastId).map(p => {
-            val episodes = episodeDao.getAllByPodcast(p).asJava
-            //val episodes = p.getEpisodes
-            val episodesDTOs = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
-            sender ! EpisodesByPodcastResult(episodesDTOs.asScala.toArray)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
-        */
 
         val tx = em.getTransaction
         tx.begin
@@ -636,9 +365,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin
 
         println("------------------------")
-        //podcastDao.getAll.map(p => println(p.getTitle))
-        //podcastRepository.findAll().asScala.map(p => println(p.getTitle))
-        podcastService.findAll.asScala.map(p => println(p))
+        podcastService.findAll.asScala.map(p => println(p.getTitle))
         println("------------------------")
 
         tx.commit
@@ -652,7 +379,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin
 
         println("------------------------")
-        episodeService.findAll.asScala.map(e => println(e))
+        episodeService.findAll.asScala.map(e => println(e.getTitle))
         println("------------------------")
 
         tx.commit
