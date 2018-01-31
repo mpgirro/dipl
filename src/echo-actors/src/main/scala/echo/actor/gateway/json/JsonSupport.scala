@@ -1,6 +1,7 @@
 package echo.actor.gateway.json
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import echo.actor.gateway.FeedJsonProtocol
 import spray.json.{DefaultJsonProtocol, JsonFormat}
 
 /**
@@ -16,5 +17,6 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     implicit val resultFormat = IndexResultJsonProtocol.IndexResultJsonFormat
     implicit val podcastFormat = PodcastJsonProtocol.PodcastJsonFormat
     implicit val episodeFormat = EpisodeJsonProtocol.EpisodeJsonFormat
+    implicit val feedFormat = FeedJsonProtocol.FeedJsonFormat
     implicit val resultWrapperFormat = ResultWrapperJsonProtocol.ResultWrapperJsonFormat
 }

@@ -14,7 +14,7 @@
 
         <preConditions onFail="CONTINUE">
             <not>
-                <tableExists schemaName="public" tableName="episode" />
+                <tableExists tableName="episode" />
             </not>
         </preConditions>
 
@@ -50,10 +50,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="podcast"/>
 
+        <!-- TODO do not load any data for now
         <loadData encoding="UTF-8"
                   file="classpath:db/liquibase/csv/episode.csv"
                   separator=";"
                   tableName="episode" />
+        -->
 
         <dropDefaultValue tableName="episode" columnName="pub_date" columnDataType="datetime"/>
 

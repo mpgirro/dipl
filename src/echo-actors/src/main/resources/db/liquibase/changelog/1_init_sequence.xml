@@ -10,7 +10,7 @@
 
     <property name="autoIncrement" value="true" dbms="mysql,h2,postgresql,oracle"/>
 
-    <changeSet id="1" author="mpgirro" dbms="postgresql,oracle">
+    <changeSet id="1" author="mpgirro" dbms="postgresql,oracle,h2">
         <createSequence sequenceName="hibernate_sequence" startValue="1" incrementBy="1"/>
     </changeSet>
 

@@ -14,7 +14,7 @@
 
         <preConditions onFail="CONTINUE">
             <not>
-                <tableExists schemaName="public" tableName="feed" />
+                <tableExists tableName="feed" />
             </not>
         </preConditions>
 
@@ -44,10 +44,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="podcast"/>
 
+        <!-- TODO do not load any data for now
         <loadData encoding="UTF-8"
                   file="classpath:db/liquibase/csv/feed.csv"
                   separator=";"
                   tableName="feed" />
+         -->
 
         <dropDefaultValue tableName="feed" columnName="last_checked" columnDataType="datetime"/>
 

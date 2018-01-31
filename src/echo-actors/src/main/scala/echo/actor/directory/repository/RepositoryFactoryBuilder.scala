@@ -1,7 +1,7 @@
 package echo.actor.directory.repository
 
 import java.util.Properties
-import javax.persistence.EntityManagerFactory
+import javax.persistence.{EntityManager, EntityManagerFactory}
 import javax.sql.DataSource
 
 import org.springframework.aop.framework.ProxyFactory
@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect
 import org.springframework.transaction.interceptor.{MatchAlwaysTransactionAttributeSource, TransactionInterceptor}
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
+import org.springframework.data.repository.core.support.RepositoryProxyPostProcessor
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.orm.jpa.{JpaTransactionManager, LocalContainerEntityManagerFactoryBean}
 
@@ -20,12 +21,17 @@ import scala.collection.JavaConverters._
   */
 class RepositoryFactoryBuilder {
 
+    private val dataSource = h2DataSource // TODO make this changeable
 
+    private val entityManagerFactory = createEntityManagerFactory(dataSource)
+    private val entityManager = entityManagerFactory.createEntityManager
 
     private def h2DataSource: DataSource = {
         val dataSource: DriverManagerDataSource = new DriverManagerDataSource
         dataSource.setDriverClassName("org.h2.Driver")
+        //dataSource.setUrl("jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;INIT=CREATE SCHEMA IF NOT EXISTS echo")
         dataSource.setUrl("jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false")
+        //dataSource.setSchema("echo")
         dataSource.setUsername("sa")
         dataSource.setPassword("")
         dataSource
@@ -43,6 +49,8 @@ class RepositoryFactoryBuilder {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect")
         properties.setProperty("hibernate.connection.charSet", "UTF-8")
         properties.setProperty("hibernate.show.sql", "true")
+        //properties.setProperty("hibernate.hbm2ddl.auto", "create")
+        //properties.setProperty("hibernate.default_schema", "echo_schema")
         properties.asScala.toMap.asJava // this seems silly but the types match up in the end...
     }
 
@@ -62,25 +70,28 @@ class RepositoryFactoryBuilder {
     }
 
     def createFactory: JpaRepositoryFactory = {
-        val entityManagerFactory = createEntityManagerFactory(h2DataSource)
-
-        if(entityManagerFactory == null){
-            println("entityManagerFactory is NULL!")
-        }
-
-        val entityManager = entityManagerFactory.createEntityManager
-
         // Create the transaction manager and RespositoryFactory
-        val txManager = new JpaTransactionManager(entityManagerFactory)
+        val txManager = new JpaTransactionManager()
+        txManager.setEntityManagerFactory(entityManagerFactory)
+        txManager.setDataSource(dataSource)
+        txManager.setJpaPropertyMap(jpaPropertiesMap)
         val repositoryFactory = new JpaRepositoryFactory(entityManager)
 
         // Make sure calls to the repository instance are intercepted for annotated transactions
-        repositoryFactory.addRepositoryProxyPostProcessor((factory: ProxyFactory, repositoryInformation: RepositoryInformation) => {
-            factory.addAdvice(new TransactionInterceptor(txManager, new MatchAlwaysTransactionAttributeSource))
+        repositoryFactory.addRepositoryProxyPostProcessor(new RepositoryProxyPostProcessor(){
+            override def postProcess(factory: ProxyFactory, repositoryInformation: RepositoryInformation) = {
+                factory.addAdvice(new TransactionInterceptor(txManager, new MatchAlwaysTransactionAttributeSource))
+            }
         })
 
         // return val
         repositoryFactory
     }
+
+    def getDataSource = this.dataSource
+
+    def getEntityManagerFactory = this.entityManagerFactory
+
+    def getEntityManager = this.entityManager
 
 }

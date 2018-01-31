@@ -95,7 +95,7 @@ class EchoMaster extends Actor with ActorLogging {
                     case "print" :: "database" :: _     => usage("print database")
                     case "print" :: _                   => help()
 
-                    case "test" :: "index" :: _ => testIndex()
+                    case "test" :: "index" :: _ => directoryStore ! LoadTestFeeds
                     case "test" :: _            => help()
 
                     case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
@@ -158,12 +158,14 @@ class EchoMaster extends Actor with ActorLogging {
         }
     }
 
+    /*
     private def testIndex(): Unit ={
         val filename = "../feeds.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(feed)
         }
     }
+    */
 
     private def getPodcast(echoId: String) = {
         val future = directoryStore ? GetPodcast(echoId)

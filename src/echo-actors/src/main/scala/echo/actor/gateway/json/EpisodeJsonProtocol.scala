@@ -2,6 +2,7 @@ package echo.actor.gateway.json
 
 import java.time.LocalDateTime
 
+import echo.core.converter.mapper.DateMapper
 import echo.core.model.dto.EpisodeDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -14,7 +15,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
             "echoId"         -> Option(e.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
             "title"          -> Option(e.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"           -> Option(e.getLink).map(value => JsString(value)).getOrElse(JsNull),
-            "pubDate"        -> Option(e.getPubDate).map(value => JsString(value.toString)).getOrElse(JsNull),
+            "pubDate"        -> Option(e.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description"    -> Option(e.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage"    -> Option(e.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
             "itunesDuration" -> Option(e.getItunesDuration).map(value => JsString(value)).getOrElse(JsNull)
@@ -26,7 +27,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                     episode.setEchoId(echoId)
                     episode.setTitle(title)
                     episode.setLink(link)
-                    episode.setPubDate(LocalDateTime.parse(pubDate))
+                    episode.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     episode.setDescription(description)
                     episode.setItunesImage(itunesImage)
                     episode.setItunesDuration(itunesDuration)

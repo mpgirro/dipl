@@ -105,6 +105,7 @@ object ActorMessages {
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllDatabase()    // User -> DirectoryStore
+    case class LoadTestFeeds()            // (User ->) Gateway -> DirectoryStore
 
     // User -> Crawler
     // TODO: automatic: Crawler -> Crawler on a regular basis

@@ -13,33 +13,39 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class PodcastDaoImpl(private val em: EntityManager) extends PodcastDao {
+class PodcastDaoImpl(private val emf: EntityManagerFactory) extends PodcastDao {
 
     def save(podcast: Podcast): Podcast = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            Option(podcast.getId)
-                .map(id => em.merge(podcast))
-                .getOrElse(em.persist(podcast))
-            em.flush()
-            podcast
-        } finally {
-            tx.commit()
-        }
+
+        Option(podcast.getId)
+            .map(id => em.merge(podcast))
+            .getOrElse(em.persist(podcast))
+        em.flush
+
+        tx.commit
+        em.close
+
+        podcast
     }
 
     def find(id: Long): Option[Podcast] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            Option(em.find(classOf[Podcast], id))
-        } finally {
-            tx.commit()
-        }
+
+        val result = Option(em.find(classOf[Podcast], id))
+
+        tx.commit
+        em.close
+
+        result
     }
 
     def findByEchoId(echoId: String): Option[Podcast] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
         try {
@@ -49,29 +55,36 @@ class PodcastDaoImpl(private val em: EntityManager) extends PodcastDao {
         } catch {
             case e: NoResultException => None
         } finally {
-            tx.commit()
+            tx.commit
+            em.close
         }
     }
 
     def getAll: List[Podcast] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            em.createQuery("FROM Podcast", classOf[Podcast]).getResultList.asScala.toList
-        } finally {
-            tx.commit()
-        }
+
+        val result = em.createQuery("FROM Podcast", classOf[Podcast]).getResultList.asScala.toList
+
+        tx.commit
+        em.close
+
+        result
     }
 
     def getByLanguage(language : String): List[Podcast] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            em.createQuery("FROM Podcast WHERE language = :language", classOf[Podcast])
-                .setParameter("language", language)
-                .getResultList.asScala.toList
-        } finally {
-            tx.commit()
-        }
+
+        val result = em.createQuery("FROM Podcast WHERE language = :language", classOf[Podcast])
+            .setParameter("language", language)
+            .getResultList.asScala.toList
+
+        tx.commit
+        em.close
+
+        result
     }
 }

@@ -14,7 +14,7 @@
 
         <preConditions onFail="CONTINUE">
             <not>
-                <tableExists schemaName="public" tableName="podcast" />
+                <tableExists tableName="podcast" />
             </not>
         </preConditions>
 
@@ -60,10 +60,12 @@
                                  referencedTableName="ermma_user"/>
         -->
 
+        <!-- TODO do not load any data for now
         <loadData encoding="UTF-8"
                   file="classpath:db/liquibase/csv/podcast.csv"
                   separator=";"
                   tableName="podcast" />
+        -->
 
         <dropDefaultValue tableName="podcast" columnName="pub_date" columnDataType="datetime"/>
         <dropDefaultValue tableName="podcast" columnName="last_build_date" columnDataType="datetime"/>

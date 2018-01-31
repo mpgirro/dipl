@@ -1,6 +1,6 @@
 package echo.actor.directory.orm.impl
 
-import javax.persistence.{EntityManager, NoResultException}
+import javax.persistence.{EntityManager, EntityManagerFactory, NoResultException}
 
 import echo.actor.directory.orm.EpisodeDao
 import echo.core.model.domain.{Episode, Podcast}
@@ -13,33 +13,39 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class EpisodeDaoImpl(private val em: EntityManager) extends EpisodeDao {
+class EpisodeDaoImpl(private val emf: EntityManagerFactory) extends EpisodeDao {
 
     def save(episode: Episode): Episode = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
-        tx.begin
-        try {
-            Option(episode.getId)
-                .map(id => em.merge(episode))
-                .getOrElse(em.persist(episode))
-            em.flush()
-            episode
-        } finally {
-            tx.commit
-        }
+        tx.begin()
+
+        Option(episode.getId)
+            .map(id => em.merge(episode))
+            .getOrElse(em.persist(episode))
+        em.flush()
+
+        tx.commit
+        em.close()
+
+        episode
     }
 
     def find(id: Long): Option[Episode] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            Option(em.find(classOf[Episode], id))
-        } finally {
-            tx.commit
-        }
+
+        val result = Option(em.find(classOf[Episode], id))
+
+        tx.commit
+        em.close
+
+        result
     }
 
     def findByEchoId(echoId: String): Option[Episode] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
         try {
@@ -50,29 +56,36 @@ class EpisodeDaoImpl(private val em: EntityManager) extends EpisodeDao {
             case e: NoResultException => None
         } finally {
             tx.commit
+            em.close
         }
     }
 
     def getAll: List[Episode] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            em.createQuery("FROM Episode", classOf[Episode]).getResultList.asScala.toList
-        } finally {
-            tx.commit
-        }
+
+        val result = em.createQuery("FROM Episode", classOf[Episode]).getResultList.asScala.toList
+
+        tx.commit
+        em.close
+
+        result
     }
 
     def getAllByPodcast(podcast: Podcast): List[Episode] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            em.createQuery("FROM Episode WHERE podcast=:podcast", classOf[Episode])
-                .setParameter("podcast", podcast)
-                .getResultList.asScala.toList
-        } finally {
-            tx.commit
-        }
+
+        val result = em.createQuery("FROM Episode WHERE podcast=:podcast", classOf[Episode])
+            .setParameter("podcast", podcast)
+            .getResultList.asScala.toList
+
+        tx.commit
+        em.close
+
+        result
     }
 
 }

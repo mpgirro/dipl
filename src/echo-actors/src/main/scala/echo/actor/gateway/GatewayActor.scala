@@ -13,7 +13,7 @@ import akka.util.Timeout
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.gateway.service.{EpisodeService, PodcastService, SearchService}
+import echo.actor.gateway.service.{EpisodeService, FeedService, PodcastService, SearchService}
 import echo.actor.protocol.ActorMessages._
 
 import scala.concurrent.Future
@@ -39,6 +39,7 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     private val searchService = new SearchService(log, internalTimeout)
     private val podcastService = new PodcastService(log, internalTimeout)
     private val episodeService = new EpisodeService(log, internalTimeout)
+    private val feedService = new FeedService(log, internalTimeout)
 
     override def preStart = {
 
@@ -58,11 +59,17 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
                 getFromResourceDirectory("swagger") ~ pathSingleSlash(get(redirect("index.html", StatusCodes.PermanentRedirect)))
             } ~
             pathPrefix("api") {
-                searchService.route ~ podcastService.route ~ episodeService.route
+                searchService.route ~ podcastService.route ~ episodeService.route ~ feedService.route
             } ~
-            pathPrefix("healthcheck") {
+            pathPrefix("load-test") { // TODO
                 get {
-                    complete("OK")
+                    directoryStore ! LoadTestFeeds()
+                    complete(StatusCodes.OK)
+                }
+            } ~
+            pathPrefix("ping") {
+                get {
+                    complete(StatusCodes.OK, "pong")
                 }
             } ~
                 SwaggerDocService.routes ~
@@ -86,6 +93,7 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
             directoryStore = ref
             podcastService.setDirectoryStoreActorRef(ref)
             episodeService.setDirectoryStoreActorRef(ref)
+            feedService.setDirectoryStoreActorRef(ref)
         }
         case _ => {
             log.warning("GatewayActor does not handle any Actor-messages yet")

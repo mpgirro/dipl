@@ -2,6 +2,7 @@ package echo.actor.gateway.json
 
 import java.time.LocalDateTime
 
+import echo.core.converter.mapper.DateMapper
 import echo.core.model.dto.IndexResult
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -15,7 +16,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
             "echoId"      -> Option(r.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
             "title"       -> Option(r.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"        -> Option(r.getLink).map(value => JsString(value)).getOrElse(JsNull),
-            "pubDate"     -> Option(r.getPubDate).map(value => JsString(value.toString)).getOrElse(JsNull),
+            "pubDate"     -> Option(r.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description" -> Option(r.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage" -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
         )
@@ -27,7 +28,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
                     result.setEchoId(echoId)
                     result.setTitle(title)
                     result.setLink(link)
-                    result.setPubDate(LocalDateTime.parse(pubDate))
+                    result.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     result.setDescription(description)
                     result.setItunesImage(itunesImage)
                     result

@@ -9,9 +9,13 @@
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
         ">
 
+    <!--
     <tx:annotation-driven transaction-manager="transactionManager"/>
+    -->
 
+    <!--
     <context:component-scan base-package="echo.actor"/>
+    -->
 
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
@@ -20,6 +24,7 @@
           p:username="sa"
           p:password=""/>
 
+    <!--
     <bean id="entityManagerFactory"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="EchoActorEnginePersistenceUnit"/>
@@ -33,7 +38,6 @@
             <map>
                 <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
                 <entry key="hibernate.connection.charSet" value="UTF-8"/>
-                <!--<entry key="hibernate.hbm2ddl.auto" value="create"/>-->
                 <entry key="hibernate.show.sql" value="true"/>
             </map>
         </property>
@@ -48,13 +52,15 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    -->
 
-
+    <!--
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
         <property name="dataSource" ref="dataSource" />
         <property name="changeLog" value="classpath:db/liquibase/master.xml" />
         <property name="contexts" value="test, production" />
     </bean>
+    -->
 
 
 </beans>

@@ -1,6 +1,6 @@
 package echo.actor.directory.orm.impl
 
-import javax.persistence.{EntityManager, NoResultException}
+import javax.persistence.{EntityManager, EntityManagerFactory, NoResultException}
 
 import echo.actor.directory.orm.FeedDao
 import echo.core.model.domain.Feed
@@ -13,33 +13,39 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class FeedDaoImpl(private val em: EntityManager) extends FeedDao {
+class FeedDaoImpl(private val emf: EntityManagerFactory) extends FeedDao {
 
     def save(feed: Feed): Feed = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
-        tx.begin
-        try {
-            Option(feed.getId)
-                .map(id => em.merge(feed))
-                .getOrElse(em.persist(feed))
-            em.flush()
-            feed
-        } finally {
-            tx.commit
-        }
+        tx.begin()
+
+        Option(feed.getId)
+            .map(id => em.merge(feed))
+            .getOrElse(em.persist(feed))
+        em.flush()
+
+        tx.commit
+        em.close()
+
+        feed
     }
 
     def find(id: Long): Option[Feed] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            Option(em.find(classOf[Feed], id))
-        } finally {
-            tx.commit
-        }
+
+        val result = Option(em.find(classOf[Feed], id))
+
+        tx.commit
+        em.close
+
+        result
     }
 
     def findByEchoId(echoId: String): Option[Feed] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
         try {
@@ -50,10 +56,12 @@ class FeedDaoImpl(private val em: EntityManager) extends FeedDao {
             case e: NoResultException => None
         } finally {
             tx.commit
+            em.close
         }
     }
 
     def findByUrl(url: String): Option[Feed] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
         try {
@@ -64,17 +72,21 @@ class FeedDaoImpl(private val em: EntityManager) extends FeedDao {
             case e: NoResultException => None
         } finally {
             tx.commit
+            em.close
         }
     }
 
     def getAll: List[Feed] = {
+        val em = emf.createEntityManager
         val tx = em.getTransaction
         tx.begin
-        try {
-            em.createQuery("FROM Feed", classOf[Feed]).getResultList.asScala.toList
-        } finally {
-            tx.commit
-        }
+
+        val result = em.createQuery("FROM Feed", classOf[Feed]).getResultList.asScala.toList
+
+        tx.commit
+        em.close
+
+        result
     }
 
 }

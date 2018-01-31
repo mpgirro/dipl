@@ -2,6 +2,7 @@ package echo.actor.gateway.json
 
 import java.time.LocalDateTime
 
+import echo.core.converter.mapper.DateMapper
 import echo.core.model.dto.PodcastDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -14,7 +15,7 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
             "echoId"      -> Option(p.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
             "title"       -> Option(p.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"        -> Option(p.getLink).map(value => JsString(value)).getOrElse(JsNull),
-            "pubDate"     -> Option(p.getPubDate).map(value => JsString(value.toString)).getOrElse(JsNull),
+            "pubDate"     -> Option(p.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description" -> Option(p.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage" -> Option(p.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
         )
@@ -25,7 +26,7 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
                     podcast.setEchoId(echoId)
                     podcast.setTitle(title)
                     podcast.setLink(link)
-                    podcast.setPubDate(LocalDateTime.parse(pubDate))
+                    podcast.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     podcast.setDescription(description)
                     podcast.setItunesImage(itunesImage)
                     podcast

@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository
   */
 trait PodcastRepository extends JpaRepository[Podcast, java.lang.Long] {
 
+    def findOneByEchoId(echoId: String): Podcast
+
 }

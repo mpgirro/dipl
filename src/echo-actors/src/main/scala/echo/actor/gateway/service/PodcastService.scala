@@ -34,7 +34,8 @@ class PodcastService(log: LoggingAdapter,
 
     val route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
                     pathPrefix("podcast" / Segment) { id =>
-                        pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~ getEpisodesByPodcast(id)
+                        pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~
+                            getEpisodesByPodcast(id) ~ getFeedsByPodcast(id)
                     }
 
 
@@ -88,6 +89,14 @@ class PodcastService(log: LoggingAdapter,
                 complete(StatusCodes.NotFound)
             }
         }
+    }
+
+    def getFeedsByPodcast(id: String): Route = get {
+        log.info("GET /api/podcast/{}/feeds", id)
+
+        // TODO
+
+        complete(StatusCodes.NotImplemented)
     }
 
     @ApiOperation(value = "Create new user", nickname = "userPost", httpMethod = "POST", produces = "text/plain")
