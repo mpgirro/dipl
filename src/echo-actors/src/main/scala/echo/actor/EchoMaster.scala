@@ -27,7 +27,7 @@ class EchoMaster extends Actor with ActorLogging {
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
         "search"         -> "query [query [query]]",
-        "print database" -> "",
+        "print database" -> "[podcasts|episodes]",
         "test index"     -> "",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<echoId>",
@@ -91,9 +91,13 @@ class EchoMaster extends Actor with ActorLogging {
                     case "search" :: Nil    => usage("search")
                     case "search" :: query  => search(query)
 
-                    case "print" :: "database" :: Nil   => directoryStore ! DebugPrintAllDatabase
-                    case "print" :: "database" :: _     => usage("print database")
-                    case "print" :: _                   => help()
+                    case "print" :: "database" :: Nil               => usage("print database")
+                    case "print" :: "database" :: "podcasts" :: Nil => directoryStore ! DebugPrintAllPodcasts
+                    case "print" :: "database" :: "podcasts" :: _   => usage("print database")
+                    case "print" :: "database" :: "episodes" :: Nil => directoryStore ! DebugPrintAllEpisodes
+                    case "print" :: "database" :: "episodes" :: _   => usage("print database")
+                    case "print" :: "database" :: _                 => usage("print database")
+                    case "print" :: _                               => help()
 
                     case "test" :: "index" :: _ => directoryStore ! LoadTestFeeds
                     case "test" :: _            => help()
@@ -157,15 +161,6 @@ class EchoMaster extends Actor with ActorLogging {
             }
         }
     }
-
-    /*
-    private def testIndex(): Unit ={
-        val filename = "../feeds.txt"
-        for (feed <- Source.fromFile(filename).getLines) {
-            directoryStore ! ProposeNewFeed(feed)
-        }
-    }
-    */
 
     private def getPodcast(echoId: String) = {
         val future = directoryStore ? GetPodcast(echoId)

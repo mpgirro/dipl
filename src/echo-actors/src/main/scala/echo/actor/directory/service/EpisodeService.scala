@@ -57,7 +57,6 @@ class EpisodeService(private val repositoryFactoryBuilder: RepositoryFactoryBuil
         }
         */
 
-
         val episode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
         val result = episodeRepository.save(episode)
         EpisodeMapper.INSTANCE.episodeToEpisodeDto(result)
@@ -74,6 +73,12 @@ class EpisodeService(private val repositoryFactoryBuilder: RepositoryFactoryBuil
     def findOneByEchoId(echoId: String): EpisodeDTO = {
         val result = episodeRepository.findOneByEchoId(echoId)
         EpisodeMapper.INSTANCE.episodeToEpisodeDto(result)
+    }
+
+    @Transactional
+    def findAll: java.util.List[EpisodeDTO] = {
+        val result = episodeRepository.findAll
+        EpisodeMapper.INSTANCE.episodesToEpisodesDtos(result)
     }
 
     @Transactional

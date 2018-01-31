@@ -8,6 +8,7 @@ import echo.actor.directory.orm.impl.PodcastDaoImpl
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
 import echo.core.converter.mapper.PodcastMapper
 import echo.core.model.dto.PodcastDTO
+import echo.core.model.feed.FeedStatus
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
@@ -67,8 +68,14 @@ class PodcastService(private val repositoryFactoryBuilder: RepositoryFactoryBuil
     }
 
     @Transactional
-    def findAll(): java.util.List[PodcastDTO] = {
-        val result = podcastRepository.findAll()
+    def findAll: java.util.List[PodcastDTO] = {
+        val result = podcastRepository.findAll
+        PodcastMapper.INSTANCE.podcastsToPodcastDtos(result)
+    }
+
+    @Transactional
+    def findAllWhereFeedStatusIsNot(status: FeedStatus): java.util.List[PodcastDTO] = {
+        val result = podcastRepository.findAllWhereFeedStatusIsNot(status)
         PodcastMapper.INSTANCE.podcastsToPodcastDtos(result)
     }
 

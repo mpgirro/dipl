@@ -104,8 +104,9 @@ object ActorMessages {
     case class NoDocumentFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development
-    case class DebugPrintAllDatabase()    // User -> DirectoryStore
-    case class LoadTestFeeds()            // (User ->) Gateway -> DirectoryStore
+    case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore
+    case class DebugPrintAllEpisodes()    // User/CLI -> DirectoryStore
+    case class LoadTestFeeds()            // (User/Web) Gateway -> DirectoryStore
 
     // User -> Crawler
     // TODO: automatic: Crawler -> Crawler on a regular basis

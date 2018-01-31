@@ -132,22 +132,15 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetPodcast(echoId) => getPodcast(echoId)
 
-        case GetAllPodcasts => getAllPodcasts()
+        case GetAllPodcasts => getAllPodcasts
 
         case GetEpisode(echoId) => getEpisode(echoId)
 
         case GetEpisodesByPodcast(podcastId) => getEpisodesByPodcast(podcastId)
 
-        case DebugPrintAllDatabase => {
-            log.debug("Received DebugPrintAllDatabase")
+        case DebugPrintAllPodcasts => debugPrintAllPodcasts
 
-            println("------------------------")
-            println("All Podcasts in database")
-            //podcastDao.getAll.map(p => println(p.getTitle))
-            //podcastRepository.findAll().asScala.map(p => println(p.getTitle))
-            podcastService.findAll().asScala.map(p => println(p.getTitle))
-            println("------------------------")
-        }
+        case DebugPrintAllEpisodes => debugPrintAllEpisodes
 
         case LoadTestFeeds => {
             log.info("Received LoadTestFeeds")
@@ -230,12 +223,14 @@ class DirectoryStore extends Actor with ActorLogging {
 
         Option(feedService.findOneByUrl(url)).map(feed => {
             log.info("Proposed feed is already in database: {}", url)
+            println(feed)
         }).getOrElse({
 
             val fakePodcastId = Url62.encode(UUID.randomUUID())
 
             var podcast = new PodcastDTO
             podcast.setEchoId(fakePodcastId)
+            podcast.setTitle("NOT YET DOWNLOADED AND PARSED")
             podcast = podcastService.save(podcast)
 
             var feed = new FeedDTO
@@ -320,6 +315,7 @@ class DirectoryStore extends Actor with ActorLogging {
         })
         podcastDao.save(update)
         */
+
 
         val tx = em.getTransaction
         tx.begin
@@ -493,7 +489,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def getAllPodcasts(): Unit = {
+    def getAllPodcasts: Unit = {
         log.debug("Received GetAllPodcasts()")
 
         /*
@@ -511,7 +507,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        val podcasts = podcastService.findAll.asScala
+        val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED).asScala
         sender ! AllPodcastsResult(podcasts.toArray)
 
         tx.commit
@@ -599,7 +595,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
     }
 
-    def runLiquibaseUpdate = {
+    def runLiquibaseUpdate: Unit = {
         log.info("Starting Liquibase update")
         try {
             Class.forName("org.h2.Driver");
@@ -630,5 +626,35 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("Error on Liquibase update: {}", e)
             }
         }
+    }
+
+    def debugPrintAllPodcasts: Unit = {
+        log.debug("Received DebugPrintAllPodcasts")
+        log.info("All Podcasts in database:")
+
+        val tx = em.getTransaction
+        tx.begin
+
+        println("------------------------")
+        //podcastDao.getAll.map(p => println(p.getTitle))
+        //podcastRepository.findAll().asScala.map(p => println(p.getTitle))
+        podcastService.findAll.asScala.map(p => println(p))
+        println("------------------------")
+
+        tx.commit
+    }
+
+    def debugPrintAllEpisodes: Unit = {
+        log.debug("Received DebugPrintAllEpisodes")
+        log.info("All Episodes in database:")
+
+        val tx = em.getTransaction
+        tx.begin
+
+        println("------------------------")
+        episodeService.findAll.asScala.map(e => println(e))
+        println("------------------------")
+
+        tx.commit
     }
 }

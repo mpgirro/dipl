@@ -17,7 +17,8 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
         case GetAllPodcasts()           => 1
         case GetEpisode(_)              => 1
         case GetEpisodesByPodcast(_)    => 1
-        case DebugPrintAllDatabase()    => 1
+        case DebugPrintAllPodcasts()    => 1
+        case DebugPrintAllEpisodes()    => 1
         case UpdatePodcastMetadata(_,_) => 2
         case UpdateEpisodeMetadata(_,_) => 2
         case _                          => 3
