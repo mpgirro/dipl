@@ -5,6 +5,7 @@ import echo.core.model.feed.FeedStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * @author Maximilian Irro
@@ -69,6 +70,26 @@ public class Feed implements Serializable {
 
     public void setPodcast(Podcast podcast) {
         this.podcast = podcast;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Feed feed = (Feed) o;
+        if(feed.id == null || id == null) {
+            return false;
+        }
+        return Objects.equals(id, feed.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

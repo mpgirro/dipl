@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 //import org.hibernate.annotations.Cascade;
@@ -56,14 +58,18 @@ public class Podcast implements Serializable {
     private int episodeCount;
 
     @OneToMany(fetch=FetchType.LAZY,
+               //cascade = CascadeType.ALL,
+               orphanRemoval = true,
                mappedBy="podcast")
 //   @Cascade(CascadeType.DELETE)
-    private Set<Episode> episodes = new HashSet<>();
+    private Set<Episode> episodes = new LinkedHashSet();
 
     @OneToMany(fetch=FetchType.LAZY,
+               //cascade = CascadeType.ALL, // TODO suspected of causing the null elements in getAllPodcasts
+               orphanRemoval = true,
                mappedBy="podcast")
 //    @Cascade(CascadeType.DELETE)
-    private Set<Feed> feeds = new HashSet<>();
+    private Set<Feed> feeds = new LinkedHashSet();
 
     public Long getId() {
         return id;
@@ -175,6 +181,48 @@ public class Podcast implements Serializable {
 
     public void setFeeds(Set<Feed> feeds) {
         this.feeds = feeds;
+    }
+
+    public void addEpisode(Episode episode) {
+        this.episodes.add(episode);
+        this.episodeCount = this.episodes.size();
+        episode.setPodcast(this);
+    }
+
+    public void removeEpisode(Episode episode) {
+        this.episodes.remove(episode);
+        this.episodeCount = this.episodes.size();
+        episode.setPodcast(null);
+    }
+
+    public void addFeed(Feed feed) {
+        this.feeds.add(feed);
+        feed.setPodcast(this);
+    }
+
+    public void removeFeed(Feed feed) {
+        this.feeds.remove(feed);
+        feed.setPodcast(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Podcast podcast = (Podcast) o;
+        if(podcast.id == null || id == null) {
+            return false;
+        }
+        return Objects.equals(id, podcast.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

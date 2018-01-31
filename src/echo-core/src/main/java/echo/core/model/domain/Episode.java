@@ -3,6 +3,7 @@ package echo.core.model.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * @author Maximilian Irro
@@ -133,6 +134,26 @@ public class Episode implements Serializable {
 
     public void setPodcast(Podcast podcast) {
         this.podcast = podcast;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Episode episode = (Episode) o;
+        if(episode.id == null || id == null) {
+            return false;
+        }
+        return Objects.equals(id, episode.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

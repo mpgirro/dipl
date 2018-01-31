@@ -60,11 +60,11 @@ public class FeedDTO {
     @Override
     public String toString() {
         return "FeedDTO{" +
-            "id='" + id +
+            "id=" + id +
             ", podcastId=" + podcastId +
-            ", url='" + url +
+            ", url='" + url + '\'' +
             ", lastChecked=" + lastChecked +
-            ", lastStatus=" + lastStatus +
+            ", lastStatus='" + lastStatus + '\'' +
             '}';
     }
 }

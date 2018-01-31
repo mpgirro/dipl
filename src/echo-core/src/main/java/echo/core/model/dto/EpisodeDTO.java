@@ -181,17 +181,17 @@ public class EpisodeDTO implements DTO {
     @Override
     public String toString() {
         return "EpisodeDTO{" +
-            "id='" + id +
-            ", echoId='" + echoId +
+            "id=" + id +
+            ", echoId='" + echoId + '\'' +
             ", podcastId=" + podcastId +
-            ", title='" + title +
-            ", link='" + link +
+            ", title='" + title + '\'' +
+            ", link='" + link + '\'' +
             ", pubDate=" + pubDate +
-            ", guid='" + guid +
+            ", guid='" + guid + '\'' +
             ", guidIsPermaLink=" + guidIsPermaLink +
-            ", description='" + description +
-            ", itunesImage='" + itunesImage +
-            ", itunesDuration='" + itunesDuration +
+            ", description='" + description + '\'' +
+            ", itunesImage='" + itunesImage + '\'' +
+            ", itunesDuration='" + itunesDuration + '\'' +
             '}';
     }
 
