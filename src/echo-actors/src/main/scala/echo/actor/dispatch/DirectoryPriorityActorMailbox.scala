@@ -13,13 +13,16 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
     PriorityGenerator {
         case ActorRefCrawlerActor(_)    => 0
         case ActorRefIndexStoreActor(_) => 0
+        case DebugPrintAllPodcasts      => 0
+        case DebugPrintAllEpisodes      => 0
         case GetPodcast(_)              => 1
-        case GetAllPodcasts()           => 1
+        case GetAllPodcasts             => 1
         case GetEpisode(_)              => 1
         case GetEpisodesByPodcast(_)    => 1
-        case DebugPrintAllPodcasts()    => 1
-        case DebugPrintAllEpisodes()    => 1
-        case UpdatePodcastMetadata(_,_) => 2
-        case UpdateEpisodeMetadata(_,_) => 2
-        case _                          => 3
+        case FeedStatusUpdate(_,_,_)    => 2
+        case UpdatePodcastMetadata(_,_) => 3
+        case UpdateEpisodeMetadata(_,_) => 3
+        case UsePodcastItunesImage(_)   => 4
+        case ProposeNewFeed(_)          => 5
+        case _                          => 6
     })

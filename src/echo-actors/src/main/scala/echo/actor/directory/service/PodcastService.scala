@@ -75,8 +75,17 @@ class PodcastService(private val repositoryFactoryBuilder: RepositoryFactoryBuil
 
     @Transactional
     def findAllWhereFeedStatusIsNot(status: FeedStatus): java.util.List[PodcastDTO] = {
+
+        val startTime = System.currentTimeMillis
+
         val result = podcastRepository.findAllWhereFeedStatusIsNot(status)
-        PodcastMapper.INSTANCE.podcastsToPodcastDtos(result)
+        val resultDTOs = PodcastMapper.INSTANCE.podcastsToPodcastDtos(result)
+
+        val stopTime = System.currentTimeMillis
+        val elapsedTime = stopTime - startTime
+        println(s"PodcastService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms")
+
+        resultDTOs
     }
 
 }
