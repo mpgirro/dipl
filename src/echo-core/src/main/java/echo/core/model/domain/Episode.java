@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author Maximilian Irro
@@ -11,6 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "episode",
     indexes = {@Index(name = "idx_episode_echo_id",  columnList="echo_id", unique = true)})
+//@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Episode implements Serializable {
 
     @Id

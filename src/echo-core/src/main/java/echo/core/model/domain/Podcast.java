@@ -1,6 +1,12 @@
 package echo.core.model.domain;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -8,8 +14,11 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 //import org.hibernate.annotations.Cascade;
 //import org.hibernate.annotations.CascadeType;
+
 
 
 /**
@@ -18,6 +27,7 @@ import java.util.Set;
 @Entity
 @Table(name = "podcast",
     indexes = {@Index(name = "idx_podcast_echo_id",  columnList="echo_id", unique = true)})
+//@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Podcast implements Serializable {
 
     @Id
@@ -62,6 +72,7 @@ public class Podcast implements Serializable {
                orphanRemoval = true,
                mappedBy="podcast")
 //   @Cascade(CascadeType.DELETE)
+//    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Episode> episodes = new LinkedHashSet();
 
     @OneToMany(fetch=FetchType.LAZY,
@@ -69,6 +80,7 @@ public class Podcast implements Serializable {
                orphanRemoval = true,
                mappedBy="podcast")
 //    @Cascade(CascadeType.DELETE)
+//    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Feed> feeds = new LinkedHashSet();
 
     public Long getId() {

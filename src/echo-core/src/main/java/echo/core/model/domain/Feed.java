@@ -1,17 +1,24 @@
 package echo.core.model.domain;
 
 import echo.core.model.feed.FeedStatus;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author Maximilian Irro
  */
 @Entity
 @Table(name = "feed")
+//@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Feed implements Serializable {
 
     @Id
