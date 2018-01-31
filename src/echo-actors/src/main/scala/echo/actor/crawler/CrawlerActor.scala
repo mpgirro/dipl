@@ -164,7 +164,7 @@ class CrawlerActor extends Actor with ActorLogging {
             conn.setConnectTimeout(connectTimeout)
             conn.setReadTimeout(readTimeout)
             conn.setRequestMethod(requestMethod)
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+            //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
             conn.addRequestProperty("User-Agent", "Mozilla");
 
             // request URL and see what happens
@@ -202,7 +202,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 conn.setReadTimeout(readTimeout)
                 conn.setRequestMethod(requestMethod)
                 conn.setRequestProperty("Cookie", cookies);
-                conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+                //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
                 conn.addRequestProperty("User-Agent", "Mozilla");
             }
 
@@ -215,7 +215,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 log.error("Timout while loading src from URL: {} [reason: {}]", url, e.getMessage)
             }
             case e: java.lang.StackOverflowError => {
-                log.error("StackOverflowError trying to download: {}", url)
+                log.error("StackOverflowError trying to download: {} [reason: {}]", url, e.getMessage)
             }
         }
         return null;
