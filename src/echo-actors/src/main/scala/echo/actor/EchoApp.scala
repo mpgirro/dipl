@@ -14,7 +14,7 @@ object EchoApp {
 
         implicit val system = ActorSystem("EchoSystem", ConfigFactory.load)
 
-        system.actorOf(Props(new EchoMaster), "master")
+        system.actorOf(Props(new MasterActor), "master")
 
         Await.ready(system.whenTerminated, Duration.Inf)
     }

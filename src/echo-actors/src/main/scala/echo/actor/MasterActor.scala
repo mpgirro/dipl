@@ -19,7 +19,7 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-class EchoMaster extends Actor with ActorLogging {
+class MasterActor extends Actor with ActorLogging {
 
     override val supervisorStrategy = SupervisorStrategy.stoppingStrategy
 
