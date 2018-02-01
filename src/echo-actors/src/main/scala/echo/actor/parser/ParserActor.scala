@@ -38,7 +38,7 @@ class ParserActor extends Actor with ActorLogging {
         /*
          * received from Crawler
          */
-        case ParseFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String) => {
+        case ParseFeedData(feedUrl: String, podcastDocId: String, feedData: String) => {
 
             /* Notes
              * - the podcastDocId has to be there (originally generated from FeedStore, even for new feeds)

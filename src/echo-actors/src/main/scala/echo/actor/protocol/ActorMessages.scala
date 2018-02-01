@@ -24,7 +24,7 @@ object ActorMessages {
      * DirectoryStore knows about the podcastDocId before hand, and about all Episodes currently known to this podcasts
      * (it does not matter if the episodes are currently in the feed to not)
      */
-    case class FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: List[String])
+    case class FetchUpdateFeed(feedUrl: String, podcastDocId: String)
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -42,7 +42,7 @@ object ActorMessages {
      * the podcastDocId has to be there (even for new feeds)
      * the episodeDocIds may be empty for new feeds (all episodes are new)
      */
-    case class ParseFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String)
+    case class ParseFeedData(feedUrl: String, podcastDocId: String, feedData: String)
 
     // Crawler -> Parser
     case class ParseWebsiteData(echoId: String, html: String)
