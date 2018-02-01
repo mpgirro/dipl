@@ -58,62 +58,61 @@ class ParserActor extends Actor with ActorLogging {
 
                 val podcast = feedParser.parseFeed(feedData)
 
-                if(podcast != null){
-                    // TODO try-catch for Feedparseerror here, send update
-                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                Option(podcast) match {
+                    case Some(p) => {
+                        // TODO try-catch for Feedparseerror here, send update
+                        // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    podcast.setEchoId(podcastDocId)
+                        podcast.setEchoId(podcastDocId)
 
-                    /* TODO
-                     * here I should send an update for the podcast data to the directoryStore (relational DB)
-                     * In order to do this, I need the ActorRef for directoryStore, which results in a circular
-                     * dependency. How am I supposed to solve this?
-                     *
-                     */
-                    directoryStore ! UpdatePodcastMetadata(podcastDocId, podcast)
+                        /* TODO
+                         * here I should send an update for the podcast data to the directoryStore (relational DB)
+                         * In order to do this, I need the ActorRef for directoryStore, which results in a circular
+                         * dependency. How am I supposed to solve this?
+                         *
+                         */
+                        directoryStore ! UpdatePodcastMetadata(podcastDocId, podcast)
 
-                    // send the document to the lucene index
-                    indexStore ! IndexStoreAddPodcast(podcast)
+                        // send the document to the lucene index
+                        indexStore ! IndexStoreAddPodcast(podcast)
 
-                    // request that the website will get added to the index as well
-                    if(podcast.getLink != null) {
-                        crawler ! FetchWebsite(podcast.getEchoId, podcast.getLink)
-                    }
-
-                    val episodes = feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData)
-
-                    if(episodes != null){
-                        for(episode <- episodes){
-
-                            //val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
-                            val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
-
-
-                            episode.setEchoId(fakeEpisodeId)
-
-                            // TODO send episode data to directoryStore, once the circular dependency is solved
-                            directoryStore ! UpdateEpisodeMetadata(podcastDocId, episode)
-
-                            indexStore ! IndexStoreAddEpisode(episode)
-
-
-                            // if no iTunes artwork is set for this episode, communicate that the one of the while Podcast should be used
-                            if(episode.getItunesImage == null || episode.getItunesImage.eq("")){
-                                log.debug("Episodes itunesImage is not set -> sending message so that the Podcast's image will be used instead")
-                                directoryStore ! UsePodcastItunesImage(episode.getEchoId)
-                            }
-
-                            // request that the website will get added to the index as well
-                            if(episode.getLink != null) {
-                                crawler ! FetchWebsite(episode.getEchoId, episode.getLink)
-                            }
+                        // request that the website will get added to the index as well
+                        Option(podcast.getLink) match {
+                            case Some(link) => crawler ! FetchWebsite(podcast.getEchoId, link)
+                            case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
                         }
-                    } else {
-                        log.warning("Parsing generated a NULL-List[EpisodeDocument] for feed: {}", feedUrl)
-                    }
 
-                } else {
-                    log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
+                        val episodes = feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData)
+                        Option(episodes) match {
+                            case Some(es) => {
+                                for(e <- es){
+
+                                    //val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
+                                    val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
+                                    e.setEchoId(fakeEpisodeId)
+
+                                    // TODO send episode data to directoryStore, once the circular dependency is solved
+                                    directoryStore ! UpdateEpisodeMetadata(podcastDocId, e)
+
+                                    indexStore ! IndexStoreAddEpisode(e)
+
+                                    // if no iTunes artwork is set for this episode, communicate that the one of the while Podcast should be used
+                                    if(e.getItunesImage == null || e.getItunesImage.eq("")){
+                                        log.debug("Episodes itunesImage is not set -> sending message so that the Podcast's image will be used instead")
+                                        directoryStore ! UsePodcastItunesImage(e.getEchoId)
+                                    }
+
+                                    // request that the website will get added to the index as well
+                                    Option(e.getLink) match {
+                                        case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)
+                                        case None => log.debug("No link set for episode {} --> no website data will be added to the index", e.getEchoId)
+                                    }
+                                }
+                            }
+                            case None => log.warning("Parsing generated a NULL-List[EpisodeDocument] for feed: {}", feedUrl)
+                        }
+                    }
+                    case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
                 }
             } catch {
                 case e: FeedParsingException => {
