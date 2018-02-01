@@ -52,7 +52,7 @@ class ParserActor extends Actor with ActorLogging {
              * - a SAX parser would be best for performance. the podcast data could be processed directly, and episode messages generated on the fly when encountering the specific xml-tags
              */
 
-            log.debug("Received IndexFeedData for feed: " + feedUrl)
+            log.debug("Received ParseFeedData for feed: " + feedUrl)
             try {
                 // TODO this is all highly test code
 
@@ -133,7 +133,7 @@ class ParserActor extends Actor with ActorLogging {
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
 
-            log.error("Received IndexPodcastData for podcastDocId: " + podcastDocId)
+            log.error("Received ParsePodcastData for podcastDocId: " + podcastDocId)
         }
 
         case ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String) => {
@@ -152,7 +152,7 @@ class ParserActor extends Actor with ActorLogging {
              * indexStore ! IndexStoreUpdateEpisode(episodeDoc)
              */
 
-            log.error("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
+            log.error("Received ParseEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
         case ParseWebsiteData(echoId: String, html: String) => {
