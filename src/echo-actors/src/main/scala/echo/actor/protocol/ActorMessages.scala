@@ -18,13 +18,13 @@ object ActorMessages {
     /* DirectoryStore -> Crawler
      * DirectoryStore generated a new podcastDocId (the Feed URL?)
      */
-    case class FetchNewFeed(url: String, podcastEchoId: String) // send from FeedStore to Crawler
+    case class FetchNewFeed(url: String, podcastId: String) // send from FeedStore to Crawler
 
     /* DirectoryStore -> Crawler
      * DirectoryStore knows about the podcastDocId before hand, and about all Episodes currently known to this podcasts
      * (it does not matter if the episodes are currently in the feed to not)
      */
-    case class FetchUpdateFeed(url: String, podcastEchoId: String)
+    case class FetchUpdateFeed(url: String, podcastId: String)
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -35,14 +35,14 @@ object ActorMessages {
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
     // Parser -> DirectoryStore
-    case class UpdatePodcastMetadata(docId: String, doc: PodcastDTO)
-    case class UpdateEpisodeMetadata(podcastEchoId: String, doc: EpisodeDTO)
+    case class UpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO)
+    case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
     /* Crawler -> Parser
      * the podcastDocId has to be there (even for new feeds)
      * the episodeDocIds may be empty for new feeds (all episodes are new)
      */
-    case class ParseFeedData(feedUrl: String, podcastDocId: String, feedData: String)
+    case class ParseFeedData(feedUrl: String, podcastId: String, feedData: String)
 
     // Crawler -> Parser
     case class ParseWebsiteData(echoId: String, html: String)
@@ -50,7 +50,7 @@ object ActorMessages {
     /* Index -> Index
      *
      */
-    case class ParsePodcastData(podcastEchoId: String, podcastFeedData: String)
+    case class ParsePodcastData(podcastId: String, podcastFeedData: String)
 
     /* Index -> Index
      *

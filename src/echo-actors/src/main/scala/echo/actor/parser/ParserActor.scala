@@ -117,7 +117,6 @@ class ParserActor extends Actor with ActorLogging {
             } catch {
                 case e: FeedParsingException => {
                     log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                    //log.error("FeedParsingException: {}", e)
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
                 }
                 case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)

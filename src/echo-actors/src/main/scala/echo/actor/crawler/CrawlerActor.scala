@@ -29,63 +29,59 @@ class CrawlerActor extends Actor with ActorLogging {
             directoryStore = ref
         }
 
-        case FetchNewFeed(feedUrl: String, podcastId: String) => {
-            log.info("Received FetchNewFeed('{}')", feedUrl)
+        case FetchNewFeed(url, podcastId) => {
+            log.info("Received FetchNewFeed('{}')", url)
 
             try {
-                val feedData = download(feedUrl)
-                if(feedData != null){
-                    // send downloaded data to Indexer for processing
-                    parser ! ParseFeedData(feedUrl, podcastId, feedData)
-
-                    // send status to DirectoryStore
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                } else {
-                    log.error("Received NULL trying to download (new) feed from URL: {}", feedUrl)
+                val data = download(url)
+                data match {
+                    case Some(xml) => {
+                        parser ! ParseFeedData(url, podcastId, xml)
+                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    }
+                    case None => log.error("Received NULL trying to download (new) feed from URL: {}", url)
                 }
             } catch {
                 case e: IOException => {
-                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", feedUrl, e.getMessage)
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
+                    directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
         }
 
-        case FetchUpdateFeed(feedUrl: String, podcastId: String) => {
+        case FetchUpdateFeed(url, podcastId) => {
 
             // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
 
-            log.info("Received FetchUpdateFeed({})", feedUrl)
+            log.info("Received FetchUpdateFeed('{}')", url)
             try {
-                val feedData = download(feedUrl)
-                if(feedData != null){
-                    // send downloaded data to Indexer for processing
-                    parser ! ParseFeedData(feedUrl, podcastId, feedData)
-
-                    // send status to DirectoryStore
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                } else {
-                    log.error("Received NULL trying to download feed (update)from URL: {}", feedUrl)
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                val data = download(url)
+                data match {
+                    case Some(xml) => {
+                        parser ! ParseFeedData(url, podcastId, xml)
+                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    }
+                    case None => {
+                        log.error("Received NULL trying to download feed (update)from URL: {}", url)
+                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                    }
                 }
             } catch {
                 case e: IOException => {
-                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", feedUrl, e.getMessage)
-                    directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
+                    directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             }
-
         }
 
-        case FetchWebsite(echoId: String, url: String) => {
-            log.debug("Received FetchWebsite({},{})", echoId, url)
+        case FetchWebsite(echoId, url) => {
+            log.debug("Received FetchWebsite({},'{}')", echoId, url)
 
             try{
-                val websiteData = download(url)
-                if(websiteData != null){
-                    parser ! ParseWebsiteData(echoId, websiteData)
-                } else {
-                    log.error("Received NULL trying to download website data for URL: {}", url)
+                val data = download(url)
+                data match {
+                    case Some(html) => parser ! ParseWebsiteData(echoId, html)
+                    case None       => log.error("Received NULL trying to download website data for URL: {}", url)
                 }
             } catch {
                 case e: IOException => {
@@ -155,7 +151,7 @@ class CrawlerActor extends Actor with ActorLogging {
     private def download(url: String,
                          connectTimeout: Int = 5000,
                          readTimeout: Int = 5000,
-                         requestMethod: String = "GET"): String = {
+                         requestMethod: String = "GET"): Option[String] = {
 
         try {
             val u = new URL(url)
@@ -208,7 +204,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
             val scanner = new Scanner(conn.getInputStream, "UTF-8").useDelimiter("\\A")
             if(scanner.hasNext){
-                return scanner.next
+                return Some(scanner.next)
             }
         } catch {
             case e: SocketTimeoutException => {
@@ -218,7 +214,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 log.error("StackOverflowError trying to download: {} [reason: {}]", url, e.getMessage)
             }
         }
-        return null;
+        None
     }
 
 }
