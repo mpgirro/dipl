@@ -325,7 +325,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     def runLiquibaseUpdate: Unit = {
-        log.info("Starting Liquibase update")
+        val startTime = System.currentTimeMillis
         try {
             Class.forName("org.h2.Driver");
             val conn: Connection = DriverManager.getConnection(
@@ -338,7 +338,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
             val liquibase: Liquibase = new Liquibase("db/liquibase/master.xml", new ClassLoaderResourceAccessor(), database);
 
-            val isDropFirst = true
+            val isDropFirst = true // TODO set this as a parameter
             if (isDropFirst) {
                 liquibase.dropAll
             }
@@ -348,12 +348,14 @@ class DirectoryStore extends Actor with ActorLogging {
             } else {
                 log.warning("Liquibase reports it is NOT safe to run the update")
             }
-
-            log.info("Finished Liquibase update")
         } catch {
             case e: Exception => {
                 log.error("Error on Liquibase update: {}", e)
             }
+        } finally {
+            val stopTime = System.currentTimeMillis
+            val elapsedTime = stopTime - startTime
+            log.info("Run Liquibase in {} ms", elapsedTime)
         }
     }
 
