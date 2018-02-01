@@ -13,7 +13,7 @@ import akka.util.Timeout
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.gateway.service.{EpisodeService, FeedService, PodcastService, SearchService}
+import echo.actor.gateway.service.{EpisodeGatewayService, FeedGatewayService, PodcastGatewayService, SearchGatewayService}
 import echo.actor.protocol.ActorMessages._
 
 import scala.concurrent.Future
@@ -36,10 +36,10 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
     implicit val internalTimeout = Timeout(5 seconds)
 
-    private val searchService = new SearchService(log, internalTimeout)
-    private val podcastService = new PodcastService(log, internalTimeout)
-    private val episodeService = new EpisodeService(log, internalTimeout)
-    private val feedService = new FeedService(log, internalTimeout)
+    private val searchService = new SearchGatewayService(log, internalTimeout)
+    private val podcastService = new PodcastGatewayService(log, internalTimeout)
+    private val episodeService = new EpisodeGatewayService(log, internalTimeout)
+    private val feedService = new FeedGatewayService(log, internalTimeout)
 
     override def preStart = {
 
