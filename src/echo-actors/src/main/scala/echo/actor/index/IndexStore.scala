@@ -68,12 +68,13 @@ class IndexStore extends Actor with ActorLogging {
             val entry = Option(indexSearcher.findByEchoId(echoId))
             entry match {
                 case Some(doc) => {
-                    if(doc.isInstanceOf[EpisodeDTO]){
-                        doc.asInstanceOf[EpisodeDTO].setItunesImage(itunesImage)
-                        indexCommitter.update(doc)
-                        indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
-                    } else {
-                        log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
+                    doc match {
+                        case e: EpisodeDTO =>
+                            doc.setItunesImage(itunesImage)
+                            indexCommitter.update(doc)
+                            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
+                        case _ =>
+                            log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
                     }
                 }
                 case None => log.error("Could not retrieve from index: echoId={}", echoId)
