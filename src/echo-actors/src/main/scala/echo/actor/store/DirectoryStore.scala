@@ -142,7 +142,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(feedService.findOneByUrl(url)).map(feed => {
+        feedService.findOneByUrl(url).map(feed => {
             log.info("Proposed feed is already in database: {}", url)
             println(feed)
         }).getOrElse({
@@ -175,7 +175,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(feedService.findOneByUrl(url)).map(feed => {
+        feedService.findOneByUrl(url).map(feed => {
             feed.setLastChecked(timestamp)
             feed.setLastStatus(status)
             feedService.save(feed)
@@ -194,7 +194,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        val update: PodcastDTO = Option(podcastService.findOneByEchoId(podcastId)).map(p => {
+        val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
             val updatedPodcast = podcastDTO
             updatedPodcast.setId(p.getId)
             updatedPodcast
@@ -215,8 +215,8 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(podcastService.findOneByEchoId(podcastId)).map(p => {
-            val update: EpisodeDTO = Option(episodeService.findOneByEchoId(episodeDTO.getEchoId)).map(e => {
+        podcastService.findOneByEchoId(podcastId).map(p => {
+            val update: EpisodeDTO = episodeService.findOneByEchoId(episodeDTO.getEchoId).map(e => {
                 val updatedEpisode = episodeDTO
                 updatedEpisode.setId(e.getId)
                 updatedEpisode
@@ -240,9 +240,9 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(episodeService.findOneByEchoId(episodeId)).map(e => {
+        episodeService.findOneByEchoId(episodeId).map(e => {
             val podcast = episodeService.findOne(e.getPodcastId)
-            Option(podcast).map(p => {
+            podcast.map(p => {
                 e.setItunesImage(p.getItunesImage)
                 episodeService.save(e)
             }).getOrElse({
@@ -263,7 +263,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(podcastService.findOneByEchoId(podcastId)).map(p => {
+        podcastService.findOneByEchoId(podcastId).map(p => {
             sender ! PodcastResult(p)
         }).getOrElse({
             log.error("Database does not contain Podcast with echoId={}", podcastId)
@@ -280,7 +280,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED).asScala
+        val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED)
         sender ! AllPodcastsResult(podcasts.toArray)
 
         tx.commit
@@ -294,7 +294,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(episodeService.findOneByEchoId(episodeId)).map(e => {
+        episodeService.findOneByEchoId(episodeId).map(e => {
             sender ! EpisodeResult(e)
         }).getOrElse({
             log.error("Database does not contain Episode with echoId={}", episodeId)
@@ -312,8 +312,8 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin
 
-        Option(podcastService.findOneByEchoId(podcastId)).map(p => {
-            val episodes = episodeService.findAllByPodcast(p).asScala
+        podcastService.findOneByEchoId(podcastId).map(p => {
+            val episodes = episodeService.findAllByPodcast(p)
             sender ! EpisodesByPodcastResult(episodes.toArray)
         }).getOrElse({
             log.error("Database does not contain Podcast with echoId={}", podcastId)
@@ -365,7 +365,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin
 
         println("------------------------")
-        podcastService.findAll.asScala.map(p => println(p.getTitle))
+        podcastService.findAll.map(p => println(p.getTitle))
         println("------------------------")
 
         tx.commit
@@ -379,7 +379,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin
 
         println("------------------------")
-        episodeService.findAll.asScala.map(e => println(e.getTitle))
+        episodeService.findAll.map(e => println(e.getTitle))
         println("------------------------")
 
         tx.commit

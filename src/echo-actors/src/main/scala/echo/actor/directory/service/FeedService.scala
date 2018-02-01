@@ -11,6 +11,8 @@ import echo.core.model.dto.FeedDTO
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
+import scala.collection.JavaConverters._
+
 /**
   * @author Maximilian Irro
   */
@@ -54,15 +56,15 @@ class FeedService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder
     }
 
     @Transactional
-    def findOne(id: Long): FeedDTO = {
+    def findOne(id: Long): Option[FeedDTO] = {
         val result = feedRepository.findOne(id)
-        FeedMapper.INSTANCE.feedToFeedDto(result)
+        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
     @Transactional
-    def findOneByUrl(url: String): FeedDTO = {
+    def findOneByUrl(url: String): Option[FeedDTO] = {
         val result = feedRepository.findOneByUrl(url)
-        FeedMapper.INSTANCE.feedToFeedDto(result)
+        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
 }

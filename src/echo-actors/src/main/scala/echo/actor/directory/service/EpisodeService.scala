@@ -12,6 +12,8 @@ import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
+import scala.collection.JavaConverters._
+
 /**
   * @author Maximilian Irro
   */
@@ -64,28 +66,30 @@ class EpisodeService(private val repositoryFactoryBuilder: RepositoryFactoryBuil
     }
 
     @Transactional
-    def findOne(id: Long): EpisodeDTO = {
+    def findOne(id: Long): Option[EpisodeDTO] = {
         val result = episodeRepository.findOne(id)
-        EpisodeMapper.INSTANCE.episodeToEpisodeDto(result)
+        Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
     @Transactional
-    def findOneByEchoId(echoId: String): EpisodeDTO = {
+    def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEchoId(echoId)
-        EpisodeMapper.INSTANCE.episodeToEpisodeDto(result)
+        Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
     @Transactional
-    def findAll: java.util.List[EpisodeDTO] = {
-        val result = episodeRepository.findAll
-        EpisodeMapper.INSTANCE.episodesToEpisodesDtos(result)
+    def findAll: List[EpisodeDTO] = {
+        val episodes = episodeRepository.findAll
+        val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
+        result.asScala.toList
     }
 
     @Transactional
-    def findAllByPodcast(podcastDTO: PodcastDTO): java.util.List[EpisodeDTO] = {
+    def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-        val result = episodeRepository.findAllByPodcast(podcast)
-        EpisodeMapper.INSTANCE.episodesToEpisodesDtos(result)
+        val episodes = episodeRepository.findAllByPodcast(podcast)
+        val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
+        result.asScala.toList
     }
 
 }
