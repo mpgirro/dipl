@@ -12,16 +12,16 @@ import echo.core.parse.api.FyydAPI
 
 class CrawlerActor extends Actor with ActorLogging {
 
-    private var indexer: ActorRef = _
+    private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     override def receive: Receive = {
 
-        case ActorRefIndexerActor(ref) => {
+        case ActorRefParserActor(ref) => {
             log.debug("Received ActorRefIndexerActor(_)")
-            indexer = ref
+            parser = ref
         }
 
         case ActorRefDirectoryStoreActor(ref) => {
@@ -36,7 +36,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 val feedData = download(feedUrl)
                 if(feedData != null){
                     // send downloaded data to Indexer for processing
-                    indexer ! IndexFeedData(feedUrl, podcastDocId, List.empty, feedData)
+                    parser ! ParseFeedData(feedUrl, podcastDocId, List.empty, feedData)
 
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
@@ -60,7 +60,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 val feedData = download(feedUrl)
                 if(feedData != null){
                     // send downloaded data to Indexer for processing
-                    indexer ! IndexFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
+                    parser ! ParseFeedData(feedUrl, podcastDocId, episodeDocIds, feedData)
 
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
@@ -83,7 +83,7 @@ class CrawlerActor extends Actor with ActorLogging {
             try{
                 val websiteData = download(url)
                 if(websiteData != null){
-                    indexer ! IndexWebsiteData(echoId, websiteData)
+                    parser ! ParseWebsiteData(echoId, websiteData)
                 } else {
                     log.error("Received NULL trying to download website data for URL: {}", url)
                 }

@@ -26,7 +26,7 @@ object ActorMessages {
      */
     case class FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: List[String])
 
-    // Indexer -> Crawler
+    // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
 
     /* Crawler -> DirectoryStore
@@ -34,30 +34,30 @@ object ActorMessages {
      */
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
-    // Indexer -> DirectoryStore
+    // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(docId: String, doc: PodcastDTO)
     case class UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDTO)
 
-    /* Crawler -> Indexer
+    /* Crawler -> Parser
      * the podcastDocId has to be there (even for new feeds)
      * the episodeDocIds may be empty for new feeds (all episodes are new)
      */
-    case class IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String)
+    case class ParseFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String)
 
-    // Crawler -> Indexer
-    case class IndexWebsiteData(echoId: String, html: String)
-
-    /* Index -> Index
-     *
-     */
-    case class IndexPodcastData(podcastDocId: String, podcastFeedData: String)
+    // Crawler -> Parser
+    case class ParseWebsiteData(echoId: String, html: String)
 
     /* Index -> Index
      *
      */
-    case class IndexEpisodeData(episodeDocIds: List[String], episodeFeedData: String)
+    case class ParsePodcastData(podcastDocId: String, podcastFeedData: String)
 
-    // Indexer -> IndexStore
+    /* Index -> Index
+     *
+     */
+    case class ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String)
+
+    // Parser -> IndexStore
     case class IndexStoreAddPodcast(podcast: PodcastDTO)
     case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
@@ -84,7 +84,7 @@ object ActorMessages {
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
     case class ActorRefDirectoryStoreActor(ref: ActorRef)
     case class ActorRefCrawlerActor(ref: ActorRef)
-    case class ActorRefIndexerActor(ref: ActorRef)
+    case class ActorRefParserActor(ref: ActorRef)
     case class ActorRefFeedStoreActor(ref: ActorRef)
     case class ActorRefIndexStoreActor(ref: ActorRef)
     case class ActorRefSearcherActor(ref: ActorRef)

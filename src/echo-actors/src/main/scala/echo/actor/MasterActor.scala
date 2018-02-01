@@ -5,7 +5,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.crawler.CrawlerActor
 import echo.actor.gateway.GatewayActor
-import echo.actor.indexer.IndexerActor
+import echo.actor.parser.ParserActor
 import echo.actor.protocol.ActorMessages._
 import echo.actor.searcher.SearcherActor
 import echo.actor.store.{DirectoryStore, IndexStore}
@@ -37,19 +37,19 @@ class MasterActor extends Actor with ActorLogging {
     implicit val internalTimeout = Timeout(5 seconds)
 
     private val indexStore = context.watch(context.actorOf(Props[IndexStore].withDispatcher("echo.index-store.dispatcher"), "indexStore"))
-    private val indexer = context.watch(context.actorOf(Props[IndexerActor].withDispatcher("echo.parser.dispatcher"), name = "indexer"))
+    private val parser = context.watch(context.actorOf(Props[ParserActor].withDispatcher("echo.parser.dispatcher"), name = "parser"))
     private val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
     private val crawler = context.watch(context.actorOf(Props[CrawlerActor].withDispatcher("echo.crawler.dispatcher"), name = "crawler"))
     private val directoryStore = context.watch(context.actorOf(Props[DirectoryStore].withDispatcher("echo.directory.dispatcher"), name = "directoryStore"))
     private val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
 
     // pass around references not provided by constructors due to circular dependencies
-    crawler ! ActorRefIndexerActor(indexer)
+    crawler ! ActorRefParserActor(parser)
     crawler ! ActorRefDirectoryStoreActor(directoryStore)
 
-    indexer ! ActorRefIndexStoreActor(indexStore)
-    indexer ! ActorRefDirectoryStoreActor(directoryStore)
-    indexer ! ActorRefCrawlerActor(crawler)
+    parser ! ActorRefIndexStoreActor(indexStore)
+    parser ! ActorRefDirectoryStoreActor(directoryStore)
+    parser ! ActorRefCrawlerActor(crawler)
 
     searcher ! ActorRefIndexStoreActor(indexStore)
 

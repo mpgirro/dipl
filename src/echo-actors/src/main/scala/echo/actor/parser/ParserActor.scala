@@ -1,4 +1,4 @@
-package echo.actor.indexer
+package echo.actor.parser
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -10,7 +10,7 @@ import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 
-class IndexerActor extends Actor with ActorLogging {
+class ParserActor extends Actor with ActorLogging {
 
     private val feedParser: FeedParser = new RomeFeedParser()
 
@@ -38,7 +38,7 @@ class IndexerActor extends Actor with ActorLogging {
         /*
          * received from Crawler
          */
-        case IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String) => {
+        case ParseFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String) => {
 
             /* Notes
              * - the podcastDocId has to be there (originally generated from FeedStore, even for new feeds)
@@ -126,7 +126,7 @@ class IndexerActor extends Actor with ActorLogging {
 
         }
 
-        case IndexPodcastData(podcastDocId: String, podcastFeedData: String) => {
+        case ParsePodcastData(podcastDocId: String, podcastFeedData: String) => {
             // TODO when using a SAX parser, this would be most efficient by merging it with IndexFeedData
             /*
              * => indexStore ! IndexStoreAddPodcast(podcastDoc)
@@ -136,7 +136,7 @@ class IndexerActor extends Actor with ActorLogging {
             log.error("Received IndexPodcastData for podcastDocId: " + podcastDocId)
         }
 
-        case IndexEpisodeData(episodeDocIds: List[String], episodeFeedData: String) => {
+        case ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String) => {
             /* TODO
              * - process the XML data (this could be used with a DOM parser (!)
              * - if the episodes GUID is contained in the known episodeDocIds, the the episode must not be processed (simply end and do not generate a new message)
@@ -155,7 +155,7 @@ class IndexerActor extends Actor with ActorLogging {
             log.error("Received IndexEpisodeData for episodes: FORGET TO SET OUTPUT")
         }
 
-        case IndexWebsiteData(echoId: String, html: String) => {
+        case ParseWebsiteData(echoId: String, html: String) => {
             // TODO we don't to any processing of raw website source code yet
 
             import org.jsoup.Jsoup
