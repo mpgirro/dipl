@@ -4,11 +4,12 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Ter
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.crawler.CrawlerActor
+import echo.actor.directory.DirectoryStore
 import echo.actor.gateway.GatewayActor
+import echo.actor.index.IndexStore
 import echo.actor.parser.ParserActor
 import echo.actor.protocol.ActorMessages._
 import echo.actor.searcher.SearcherActor
-import echo.actor.store.{DirectoryStore, IndexStore}
 import echo.core.util.DocumentFormatter
 
 import scala.concurrent.Await

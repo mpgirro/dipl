@@ -1,4 +1,4 @@
-package echo.actor.dispatch
+package echo.actor.index
 
 import akka.actor.ActorSystem
 import akka.dispatch.{PriorityGenerator, UnboundedPriorityMailbox}

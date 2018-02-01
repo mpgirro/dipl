@@ -1,4 +1,4 @@
-package echo.actor.store
+package echo.actor.directory
 
 import java.sql.{Connection, DriverManager}
 import java.time.LocalDateTime
@@ -9,7 +9,7 @@ import javax.transaction.Transactional
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
 import echo.actor.directory.repository.RepositoryFactoryBuilder
-import echo.actor.directory.service.{EpisodeService, FeedService, PodcastService}
+import echo.actor.directory.service.{EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
 import echo.actor.protocol.ActorMessages._
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
@@ -18,7 +18,6 @@ import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.{Contexts, LabelExpression, Liquibase}
 
-import scala.collection.JavaConverters._
 import scala.io.Source
 
 /**
@@ -57,9 +56,9 @@ class DirectoryStore extends Actor with ActorLogging {
     val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
     */
 
-    val podcastService = new PodcastService(repositoryFactoryBuilder)
-    val episodeService = new EpisodeService(repositoryFactoryBuilder)
-    val feedService = new FeedService(repositoryFactoryBuilder)
+    val podcastService = new PodcastDirectoryService(repositoryFactoryBuilder)
+    val episodeService = new EpisodeDirectoryService(repositoryFactoryBuilder)
+    val feedService = new FeedDirectoryService(repositoryFactoryBuilder)
 
     val em: EntityManager = repositoryFactoryBuilder.getEntityManager
     /*

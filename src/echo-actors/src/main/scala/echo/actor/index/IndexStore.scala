@@ -1,11 +1,11 @@
-package echo.actor.store
+package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.protocol.ActorMessages._
-import echo.core.model.dto.EpisodeDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, LuceneCommitter}
+import echo.core.model.dto.EpisodeDTO
 import echo.core.search.{IndexSearcher, LuceneSearcher}
 
 class IndexStore extends Actor with ActorLogging {
