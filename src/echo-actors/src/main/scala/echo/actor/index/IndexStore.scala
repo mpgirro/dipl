@@ -48,13 +48,14 @@ class IndexStore extends Actor with ActorLogging {
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
-            val doc = indexSearcher.findByEchoId(echoId);
-            if(doc != null){
-                doc.setWebsiteData(html)
-                indexCommitter.update(doc)
-                indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
-            } else {
-                log.error("Could not retrieve from index: echoId={}", echoId)
+            val entry = Option(indexSearcher.findByEchoId(echoId))
+            entry match {
+                case Some(doc) => {
+                    doc.setWebsiteData(html)
+                    indexCommitter.update(doc)
+                    indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
+                }
+                case None => log.error("Could not retrieve from index: echoId={}", echoId)
             }
         }
 
@@ -64,17 +65,18 @@ class IndexStore extends Actor with ActorLogging {
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
 
-            val doc = indexSearcher.findByEchoId(echoId);
-            if(doc != null){
-                if(doc.isInstanceOf[EpisodeDTO]){
-                    doc.asInstanceOf[EpisodeDTO].setItunesImage(itunesImage)
-                    indexCommitter.update(doc)
-                    indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
-                } else {
-                    log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
+            val entry = Option(indexSearcher.findByEchoId(echoId))
+            entry match {
+                case Some(doc) => {
+                    if(doc.isInstanceOf[EpisodeDTO]){
+                        doc.asInstanceOf[EpisodeDTO].setItunesImage(itunesImage)
+                        indexCommitter.update(doc)
+                        indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
+                    } else {
+                        log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
+                    }
                 }
-            } else {
-                log.error("Could not retrieve from index: echoId={}", echoId)
+                case None => log.error("Could not retrieve from index: echoId={}", echoId)
             }
         }
 
