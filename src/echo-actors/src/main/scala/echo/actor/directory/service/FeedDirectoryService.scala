@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class FeedService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class FeedDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])

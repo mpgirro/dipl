@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class EpisodeService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class EpisodeDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val episodeRepository: EpisodeRepository = repositoryFactory.getRepository(classOf[EpisodeRepository])

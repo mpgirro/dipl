@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class PodcastService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
