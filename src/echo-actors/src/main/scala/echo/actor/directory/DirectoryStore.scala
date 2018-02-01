@@ -90,9 +90,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case FeedStatusUpdate(feedUrl, timestamp, status) => updateFeed(feedUrl, timestamp, status)
 
-        case UpdatePodcastMetadata(docId, podcast) => updatePodcast(docId, podcast)
+        case UpdatePodcastMetadata(echoId, podcast) => updatePodcast(echoId, podcast)
 
-        case UpdateEpisodeMetadata(podcastDocId, episode) => updateEpisode(podcastDocId, episode)
+        case UpdateEpisodeMetadata(echoId, episode) => updateEpisode(echoId, episode)
 
         // this is the case when an Episode has no iTunesImage URL set in the feed.
         // then we should set the image url of the whole podcast
@@ -104,7 +104,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetEpisode(echoId) => getEpisode(echoId)
 
-        case GetEpisodesByPodcast(podcastId) => getEpisodesByPodcast(podcastId)
+        case GetEpisodesByPodcast(echoId) => getEpisodesByPodcast(echoId)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts
 

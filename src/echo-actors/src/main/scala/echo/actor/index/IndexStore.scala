@@ -43,14 +43,14 @@ class IndexStore extends Actor with ActorLogging {
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
         }
 
-        case IndexSoreUpdateDocumentWebsiteData(echoId, websiteData) => {
+        case IndexSoreUpdateDocumentWebsiteData(echoId, html) => {
             log.debug("Received IndexSoreUpdateDocumentWebsiteData({},_)", echoId)
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
             val doc = indexSearcher.findByEchoId(echoId);
             if(doc != null){
-                doc.setWebsiteData(websiteData)
+                doc.setWebsiteData(html)
                 indexCommitter.update(doc)
                 indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
             } else {
@@ -58,7 +58,7 @@ class IndexStore extends Actor with ActorLogging {
             }
         }
 
-        case IndexStoreUpdateEpisodeAddItunesImage(echoId,itunesImage) => {
+        case IndexStoreUpdateEpisodeAddItunesImage(echoId, itunesImage) => {
             log.debug("Received IndexStoreUpdateEpisodeAddItunesImage({},{})", echoId, itunesImage)
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point

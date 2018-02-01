@@ -38,7 +38,7 @@ class ParserActor extends Actor with ActorLogging {
         /*
          * received from Crawler
          */
-        case ParseFeedData(feedUrl: String, podcastDocId: String, feedData: String) => {
+        case ParseFeedData(feedUrl: String, podcastEchoId: String, feedData: String) => {
 
             /* Notes
              * - the podcastDocId has to be there (originally generated from FeedStore, even for new feeds)
@@ -63,7 +63,7 @@ class ParserActor extends Actor with ActorLogging {
                         // TODO try-catch for Feedparseerror here, send update
                         // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                        podcast.setEchoId(podcastDocId)
+                        podcast.setEchoId(podcastEchoId)
 
                         /* TODO
                          * here I should send an update for the podcast data to the directoryStore (relational DB)
@@ -71,7 +71,7 @@ class ParserActor extends Actor with ActorLogging {
                          * dependency. How am I supposed to solve this?
                          *
                          */
-                        directoryStore ! UpdatePodcastMetadata(podcastDocId, podcast)
+                        directoryStore ! UpdatePodcastMetadata(podcastEchoId, podcast)
 
                         // send the document to the lucene index
                         indexStore ! IndexStoreAddPodcast(podcast)
@@ -92,7 +92,7 @@ class ParserActor extends Actor with ActorLogging {
                                     e.setEchoId(fakeEpisodeId)
 
                                     // TODO send episode data to directoryStore, once the circular dependency is solved
-                                    directoryStore ! UpdateEpisodeMetadata(podcastDocId, e)
+                                    directoryStore ! UpdateEpisodeMetadata(podcastEchoId, e)
 
                                     indexStore ! IndexStoreAddEpisode(e)
 
@@ -125,17 +125,17 @@ class ParserActor extends Actor with ActorLogging {
 
         }
 
-        case ParsePodcastData(podcastDocId: String, podcastFeedData: String) => {
+        case ParsePodcastData(podcastEchoId: String, podcastFeedData: String) => {
             // TODO when using a SAX parser, this would be most efficient by merging it with IndexFeedData
             /*
              * => indexStore ! IndexStoreAddPodcast(podcastDoc)
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
 
-            log.error("Received ParsePodcastData for podcastDocId: " + podcastDocId)
+            log.error("Received ParsePodcastData for podcastDocId: " + podcastEchoId)
         }
 
-        case ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String) => {
+        case ParseEpisodeData(episodeEchoIds: List[String], episodeFeedData: String) => {
             /* TODO
              * - process the XML data (this could be used with a DOM parser (!)
              * - if the episodes GUID is contained in the known episodeDocIds, the the episode must not be processed (simply end and do not generate a new message)

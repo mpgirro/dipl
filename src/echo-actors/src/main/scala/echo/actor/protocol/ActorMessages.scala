@@ -13,18 +13,18 @@ import scala.collection.mutable.ListBuffer
   */
 object ActorMessages {
 
-    case class ProposeNewFeed(feedUrl: String) // sent from User to FeedStore
+    case class ProposeNewFeed(url: String) // sent from User to FeedStore
 
     /* DirectoryStore -> Crawler
      * DirectoryStore generated a new podcastDocId (the Feed URL?)
      */
-    case class FetchNewFeed(feedUrl: String, podcastDocId: String) // send from FeedStore to Crawler
+    case class FetchNewFeed(url: String, podcastEchoId: String) // send from FeedStore to Crawler
 
     /* DirectoryStore -> Crawler
      * DirectoryStore knows about the podcastDocId before hand, and about all Episodes currently known to this podcasts
      * (it does not matter if the episodes are currently in the feed to not)
      */
-    case class FetchUpdateFeed(feedUrl: String, podcastDocId: String)
+    case class FetchUpdateFeed(url: String, podcastEchoId: String)
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -36,7 +36,7 @@ object ActorMessages {
 
     // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(docId: String, doc: PodcastDTO)
-    case class UpdateEpisodeMetadata(podcastDocId: String, doc: EpisodeDTO)
+    case class UpdateEpisodeMetadata(podcastEchoId: String, doc: EpisodeDTO)
 
     /* Crawler -> Parser
      * the podcastDocId has to be there (even for new feeds)
@@ -50,7 +50,7 @@ object ActorMessages {
     /* Index -> Index
      *
      */
-    case class ParsePodcastData(podcastDocId: String, podcastFeedData: String)
+    case class ParsePodcastData(podcastEchoId: String, podcastFeedData: String)
 
     /* Index -> Index
      *
@@ -62,7 +62,7 @@ object ActorMessages {
     case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
-    case class IndexSoreUpdateDocumentWebsiteData(echoId: String, websiteData: String) // used for all document types
+    case class IndexSoreUpdateDocumentWebsiteData(echoId: String, html: String) // used for all document types
 
     // DirectoryStore -> IndexStore
     case class IndexStoreUpdateEpisodeAddItunesImage(echoId: String, itunesImage: String)
