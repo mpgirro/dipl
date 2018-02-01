@@ -38,7 +38,7 @@ class ParserActor extends Actor with ActorLogging {
         /*
          * received from Crawler
          */
-        case ParseFeedData(feedUrl: String, podcastEchoId: String, feedData: String) => {
+        case ParseFeedData(feedUrl: String, podcastId: String, feedData: String) => {
 
             /* Notes
              * - the podcastDocId has to be there (originally generated from FeedStore, even for new feeds)
@@ -63,7 +63,7 @@ class ParserActor extends Actor with ActorLogging {
                         // TODO try-catch for Feedparseerror here, send update
                         // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                        podcast.setEchoId(podcastEchoId)
+                        podcast.setEchoId(podcastId)
 
                         /* TODO
                          * here I should send an update for the podcast data to the directoryStore (relational DB)
@@ -71,7 +71,7 @@ class ParserActor extends Actor with ActorLogging {
                          * dependency. How am I supposed to solve this?
                          *
                          */
-                        directoryStore ! UpdatePodcastMetadata(podcastEchoId, podcast)
+                        directoryStore ! UpdatePodcastMetadata(podcastId, podcast)
 
                         // send the document to the lucene index
                         indexStore ! IndexStoreAddPodcast(podcast)
@@ -92,7 +92,7 @@ class ParserActor extends Actor with ActorLogging {
                                     e.setEchoId(fakeEpisodeId)
 
                                     // TODO send episode data to directoryStore, once the circular dependency is solved
-                                    directoryStore ! UpdateEpisodeMetadata(podcastEchoId, e)
+                                    directoryStore ! UpdateEpisodeMetadata(podcastId, e)
 
                                     indexStore ! IndexStoreAddEpisode(e)
 
@@ -125,14 +125,14 @@ class ParserActor extends Actor with ActorLogging {
 
         }
 
-        case ParsePodcastData(podcastEchoId: String, podcastFeedData: String) => {
+        case ParsePodcastData(podcastId: String, podcastFeedData: String) => {
             // TODO when using a SAX parser, this would be most efficient by merging it with IndexFeedData
             /*
              * => indexStore ! IndexStoreAddPodcast(podcastDoc)
              * => indexStore ! IndexStoreUpdatePodcast(podcastDoc)
              */
 
-            log.error("Received ParsePodcastData for podcastDocId: " + podcastEchoId)
+            log.error("Received ParsePodcastData for podcastDocId: " + podcastId)
         }
 
         case ParseEpisodeData(episodeEchoIds: List[String], episodeFeedData: String) => {

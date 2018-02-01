@@ -29,14 +29,14 @@ class CrawlerActor extends Actor with ActorLogging {
             directoryStore = ref
         }
 
-        case FetchNewFeed(feedUrl: String, podcastEchoId: String) => {
+        case FetchNewFeed(feedUrl: String, podcastId: String) => {
             log.info("Received FetchNewFeed('{}')", feedUrl)
 
             try {
                 val feedData = download(feedUrl)
                 if(feedData != null){
                     // send downloaded data to Indexer for processing
-                    parser ! ParseFeedData(feedUrl, podcastEchoId, feedData)
+                    parser ! ParseFeedData(feedUrl, podcastId, feedData)
 
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
@@ -51,7 +51,7 @@ class CrawlerActor extends Actor with ActorLogging {
             }
         }
 
-        case FetchUpdateFeed(feedUrl: String, podcastDocId: String) => {
+        case FetchUpdateFeed(feedUrl: String, podcastId: String) => {
 
             // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
 
@@ -60,7 +60,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 val feedData = download(feedUrl)
                 if(feedData != null){
                     // send downloaded data to Indexer for processing
-                    parser ! ParseFeedData(feedUrl, podcastDocId, feedData)
+                    parser ! ParseFeedData(feedUrl, podcastId, feedData)
 
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)

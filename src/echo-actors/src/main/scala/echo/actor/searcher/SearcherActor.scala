@@ -16,7 +16,7 @@ class SearcherActor extends Actor with ActorLogging {
             indexStore = ref
         }
 
-        case SearchRequest(query,page,size) => {
+        case SearchRequest(query, page, size) => {
             log.info("Received SearchRequest('{}',{},{})", query, page, size)
 
             val originalSender = Some(sender) // this is important to not expose the handler
