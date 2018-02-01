@@ -36,7 +36,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 val feedData = download(feedUrl)
                 if(feedData != null){
                     // send downloaded data to Indexer for processing
-                    indexer ! IndexFeedData(feedUrl, podcastDocId, Array.empty, feedData)
+                    indexer ! IndexFeedData(feedUrl, podcastDocId, List.empty, feedData)
 
                     // send status to DirectoryStore
                     directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
@@ -51,7 +51,7 @@ class CrawlerActor extends Actor with ActorLogging {
             }
         }
 
-        case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String]) => {
+        case FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: List[String]) => {
 
             // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
 

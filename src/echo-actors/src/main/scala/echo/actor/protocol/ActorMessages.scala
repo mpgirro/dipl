@@ -24,7 +24,7 @@ object ActorMessages {
      * DirectoryStore knows about the podcastDocId before hand, and about all Episodes currently known to this podcasts
      * (it does not matter if the episodes are currently in the feed to not)
      */
-    case class FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String])
+    case class FetchUpdateFeed(feedUrl: String, podcastDocId: String, episodeDocIds: List[String])
 
     // Indexer -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -42,7 +42,7 @@ object ActorMessages {
      * the podcastDocId has to be there (even for new feeds)
      * the episodeDocIds may be empty for new feeds (all episodes are new)
      */
-    case class IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String], feedData: String)
+    case class IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String)
 
     // Crawler -> Indexer
     case class IndexWebsiteData(echoId: String, html: String)
@@ -55,7 +55,7 @@ object ActorMessages {
     /* Index -> Index
      *
      */
-    case class IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String)
+    case class IndexEpisodeData(episodeDocIds: List[String], episodeFeedData: String)
 
     // Indexer -> IndexStore
     case class IndexStoreAddPodcast(podcast: PodcastDTO)
@@ -98,9 +98,9 @@ object ActorMessages {
     // DirectoryStore -> Gateway
     trait DirectoryResult
     case class PodcastResult(podcast: PodcastDTO) extends DirectoryResult
-    case class AllPodcastsResult(results: Array[PodcastDTO]) extends DirectoryResult
+    case class AllPodcastsResult(results: List[PodcastDTO]) extends DirectoryResult
     case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
-    case class EpisodesByPodcastResult(episodes: Array[EpisodeDTO]) extends DirectoryResult
+    case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends DirectoryResult
     case class NoDocumentFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development

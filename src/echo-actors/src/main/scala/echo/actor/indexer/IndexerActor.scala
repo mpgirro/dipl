@@ -38,7 +38,7 @@ class IndexerActor extends Actor with ActorLogging {
         /*
          * received from Crawler
          */
-        case IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: Array[String], feedData: String) => {
+        case IndexFeedData(feedUrl: String, podcastDocId: String, episodeDocIds: List[String], feedData: String) => {
 
             /* Notes
              * - the podcastDocId has to be there (originally generated from FeedStore, even for new feeds)
@@ -136,7 +136,7 @@ class IndexerActor extends Actor with ActorLogging {
             log.error("Received IndexPodcastData for podcastDocId: " + podcastDocId)
         }
 
-        case IndexEpisodeData(episodeDocIds: Array[String], episodeFeedData: String) => {
+        case IndexEpisodeData(episodeDocIds: List[String], episodeFeedData: String) => {
             /* TODO
              * - process the XML data (this could be used with a DOM parser (!)
              * - if the episodes GUID is contained in the known episodeDocIds, the the episode must not be processed (simply end and do not generate a new message)

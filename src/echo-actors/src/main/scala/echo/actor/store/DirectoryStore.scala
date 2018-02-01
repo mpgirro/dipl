@@ -281,7 +281,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin
 
         val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED)
-        sender ! AllPodcastsResult(podcasts.toArray)
+        sender ! AllPodcastsResult(podcasts)
 
         tx.commit
 
@@ -314,7 +314,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         podcastService.findOneByEchoId(podcastId).map(p => {
             val episodes = episodeService.findAllByPodcast(p)
-            sender ! EpisodesByPodcastResult(episodes.toArray)
+            sender ! EpisodesByPodcastResult(episodes)
         }).getOrElse({
             log.error("Database does not contain Podcast with echoId={}", podcastId)
             sender ! NoDocumentFound(podcastId)
