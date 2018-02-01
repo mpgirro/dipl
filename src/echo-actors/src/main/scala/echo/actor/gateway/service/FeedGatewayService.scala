@@ -18,8 +18,8 @@ import io.swagger.annotations._
 @Path("/api/feed")  // @Path annotation required for Swagger
 @Api(value = "/api/feed",
     produces = "application/json")
-class FeedService (log: LoggingAdapter,
-                   internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+class FeedGatewayService(log: LoggingAdapter,
+                         internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived

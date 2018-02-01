@@ -22,8 +22,8 @@ import scala.concurrent.Await
 @Path("/api/search")  // @Path annotation required for Swagger
 @Api(value = "/api/search",
     produces = "application/json")
-class SearchService (log: LoggingAdapter,
-                     internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+class SearchGatewayService(log: LoggingAdapter,
+                           internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
 
     val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
     val DEFAULT_SIZE = ConfigFactory.load().getInt("echo.gateway.default-size")

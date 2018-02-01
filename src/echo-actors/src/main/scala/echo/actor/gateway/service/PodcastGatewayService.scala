@@ -20,8 +20,8 @@ import io.swagger.annotations._
 @Path("/api/podcast")  // @Path annotation required for Swagger
 @Api(value = "/api/podcast",
      produces = "application/json")
-class PodcastService(log: LoggingAdapter,
-                     internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+class PodcastGatewayService(log: LoggingAdapter,
+                            internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
