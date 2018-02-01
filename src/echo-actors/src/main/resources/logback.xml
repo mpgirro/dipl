@@ -28,6 +28,12 @@
         </encoder>
     </appender>
 
+    <!-- async console output -->
+    <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>3</queueSize>
+        <appender-ref ref="STDOUT" />
+    </appender>
+
     <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
 
     <configuration>
@@ -38,6 +44,8 @@
     <logger name="echo.actor" level="INFO" />
     <logger name="echo.core" level="WARN" />
     <logger name="ch.qos.logback" level="WARN"/>
+    <logger name="liquibase" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
