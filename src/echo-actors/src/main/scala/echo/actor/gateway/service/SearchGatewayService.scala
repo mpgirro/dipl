@@ -23,7 +23,7 @@ import scala.concurrent.Await
 @Api(value = "/api/search",
     produces = "application/json")
 class SearchGatewayService(log: LoggingAdapter,
-                           internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+                           internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
     val DEFAULT_SIZE = ConfigFactory.load().getInt("echo.gateway.default-size")

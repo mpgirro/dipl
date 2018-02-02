@@ -19,7 +19,7 @@ import io.swagger.annotations._
 @Api(value = "/api/feed",
     produces = "application/json")
 class FeedGatewayService(log: LoggingAdapter,
-                         internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+                         internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived

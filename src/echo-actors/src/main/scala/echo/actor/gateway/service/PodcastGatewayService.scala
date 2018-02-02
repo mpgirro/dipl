@@ -21,7 +21,7 @@ import io.swagger.annotations._
 @Api(value = "/api/podcast",
      produces = "application/json")
 class PodcastGatewayService(log: LoggingAdapter,
-                            internalTimeout: Timeout)(implicit val context: ActorContext) extends Directives with JsonSupport {
+                            internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
@@ -57,6 +57,7 @@ class PodcastGatewayService(log: LoggingAdapter,
 
         onSuccess(directoryStore ? GetAllPodcasts) {
             case AllPodcastsResult(results)  => {
+                log.info("PodcastGatewayService returns {} podcast entries on REST interface", results.size)
                 complete(StatusCodes.OK, ArrayWrapper(results))
             }
         }
