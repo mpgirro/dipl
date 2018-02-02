@@ -13,46 +13,26 @@ object ActorProtocol {
 
     case class ProposeNewFeed(url: String) // sent from User to FeedStore
 
-    /* DirectoryStore -> Crawler
-     * DirectoryStore generated a new podcastDocId (the Feed URL?)
-     */
+    // DirectoryStore -> Crawler
     case class FetchNewFeed(url: String, podcastId: String) // send from FeedStore to Crawler
-
-    /* DirectoryStore -> Crawler
-     * DirectoryStore knows about the podcastDocId before hand, and about all Episodes currently known to this podcasts
-     * (it does not matter if the episodes are currently in the feed to not)
-     */
     case class FetchUpdateFeed(url: String, podcastId: String)
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
 
-    /* Crawler -> DirectoryStore
-     *
-     */
+    // Crawler -> DirectoryStore
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
     // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO)
     case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
-    /* Crawler -> Parser
-     * the podcastDocId has to be there (even for new feeds)
-     * the episodeDocIds may be empty for new feeds (all episodes are new)
-     */
-    case class ParseFeedData(feedUrl: String, podcastId: String, feedData: String)
-
     // Crawler -> Parser
+    case class ParseFeedData(feedUrl: String, podcastId: String, feedData: String)
     case class ParseWebsiteData(echoId: String, html: String)
 
-    /* Index -> Index
-     *
-     */
+    // Index -> Index
     case class ParsePodcastData(podcastId: String, podcastFeedData: String)
-
-    /* Index -> Index
-     *
-     */
     case class ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String)
 
     // Parser -> IndexStore
@@ -60,10 +40,10 @@ object ActorProtocol {
     case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
-    case class IndexSoreUpdateDocumentWebsiteData(echoId: String, html: String) // used for all document types
+    case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
 
     // DirectoryStore -> IndexStore
-    case class IndexStoreUpdateEpisodeAddItunesImage(echoId: String, itunesImage: String)
+    case class IndexStoreUpdateDocItunesImage(echoId: String, itunesImage: String)
 
     // Index -> DirectoryStore
     case class UsePodcastItunesImage(echoId: String)

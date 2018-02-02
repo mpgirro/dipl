@@ -1,6 +1,6 @@
 package echo.actor.directory.service
 
-import javax.persistence.{EntityManagerFactory, EntityTransaction}
+import javax.persistence.{EntityManager, EntityManagerFactory, EntityTransaction}
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.orm.PodcastDao
@@ -21,7 +21,7 @@ class PodcastDirectoryService(protected override val log: LoggingAdapter,
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
 
-    protected override val em = repositoryFactoryBuilder.getEntityManager
+    protected override val em: EntityManager = repositoryFactoryBuilder.getEntityManager
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
     private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
 
@@ -68,7 +68,7 @@ class PodcastDirectoryService(protected override val log: LoggingAdapter,
 
         val stopTime = System.currentTimeMillis
         val elapsedTime = stopTime - startTime
-        println(s"PodcastDirectoryService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms, found ${result.size()} entries")
+        println(s"PodcastDirectoryService.findAllWhereFeedStatusIsNot($status) took $elapsedTime ms, found ${result.size()} entries")
 
         result.asScala.toList
     }

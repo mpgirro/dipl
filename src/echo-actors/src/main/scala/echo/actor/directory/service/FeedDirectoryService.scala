@@ -1,6 +1,6 @@
 package echo.actor.directory.service
 
-import javax.persistence.EntityTransaction
+import javax.persistence.{EntityManager, EntityTransaction}
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{FeedRepository, RepositoryFactoryBuilder}
@@ -18,7 +18,7 @@ class FeedDirectoryService(protected override val log: LoggingAdapter,
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
 
-    protected override val em = repositoryFactoryBuilder.getEntityManager
+    protected override val em: EntityManager = repositoryFactoryBuilder.getEntityManager
 
     /*
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -55,10 +55,9 @@ class FeedDirectoryService(protected override val log: LoggingAdapter,
             tx.commit()
             return result
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to find all feeds")
                 tx.rollback()
-            }
         }
         None
     }

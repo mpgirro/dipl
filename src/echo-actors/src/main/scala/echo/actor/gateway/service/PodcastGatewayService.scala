@@ -20,19 +20,19 @@ import io.swagger.annotations._
 @Path("/api/podcast")  // @Path annotation required for Swagger
 @Api(value = "/api/podcast",
      produces = "application/json")
-class PodcastGatewayService(log: LoggingAdapter,
-                            internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
+class PodcastGatewayService(private val log: LoggingAdapter,
+                            private val internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    var directoryStore: ActorRef = _
+    private var directoryStore: ActorRef = _
 
     // TODO better use the logger of the actor, for cluster use later, via constructor --> log: LoggingAdapter
     // val log = Logging(context.system, classOf[EpisodeService])
 
-    implicit val timeout = internalTimeout
+    implicit val timeout: Timeout = internalTimeout
 
-    override val route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
+    override val route: Route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
                     pathPrefix("podcast" / Segment) { id =>
                         pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~
                             getEpisodesByPodcast(id) ~ getFeedsByPodcast(id)

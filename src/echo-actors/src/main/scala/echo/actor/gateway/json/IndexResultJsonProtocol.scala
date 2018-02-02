@@ -20,7 +20,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
             "description" -> Option(r.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage" -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
         )
-        def read(value: JsValue) = {
+        def read(value: JsValue): IndexResult = {
             value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "itunesImage") match {
                 case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(description), JsString(itunesImage)) =>
                     val result = new IndexResult()
@@ -33,7 +33,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
                     result.setItunesImage(itunesImage)
                     result
                     //new IndexResult(docType, echoId, title, link, LocalDateTime.parse(pubDate), description, itunesImage)
-                case _ => throw new DeserializationException("IndexResult expected")
+                case _ => throw DeserializationException("IndexResult expected")
             }
         }
     }

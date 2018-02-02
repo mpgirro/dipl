@@ -53,14 +53,12 @@ class DirectoryStore extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case ActorRefCrawlerActor(ref) => {
+        case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-        }
-        case ActorRefIndexStoreActor(ref) => {
+        case ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
-        }
 
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
 
@@ -215,7 +213,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 episodeService.save(e, tx)
                 tx.commit()
 
-                indexStore ! IndexStoreUpdateEpisodeAddItunesImage(episodeId, p.getItunesImage)
+                indexStore ! IndexStoreUpdateDocItunesImage(episodeId, p.getItunesImage)
             }).getOrElse({
                 log.error("e.getPodcast produced null!")
             })

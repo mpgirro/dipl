@@ -41,7 +41,7 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     private val episodeService = new EpisodeGatewayService(log, internalTimeout)
     private val feedService = new FeedGatewayService(log, internalTimeout)
 
-    override def preStart = {
+    override def preStart: Unit = {
 
         // the following implicit values are somehow required and used by Akka HTTP
         implicit val actorSystem = this.context.system
@@ -83,21 +83,18 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     }
 
     override def receive: Receive = {
-        case ActorRefSearcherActor(ref) => {
+        case ActorRefSearcherActor(ref) =>
             log.debug("Received ActorRefSearcherActor(_)")
             searcher = ref
             searchService.setSearcherActorRef(searcher)
-        }
-        case ActorRefDirectoryStoreActor(ref) => {
+        case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
             podcastService.setDirectoryStoreActorRef(ref)
             episodeService.setDirectoryStoreActorRef(ref)
             feedService.setDirectoryStoreActorRef(ref)
-        }
-        case _ => {
+        case _ =>
             log.warning("GatewayActor does not handle any Actor-messages yet")
-        }
     }
 
 }

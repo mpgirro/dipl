@@ -17,7 +17,7 @@ object ResultWrapperJsonProtocol extends DefaultJsonProtocol {
             "totalHits" -> Option(rw.getTotalHits).map(value => JsNumber(value)).getOrElse(JsNull),
             "results"   -> Option(rw.getResults).map(value => JsArray(value.map(r => IndexResultJsonFormat.write(r)).toVector)).getOrElse(JsNull)
         )
-        def read(value: JsValue) = {
+        def read(value: JsValue): ResultWrapperDTO = {
             value.asJsObject.getFields("currPage", "maxPage", "totalHits", "results") match {
                 case Seq(JsNumber(currPage), JsNumber(maxPage), JsNumber(totalHits),  JsArray(results)) =>
                     val resultWrapper = new ResultWrapperDTO
@@ -32,7 +32,7 @@ object ResultWrapperJsonProtocol extends DefaultJsonProtocol {
                     resultWrapper.setResults(foo) // seqAsJavaList()   results.map(_.convertTo[IndexResult]).to[Array[IndexResult]]
                     resultWrapper
                 //new PodcastDTO(echoId, title, link, description, itunesImage)
-                case _ => throw new DeserializationException("ResultWrapperDTO expected")
+                case _ => throw DeserializationException("ResultWrapperDTO expected")
             }
         }
     }

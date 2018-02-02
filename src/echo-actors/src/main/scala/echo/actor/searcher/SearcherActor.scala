@@ -9,19 +9,18 @@ import scala.language.postfixOps
 class SearcherActor extends Actor with ActorLogging {
 
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
-    val DEFAULT_SIZE = ConfigFactory.load().getInt("echo.gateway.default-size")
+    private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
+    private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.gateway.default-size")
 
     private var indexStore: ActorRef = _
 
     override def receive: Receive = {
 
-        case ActorRefIndexStoreActor(ref) => {
+        case ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor")
             indexStore = ref
-        }
 
-        case SearchRequest(query, page, size) => {
+        case SearchRequest(query, page, size) =>
             log.info("Received SearchRequest('{}',{},{})", query, page, size)
 
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
@@ -38,7 +37,6 @@ class SearcherActor extends Actor with ActorLogging {
             val originalSender = Some(sender) // this is important to not expose the handler
             val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), "searcher-cameo-message-handler")
             indexStore.tell(SearchIndex(query, p, s), handler)
-        }
 
     }
 }

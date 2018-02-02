@@ -1,6 +1,6 @@
 package echo.actor.directory.service
 
-import javax.persistence.EntityTransaction
+import javax.persistence.{EntityManager, EntityTransaction}
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{EpisodeRepository, RepositoryFactoryBuilder}
@@ -18,7 +18,7 @@ class EpisodeDirectoryService(protected override val log: LoggingAdapter,
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val episodeRepository: EpisodeRepository = repositoryFactory.getRepository(classOf[EpisodeRepository])
 
-    protected override val em = repositoryFactoryBuilder.getEntityManager
+    protected override val em: EntityManager = repositoryFactoryBuilder.getEntityManager
 
     /*
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -55,10 +55,9 @@ class EpisodeDirectoryService(protected override val log: LoggingAdapter,
             tx.commit()
             return results
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to find all episodes by podcast : {}", podcastDTO)
                 tx.rollback()
-            }
         }
         List.empty
     }

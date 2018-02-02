@@ -19,37 +19,32 @@ class CrawlerActor extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case ActorRefParserActor(ref) => {
+        case ActorRefParserActor(ref) =>
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
-        }
 
-        case ActorRefDirectoryStoreActor(ref) => {
+        case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
-        }
 
-        case FetchNewFeed(url, podcastId) => {
+        case FetchNewFeed(url, podcastId) =>
             log.info("Received FetchNewFeed('{}')", url)
 
             try {
                 val data = download(url)
                 data match {
-                    case Some(xml) => {
+                    case Some(xml) =>
                         parser ! ParseFeedData(url, podcastId, xml)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                    }
                     case None => log.error("Received NULL trying to download (new) feed from URL: {}", url)
                 }
             } catch {
-                case e: IOException => {
+                case e: IOException =>
                     log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
                     directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                }
             }
-        }
 
-        case FetchUpdateFeed(url, podcastId) => {
+        case FetchUpdateFeed(url, podcastId) =>
 
             // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
 
@@ -57,24 +52,20 @@ class CrawlerActor extends Actor with ActorLogging {
             try {
                 val data = download(url)
                 data match {
-                    case Some(xml) => {
+                    case Some(xml) =>
                         parser ! ParseFeedData(url, podcastId, xml)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                    }
-                    case None => {
+                    case None =>
                         log.error("Received NULL trying to download feed (update)from URL: {}", url)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                    }
                 }
             } catch {
-                case e: IOException => {
+                case e: IOException =>
                     log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
                     directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                }
             }
-        }
 
-        case FetchWebsite(echoId, url) => {
+        case FetchWebsite(echoId, url) =>
             log.debug("Received FetchWebsite({},'{}')", echoId, url)
 
             try{
@@ -84,14 +75,12 @@ class CrawlerActor extends Actor with ActorLogging {
                     case None       => log.error("Received NULL trying to download website data for URL: {}", url)
                 }
             } catch {
-                case e: IOException => {
+                case e: IOException =>
                     log.error("IO Exception trying to download content from URL: {} [reason: {}]", url, e.getMessage)
                     directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                }
             }
-        }
 
-        case CrawlFyyd(count) => {
+        case CrawlFyyd(count) =>
             log.debug("Received CrawlFyyd({})", count)
             val feeds = fyydAPI.getFeedUrls(count);
             log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
@@ -101,7 +90,6 @@ class CrawlerActor extends Actor with ActorLogging {
             while(it.hasNext){
                 directoryStore ! ProposeNewFeed(it.next())
             }
-        }
 
         /*
         case HttpResponse(StatusCodes.OK, headers, entity, _) => {
@@ -164,15 +152,15 @@ class CrawlerActor extends Actor with ActorLogging {
             conn.addRequestProperty("User-Agent", "Mozilla");
 
             // request URL and see what happens
-            conn.connect
+            conn.connect()
 
-            var redirect = false;
-            var notFound = false;
+            var redirect = false
+            var notFound = false
 
             // normally, 3xx is redirect
-            val status = conn.getResponseCode;
+            val status = conn.getResponseCode
             status match {
-                case HttpURLConnection.HTTP_OK         => {  /* all is well */ }
+                case HttpURLConnection.HTTP_OK         => /* all is well */
                 case HttpURLConnection.HTTP_MOVED_TEMP => redirect = true;
                 case HttpURLConnection.HTTP_MOVED_PERM => redirect = true;
                 case HttpURLConnection.HTTP_SEE_OTHER  => redirect = true;
@@ -182,24 +170,24 @@ class CrawlerActor extends Actor with ActorLogging {
 
             // if we've got a 404, there is no point going on
             if (notFound) {
-                return None;
+                return None
             }
 
             if (redirect) {
                 // get redirect url from "location" header field
-                val newUrl = conn.getHeaderField("Location");
+                val newUrl = conn.getHeaderField("Location")
 
                 // get the cookie if need, for login
-                val cookies = conn.getHeaderField("Set-Cookie");
+                val cookies = conn.getHeaderField("Set-Cookie")
 
                 // open the new connnection again
-                conn = new URL(newUrl).openConnection().asInstanceOf[HttpURLConnection];
+                conn = new URL(newUrl).openConnection().asInstanceOf[HttpURLConnection]
                 conn.setConnectTimeout(connectTimeout)
                 conn.setReadTimeout(readTimeout)
                 conn.setRequestMethod(requestMethod)
-                conn.setRequestProperty("Cookie", cookies);
+                conn.setRequestProperty("Cookie", cookies)
                 //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-                conn.addRequestProperty("User-Agent", "Mozilla");
+                conn.addRequestProperty("User-Agent", "Mozilla")
             }
 
             val scanner = new Scanner(conn.getInputStream, "UTF-8").useDelimiter("\\A")

@@ -17,16 +17,15 @@ object FeedJsonProtocol extends DefaultJsonProtocol {
             "lastChecked" -> Option(f.getLastChecked).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "lastStatus"  -> Option(f.getLastStatus).map(value => JsString(value.getName)).getOrElse(JsNull)
         )
-        def read(value: JsValue) = {
+        def read(value: JsValue): FeedDTO = {
             value.asJsObject.getFields("url", "lastChecked", "lastStatus") match {
-                case Seq(JsString(url), JsString(lastChecked), JsString(lastStatus)) => {
+                case Seq(JsString(url), JsString(lastChecked), JsString(lastStatus)) =>
                     val feed = new FeedDTO
                     feed.setUrl(url)
                     feed.setLastChecked(DateMapper.INSTANCE.asLocalDateTime(lastChecked))
                     feed.setLastStatus(FeedStatus.getByName(lastStatus))
                     feed
-                }
-                case _ => throw new DeserializationException("FeedDTO expected")
+                case _ => throw DeserializationException("FeedDTO expected")
             }
         }
     }

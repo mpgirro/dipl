@@ -1,6 +1,6 @@
 package echo.actor.searcher
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import akka.event.LoggingReceive
 import echo.actor.ActorProtocol.{IndexResultsFound, NoIndexResultsFound, SearchResults}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
@@ -26,7 +26,7 @@ object IndexStoreReponseHandler {
 
 class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) extends Actor with ActorLogging {
     def receive = LoggingReceive {
-        case IndexResultsFound(query: String, results: ResultWrapperDTO) => {
+        case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
             log.info("Received " + results.getTotalHits + " results from index for query '" + query + "'")
             timeoutMessager.cancel
 
@@ -43,23 +43,21 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) e
             })
 
             sendResponseAndShutdown(SearchResults(results))
-        }
-        case NoIndexResultsFound(query: String) => {
+        case NoIndexResultsFound(query: String) =>
             log.info("Received NO results from index for query '" + query + "'")
             sendResponseAndShutdown(SearchResults(new ResultWrapperDTO))
-        }
         case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
         case _ =>
     }
 
-    def sendResponseAndShutdown(response: Any) = {
+    def sendResponseAndShutdown(response: Any): Unit = {
         originalSender ! response
         log.debug("Stopping context capturing actor")
         context.stop(self)
     }
 
     import context.dispatcher
-    val timeoutMessager = context.system.scheduler.
+    val timeoutMessager: Cancellable = context.system.scheduler.
         scheduleOnce(5 seconds) {
             self ! IndexRetrievalTimeout
         }

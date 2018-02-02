@@ -20,10 +20,9 @@ trait DirectoryService[T] {
             tx.commit()
             return result
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to save : {}", dto)
                 tx.rollback()
-            }
         }
         None
     }
@@ -38,10 +37,9 @@ trait DirectoryService[T] {
             tx.commit()
             return result
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to find one by id={}", id)
                 tx.rollback()
-            }
         }
         None
     }
@@ -56,10 +54,9 @@ trait DirectoryService[T] {
             tx.commit()
             return result
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to find one by echoId={}", echoId)
                 tx.rollback()
-            }
         }
         None
     }
@@ -74,10 +71,9 @@ trait DirectoryService[T] {
             tx.commit()
             return results
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error trying to find all") // typeOf[T].typeSymbol.name.toString
                 tx.rollback()
-            }
         }
         List.empty
     }

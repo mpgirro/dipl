@@ -22,22 +22,22 @@ import scala.concurrent.Await
 @Path("/api/search")  // @Path annotation required for Swagger
 @Api(value = "/api/search",
     produces = "application/json")
-class SearchGatewayService(log: LoggingAdapter,
-                           internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
+class SearchGatewayService(private val log: LoggingAdapter,
+                           private val internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
-    val DEFAULT_SIZE = ConfigFactory.load().getInt("echo.gateway.default-size")
+    private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
+    private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.gateway.default-size")
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    var searcher: ActorRef = _
+    private var searcher: ActorRef = _
 
-    implicit val timeout = internalTimeout
+    implicit val timeout: Timeout = internalTimeout
 
-    override val route = pathPrefix("search"){ pathEndOrSingleSlash { search } }
+    override val route: Route = pathPrefix("search"){ pathEndOrSingleSlash { search } }
 
-    def setSearcherActorRef(searcher: ActorRef) = this.searcher = searcher
+    def setSearcherActorRef(searcher: ActorRef): Unit = this.searcher = searcher
 
     @ApiOperation(value = "Search the index",
         nickname = "search",

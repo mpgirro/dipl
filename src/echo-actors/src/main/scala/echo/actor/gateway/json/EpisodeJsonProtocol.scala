@@ -20,9 +20,9 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
             "itunesImage"    -> Option(e.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
             "itunesDuration" -> Option(e.getItunesDuration).map(value => JsString(value)).getOrElse(JsNull)
         )
-        def read(value: JsValue) = {
+        def read(value: JsValue): EpisodeDTO = {
             value.asJsObject.getFields("echoId", "title", "link", "pubDate", "description", "itunesImage", "itunesDuration") match {
-                case Seq(JsString(echoId), JsString(title), JsString(link),  JsString(pubDate), JsString(description), JsString(itunesImage), JsString(itunesDuration)) => {
+                case Seq(JsString(echoId), JsString(title), JsString(link),  JsString(pubDate), JsString(description), JsString(itunesImage), JsString(itunesDuration)) =>
                     val episode = new EpisodeDTO()
                     episode.setEchoId(echoId)
                     episode.setTitle(title)
@@ -33,8 +33,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                     episode.setItunesDuration(itunesDuration)
                     episode
                     //new EpisodeDTO(echoId, title, link, description, itunesImage)
-                }
-                case _ => throw new DeserializationException("EpisodeDTO expected")
+                case _ => throw DeserializationException("EpisodeDTO expected")
             }
         }
     }

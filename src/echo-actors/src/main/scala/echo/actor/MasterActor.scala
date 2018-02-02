@@ -22,7 +22,7 @@ import scala.language.postfixOps
   */
 class MasterActor extends Actor with ActorLogging {
 
-    override val supervisorStrategy = SupervisorStrategy.stoppingStrategy
+    override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 
     private var shutdown = false
     val usageMap = Map(
@@ -66,7 +66,7 @@ class MasterActor extends Actor with ActorLogging {
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
     repl()
 
-    override def receive = {
+    override def receive: Receive = {
         case Terminated(actor) => onTerminated(actor)
     }
 
@@ -108,11 +108,11 @@ class MasterActor extends Actor with ActorLogging {
                     case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
 
                     case "get" :: "podcast" :: Nil           => usage("get podcast")
-                    case "get" :: "podcast" :: echoId :: Nil => getPodcast(echoId)
+                    case "get" :: "podcast" :: echoId :: Nil => getAndPrintPodcast(echoId)
                     case "get" :: "podcast" :: echoId :: _   => usage("get podcast")
 
                     case "get" :: "episode" :: Nil           => usage("get episode")
-                    case "get" :: "episode" :: echoId :: Nil => getEpisode(echoId)
+                    case "get" :: "episode" :: echoId :: Nil => getAndPrintEpisode(echoId)
                     case "get" :: "episode" :: echoId :: _   => usage("get episode")
 
                     case _  => help()
@@ -130,8 +130,7 @@ class MasterActor extends Actor with ActorLogging {
             val args = usageMap.get(cmd)
             println("Command parsing error")
             println("Usage: " + cmd + " " + args)
-        }
-        else {
+        } else {
             println("Unknown command: " + cmd)
             println("These are the available commands:")
             for ( (k,v) <- usageMap ) {
@@ -153,7 +152,7 @@ class MasterActor extends Actor with ActorLogging {
         val response = Await.result(future, internalTimeout.duration).asInstanceOf[SearchResults]
         response match {
             case SearchResults(results) => {
-                println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'");
+                println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'")
                 println("Results:")
                 for (result <- results.getResults) {
                     println(s"\n${DocumentFormatter.cliFormat(result)}\n")
@@ -163,7 +162,7 @@ class MasterActor extends Actor with ActorLogging {
         }
     }
 
-    private def getPodcast(echoId: String) = {
+    private def getAndPrintPodcast(echoId: String) = {
         val future = directoryStore ? GetPodcast(echoId)
         val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
         response match {
@@ -172,7 +171,7 @@ class MasterActor extends Actor with ActorLogging {
         }
     }
 
-    private def getEpisode(echoId: String) = {
+    private def getAndPrintEpisode(echoId: String) = {
         val future = directoryStore ? GetEpisode(echoId)
         val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
         response match {

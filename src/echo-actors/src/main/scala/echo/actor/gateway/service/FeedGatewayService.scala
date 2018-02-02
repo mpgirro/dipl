@@ -18,21 +18,21 @@ import io.swagger.annotations._
 @Path("/api/feed")  // @Path annotation required for Swagger
 @Api(value = "/api/feed",
     produces = "application/json")
-class FeedGatewayService(log: LoggingAdapter,
-                         internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
+class FeedGatewayService(private val log: LoggingAdapter,
+                         private val internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    var directoryStore: ActorRef = _
+    private var directoryStore: ActorRef = _
 
-    implicit val timeout = internalTimeout
+    implicit val timeout: Timeout = internalTimeout
 
-    override val route = pathPrefix("feed") { pathEndOrSingleSlash { getAllFeeds ~ postFeed } } ~
+    override val route: Route = pathPrefix("feed") { pathEndOrSingleSlash { getAllFeeds ~ postFeed } } ~
         pathPrefix("feed" / Segment) { id =>
             pathEndOrSingleSlash{ getFeed(id) ~ putFeed(id) ~ deleteFeed(id) }
         }
 
-    def setDirectoryStoreActorRef(directoryStore: ActorRef) = this.directoryStore = directoryStore
+    def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
 
     def getAllFeeds: Route = get {
 
