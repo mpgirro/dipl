@@ -98,13 +98,13 @@ class DirectoryStore extends Actor with ActorLogging {
         // then we should set the image url of the whole podcast
         case UsePodcastItunesImage(echoId) => setEpisodesItunesImageToPodcast(echoId)
 
-        case GetPodcast(echoId) => getPodcast(echoId)
+        case GetPodcast(echoId) => onGetPodcast(echoId)
 
-        case GetAllPodcasts => getAllPodcasts
+        case GetAllPodcasts => onGetAllPodcasts()
 
-        case GetEpisode(echoId) => getEpisode(echoId)
+        case GetEpisode(echoId) => onGetEpisode(echoId)
 
-        case GetEpisodesByPodcast(echoId) => getEpisodesByPodcast(echoId)
+        case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
@@ -122,7 +122,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def proposeFeed(url: String) = {
+    def proposeFeed(url: String): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
         /*
@@ -254,7 +254,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def getPodcast(podcastId: String): Unit = {
+    def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
 
         val tx = em.getTransaction
@@ -271,7 +271,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def getAllPodcasts: Unit = {
+    def onGetAllPodcasts(): Unit = {
         log.debug("Received GetAllPodcasts()")
 
         val tx = em.getTransaction
@@ -285,7 +285,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def getEpisode(episodeId: String): Unit= {
+    def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
 
         val tx = em.getTransaction
@@ -303,7 +303,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     @Transactional
-    def getEpisodesByPodcast(podcastId: String): Unit = {
+    def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
 
         val tx = em.getTransaction
