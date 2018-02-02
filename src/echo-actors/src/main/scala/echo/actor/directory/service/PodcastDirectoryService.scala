@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) extends DirectoryService[PodcastDTO] {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
@@ -27,7 +27,7 @@ class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
     private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
 
     @Transactional
-    def save(podcastDTO: PodcastDTO): PodcastDTO = {
+    override def save(podcastDTO: PodcastDTO): PodcastDTO = {
 
         //val em = repositoryFactoryBuilder.getEntityManager
         //val emf = repositoryFactoryBuilder.getEntityManagerFactory
@@ -57,19 +57,19 @@ class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
     }
 
     @Transactional
-    def findOne(id: Long): Option[PodcastDTO] = {
+    override def findOne(id: Long): Option[PodcastDTO] = {
         val result = podcastRepository.findOne(id)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
     @Transactional
-    def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
+    override def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
         val result = podcastRepository.findOneByEchoId(echoId)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
     @Transactional
-    def findAll: List[PodcastDTO] = {
+    override def findAll: List[PodcastDTO] = {
         val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
 
@@ -81,12 +81,13 @@ class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
 
         val startTime = System.currentTimeMillis
 
-        val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
+        //val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
+        val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
 
         val stopTime = System.currentTimeMillis
         val elapsedTime = stopTime - startTime
-        println(s"PodcastService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms")
+        println(s"PodcastService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms, found ${result.size()} entries")
 
         result.asScala.toList
     }

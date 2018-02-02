@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class EpisodeDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class EpisodeDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) extends DirectoryService[EpisodeDTO] {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val episodeRepository: EpisodeRepository = repositoryFactory.getRepository(classOf[EpisodeRepository])
@@ -27,7 +27,7 @@ class EpisodeDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
     private val episodeDao: EpisodeDao =  new EpisodeDaoImpl(emf)
 
     @Transactional
-    def save(episodeDTO: EpisodeDTO): EpisodeDTO = {
+    override def save(episodeDTO: EpisodeDTO): EpisodeDTO = {
         //val em = repositoryFactoryBuilder.getEntityManager
         //val emf = repositoryFactoryBuilder.getEntityManagerFactory
 
@@ -66,19 +66,19 @@ class EpisodeDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
     }
 
     @Transactional
-    def findOne(id: Long): Option[EpisodeDTO] = {
+    override def findOne(id: Long): Option[EpisodeDTO] = {
         val result = episodeRepository.findOne(id)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
     @Transactional
-    def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
+    override def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEchoId(echoId)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
     @Transactional
-    def findAll: List[EpisodeDTO] = {
+    override def findAll: List[EpisodeDTO] = {
         val episodes = episodeRepository.findAll
         val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
         result.asScala.toList

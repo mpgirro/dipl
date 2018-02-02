@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class FeedDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) {
+class FeedDirectoryService(private val repositoryFactoryBuilder: RepositoryFactoryBuilder) extends DirectoryService[FeedDTO] {
 
     private val repositoryFactory = repositoryFactoryBuilder.createFactory
     private val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
@@ -26,7 +26,7 @@ class FeedDirectoryService(private val repositoryFactoryBuilder: RepositoryFacto
     private val feedDao: FeedDao =  new FeedDaoImpl(emf)
 
     @Transactional
-    def save(feedDTO: FeedDTO): FeedDTO = {
+    override def save(feedDTO: FeedDTO): FeedDTO = {
         //val em = repositoryFactoryBuilder.getEntityManager
         //val emf = repositoryFactoryBuilder.getEntityManagerFactory
 
@@ -56,9 +56,22 @@ class FeedDirectoryService(private val repositoryFactoryBuilder: RepositoryFacto
     }
 
     @Transactional
-    def findOne(id: Long): Option[FeedDTO] = {
+    override def findOne(id: Long): Option[FeedDTO] = {
         val result = feedRepository.findOne(id)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+    }
+
+    @Transactional
+    override def findOneByEchoId(echoId: String): Option[FeedDTO] = {
+        val result = feedRepository.findOneByEchoId(echoId)
+        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+    }
+
+    @Transactional
+    override def findAll: List[FeedDTO] = {
+        val feeds = feedRepository.findAll
+        val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
+        results.asScala.toList
     }
 
     @Transactional
