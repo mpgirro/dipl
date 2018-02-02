@@ -14,7 +14,7 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service.{EpisodeGatewayService, FeedGatewayService, PodcastGatewayService, SearchGatewayService}
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

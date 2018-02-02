@@ -1,17 +1,15 @@
-package echo.actor.protocol
+package echo.actor
 
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.model.dto.{DTO, EpisodeDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.model.dto.{EpisodeDTO, PodcastDTO, ResultWrapperDTO}
 import echo.core.model.feed.FeedStatus
-
-import scala.collection.mutable.ListBuffer
 
 /**
   * @author Maximilian Irro
   */
-object ActorMessages {
+object ActorProtocol {
 
     case class ProposeNewFeed(url: String) // sent from User to FeedStore
 

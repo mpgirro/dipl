@@ -3,7 +3,7 @@ package echo.actor.parser
 import akka.actor.ActorSystem
 import akka.dispatch.{PriorityGenerator, UnboundedPriorityMailbox}
 import com.typesafe.config.Config
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 
 /**
   * @author Maximilian Irro

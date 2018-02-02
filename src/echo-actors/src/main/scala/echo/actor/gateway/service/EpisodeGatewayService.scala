@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.protocol.ActorMessages.{EpisodeResult, GetEpisode, NoDocumentFound}
+import echo.actor.ActorProtocol.{EpisodeResult, GetEpisode, NoDocumentFound}
 import echo.core.model.dto.EpisodeDTO
 import io.swagger.annotations._
 

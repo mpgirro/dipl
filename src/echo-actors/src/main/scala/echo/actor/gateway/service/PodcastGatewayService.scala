@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
 import io.swagger.annotations._
 

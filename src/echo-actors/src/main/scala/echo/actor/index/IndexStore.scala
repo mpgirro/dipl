@@ -2,7 +2,7 @@ package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.model.dto.EpisodeDTO

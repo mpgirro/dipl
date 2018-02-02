@@ -5,7 +5,7 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}

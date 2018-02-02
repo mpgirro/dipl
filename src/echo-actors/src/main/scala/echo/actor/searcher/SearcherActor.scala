@@ -1,7 +1,7 @@
 package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 
 import scala.language.postfixOps
 

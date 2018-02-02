@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import java.util.Scanner
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 

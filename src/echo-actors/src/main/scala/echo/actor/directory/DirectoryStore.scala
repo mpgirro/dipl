@@ -10,7 +10,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
-import echo.actor.protocol.ActorMessages._
+import echo.actor.ActorProtocol._
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
 import liquibase.database.jvm.JdbcConnection

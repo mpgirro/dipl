@@ -10,7 +10,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.protocol.ActorMessages.{IndexResult, NoIndexResultsFound, SearchRequest, SearchResults}
+import echo.actor.ActorProtocol.{IndexResult, NoIndexResultsFound, SearchRequest, SearchResults}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import io.swagger.annotations.{Api, ApiOperation}
 
