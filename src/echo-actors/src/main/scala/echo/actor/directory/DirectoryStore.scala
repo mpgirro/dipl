@@ -278,7 +278,8 @@ class DirectoryStore extends Actor with ActorLogging {
         val tx = em.getTransaction
         tx.begin()
 
-        val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED)
+        //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
+        val podcasts = podcastService.findAll
         sender ! AllPodcastsResult(podcasts)
 
         tx.commit()

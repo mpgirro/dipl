@@ -70,8 +70,14 @@ class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
 
     @Transactional
     override def findAll: List[PodcastDTO] = {
+        val startTime = System.currentTimeMillis
+
         val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
+
+        val stopTime = System.currentTimeMillis
+        val elapsedTime = stopTime - startTime
+        println(s"PodcastDirectoryService.findAll took ${elapsedTime} ms, found ${result.size()} entries")
 
         result.asScala.toList
     }
@@ -81,13 +87,12 @@ class PodcastDirectoryService(private val repositoryFactoryBuilder: RepositoryFa
 
         val startTime = System.currentTimeMillis
 
-        //val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
-        val podcasts = podcastRepository.findAll
+        val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
 
         val stopTime = System.currentTimeMillis
         val elapsedTime = stopTime - startTime
-        println(s"PodcastService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms, found ${result.size()} entries")
+        println(s"PodcastDirectoryService.findAllWhereFeedStatusIsNot($status) took ${elapsedTime} ms, found ${result.size()} entries")
 
         result.asScala.toList
     }
