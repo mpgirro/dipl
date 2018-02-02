@@ -149,7 +149,7 @@ class MasterActor extends Actor with ActorLogging {
     }
 
     private def search(query: List[String]): Unit = {
-        val future = searcher ? SearchRequest(query.mkString(" "), 1, 100)
+        val future = searcher ? SearchRequest(query.mkString(" "), Some(1), Some(100))
         val response = Await.result(future, internalTimeout.duration).asInstanceOf[SearchResults]
         response match {
             case SearchResults(results) => {

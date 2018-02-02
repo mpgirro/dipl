@@ -25,6 +25,7 @@ import scala.concurrent.Await
 class SearchGatewayService(log: LoggingAdapter,
                            internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
 
+    // TODO these values are used by searcher and gateway, so save them somewhere more common for both
     val DEFAULT_PAGE = ConfigFactory.load().getInt("echo.gateway.default-page")
     val DEFAULT_SIZE = ConfigFactory.load().getInt("echo.gateway.default-size")
 
@@ -44,8 +45,9 @@ class SearchGatewayService(log: LoggingAdapter,
         response = classOf[IndexResult],
         responseContainer = "Set")
     def search: Route = get {
-        parameters('q, 'p.?, 's.?) { (query, page, size) =>
+        parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
 
+            /*
             val p: Int = page match {
                 case Some(x) => x.toInt
                 case None    => DEFAULT_PAGE
@@ -54,10 +56,11 @@ class SearchGatewayService(log: LoggingAdapter,
                 case Some(x) => x.toInt
                 case None    => DEFAULT_SIZE
             }
+            */
 
-            log.info("GET /api/search/?q={}&p={}&s={}", query, p, s)
+            log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
 
-            onSuccess(searcher ? SearchRequest(query, p, s)) {
+            onSuccess(searcher ? SearchRequest(query, page, size)) {
                 case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
                 case NoIndexResultsFound(_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
                 case IndexRetrievalTimeout  => {
