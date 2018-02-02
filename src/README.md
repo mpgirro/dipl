@@ -8,3 +8,19 @@
     : The library for core Echo tasks (feed-parsing, searching, etc), used by echo-actors and echo-microservices
 * [echo-web](echo-web/)
     : The web-frontend for the Echo, used by both [echo-actors](echo-actors/) and [echo-microservices](echo-microservices/)
+
+## Actor-Engine
+
+Run with:
+
+```
+gradle :echo-actors:clean build run
+```
+
+## Web
+
+Run with:
+
+```
+gradle :echo-web:ngServe
+```
