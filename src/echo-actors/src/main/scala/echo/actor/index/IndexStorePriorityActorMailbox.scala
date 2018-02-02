@@ -17,6 +17,7 @@ class IndexStorePriorityActorMailbox(settings: ActorSystem.Settings, config: Con
         case IndexStoreAddEpisode(_) => 1
         case IndexStoreUpdatePodcast(_) => 2
         case IndexStoreUpdateEpisode(_) => 2
+        case IndexStoreUpdateEpisodeAddItunesImage(_,_) => 2
         // other messages
         case _ => 3
     })
