@@ -35,7 +35,7 @@ class SearchGatewayService(log: LoggingAdapter,
 
     implicit val timeout = internalTimeout
 
-    val route = pathPrefix("search"){ pathEndOrSingleSlash { search } }
+    override val route = pathPrefix("search"){ pathEndOrSingleSlash { search } }
 
     def setSearcherActorRef(searcher: ActorRef) = this.searcher = searcher
 
@@ -46,18 +46,6 @@ class SearchGatewayService(log: LoggingAdapter,
         responseContainer = "Set")
     def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
-
-            /*
-            val p: Int = page match {
-                case Some(x) => x.toInt
-                case None    => DEFAULT_PAGE
-            }
-            val s: Int = size match {
-                case Some(x) => x.toInt
-                case None    => DEFAULT_SIZE
-            }
-            */
-
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
 
             onSuccess(searcher ? SearchRequest(query, page, size)) {

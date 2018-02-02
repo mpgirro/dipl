@@ -27,7 +27,7 @@ class FeedGatewayService(log: LoggingAdapter,
 
     implicit val timeout = internalTimeout
 
-    val route = pathPrefix("feed") { pathEndOrSingleSlash { getAllFeeds ~ postFeed } } ~
+    override val route = pathPrefix("feed") { pathEndOrSingleSlash { getAllFeeds ~ postFeed } } ~
         pathPrefix("feed" / Segment) { id =>
             pathEndOrSingleSlash{ getFeed(id) ~ putFeed(id) ~ deleteFeed(id) }
         }

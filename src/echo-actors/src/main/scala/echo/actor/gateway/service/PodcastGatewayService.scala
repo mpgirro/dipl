@@ -32,7 +32,7 @@ class PodcastGatewayService(log: LoggingAdapter,
 
     implicit val timeout = internalTimeout
 
-    val route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
+    override val route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
                     pathPrefix("podcast" / Segment) { id =>
                         pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~
                             getEpisodesByPodcast(id) ~ getFeedsByPodcast(id)
