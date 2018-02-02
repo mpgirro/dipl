@@ -24,11 +24,20 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="echo_id" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
             <column name="url" type="text"/>
             <column name="last_checked" type="timestamp"/>
             <column name="last_status" type="text"/>
             <column name="podcast_id" type="bigint"/>
         </createTable>
+
+        <createIndex indexName="idx_feed_echo_id"
+                     tableName="feed"
+                     unique="true">
+            <column name="echo_id" type="varchar(255)"/>
+        </createIndex>
 
         <!--
         <createIndex indexName="idx_feed_url"
