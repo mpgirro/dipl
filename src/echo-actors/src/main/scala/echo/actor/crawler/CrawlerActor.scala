@@ -204,7 +204,9 @@ class CrawlerActor extends Actor with ActorLogging {
 
             val scanner = new Scanner(conn.getInputStream, "UTF-8").useDelimiter("\\A")
             if(scanner.hasNext){
-                return Some(scanner.next)
+                val data = scanner.next
+                return Option(data)
+                //return Some(scanner.next) // because scanner.next seems to be able to return null anyway
             }
         } catch {
             case e: SocketTimeoutException => {
