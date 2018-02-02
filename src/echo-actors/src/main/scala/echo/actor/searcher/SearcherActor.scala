@@ -27,11 +27,11 @@ class SearcherActor extends Actor with ActorLogging {
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
 
             val p: Int = page match {
-                case Some(x) => x.toInt
+                case Some(x) => x
                 case None    => DEFAULT_PAGE
             }
             val s: Int = size match {
-                case Some(x) => x.toInt
+                case Some(x) => x
                 case None    => DEFAULT_SIZE
             }
 

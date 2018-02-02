@@ -65,7 +65,7 @@ class RepositoryFactoryBuilder {
         entityManagerFactoryBean.setJpaPropertyMap(jpaPropertiesMap)
 
         // these two need to be called, otherwise the factory object will be null
-        entityManagerFactoryBean.afterPropertiesSet
+        entityManagerFactoryBean.afterPropertiesSet()
         return entityManagerFactoryBean.getObject
     }
 
@@ -88,10 +88,18 @@ class RepositoryFactoryBuilder {
         repositoryFactory
     }
 
-    def getDataSource = this.dataSource
+    /*
+    def transactionManager(emf: EntityManagerFactory): PlatformTransactionManager = {
+        val transactionManager = new JpaTransactionManager
+        transactionManager.setEntityManagerFactory(emf)
+        transactionManager
+    }
+    */
 
-    def getEntityManagerFactory = this.entityManagerFactory
+    def getDataSource: DataSource = this.dataSource
 
-    def getEntityManager = this.entityManager
+    def getEntityManagerFactory: EntityManagerFactory = this.entityManagerFactory
+
+    def getEntityManager: EntityManager = this.entityManager
 
 }
