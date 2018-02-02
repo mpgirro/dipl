@@ -147,18 +147,19 @@ class DirectoryStore extends Actor with ActorLogging {
         }).getOrElse({
 
             val fakePodcastId = Url62.encode(UUID.randomUUID())
-
-            var podcast = new PodcastDTO
+            val podcast = new PodcastDTO
             podcast.setEchoId(fakePodcastId)
             podcast.setTitle("<NOT YET PARSED>")
-            podcast = podcastService.save(podcast)
+            podcastService.save(podcast)
 
-            var feed = new FeedDTO
+            val fakeFeedId = Url62.encode(UUID.randomUUID())
+            val feed = new FeedDTO
+            feed.setEchoId(fakeFeedId)
             feed.setUrl(url)
             feed.setLastChecked(LocalDateTime.now())
             feed.setLastStatus(FeedStatus.NEVER_CHECKED)
             feed.setPodcastId(podcast.getId)
-            feed = feedService.save(feed)
+            feedService.save(feed)
 
             crawler ! FetchNewFeed(url, fakePodcastId)
         })
@@ -238,7 +239,7 @@ class DirectoryStore extends Actor with ActorLogging {
         tx.begin()
 
         episodeService.findOneByEchoId(episodeId).map(e => {
-            val podcast = episodeService.findOne(e.getPodcastId)
+            val podcast = podcastService.findOne(e.getPodcastId) // TODO hier muss ich den podcastService aufrufen, Depp!
             podcast.map(p => {
                 e.setItunesImage(p.getItunesImage)
                 episodeService.save(e)
