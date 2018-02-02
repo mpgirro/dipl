@@ -182,7 +182,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
             // if we've got a 404, there is no point going on
             if (notFound) {
-                return null;
+                return None;
             }
 
             if (redirect) {
@@ -204,9 +204,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
             val scanner = new Scanner(conn.getInputStream, "UTF-8").useDelimiter("\\A")
             if(scanner.hasNext){
-                val data = scanner.next
-                return Option(data)
-                //return Some(scanner.next) // because scanner.next seems to be able to return null anyway
+                return Some(scanner.next)
             }
         } catch {
             case e: SocketTimeoutException => {
