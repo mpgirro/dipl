@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 public class FeedDTO {
 
     private Long id;
+    private String echoId;
     private Long podcastId;
 
     private String url;
@@ -23,6 +24,14 @@ public class FeedDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEchoId() {
+        return this.echoId;
+    }
+
+    public void setEchoId(String echoId) {
+        this.echoId = echoId;
     }
 
     public Long getPodcastId() {
@@ -61,6 +70,7 @@ public class FeedDTO {
     public String toString() {
         return "FeedDTO{" +
             "id=" + id +
+            ", echoId='" + echoId + '\'' +
             ", podcastId=" + podcastId +
             ", url='" + url + '\'' +
             ", lastChecked=" + lastChecked +

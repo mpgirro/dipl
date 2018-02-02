@@ -21,6 +21,7 @@ public interface FeedMapper {
 
     @Mappings( {
         @Mapping(source = "id", target = "id"),
+        @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "podcast.id", target = "podcastId"),
         @Mapping(source = "url", target = "url"),
         @Mapping(source = "lastChecked", target = "lastChecked"),
@@ -34,6 +35,7 @@ public interface FeedMapper {
 
     @Mappings( {
         @Mapping(source = "id", target = "id"),
+        @Mapping(source = "echoId", target = "echoId"),
         @Mapping(source = "podcastId", target = "podcast"),
         @Mapping(source = "url", target = "url"),
         @Mapping(source = "lastChecked", target = "lastChecked"),
