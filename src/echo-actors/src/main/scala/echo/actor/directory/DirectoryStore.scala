@@ -213,6 +213,9 @@ class DirectoryStore extends Actor with ActorLogging {
             podcast.map(p => {
                 e.setItunesImage(p.getItunesImage)
                 episodeService.save(e, tx)
+                tx.commit()
+
+                indexStore ! IndexStoreUpdateEpisodeAddItunesImage(episodeId, p.getItunesImage)
             }).getOrElse({
                 log.error("e.getPodcast produced null!")
             })
@@ -220,7 +223,7 @@ class DirectoryStore extends Actor with ActorLogging {
             log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
         )
 
-        tx.commit()
+
 
     }
 
@@ -275,7 +278,7 @@ class DirectoryStore extends Actor with ActorLogging {
     private def runLiquibaseUpdate(): Unit = {
         val startTime = System.currentTimeMillis
         try {
-            Class.forName("org.h2.Driver");
+            Class.forName("org.h2.Driver")
             val conn: Connection = DriverManager.getConnection(
                 "jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false",
                 "sa",
