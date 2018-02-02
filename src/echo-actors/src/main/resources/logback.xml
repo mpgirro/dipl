@@ -21,7 +21,7 @@
     -->
 
     <!-- Console output -->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
             <pattern>[%highlight(%-5level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{akkaSource}] - %msg%n</pattern>
@@ -29,17 +29,14 @@
     </appender>
 
     <!-- async console output -->
+    <!--
     <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>3</queueSize>
         <appender-ref ref="STDOUT" />
     </appender>
+    -->
 
-    <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->
-
-    <configuration>
-        <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
-        <!-- etc -->
-    </configuration>
+    <!-- for further appenders see http://logback.qos.ch/manual/appenders.html -->q
 
     <logger name="echo.actor" level="INFO" />
     <logger name="echo.core" level="WARN" />
@@ -48,7 +45,7 @@
     <logger name="org.hibernate" level="WARN"/>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="CONSOLE"/>
         <!-- appender-ref ref="FILE"/ -->
     </root>
 
