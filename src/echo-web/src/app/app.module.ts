@@ -13,6 +13,8 @@ import { PodcastDetailComponent } from './podcast-detail/podcast-detail.componen
 import { EpisodeService } from './episode.service';
 import { EpisodeDetailComponent } from './episode-detail/episode-detail.component';
 
+import { DomainService } from './domain.service';
+
 import { AppRoutingModule } from './/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -42,7 +44,7 @@ import { EpisodeTablelistComponent } from './episode-tablelist/episode-tablelist
     HttpClientModule,
     Angular2FontawesomeModule
   ],
-  providers: [SearchService, PodcastService, EpisodeService],
+  providers: [SearchService, PodcastService, EpisodeService, DomainService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { Result } from '../result';
 import { SearchService } from '../search.service';
+import { DomainService } from '../domain.service';
 import {of} from 'rxjs/observable/of';
 import {ResultWrapper} from '../resultwrapper';
 
@@ -28,7 +29,8 @@ export class SearchComponent implements OnInit {
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private searchService: SearchService) { }
+              private searchService: SearchService,
+              private domainService: DomainService) { }
 
   ngOnInit() {
     const q = this.route.snapshot.queryParamMap.get('q');
