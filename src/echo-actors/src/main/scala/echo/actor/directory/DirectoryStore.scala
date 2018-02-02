@@ -44,7 +44,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
     */
 
-    runLiquibaseUpdate
+    runLiquibaseUpdate()
 
     val repositoryFactoryBuilder = new RepositoryFactoryBuilder()
     //val repositoryFactory = repositoryFactoryBuilder.createFactory
@@ -106,9 +106,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetEpisodesByPodcast(echoId) => getEpisodesByPodcast(echoId)
 
-        case DebugPrintAllPodcasts => debugPrintAllPodcasts
+        case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
-        case DebugPrintAllEpisodes => debugPrintAllEpisodes
+        case DebugPrintAllEpisodes => debugPrintAllEpisodes()
 
         case LoadTestFeeds => {
             log.info("Received LoadTestFeeds")
@@ -139,7 +139,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO handle known and unknown
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         feedService.findOneByUrl(url).map(feed => {
             log.info("Proposed feed is already in database: {}", url)
@@ -163,7 +163,7 @@ class DirectoryStore extends Actor with ActorLogging {
             crawler ! FetchNewFeed(url, fakePodcastId)
         })
 
-        tx.commit
+        tx.commit()
 
     }
 
@@ -172,7 +172,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         feedService.findOneByUrl(url).map(feed => {
             feed.setLastChecked(timestamp)
@@ -182,53 +182,51 @@ class DirectoryStore extends Actor with ActorLogging {
             log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
         })
 
-        tx.commit
+        tx.commit()
 
     }
 
     @Transactional
-    def updatePodcast(podcastId: String, podcastDTO: PodcastDTO): Unit = {
-        log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcastDTO)
+    def updatePodcast(podcastId: String, podcast: PodcastDTO): Unit = {
+        log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcast)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
-            val updatedPodcast = podcastDTO
-            updatedPodcast.setId(p.getId)
-            updatedPodcast
+            podcast.setId(p.getId)
+            podcast
         }).getOrElse({
             log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
-            podcastDTO
+            podcast
         })
         podcastService.save(update)
 
-        tx.commit
+        tx.commit()
 
     }
 
     @Transactional
-    def updateEpisode(podcastId: String, episodeDTO: EpisodeDTO): Unit = {
-        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episodeDTO)
+    def updateEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
+        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         podcastService.findOneByEchoId(podcastId).map(p => {
-            val update: EpisodeDTO = episodeService.findOneByEchoId(episodeDTO.getEchoId).map(e => {
-                val updatedEpisode = episodeDTO
-                updatedEpisode.setId(e.getId)
-                updatedEpisode
+            val updatedPodcast: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
+                episode.setId(e.getId)
+                episode
             }).getOrElse({
-                episodeDTO
+                episode
             })
-            update.setPodcastId(p.getId)
-            episodeService.save(update)
+            updatedPodcast.setPodcastId(p.getId)
+            episodeService.save(updatedPodcast)
         }).getOrElse({
             log.error("No Podcast found in database with echoId={}", podcastId)
         })
 
-        tx.commit
+        tx.commit()
 
     }
 
@@ -237,7 +235,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received UsePodcastItunesImage({})", episodeId)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         episodeService.findOneByEchoId(episodeId).map(e => {
             val podcast = episodeService.findOne(e.getPodcastId)
@@ -251,7 +249,7 @@ class DirectoryStore extends Actor with ActorLogging {
             log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
         )
 
-        tx.commit
+        tx.commit()
 
     }
 
@@ -260,7 +258,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetPodcast('{}')", podcastId)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         podcastService.findOneByEchoId(podcastId).map(p => {
             sender ! PodcastResult(p)
@@ -269,7 +267,7 @@ class DirectoryStore extends Actor with ActorLogging {
             sender ! NoDocumentFound(podcastId)
         })
 
-        tx.commit
+        tx.commit()
     }
 
     @Transactional
@@ -277,12 +275,12 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetAllPodcasts()")
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED)
         sender ! AllPodcastsResult(podcasts)
 
-        tx.commit
+        tx.commit()
 
     }
 
@@ -291,7 +289,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetEpisode('{}')", episodeId)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         episodeService.findOneByEchoId(episodeId).map(e => {
             sender ! EpisodeResult(e)
@@ -300,7 +298,7 @@ class DirectoryStore extends Actor with ActorLogging {
             sender ! NoDocumentFound(episodeId)
         })
 
-        tx.commit
+        tx.commit()
 
     }
 
@@ -309,7 +307,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         podcastService.findOneByEchoId(podcastId).map(p => {
             val episodes = episodeService.findAllByPodcast(p)
@@ -319,11 +317,11 @@ class DirectoryStore extends Actor with ActorLogging {
             sender ! NoDocumentFound(podcastId)
         })
 
-        tx.commit
+        tx.commit()
 
     }
 
-    def runLiquibaseUpdate: Unit = {
+    def runLiquibaseUpdate(): Unit = {
         val startTime = System.currentTimeMillis
         try {
             Class.forName("org.h2.Driver");
@@ -339,7 +337,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
             val isDropFirst = true // TODO set this as a parameter
             if (isDropFirst) {
-                liquibase.dropAll
+                liquibase.dropAll()
             }
 
             if(liquibase.isSafeToRunUpdate){
@@ -358,31 +356,31 @@ class DirectoryStore extends Actor with ActorLogging {
         }
     }
 
-    def debugPrintAllPodcasts: Unit = {
+    def debugPrintAllPodcasts(): Unit = {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         println("------------------------")
-        podcastService.findAll.map(p => println(p.getTitle))
+        podcastService.findAll.foreach(p => println(p.getTitle))
         println("------------------------")
 
-        tx.commit
+        tx.commit()
     }
 
-    def debugPrintAllEpisodes: Unit = {
+    def debugPrintAllEpisodes(): Unit = {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
 
         val tx = em.getTransaction
-        tx.begin
+        tx.begin()
 
         println("------------------------")
-        episodeService.findAll.map(e => println(e.getTitle))
+        episodeService.findAll.foreach(e => println(e.getTitle))
         println("------------------------")
 
-        tx.commit
+        tx.commit()
     }
 }
