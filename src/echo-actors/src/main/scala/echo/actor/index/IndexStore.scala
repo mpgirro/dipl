@@ -40,7 +40,7 @@ class IndexStore extends Actor with ActorLogging {
             indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
-            log.debug("Received IndexSoreUpdateDocumentWebsiteData({},_)", echoId)
+            log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
@@ -54,7 +54,7 @@ class IndexStore extends Actor with ActorLogging {
             }
 
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
-            log.debug("Received IndexStoreUpdateEpisodeAddItunesImage({},{})", echoId, itunesImage)
+            log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
 
             indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
             indexSearcher.refresh()
@@ -86,10 +86,9 @@ class IndexStore extends Actor with ActorLogging {
                     sender ! NoIndexResultsFound(query)
                 }
             } catch {
-                case e: SearchException => {
+                case e: SearchException =>
                     log.error("Error trying to search the index [reason: {}]", e.getMessage)
                     sender ! NoIndexResultsFound(query) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
-                }
             }
 
     }

@@ -48,11 +48,14 @@ object ActorProtocol {
     // Index -> DirectoryStore
     case class UsePodcastItunesImage(echoId: String)
 
+    // Gateway(= Web) -> Searcher
+    case class SearchRequest(query: String, page: Option[Int], size: Option[Int])
 
-    case class SearchRequest(query: String, page: Option[Int], size: Option[Int]) // Gateway(= Web) -> Searcher
-    case class SearchResults(results: ResultWrapperDTO)                           // Searcher -> User
+    // Searcher -> User
+    case class SearchResults(results: ResultWrapperDTO)
 
-    case class SearchIndex(query: String, page: Int, size: Int)                   // Searcher -> IndexStore
+    // Searcher -> IndexStore
+    case class SearchIndex(query: String, page: Int, size: Int)
 
     // IndexStore -> Searcher
     trait IndexResult
