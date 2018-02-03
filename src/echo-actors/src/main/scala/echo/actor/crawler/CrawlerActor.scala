@@ -3,20 +3,29 @@ package echo.actor.crawler
 import java.io.{IOException, InputStreamReader}
 import java.net.{HttpURLConnection, SocketTimeoutException, URL}
 import java.time.LocalDateTime
-import java.util.Scanner
+import java.util.{Date, Scanner}
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import echo.actor.ActorProtocol._
+import echo.core.exception.EchoException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 import org.apache.commons.io.IOUtils
-import org.apache.http.{HttpResponse, HttpStatus}
+import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
-import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.{HttpGet, HttpHead, HttpRequestBase}
+import org.apache.http.client.utils.DateUtils
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.nio.client.{CloseableHttpAsyncClient, HttpAsyncClients}
 
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import scala.util.{Failure, Success, Try}
+
 class CrawlerActor extends Actor with ActorLogging {
+
+    val DOWNLOAD_TIMEOUT = 3 // TODO read from config
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
@@ -33,28 +42,9 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
 
-        case FetchNewFeed(url, podcastId) =>
-            log.info("Received FetchNewFeed('{}')", url)
+        case FetchFeed(url, podcastId) =>
+            log.info("Received FetchFeed('{}')", url)
 
-            try {
-                val data = download_v2(url)
-                data match {
-                    case Some(xml) =>
-                        parser ! ParseFeedData(url, podcastId, xml)
-                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                    case None => log.error("Received NULL trying to download (new) feed from URL: {}", url)
-                }
-            } catch {
-                case e: IOException =>
-                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
-                    directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-            }
-
-        case FetchUpdateFeed(url, podcastId) =>
-
-            // TODO NewFeed und UpdateFeed unterscheiden sich noch kaum
-
-            log.info("Received FetchUpdateFeed('{}')", url)
             try {
                 val data = download_v2(url)
                 data match {
@@ -62,7 +52,7 @@ class CrawlerActor extends Actor with ActorLogging {
                         parser ! ParseFeedData(url, podcastId, xml)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     case None =>
-                        //log.error("Received NULL trying to download feed (update)from URL: {}", url)
+                        // log.error("Received NULL trying to download (new) feed from URL: {}", url)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
                 }
             } catch {
@@ -83,7 +73,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 }
             } catch {
                 case e: IOException =>
-                    log.error("IO Exception trying to download content from URL: {} [reason: {}]", url, e.getMessage)
+                    log.error("IO Exception trying to download content from URL : {} [reason: {}]", url, e.getMessage)
                     directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
             }
 
@@ -210,43 +200,135 @@ class CrawlerActor extends Actor with ActorLogging {
         None
     }
 
-    private def download_v2(url: String): Option[String] ={
+
+
+    private def buildHttpClient(): HttpClient = {
+        val requestConfig = RequestConfig.custom.
+            setSocketTimeout(DOWNLOAD_TIMEOUT * 1000)
+            .setConnectTimeout(DOWNLOAD_TIMEOUT * 1000)
+            .build
+        HttpClientBuilder
+            .create
+            .setDefaultRequestConfig(requestConfig)
+            //.setConnectionManager(poolingHttpClientConnectionManager)
+            .build
+    }
+
+    private def executeRequestWithHardTimeout(request: HttpRequestBase): Option[HttpResponse] ={
+
+        val httpClient = buildHttpClient()
+
+        import context.dispatcher
+        val requestTimeouter: Cancellable = context.system.scheduler.
+            scheduleOnce(DOWNLOAD_TIMEOUT seconds) {
+                if (request != null){
+                    request.abort()
+                }
+            }
+
+        val result = httpClient.execute(request)
+        requestTimeouter.cancel()
+
+        return if (request.isAborted) None else Some(result)
+    }
+
+    private def testHead(url: String): Try[(Option[String],Option[String],Option[Date])] = {
+
+        var headMethod = new HttpHead(url)
+
+        executeRequestWithHardTimeout(headMethod) match {
+            case Some(httpResponse) =>
+                val statusCode = httpResponse.getStatusLine.getStatusCode
+
+                statusCode match {
+                    case 200 => // all fine
+                    case 404 => // not found: nothing there worth processing
+                        return Failure(new EchoException(s"HEAD request reported status $statusCode : ${httpResponse.getStatusLine.getReasonPhrase}")) // TODO make a dedicated exception
+                    case _   =>
+                        log.warning("Received unexpected status={} from HEAD request on : {}", statusCode, url)
+                }
+
+                val mimeType: Option[String] = Option(httpResponse.getLastHeader("Content-Type"))
+                    .map(contentTypeHeader => Some(contentTypeHeader.getValue.split(";")(0).trim))
+                    .getOrElse(None)
+                mimeType match {
+                    case Some(mime) =>
+                        mime match {
+                            case "application/rss+xml"  => // feed
+                            case "application/xml"      => // feed
+                            case "text/xml"             => // feed
+                            case "text/html"            => // website
+                            case _@("audio/mpeg" | "application/octet-stream") =>
+                                return Failure(new EchoException(s"Invalid MIME-type '$mime'")) // TODO make a dedicated exception
+                            case _ =>
+                                log.warning("Unexpected MIME type='{}' of response by : {}", mime, url)
+                        }
+                    case None =>
+                        // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself
+                        log.warning("Did not get a Content-Type from HEAD request")
+                }
+
+                //set the new etag if existent
+                val eTag: Option[String] = Option(httpResponse.getLastHeader("etag"))
+                    .map(eTagHeader => Some(eTagHeader.getValue))
+                    .getOrElse(None)
+
+                //set the new "last modified" header field if existent
+                val lastModified: Option[Date] = Option(httpResponse.getLastHeader("last-modified"))
+                    .map(lastModifiedHeader => Some(DateUtils.parseDate(lastModifiedHeader.getValue)))
+                    .getOrElse(None)
+
+                // Release the connection.
+                headMethod.releaseConnection()
+
+                Success((mimeType, eTag, lastModified))
+            case None =>
+                log.warning("Canceled HTTP request due to timeout on: $url")
+                Failure(new EchoException(s"Canceled HTTP request due to timeout on : {}", url))
+        }
+    }
+
+    private def download_v2(url: String): Option[String] = {
 
         try{
-            val client: HttpClient = HttpClientBuilder.create().build()
+            testHead(url) match {
+                case Success((mimeType,eTag,lastModified)) =>
 
-            val response: HttpResponse = client.execute(new HttpGet(url))
+                    // TODO check eTag if the resource has changed
 
-            val statusCode: Int = response.getStatusLine.getStatusCode
-            statusCode match {
-                case 200 => // all fine
-                case 404 => // not found: nothing there worth processing
-                    log.warning("404 behind : {}", url)
+                    // TODO check the lastModified date if the resource has changed
+
+                    // val httpClient = buildHttpClient()
+
+                    val getMethod = new HttpGet(url)
+
+                    executeRequestWithHardTimeout(getMethod) match {
+                        case Some(response) =>
+                            val in = response.getEntity.getContent
+                            val html = IOUtils.toString(new InputStreamReader(in))
+
+                            return Option(html)
+                        case None =>
+                            log.warning("Canceled HTTP request due to timeout on: $url")
+                            return None
+                    }
+                case Failure(reason) =>
+                    log.error("HEAD request evaluation prevented downloading resource : {} [reason : {}]", url, Option(reason.getMessage).getOrElse("NON GIVEN IN EXCEPTION"))
                     return None
-                case _   => log.warning("Got unexpected status={} from downloading url={}", statusCode, url)
             }
-
-            val contentType = response.getEntity.getContentType
-            val mimeType = contentType.getValue.split(";")(0).trim
-            mimeType match {
-                case "application/rss+xml" => // feed
-                case "application/xml"     => // feed
-                case "text/xml"            => // feed
-                case "text/html"           => // website
-                case "audio/mpeg"          =>
-                    log.error("Refused to download 'audio/mpeg' from url={}", url)
-                    return None
-                case _ => log.warning("Got unexpected MIME type='{}' of response from url={}", mimeType, url)
-            }
-
-            val in = response.getEntity.getContent
-            val html: String = IOUtils.toString(new InputStreamReader(in))
-
-            Option(html)
         } catch {
             case e: java.net.UnknownHostException =>
-                log.error("UnknownHostException for url={}", url)
+                log.error("UnknownHostException for : {}", url)
                 // TODO I should rethrow this exception, and then send a message that to mark the feed as invalid (dont crawl it again?)
+                None
+            case e: javax.net.ssl.SSLProtocolException =>
+                log.error("SSLProtocolException for : {}", url)
+                None
+            case e: java.net.SocketException =>
+                log.error("SocketException for : {}", url)
+                None
+            case e: org.apache.http.conn.ConnectTimeoutException =>
+                log.error("ConnectTimeoutException for : {}", url)
                 None
             case e: Exception =>
                 e.printStackTrace()

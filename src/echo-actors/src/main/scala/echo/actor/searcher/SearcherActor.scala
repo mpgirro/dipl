@@ -35,7 +35,7 @@ class SearcherActor extends Actor with ActorLogging {
             }
 
             val originalSender = Some(sender) // this is important to not expose the handler
-            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), "searcher-cameo-message-handler")
+            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), "result")
             indexStore.tell(SearchIndex(query, p, s), handler)
 
     }

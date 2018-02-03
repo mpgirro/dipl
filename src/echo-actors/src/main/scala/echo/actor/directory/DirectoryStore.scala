@@ -143,7 +143,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
             tx.commit()
 
-            crawler ! FetchNewFeed(url, fakePodcastId)
+            crawler ! FetchFeed(url, fakePodcastId)
         })
     }
 
