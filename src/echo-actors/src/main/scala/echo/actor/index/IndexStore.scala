@@ -1,6 +1,6 @@
 package echo.actor.index
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, Cancellable}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.exception.SearchException
@@ -8,36 +8,45 @@ import echo.core.index.{IndexCommitter, LuceneCommitter}
 import echo.core.model.dto.EpisodeDTO
 import echo.core.search.{IndexSearcher, LuceneSearcher}
 
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 class IndexStore extends Actor with ActorLogging {
 
     private val INDEX_PATH = ConfigFactory.load().getString("echo.index")
 
+    private val COMMIT_INTERVAL = 3000 millis // TODO read from config file
+
     private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
+    import context.dispatcher
+    private val commitMessager: Cancellable = context.system.scheduler.
+        schedule(COMMIT_INTERVAL, COMMIT_INTERVAL) {
+            self ! CommitIndex
+        }
+
     override def receive: Receive = {
 
+        case CommitIndex =>
+            log.debug("Received CommitIndex()")
+            indexCommitter.commit()
+
         case IndexStoreAddPodcast(podcast)  =>
-            log.debug("IndexStoreAddPodcast({})", podcast)
+            log.debug("Received IndexStoreAddPodcast({})", podcast)
             indexCommitter.add(podcast)
-            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
 
         case IndexStoreUpdatePodcast(podcast) =>
-            // TODO
-            log.debug("IndexStoreUpdatePodcast({})", podcast)
+            log.debug("Received IndexStoreUpdatePodcast({})", podcast)
             indexCommitter.update(podcast)
-            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
 
         case IndexStoreAddEpisode(episode) =>
-            log.debug("IndexStoreAddEpisode({})", episode)
+            log.debug("Received IndexStoreAddEpisode({})", episode)
             indexCommitter.add(episode)
-            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
 
         case IndexStoreUpdateEpisode(episode) =>
-            // TODO
-            log.debug("IndexStoreUpdateEpisode({})", episode)
+            log.debug("Received IndexStoreUpdateEpisode({})", episode)
             indexCommitter.update(episode)
-            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
@@ -49,7 +58,6 @@ class IndexStore extends Actor with ActorLogging {
                 case Some(doc) =>
                     doc.setWebsiteData(html)
                     indexCommitter.update(doc)
-                    indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
                 case None => log.error("Could not retrieve from index: echoId={}", echoId)
             }
 
@@ -66,7 +74,6 @@ class IndexStore extends Actor with ActorLogging {
                         case e: EpisodeDTO =>
                             doc.setItunesImage(itunesImage)
                             indexCommitter.update(doc)
-                            indexCommitter.commit() // TODO I should do this every once in a while via an message, not every time
                         case _ =>
                             log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
                     }
@@ -78,9 +85,9 @@ class IndexStore extends Actor with ActorLogging {
 
             indexSearcher.refresh()
             try {
-                val results = indexSearcher.search(query, page, size) // TODO get page and size as arguments from message!
+                val results = indexSearcher.search(query, page, size)
                 if(results.getTotalHits > 0){
-                    sender ! IndexResultsFound(query,results) // TODO results ist jetzt ein ResultWrapperDTO
+                    sender ! IndexResultsFound(query,results)
                 } else {
                     log.warning("No Podcast matching query: '"+query+"' found in the index")
                     sender ! NoIndexResultsFound(query)

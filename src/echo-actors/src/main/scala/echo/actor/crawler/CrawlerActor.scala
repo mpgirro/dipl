@@ -283,7 +283,6 @@ class CrawlerActor extends Actor with ActorLogging {
 
                 Success((mimeType, eTag, lastModified))
             case None =>
-                log.warning("Canceled HTTP request due to timeout on: $url")
                 Failure(new EchoException(s"Canceled HTTP request due to timeout on : {}", url))
         }
     }

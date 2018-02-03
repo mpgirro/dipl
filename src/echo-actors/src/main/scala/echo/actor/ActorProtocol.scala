@@ -14,8 +14,7 @@ object ActorProtocol {
     case class ProposeNewFeed(url: String) // sent from User to FeedStore
 
     // DirectoryStore -> Crawler
-    case class FetchNewFeed(url: String, podcastId: String) // send from FeedStore to Crawler
-    case class FetchUpdateFeed(url: String, podcastId: String)
+    case class FetchFeed(url: String, podcastId: String) // send from FeedStore to Crawler
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -41,6 +40,9 @@ object ActorProtocol {
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
+
+    // IndexStore -> IndexStore
+    case class CommitIndex()
 
     // DirectoryStore -> IndexStore
     case class IndexStoreUpdateDocItunesImage(echoId: String, itunesImage: String)

@@ -25,7 +25,8 @@ object IndexStoreReponseHandler {
 }
 
 class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) extends Actor with ActorLogging {
-    def receive = LoggingReceive {
+
+    override def receive = LoggingReceive {
         case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
             log.info("Received " + results.getTotalHits + " results from index for query '" + query + "'")
             timeoutMessager.cancel
