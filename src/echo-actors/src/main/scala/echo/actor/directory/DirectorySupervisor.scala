@@ -15,15 +15,14 @@ import liquibase.resource.ClassLoaderResourceAccessor
   */
 class DirectorySupervisor extends Actor with ActorLogging {
 
-    private val WORKER_NUMBER = 5 // TODO read this from config
+    private val WORKER_COUNT = 5 // TODO read this from config
+    private var workerIndex = 1
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 
-    private var directoryIndex = 1
-
     private var router: Router = {
-        val routees = Vector.fill(WORKER_NUMBER) {
+        val routees = Vector.fill(WORKER_COUNT) {
             val directoryStore = createDirectoryActor()
             context watch directoryStore
             ActorRefRoutee(directoryStore)
@@ -59,9 +58,9 @@ class DirectorySupervisor extends Actor with ActorLogging {
     private def createDirectoryActor(): ActorRef = {
         val directoryStore = context.actorOf(Props[DirectoryStore]
             .withDispatcher("echo.directory.dispatcher"),
-            name = "directory-" + directoryIndex)
+            name = "directory-" + workerIndex)
 
-        directoryIndex += 1
+        workerIndex += 1
 
         Option(crawler).map(c => directoryStore ! ActorRefCrawlerActor(c) )
         Option(indexStore).map(i => directoryStore ! ActorRefIndexStoreActor(i))

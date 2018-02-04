@@ -14,7 +14,8 @@ object ActorProtocol {
     case class ProposeNewFeed(url: String) // sent from User to FeedStore
 
     // DirectoryStore -> Crawler
-    case class FetchFeed(url: String, podcastId: String) // send from FeedStore to Crawler
+    case class FetchFeedForNewPodcast(url: String, podcastId: String)
+    case class FetchFeedForUpdateEpisodes(url: String, podcastId: String)
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
@@ -23,16 +24,16 @@ object ActorProtocol {
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
 
     // Parser -> DirectoryStore
-    case class UpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO)
+    case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)
     case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
     // Crawler -> Parser
-    case class ParseFeedData(feedUrl: String, podcastId: String, feedData: String)
+    case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
+    case class ParseEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
     case class ParseWebsiteData(echoId: String, html: String)
 
     // Index -> Index
     case class ParsePodcastData(podcastId: String, podcastFeedData: String)
-    case class ParseEpisodeData(episodeDocIds: List[String], episodeFeedData: String)
 
     // Parser -> IndexStore
     case class IndexStoreAddPodcast(podcast: PodcastDTO)

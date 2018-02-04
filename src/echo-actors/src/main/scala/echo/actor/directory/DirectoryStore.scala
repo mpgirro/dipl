@@ -59,7 +59,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case FeedStatusUpdate(feedUrl, timestamp, status) => onFeedStatusUpdate(feedUrl, timestamp, status)
 
-        case UpdatePodcastMetadata(echoId, podcast) => onUpdatePodcastMetadata(echoId, podcast)
+        case UpdatePodcastMetadata(echoId, url, podcast) => onUpdatePodcastMetadata(echoId, url, podcast)
 
         case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
 
@@ -112,18 +112,18 @@ class DirectoryStore extends Actor with ActorLogging {
                 podcast.setEchoId(fakePodcastId)
                 //podcast.setTitle("<NOT YET PARSED>")
                 podcast.setTitle(url)
-                podcast.setDescription(url) // for debugging
                 podcastService.save(podcast).map(p => {
+
                     val fakeFeedId = Url62.encode(UUID.randomUUID())
                     val feed = new FeedDTO
                     feed.setEchoId(fakeFeedId)
                     feed.setUrl(url)
                     feed.setLastChecked(LocalDateTime.now())
                     feed.setLastStatus(FeedStatus.NEVER_CHECKED)
-                    feed.setPodcastId(podcast.getId)
+                    feed.setPodcastId(p.getId)
                     feedService.save(feed)
 
-                    crawler ! FetchFeed(url, fakePodcastId)
+                    crawler ! FetchFeedForNewPodcast(url, fakePodcastId)
                 })
             })
         } finally {
@@ -149,8 +149,14 @@ class DirectoryStore extends Actor with ActorLogging {
         }
     }
 
-    private def onUpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO): Unit = {
-        log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcast.getEchoId)
+    private def onUpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
+        log.debug("Received UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
+
+        /* TODO
+         * hier empfange ich die feedUrl die mir der Parser zurückgib, um anschließend die episode laden zu können
+         * das würde ich mir gerne ersparen. dazu müsste ich aus der DB den "primärfeed" irgednwie bekommen können, also
+         * jenen feed den ich immer benutze um updates zu laden
+         */
 
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
@@ -162,6 +168,8 @@ class DirectoryStore extends Actor with ActorLogging {
                 podcast
             })
             podcastService.save(update)
+
+            crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         } finally {
             TransactionSynchronizationManager.unbindResource(emf)
         }

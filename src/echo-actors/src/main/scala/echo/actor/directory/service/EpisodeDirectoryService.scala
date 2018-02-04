@@ -6,6 +6,7 @@ import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{EpisodeRepository, RepositoryFactoryBuilder}
 import echo.core.converter.mapper.{EpisodeMapper, PodcastMapper}
 import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
+import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 import scala.collection.JavaConverters._
@@ -13,6 +14,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
+@Repository
 @Transactional
 class EpisodeDirectoryService(private val log: LoggingAdapter,
                               private val rfb: RepositoryFactoryBuilder) {

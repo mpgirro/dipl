@@ -42,14 +42,33 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
 
-        case FetchFeed(url, podcastId) =>
-            log.info("Received FetchFeed('{}')", url)
+        case FetchFeedForNewPodcast(url, podcastId) =>
+            log.info("Received FetchFeedForNewPodcast('{}', {})", url, podcastId)
 
             try {
                 val data = download_v2(url)
                 data match {
                     case Some(xml) =>
-                        parser ! ParseFeedData(url, podcastId, xml)
+                        parser ! ParseNewPodcastData(url, podcastId, xml)
+                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    case None =>
+                        // log.error("Received NULL trying to download (new) feed from URL: {}", url)
+                        directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                }
+            } catch {
+                case e: IOException =>
+                    log.error("IO Exception trying to download content from feed: {} [reason: {}]", url, e.getMessage)
+                    directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+            }
+
+        case FetchFeedForUpdateEpisodes(url, podcastId) =>
+            log.info("Received FetchFeedForUpdateEpisodes('{}',{})", url, podcastId)
+
+            try {
+                val data = download_v2(url)
+                data match {
+                    case Some(xml) =>
+                        parser ! ParseEpisodeData(url, podcastId, xml)
                         directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     case None =>
                         // log.error("Received NULL trying to download (new) feed from URL: {}", url)

@@ -23,6 +23,8 @@ import scala.collection.JavaConverters._
   */
 class RepositoryFactoryBuilder {
 
+    private val persistanceUnitName = "EchoActorEnginePersistenceUnit" + (100 + (new scala.util.Random).nextInt(( 999 - 100) + 1))
+
     private val dataSource = h2DataSource // TODO make this changeable
 
     private val emf = createEntityManagerFactory(dataSource)
@@ -83,9 +85,9 @@ class RepositoryFactoryBuilder {
         val entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean
         entityManagerFactoryBean.setPersistenceProviderClass(classOf[org.hibernate.jpa.HibernatePersistenceProvider])
         entityManagerFactoryBean.setJpaDialect(new HibernateJpaDialect)
-        entityManagerFactoryBean.setPersistenceUnitName("EchoActorEngine_ManuallyCreatedPersistenceUnit")
+        entityManagerFactoryBean.setPersistenceUnitName(persistanceUnitName)
         entityManagerFactoryBean.setDataSource(dataSource)
-        entityManagerFactoryBean.setPackagesToScan("echo.core.model.domain")
+        entityManagerFactoryBean.setPackagesToScan("echo.core.model.domain", "echo.core.actor.directory")
 
         entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter)
         entityManagerFactoryBean.setJpaPropertyMap(jpaPropertiesMap)

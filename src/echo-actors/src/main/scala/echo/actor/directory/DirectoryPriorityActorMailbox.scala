@@ -20,7 +20,7 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
         case GetEpisode(_)              => 1
         case GetEpisodesByPodcast(_)    => 1
         case FeedStatusUpdate(_,_,_)    => 2
-        case UpdatePodcastMetadata(_,_) => 3
+        case UpdatePodcastMetadata(_,_,_) => 3
         case UpdateEpisodeMetadata(_,_) => 3
 //        case UsePodcastItunesImage(_)   => 4
         case ProposeNewFeed(_)          => 4

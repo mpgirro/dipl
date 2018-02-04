@@ -7,6 +7,7 @@ import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuil
 import echo.core.converter.mapper.PodcastMapper
 import echo.core.model.dto.PodcastDTO
 import echo.core.model.feed.FeedStatus
+import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 import scala.collection.JavaConverters._
@@ -14,6 +15,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
+@Repository
 @Transactional
 class PodcastDirectoryService(private val log: LoggingAdapter,
                               private val rfb: RepositoryFactoryBuilder) {
