@@ -20,51 +20,75 @@ class IndexStore extends Actor with ActorLogging {
     private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
+    private var indexChanged = false
+
     import context.dispatcher
     private val commitMessager: Cancellable = context.system.scheduler.
         schedule(COMMIT_INTERVAL, COMMIT_INTERVAL) {
             self ! CommitIndex
         }
 
+    private def commitIndexIfChanged(): Unit = {
+        if(indexChanged) {
+            indexCommitter.commit()
+            indexChanged = false
+        }
+    }
+
     override def receive: Receive = {
 
         case CommitIndex =>
             log.debug("Received CommitIndex()")
-            indexCommitter.commit()
+            commitIndexIfChanged()
 
         case IndexStoreAddPodcast(podcast)  =>
             log.debug("Received IndexStoreAddPodcast({})", podcast)
             indexCommitter.add(podcast)
+            indexChanged = true
 
         case IndexStoreUpdatePodcast(podcast) =>
             log.debug("Received IndexStoreUpdatePodcast({})", podcast)
             indexCommitter.update(podcast)
+            indexChanged = true
 
         case IndexStoreAddEpisode(episode) =>
             log.debug("Received IndexStoreAddEpisode({})", episode)
             indexCommitter.add(episode)
+            indexChanged = true
 
         case IndexStoreUpdateEpisode(episode) =>
             log.debug("Received IndexStoreUpdateEpisode({})", episode)
             indexCommitter.update(episode)
+            indexChanged = true
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
 
-            indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
+            /* TODO
+             * I could add a tryCount argument to the message (e.g. initial 3), and in case i cannot find a document
+             * then resend the message to self with tryCount-1. if a message with tryCount=0 arrives, the the message is ignored and dropped
+             */
+            commitIndexIfChanged() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
+
             indexSearcher.refresh()
             val entry = Option(indexSearcher.findByEchoId(echoId))
             entry match {
                 case Some(doc) =>
                     doc.setWebsiteData(html)
                     indexCommitter.update(doc)
+                    indexChanged = true
                 case None => log.error("Could not retrieve from index: echoId={}", echoId)
             }
 
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
             log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
 
-            indexCommitter.commit() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
+            /* TODO
+             * I could add a tryCount argument to the message (e.g. initial 3), and in case i cannot find a document
+             * then resend the message to self with tryCount-1. if a message with tryCount=0 arrives, the the message is ignored and dropped
+             */
+            commitIndexIfChanged() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
+
             indexSearcher.refresh()
 
             val entry = Option(indexSearcher.findByEchoId(echoId))
@@ -74,6 +98,7 @@ class IndexStore extends Actor with ActorLogging {
                         case e: EpisodeDTO =>
                             doc.setItunesImage(itunesImage)
                             indexCommitter.update(doc)
+                            indexChanged = true
                         case _ =>
                             log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
                     }
