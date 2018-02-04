@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Ter
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.crawler.CrawlerActor
-import echo.actor.directory.DirectoryStore
+import echo.actor.directory.{DirectoryStore, DirectorySupervisor}
 import echo.actor.gateway.GatewayActor
 import echo.actor.index.IndexStore
 import echo.actor.parser.ParserActor
@@ -37,30 +37,35 @@ class MasterActor extends Actor with ActorLogging {
         val crawler = context.watch(context.actorOf(Props[CrawlerActor]
             .withDispatcher("echo.crawler.dispatcher"),
             name = "crawler"))
+        /*
         val directoryStore = context.watch(context.actorOf(Props[DirectoryStore]
             .withDispatcher("echo.directory.dispatcher"),
             name = "directoryStore"))
+        */
+        val directorySupervisor = context.actorOf(Props[DirectorySupervisor], name = "directorySupervisor")
+        context watch directorySupervisor
+
         val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
 
-        val cli = context.watch(context.actorOf(Props(new CliActor(indexStore, parser, searcher, crawler, directoryStore, gateway))
+        val cli = context.watch(context.actorOf(Props(new CliActor(indexStore, parser, searcher, crawler, directorySupervisor, gateway))
             .withDispatcher("echo.cli.dispatcher"),
             name = "cli"))
 
         // pass around references not provided by constructors due to circular dependencies
         crawler ! ActorRefParserActor(parser)
-        crawler ! ActorRefDirectoryStoreActor(directoryStore)
+        crawler ! ActorRefDirectoryStoreActor(directorySupervisor)
 
         parser ! ActorRefIndexStoreActor(indexStore)
-        parser ! ActorRefDirectoryStoreActor(directoryStore)
+        parser ! ActorRefDirectoryStoreActor(directorySupervisor)
         parser ! ActorRefCrawlerActor(crawler)
 
         searcher ! ActorRefIndexStoreActor(indexStore)
 
         gateway ! ActorRefSearcherActor(searcher)
-        gateway ! ActorRefDirectoryStoreActor(directoryStore)
+        gateway ! ActorRefDirectoryStoreActor(directorySupervisor)
 
-        directoryStore ! ActorRefCrawlerActor(crawler)
-        directoryStore ! ActorRefIndexStoreActor(indexStore)
+        directorySupervisor ! ActorRefCrawlerActor(crawler)
+        directorySupervisor ! ActorRefIndexStoreActor(indexStore)
 
         /*
         cli ! ActorRefIndexStoreActor(indexStore)

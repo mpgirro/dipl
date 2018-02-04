@@ -1,68 +1,58 @@
 package echo.actor.directory.service
 
-import javax.persistence.{EntityManager, EntityTransaction}
+import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{EpisodeRepository, RepositoryFactoryBuilder}
 import echo.core.converter.mapper.{EpisodeMapper, PodcastMapper}
 import echo.core.model.dto.{EpisodeDTO, PodcastDTO}
+import org.springframework.transaction.annotation.Transactional
 
 import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
   */
-class EpisodeDirectoryService(protected override val log: LoggingAdapter,
-                              private val repositoryFactoryBuilder: RepositoryFactoryBuilder) extends DirectoryService[EpisodeDTO] {
+@Transactional
+class EpisodeDirectoryService(private val log: LoggingAdapter,
+                              private val rfb: RepositoryFactoryBuilder) {
 
-    private val repositoryFactory = repositoryFactoryBuilder.createFactory
+    private val em: EntityManager = rfb.getEntityManager
+    private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
+
+    private val repositoryFactory = rfb.createFactory(em)
     private val episodeRepository: EpisodeRepository = repositoryFactory.getRepository(classOf[EpisodeRepository])
 
-    protected override val em: EntityManager = repositoryFactoryBuilder.getEntityManager
+    // private val episodeDao: EpisodeDao =  new EpisodeDaoImpl(emf)
 
-    /*
-    private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
-    private val episodeDao: EpisodeDao =  new EpisodeDaoImpl(emf)
-    */
-
-    override def save(episodeDTO: EpisodeDTO, tx: EntityTransaction): Option[EpisodeDTO] = {
+    @Transactional
+    def save(episodeDTO: EpisodeDTO): Option[EpisodeDTO] = {
         val episode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
         val result = episodeRepository.save(episode)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    override def findOne(id: Long, tx: EntityTransaction): Option[EpisodeDTO] = {
+    @Transactional(readOnly = true)
+    def findOne(id: Long): Option[EpisodeDTO] = {
         val result = episodeRepository.findOne(id)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    override def findOneByEchoId(echoId: String, tx: EntityTransaction): Option[EpisodeDTO] = {
+    @Transactional(readOnly = true)
+    def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEchoId(echoId)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    override def findAll(tx: EntityTransaction): List[EpisodeDTO] = {
+    @Transactional(readOnly = true)
+    def findAll(): List[EpisodeDTO] = {
         val episodes = episodeRepository.findAll
         val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
         result.asScala.toList
     }
 
+    @Transactional(readOnly = true)
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
-        val tx = em.getTransaction
-        tx.begin()
-        try {
-            val results = findAllByPodcast(podcastDTO, tx)
-            tx.commit()
-            return results
-        } catch {
-            case e: Exception =>
-                log.error("Error trying to find all episodes by podcast : {}", podcastDTO)
-                tx.rollback()
-        }
-        List.empty
-    }
-
-    def findAllByPodcast(podcastDTO: PodcastDTO, tx: EntityTransaction): List[EpisodeDTO] = {
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
         val episodes = episodeRepository.findAllByPodcast(podcast)
         val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)

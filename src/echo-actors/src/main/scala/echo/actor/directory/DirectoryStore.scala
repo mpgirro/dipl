@@ -1,22 +1,18 @@
 package echo.actor.directory
 
-import java.sql.{Connection, DriverManager}
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.persistence.{EntityManager, EntityTransaction}
-import javax.transaction.Transactional
+import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
+import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
-import echo.actor.ActorProtocol._
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
-import liquibase.database.jvm.JdbcConnection
-import liquibase.database.{Database, DatabaseFactory}
-import liquibase.resource.ClassLoaderResourceAccessor
-import liquibase.{Contexts, LabelExpression, Liquibase}
+import org.springframework.orm.jpa.EntityManagerHolder
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import scala.io.Source
 
@@ -36,10 +32,9 @@ class DirectoryStore extends Actor with ActorLogging {
     val feedDao: FeedDao = appCtx.getBean(classOf[FeedDao])
     */
 
-    runLiquibaseUpdate()
-
     private val repositoryFactoryBuilder = new RepositoryFactoryBuilder()
     private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
+    private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 
     private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
     private val episodeService = new EpisodeDirectoryService(log, repositoryFactoryBuilder)
@@ -94,12 +89,6 @@ class DirectoryStore extends Actor with ActorLogging {
 
     }
 
-    private def beginTransaction(): EntityTransaction = {
-        val tx = em.getTransaction
-        tx.begin()
-        tx
-    }
-
     private def proposeFeed(url: String): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
@@ -116,218 +105,202 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO check of feed is known yet
         // TODO handle known and unknown
 
-        val tx = beginTransaction()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            feedService.findOneByUrl(url).map(feed => {
+                log.info("Proposed feed is already in database: {}", url)
+                println(feed)
+            }).getOrElse({
+                val fakePodcastId = Url62.encode(UUID.randomUUID())
+                var podcast = new PodcastDTO
+                podcast.setEchoId(fakePodcastId)
+                //podcast.setTitle("<NOT YET PARSED>")
+                podcast.setTitle(url)
+                podcast.setDescription(url) // for debugging
+                podcastService.save(podcast).map(p => {
+                    val fakeFeedId = Url62.encode(UUID.randomUUID())
+                    val feed = new FeedDTO
+                    feed.setEchoId(fakeFeedId)
+                    feed.setUrl(url)
+                    feed.setLastChecked(LocalDateTime.now())
+                    feed.setLastStatus(FeedStatus.NEVER_CHECKED)
+                    feed.setPodcastId(podcast.getId)
+                    feedService.save(feed)
 
-        feedService.findOneByUrl(url, tx).map(feed => {
-            log.info("Proposed feed is already in database: {}", url)
-            println(feed)
-        }).getOrElse({
-            val fakePodcastId = Url62.encode(UUID.randomUUID())
-            var podcast = new PodcastDTO
-            podcast.setEchoId(fakePodcastId)
-            //podcast.setTitle("<NOT YET PARSED>")
-            podcast.setTitle(url)
-            podcast.setDescription(url) // for debugging
-            podcastService.save(podcast, tx).map(p => {
-                val fakeFeedId = Url62.encode(UUID.randomUUID())
-                val feed = new FeedDTO
-                feed.setEchoId(fakeFeedId)
-                feed.setUrl(url)
-                feed.setLastChecked(LocalDateTime.now())
-                feed.setLastStatus(FeedStatus.NEVER_CHECKED)
-                feed.setPodcastId(podcast.getId)
-                feedService.save(feed, tx)
-
-                crawler ! FetchFeed(url, fakePodcastId)
+                    crawler ! FetchFeed(url, fakePodcastId)
+                })
             })
-        })
-
-        tx.commit()
+        } finally {
+            // Make sure to unbind when done with the repository instance
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
 
-        val tx = beginTransaction()
-
-        feedService.findOneByUrl(url, tx).map(feed => {
-            feed.setLastChecked(timestamp)
-            feed.setLastStatus(status)
-            feedService.save(feed, tx)
-        }).getOrElse({
-            log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
-        })
-
-        tx.commit()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            feedService.findOneByUrl(url).map(feed => {
+                feed.setLastChecked(timestamp)
+                feed.setLastStatus(status)
+                feedService.save(feed)
+            }).getOrElse({
+                log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
+            })
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onUpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO): Unit = {
         log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcast.getEchoId)
 
-        val tx = beginTransaction()
-
-        val update: PodcastDTO = podcastService.findOneByEchoId(podcastId, tx).map(p => {
-            podcast.setId(p.getId)
-            podcast
-        }).getOrElse({
-            log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
-            podcast
-        })
-        podcastService.save(update, tx)
-
-        tx.commit()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
+                podcast.setId(p.getId)
+                podcast
+            }).getOrElse({
+                log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
+                podcast
+            })
+            podcastService.save(update)
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
 
-        val tx = beginTransaction()
-
-        podcastService.findOneByEchoId(podcastId, tx).map(p => {
-            val updatedPodcast: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId, tx).map(e => {
-                episode.setId(e.getId)
-                episode
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            podcastService.findOneByEchoId(podcastId).map(p => {
+                val updatedPodcast: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
+                    episode.setId(e.getId)
+                    episode
+                }).getOrElse({
+                    episode
+                })
+                updatedPodcast.setPodcastId(p.getId)
+                episodeService.save(updatedPodcast)
             }).getOrElse({
-                episode
+                log.error("No Podcast found in database with echoId={}", podcastId)
             })
-            updatedPodcast.setPodcastId(p.getId)
-            episodeService.save(updatedPodcast, tx)
-        }).getOrElse({
-            log.error("No Podcast found in database with echoId={}", podcastId)
-        })
-
-        tx.commit()
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def setEpisodesItunesImageToPodcast(episodeId: String): Unit = {
         log.debug("Received UsePodcastItunesImage({})", episodeId)
 
-        val tx = beginTransaction()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            episodeService.findOneByEchoId(episodeId).map(e => {
+                val podcast = podcastService.findOne(e.getPodcastId) // TODO hier muss ich den podcastService aufrufen, Depp!
+                podcast.map(p => {
+                    e.setItunesImage(p.getItunesImage)
+                    episodeService.save(e)
 
-        episodeService.findOneByEchoId(episodeId, tx).map(e => {
-            val podcast = podcastService.findOne(e.getPodcastId, tx) // TODO hier muss ich den podcastService aufrufen, Depp!
-            podcast.map(p => {
-                e.setItunesImage(p.getItunesImage)
-                episodeService.save(e, tx)
-                tx.commit()
-
-                indexStore ! IndexStoreUpdateDocItunesImage(episodeId, p.getItunesImage)
-            }).getOrElse({
-                log.error("e.getPodcast produced null!")
-            })
-        }).getOrElse(
-            log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
-        )
-
-
-
+                    indexStore ! IndexStoreUpdateDocItunesImage(episodeId, p.getItunesImage)
+                }).getOrElse({
+                    log.error("e.getPodcast produced null!")
+                })
+            }).getOrElse(
+                log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
+            )
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
 
-        podcastService.findOneByEchoId(podcastId).map(p => {
-            sender ! PodcastResult(p)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            podcastService.findOneByEchoId(podcastId).map(p => {
+                sender ! PodcastResult(p)
+            }).getOrElse({
+                log.error("Database does not contain Podcast with echoId={}", podcastId)
+                sender ! NoDocumentFound(podcastId)
+            })
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onGetAllPodcasts(): Unit = {
         log.debug("Received GetAllPodcasts()")
 
-        //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
-        val podcasts = podcastService.findAll()
-        sender ! AllPodcastsResult(podcasts)
-
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
+            val podcasts = podcastService.findAll()
+            sender ! AllPodcastsResult(podcasts)
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
 
-        episodeService.findOneByEchoId(episodeId).map(e => {
-            sender ! EpisodeResult(e)
-        }).getOrElse({
-            log.error("Database does not contain Episode with echoId={}", episodeId)
-            sender ! NoDocumentFound(episodeId)
-        })
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+        try {
+            episodeService.findOneByEchoId(episodeId).map(e => {
+                sender ! EpisodeResult(e)
+            }).getOrElse({
+                log.error("Database does not contain Episode with echoId={}", episodeId)
+                sender ! NoDocumentFound(episodeId)
+            })
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
 
-        val tx = beginTransaction()
-
-        podcastService.findOneByEchoId(podcastId, tx).map(p => {
-            val episodes = episodeService.findAllByPodcast(p, tx)
-            sender ! EpisodesByPodcastResult(episodes)
-        }).getOrElse({
-            log.error("Database does not contain Podcast with echoId={}", podcastId)
-            sender ! NoDocumentFound(podcastId)
-        })
-
-        tx.commit()
-
-    }
-
-    private def runLiquibaseUpdate(): Unit = {
-        val startTime = System.currentTimeMillis
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
-            Class.forName("org.h2.Driver")
-            val conn: Connection = DriverManager.getConnection(
-                "jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false",
-                "sa",
-                "")
-
-            val database: Database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn))
-            //database.setDefaultSchemaName("echo")
-
-            val liquibase: Liquibase = new Liquibase("db/liquibase/master.xml", new ClassLoaderResourceAccessor(), database)
-
-            val isDropFirst = true // TODO set this as a parameter
-            if (isDropFirst) {
-                liquibase.dropAll()
-            }
-
-            if(liquibase.isSafeToRunUpdate){
-                liquibase.update(new Contexts(), new LabelExpression())
-            } else {
-                log.warning("Liquibase reports it is NOT safe to run the update")
-            }
-        } catch {
-            case e: Exception =>
-                log.error("Error on Liquibase update: {}", e)
+            podcastService.findOneByEchoId(podcastId).map(p => {
+                val episodes = episodeService.findAllByPodcast(p)
+                sender ! EpisodesByPodcastResult(episodes)
+            }).getOrElse({
+                log.error("Database does not contain Podcast with echoId={}", podcastId)
+                sender ! NoDocumentFound(podcastId)
+            })
         } finally {
-            val stopTime = System.currentTimeMillis
-            val elapsedTime = stopTime - startTime
-            log.info("Run Liquibase in {} ms", elapsedTime)
+            TransactionSynchronizationManager.unbindResource(emf)
         }
     }
+
+
 
     private def debugPrintAllPodcasts(): Unit = {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
 
-        val tx = beginTransaction()
-
-        println("------------------------")
-        podcastService.findAll().foreach(p => println(p.getTitle))
-        println("------------------------")
-
-        tx.commit()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(emf.createEntityManager()))
+        try {
+            podcastService.findAll().foreach(p => println(p.getTitle))
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 
     private def debugPrintAllEpisodes(): Unit = {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
 
-        val tx = beginTransaction()
-
-        println("------------------------")
-        episodeService.findAll().foreach(e => println(e.getTitle))
-        println("------------------------")
-
-        tx.commit()
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(emf.createEntityManager()))
+        try {
+            episodeService.findAll().foreach(e => println(e.getTitle))
+        } finally {
+            TransactionSynchronizationManager.unbindResource(emf)
+        }
     }
 }

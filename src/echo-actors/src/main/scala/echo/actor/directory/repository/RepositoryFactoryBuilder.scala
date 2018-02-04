@@ -5,6 +5,7 @@ import javax.persistence.{EntityManager, EntityManagerFactory}
 import javax.sql.DataSource
 
 import org.springframework.aop.framework.ProxyFactory
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
 import org.springframework.data.repository.core.RepositoryInformation
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.data.repository.core.support.RepositoryProxyPostProcessor
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.orm.jpa.{JpaTransactionManager, LocalContainerEntityManagerFactoryBean}
+import org.springframework.transaction.PlatformTransactionManager
 
 import scala.collection.JavaConverters._
 
@@ -61,6 +63,7 @@ class RepositoryFactoryBuilder {
         entityManagerFactoryBean.setPersistenceUnitName("EchoActorEngine_ManuallyCreatedPersistenceUnit")
         entityManagerFactoryBean.setDataSource(dataSource)
         entityManagerFactoryBean.setPackagesToScan("echo.core.model.domain")
+
         entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter)
         entityManagerFactoryBean.setJpaPropertyMap(jpaPropertiesMap)
 
@@ -70,12 +73,17 @@ class RepositoryFactoryBuilder {
     }
 
     def createFactory: JpaRepositoryFactory = {
+        val em = entityManagerFactory.createEntityManager()
+        return createFactory(em)
+    }
+
+    def createFactory(em: EntityManager): JpaRepositoryFactory = {
         // Create the transaction manager and RespositoryFactory
         val txManager = new JpaTransactionManager()
         txManager.setEntityManagerFactory(entityManagerFactory)
         txManager.setDataSource(dataSource)
         txManager.setJpaPropertyMap(jpaPropertiesMap)
-        val repositoryFactory = new JpaRepositoryFactory(entityManager)
+        val repositoryFactory = new JpaRepositoryFactory(em)
 
         // Make sure calls to the repository instance are intercepted for annotated transactions
         repositoryFactory.addRepositoryProxyPostProcessor(new RepositoryProxyPostProcessor(){
@@ -83,18 +91,8 @@ class RepositoryFactoryBuilder {
                 factory.addAdvice(new TransactionInterceptor(txManager, new MatchAlwaysTransactionAttributeSource))
             }
         })
-
-        // return val
         repositoryFactory
     }
-
-    /*
-    def transactionManager(emf: EntityManagerFactory): PlatformTransactionManager = {
-        val transactionManager = new JpaTransactionManager
-        transactionManager.setEntityManagerFactory(emf)
-        transactionManager
-    }
-    */
 
     def getDataSource: DataSource = this.dataSource
 

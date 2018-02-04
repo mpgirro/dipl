@@ -30,6 +30,7 @@ class IndexStore extends Actor with ActorLogging {
 
     private def commitIndexIfChanged(): Unit = {
         if(indexChanged) {
+            log.debug("Index changed, committing now")
             indexCommitter.commit()
             indexChanged = false
         }
@@ -38,7 +39,6 @@ class IndexStore extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case CommitIndex =>
-            log.debug("Received CommitIndex()")
             commitIndexIfChanged()
 
         case IndexStoreAddPodcast(podcast)  =>

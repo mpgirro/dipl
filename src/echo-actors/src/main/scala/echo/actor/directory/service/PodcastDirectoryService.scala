@@ -1,64 +1,58 @@
 package echo.actor.directory.service
 
-import javax.persistence.{EntityManager, EntityManagerFactory, EntityTransaction}
+import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.event.LoggingAdapter
-import echo.actor.directory.orm.PodcastDao
-import echo.actor.directory.orm.impl.PodcastDaoImpl
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
 import echo.core.converter.mapper.PodcastMapper
 import echo.core.model.dto.PodcastDTO
 import echo.core.model.feed.FeedStatus
+import org.springframework.transaction.annotation.Transactional
 
 import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
   */
-class PodcastDirectoryService(protected override val log: LoggingAdapter,
-                              private val repositoryFactoryBuilder: RepositoryFactoryBuilder) extends DirectoryService[PodcastDTO] {
+@Transactional
+class PodcastDirectoryService(private val log: LoggingAdapter,
+                              private val rfb: RepositoryFactoryBuilder) {
 
-    private val repositoryFactory = repositoryFactoryBuilder.createFactory
+    private val em: EntityManager = rfb.getEntityManager
+    private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
+
+    private val repositoryFactory = rfb.createFactory(em)
     private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
 
-    protected override val em: EntityManager = repositoryFactoryBuilder.getEntityManager
-    private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
-    private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
+    // private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
 
-    /*
-    TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-    try {
-        val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-        val result = podcastRepository.save(podcast)
-        PodcastMapper.INSTANCE.podcastToPodcastDto(result)
-    } finally {
-        // Make sure to unbind when done with the repository instance
-        TransactionSynchronizationManager.unbindResource(emf)
-    }
-    */
-
-    override def save(podcastDTO: PodcastDTO, tx: EntityTransaction): Option[PodcastDTO] = {
+    @Transactional
+    def save(podcastDTO: PodcastDTO): Option[PodcastDTO] = {
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
         val result = podcastRepository.save(podcast)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    override def findOne(id: Long, tx: EntityTransaction): Option[PodcastDTO] = {
+    @Transactional(readOnly = true)
+    def findOne(id: Long): Option[PodcastDTO] = {
         val result = podcastRepository.findOne(id)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    override def findOneByEchoId(echoId: String, tx: EntityTransaction): Option[PodcastDTO] = {
+    @Transactional(readOnly = true)
+    def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
         val result = podcastRepository.findOneByEchoId(echoId)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    override def findAll(tx: EntityTransaction): List[PodcastDTO] = {
+    @Transactional(readOnly = true)
+    def findAll(): List[PodcastDTO] = {
         val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
         result.asScala.toList
     }
 
+    @Transactional(readOnly = true)
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
 
         val startTime = System.currentTimeMillis
