@@ -25,15 +25,6 @@ class CliActor(private val indexStore: ActorRef,
 
     private var shutdown = false
 
-    /*
-    private var indexStore: ActorRef = _
-    private var parser: ActorRef = _
-    private var searcher: ActorRef = _
-    private var crawler: ActorRef = _
-    private var directoryStore: ActorRef = _
-    private var gateway: ActorRef = _
-    */
-
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
         "search"         -> "query [query [query]]",
@@ -44,42 +35,18 @@ class CliActor(private val indexStore: ActorRef,
         "get episode"    -> "<echoId>"
     )
 
+
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
     repl()
 
-    /* TODO it does not work if I put the repl() call in preStart()
-    override def preStart(): Unit = {
-
-    }
-    */
 
     override def receive: Receive = {
-        /*
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
-        case ActorRefParserActor(ref) =>
-            log.debug("Received ActorRefIndexerActor(_)")
-            parser = ref
-        case ActorRefSearcherActor(ref) =>
-            log.debug("Received ActorRefSearcherActor(_)")
-            searcher = ref
-        case ActorRefCrawlerActor(ref) =>
-            log.debug("Received ActorRefCrawlerActor(_)")
-            crawler = ref
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref
-        case ActorRefGatewayActor(ref) =>
-            log.debug("Received ActorRefGatewayActor(_)")
-            gateway = ref
-        */
         case unhandled => log.info("Received " + unhandled)
     }
 
     private def repl() {
 
-        println("> Welcome to Echo:Actor Engine interactive exploration App!")
+        log.info("Echo:CLI read to take commands")
 
         while(!shutdown){
             val input = StdIn.readLine()

@@ -29,7 +29,7 @@ class MasterActor extends Actor with ActorLogging {
     override def preStart(): Unit = {
         val indexStore = context.watch(context.actorOf(Props[IndexStore]
             .withDispatcher("echo.index-store.dispatcher"),
-            name = "indexStore"))
+            name = "index"))
         val parser = context.watch(context.actorOf(Props[ParserActor]
             .withDispatcher("echo.parser.dispatcher"),
             name = "parser"))
@@ -42,7 +42,7 @@ class MasterActor extends Actor with ActorLogging {
             .withDispatcher("echo.directory.dispatcher"),
             name = "directoryStore"))
         */
-        val directorySupervisor = context.actorOf(Props[DirectorySupervisor], name = "directorySupervisor")
+        val directorySupervisor = context.actorOf(Props[DirectorySupervisor], name = "directory-supervisor")
         context watch directorySupervisor
 
         val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
@@ -66,15 +66,6 @@ class MasterActor extends Actor with ActorLogging {
 
         directorySupervisor ! ActorRefCrawlerActor(crawler)
         directorySupervisor ! ActorRefIndexStoreActor(indexStore)
-
-        /*
-        cli ! ActorRefIndexStoreActor(indexStore)
-        cli ! ActorRefParserActor(parser)
-        cli ! ActorRefSearcherActor(searcher)
-        cli ! ActorRefCrawlerActor(crawler)
-        cli ! ActorRefDirectoryStoreActor(directoryStore)
-        cli ! ActorRefGatewayActor(gateway)
-        */
 
         log.info("EchoMaster up and running")
     }

@@ -59,7 +59,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
     private def createDirectoryActor(): ActorRef = {
         val directoryStore = context.actorOf(Props[DirectoryStore]
             .withDispatcher("echo.directory.dispatcher"),
-            name = "directoryStore-" + directoryIndex)
+            name = "directory-" + directoryIndex)
 
         directoryIndex += 1
 
