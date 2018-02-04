@@ -119,57 +119,11 @@ class IndexStore extends Actor with ActorLogging {
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
-
-            /* TODO
-             * I could add a tryCount argument to the message (e.g. initial 3), and in case i cannot find a document
-             * then resend the message to self with tryCount-1. if a message with tryCount=0 arrives, the the message is ignored and dropped
-             */
-
             websiteQueue.enqueue((echoId,html))
-
-            /*
-            commitIndexIfChanged() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
-
-            indexSearcher.refresh()
-            val entry = Option(indexSearcher.findByEchoId(echoId))
-            entry match {
-                case Some(doc) =>
-                    doc.setWebsiteData(html)
-                    indexCommitter.update(doc)
-                    indexChanged = true
-                case None => log.error("Could not retrieve from index: echoId={}", echoId)
-            }
-            */
 
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
             log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
-
-            /* TODO
-             * I could add a tryCount argument to the message (e.g. initial 3), and in case i cannot find a document
-             * then resend the message to self with tryCount-1. if a message with tryCount=0 arrives, the the message is ignored and dropped
-             */
-
             imageQueue.enqueue((echoId, itunesImage))
-
-            /*
-            commitIndexIfChanged() // ensure that the Podcast/Episode document is committed to the document (the message should already be processed at this point
-
-            indexSearcher.refresh()
-
-            val entry = Option(indexSearcher.findByEchoId(echoId))
-            entry match {
-                case Some(doc) =>
-                    doc match {
-                        case e: EpisodeDTO =>
-                            doc.setItunesImage(itunesImage)
-                            indexCommitter.update(doc)
-                            indexChanged = true
-                        case _ =>
-                            log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
-                    }
-                case None => log.error("Could not retrieve from index: echoId={}", echoId)
-            }
-            */
 
         case SearchIndex(query, page, size) =>
             log.info("Received SearchIndex('{}',{},{}) message", query, page, size)
