@@ -25,8 +25,31 @@ class RepositoryFactoryBuilder {
 
     private val dataSource = h2DataSource // TODO make this changeable
 
-    private val entityManagerFactory = createEntityManagerFactory(dataSource)
-    private val entityManager = entityManagerFactory.createEntityManager
+    private val emf = createEntityManagerFactory(dataSource)
+    private val em = emf.createEntityManager
+
+    def getDataSource: DataSource = this.dataSource
+
+    def getEntityManagerFactory: EntityManagerFactory = this.emf
+
+    def getEntityManager: EntityManager = this.em
+
+    def createRepositoryFactory(em: EntityManager): JpaRepositoryFactory = {
+        // Create the transaction manager and RespositoryFactory
+        val txManager = new JpaTransactionManager()
+        txManager.setEntityManagerFactory(emf)
+        txManager.setDataSource(dataSource)
+        txManager.setJpaPropertyMap(jpaPropertiesMap)
+        val repositoryFactory = new JpaRepositoryFactory(em)
+
+        // Make sure calls to the repository instance are intercepted for annotated transactions
+        repositoryFactory.addRepositoryProxyPostProcessor(new RepositoryProxyPostProcessor(){
+            override def postProcess(factory: ProxyFactory, repositoryInformation: RepositoryInformation) = {
+                factory.addAdvice(new TransactionInterceptor(txManager, new MatchAlwaysTransactionAttributeSource))
+            }
+        })
+        repositoryFactory
+    }
 
     private def h2DataSource: DataSource = {
         val dataSource: DriverManagerDataSource = new DriverManagerDataSource
@@ -71,33 +94,5 @@ class RepositoryFactoryBuilder {
         entityManagerFactoryBean.afterPropertiesSet()
         return entityManagerFactoryBean.getObject
     }
-
-    def createFactory: JpaRepositoryFactory = {
-        val em = entityManagerFactory.createEntityManager()
-        return createFactory(em)
-    }
-
-    def createFactory(em: EntityManager): JpaRepositoryFactory = {
-        // Create the transaction manager and RespositoryFactory
-        val txManager = new JpaTransactionManager()
-        txManager.setEntityManagerFactory(entityManagerFactory)
-        txManager.setDataSource(dataSource)
-        txManager.setJpaPropertyMap(jpaPropertiesMap)
-        val repositoryFactory = new JpaRepositoryFactory(em)
-
-        // Make sure calls to the repository instance are intercepted for annotated transactions
-        repositoryFactory.addRepositoryProxyPostProcessor(new RepositoryProxyPostProcessor(){
-            override def postProcess(factory: ProxyFactory, repositoryInformation: RepositoryInformation) = {
-                factory.addAdvice(new TransactionInterceptor(txManager, new MatchAlwaysTransactionAttributeSource))
-            }
-        })
-        repositoryFactory
-    }
-
-    def getDataSource: DataSource = this.dataSource
-
-    def getEntityManagerFactory: EntityManagerFactory = this.entityManagerFactory
-
-    def getEntityManager: EntityManager = this.entityManager
 
 }

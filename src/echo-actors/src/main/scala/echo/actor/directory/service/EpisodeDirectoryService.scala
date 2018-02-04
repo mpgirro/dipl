@@ -20,7 +20,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     private val em: EntityManager = rfb.getEntityManager
     private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
 
-    private val repositoryFactory = rfb.createFactory(em)
+    private val repositoryFactory = rfb.createRepositoryFactory(em)
     private val episodeRepository: EpisodeRepository = repositoryFactory.getRepository(classOf[EpisodeRepository])
 
     // private val episodeDao: EpisodeDao =  new EpisodeDaoImpl(emf)
@@ -32,26 +32,26 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOne(id: Long): Option[EpisodeDTO] = {
         val result = episodeRepository.findOne(id)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEchoId(echoId)
         Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findAll(): List[EpisodeDTO] = {
         val episodes = episodeRepository.findAll
         val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
         result.asScala.toList
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
         val episodes = episodeRepository.findAllByPodcast(podcast)

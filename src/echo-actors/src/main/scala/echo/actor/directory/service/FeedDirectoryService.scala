@@ -20,7 +20,7 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     private val em: EntityManager = rfb.getEntityManager
     private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
 
-    private val repositoryFactory = rfb.createFactory(em)
+    private val repositoryFactory = rfb.createRepositoryFactory(em)
     private val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
 
     // private val feedDao: FeedDao =  new FeedDaoImpl(emf)
@@ -32,26 +32,26 @@ class FeedDirectoryService(private val log: LoggingAdapter,
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOne(id: Long): Option[FeedDTO] = {
         val result = feedRepository.findOne(id)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOneByEchoId(echoId: String): Option[FeedDTO] = {
         val result = feedRepository.findOneByEchoId(echoId)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findAll(): List[FeedDTO] = {
         val feeds = feedRepository.findAll
         val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
         results.asScala.toList
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOneByUrl(url: String): Option[FeedDTO] = {
         val result = feedRepository.findOneByUrl(url)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))

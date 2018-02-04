@@ -21,7 +21,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     private val em: EntityManager = rfb.getEntityManager
     private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
 
-    private val repositoryFactory = rfb.createFactory(em)
+    private val repositoryFactory = rfb.createRepositoryFactory(em)
     private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
 
     // private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
@@ -33,26 +33,26 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOne(id: Long): Option[PodcastDTO] = {
         val result = podcastRepository.findOne(id)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
         val result = podcastRepository.findOneByEchoId(echoId)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findAll(): List[PodcastDTO] = {
         val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
         result.asScala.toList
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
 
         val startTime = System.currentTimeMillis
