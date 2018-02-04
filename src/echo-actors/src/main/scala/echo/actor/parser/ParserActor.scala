@@ -43,9 +43,13 @@ class ParserActor extends Actor with ActorLogging {
 
                         p.setEchoId(podcastId)
 
+                        /* TODO
+                         * do the same as with episodes, directory will have to save out if we already have the podcast in the database
+                         * and only if not, we will add it to the index
+                         */
+
                         directoryStore ! UpdatePodcastMetadata(podcastId, p)
 
-                        // send the document to the lucene index
                         indexStore ! IndexStoreAddPodcast(p)
 
                         // request that the website will get added to the index as well
@@ -63,7 +67,14 @@ class ParserActor extends Actor with ActorLogging {
                                     val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
                                     e.setEchoId(fakeEpisodeId)
 
-                                    // TODO send episode data to directoryStore, once the circular dependency is solved
+                                    /* TODO
+                                     * for now, we always send the update episode and add to index messages, but eventually
+                                     * we'll have to find out weither the episode is already known, (directory will have to say).
+                                     * then we either do not update the episode (or we just do), and we will add to index only
+                                     * of it is a new episode
+                                     *
+                                     * --> for starters, do not update in either directory nor index, for performance, only add new ones
+                                     */
                                     directoryStore ! UpdateEpisodeMetadata(podcastId, e)
 
                                     indexStore ! IndexStoreAddEpisode(e)

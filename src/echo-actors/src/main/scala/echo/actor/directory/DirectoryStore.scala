@@ -84,14 +84,13 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
 
-        case LoadTestFeeds => {
+        case LoadTestFeeds =>
             log.info("Received LoadTestFeeds")
 
             val filename = "../feeds.txt"
             for (feed <- Source.fromFile(filename).getLines) {
                 self ! ProposeNewFeed(feed)
             }
-        }
 
     }
 
@@ -122,29 +121,28 @@ class DirectoryStore extends Actor with ActorLogging {
         feedService.findOneByUrl(url, tx).map(feed => {
             log.info("Proposed feed is already in database: {}", url)
             println(feed)
-
-            tx.commit()
         }).getOrElse({
-
             val fakePodcastId = Url62.encode(UUID.randomUUID())
-            val podcast = new PodcastDTO
+            var podcast = new PodcastDTO
             podcast.setEchoId(fakePodcastId)
-            podcast.setTitle("<NOT YET PARSED>")
-            podcastService.save(podcast, tx)
+            //podcast.setTitle("<NOT YET PARSED>")
+            podcast.setTitle(url)
+            podcast.setDescription(url) // for debugging
+            podcastService.save(podcast, tx).map(p => {
+                val fakeFeedId = Url62.encode(UUID.randomUUID())
+                val feed = new FeedDTO
+                feed.setEchoId(fakeFeedId)
+                feed.setUrl(url)
+                feed.setLastChecked(LocalDateTime.now())
+                feed.setLastStatus(FeedStatus.NEVER_CHECKED)
+                feed.setPodcastId(podcast.getId)
+                feedService.save(feed, tx)
 
-            val fakeFeedId = Url62.encode(UUID.randomUUID())
-            val feed = new FeedDTO
-            feed.setEchoId(fakeFeedId)
-            feed.setUrl(url)
-            feed.setLastChecked(LocalDateTime.now())
-            feed.setLastStatus(FeedStatus.NEVER_CHECKED)
-            feed.setPodcastId(podcast.getId)
-            feedService.save(feed, tx)
-
-            tx.commit()
-
-            crawler ! FetchFeed(url, fakePodcastId)
+                crawler ! FetchFeed(url, fakePodcastId)
+            })
         })
+
+        tx.commit()
     }
 
     private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
@@ -164,7 +162,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     private def onUpdatePodcastMetadata(podcastId: String, podcast: PodcastDTO): Unit = {
-        log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcast)
+        log.debug("Received UpdatePodcastMetadata({},{})", podcastId, podcast.getEchoId)
 
         val tx = beginTransaction()
 
@@ -181,7 +179,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
-        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode)
+        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
 
         val tx = beginTransaction()
 
@@ -298,9 +296,8 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.warning("Liquibase reports it is NOT safe to run the update")
             }
         } catch {
-            case e: Exception => {
+            case e: Exception =>
                 log.error("Error on Liquibase update: {}", e)
-            }
         } finally {
             val stopTime = System.currentTimeMillis
             val elapsedTime = stopTime - startTime

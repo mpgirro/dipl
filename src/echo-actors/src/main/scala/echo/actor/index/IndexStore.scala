@@ -42,22 +42,22 @@ class IndexStore extends Actor with ActorLogging {
             commitIndexIfChanged()
 
         case IndexStoreAddPodcast(podcast)  =>
-            log.debug("Received IndexStoreAddPodcast({})", podcast)
+            log.debug("Received IndexStoreAddPodcast({})", podcast.getEchoId)
             indexCommitter.add(podcast)
             indexChanged = true
 
         case IndexStoreUpdatePodcast(podcast) =>
-            log.debug("Received IndexStoreUpdatePodcast({})", podcast)
+            log.debug("Received IndexStoreUpdatePodcast({})", podcast.getEchoId)
             indexCommitter.update(podcast)
             indexChanged = true
 
         case IndexStoreAddEpisode(episode) =>
-            log.debug("Received IndexStoreAddEpisode({})", episode)
+            log.debug("Received IndexStoreAddEpisode({})", episode.getEchoId)
             indexCommitter.add(episode)
             indexChanged = true
 
         case IndexStoreUpdateEpisode(episode) =>
-            log.debug("Received IndexStoreUpdateEpisode({})", episode)
+            log.debug("Received IndexStoreUpdateEpisode({})", episode.getEchoId)
             indexCommitter.update(episode)
             indexChanged = true
 
