@@ -65,7 +65,7 @@ public class RomeFeedParser implements FeedParser {
             final List<Link> atomLinks = getAtomLinks(syndFeed);
             for(Link atomLink : atomLinks){
                 if(atomLink.getRel().equals("http://podlove.org/deep-link")){
-                    // TODO
+                    // TODO this should be a link to the episode website (but is it always though?!)
                 } else if(atomLink.getRel().equals("payment")){
                     // TODO
                 } else if(atomLink.getRel().equals("self")){
@@ -93,7 +93,7 @@ public class RomeFeedParser implements FeedParser {
 
             return podcast;
 
-        } catch (FeedException e) {
+        } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed", e);
         }
     }
@@ -139,7 +139,7 @@ public class RomeFeedParser implements FeedParser {
                 results.add(episode);
             }
             return results.toArray(new EpisodeDTO[0]);
-        } catch (FeedException e) {
+        } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed (trying to extract the episodes)", e);
         }
     }
