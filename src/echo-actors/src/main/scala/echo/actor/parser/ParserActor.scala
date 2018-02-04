@@ -79,12 +79,6 @@ class ParserActor extends Actor with ActorLogging {
 
                                     indexStore ! IndexStoreAddEpisode(e)
 
-                                    // if no iTunes artwork is set for this episode, communicate that the one of the while Podcast should be used
-                                    if(e.getItunesImage == null || e.getItunesImage.eq("")){
-                                        log.debug("Episodes itunesImage is not set -> sending message so that the Podcast's image will be used instead")
-                                        directoryStore ! UsePodcastItunesImage(e.getEchoId)
-                                    }
-
                                     // request that the website will get added to the index as well
                                     Option(e.getLink) match {
                                         case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)

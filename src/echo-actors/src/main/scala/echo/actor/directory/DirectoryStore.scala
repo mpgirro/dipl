@@ -63,10 +63,6 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
 
-        // this is the case when an Episode has no iTunesImage URL set in the feed.
-        // then we should set the image url of the whole podcast
-        case UsePodcastItunesImage(echoId) => setEpisodesItunesImageToPodcast(echoId)
-
         case GetPodcast(echoId) => onGetPodcast(echoId)
 
         case GetAllPodcasts => onGetAllPodcasts()
@@ -177,40 +173,25 @@ class DirectoryStore extends Actor with ActorLogging {
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             podcastService.findOneByEchoId(podcastId).map(p => {
-                val updatedPodcast: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
+                val updatedEpisode: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
                     episode.setId(e.getId)
                     episode
                 }).getOrElse({
                     episode
                 })
-                updatedPodcast.setPodcastId(p.getId)
-                episodeService.save(updatedPodcast)
+                updatedEpisode.setPodcastId(p.getId)
+
+                // check if the episode has a cover image defined, and set the one of the episode
+                Option(updatedEpisode.getItunesImage).getOrElse({
+                    indexStore ! IndexStoreUpdateDocItunesImage(updatedEpisode.getEchoId, p.getItunesImage)
+                    updatedEpisode.setItunesImage(p.getItunesImage)
+                })
+                log.debug("Episode {} itunesImage : {}", updatedEpisode.getEchoId, updatedEpisode.getItunesImage)
+
+                episodeService.save(updatedEpisode)
             }).getOrElse({
                 log.error("No Podcast found in database with echoId={}", podcastId)
             })
-        } finally {
-            TransactionSynchronizationManager.unbindResource(emf)
-        }
-    }
-
-    private def setEpisodesItunesImageToPodcast(episodeId: String): Unit = {
-        log.debug("Received UsePodcastItunesImage({})", episodeId)
-
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
-            episodeService.findOneByEchoId(episodeId).map(e => {
-                val podcast = podcastService.findOne(e.getPodcastId) // TODO hier muss ich den podcastService aufrufen, Depp!
-                podcast.map(p => {
-                    e.setItunesImage(p.getItunesImage)
-                    episodeService.save(e)
-
-                    indexStore ! IndexStoreUpdateDocItunesImage(episodeId, p.getItunesImage)
-                }).getOrElse({
-                    log.error("e.getPodcast produced null!")
-                })
-            }).getOrElse(
-                log.error("Did not find Episode with echoId={} in the database (could not set its itunesImage therefore)", episodeId)
-            )
         } finally {
             TransactionSynchronizationManager.unbindResource(emf)
         }

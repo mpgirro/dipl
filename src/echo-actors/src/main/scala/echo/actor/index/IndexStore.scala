@@ -38,14 +38,14 @@ class IndexStore extends Actor with ActorLogging {
             indexChanged = false
         }
 
-        if(!websiteQueue.isEmpty){
+        if(websiteQueue.nonEmpty){
             log.debug("Processing pending entries in website queue")
             indexSearcher.refresh()
             processWebsiteQueue(websiteQueue)
             indexCommitter.commit()
         }
 
-        if(!imageQueue.isEmpty){
+        if(imageQueue.nonEmpty){
             log.debug("Processing pending entries in image queue")
             indexSearcher.refresh()
             processImageQueue(imageQueue)

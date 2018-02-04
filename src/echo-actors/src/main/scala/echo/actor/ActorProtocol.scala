@@ -47,9 +47,6 @@ object ActorProtocol {
     // DirectoryStore -> IndexStore
     case class IndexStoreUpdateDocItunesImage(echoId: String, itunesImage: String)
 
-    // Index -> DirectoryStore
-    case class UsePodcastItunesImage(echoId: String)
-
     // Gateway(= Web) -> Searcher
     case class SearchRequest(query: String, page: Option[Int], size: Option[Int])
 
