@@ -71,6 +71,7 @@ object ActorProtocol {
     case class ActorRefFeedStoreActor(ref: ActorRef)
     case class ActorRefIndexStoreActor(ref: ActorRef)
     case class ActorRefSearcherActor(ref: ActorRef)
+    case class ActorRefGatewayActor(ref: ActorRef)
 
     // Gateway -> DirectoryStore
     case class GetPodcast(echoId: String)

@@ -120,6 +120,7 @@ class ParserActor extends Actor with ActorLogging {
 
         case ParseWebsiteData(echoId: String, html: String) =>
             // TODO we don't to any processing of raw website source code yet
+            log.debug("Received ParseWebsiteData({},_)", echoId)
 
             import org.jsoup.Jsoup
             val readableText = Jsoup.parse(html).text()
