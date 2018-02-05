@@ -11,9 +11,11 @@ import echo.actor.ActorProtocol._
 class CrawlerPriorityActorMailbox(settings: ActorSystem.Settings, config: Config) extends UnboundedPriorityMailbox(
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
-        case ActorRefDirectoryStoreActor(_) => 0
-        case FetchFeedForNewPodcast(_,_)              => 1
-        case CrawlFyyd(_)                   => 1
-        case FetchWebsite(_,_)              => 2
-        case _                              => 3
+        case ActorRefParserActor(_)          => 0
+        case ActorRefDirectoryStoreActor(_)  => 0
+        case CrawlFyyd(_)                    => 1
+        case FetchFeedForNewPodcast(_,_)     => 2
+        case FetchFeedForUpdateEpisodes(_,_) => 3
+        case FetchWebsite(_,_)               => 4
+        case _                               => 5
     })
