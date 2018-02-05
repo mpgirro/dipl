@@ -46,7 +46,7 @@ class CrawlerActor extends Actor with ActorLogging {
             log.info("Received FetchFeedForNewPodcast('{}', {})", url, podcastId)
 
             try {
-                val data = download_v2(url)
+                val data = download(url)
                 data match {
                     case Some(xml) =>
                         parser ! ParseNewPodcastData(url, podcastId, xml)
@@ -65,7 +65,7 @@ class CrawlerActor extends Actor with ActorLogging {
             log.info("Received FetchFeedForUpdateEpisodes('{}',{})", url, podcastId)
 
             try {
-                val data = download_v2(url)
+                val data = download(url)
                 data match {
                     case Some(xml) =>
                         parser ! ParseEpisodeData(url, podcastId, xml)
@@ -84,7 +84,7 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Received FetchWebsite({},'{}')", echoId, url)
 
             try{
-                val data = download_v2(url)
+                val data = download(url)
                 data match {
                     case Some(html) => parser ! ParseWebsiteData(echoId, html)
                     case None       => // we simply have no website data to add to the index --> ignore and move on
@@ -126,100 +126,6 @@ class CrawlerActor extends Actor with ActorLogging {
         */
 
     }
-
-    /**
-      * Returns the text (content) from a REST URL as a String.
-      * Inspired by http://matthewkwong.blogspot.com/2009/09/scala-scalaiosource-fromurl-blockshangs.html
-      * and http://alvinalexander.com/blog/post/java/how-open-url-read-contents-httpurl-connection-java
-      *
-      * The `connectTimeout` and `readTimeout` comes from the Java URLConnection class Javadoc.
-      * The connection follows HTTP redirects
-      * @param url The full URL to connect to.
-      * @param connectTimeout Sets a specified timeout value, in milliseconds,
-      * to be used when opening a communications link to the resource referenced
-      * by this URLConnection. If the timeout expires before the connection can
-      * be established, a java.net.SocketTimeoutException
-      * is raised. A timeout of zero is interpreted as an infinite timeout.
-      * Defaults to 5000 ms.
-      * @param readTimeout If the timeout expires before there is data available
-      * for read, a java.net.SocketTimeoutException is raised. A timeout of zero
-      * is interpreted as an infinite timeout. Defaults to 5000 ms.
-      * @param requestMethod Defaults to "GET". (Other methods have not been tested.)
-      *
-      * @example get("http://www.example.com/getInfo")
-      * @example get("http://www.example.com/getInfo", 5000)
-      * @example get("http://www.example.com/getInfo", 5000, 5000)
-      * @throws IOException
-      */
-    @throws(classOf[IOException])
-    private def download(url: String,
-                         connectTimeout: Int = 5000,
-                         readTimeout: Int = 5000,
-                         requestMethod: String = "GET"): Option[String] = {
-
-        try {
-            val u = new URL(url)
-            var conn = u.openConnection.asInstanceOf[HttpURLConnection]
-            HttpURLConnection.setFollowRedirects(false)
-            conn.setConnectTimeout(connectTimeout)
-            conn.setReadTimeout(readTimeout)
-            conn.setRequestMethod(requestMethod)
-            //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-
-            // request URL and see what happens
-            conn.connect()
-
-            var redirect = false
-            var notFound = false
-
-            // normally, 3xx is redirect
-            val status = conn.getResponseCode
-            status match {
-                case HttpURLConnection.HTTP_OK         => /* all is well */
-                case HttpURLConnection.HTTP_MOVED_TEMP => redirect = true;
-                case HttpURLConnection.HTTP_MOVED_PERM => redirect = true;
-                case HttpURLConnection.HTTP_SEE_OTHER  => redirect = true;
-                case HttpURLConnection.HTTP_NOT_FOUND  => notFound = true;
-                case _ => log.warning("Unhandeled status received from download: {}", status)
-            }
-
-            // if we've got a 404, there is no point going on
-            if (notFound) {
-                return None
-            }
-
-            if (redirect) {
-                // get redirect url from "location" header field
-                val newUrl = conn.getHeaderField("Location")
-
-                // get the cookie if need, for login
-                val cookies = conn.getHeaderField("Set-Cookie")
-
-                // open the new connnection again
-                conn = new URL(newUrl).openConnection().asInstanceOf[HttpURLConnection]
-                conn.setConnectTimeout(connectTimeout)
-                conn.setReadTimeout(readTimeout)
-                conn.setRequestMethod(requestMethod)
-                conn.setRequestProperty("Cookie", cookies)
-                //conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-                conn.addRequestProperty("User-Agent", "Mozilla")
-            }
-
-            val scanner = new Scanner(conn.getInputStream, "UTF-8").useDelimiter("\\A")
-            if(scanner.hasNext){
-                return Some(scanner.next)
-            }
-        } catch {
-            case e: SocketTimeoutException =>
-                log.error("Timout while loading src from URL: {} [reason: {}]", url, e.getMessage)
-            case e: java.lang.StackOverflowError =>
-                log.error("StackOverflowError trying to download: {} [reason: {}]", url, e.getMessage)
-        }
-        None
-    }
-
-
 
     private def buildHttpClient(): HttpClient = {
         val requestConfig = RequestConfig.custom.
@@ -306,7 +212,7 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
-    private def download_v2(url: String): Option[String] = {
+    private def download(url: String): Option[String] = {
 
         try{
             testHead(url) match {
