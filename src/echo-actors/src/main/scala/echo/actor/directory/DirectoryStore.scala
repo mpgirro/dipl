@@ -8,7 +8,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.devskiller.friendly_id.Url62
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
-import echo.actor.directory.service.{EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
+import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
 import org.springframework.orm.jpa.EntityManagerHolder
@@ -101,11 +101,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO check of feed is known yet
         // TODO handle known and unknown
 
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        feedService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             feedService.findOneByUrl(url).map(feed => {
                 log.info("Proposed feed is already in database: {}", url)
                 println(feed)
@@ -129,20 +125,13 @@ class DirectoryStore extends Actor with ActorLogging {
                     crawler ! FetchFeedForNewPodcast(url, fakePodcastId)
                 })
             })
-        } finally {
-            em.close()
-            // Make sure to unbind when done with the repository instance
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService, feedService))
     }
 
     private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
-
-        val em: EntityManager = emf.createEntityManager()
-        feedService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             feedService.findOneByUrl(url).map(feed => {
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
@@ -150,10 +139,8 @@ class DirectoryStore extends Actor with ActorLogging {
             }).getOrElse({
                 log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
             })
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(feedService))
     }
 
     private def onUpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
@@ -164,11 +151,7 @@ class DirectoryStore extends Actor with ActorLogging {
          * das würde ich mir gerne ersparen. dazu müsste ich aus der DB den "primärfeed" irgednwie bekommen können, also
          * jenen feed den ich immer benutze um updates zu laden
          */
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
                 podcast.setId(p.getId)
                 podcast
@@ -179,20 +162,13 @@ class DirectoryStore extends Actor with ActorLogging {
             podcastService.save(update)
 
             crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService))
     }
 
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        episodeService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 val updatedEpisode: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
                     episode.setId(e.getId)
@@ -213,74 +189,49 @@ class DirectoryStore extends Actor with ActorLogging {
             }).getOrElse({
                 log.error("No Podcast found in database with echoId={}", podcastId)
             })
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService, episodeService))
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 sender ! PodcastResult(p)
             }).getOrElse({
                 log.error("Database does not contain Podcast with echoId={}", podcastId)
                 sender ! NoDocumentFound(podcastId)
             })
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService))
     }
 
     private def onGetAllPodcasts(): Unit = {
         log.debug("Received GetAllPodcasts()")
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
             val podcasts = podcastService.findAll()
             sender ! AllPodcastsResult(podcasts)
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService))
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
-
-        val em: EntityManager = emf.createEntityManager()
-        episodeService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             episodeService.findOneByEchoId(episodeId).map(e => {
                 sender ! EpisodeResult(e)
             }).getOrElse({
                 log.error("Database does not contain Episode with echoId={}", episodeId)
                 sender ! NoDocumentFound(episodeId)
             })
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(episodeService))
     }
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        episodeService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 val episodes = episodeService.findAllByPodcast(p)
                 sender ! EpisodesByPodcastResult(episodes)
@@ -288,10 +239,8 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("Database does not contain Podcast with echoId={}", podcastId)
                 sender ! NoDocumentFound(podcastId)
             })
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService, episodeService))
     }
 
 
@@ -299,30 +248,38 @@ class DirectoryStore extends Actor with ActorLogging {
     private def debugPrintAllPodcasts(): Unit = {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
-
-        val em: EntityManager = emf.createEntityManager()
-        podcastService.refresh(em)
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
+        def toDo = () => {
             podcastService.findAll().foreach(p => println(p.getTitle))
-        } finally {
-            em.close()
-            TransactionSynchronizationManager.unbindResource(emf)
         }
+        doInTransaction(toDo, List(podcastService))
     }
 
     private def debugPrintAllEpisodes(): Unit = {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
+        def toDo = () => {
+            episodeService.findAll().foreach(e => println(e.getTitle))
+        }
+        doInTransaction(toDo, List(episodeService))
+    }
 
+    /**
+      *
+      * @param callable the function to be executed inside a transaction
+      * @param services all services used within the callable function, which therefore require a refresh before doing the work
+      */
+    private def doInTransaction(callable: () => Any, services: List[DirectoryService] ): Unit = {
         val em: EntityManager = emf.createEntityManager()
-        episodeService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
-            episodeService.findAll().foreach(e => println(e.getTitle))
+            services.foreach(_.refresh(em))
+            callable()
         } finally {
-            em.close()
+            if(em.isOpen){
+                em.close()
+            }
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
+
 }

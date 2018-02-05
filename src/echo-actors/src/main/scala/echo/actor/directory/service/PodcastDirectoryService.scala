@@ -19,30 +19,20 @@ import scala.collection.JavaConverters._
 @Repository
 @Transactional
 class PodcastDirectoryService(private val log: LoggingAdapter,
-                              private val rfb: RepositoryFactoryBuilder) {
-
-    //private val em: EntityManager = rfb.getEntityManager
-    private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
-
-    //private val repositoryFactory = rfb.createRepositoryFactory(em)
-    //private val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
+                              private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     // private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var podcastRepository: PodcastRepository = _
 
-    def refresh(em: EntityManager): Unit = {
+    override def refresh(em: EntityManager): Unit = {
         repositoryFactory = rfb.createRepositoryFactory(em)
         podcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
     }
 
     @Transactional
     def save(podcastDTO: PodcastDTO): Option[PodcastDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
-        */
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
         val result = podcastRepository.save(podcast)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
@@ -50,30 +40,18 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findOne(id: Long): Option[PodcastDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
-        */
         val result = podcastRepository.findOne(id)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
     @Transactional
     def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
-        */
         val result = podcastRepository.findOneByEchoId(echoId)
         Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
     }
 
     @Transactional
     def findAll(): List[PodcastDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
-        */
         val podcasts = podcastRepository.findAll
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
         result.asScala.toList
@@ -81,10 +59,6 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val podcastRepository: PodcastRepository = repositoryFactory.getRepository(classOf[PodcastRepository])
-        */
         val startTime = System.currentTimeMillis
 
         val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)

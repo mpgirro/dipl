@@ -1,6 +1,6 @@
 package echo.actor.directory.service
 
-import javax.persistence.{EntityManager, EntityManagerFactory}
+import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{FeedRepository, RepositoryFactoryBuilder}
@@ -18,30 +18,20 @@ import scala.collection.JavaConverters._
 @Repository
 @Transactional
 class FeedDirectoryService(private val log: LoggingAdapter,
-                           private val rfb: RepositoryFactoryBuilder) {
-
-    //private val em: EntityManager = rfb.getEntityManager
-    private def emf: EntityManagerFactory = rfb.getEntityManagerFactory
-
-    //private val repositoryFactory = rfb.createRepositoryFactory(em)
-    //private val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
+                           private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     // private val feedDao: FeedDao =  new FeedDaoImpl(emf)
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var feedRepository: FeedRepository = _
 
-    def refresh(em: EntityManager): Unit = {
+    override def refresh(em: EntityManager): Unit = {
         repositoryFactory = rfb.createRepositoryFactory(em)
         feedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
     }
 
     @Transactional
     def save(feedDTO: FeedDTO): Option[FeedDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
-        */
         val feed = FeedMapper.INSTANCE.feedDtoToFeed(feedDTO)
         val result = feedRepository.save(feed)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
@@ -49,30 +39,18 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findOne(id: Long): Option[FeedDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
-        */
         val result = feedRepository.findOne(id)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
     @Transactional
     def findOneByEchoId(echoId: String): Option[FeedDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
-        */
         val result = feedRepository.findOneByEchoId(echoId)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 
     @Transactional
     def findAll(): List[FeedDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
-        */
         val feeds = feedRepository.findAll
         val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
         results.asScala.toList
@@ -80,10 +58,6 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findOneByUrl(url: String): Option[FeedDTO] = {
-        /*
-        val repositoryFactory = rfb.createRepositoryFactory(em)
-        val feedRepository: FeedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
-        */
         val result = feedRepository.findOneByUrl(url)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
