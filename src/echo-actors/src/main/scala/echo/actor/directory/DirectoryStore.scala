@@ -33,7 +33,7 @@ class DirectoryStore extends Actor with ActorLogging {
     */
 
     private val repositoryFactoryBuilder = new RepositoryFactoryBuilder()
-    private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
+    //private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 
     private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
@@ -101,6 +101,9 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO check of feed is known yet
         // TODO handle known and unknown
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
+        feedService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             feedService.findOneByUrl(url).map(feed => {
@@ -127,6 +130,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 })
             })
         } finally {
+            em.close()
             // Make sure to unbind when done with the repository instance
             TransactionSynchronizationManager.unbindResource(emf)
         }
@@ -135,6 +139,8 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
 
+        val em: EntityManager = emf.createEntityManager()
+        feedService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             feedService.findOneByUrl(url).map(feed => {
@@ -145,6 +151,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
             })
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -158,6 +165,8 @@ class DirectoryStore extends Actor with ActorLogging {
          * jenen feed den ich immer benutze um updates zu laden
          */
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
@@ -171,6 +180,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
             crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -178,6 +188,9 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
+        episodeService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             podcastService.findOneByEchoId(podcastId).map(p => {
@@ -201,6 +214,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("No Podcast found in database with echoId={}", podcastId)
             })
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -208,6 +222,8 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             podcastService.findOneByEchoId(podcastId).map(p => {
@@ -217,6 +233,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(podcastId)
             })
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -224,12 +241,15 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetAllPodcasts(): Unit = {
         log.debug("Received GetAllPodcasts()")
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
             val podcasts = podcastService.findAll()
             sender ! AllPodcastsResult(podcasts)
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -237,6 +257,8 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
 
+        val em: EntityManager = emf.createEntityManager()
+        episodeService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             episodeService.findOneByEchoId(episodeId).map(e => {
@@ -246,6 +268,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(episodeId)
             })
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -253,6 +276,9 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
 
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
+        episodeService.refresh(em)
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             podcastService.findOneByEchoId(podcastId).map(p => {
@@ -263,6 +289,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(podcastId)
             })
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -273,10 +300,13 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
 
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(emf.createEntityManager()))
+        val em: EntityManager = emf.createEntityManager()
+        podcastService.refresh(em)
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             podcastService.findAll().foreach(p => println(p.getTitle))
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }
@@ -285,10 +315,13 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
 
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(emf.createEntityManager()))
+        val em: EntityManager = emf.createEntityManager()
+        episodeService.refresh(em)
+        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             episodeService.findAll().foreach(e => println(e.getTitle))
         } finally {
+            em.close()
             TransactionSynchronizationManager.unbindResource(emf)
         }
     }

@@ -28,13 +28,13 @@ class RepositoryFactoryBuilder {
     private val dataSource = h2DataSource // TODO make this changeable
 
     private val emf = createEntityManagerFactory(dataSource)
-    private val em = emf.createEntityManager
+    //private val em = emf.createEntityManager
 
     def getDataSource: DataSource = this.dataSource
 
     def getEntityManagerFactory: EntityManagerFactory = this.emf
 
-    def getEntityManager: EntityManager = this.em
+    //def getEntityManager: EntityManager = this.em
 
     def createRepositoryFactory(em: EntityManager): JpaRepositoryFactory = {
         // Create the transaction manager and RespositoryFactory
