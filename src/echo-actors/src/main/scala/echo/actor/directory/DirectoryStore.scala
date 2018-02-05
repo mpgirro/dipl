@@ -183,7 +183,6 @@ class DirectoryStore extends Actor with ActorLogging {
                     indexStore ! IndexStoreUpdateDocItunesImage(updatedEpisode.getEchoId, p.getItunesImage)
                     updatedEpisode.setItunesImage(p.getItunesImage)
                 })
-                log.debug("Episode {} itunesImage : {}", updatedEpisode.getEchoId, updatedEpisode.getItunesImage)
 
                 episodeService.save(updatedEpisode)
             }).getOrElse({
