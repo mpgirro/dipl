@@ -46,7 +46,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
     }
 
     private def createCrawler(): ActorRef = {
-        val crawler = context.actorOf(Props[CrawlerActor]
+        val crawler = context.actorOf(Props[AkkaHttpCrawlerActor]
             .withDispatcher("echo.crawler.dispatcher"),
             name = "crawler-" + workerIndex)
 

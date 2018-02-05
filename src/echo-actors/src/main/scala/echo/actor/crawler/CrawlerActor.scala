@@ -169,6 +169,8 @@ class CrawlerActor extends Actor with ActorLogging {
                     case 200 => // all fine
                     case 404 => // not found: nothing there worth processing
                         return Failure(new EchoException(s"HEAD request reported status $statusCode : ${httpResponse.getStatusLine.getReasonPhrase}")) // TODO make a dedicated exception
+                    case 503 => // service unavailable
+                        return Failure(new EchoException(s"HEAD request reported status $statusCode : ${httpResponse.getStatusLine.getReasonPhrase}")) // TODO make a dedicated exception
                     case _   =>
                         log.warning("Received unexpected status={} from HEAD request on : {}", statusCode, url)
                 }
@@ -187,6 +189,7 @@ class CrawlerActor extends Actor with ActorLogging {
                                 return Failure(new EchoException(s"Invalid MIME-type '$mime'")) // TODO make a dedicated exception
                             case _ =>
                                 log.warning("Unexpected MIME type='{}' of response by : {}", mime, url)
+                                return Failure(new EchoException(s"We do not process '$mime' (yet?)")) // TODO make a dedicated exception
                         }
                     case None =>
                         // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself

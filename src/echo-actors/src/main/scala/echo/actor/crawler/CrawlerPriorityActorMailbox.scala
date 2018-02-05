@@ -13,6 +13,7 @@ class CrawlerPriorityActorMailbox(settings: ActorSystem.Settings, config: Config
     PriorityGenerator {
         case ActorRefParserActor(_)          => 0
         case ActorRefDirectoryStoreActor(_)  => 0
+        case DownloadAsync(_,_,_)            => 1
         case CrawlFyyd(_)                    => 1
         case FetchFeedForNewPodcast(_,_)     => 2
         case FetchFeedForUpdateEpisodes(_,_) => 3

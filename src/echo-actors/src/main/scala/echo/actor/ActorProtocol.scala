@@ -11,6 +11,11 @@ import echo.core.model.feed.FeedStatus
   */
 object ActorProtocol {
 
+    // TODO name this something better
+    object JobKind extends Enumeration {
+        val FEED_NEW_PODCAST, FEED_UPDATE_EPISODES, WEBSITE = Value
+    }
+
     case class ProposeNewFeed(url: String) // sent from User to FeedStore
 
     // DirectoryStore -> Crawler
@@ -19,6 +24,9 @@ object ActorProtocol {
 
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
+
+    // Crawler -> Crawler
+    case class DownloadAsync(echoId: String, url: String, jobKind: JobKind.Value)
 
     // Crawler -> DirectoryStore
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
