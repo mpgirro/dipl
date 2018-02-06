@@ -7,12 +7,14 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.headers.`Set-Cookie`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.stream.scaladsl.Sink
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import echo.actor.ActorProtocol._
 import echo.core.exception.EchoException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -42,6 +44,9 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
     private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(context.system))
 
     private val http = Http(context.system)
+
+    // TODO this is where I cache the request for a given host, so I do not process more than one conncetion at a time
+    //private val hostRequestCache: mutable.Map[String, (String, String)] = mutable.Map[String, (String,String)].empty
 
     override def receive: Receive = {
 
@@ -162,34 +167,38 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
     }
 
     private def testAndDownloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+        val headRequest = HttpRequest(
+            HttpMethods.HEAD,
+            uri = url,
+            protocol = `HTTP/1.0`)
         try {
-            val headRequest = HttpRequest(
-                HttpMethods.HEAD,
-                uri = url,
-                protocol = `HTTP/1.0`)
             val responseFuture: Future[HttpResponse] = http.singleRequest(headRequest)
             responseFuture
                 .onComplete {
                     case Success(response) =>
-                        val testResult = evalResponse(response)
-                        testResult match {
-                            case Success((etag, lastMod)) =>
+                        try {
+                            val testResult = evalResponse(response)
+                            testResult match {
+                                case Success((etag, lastMod)) =>
 
-                                jobType match {
-                                    case JobKind.WEBSITE =>
-                                        // we always download websites, because we only do it once anyway
-                                        self ! DownloadAsync(echoId, url, jobType)
-                                    case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
-                                        /*
-                                         * TODO
-                                         * here I have to do some voodoo with etag/lastMod to
-                                         * determine weither the feed changed and I really need to redownload
-                                         */
-                                        self ! DownloadAsync(echoId, url, jobType)
-                                }
-                            case Failure(reason) =>
-                                log.error("HEAD request evaluation prevented downloading resource : {} [reason : {}]", url, Option(reason.getMessage).getOrElse("NON GIVEN IN EXCEPTION"))
-                                sendErrorNotificationIfFeasable(url, jobType)
+                                    jobType match {
+                                        case JobKind.WEBSITE =>
+                                            // we always download websites, because we only do it once anyway
+                                            self ! DownloadAsync(echoId, url, jobType)
+                                        case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
+                                            /*
+                                             * TODO
+                                             * here I have to do some voodoo with etag/lastMod to
+                                             * determine weither the feed changed and I really need to redownload
+                                             */
+                                            self ! DownloadAsync(echoId, url, jobType)
+                                    }
+                                case Failure(reason) =>
+                                    log.error("HEAD request evaluation prevented downloading resource : {} [reason : {}]", url, Option(reason.getMessage).getOrElse("NON GIVEN IN EXCEPTION"))
+                                    sendErrorNotificationIfFeasable(url, jobType)
+                            }
+                        } finally {
+                            response.discardEntityBytes()
                         }
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
@@ -200,40 +209,46 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 log.error(e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
+        } finally {
+            headRequest.discardEntityBytes()
         }
     }
 
     private def downloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+        val getRequest = HttpRequest(
+            HttpMethods.GET,
+            uri = url,
+            protocol = `HTTP/1.0`)
         try {
-            val getRequest = HttpRequest(
-                HttpMethods.GET,
-                uri = url,
-                protocol = `HTTP/1.0`)
             val responseFuture: Future[HttpResponse] = http.singleRequest(getRequest)
             responseFuture
                 .onComplete {
                     case Success(response) =>
-                        val htmlFuture: Future[String] = response.entity
-                            .toStrict(internalTimeout)
-                            .map { _.data }
-                            .map(_.utf8String) // get a real `String`
-                        htmlFuture
-                            .onComplete {
-                                case Success(data) =>
-                                    jobType match {
-                                        case JobKind.FEED_NEW_PODCAST =>
-                                            parser ! ParseNewPodcastData(url, echoId, data)
-                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                        case JobKind.FEED_UPDATE_EPISODES =>
-                                            parser ! ParseEpisodeData(url, echoId, data)
-                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                        case JobKind.WEBSITE =>
-                                            parser ! ParseWebsiteData(echoId, data)
-                                    }
-                                case Failure(reason) =>
-                                    log.error("Failed to collect response body HTML into a String : {} [reason : {}]", url, reason.getMessage)
-                                    sendErrorNotificationIfFeasable(url, jobType)
-                            }
+                        try {
+                            val htmlFuture: Future[String] = response.entity
+                                .toStrict(internalTimeout)
+                                .map { _.data }
+                                .map(_.utf8String) // get a real `String`
+                            htmlFuture
+                                .onComplete {
+                                    case Success(data) =>
+                                        jobType match {
+                                            case JobKind.FEED_NEW_PODCAST =>
+                                                parser ! ParseNewPodcastData(url, echoId, data)
+                                                directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                            case JobKind.FEED_UPDATE_EPISODES =>
+                                                parser ! ParseEpisodeData(url, echoId, data)
+                                                directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                            case JobKind.WEBSITE =>
+                                                parser ! ParseWebsiteData(echoId, data)
+                                        }
+                                    case Failure(reason) =>
+                                        log.error("Failed to collect response body HTML into a String : {} [reason : {}]", url, reason.getMessage)
+                                        sendErrorNotificationIfFeasable(url, jobType)
+                                }
+                        } finally {
+                            response.discardEntityBytes()
+                        }
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on website : '{}' [reason : {}]", url, reason.getMessage)
                         sendErrorNotificationIfFeasable(url, jobType)
@@ -243,6 +258,8 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 log.error(e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
+        } finally {
+            getRequest.discardEntityBytes()
         }
     }
 
