@@ -2,20 +2,20 @@ package echo.actor.crawler
 
 import java.time.LocalDateTime
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.headers.`Set-Cookie`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
-import akka.stream.scaladsl.Sink
-import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source, SourceQueueWithComplete}
+import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, QueueOfferResult}
 import echo.actor.ActorProtocol._
 import echo.core.exception.EchoException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 
 import scala.collection.mutable
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
@@ -31,19 +31,104 @@ object AkkaHttpCrawlerActor {
 class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     private final val DOWNLOAD_TIMEOUT = 3 // TODO read from config
+    private final val QUEUE_SIZE = 50 // TODO read from config file
+
+    private val downloadTimeout = 15.seconds // TODO read value from config
 
     import context.dispatcher
+    private final implicit val system: ActorSystem = context.system
+    private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
-    private val internalTimeout = 5.seconds // TODO read value from config
+    private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
 
-    private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(context.system))
+    /*
+    def exec(host: String, httpRequest: HttpRequest): Future[HttpResponse] = {
+        if(!connMap.contains(host)){
+            val pool = Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
+            val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
+                .via(pool)
+                .toMat(Sink.foreach({
+                    case ((Success(resp), p)) => p.success(resp)
+                    case ((Failure(e), p))    => p.failure(e)
+                }))(Keep.left)
+                .run
+            connMap += (host -> (pool,queue))
+        }
+        val (_,queue) = connMap(host)
+        val promise = Promise[HttpResponse]
 
-    private val http = Http(context.system)
+        val request = httpRequest -> promise
+
+        queue.offer(request).flatMap(buffered => {
+            if (buffered) promise.future
+            else Future.failed(new RuntimeException())
+        })
+    }
+    */
+
+    def queueRequest(url: String, request: HttpRequest): Future[HttpResponse] = {
+
+        // TODO remove elements from the queueMap after a certain to too prevent bloating
+
+        val (host,protocol) = analyzeUrl(url)
+
+        if(!requestQueueMap.contains(host)){
+            val pool = if (protocol.equals("https")) {
+                Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
+            } else {
+                Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
+            }
+            val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
+                .via(pool)
+                .toMat(Sink.foreach({
+                    case ((Success(resp), p)) => p.success(resp)
+                    case ((Failure(e), p))    => p.failure(e)
+                }))(Keep.left)
+                .run
+            requestQueueMap += (host -> queue)
+        }
+        val queue = requestQueueMap(host)
+
+        val responsePromise = Promise[HttpResponse]()
+
+        queue.offer(request -> responsePromise).flatMap {
+            case QueueOfferResult.Enqueued    => responsePromise.future
+            case QueueOfferResult.Dropped     => Future.failed(new RuntimeException("Queue overflowed. Try again later."))
+            case QueueOfferResult.Failure(ex) => Future.failed(ex)
+            case QueueOfferResult.QueueClosed => Future.failed(new RuntimeException("Queue was closed (pool shut down) while running the request. Try again later."))
+        }
+    }
+
+    def analyzeUrl(url: String): (String, String) = {
+
+        // http, https, ftp if provided
+        val protocol = if(url.indexOf("://") > -1) {
+            url.split("://")(0)
+        } else {
+            ""
+        }
+
+        var hostname = if (url.indexOf("://") > -1) {
+            url.split('/')(2)
+        } else {
+            url.split('/')(0)
+        }
+
+        // find & remove port number
+        hostname = hostname.split(':')(0);
+
+        // find & remove "?"
+        hostname = hostname.split('?')(0);
+
+        (hostname, protocol)
+    }
+
+    //private val http = Http(context.system)
 
     // TODO this is where I cache the request for a given host, so I do not process more than one conncetion at a time
     //private val hostRequestCache: mutable.Map[String, (String, String)] = mutable.Map[String, (String,String)].empty
@@ -105,6 +190,17 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     }
 
+    /*
+    def exec(req: HttpRequest): Future[HttpResponse] = {
+        Source.single(req -> 1)
+            .via(pool)
+            .runWith(Sink.head).flatMap {
+            case (Success(r: HttpResponse), _) => Future.successful(r)
+            case (Failure(f), _) => Future.failed(f)
+        }
+    }
+    */
+
     private def evalResponse(response: HttpResponse): Try[(Option[String],Option[String])] = {
 
         val statusCode = response.status.intValue
@@ -122,8 +218,8 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                     .map(_.value)
                     .headOption
                 log.warning("301 Moved Permanently reported, this is the new location : {}", location.getOrElse("NON PROVIDED"))
-                // TODO once I have a propper procedure for 301 handling, should I fail here?
-                //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
+            // TODO once I have a propper procedure for 301 handling, should I fail here?
+            //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
             case 404 => // not found: nothing there worth processing
                 return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
             case 503 => // service unavailable
@@ -172,7 +268,8 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             uri = url,
             protocol = `HTTP/1.0`)
         try {
-            val responseFuture: Future[HttpResponse] = http.singleRequest(headRequest)
+            //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(headRequest)
+            val responseFuture = queueRequest(url, headRequest)
             responseFuture
                 .onComplete {
                     case Success(response) =>
@@ -198,7 +295,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                                     sendErrorNotificationIfFeasable(url, jobType)
                             }
                         } finally {
-                            response.discardEntityBytes()
+                            response.discardEntityBytes() // make sure the conncetion does not remain open longer than it must
                         }
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
@@ -206,7 +303,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 }
         } catch {
             case e: Exception =>
-                log.error(e.getMessage)
+                log.error("Exception while testing HEAD : {} [reason : {}]", url, e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
         } finally {
@@ -220,42 +317,45 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             uri = url,
             protocol = `HTTP/1.0`)
         try {
-            val responseFuture: Future[HttpResponse] = http.singleRequest(getRequest)
+            //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
+            val responseFuture = queueRequest(url, getRequest)
             responseFuture
                 .onComplete {
                     case Success(response) =>
-                        try {
-                            val htmlFuture: Future[String] = response.entity
-                                .toStrict(internalTimeout)
-                                .map { _.data }
-                                .map(_.utf8String) // get a real `String`
-                            htmlFuture
-                                .onComplete {
-                                    case Success(data) =>
-                                        jobType match {
-                                            case JobKind.FEED_NEW_PODCAST =>
-                                                parser ! ParseNewPodcastData(url, echoId, data)
-                                                directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                            case JobKind.FEED_UPDATE_EPISODES =>
-                                                parser ! ParseEpisodeData(url, echoId, data)
-                                                directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                            case JobKind.WEBSITE =>
-                                                parser ! ParseWebsiteData(echoId, data)
-                                        }
-                                    case Failure(reason) =>
-                                        log.error("Failed to collect response body HTML into a String : {} [reason : {}]", url, reason.getMessage)
-                                        sendErrorNotificationIfFeasable(url, jobType)
-                                }
-                        } finally {
-                            response.discardEntityBytes()
-                        }
+
+                        implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher") // TODO
+                        val htmlFuture: Future[String] = response.entity
+                            .toStrict(downloadTimeout)
+                            .map { _.data }
+                            .map(_.utf8String) // get a real `String`
+                        htmlFuture
+                            .onComplete {
+                                case Success(data: String) =>
+                                    jobType match {
+                                        case JobKind.FEED_NEW_PODCAST =>
+                                            parser ! ParseNewPodcastData(url, echoId, data)
+                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                        case JobKind.FEED_UPDATE_EPISODES =>
+                                            parser ! ParseEpisodeData(url, echoId, data)
+                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                        case JobKind.WEBSITE =>
+                                            parser ! ParseWebsiteData(echoId, data)
+                                    }
+                                case Success(data) =>
+                                    log.error("The Success(data) data has an unexpected type other than String")
+                                case Failure(reason) =>
+                                    log.error("Failed to collect response body HTML into a String : {} [reason : {}]", url, reason.getMessage)
+                                    reason.printStackTrace()
+                                    sendErrorNotificationIfFeasable(url, jobType)
+                            }
+
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on website : '{}' [reason : {}]", url, reason.getMessage)
                         sendErrorNotificationIfFeasable(url, jobType)
                 }
         } catch {
             case e: Exception =>
-                log.error(e.getMessage)
+                log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
         } finally {
