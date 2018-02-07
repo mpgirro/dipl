@@ -16,14 +16,15 @@ class IndexStore extends Actor with ActorLogging {
 
     private val INDEX_PATH = ConfigFactory.load().getString("echo.index")
 
-    private val COMMIT_INTERVAL = 10 seconds // TODO read from config file
+    private val COMMIT_INTERVAL = 3 seconds // TODO read from config file
 
     private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
     private var indexChanged = false
-    private val websiteQueue: mutable.Queue[(String,String)] = new mutable.Queue
-    private val imageQueue: mutable.Queue[(String,String)] = new mutable.Queue
+    private val updateWebsiteQueue: mutable.Queue[(String,String)] = new mutable.Queue
+    private val updateImageQueue: mutable.Queue[(String,String)] = new mutable.Queue
+    private val updateLinkQueue: mutable.Queue[(String,String)] = new mutable.Queue
 
     import context.dispatcher
     private val commitMessager: Cancellable = context.system.scheduler.
@@ -38,17 +39,24 @@ class IndexStore extends Actor with ActorLogging {
             indexChanged = false
         }
 
-        if(websiteQueue.nonEmpty){
+        if(updateWebsiteQueue.nonEmpty){
             log.debug("Processing pending entries in website queue")
             indexSearcher.refresh()
-            processWebsiteQueue(websiteQueue)
+            processWebsiteQueue(updateWebsiteQueue)
             indexCommitter.commit()
         }
 
-        if(imageQueue.nonEmpty){
+        if(updateImageQueue.nonEmpty){
             log.debug("Processing pending entries in image queue")
             indexSearcher.refresh()
-            processImageQueue(imageQueue)
+            processImageQueue(updateImageQueue)
+            indexCommitter.commit()
+        }
+
+        if(updateLinkQueue.nonEmpty){
+            log.debug("Processing pending entries in link queue")
+            indexSearcher.refresh()
+            processLinkQueue(updateLinkQueue)
             indexCommitter.commit()
         }
     }
@@ -82,7 +90,6 @@ class IndexStore extends Actor with ActorLogging {
                     case e: EpisodeDTO =>
                         doc.setItunesImage(itunesImage)
                         indexCommitter.update(doc)
-                        indexChanged = true
                     case _ =>
                         log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
                 }
@@ -91,6 +98,23 @@ class IndexStore extends Actor with ActorLogging {
 
         processImageQueue(queue)
     }
+
+    private def processLinkQueue(queue: mutable.Queue[(String,String)]): Unit = {
+
+        if(queue.isEmpty) return
+
+        val (echoId,link) = queue.dequeue()
+        val entry = Option(indexSearcher.findByEchoId(echoId))
+        entry match {
+            case Some(doc) =>
+                doc.setLink(link)
+                indexCommitter.update(doc)
+            case None => log.error("Could not retrieve from index: echoId={}", echoId)
+        }
+
+        processLinkQueue(queue)
+    }
+
 
     override def receive: Receive = {
 
@@ -119,11 +143,15 @@ class IndexStore extends Actor with ActorLogging {
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
-            websiteQueue.enqueue((echoId,html))
+            updateWebsiteQueue.enqueue((echoId,html))
 
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
             log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
-            imageQueue.enqueue((echoId, itunesImage))
+            updateImageQueue.enqueue((echoId, itunesImage))
+
+        case IndexStoreUpdateDocLink(echoId, link) =>
+            log.debug("Received IndexStoreUpdateDocLink({},'{}')", echoId, link)
+            updateLinkQueue.enqueue((echoId, link))
 
         case SearchIndex(query, page, size) =>
             log.info("Received SearchIndex('{}',{},{}) message", query, page, size)

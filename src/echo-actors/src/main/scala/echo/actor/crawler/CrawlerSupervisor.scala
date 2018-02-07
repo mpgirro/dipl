@@ -9,11 +9,12 @@ import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreAct
   */
 class CrawlerSupervisor extends Actor with ActorLogging {
 
-    private val WORKER_COUNT = 5 // TODO read this from config
+    private val WORKER_COUNT = 1 // TODO read this from config
     private var workerIndex = 1
 
     private var parser: ActorRef = _
     private var directory: ActorRef = _
+    private var indexStore: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -34,6 +35,11 @@ class CrawlerSupervisor extends Actor with ActorLogging {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directory = ref
             router.routees.foreach(r => r.send(ActorRefDirectoryStoreActor(directory), sender()))
+
+        case ActorRefIndexStoreActor(ref) =>
+            log.debug("Received ActorRefIndexStoreActor(_)")
+            indexStore = ref
+            router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case Terminated(a) =>
             router = router.removeRoutee(a)

@@ -61,6 +61,7 @@ class MasterActor extends Actor with ActorLogging {
         // pass around references not provided by constructors due to circular dependencies
         crawlerSupervisor ! ActorRefParserActor(parser)
         crawlerSupervisor ! ActorRefDirectoryStoreActor(directorySupervisor)
+        crawlerSupervisor ! ActorRefIndexStoreActor(indexStore)
 
         parser ! ActorRefIndexStoreActor(indexStore)
         parser ! ActorRefDirectoryStoreActor(directorySupervisor)

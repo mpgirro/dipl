@@ -65,6 +65,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdateFeedUrl(oldUrl, newUrl) => onUpdateFeedMetadataUrl(oldUrl, newUrl)
 
+        case UpdateLinkByEchoId(echoId, newUrl) => onUpdateLinkByEchoId(echoId, newUrl)
+
         case GetPodcast(echoId) => onGetPodcast(echoId)
 
         case GetAllPodcasts => onGetAllPodcasts()
@@ -153,7 +155,7 @@ class DirectoryStore extends Actor with ActorLogging {
          * das würde ich mir gerne ersparen. dazu müsste ich aus der DB den "primärfeed" irgednwie bekommen können, also
          * jenen feed den ich immer benutze um updates zu laden
          */
-        def toDo = () => {
+        def task = () => {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
                 podcast.setId(p.getId)
                 podcast
@@ -165,12 +167,12 @@ class DirectoryStore extends Actor with ActorLogging {
 
             crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         }
-        doInTransaction(toDo, List(podcastService))
+        doInTransaction(task, List(podcastService))
     }
 
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
-        def toDo = () => {
+        def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 val updatedEpisode: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
                     episode.setId(e.getId)
@@ -191,12 +193,12 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("No Podcast found in database with echoId={}", podcastId)
             })
         }
-        doInTransaction(toDo, List(podcastService, episodeService))
+        doInTransaction(task, List(podcastService, episodeService))
     }
 
     private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
         log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
-        def todo = () => {
+        def task = () => {
             feedService.findOneByUrl(oldUrl).map(f => {
                 f.setUrl(newUrl)
                 feedService.save(f)
@@ -204,12 +206,30 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("No Feed found in database with url='{}'", oldUrl)
             })
         }
-        doInTransaction(todo, List(feedService))
+        doInTransaction(task, List(feedService))
+    }
+
+    private def onUpdateLinkByEchoId(echoId: String, newUrl: String): Unit = {
+        log.debug("Received UpdateLinkByEchoId({},'{}')", echoId, newUrl)
+        def task = () => {
+            podcastService.findOneByEchoId(echoId).map(p => {
+                p.setLink(newUrl)
+                podcastService.save(p)
+            }).getOrElse({
+                episodeService.findOneByEchoId(echoId).map(e => {
+                    e.setLink(newUrl)
+                    episodeService.save(e)
+                }).getOrElse({
+                    log.error("Cannot update Link URL - no Podcast or Episode found by echo={}", echoId)
+                })
+            })
+        }
+        doInTransaction(task, List(podcastService,episodeService))
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
-        def toDo = () => {
+        def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 sender ! PodcastResult(p)
             }).getOrElse({
@@ -217,22 +237,22 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(podcastId)
             })
         }
-        doInTransaction(toDo, List(podcastService))
+        doInTransaction(task, List(podcastService))
     }
 
     private def onGetAllPodcasts(): Unit = {
         log.debug("Received GetAllPodcasts()")
-        def toDo = () => {
+        def task = () => {
             //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
             val podcasts = podcastService.findAll()
             sender ! AllPodcastsResult(podcasts)
         }
-        doInTransaction(toDo, List(podcastService))
+        doInTransaction(task, List(podcastService))
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
-        def toDo = () => {
+        def task = () => {
             episodeService.findOneByEchoId(episodeId).map(e => {
                 sender ! EpisodeResult(e)
             }).getOrElse({
@@ -240,12 +260,12 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(episodeId)
             })
         }
-        doInTransaction(toDo, List(episodeService))
+        doInTransaction(task, List(episodeService))
     }
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
-        def toDo = () => {
+        def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 val episodes = episodeService.findAllByPodcast(p)
                 sender ! EpisodesByPodcastResult(episodes)
@@ -254,7 +274,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! NoDocumentFound(podcastId)
             })
         }
-        doInTransaction(toDo, List(podcastService, episodeService))
+        doInTransaction(task, List(podcastService, episodeService))
     }
 
 
@@ -262,19 +282,19 @@ class DirectoryStore extends Actor with ActorLogging {
     private def debugPrintAllPodcasts(): Unit = {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
-        def toDo = () => {
+        def task = () => {
             podcastService.findAll().foreach(p => println(p.getTitle))
         }
-        doInTransaction(toDo, List(podcastService))
+        doInTransaction(task, List(podcastService))
     }
 
     private def debugPrintAllEpisodes(): Unit = {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
-        def toDo = () => {
+        def task = () => {
             episodeService.findAll().foreach(e => println(e.getTitle))
         }
-        doInTransaction(toDo, List(episodeService))
+        doInTransaction(task, List(episodeService))
     }
 
     /**

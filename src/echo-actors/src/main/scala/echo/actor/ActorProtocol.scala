@@ -31,6 +31,7 @@ object ActorProtocol {
     // Crawler -> DirectoryStore
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
     case class UpdateFeedUrl(oldUrl: String, newUrl: String)
+    case class UpdateLinkByEchoId(echoId: String, newUrl: String)
 
     // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)
@@ -50,6 +51,9 @@ object ActorProtocol {
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
+
+    // Crawler -> IndexStore
+    case class IndexStoreUpdateDocLink(echoId: String, newLink: String)
 
     // IndexStore -> IndexStore
     case class CommitIndex()

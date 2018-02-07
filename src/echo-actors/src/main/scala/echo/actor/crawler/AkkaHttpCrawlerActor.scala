@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.headers.`Set-Cookie`
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{ContentType, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, QueueOfferResult}
 import echo.actor.ActorProtocol._
@@ -23,15 +23,11 @@ import scala.util.{Failure, Success, Try}
 /**
   * @author Maximilian Irro
   */
-object AkkaHttpCrawlerActor {
-
-}
-
-
 class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     private final val DOWNLOAD_TIMEOUT = 3 // TODO read from config
     private final val QUEUE_SIZE = 1000 // TODO read from config file
+    private final val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
 
     private val downloadTimeout = 30.seconds // TODO read value from config
 
@@ -41,67 +37,11 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
+    private var indexStore: ActorRef = _
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
-
-    def queueRequest(url: String, request: HttpRequest): Future[HttpResponse] = {
-
-        // TODO remove elements from the queueMap after a certain to too prevent bloating
-
-        val (host,protocol) = analyzeUrl(url)
-
-        if(!requestQueueMap.contains(host)){
-            val pool = if (protocol.equals("https")) {
-                Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
-            } else {
-                Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
-            }
-            val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
-                .via(pool)
-                .toMat(Sink.foreach({
-                    case ((Success(resp), p)) => p.success(resp)
-                    case ((Failure(e), p))    => p.failure(e)
-                }))(Keep.left)
-                .run
-            requestQueueMap += (host -> queue)
-        }
-        val queue = requestQueueMap(host)
-
-        val responsePromise = Promise[HttpResponse]()
-        queue.offer(request -> responsePromise).flatMap {
-            case QueueOfferResult.Enqueued    => responsePromise.future
-            case QueueOfferResult.Dropped     => Future.failed(new RuntimeException("Queue overflowed. Try again later."))
-            case QueueOfferResult.Failure(ex) => Future.failed(ex)
-            case QueueOfferResult.QueueClosed => Future.failed(new RuntimeException("Queue was closed (pool shut down) while running the request. Try again later."))
-        }
-    }
-
-    def analyzeUrl(url: String): (String, String) = {
-
-        // http, https, ftp if provided
-        val protocol = if(url.indexOf("://") > -1) {
-            url.split("://")(0)
-        } else {
-            ""
-        }
-
-        val hostname = {
-            if (url.indexOf("://") > -1)
-                url.split('/')(2)
-            else
-                url.split('/')(0)
-        }.split(':')(0) // find & remove port number
-         .split('?')(0) // find & remove "?"
-
-        (hostname, protocol)
-    }
-
-    //private val http = Http(context.system)
-
-    // TODO this is where I cache the request for a given host, so I do not process more than one conncetion at a time
-    //private val hostRequestCache: mutable.Map[String, (String, String)] = mutable.Map[String, (String,String)].empty
 
     override def receive: Receive = {
 
@@ -112,6 +52,10 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
+
+        case ActorRefIndexStoreActor(ref) =>
+            log.debug("Received ActorRefIndexStoreActor(_)")
+            indexStore = ref
 
         case FetchFeedForNewPodcast(url, podcastId) =>
             log.info("Received FetchFeedForNewPodcast('{}', {})", url, podcastId)
@@ -160,6 +104,75 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     }
 
+    private def queueRequest(url: String, request: HttpRequest): Future[HttpResponse] = {
+
+        // TODO remove elements from the queueMap after a certain to too prevent bloating
+
+        val (host,protocol) = analyzeUrl(url)
+
+        if(!requestQueueMap.contains(host)){
+
+            log.debug("Creating Pool for : {} (due to {})", host, url)
+
+            val pool = if (protocol.equals("https")) {
+                Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
+            } else {
+                Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
+            }
+            val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
+                .via(pool)
+                .toMat(Sink.foreach({
+                    case ((Success(resp), p)) => p.success(resp)
+                    case ((Failure(e), p))    => p.failure(e)
+                }))(Keep.left)
+                .run
+            requestQueueMap += (host -> queue)
+        }
+        val queue = requestQueueMap(host)
+
+        val responsePromise = Promise[HttpResponse]()
+        queue.offer(request -> responsePromise).flatMap {
+            case QueueOfferResult.Enqueued    => responsePromise.future
+            case QueueOfferResult.Dropped     => Future.failed(new RuntimeException("Queue overflowed. Try again later."))
+            case QueueOfferResult.Failure(ex) => Future.failed(ex)
+            case QueueOfferResult.QueueClosed => Future.failed(new RuntimeException("Queue was closed (pool shut down) while running the request. Try again later."))
+        }
+    }
+
+    private def analyzeUrl(url: String): (String, String) = {
+
+        // http, https, ftp if provided
+        val protocol = if(url.indexOf("://") > -1) {
+            url.split("://")(0)
+        } else {
+            ""
+        }
+
+        val hostname = {
+            if (url.indexOf("://") > -1)
+                url.split('/')(2)
+            else
+                url.split('/')(0)
+        }  .split(':')(0) // find & remove port number
+            .split('?')(0) // find & remove "?"
+           // .split('/')(0) // find & remove the "/" that might still stick at the end of the hostname
+
+        (hostname, protocol)
+    }
+
+    private def validMimeType(mime: String): Boolean = {
+        mime match {
+            case "application/rss+xml"  => true // feed
+            case "application/xml"      => true // feed
+            case "text/xml"             => true // feed
+            case "text/html"            => true // website
+            case "text/plain"           => true // might be ok and might be not -> will have to check manually
+            case "none/none"            => true // might be ok and might be not -> will have to check manually
+            case "application/octet-stream" => true // some sites use this, but might also be used for media files
+            case _                      => false
+        }
+    }
+
     private def evalResponse(url: String, response: HttpResponse): Try[(Option[String],Option[String],Option[String])] = {
 
         val statusCode = response.status.intValue
@@ -179,6 +192,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                     .filter(_.is("location"))
                     .map(_.value)
                     .headOption
+                log.info("Redirecting {} to {}", url, location.getOrElse("NON PROVIDED"))
                 //log.warning("301 Moved Permanently reported, this is the new location : {} (of : {})", location.getOrElse("NON PROVIDED"), url)
             // TODO once I have a propper procedure for 301 handling, should I fail here?
             //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
@@ -188,22 +202,20 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             case 503 => // service unavailable
                 return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
             case _   =>
-                log.warning("Received unexpected status from HEAD request : {} {}", statusCode, response.status.reason())
+                log.warning("Received unexpected status from HEAD request : {} {} on {}", statusCode, response.status.reason(), url)
         }
 
         val mimeType: Option[String] = Option(response.entity.contentType.mediaType.value)
         mimeType match {
             case Some(mime) =>
-                mime match {
-                    case "application/rss+xml"  => // feed
-                    case "application/xml"      => // feed
-                    case "text/xml"             => // feed
-                    case "text/html"            => // website
-                    case _@("audio/mpeg" | "application/octet-stream") =>
-                        return Failure(new EchoException(s"Invalid MIME-type '$mime' of $url")) // TODO make a dedicated exception
-                    case _ =>
-                        //log.warning("Received unexpected MIME type '{}' from HEAD request to : '{}'", mime, url)
-                        return Failure(new EchoException(s"Unexpected MIME type '$mime' of '$url'")) // TODO make a dedicated exception
+                if(!validMimeType(mime)){
+                    mime match {
+                        case _@("audio/mpeg" | "application/octet-stream") =>
+                            return Failure(new EchoException(s"Invalid MIME-type '$mime' of $url")) // TODO make a dedicated exception
+                        case _ =>
+                            //log.warning("Received unexpected MIME type '{}' from HEAD request to : '{}'", mime, url)
+                            return Failure(new EchoException(s"Unexpected MIME type '$mime' of '$url'")) // TODO make a dedicated exception
+                    }
                 }
             case None =>
                 // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself
@@ -236,14 +248,21 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 .onComplete {
                     case Success(response) =>
                         try {
-                            val testResult = evalResponse(url, response)
-                            testResult match {
+                            evalResponse(url, response) match {
                                 case Success((location, etag, lastMod)) =>
-
                                     location match {
                                         case Some(href) =>
+                                            log.debug("Sending message to download async : {}", href)
                                             jobType match {
                                                 case JobKind.WEBSITE =>
+
+                                                    // if the link in the feed is redirected (which is often the case due
+                                                    // to some feed analytic tools, we set our records to the new location
+                                                    if(!url.equals(href)) {
+                                                        directoryStore ! UpdateLinkByEchoId(echoId, href)
+                                                        indexStore ! IndexStoreUpdateDocLink(echoId, href)
+                                                    }
+
                                                     // we always download websites, because we only do it once anyway
                                                     self ! DownloadAsync(echoId, href, jobType)
                                                 case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
@@ -286,6 +305,8 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
         }
     }
 
+
+
     private def downloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val getRequest = HttpRequest(
             HttpMethods.GET,
@@ -293,13 +314,31 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
-            val responseFuture = queueRequest(url, getRequest)
-            responseFuture
+            queueRequest(url, getRequest)
                 .onComplete {
                     case Success(response) =>
 
+                        // once again, ensure we do not accidentally fetch a media file and take it for text
+                        if(!validMimeType(response.entity.contentType.mediaType.value)){
+                            log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", response.entity.contentType.mediaType.value, url)
+                            throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${response.entity.contentType.mediaType.value}'") // TODO make dedicated exception
+                        }
+
+                        // ensure we do not accidentally fetch a neverending stream
+                        if(response.entity.isIndefiniteLength()){
+                            log.error("Refusing to download resource with indefinite length from : '{}'", url)
+                            throw new EchoException("Refusing to download resource with indefinite length") // TODO make dedicated exception
+                        }
+
+                        response.entity.contentLengthOption.foreach(cl => {
+                            if(cl > DOWNLOAD_MAXBYTES){
+                                log.error("Refusing to download resource because content length exceeds maximum: {} > ", cl, DOWNLOAD_MAXBYTES)
+                            }
+                        })
+
                         implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher") // TODO
                         response.entity
+                            .withSizeLimit(DOWNLOAD_MAXBYTES)
                             .toStrict(downloadTimeout)
                             .map { _.data }
                             .map(_.utf8String) // get a real `String`
@@ -317,24 +356,19 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                                     }
                                 case Success(data) =>
                                     log.error("The Success(data) data has an unexpected type : {}", data.getClass)
-                                case Failure(reason: Exception) =>
+                                case Failure(reason) =>
                                     reason match {
                                         case e: java.util.concurrent.TimeoutException =>
                                             log.warning("Failed to download resource due to timeout : {}", url)
-                                        case e: Exception =>
+                                        case e =>
                                             log.error("Failed to collect response body HTML into a String : {} [reason : {} from message type : {}]", url, e.getMessage, e.getClass)
-                                        /*
-                                        case _ =>
-                                            log.error("Encountered a Failure of type {} : {}", reason.getClass, Option(reason.getMessage).getOrElse("EXCEPTION MESSAGE IS NULL"))
-                                        */
+                                            //e.printStackTrace()
                                     }
                                     sendErrorNotificationIfFeasable(url, jobType)
-                                case Failure(reason: Throwable) =>
-                                    log.error("Encountered a Failure(reason) of type Throwable : {}", reason.getMessage)
                             }
 
                     case Failure(reason) =>
-                        log.warning("HTTP HEAD request failed on website : '{}' [reason : {}]", url, reason.getMessage)
+                        log.warning("HTTP GET request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
                         sendErrorNotificationIfFeasable(url, jobType)
                 }
         } catch {

@@ -33,7 +33,7 @@ class ParserActor extends Actor with ActorLogging {
             crawler = ref
 
         case ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String) =>
-            log.debug("Received ParseFeedData for feed: " + feedUrl)
+            log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
             try {
                 val podcast = Option(feedParser.parseFeed(feedData))
                 podcast match {
