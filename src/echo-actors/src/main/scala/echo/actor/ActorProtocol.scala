@@ -30,6 +30,7 @@ object ActorProtocol {
 
     // Crawler -> DirectoryStore
     case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
+    case class UpdateFeedUrl(oldUrl: String, newUrl: String)
 
     // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)

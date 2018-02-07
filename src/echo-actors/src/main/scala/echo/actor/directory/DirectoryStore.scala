@@ -63,6 +63,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
 
+        case UpdateFeedUrl(oldUrl, newUrl) => onUpdateFeedMetadataUrl(oldUrl, newUrl)
+
         case GetPodcast(echoId) => onGetPodcast(echoId)
 
         case GetAllPodcasts => onGetAllPodcasts()
@@ -190,6 +192,19 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(toDo, List(podcastService, episodeService))
+    }
+
+    private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
+        log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
+        def todo = () => {
+            feedService.findOneByUrl(oldUrl).map(f => {
+                f.setUrl(newUrl)
+                feedService.save(f)
+            }).getOrElse({
+                log.error("No Feed found in database with url='{}'", oldUrl)
+            })
+        }
+        doInTransaction(todo, List(feedService))
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
