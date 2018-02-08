@@ -1,15 +1,5 @@
 
-<nav class="navbar navbar-expand navbar-light px-0">
-  <a class="navbar-brand" href="#">Echo</a>
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/search">Search</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
-    </li>
-  </ul>
-</nav>
+<app-navbar></app-navbar>
 
 
       <!--
@@ -22,7 +12,7 @@
                [(ngModel)]="query"
                (keyup.enter)="onEnter(searchBox.value)"
                type="text" class="form-control"
-               placeholder="every podcast leaves an echo. find it...">
+               placeholder="every podcast leaves an echo...">
       </div>
 
       <!--
@@ -81,7 +71,7 @@
                 <p>
                   <a href="{{result.link}}">
                     <small class="text-muted"><span class="oi oi-link-intact"></span></small>
-                    {{domainService.extractHostname(result.link)}}
+                    {{domainService.removeProtocol(result.link).substr(0,48)}}
                   </a>
                 </p>
 

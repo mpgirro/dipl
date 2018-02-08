@@ -24,6 +24,7 @@ import { EpisodeTeaserComponent } from './episode-teaser/episode-teaser.componen
 import { EpisodeTableComponent } from './episode-table/episode-table.component';
 import { EpisodeListgroupComponent } from './episode-listgroup/episode-listgroup.component';
 import { EpisodeTablelistComponent } from './episode-tablelist/episode-tablelist.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { EpisodeTablelistComponent } from './episode-tablelist/episode-tablelist
     EpisodeTeaserComponent,
     EpisodeTableComponent,
     EpisodeListgroupComponent,
-    EpisodeTablelistComponent
+    EpisodeTablelistComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,

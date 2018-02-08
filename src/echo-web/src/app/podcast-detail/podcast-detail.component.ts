@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { Podcast } from '../podcast';
 import { Episode } from '../episode';
 import { PodcastService } from '../podcast.service';
+import { DomainService } from '../domain.service';
 
 @Component({
   selector: 'app-podcast-detail',
@@ -19,6 +20,7 @@ export class PodcastDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private podcastService: PodcastService,
+              private domainService: DomainService,
               private location: Location) { }
 
   ngOnInit() {

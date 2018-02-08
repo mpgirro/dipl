@@ -1,16 +1,5 @@
 
-<nav class="navbar navbar-expand navbar-light px-0">
-  <!--<button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>-->
-  <a class="navbar-brand" href="#">Echo</a>
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/search">Search</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
-    </li>
-  </ul>
-</nav>
+<app-navbar></app-navbar>
 
 
 <div class="text-center my-5">
@@ -44,7 +33,12 @@
   </small>
 </div>
 
-
+<p class="my-3">
+  <a href="{{episode.link}}">
+    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+    {{domainService.removeProtocol(episode.link)}}
+  </a>
+</p>
 
 <div class="collapse my-5" id="collapseAudioPlayer">
   <!-- TODO this does not work at all, uses https://plyr.io/#audio -->
@@ -106,12 +100,7 @@
    [innerHTML]="episode.description">
 </p>
 
-<p class="my-3">
-  <a href="{{episode.link}}">
-    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
-    {{episode.link}}
-  </a>
-</p>
+
 
 
 

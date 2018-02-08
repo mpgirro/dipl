@@ -1,46 +1,104 @@
 
-<nav class="navbar navbar-expand navbar-light px-0">
-  <!--<button type="button" class="btn btn-link btn-sm" (click)="goBack()" style="padding-left: 0px;"><span aria-hidden="true">&laquo;</span> Back</button>-->
-  <a class="navbar-brand" href="#">Echo</a>
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/search">Search</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/podcast-directory">Directory</a>
-    </li>
-  </ul>
-</nav>
+<app-navbar></app-navbar>
+
+<div>
+  <!-- Nav tabs -->
+  <nav class="navbar navbar-expand px-0 mt-5">
+    <span class="navbar-text"><h1 class="h5">Podcast Directory</h1></span>
+    <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
+      <li class="nav-item"><a class="nav-link active" id="directory-richlist-tab" data-toggle="tab" href="#directory-richlist" role="tab" aria-controls="directory-richlist" aria-selected="false">
+        <span class="oi oi-list-rich"></span>
+      </a></li>
+      <li class="nav-item"><a class="nav-link"        id="directory-grid-tab" data-toggle="tab" href="#directory-grid" role="tab" aria-controls="directory-grid" aria-selected="true">
+        <span class="oi oi-grid-three-up"></span>
+      </a></li>
+    </ul>
+  </nav>
 
 
-<h1 class="h5 my-5">
-  Podcast Directory
-</h1>
+  <!-- Tab panes -->
+  <div class="tab-content" id="directoryTabContent">
 
-<ul class="list-group list-group-flush">
+    <div class="tab-pane fade show active" id="directory-richlist" role="tabpanel" aria-labelledby="directory-richlist-tab">
+      <ul class="list-group list-group-flush">
+        <li *ngFor="let podcast of podcasts"
+            class="list-group-item">
 
-  <li *ngFor="let podcast of podcasts"
-      class="list-group-item">
+          <div class="media">
+            <div class="media my-2">
+              <img class="episode-thumb mr-3"
+                   src="{{podcast.itunesImage}}"
+                   alt="Generic placeholder image">
 
-    <div class="media">
-      <div class="media my-2">
-        <img class="episode-thumb mr-3"
-             src="{{podcast.itunesImage}}"
-             alt="Generic placeholder image">
+              <div class="media-body">
+                <h5 class="mt-0">
+                  <a routerLink="/p/{{podcast.echoId}}" class="podcast-h">{{podcast.title}}</a>
+                </h5>
+                <!--<p class="mb-1" [innerHTML]="podcast.description"></p>-->
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
 
-        <div class="media-body">
-          <h5 class="mt-0">
-            <a routerLink="/p/{{podcast.echoId}}" class="podcast-h">{{podcast.title}}</a>
-          </h5>
-          <!--<p class="mb-1" [innerHTML]="podcast.description"></p>-->
+    <div class="tab-pane fade" id="directory-grid" role="tabpanel" aria-labelledby="directory-grid-tab">
+
+      <div *ngFor="let podcast of podcasts; let i = index">
+
+        <div class="row mt-4" *ngIf="i%4===0">
+          <div class="col-3">
+            <img class="podcast-thumb" style="width:96px;"
+                 src="{{podcasts[i].itunesImage}}"
+                 alt="Generic placeholder image">
+            <small class="text-muted">
+              <span>{{podcasts[i].title}}</span>
+            </small>
+          </div>
+
+          <div class="col-3 ml-auto">
+            <div *ngIf="podcasts[i + 1]">
+              <img class="podcast-thumb" style="width:96px;"
+                   src="{{podcasts[i + 1].itunesImage}}"
+                   alt="Generic placeholder image">
+              <small class="text-muted">
+                <span>{{podcasts[i + 1].title}}</span>
+              </small>
+            </div>
+          </div>
+
+          <div class="col-3 ml-auto">
+            <div *ngIf="podcasts[i + 2]">
+              <img class="podcast-thumb" style="width:96px;"
+                   src="{{podcasts[i + 2].itunesImage}}"
+                   alt="Generic placeholder image">
+              <small class="text-muted">
+                <span>{{podcasts[i + 2].title}}</span>
+              </small>
+            </div>
+          </div>
+
+          <div class="col-3 ml-auto">
+            <div *ngIf="podcasts[i + 3]">
+              <img class="podcast-thumb" style="width:96px;"
+                   src="{{podcasts[i + 3].itunesImage}}"
+                   alt="Generic placeholder image">
+              <small class="text-muted">
+                <span>{{podcasts[i + 3].title}}</span>
+              </small>
+            </div>
+          </div>
         </div>
+
       </div>
 
     </div>
+  </div>
+</div>
 
-  </li>
 
-</ul>
+
+
 
 <!--
 <div>

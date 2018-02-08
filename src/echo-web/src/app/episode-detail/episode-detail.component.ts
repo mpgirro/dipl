@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 
 import { Episode } from '../episode';
 import { EpisodeService } from '../episode.service';
+import { DomainService } from '../domain.service';
 
 @Component({
   selector: 'app-episode-detail',
@@ -16,6 +17,7 @@ export class EpisodeDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private episodeService: EpisodeService,
+              private domainService: DomainService,
               private location: Location) { }
 
   ngOnInit() {
