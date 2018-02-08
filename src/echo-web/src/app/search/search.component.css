@@ -4,8 +4,9 @@
   font-weight: bold;
 }
 
-img.mr-3 {
+img.result-thumb {
   width: 64px;
+  height: 64px;
 }
 
 #search-box {

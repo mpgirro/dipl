@@ -3,8 +3,9 @@
   font-weight: bold;
 }
 
-img.mr-3 {
-  width: 64px;
+img.podcast-thumb {
+  width:96px;
+  height:96px;
 }
 
 .podcast-h {
