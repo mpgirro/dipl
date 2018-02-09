@@ -25,6 +25,10 @@ class CrawlerSupervisor extends Actor with ActorLogging {
         Router(RoundRobinRoutingLogic(), routees) // TODO hier gibt es vll einen besseren router als roundrobin. balanced mailbox?
     }
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
         case ActorRefParserActor(ref) =>
             log.debug("Received ActorRefIndexerActor(_)")
@@ -52,7 +56,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
     }
 
     private def createCrawler(): ActorRef = {
-        val crawler = context.actorOf(Props[AkkaHttpCrawlerActor]
+        val crawler = context.actorOf(Props[CrawlerActor]
             .withDispatcher("echo.crawler.dispatcher"),
             name = "crawler-" + workerIndex)
 

@@ -82,6 +82,10 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
         log.info("listening to http://{}:{}", GATEWAY_HOST, GATEWAY_PORT)
     }
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
         case ActorRefSearcherActor(ref) =>
             log.debug("Received ActorRefSearcherActor(_)")

@@ -34,6 +34,10 @@ class DirectorySupervisor extends Actor with ActorLogging {
         runLiquibaseUpdate()
     }
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")

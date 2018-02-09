@@ -51,6 +51,10 @@ class DirectoryStore extends Actor with ActorLogging {
     liquibase.setChangeLog("classpath:db/liquibase/master.xml")
     */
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
 
         case ActorRefCrawlerActor(ref) =>

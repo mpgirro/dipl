@@ -14,6 +14,10 @@ class SearcherActor extends Actor with ActorLogging {
 
     private var indexStore: ActorRef = _
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
 
         case ActorRefIndexStoreActor(ref) =>

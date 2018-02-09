@@ -3,7 +3,7 @@ package echo.actor
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.crawler.{CrawlerActor, CrawlerSupervisor}
+import echo.actor.crawler.CrawlerSupervisor
 import echo.actor.directory.{DirectoryStore, DirectorySupervisor}
 import echo.actor.gateway.GatewayActor
 import echo.actor.index.IndexStore
@@ -76,6 +76,10 @@ class MasterActor extends Actor with ActorLogging {
         directorySupervisor ! ActorRefIndexStoreActor(indexStore)
 
         log.info("EchoMaster up and running")
+    }
+
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
     }
 
     override def receive: Receive = {

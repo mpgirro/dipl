@@ -25,6 +25,10 @@ class ParserActor extends Actor with ActorLogging {
 
     private var mockEchoIdGenerator = 0
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
+
     override def receive: Receive = {
 
         case ActorRefIndexStoreActor(ref) =>

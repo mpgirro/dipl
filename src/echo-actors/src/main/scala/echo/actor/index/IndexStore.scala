@@ -32,6 +32,13 @@ class IndexStore extends Actor with ActorLogging {
             self ! CommitIndex
         }
 
+    override def postStop: Unit = {
+        indexCommitter.destroy()
+        indexSearcher.destroy()
+
+        log.info(s"${self.path.name} shut down")
+    }
+
     private def commitIndexIfChanged(): Unit = {
         if(indexChanged) {
             log.debug("Committing Index due to pending changes")

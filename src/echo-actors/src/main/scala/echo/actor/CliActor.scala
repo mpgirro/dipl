@@ -39,6 +39,9 @@ class CliActor(private val indexStore: ActorRef,
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
     repl()
 
+    override def postStop: Unit = {
+        log.info(s"${self.path.name} shut down")
+    }
 
     override def receive: Receive = {
         case unhandled => log.info("Received " + unhandled)
