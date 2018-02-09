@@ -2,7 +2,7 @@ package echo.actor.gateway.json
 
 import java.time.LocalDateTime
 
-import echo.core.converter.mapper.DateMapper
+import echo.core.mapper.DateMapper
 import echo.core.model.dto.PodcastDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
