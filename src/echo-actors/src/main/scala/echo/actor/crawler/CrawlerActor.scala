@@ -5,9 +5,8 @@ import java.time.LocalDateTime
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
-import akka.http.scaladsl.model.headers.`Set-Cookie`
-import akka.http.scaladsl.model.{ContentType, HttpMethods, HttpRequest, HttpResponse}
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source, SourceQueueWithComplete}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.stream.scaladsl.{Keep, Sink, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, QueueOfferResult}
 import echo.actor.ActorProtocol._
 import echo.core.exception.EchoException
@@ -15,8 +14,8 @@ import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
@@ -41,12 +40,15 @@ class CrawlerActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
     private var indexStore: ActorRef = _
 
+    private val http = Http()
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        Http().shutdownAllConnectionPools().onComplete {
+            case _ => log.info(s"${self.path.name} shut down")
+        }
     }
 
     override def receive: Receive = {
@@ -121,9 +123,9 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Creating Pool for : {} (due to {})", host, url)
 
             val pool = if (protocol.equals("https")) {
-                Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
+                http.cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
             } else {
-                Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
+                http.cachedHostConnectionPool[Promise[HttpResponse]](host)
             }
 
             val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
@@ -311,8 +313,6 @@ class CrawlerActor extends Actor with ActorLogging {
             headRequest.discardEntityBytes()
         }
     }
-
-
 
     private def downloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val getRequest = HttpRequest(

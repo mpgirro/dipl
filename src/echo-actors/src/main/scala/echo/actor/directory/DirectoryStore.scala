@@ -1,18 +1,15 @@
 package echo.actor.directory
 
-import java.time.{LocalDateTime, ZonedDateTime}
-import java.util.UUID
+import java.time.LocalDateTime
 import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.devskiller.friendly_id.Url62
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
 import echo.core.util.EchoIdGenerator
-import org.hashids.Hashids
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
@@ -26,16 +23,8 @@ class DirectoryStore extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 
-    // TODO get the salt from config
-    private val hashids: Hashids = new Hashids("297122570966408627");
-
     // I need this to run liquibase
     //val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
-    /* TODO these I used before
-    val podcastDao: PodcastDao = appCtx.getBean(classOf[PodcastDao])
-    val episodeDao: EpisodeDao = appCtx.getBean(classOf[EpisodeDao])
-    val feedDao: FeedDao = appCtx.getBean(classOf[FeedDao])
-    */
 
     private val repositoryFactoryBuilder = new RepositoryFactoryBuilder()
     //private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
@@ -119,17 +108,14 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.info("Proposed feed is already in database: {}", url)
                 println(feed)
             }).getOrElse({
-                //val fakePodcastId = Url62.encode(UUID.randomUUID())
-                //val fakePodcastId: String = hashids.encode(System.currentTimeMillis());
                 val fakePodcastId: String = EchoIdGenerator.getNewId()
                 var podcast = new PodcastDTO
                 podcast.setEchoId(fakePodcastId)
-                //podcast.setTitle("<NOT YET PARSED>")
                 podcast.setTitle(fakePodcastId)
                 podcast.setDescription(url)
                 podcastService.save(podcast).map(p => {
 
-                    val fakeFeedId = Url62.encode(UUID.randomUUID())
+                    val fakeFeedId = EchoIdGenerator.getNewId()
                     val feed = new FeedDTO
                     feed.setEchoId(fakeFeedId)
                     feed.setUrl(url)

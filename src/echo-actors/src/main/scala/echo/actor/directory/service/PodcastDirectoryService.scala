@@ -1,6 +1,6 @@
 package echo.actor.directory.service
 
-import javax.persistence.{EntityManager, EntityManagerFactory}
+import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}

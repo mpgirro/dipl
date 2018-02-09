@@ -1,16 +1,13 @@
 package echo.actor.parser
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.devskiller.friendly_id.Url62
 import echo.actor.ActorProtocol._
 import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import echo.core.util.EchoIdGenerator
-import org.hashids.Hashids
 
 class ParserActor extends Actor with ActorLogging {
 
@@ -19,11 +16,6 @@ class ParserActor extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
-
-    // TODO get the salt from config
-    private val hashids: Hashids = new Hashids("297122570966408627");
-
-    private var mockEchoIdGenerator = 0
 
     override def postStop: Unit = {
         log.info(s"${self.path.name} shut down")
