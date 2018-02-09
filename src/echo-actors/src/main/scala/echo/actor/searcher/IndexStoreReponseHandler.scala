@@ -2,6 +2,7 @@ package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import akka.event.LoggingReceive
+import akka.util.Timeout
 import echo.actor.ActorProtocol.{IndexResultsFound, NoIndexResultsFound, SearchResults}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.model.dto.ResultWrapperDTO
@@ -59,7 +60,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) e
 
     import context.dispatcher
     val timeoutMessager: Cancellable = context.system.scheduler.
-        scheduleOnce(5 seconds) {
+        scheduleOnce(5 seconds) { // TODO read timeout val from config
             self ! IndexRetrievalTimeout
         }
 }

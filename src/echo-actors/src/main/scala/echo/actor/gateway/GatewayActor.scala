@@ -34,7 +34,7 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _
 
-    implicit val internalTimeout = Timeout(5 seconds)
+    implicit val internalTimeout = Timeout(5 seconds) // TODO read value from config
 
     private val searchService = new SearchGatewayService(log, internalTimeout)
     private val podcastService = new PodcastGatewayService(log, internalTimeout)

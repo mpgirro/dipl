@@ -250,7 +250,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 .onComplete {
                     case Success(response) =>
                         try {
-                            log.info("Just got HEAD response from : {}", url)
+                            log.debug("Just got HEAD response from : {}", url)
                             evalResponse(url, response) match {
                                 case Success((location, etag, lastMod)) =>
                                     location match {
