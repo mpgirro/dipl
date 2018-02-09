@@ -1,6 +1,6 @@
 package echo.actor.directory
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.UUID
 import javax.persistence.{EntityManager, EntityManagerFactory}
 
@@ -11,6 +11,7 @@ import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
+import org.hashids.Hashids
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
@@ -23,6 +24,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
+
+    // TODO get the salt from config
+    private val hashids: Hashids = new Hashids("297122570966408627");
 
     // I need this to run liquibase
     //val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
@@ -110,11 +114,13 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.info("Proposed feed is already in database: {}", url)
                 println(feed)
             }).getOrElse({
-                val fakePodcastId = Url62.encode(UUID.randomUUID())
+                //val fakePodcastId = Url62.encode(UUID.randomUUID())
+                val fakePodcastId: String = hashids.encode(System.currentTimeMillis());
                 var podcast = new PodcastDTO
                 podcast.setEchoId(fakePodcastId)
                 //podcast.setTitle("<NOT YET PARSED>")
-                podcast.setTitle(url)
+                podcast.setTitle(fakePodcastId)
+                podcast.setDescription(url)
                 podcastService.save(podcast).map(p => {
 
                     val fakeFeedId = Url62.encode(UUID.randomUUID())

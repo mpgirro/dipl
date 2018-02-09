@@ -9,6 +9,7 @@ import echo.actor.ActorProtocol._
 import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
+import org.hashids.Hashids
 
 class ParserActor extends Actor with ActorLogging {
 
@@ -17,6 +18,9 @@ class ParserActor extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
+
+    // TODO get the salt from config
+    private val hashids: Hashids = new Hashids("297122570966408627");
 
     private var mockEchoIdGenerator = 0
 
@@ -105,7 +109,11 @@ class ParserActor extends Actor with ActorLogging {
                         for(e <- es){
 
                             //val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
-                            val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
+                            //val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
+
+                            //val fakeEpisodeId: String = hashids.encode(System.currentTimeMillis());
+                            // add some random part to the seed, to avoid conflict in case we get the same millisecond (that can happen)
+                            val fakeEpisodeId: String = hashids.encode((System.currentTimeMillis()*Math.random()).toLong)
                             e.setEchoId(fakeEpisodeId)
 
                             /* TODO
