@@ -2,8 +2,8 @@ package echo.core.parse.rss;
 
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import com.icosillion.podengine.models.Podcast;
-import echo.core.converter.mapper.EpisodeMapper;
-import echo.core.converter.mapper.PodcastMapper;
+import echo.core.mapper.EpisodeMapper;
+import echo.core.mapper.PodcastMapper;
 import echo.core.exception.EchoException;
 import echo.core.exception.FeedParsingException;
 import echo.core.model.dto.EpisodeDTO;

@@ -1,19 +1,17 @@
 package echo.core;
 
-import echo.core.converter.PodEngineEpisodeConverter;
-import echo.core.converter.PodEnginePodcastConverter;
-import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.IndexResult;
-import echo.core.model.dto.PodcastDTO;
-import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
-import echo.core.parse.rss.FeedParser;
-import echo.core.parse.rss.PodEngineFeedParser;
+import echo.core.model.dto.EpisodeDTO;
+import echo.core.model.dto.IndexResult;
+import echo.core.model.dto.PodcastDTO;
+import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.parse.api.API;
 import echo.core.parse.api.FyydAPI;
+import echo.core.parse.rss.FeedParser;
+import echo.core.parse.rss.PodEngineFeedParser;
 import echo.core.search.IndexSearcher;
 import echo.core.search.LuceneSearcher;
 import echo.core.util.DocumentFormatter;
@@ -44,9 +42,6 @@ public class CoreApp {
 
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
-
-    private final PodEnginePodcastConverter podcastConverter = new PodEnginePodcastConverter();
-    private final PodEngineEpisodeConverter episodeConverter = new PodEngineEpisodeConverter();
 
     private final API fyydAPI = new FyydAPI();
 

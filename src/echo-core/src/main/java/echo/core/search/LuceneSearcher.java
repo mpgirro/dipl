@@ -1,8 +1,8 @@
 package echo.core.search;
 
-import echo.core.converter.mapper.EpisodeMapper;
-import echo.core.converter.mapper.PodcastMapper;
-import echo.core.converter.mapper.ResultMapper;
+import echo.core.mapper.EpisodeMapper;
+import echo.core.mapper.PodcastMapper;
+import echo.core.mapper.ResultMapper;
 import echo.core.model.dto.DTO;
 import echo.core.model.dto.IndexResult;
 import echo.core.model.dto.ResultWrapperDTO;

@@ -1,4 +1,4 @@
-package echo.core.converter.mapper;
+package echo.core.mapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

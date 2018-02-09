@@ -1,4 +1,4 @@
-package echo.core.converter.mapper;
+package echo.core.mapper;
 
 import echo.core.model.dto.EpisodeDTO;
 import echo.core.model.dto.IndexResult;

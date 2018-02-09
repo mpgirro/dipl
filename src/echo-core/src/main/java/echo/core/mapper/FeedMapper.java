@@ -1,4 +1,4 @@
-package echo.core.converter.mapper;
+package echo.core.mapper;
 
 import echo.core.model.domain.Feed;
 import echo.core.model.domain.Podcast;

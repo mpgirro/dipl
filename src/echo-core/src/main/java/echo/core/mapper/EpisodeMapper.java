@@ -1,4 +1,4 @@
-package echo.core.converter.mapper;
+package echo.core.mapper;
 
 import com.icosillion.podengine.exceptions.DateFormatException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
