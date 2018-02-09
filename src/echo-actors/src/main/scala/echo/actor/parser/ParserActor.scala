@@ -9,6 +9,7 @@ import echo.actor.ActorProtocol._
 import echo.core.exception.FeedParsingException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
+import echo.core.util.EchoIdGenerator
 import org.hashids.Hashids
 
 class ParserActor extends Actor with ActorLogging {
@@ -113,7 +114,8 @@ class ParserActor extends Actor with ActorLogging {
 
                             //val fakeEpisodeId: String = hashids.encode(System.currentTimeMillis());
                             // add some random part to the seed, to avoid conflict in case we get the same millisecond (that can happen)
-                            val fakeEpisodeId: String = hashids.encode((System.currentTimeMillis()*Math.random()).toLong)
+                            //val fakeEpisodeId: String = hashids.encode((System.currentTimeMillis()*Math.random()).toLong)
+                            val fakeEpisodeId: String = EchoIdGenerator.getNewId()
                             e.setEchoId(fakeEpisodeId)
 
                             /* TODO
