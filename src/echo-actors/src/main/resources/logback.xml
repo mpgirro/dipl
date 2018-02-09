@@ -43,6 +43,8 @@
     <logger name="ch.qos.logback" level="WARN"/>
     <logger name="liquibase" level="WARN"/>
     <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.springframework.jdbc" level="WARN"/>
+    <logger name="org.springframework.orm" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
