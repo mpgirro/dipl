@@ -26,12 +26,14 @@ import scala.util.{Failure, Success, Try}
 class AkkaHttpCrawlerActor extends Actor with ActorLogging {
 
     private final val DOWNLOAD_TIMEOUT = 3 // TODO read from config
-    private final val QUEUE_SIZE = 1000 // TODO read from config file
+    private final val QUEUE_SIZE = 1500 // TODO read from config file
     private final val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
 
-    private val downloadTimeout = 30.seconds // TODO read value from config
+    private val downloadTimeout = 60.seconds // TODO read value from config
 
-    import context.dispatcher
+    // important, or we will experience starvation on processing many feeds at once
+    private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher")
+
     private final implicit val system: ActorSystem = context.system
     private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
 
@@ -119,6 +121,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             } else {
                 Http().cachedHostConnectionPool[Promise[HttpResponse]](host)
             }
+
             val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
                 .via(pool)
                 .toMat(Sink.foreach({
@@ -129,7 +132,6 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             requestQueueMap += (host -> queue)
         }
         val queue = requestQueueMap(host)
-
         val responsePromise = Promise[HttpResponse]()
         queue.offer(request -> responsePromise).flatMap {
             case QueueOfferResult.Enqueued    => responsePromise.future
@@ -192,7 +194,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                     .filter(_.is("location"))
                     .map(_.value)
                     .headOption
-                log.info("Redirecting {} to {}", url, location.getOrElse("NON PROVIDED"))
+                log.debug("Redirecting {} to {}", url, location.getOrElse("NON PROVIDED"))
                 //log.warning("301 Moved Permanently reported, this is the new location : {} (of : {})", location.getOrElse("NON PROVIDED"), url)
             // TODO once I have a propper procedure for 301 handling, should I fail here?
             //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
@@ -248,6 +250,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                 .onComplete {
                     case Success(response) =>
                         try {
+                            log.info("Just got HEAD response from : {}", url)
                             evalResponse(url, response) match {
                                 case Success((location, etag, lastMod)) =>
                                     location match {
@@ -317,7 +320,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
             queueRequest(url, getRequest)
                 .onComplete {
                     case Success(response) =>
-
+                        log.info("Just got GET response from : {}", url)
                         // once again, ensure we do not accidentally fetch a media file and take it for text
                         if(!validMimeType(response.entity.contentType.mediaType.value)){
                             log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", response.entity.contentType.mediaType.value, url)
@@ -336,7 +339,7 @@ class AkkaHttpCrawlerActor extends Actor with ActorLogging {
                             }
                         })
 
-                        implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher") // TODO
+                        //implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher") // TODO
                         response.entity
                             .withSizeLimit(DOWNLOAD_MAXBYTES)
                             .toStrict(downloadTimeout)
