@@ -122,21 +122,23 @@ We test our findings on the implementations of the architecture of a domain spec
 
 # Preface / Authors Note { -; toc:clear; }
 
-It all began in 2015, when I've read a comment thread[^fn-hackernews] on the famouse site *news.ycombinator.com* (called "HackerNews") where someone eventually claimed: "*You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter*". This claim by itself was asking for a "citation needed"[^fn-xkcd] I thought, but it was followed by a second statement that instead started to intrigued me:
+Back in early 2016, I came across a comment thread discussion[^fn-hackernews] on the famouse "HackerNews" (*news.ycombinator.com*) where someone eventually claimed: "*You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter*". First I thought this was asking for a "`[citation needed]`"[^fn-xkcd], but it was followed by a second statement that instead started to intrigued me:
 
 > "The architecture of an idiomatic Erlang-based system is essentially a microservice architecture."
 
-But is it really? I was wondering. It would have some fundamental implications. Erlang is an interresting language (and we will motivate some of the reasons why), and one of its basic building blocks are what it defines as *processes*. They are Erlangs version of the Actor model for concurrent programming. If the claim that any Erlang system is a microservice architecture, than these processes would mirror the microservices. And the name "process" already motivates why this might be the case. Any microservices most essential property is that it is contained within a single, dedicated (operating-system) process, and these are - as we will discuss within this thesis - by nature concurrently executed. One thing that I thought was odd though (back then at least), was that Erlangs processes are Actors, and Actors are for concurrency (like threads), while a microservice by its nature is really a component of a distributed system. And if concurrency primitives can meet the concerns a distributed system architecture style can, then why bother with the hassles that usually come with distributed programming anyway?
+But is it really? I was wondering. It would have some fundamental implications. Erlang is an interresting language (and we will motivate some of the reasons why), and one of its basic building blocks are what it defines as *processes*. They are Erlangs version of the Actor model for concurrent programming. If the claim that any Erlang system is a microservice architecture, than these processes would mirror the microservices. And the name "process" already motivates why this might be the case. Any microservices most essential property is that it is contained within a single, dedicated (operating-system) process, and these are by nature concurrently executed on the OS level. One thing that I thought was odd though (back then at least), was that Erlangs processes are Actors, and Actors are for concurrency (like threads), while a microservice by its nature is really a component of a distributed system. And if concurrency primitives can meet the concerns a distributed system architecture style can, then why bother with all the hassles that usually come with distributed programming anyway?
 
-Having been passionate about microservice architectures as an alternative to ever growing monoliths for some time back then, this idea would remain in the back of my head and pop up occasionally to think about when there was time to think about such things - link on public transport.  
+Having been passionate about microservice architectures as an alternative to ever growing monoliths for some time back then, this idea would remain in the back of my head and pop up occasionally to think about when there was time to think about such things - like on public transport.  
 
-Over a year later, an article[^fn-qcon] about a presentation given by Joe Duffy, former Director of Engineering for languages and compilers at Microsoft, stated:
+Over a year later, I've read an article[^fn-qcon] about a presentation given by Joe Duffy, former Director of Engineering for languages and compilers at Microsoft, that stated:
 
 > "Duffy expects to see a return of distributed programming with increasingly fine-grained distributed systems that will make systems look more and more like classic concurrent systems."
 
 Now, these fine grained distributed systems Duffy is speaking about are what we have dubbed microservice architectures at the moment, and based on the previous claim, the "classic concurrent systems" they resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
 
-In my mind, this thought was worth further investigation. And this thesis is the results I've found. 
+Now, from the first claim and the principles of microservice design, we can argue that microservice architectures qualify for such fine grained distributed systems Duffy is speaking about. And this would mean that the "classic concurrent systems" these distributed systems resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
+
+And this, I thought, was worth some further investigation. The results of this investigation is this thesis. 
 
 Vienna, June 2018
 
