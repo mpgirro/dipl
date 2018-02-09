@@ -1,7 +1,5 @@
 package echo.core.converter.mapper;
 
-import org.mapstruct.factory.Mappers;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 

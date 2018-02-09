@@ -2,32 +2,27 @@ package echo.core.parse.rss;
 
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import com.icosillion.podengine.models.Podcast;
-import echo.core.converter.DocumentConverter;
-import echo.core.converter.PodEngineEpisodeConverter;
-import echo.core.converter.PodEnginePodcastConverter;
+import echo.core.converter.mapper.EpisodeMapper;
+import echo.core.converter.mapper.PodcastMapper;
+import echo.core.exception.EchoException;
+import echo.core.exception.FeedParsingException;
 import echo.core.model.dto.EpisodeDTO;
 import echo.core.model.dto.PodcastDTO;
-import echo.core.exception.FeedParsingException;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Maximilian Irro
  */
 public class PodEngineFeedParser implements FeedParser {
 
-    private final DocumentConverter podcastConverter;
-    private final DocumentConverter episodeConverter;
-
-    public PodEngineFeedParser(){
-        this.podcastConverter = new PodEnginePodcastConverter();
-        this.episodeConverter = new PodEngineEpisodeConverter();
-    }
-
     @Override
     public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            return (PodcastDTO) podcastConverter.toDTO(podcast);
-        } catch (MalformedFeedException e) {
+            return PodcastMapper.INSTANCE.podenginePodcastToPodcastDto(podcast);
+        } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed", e);
         }
     }
@@ -37,18 +32,16 @@ public class PodEngineFeedParser implements FeedParser {
         throw new UnsupportedOperationException("PodEngineFeedParser.parseEpisode not yet implemented");
     }
 
-    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
             if(podcast.getEpisodes() != null){
-                return podcast.getEpisodes().stream()
-                    .map( e -> episodeConverter.toDTO(e))
-                    .toArray(EpisodeDTO[]::new);
+                return EpisodeMapper.INSTANCE.podengineEpisodesToEpisodeDtos(podcast.getEpisodes());
             }
-        } catch (MalformedFeedException e) {
+        } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
-        return new EpisodeDTO[0];
+        return new LinkedList<>();
     }
 
 }

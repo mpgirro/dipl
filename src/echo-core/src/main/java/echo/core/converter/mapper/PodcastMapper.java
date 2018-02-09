@@ -1,5 +1,8 @@
 package echo.core.converter.mapper;
 
+import com.icosillion.podengine.exceptions.DateFormatException;
+import com.icosillion.podengine.exceptions.MalformedFeedException;
+import echo.core.exception.ConversionException;
 import echo.core.model.dto.PodcastDTO;
 import echo.core.model.domain.Podcast;
 import org.apache.lucene.document.Document;
@@ -8,6 +11,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+import java.net.MalformedURLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -82,5 +89,31 @@ public interface PodcastMapper {
     }
 
     List<PodcastDTO> luceneDocumentsToPodcastDtos(List<Document> docs);
+
+    default PodcastDTO podenginePodcastToPodcastDto(com.icosillion.podengine.models.Podcast podcast) throws ConversionException {
+
+        if (podcast == null) {
+            return null;
+        }
+
+        final PodcastDTO dto = new PodcastDTO();
+        try {
+            if(podcast.getTitle()         != null){ dto.setTitle(podcast.getTitle()); }
+            if(podcast.getLink()          != null){ dto.setLink(podcast.getLink().toExternalForm()); }
+            if(podcast.getDescription()   != null){ dto.setDescription(podcast.getDescription()); }
+            if(podcast.getPubDate()       != null){ dto.setPubDate(LocalDateTime.ofInstant(podcast.getPubDate().toInstant(), ZoneId.systemDefault())); }
+            if(podcast.getLastBuildDate() != null){ dto.setLastBuildDate(LocalDateTime.ofInstant(podcast.getLastBuildDate().toInstant(), ZoneId.systemDefault())); }
+            if(podcast.getLanguage()      != null){ dto.setLanguage(podcast.getLanguage()); }
+            if(podcast.getGenerator()     != null){ dto.setGenerator(podcast.getGenerator()); }
+            if(podcast.getCategories()    != null){ dto.setItunesCategory(String.join(" & ", Arrays.asList(podcast.getCategories()))); }
+            if(podcast.getITunesInfo()    != null){ dto.setItunesImage(podcast.getITunesInfo().getImageString()); }
+        } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
+            throw new ConversionException("Exception during converting podengine.Podcast to PodcastDTO [reason: {}]", e);
+        }
+
+        return dto;
+    }
+
+    List<PodcastDTO> podenginePodcastsToPodcastDtos(List<com.icosillion.podengine.models.Podcast> podcasts) throws ConversionException;
 
 }

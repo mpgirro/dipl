@@ -24,10 +24,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -190,7 +187,7 @@ public class CoreApp {
 
             this.committer.add(podcastDoc);
 
-            final EpisodeDTO[] episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
+            final List<EpisodeDTO> episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
             for (EpisodeDTO episode : episodes) {
                 out.println("  Episode: " + episode.getTitle());
 
