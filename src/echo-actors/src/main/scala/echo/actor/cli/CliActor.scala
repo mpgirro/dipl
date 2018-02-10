@@ -1,4 +1,4 @@
-package echo.actor
+package echo.actor.cli
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.pattern.ask
@@ -8,7 +8,7 @@ import echo.core.util.DocumentFormatter
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.io.{Source, StdIn}
+import scala.io.StdIn
 import scala.language.postfixOps
 
 /**

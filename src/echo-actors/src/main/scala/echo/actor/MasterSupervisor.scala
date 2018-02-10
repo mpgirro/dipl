@@ -3,6 +3,7 @@ package echo.actor
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
 import akka.util.Timeout
 import echo.actor.ActorProtocol._
+import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
 import echo.actor.directory.DirectorySupervisor
 import echo.actor.gateway.GatewayActor
@@ -16,7 +17,7 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-class MasterActor extends Actor with ActorLogging {
+class MasterSupervisor extends Actor with ActorLogging {
 
     override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 
