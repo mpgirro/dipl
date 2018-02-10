@@ -153,13 +153,8 @@ class IndexStore extends Actor with ActorLogging {
         val entry = Option(indexSearcher.findByEchoId(echoId))
         entry match {
             case Some(doc) =>
-                doc match {
-                    case e: EpisodeDTO =>
-                        doc.setItunesImage(itunesImage)
-                        indexCommitter.update(doc)
-                    case _ =>
-                        log.error("Retrieved a Document by ID from Index that is not an EpisodeDocument, though I expected one")
-                }
+                doc.setItunesImage(itunesImage)
+                indexCommitter.update(doc)
             case None => log.error("Could not retrieve from index: echoId={}", echoId)
         }
 

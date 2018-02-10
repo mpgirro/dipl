@@ -1,7 +1,7 @@
 package echo.actor.gateway.json
 
 import echo.actor.gateway.json.IndexResultJsonProtocol.IndexResultJsonFormat
-import echo.core.model.dto.{IndexResult, ResultWrapperDTO}
+import echo.core.model.dto.{IndexDocDTO, ResultWrapperDTO}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
 import spray.json.CollectionFormats
 import scala.collection.JavaConverters._
@@ -25,8 +25,8 @@ object ResultWrapperJsonProtocol extends DefaultJsonProtocol {
                     resultWrapper.setMaxPage(maxPage.toInt)
                     resultWrapper.setTotalHits(totalHits.toInt)
 
-                    val foo: Array[IndexResult] = results.map(_.convertTo[IndexResult]).to[Array]
-                    val bar: java.util.List[IndexResult] = seqAsJavaList(foo)
+                    val foo: Array[IndexDocDTO] = results.map(_.convertTo[IndexDocDTO]).to[Array]
+                    val bar: java.util.List[IndexDocDTO] = seqAsJavaList(foo)
 
 
                     resultWrapper.setResults(foo) // seqAsJavaList()   results.map(_.convertTo[IndexResult]).to[Array[IndexResult]]
