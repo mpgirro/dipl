@@ -15,22 +15,4 @@ public interface DTO extends Serializable {
     String getEchoId();
     void setEchoId(String echoId);
 
-    String getTitle();
-    void setTitle(String title);
-
-    String getLink();
-    void setLink(String link);
-
-    LocalDateTime getPubDate();
-    void setPubDate(LocalDateTime pubDate);
-
-    String getDescription();
-    void setDescription(String description);
-
-    String getItunesImage();
-    void setItunesImage(String itunesImage);
-
-    String getWebsiteData();
-    void setWebsiteData(String websiteData);
-
 }

@@ -5,21 +5,23 @@ import java.time.LocalDateTime;
 /**
  * @author Maximilian Irro
  */
-public class IndexResult {
+public class IndexDocDTO {
 
     private String docType;
     private String echoId;
     private String title;
     private String link;
-    private LocalDateTime pubDate;
     private String description;
+    private LocalDateTime pubDate;
     private String itunesImage;
+    private String itunesCategory;
+    private String websiteData;
 
-    public IndexResult(){
+    public IndexDocDTO(){
 
     }
 
-    public IndexResult(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage) {
+    public IndexDocDTO(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage, String itunesCategory) {
         this.docType = docType;
         this.echoId = echoId;
         this.title = title;
@@ -27,13 +29,14 @@ public class IndexResult {
         this.pubDate = pubDate;
         this.description = description;
         this.itunesImage = itunesImage;
+        this.itunesCategory = itunesCategory;
     }
 
     public String getDocType() {
-        return this.docType;
+        return docType;
     }
 
-    public void setDocType(String docType){
+    public void setDocType(String docType) {
         this.docType = docType;
     }
 
@@ -85,4 +88,34 @@ public class IndexResult {
         this.itunesImage = itunesImage;
     }
 
+    public String getItunesCategory() {
+        return itunesCategory;
+    }
+
+    public void setItunesCategory(String itunesCategory) {
+        this.itunesCategory = itunesCategory;
+    }
+
+    public String getWebsiteData() {
+        return websiteData;
+    }
+
+    public void setWebsiteData(String websiteData) {
+        this.websiteData = websiteData;
+    }
+
+    @Override
+    public String toString() {
+        return "IndexDocDTO{" +
+            "docType='" + docType + '\'' +
+            ", echoId='" + echoId + '\'' +
+            ", title='" + title + '\'' +
+            ", link='" + link + '\'' +
+            ", pubDate=" + pubDate +
+            ", description='" + description + '\'' +
+            ", itunesImage='" + itunesImage + '\'' +
+            ", itunesCategory='" + itunesCategory + '\'' +
+            ", websiteData='" + websiteData + '\'' +
+            '}';
+    }
 }

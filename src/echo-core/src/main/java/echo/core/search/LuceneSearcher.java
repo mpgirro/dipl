@@ -2,9 +2,8 @@ package echo.core.search;
 
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
-import echo.core.mapper.ResultMapper;
-import echo.core.model.dto.DTO;
-import echo.core.model.dto.IndexResult;
+import echo.core.mapper.IndexDocMapper;
+import echo.core.model.dto.IndexDocDTO;
 import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 import org.apache.lucene.analysis.Analyzer;
@@ -122,11 +121,11 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             }
 
             int windowSize = windowEnd - windowStart;
-            final IndexResult[] results = new IndexResult[windowSize];
+            final IndexDocDTO[] results = new IndexDocDTO[windowSize];
 
             int j = 0;
             for(int i = windowStart; i < windowEnd; i++){
-                results[j] = toResult(indexSearcher.doc(hits[i].doc));
+                results[j] = toIndexDoc(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
@@ -147,7 +146,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
     }
 
     @Override
-    public DTO findByEchoId(String id){
+    public IndexDocDTO findByEchoId(String id){
         IndexSearcher indexSearcher = null;
         try {
 
@@ -163,7 +162,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             }
             if(topDocs.totalHits == 1){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return this.toDTO(indexSearcher.doc(hits[0].doc));
+                return toIndexDoc(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
@@ -197,7 +196,7 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
         }
     }
 
-
+    /*
     private DTO toDTO(Document doc) {
         if(doc.get("doc_type").equals("podcast")) {
             return PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc);
@@ -207,12 +206,13 @@ public class LuceneSearcher implements echo.core.search.IndexSearcher{
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }
     }
+    */
 
-    private IndexResult toResult(Document doc){
+    private IndexDocDTO toIndexDoc(Document doc){
         if(doc.get("doc_type").equals("podcast")) {
-            return ResultMapper.INSTANCE.podcastDtoToIndexResult(PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc));
+            return IndexDocMapper.INSTANCE.podcastDtoToIndexResult(PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc));
         } else if(doc.get("doc_type").equals("episode")) {
-            return ResultMapper.INSTANCE.episodeDtoToIndexResult(EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc));
+            return IndexDocMapper.INSTANCE.episodeDtoToIndexResult(EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc));
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }

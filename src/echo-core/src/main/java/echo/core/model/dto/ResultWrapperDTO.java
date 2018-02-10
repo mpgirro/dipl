@@ -8,7 +8,7 @@ public class ResultWrapperDTO {
     private int currPage;
     private int maxPage;
     private int totalHits;
-    private IndexResult[] results;
+    private IndexDocDTO[] results;
 
     public ResultWrapperDTO(){
 
@@ -38,11 +38,11 @@ public class ResultWrapperDTO {
         this.totalHits = totalHits;
     }
 
-    public IndexResult[] getResults() {
+    public IndexDocDTO[] getResults() {
         return results;
     }
 
-    public void setResults(IndexResult[] results) {
+    public void setResults(IndexDocDTO[] results) {
         this.results = results;
     }
 

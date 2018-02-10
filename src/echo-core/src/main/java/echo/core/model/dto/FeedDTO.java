@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 /**
  * @author Maximilian Irro
  */
-public class FeedDTO {
+public class FeedDTO implements DTO {
 
     private Long id;
     private String echoId;
@@ -26,10 +26,12 @@ public class FeedDTO {
         this.id = id;
     }
 
+    @Override
     public String getEchoId() {
         return this.echoId;
     }
 
+    @Override
     public void setEchoId(String echoId) {
         this.echoId = echoId;
     }

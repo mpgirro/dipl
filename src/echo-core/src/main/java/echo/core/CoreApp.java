@@ -5,7 +5,7 @@ import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
 import echo.core.index.LuceneCommitter;
 import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.IndexResult;
+import echo.core.model.dto.IndexDocDTO;
 import echo.core.model.dto.PodcastDTO;
 import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.parse.api.API;
@@ -212,7 +212,7 @@ public class CoreApp {
         final ResultWrapperDTO results = this.searcher.search(query, 1, 100);
         out.println("Found "+results.getTotalHits()+" results for query '" + query + "'");
         out.println("Results:");
-        for(IndexResult doc : results.getResults()){
+        for(IndexDocDTO doc : results.getResults()){
             out.println();
             out.println(DocumentFormatter.cliFormat(doc));
             out.println();

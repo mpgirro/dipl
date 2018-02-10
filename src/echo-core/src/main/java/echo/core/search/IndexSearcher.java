@@ -1,6 +1,7 @@
 package echo.core.search;
 
 import echo.core.model.dto.DTO;
+import echo.core.model.dto.IndexDocDTO;
 import echo.core.model.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 
@@ -11,7 +12,7 @@ public interface IndexSearcher {
 
     ResultWrapperDTO search(String query, int page, int size) throws SearchException;
 
-    DTO findByEchoId(String id);
+    IndexDocDTO findByEchoId(String id);
 
     void refresh();
 

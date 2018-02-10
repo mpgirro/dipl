@@ -71,32 +71,26 @@ public class EpisodeDTO implements DTO {
         this.podcastId = podcastId;
     }
 
-    @Override
     public String getTitle() {
         return title;
     }
 
-    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
-    @Override
     public String getLink() {
         return link;
     }
 
-    @Override
     public void setLink(String link) {
         this.link = link;
     }
 
-    @Override
     public LocalDateTime getPubDate() {
         return pubDate;
     }
 
-    @Override
     public void setPubDate(LocalDateTime pubDate) {
         this.pubDate = pubDate;
     }
@@ -117,22 +111,18 @@ public class EpisodeDTO implements DTO {
         this.guidIsPermaLink = guidIsPermaLink;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
-    @Override
     public String getItunesImage() {
         return itunesImage;
     }
 
-    @Override
     public void setItunesImage(String itunesImage) {
         this.itunesImage = itunesImage;
     }
@@ -145,12 +135,10 @@ public class EpisodeDTO implements DTO {
         this.itunesDuration = itunesDuration;
     }
 
-    @Override
     public String getWebsiteData() {
         return websiteData;
     }
 
-    @Override
     public void setWebsiteData(String websiteData) {
         this.websiteData = websiteData;
     }
