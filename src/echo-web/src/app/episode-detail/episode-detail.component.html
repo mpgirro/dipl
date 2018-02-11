@@ -33,7 +33,7 @@
   </small>
 </div>
 
-<p class="my-3">
+<p *ngIf="episode.link" class="my-3">
   <a href="{{episode.link}}">
     <small class="text-muted"><span class="oi oi-link-intact"></span></small>
     {{domainService.removeProtocol(episode.link)}}
