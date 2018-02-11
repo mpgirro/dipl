@@ -1,10 +1,14 @@
 package echo.actor.gateway.json
 
 import java.time.LocalDateTime
+import java.util
+import java.util.stream.Collectors
 
 import echo.core.mapper.DateMapper
 import echo.core.model.dto.IndexDocDTO
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -18,12 +22,12 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
             "link"        -> Option(r.getLink).map(value => JsString(value)).getOrElse(JsNull),
             "pubDate"     -> Option(r.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description" -> Option(r.getDescription).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesImage" -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesCategory" -> Option(r.getItunesCategory).map(value => JsString(value)).getOrElse(JsNull)
+            "itunesImage" -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
+            //"itunesCategories"  -> Option(r.getItunesCategories).map(value => JsArray(value.asScala.map(c => JsString(c)).toVector)).getOrElse(JsNull)
         )
         def read(value: JsValue): IndexDocDTO = {
-            value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "itunesImage", "itunesCategory") match {
-                case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(description), JsString(itunesImage), JsString(itunesCategory)) =>
+            value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "itunesImage", "itunesCategories") match {
+                case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(description), JsString(itunesImage)) =>
                     val result = new IndexDocDTO()
                     result.setDocType(docType)
                     result.setEchoId(echoId)
@@ -32,7 +36,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
                     result.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     result.setDescription(description)
                     result.setItunesImage(itunesImage)
-                    result.setItunesCategory(itunesCategory)
+                    //result.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
                     result
                 case _ => throw DeserializationException("IndexDocDTO expected")
             }
