@@ -14,6 +14,8 @@ class SearcherActor extends Actor with ActorLogging {
 
     private var indexStore: ActorRef = _
 
+    private var responseHandlerCounter = 0
+
     override def postStop: Unit = {
         log.info(s"${self.path.name} shut down")
     }
@@ -39,7 +41,10 @@ class SearcherActor extends Actor with ActorLogging {
             }
 
             val originalSender = Some(sender) // this is important to not expose the handler
-            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), "result")
+
+            responseHandlerCounter += 1
+            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), s"${self.path.name}-response-handler-${responseHandlerCounter}")
+
             indexStore.tell(SearchIndex(query, p, s), handler)
 
     }
