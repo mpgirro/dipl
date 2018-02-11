@@ -1,3 +1,12 @@
 img.episode-thumb {
   width: 64px;
 }
+
+.episode-title {
+
+}
+
+.episode-description img {
+  max-width: 440px !important;
+  height: auto !important;
+}
