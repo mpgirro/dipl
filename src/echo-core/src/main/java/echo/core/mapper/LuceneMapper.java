@@ -34,7 +34,7 @@ public interface LuceneMapper {
         if(doc.getDescription()    != null){ lucene.add(new TextField("description", doc.getDescription(), Field.Store.YES)); }
         if(doc.getPubDate()        != null){ lucene.add(new StringField("pub_date", DateMapper.INSTANCE.asString(doc.getPubDate()), Field.Store.YES)); }
         if(doc.getItunesImage()    != null){ lucene.add(new TextField("itunes_image", doc.getItunesImage(), Field.Store.YES)); }
-        if(doc.getItunesCategory() != null){ lucene.add(new TextField("itunes_category", doc.getItunesCategory(), Field.Store.YES)); }
+        //if(doc.getItunesCategories() != null){ lucene.add(new TextField("itunes_categories", String.join(" | ", doc.getItunesCategories()), Field.Store.YES)); }
         if(doc.getWebsiteData()    != null){ lucene.add(new TextField("website_data", doc.getWebsiteData(), Field.Store.NO)); }
 
         return lucene;

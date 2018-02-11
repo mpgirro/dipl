@@ -71,6 +71,8 @@ dependencies {
     compile 'com.rometools:rome:1.9.0'
     compile 'com.rometools:rome-modules:1.9.0'
 
+    compile 'org.hashids:hashids:1.0.3'
+
     compile 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
     testCompile 'org.testng:testng:6.10', 'org.easytesting:fest-assert:1.4'
     apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
@@ -87,6 +89,13 @@ dependencies {
     compile "org.apache.solr:solr-solrj:$luceneVersion" // TODO solr support is only experimental and not suitable for the scope of the thesis
     */
 
+}
+
+jar {
+    doLast {
+        exclude("**/resources/logback.xml")
+//        exclude("**/logback.xml")
+    }
 }
 
 publishing {

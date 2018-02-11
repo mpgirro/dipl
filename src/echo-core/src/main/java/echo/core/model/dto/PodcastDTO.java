@@ -1,6 +1,7 @@
 package echo.core.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -19,7 +20,7 @@ public class PodcastDTO implements DTO {
     private String generator;
 
     private String itunesImage;
-    private String itunesCategory;
+    private Set<String> itunesCategories;
 
     private int episodeCount;
 
@@ -123,12 +124,12 @@ public class PodcastDTO implements DTO {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesCategory() {
-        return itunesCategory;
+    public Set<String> getItunesCategories() {
+        return itunesCategories;
     }
 
-    public void setItunesCategory(String itunesCategory) {
-        this.itunesCategory = itunesCategory;
+    public void setItunesCategories(Set<String> itunesCategories) {
+        this.itunesCategories = itunesCategories;
     }
 
     public int getEpisodeCount() {
@@ -183,7 +184,7 @@ public class PodcastDTO implements DTO {
             ", language='" + language + '\'' +
             ", generator='" + generator + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
+            ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", episodeCount=" + episodeCount +
             '}';
     }

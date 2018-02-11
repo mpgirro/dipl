@@ -1,6 +1,7 @@
 package echo.core.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -14,14 +15,14 @@ public class IndexDocDTO {
     private String description;
     private LocalDateTime pubDate;
     private String itunesImage;
-    private String itunesCategory;
+    //private Set<String> itunesCategories;
     private String websiteData;
 
     public IndexDocDTO(){
 
     }
 
-    public IndexDocDTO(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage, String itunesCategory) {
+    public IndexDocDTO(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage) {
         this.docType = docType;
         this.echoId = echoId;
         this.title = title;
@@ -29,7 +30,7 @@ public class IndexDocDTO {
         this.pubDate = pubDate;
         this.description = description;
         this.itunesImage = itunesImage;
-        this.itunesCategory = itunesCategory;
+        //this.itunesCategories = itunesCategories;
     }
 
     public String getDocType() {
@@ -88,13 +89,15 @@ public class IndexDocDTO {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesCategory() {
-        return itunesCategory;
+    /*
+    public Set<String> getItunesCategories() {
+        return itunesCategories;
     }
 
-    public void setItunesCategory(String itunesCategory) {
-        this.itunesCategory = itunesCategory;
+    public void setItunesCategories(Set<String> itunesCategories) {
+        this.itunesCategories = itunesCategories;
     }
+    */
 
     public String getWebsiteData() {
         return websiteData;
@@ -114,7 +117,7 @@ public class IndexDocDTO {
             ", pubDate=" + pubDate +
             ", description='" + description + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
+            //", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", websiteData='" + websiteData + '\'' +
             '}';
     }

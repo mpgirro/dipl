@@ -13,6 +13,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name = "episode",
     indexes = {@Index(name = "idx_episode_echo_id",  columnList="echo_id", unique = true)})
+//@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Episode implements Serializable {
 

@@ -9,10 +9,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -27,6 +24,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name = "podcast",
     indexes = {@Index(name = "idx_podcast_echo_id",  columnList="echo_id", unique = true)})
+//@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Podcast implements Serializable {
 
@@ -61,8 +59,13 @@ public class Podcast implements Serializable {
     @Column(name = "itunes_image")
     private String itunesImage;
 
-    @Column(name = "itunes_category")
-    private String itunesCategory;
+    @Column(name = "category")
+    @ElementCollection(targetClass=String.class)
+    @CollectionTable(
+        name="itunes_category",
+        joinColumns=@JoinColumn(name="podcast_id")
+    )
+    private Set<String> itunesCategories;
 
     @Column(name = "episode_count")
     private int episodeCount;
@@ -163,12 +166,12 @@ public class Podcast implements Serializable {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesCategory() {
-        return itunesCategory;
+    public Set<String> getItunesCategories() {
+        return itunesCategories;
     }
 
-    public void setItunesCategory(String itunesCategory) {
-        this.itunesCategory = itunesCategory;
+    public void setItunesCategories(Set<String> itunesCategories) {
+        this.itunesCategories = itunesCategories;
     }
 
     public int getEpisodeCount() {
@@ -250,7 +253,7 @@ public class Podcast implements Serializable {
             ", language='" + language + '\'' +
             ", generator='" + generator + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
+            ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", episodeCount=" + episodeCount +
             '}';
     }

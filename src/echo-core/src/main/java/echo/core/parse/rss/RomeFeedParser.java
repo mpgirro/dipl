@@ -20,6 +20,7 @@ import org.xml.sax.InputSource;
 import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,11 @@ public class RomeFeedParser implements FeedParser {
                     podcast.setItunesImage(itunesFeedInfo.getImage().toExternalForm());
                 }
 
-                podcast.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+                podcast.setItunesCategories(new LinkedHashSet<>(
+                    itunesFeedInfo.getCategories().stream()
+                        .map(c->c.getName())
+                        .collect(Collectors.toCollection(LinkedList::new))));
+                //podcast.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
             } else {
                 log.debug("No iTunes Namespace elements found in Podcast");
             }

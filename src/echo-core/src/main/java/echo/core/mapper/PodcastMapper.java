@@ -15,7 +15,9 @@ import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -36,7 +38,7 @@ public interface PodcastMapper {
         @Mapping(source = "language", target = "language"),
         @Mapping(source = "generator", target = "generator"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(source = "itunesCategory", target = "itunesCategory"),
+        @Mapping(source = "itunesCategories", target = "itunesCategories"),
         @Mapping(target = "websiteData", ignore = true)
     } )
     PodcastDTO podcastToPodcastDto(Podcast podcast);
@@ -54,7 +56,7 @@ public interface PodcastMapper {
         @Mapping(source = "language", target = "language"),
         @Mapping(source = "generator", target = "generator"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(source = "itunesCategory", target = "itunesCategory"),
+        @Mapping(source = "itunesCategories", target = "itunesCategories"),
         @Mapping(target = "episodes", ignore = true),
         @Mapping(target = "feeds", ignore = true)
     } )
@@ -81,7 +83,7 @@ public interface PodcastMapper {
         if(doc.get("language")        != null){ dto.setLanguage(doc.get("language")); }
         if(doc.get("generator")       != null){ dto.setGenerator(doc.get("generator")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }
-        if(doc.get("itunes_category") != null){ dto.setItunesCategory(doc.get("itunes_category")); }
+        //if(doc.get("itunes_categories") != null){ dto.setItunesCategories(new HashSet<>(Arrays.asList(doc.get("itunes_categories").split(" | ")))); }
 
         // note: we do not retrieve websiteData
 
@@ -105,7 +107,7 @@ public interface PodcastMapper {
             if(podcast.getLastBuildDate() != null){ dto.setLastBuildDate(LocalDateTime.ofInstant(podcast.getLastBuildDate().toInstant(), ZoneId.systemDefault())); }
             if(podcast.getLanguage()      != null){ dto.setLanguage(podcast.getLanguage()); }
             if(podcast.getGenerator()     != null){ dto.setGenerator(podcast.getGenerator()); }
-            if(podcast.getCategories()    != null){ dto.setItunesCategory(String.join(" & ", Arrays.asList(podcast.getCategories()))); }
+            if(podcast.getCategories()    != null){ dto.setItunesCategories(new HashSet<>(Arrays.asList(podcast.getCategories()))); }
             if(podcast.getITunesInfo()    != null){ dto.setItunesImage(podcast.getITunesInfo().getImageString()); }
         } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
             throw new ConversionException("Exception during converting podengine.Podcast to PodcastDTO [reason: {}]", e);

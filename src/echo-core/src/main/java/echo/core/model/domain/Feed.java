@@ -20,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name = "feed",
     indexes = {@Index(name = "idx_feed_echo_id",  columnList="echo_id", unique = true)})
+//@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Feed implements Serializable {
 

@@ -27,7 +27,7 @@ public interface IndexDocMapper {
         @Mapping(source = "description", target = "description"),
         @Mapping(source = "pubDate", target = "pubDate"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(source = "itunesCategory", target = "itunesCategory")
+        //@Mapping(target = "itunesCategories", ignore = true)
     } )
     IndexDocDTO podcastDtoToIndexResult(PodcastDTO podcast);
 
@@ -41,7 +41,7 @@ public interface IndexDocMapper {
         @Mapping(source = "description", target = "description"),
         @Mapping(source = "pubDate", target = "pubDate"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(target = "itunesCategory", ignore = true)
+        //@Mapping(target = "itunesCategories", ignore = true)
     } )
     IndexDocDTO episodeDtoToIndexResult(EpisodeDTO episodeDTO);
 
