@@ -42,7 +42,7 @@ public class RomeFeedParser implements FeedParser {
             final PodcastDTO podcast = new PodcastDTO();
 
             podcast.setTitle(syndFeed.getTitle());
-            podcast.setLink(syndFeed.getLink());
+            podcast.setLink(sanitizeUrl(syndFeed.getLink()));
             podcast.setDescription(syndFeed.getDescription());
             if(syndFeed.getPublishedDate() != null){
                 podcast.setPubDate(LocalDateTime.ofInstant(syndFeed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
@@ -119,7 +119,7 @@ public class RomeFeedParser implements FeedParser {
                 final EpisodeDTO episode = new EpisodeDTO();
 
                 episode.setTitle(e.getTitle());
-                episode.setLink(e.getLink());
+                episode.setLink(sanitizeUrl(e.getLink()));
                 if(e.getPublishedDate() != null){
                     episode.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
