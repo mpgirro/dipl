@@ -6,4 +6,5 @@ export class Podcast {
   description: string;
   pubDate: string;
   itunesImage: string;
+  itunesCategories: string[];
 }

@@ -14,6 +14,13 @@
 </h1>
 
 <p class="my-3">
+  <span class="badge badge-secondary mx-1"
+        *ngFor="let category of podcast.itunesCategories">
+    {{category}}
+  </span>
+</p>
+
+<p class="my-3">
   <a href="{{podcast.link}}">
     <small class="text-muted"><span class="oi oi-link-intact"></span></small>
     {{domainService.removeProtocol(podcast.link)}}
