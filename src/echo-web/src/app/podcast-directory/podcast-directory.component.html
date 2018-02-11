@@ -29,8 +29,9 @@
       <div *ngFor="let podcast of podcasts; let i = index">
 
         <div class="row mt-4" *ngIf="i%4===0">
+
           <div class="col-3">
-            <a href="/p/{{podcasts[i].echoId}}">
+            <a href="/p/{{podcasts[i].echoId}}" class="podcast-cell">
               <img class="podcast-thumb"
                    src="{{podcasts[i].itunesImage}}"
                    alt="Generic placeholder image">
@@ -42,7 +43,7 @@
 
           <div class="col-3 ml-auto">
             <div *ngIf="podcasts[i + 1]">
-              <a href="/p/{{podcasts[i + 1].echoId}}">
+              <a href="/p/{{podcasts[i + 1].echoId}}" class="podcast-cell">
                 <img class="podcast-thumb"
                      src="{{podcasts[i + 1].itunesImage}}"
                      alt="Generic placeholder image">
@@ -53,9 +54,9 @@
             </div>
           </div>
 
-          <div class="col-3 ml-auto">
+          <div class="podcast-cell col-3 ml-auto">
             <div *ngIf="podcasts[i + 2]">
-              <a href="/p/{{podcasts[i + 2].echoId}}">
+              <a href="/p/{{podcasts[i + 2].echoId}}" class="podcast-cell">
                 <img class="podcast-thumb"
                      src="{{podcasts[i + 2].itunesImage}}"
                      alt="Generic placeholder image">
@@ -66,9 +67,9 @@
             </div>
           </div>
 
-          <div class="col-3 ml-auto">
+          <div class="podcast-cell col-3 ml-auto">
             <div *ngIf="podcasts[i + 3]">
-              <a href="/p/{{podcasts[i + 3].echoId}}">
+              <a href="/p/{{podcasts[i + 3].echoId}}" class="podcast-cell">
                 <img class="podcast-thumb"
                      src="{{podcasts[i + 3].itunesImage}}"
                      alt="Generic placeholder image">

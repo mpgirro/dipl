@@ -11,3 +11,6 @@ img.podcast-thumb {
 .podcast-h {
   color:black;
 }
+a.podcast-cell {
+  text-decoration: none;
+}
