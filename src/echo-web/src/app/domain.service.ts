@@ -4,6 +4,10 @@ import { Injectable } from '@angular/core';
 export class DomainService {
 
    extractHostname(url: string): string {
+     if (!url) {
+       return null;
+     }
+
      let hostname;
      // find & remove protocol (http, ftp, etc.) and get hostname
 
@@ -22,6 +26,10 @@ export class DomainService {
   }
 
   removeProtocol(url: string): string {
+    if (!url) {
+      return null;
+    }
+
     let hostname;
     if (url.indexOf('://') > -1) {
       hostname = url.split('://')[1];
