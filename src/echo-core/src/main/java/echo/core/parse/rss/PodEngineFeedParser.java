@@ -21,7 +21,9 @@ public class PodEngineFeedParser implements FeedParser {
     public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            return PodcastMapper.INSTANCE.podenginePodcastToPodcastDto(podcast);
+            final PodcastDTO dto = PodcastMapper.INSTANCE.podenginePodcastToPodcastDto(podcast);
+            dto.setLink(sanitizeUrl(dto.getLink()));
+            return dto;
         } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed", e);
         }
@@ -35,13 +37,17 @@ public class PodEngineFeedParser implements FeedParser {
     public List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            if(podcast.getEpisodes() != null){
-                return EpisodeMapper.INSTANCE.podengineEpisodesToEpisodeDtos(podcast.getEpisodes());
+            if (podcast.getEpisodes() == null) {
+                return new LinkedList<>();
             }
+            final List<EpisodeDTO> episodes = EpisodeMapper.INSTANCE.podengineEpisodesToEpisodeDtos(podcast.getEpisodes());
+            for (EpisodeDTO e : episodes) {
+                e.setLink(sanitizeUrl(e.getLink()));
+            }
+            return episodes;
         } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }
-        return new LinkedList<>();
     }
 
 }
