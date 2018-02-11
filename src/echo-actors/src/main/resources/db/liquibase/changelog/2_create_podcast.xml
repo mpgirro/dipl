@@ -70,13 +70,11 @@
         <dropDefaultValue tableName="podcast" columnName="pub_date" columnDataType="datetime"/>
         <dropDefaultValue tableName="podcast" columnName="last_build_date" columnDataType="datetime"/>
 
-    </changeSet>
-
-    <changeSet id="2-1" author="mpgirro">
         <createTable tableName="itunes_category">
             <column name="podcast_id" type="bigint" />
             <column name="category" type="text"/>
         </createTable>
+
     </changeSet>
 
 </databaseChangeLog>
