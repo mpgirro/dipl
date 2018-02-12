@@ -34,8 +34,20 @@
             <column name="last_build_date" type="timestamp"/>
             <column name="language" type="text"/>
             <column name="generator" type="text"/>
+            <column name="copyright" type="text"/>
+            <column name="docs" type="text"/>
+            <column name="managing_editor" type="text"/>
             <column name="itunes_image" type="text"/>
-            <!--<column name="itunes_category" type="text"/>-->
+            <column name="itunes_summary" type="text"/>
+            <column name="itunes_author" type="text"/>
+            <column name="itunes_keywords" type="text"/>
+            <column name="itunes_explicit" type="bit"/>
+            <column name="itunes_block" type="bit"/>
+            <column name="itunes_type" type="text"/>
+            <column name="itunes_owner_name" type="text"/>
+            <column name="itunes_owner_email" type="text"/>
+            <column name="feedpress_locale" type="text"/>
+            <column name="fyyd_verify" type="text"/>
             <column name="episode_count" type="int"/>
         </createTable>
 

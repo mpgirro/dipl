@@ -281,7 +281,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
         def task = () => {
-            podcastService.findAll().foreach(p => println(p.getTitle))
+            podcastService.findAll().foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
         }
         doInTransaction(task, List(podcastService))
     }
@@ -290,7 +290,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllEpisodes")
         log.info("All Episodes in database:")
         def task = () => {
-            episodeService.findAll().foreach(e => println(e.getTitle))
+            episodeService.findAll().foreach(e => println(s"${e.getEchoId} : ${e.getTitle}"))
         }
         doInTransaction(task, List(episodeService))
     }

@@ -35,6 +35,16 @@
             <column name="guid_is_permalink" type="bit"/>
             <column name="itunes_image" type="text"/>
             <column name="itunes_duration" type="text"/>
+            <column name="itunes_subtitle" type="text"/>
+            <column name="itunes_author" type="text"/>
+            <column name="itunes_summary" type="text"/>
+            <column name="itunes_season" type="int"/>
+            <column name="itunes_episode" type="int"/>
+            <column name="itunes_episode_type" type="text"/>
+            <column name="enclosure_url" type="text"/>
+            <column name="enclosure_length" type="bigint"/>
+            <column name="enclosure_type" type="text"/>
+            <column name="content_encoded" type="text"/>
             <column name="podcast_id" type="bigint"/>
         </createTable>
 
