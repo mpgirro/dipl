@@ -56,6 +56,15 @@ public class Podcast implements Serializable {
     @Column(name = "generator")
     private String generator;
 
+    @Column(name = "copyright")
+    private String copyright;
+
+    @Column(name = "docs")
+    private String docs;
+
+    @Column(name = "managing_editor")
+    private String managingEditor;
+
     @Column(name = "itunes_image")
     private String itunesImage;
 
@@ -66,6 +75,36 @@ public class Podcast implements Serializable {
         joinColumns=@JoinColumn(name="podcast_id")
     )
     private Set<String> itunesCategories;
+
+    @Column(name = "itunes_summary")
+    private String itunesSummary;
+
+    @Column(name = "itunes_author")
+    private String itunesAuthor;
+
+    @Column(name = "itunes_keywords")
+    private String itunesKeywords;
+
+    @Column(name = "itunes_explicit")
+    private Boolean itunesExplicit;
+
+    @Column(name = "itunes_block")
+    private Boolean itunesBlock;
+
+    @Column(name = "itunes_type")
+    private String itunesType;
+
+    @Column(name = "itunes_owner_name")
+    private String itunesOwnerName;
+
+    @Column(name = "itunes_owner_email")
+    private String itunesOwnerEmail;
+
+    @Column(name = "feedpress_locale")
+    private String feedpressLocale;
+
+    @Column(name = "fyyd_verify")
+    private String fyydVerify;
 
     @Column(name = "episode_count")
     private int episodeCount;
@@ -158,6 +197,30 @@ public class Podcast implements Serializable {
         this.generator = generator;
     }
 
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
+
+    public String getDocs() {
+        return docs;
+    }
+
+    public void setDocs(String docs) {
+        this.docs = docs;
+    }
+
+    public String getManagingEditor() {
+        return managingEditor;
+    }
+
+    public void setManagingEditor(String managingEditor) {
+        this.managingEditor = managingEditor;
+    }
+
     public String getItunesImage() {
         return itunesImage;
     }
@@ -172,6 +235,86 @@ public class Podcast implements Serializable {
 
     public void setItunesCategories(Set<String> itunesCategories) {
         this.itunesCategories = itunesCategories;
+    }
+
+    public String getItunesSummary() {
+        return itunesSummary;
+    }
+
+    public void setItunesSummary(String itunesSummary) {
+        this.itunesSummary = itunesSummary;
+    }
+
+    public String getItunesAuthor() {
+        return itunesAuthor;
+    }
+
+    public void setItunesAuthor(String itunesAuthor) {
+        this.itunesAuthor = itunesAuthor;
+    }
+
+    public String getItunesKeywords() {
+        return itunesKeywords;
+    }
+
+    public void setItunesKeywords(String itunesKeywords) {
+        this.itunesKeywords = itunesKeywords;
+    }
+
+    public Boolean getItunesExplicit() {
+        return itunesExplicit;
+    }
+
+    public void setItunesExplicit(Boolean itunesExplicit) {
+        this.itunesExplicit = itunesExplicit;
+    }
+
+    public Boolean getItunesBlock() {
+        return itunesBlock;
+    }
+
+    public void setItunesBlock(Boolean itunesBlock) {
+        this.itunesBlock = itunesBlock;
+    }
+
+    public String getItunesType() {
+        return itunesType;
+    }
+
+    public void setItunesType(String itunesType) {
+        this.itunesType = itunesType;
+    }
+
+    public String getItunesOwnerName() {
+        return itunesOwnerName;
+    }
+
+    public void setItunesOwnerName(String itunesOwnerName) {
+        this.itunesOwnerName = itunesOwnerName;
+    }
+
+    public String getItunesOwnerEmail() {
+        return itunesOwnerEmail;
+    }
+
+    public void setItunesOwnerEmail(String itunesOwnerEmail) {
+        this.itunesOwnerEmail = itunesOwnerEmail;
+    }
+
+    public String getFeedpressLocale() {
+        return feedpressLocale;
+    }
+
+    public void setFeedpressLocale(String feedpressLocale) {
+        this.feedpressLocale = feedpressLocale;
+    }
+
+    public String getFyydVerify() {
+        return fyydVerify;
+    }
+
+    public void setFyydVerify(String fyydVerify) {
+        this.fyydVerify = fyydVerify;
     }
 
     public int getEpisodeCount() {
@@ -243,7 +386,7 @@ public class Podcast implements Serializable {
     @Override
     public String toString() {
         return "Podcast{" +
-            "id=" + id + '\'' +
+            "id=" + id +
             ", echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
@@ -252,8 +395,21 @@ public class Podcast implements Serializable {
             ", lastBuildDate=" + lastBuildDate +
             ", language='" + language + '\'' +
             ", generator='" + generator + '\'' +
+            ", copyright=" + copyright + '\'' +
+            ", docs=" + docs + '\'' +
+            ", managingEditor=" + managingEditor + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
             ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
+            ", itunesSummary='" + itunesSummary + '\'' +
+            ", itunesAuthor='" + itunesAuthor + '\'' +
+            ", itunesKeywords='" + itunesKeywords + '\'' +
+            ", itunesExplicit=" + itunesExplicit +
+            ", itunesBlock=" + itunesBlock +
+            ", itunesType='" + itunesType + '\'' +
+            ", itunesOwnerName='" + itunesOwnerName + '\'' +
+            ", itunesOwnerEmail='" + itunesOwnerEmail + '\'' +
+            ", feedpressLocale='" + feedpressLocale + '\'' +
+            ", fyydVerify='" + fyydVerify + '\'' +
             ", episodeCount=" + episodeCount +
             '}';
     }

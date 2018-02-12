@@ -48,6 +48,36 @@ public class Episode implements Serializable {
     @Column(name = "itunes_duration")
     private String itunesDuration;
 
+    @Column(name = "itunes_subtitle")
+    private String itunesSubtitle;
+
+    @Column(name = "itunes_author")
+    private String itunesAuthor;
+
+    @Column(name = "itunes_summary")
+    private String itunesSummary;
+
+    @Column(name = "itunes_season")
+    private Integer itunesSeason;
+
+    @Column(name = "itunes_episode")
+    private Integer itunesEpisode;
+
+    @Column(name = "itunes_episode_type")
+    private String itunesEpisodeType;
+
+    @Column(name = "enclosure_url")
+    private String enclosureUrl;
+
+    @Column(name = "enclosure_length")
+    private Long enclosureLength;
+
+    @Column(name = "enclosure_type")
+    private String enclosureType;
+
+    @Column(name = "content_encoded")
+    private String contentEncoded;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
@@ -132,6 +162,86 @@ public class Episode implements Serializable {
         this.itunesDuration = itunesDuration;
     }
 
+    public String getItunesSubtitle() {
+        return itunesSubtitle;
+    }
+
+    public void setItunesSubtitle(String itunesSubtitle) {
+        this.itunesSubtitle = itunesSubtitle;
+    }
+
+    public String getItunesAuthor() {
+        return itunesAuthor;
+    }
+
+    public void setItunesAuthor(String itunesAuthor) {
+        this.itunesAuthor = itunesAuthor;
+    }
+
+    public String getItunesSummary() {
+        return itunesSummary;
+    }
+
+    public void setItunesSummary(String itunesSummary) {
+        this.itunesSummary = itunesSummary;
+    }
+
+    public Integer getItunesSeason() {
+        return itunesSeason;
+    }
+
+    public void setItunesSeason(Integer itunesSeason) {
+        this.itunesSeason = itunesSeason;
+    }
+
+    public Integer getItunesEpisode() {
+        return itunesEpisode;
+    }
+
+    public void setItunesEpisode(Integer itunesEpisode) {
+        this.itunesEpisode = itunesEpisode;
+    }
+
+    public String getItunesEpisodeType() {
+        return itunesEpisodeType;
+    }
+
+    public void setItunesEpisodeType(String itunesEpisodeType) {
+        this.itunesEpisodeType = itunesEpisodeType;
+    }
+
+    public String getEnclosureUrl() {
+        return enclosureUrl;
+    }
+
+    public void setEnclosureUrl(String enclosureUrl) {
+        this.enclosureUrl = enclosureUrl;
+    }
+
+    public Long getEnclosureLength() {
+        return enclosureLength;
+    }
+
+    public void setEnclosureLength(Long enclosureLength) {
+        this.enclosureLength = enclosureLength;
+    }
+
+    public String getEnclosureType() {
+        return enclosureType;
+    }
+
+    public void setEnclosureType(String enclosureType) {
+        this.enclosureType = enclosureType;
+    }
+
+    public String getContentEncoded() {
+        return contentEncoded;
+    }
+
+    public void setContentEncoded(String contentEncoded) {
+        this.contentEncoded = contentEncoded;
+    }
+
     public Podcast getPodcast() {
         return podcast;
     }
@@ -163,16 +273,26 @@ public class Episode implements Serializable {
     @Override
     public String toString() {
         return "Episode{" +
-            "id=" + id + '\'' +
+            "id=" + id +
             ", echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
+            ", description='" + description + '\'' +
             ", pubDate=" + pubDate +
             ", guid='" + guid + '\'' +
             ", guidIsPermaLink=" + guidIsPermaLink +
-            ", description='" + description + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
             ", itunesDuration='" + itunesDuration + '\'' +
+            ", itunesSubtitle='" + itunesSubtitle + '\'' +
+            ", itunesAuthor='" + itunesAuthor + '\'' +
+            ", itunesSummary='" + itunesSummary + '\'' +
+            ", itunesSeason=" + itunesSeason +
+            ", itunesEpisode=" + itunesEpisode +
+            ", itunesEpisodeType='" + itunesEpisodeType + '\'' +
+            ", enclosureUrl='" + enclosureUrl + '\'' +
+            ", enclosureLength=" + enclosureLength +
+            ", enclosureType='" + enclosureType + '\'' +
+            ", contentEncoded='" + contentEncoded + '\'' +
             '}';
     }
 }
