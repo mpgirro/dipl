@@ -69,6 +69,21 @@ public class FeedDTO implements DTO {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FeedDTO that = (FeedDTO) o;
+
+        return echoId.equals(that.echoId);
+    }
+
+    @Override
+    public int hashCode() {
+        return echoId.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "FeedDTO{" +
             "id=" + id +
