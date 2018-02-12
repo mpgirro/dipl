@@ -34,8 +34,20 @@ public interface EpisodeMapper {
         @Mapping(source = "link", target = "link"),
         @Mapping(source = "pubDate", target = "pubDate"),
         @Mapping(source = "description", target = "description"),
+        @Mapping(source = "guid", target = "guid"),
+        @Mapping(source = "guidIsPermaLink", target = "guidIsPermaLink"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
         @Mapping(source = "itunesDuration", target = "itunesDuration"),
+        @Mapping(source = "itunesSubtitle", target = "itunesSubtitle"),
+        @Mapping(source = "itunesAuthor", target = "itunesAuthor"),
+        @Mapping(source = "itunesSummary", target = "itunesSummary"),
+        @Mapping(source = "itunesSeason", target = "itunesSeason"),
+        @Mapping(source = "itunesEpisode", target = "itunesEpisode"),
+        @Mapping(source = "itunesEpisodeType", target = "itunesEpisodeType"),
+        @Mapping(source = "enclosureUrl", target = "enclosureUrl"),
+        @Mapping(source = "enclosureLength", target = "enclosureLength"),
+        @Mapping(source = "enclosureType", target = "enclosureType"),
+        @Mapping(source = "contentEncoded", target = "contentEncoded"),
         @Mapping(target = "websiteData", ignore = true)
     } )
     EpisodeDTO episodeToEpisodeDto(Episode episode);
@@ -51,11 +63,21 @@ public interface EpisodeMapper {
         @Mapping(source = "title", target = "title"),
         @Mapping(source = "link", target = "link"),
         @Mapping(source = "pubDate", target = "pubDate"),
+        @Mapping(source = "description", target = "description"),
         @Mapping(source = "guid", target = "guid"),
         @Mapping(source = "guidIsPermaLink", target = "guidIsPermaLink"),
-        @Mapping(source = "description", target = "description"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
-        @Mapping(source = "itunesDuration", target = "itunesDuration")
+        @Mapping(source = "itunesDuration", target = "itunesDuration"),
+        @Mapping(source = "itunesSubtitle", target = "itunesSubtitle"),
+        @Mapping(source = "itunesAuthor", target = "itunesAuthor"),
+        @Mapping(source = "itunesSummary", target = "itunesSummary"),
+        @Mapping(source = "itunesSeason", target = "itunesSeason"),
+        @Mapping(source = "itunesEpisode", target = "itunesEpisode"),
+        @Mapping(source = "itunesEpisodeType", target = "itunesEpisodeType"),
+        @Mapping(source = "enclosureUrl", target = "enclosureUrl"),
+        @Mapping(source = "enclosureLength", target = "enclosureLength"),
+        @Mapping(source = "enclosureType", target = "enclosureType"),
+        @Mapping(source = "contentEncoded", target = "contentEncoded")
     } )
     Episode episodeDtoToEpisode(EpisodeDTO episodeDto);
 
@@ -83,12 +105,9 @@ public interface EpisodeMapper {
         if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
         if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
         if(doc.get("pub_date")        != null){ dto.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
-        if(doc.get("guid")            != null){ dto.setGuid(doc.get("guid")); }
         if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
         if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }
         if(doc.get("itunes_duration") != null){ dto.setItunesDuration(doc.get("itunes_duration")); }
-
-        // note: we do not retrieve websiteData
 
         return dto;
     }

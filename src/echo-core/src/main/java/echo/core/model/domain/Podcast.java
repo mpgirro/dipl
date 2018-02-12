@@ -107,7 +107,7 @@ public class Podcast implements Serializable {
     private String fyydVerify;
 
     @Column(name = "episode_count")
-    private int episodeCount;
+    private Integer episodeCount;
 
     @OneToMany(fetch=FetchType.LAZY,
                //cascade = CascadeType.ALL,
@@ -317,7 +317,7 @@ public class Podcast implements Serializable {
         this.fyydVerify = fyydVerify;
     }
 
-    public int getEpisodeCount() {
+    public Integer getEpisodeCount() {
         return episodeCount;
     }
 

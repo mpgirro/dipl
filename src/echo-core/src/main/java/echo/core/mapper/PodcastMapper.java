@@ -37,8 +37,22 @@ public interface PodcastMapper {
         @Mapping(source = "lastBuildDate", target = "lastBuildDate"),
         @Mapping(source = "language", target = "language"),
         @Mapping(source = "generator", target = "generator"),
+        @Mapping(source = "copyright", target = "copyright"),
+        @Mapping(source = "docs", target = "docs"),
+        @Mapping(source = "managingEditor", target = "managingEditor"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
         @Mapping(source = "itunesCategories", target = "itunesCategories"),
+        @Mapping(source = "itunesSummary", target = "itunesSummary"),
+        @Mapping(source = "itunesAuthor", target = "itunesAuthor"),
+        @Mapping(source = "itunesKeywords", target = "itunesKeywords"),
+        @Mapping(source = "itunesExplicit", target = "itunesExplicit"),
+        @Mapping(source = "itunesBlock", target = "itunesBlock"),
+        @Mapping(source = "itunesType", target = "itunesType"),
+        @Mapping(source = "itunesOwnerName", target = "itunesOwnerName"),
+        @Mapping(source = "itunesOwnerEmail", target = "itunesOwnerEmail"),
+        @Mapping(source = "feedpressLocale", target = "feedpressLocale"),
+        @Mapping(source = "fyydVerify", target = "fyydVerify"),
+        @Mapping(source = "episodeCount", target = "episodeCount"),
         @Mapping(target = "websiteData", ignore = true)
     } )
     PodcastDTO podcastToPodcastDto(Podcast podcast);
@@ -55,8 +69,22 @@ public interface PodcastMapper {
         @Mapping(source = "lastBuildDate", target = "lastBuildDate"),
         @Mapping(source = "language", target = "language"),
         @Mapping(source = "generator", target = "generator"),
+        @Mapping(source = "copyright", target = "copyright"),
+        @Mapping(source = "docs", target = "docs"),
+        @Mapping(source = "managingEditor", target = "managingEditor"),
         @Mapping(source = "itunesImage", target = "itunesImage"),
         @Mapping(source = "itunesCategories", target = "itunesCategories"),
+        @Mapping(source = "itunesSummary", target = "itunesSummary"),
+        @Mapping(source = "itunesAuthor", target = "itunesAuthor"),
+        @Mapping(source = "itunesKeywords", target = "itunesKeywords"),
+        @Mapping(source = "itunesExplicit", target = "itunesExplicit"),
+        @Mapping(source = "itunesBlock", target = "itunesBlock"),
+        @Mapping(source = "itunesType", target = "itunesType"),
+        @Mapping(source = "itunesOwnerName", target = "itunesOwnerName"),
+        @Mapping(source = "itunesOwnerEmail", target = "itunesOwnerEmail"),
+        @Mapping(source = "feedpressLocale", target = "feedpressLocale"),
+        @Mapping(source = "fyydVerify", target = "fyydVerify"),
+        @Mapping(source = "episodeCount", target = "episodeCount"),
         @Mapping(target = "episodes", ignore = true),
         @Mapping(target = "feeds", ignore = true)
     } )
@@ -72,20 +100,12 @@ public interface PodcastMapper {
 
         final PodcastDTO dto = new PodcastDTO();
 
-        if(doc.get("echo_id")         != null){ dto.setEchoId(doc.get("echo_id")); }
-        if(doc.get("title")           != null){ dto.setTitle(doc.get("title")); }
-        if(doc.get("link")            != null){ dto.setLink(doc.get("link")); }
-        if(doc.get("description")     != null){ dto.setDescription(doc.get("description")); }
-        if(doc.get("pub_date")        != null){ dto.setLastBuildDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
-        if(doc.get("last_build_date") != null){ dto.setLastBuildDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("last_build_date"))); }
-        //if(doc.get("pub_date")        != null){ dto.setLastBuildDate(DateMapper.asZonedDateTime(doc.get("pub_date"))); }
-        //if(doc.get("last_build_date") != null){ dto.setLastBuildDate(DateMapper.asZonedDateTime(doc.get("last_build_date"))); }
-        if(doc.get("language")        != null){ dto.setLanguage(doc.get("language")); }
-        if(doc.get("generator")       != null){ dto.setGenerator(doc.get("generator")); }
-        if(doc.get("itunes_image")    != null){ dto.setItunesImage(doc.get("itunes_image")); }
-        //if(doc.get("itunes_categories") != null){ dto.setItunesCategories(new HashSet<>(Arrays.asList(doc.get("itunes_categories").split(" | ")))); }
-
-        // note: we do not retrieve websiteData
+        if(doc.get("echo_id")      != null){ dto.setEchoId(doc.get("echo_id")); }
+        if(doc.get("title")        != null){ dto.setTitle(doc.get("title")); }
+        if(doc.get("link")         != null){ dto.setLink(doc.get("link")); }
+        if(doc.get("description")  != null){ dto.setDescription(doc.get("description")); }
+        if(doc.get("pub_date")     != null){ dto.setLastBuildDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
+        if(doc.get("itunes_image") != null){ dto.setItunesImage(doc.get("itunes_image")); }
 
         return dto;
     }
