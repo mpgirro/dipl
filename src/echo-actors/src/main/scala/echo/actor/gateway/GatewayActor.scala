@@ -2,6 +2,8 @@ package echo.actor.gateway
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.dispatch.MessageDispatcher
+import akka.event.LoggingAdapter
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives.{complete, get, _}
@@ -34,12 +36,12 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _
 
-    implicit val internalTimeout = Timeout(5 seconds) // TODO read value from config
+    private implicit val internalTimeout = Timeout(5 seconds) // TODO read value from config
 
-    private val searchService = new SearchGatewayService(log, internalTimeout)
-    private val podcastService = new PodcastGatewayService(log, internalTimeout)
-    private val episodeService = new EpisodeGatewayService(log, internalTimeout)
-    private val feedService = new FeedGatewayService(log, internalTimeout)
+    private val searchService = new SearchGatewayService(log)
+    private val podcastService = new PodcastGatewayService(log)
+    private val episodeService = new EpisodeGatewayService(log)
+    private val feedService = new FeedGatewayService(log)
 
     override def preStart: Unit = {
 

@@ -3,6 +3,7 @@ package echo.actor.gateway.service
 import javax.ws.rs.Path
 
 import akka.actor.{ActorContext, ActorRef}
+import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
@@ -20,17 +21,14 @@ import io.swagger.annotations._
 @Path("/api/episode")  // @Path annotation required for Swagger
 @Api(value = "/api/episode",
      produces = "application/json")
-class EpisodeGatewayService(private val log: LoggingAdapter,
-                            private val internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
+class EpisodeGatewayService (private val log: LoggingAdapter)
+                            (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
     private var directoryStore: ActorRef = _
 
-    // TODO better use the logger of the actor, for cluster use later, via constructor --> log: LoggingAdapter
-    // val log = Logging(context.system, classOf[EpisodeService])
-
-    implicit val timeout: Timeout = internalTimeout
+    override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
     override val route: Route = pathPrefix("episode") { pathEndOrSingleSlash { getAllEpisodes ~ postEpisode } } ~
                     pathPrefix("episode" / Segment) { id => getEpisode(id) ~ putEpisode(id) ~ deleteEpisode(id) }

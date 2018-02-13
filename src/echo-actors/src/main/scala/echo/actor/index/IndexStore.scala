@@ -51,33 +51,40 @@ class IndexStore extends Actor with ActorLogging {
             log.debug("Received IndexStoreAddPodcast({})", podcast.getEchoId)
             indexCommitter.add(podcast)
             indexChanged = true
+            log.debug("Exit IndexStoreAddPodcast({})", podcast.getEchoId)
 
         case IndexStoreUpdatePodcast(podcast) =>
             log.debug("Received IndexStoreUpdatePodcast({})", podcast.getEchoId)
             indexCommitter.update(podcast)
             indexChanged = true
+            log.debug("Exit IndexStoreUpdatePodcast({})", podcast.getEchoId)
 
         case IndexStoreAddEpisode(episode) =>
             log.debug("Received IndexStoreAddEpisode({})", episode.getEchoId)
             indexCommitter.add(episode)
             indexChanged = true
+            log.debug("Exit IndexStoreAddEpisode({})", episode.getEchoId)
 
         case IndexStoreUpdateEpisode(episode) =>
             log.debug("Received IndexStoreUpdateEpisode({})", episode.getEchoId)
             indexCommitter.update(episode)
             indexChanged = true
+            log.debug("Exit IndexStoreUpdateEpisode({})", episode.getEchoId)
 
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
             updateWebsiteQueue.enqueue((echoId,html))
+            log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", echoId)
 
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
             log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
             updateImageQueue.enqueue((echoId, itunesImage))
+            log.debug("Exit IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
 
         case IndexStoreUpdateDocLink(echoId, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", echoId, link)
             updateLinkQueue.enqueue((echoId, link))
+            log.debug("Exit IndexStoreUpdateDocLink({},'{}')", echoId, link)
 
         case SearchIndex(query, page, size) =>
             log.info("Received SearchIndex('{}',{},{}) message", query, page, size)
@@ -96,6 +103,7 @@ class IndexStore extends Actor with ActorLogging {
                     log.error("Error trying to search the index [reason: {}]", e.getMessage)
                     sender ! NoIndexResultsFound(query) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
             }
+            log.info("Exit SearchIndex('{}',{},{}) message", query, page, size)
 
     }
 
@@ -104,6 +112,7 @@ class IndexStore extends Actor with ActorLogging {
             log.debug("Committing Index due to pending changes")
             indexCommitter.commit()
             indexChanged = false
+            log.debug("Finished Index due to pending changes")
         }
 
         if(updateWebsiteQueue.nonEmpty){
@@ -111,6 +120,7 @@ class IndexStore extends Actor with ActorLogging {
             indexSearcher.refresh()
             processWebsiteQueue(updateWebsiteQueue)
             indexCommitter.commit()
+            log.debug("Finished pending entries in website queue")
         }
 
         if(updateImageQueue.nonEmpty){
@@ -118,6 +128,7 @@ class IndexStore extends Actor with ActorLogging {
             indexSearcher.refresh()
             processImageQueue(updateImageQueue)
             indexCommitter.commit()
+            log.debug("Finished pending entries in image queue")
         }
 
         if(updateLinkQueue.nonEmpty){
@@ -125,6 +136,7 @@ class IndexStore extends Actor with ActorLogging {
             indexSearcher.refresh()
             processLinkQueue(updateLinkQueue)
             indexCommitter.commit()
+            log.debug("Finished pending entries in link queue")
         }
     }
 

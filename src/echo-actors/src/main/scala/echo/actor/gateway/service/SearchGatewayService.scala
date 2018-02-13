@@ -2,7 +2,8 @@ package echo.actor.gateway.service
 
 import javax.ws.rs.Path
 
-import akka.actor.{ActorContext, ActorRef}
+import akka.actor.{ActorContext, ActorLogging, ActorRef}
+import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
@@ -22,8 +23,8 @@ import scala.concurrent.Await
 @Path("/api/search")  // @Path annotation required for Swagger
 @Api(value = "/api/search",
     produces = "application/json")
-class SearchGatewayService(private val log: LoggingAdapter,
-                           private val internalTimeout: Timeout)(implicit val context: ActorContext) extends GatewayService with Directives with JsonSupport {
+class SearchGatewayService (private val log: LoggingAdapter)
+                           (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
     private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
@@ -33,7 +34,7 @@ class SearchGatewayService(private val log: LoggingAdapter,
     // once the message with the reference arrived
     private var searcher: ActorRef = _
 
-    implicit val timeout: Timeout = internalTimeout
+    override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
     override val route: Route = pathPrefix("search"){ pathEndOrSingleSlash { search } }
 

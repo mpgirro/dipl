@@ -103,7 +103,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO check of feed is known yet
         // TODO handle known and unknown
 
-        def toDo = () => {
+        def task = () => {
             feedService.findOneByUrl(url).map(feed => {
                 log.info("Proposed feed is already in database: {}", url)
                 println(feed)
@@ -128,12 +128,14 @@ class DirectoryStore extends Actor with ActorLogging {
                 })
             })
         }
-        doInTransaction(toDo, List(podcastService, feedService))
+        doInTransaction(task, List(podcastService, feedService))
+
+        log.debug("Finished msg proposing a new feed: " + url)
     }
 
     private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
-        def toDo = () => {
+        def task = () => {
             feedService.findOneByUrl(url).map(feed => {
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
@@ -142,7 +144,9 @@ class DirectoryStore extends Actor with ActorLogging {
                 log.error("Received UNKNOWN FEED/Podcast FeedStatusUpdate({},{},{})", url, timestamp, status)
             })
         }
-        doInTransaction(toDo, List(feedService))
+        doInTransaction(task, List(feedService))
+
+        log.debug("Finished FeedStatusUpdate({},{},{})", url, timestamp, status)
     }
 
     private def onUpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
@@ -166,6 +170,8 @@ class DirectoryStore extends Actor with ActorLogging {
             crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         }
         doInTransaction(task, List(podcastService))
+
+        log.debug("Finished UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
     }
 
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
@@ -192,6 +198,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(podcastService, episodeService))
+
+        log.debug("Finished UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
     }
 
     private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
@@ -205,6 +213,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(feedService))
+
+        log.debug("Finished UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
     }
 
     private def onUpdateLinkByEchoId(echoId: String, newUrl: String): Unit = {
@@ -223,6 +233,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(podcastService,episodeService))
+
+        log.debug("Finished UpdateLinkByEchoId({},'{}')", echoId, newUrl)
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
@@ -236,6 +248,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(podcastService))
+
+        log.debug("Finished GetPodcast('{}')", podcastId)
     }
 
     private def onGetAllPodcasts(): Unit = {
@@ -246,6 +260,8 @@ class DirectoryStore extends Actor with ActorLogging {
             sender ! AllPodcastsResult(podcasts)
         }
         doInTransaction(task, List(podcastService))
+
+        log.debug("Finished GetAllPodcasts()")
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
@@ -259,6 +275,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(episodeService))
+
+        log.debug("Finished GetEpisode('{}')", episodeId)
     }
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
@@ -273,9 +291,9 @@ class DirectoryStore extends Actor with ActorLogging {
             })
         }
         doInTransaction(task, List(podcastService, episodeService))
+
+        log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
     }
-
-
 
     private def debugPrintAllPodcasts(): Unit = {
         log.debug("Received DebugPrintAllPodcasts")
@@ -284,6 +302,8 @@ class DirectoryStore extends Actor with ActorLogging {
             podcastService.findAll().foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
         }
         doInTransaction(task, List(podcastService))
+
+        log.debug("Finished DebugPrintAllPodcasts")
     }
 
     private def debugPrintAllEpisodes(): Unit = {
@@ -293,19 +313,21 @@ class DirectoryStore extends Actor with ActorLogging {
             episodeService.findAll().foreach(e => println(s"${e.getEchoId} : ${e.getTitle}"))
         }
         doInTransaction(task, List(episodeService))
+
+        log.debug("Finished DebugPrintAllEpisodes")
     }
 
     /**
       *
-      * @param callable the function to be executed inside a transaction
+      * @param task the function to be executed inside a transaction
       * @param services all services used within the callable function, which therefore require a refresh before doing the work
       */
-    private def doInTransaction(callable: () => Any, services: List[DirectoryService] ): Unit = {
+    private def doInTransaction(task: () => Any, services: List[DirectoryService] ): Unit = {
         val em: EntityManager = emf.createEntityManager()
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {
             services.foreach(_.refresh(em))
-            callable()
+            task()
         } finally {
             if(em.isOpen){
                 em.close()

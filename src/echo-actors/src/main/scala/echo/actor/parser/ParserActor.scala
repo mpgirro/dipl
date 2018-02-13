@@ -67,6 +67,8 @@ class ParserActor extends Actor with ActorLogging {
                 case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
             }
 
+            log.debug("Finished ParseNewPodcastData for feed: " + feedUrl)
+
         case ParsePodcastData(podcastId: String, podcastFeedData: String) =>
             // TODO when using a SAX parser, this would be most efficient by merging it with IndexFeedData
             /*
@@ -141,6 +143,8 @@ class ParserActor extends Actor with ActorLogging {
                 case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
             }
 
+            log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastId)
+
 
         case ParseWebsiteData(echoId: String, html: String) =>
             // TODO we don't to any processing of raw website source code yet
@@ -150,6 +154,8 @@ class ParserActor extends Actor with ActorLogging {
             val readableText = Jsoup.parse(html).text()
 
             indexStore ! IndexStoreUpdateDocWebsiteData(echoId, readableText)
+
+            log.debug("Finished ParseWebsiteData({},_)", echoId)
 
     }
 

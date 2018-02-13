@@ -46,10 +46,13 @@ class CrawlerSupervisor extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case Terminated(a) =>
+            log.info("Child '{}' terminated" + a.path.name)
+            /* TODO at some point we want to simply restart replace the worker
             router = router.removeRoutee(a)
             val crawler = createCrawler()
             context watch crawler
             router = router.addRoutee(crawler)
+            */
 
         case work =>
             router.route(work, sender())

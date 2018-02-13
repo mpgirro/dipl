@@ -23,22 +23,32 @@ class MasterSupervisor extends Actor with ActorLogging {
 
     implicit val internalTimeout = Timeout(5 seconds)
 
+    private var index: ActorRef = _
+    private var parser: ActorRef = _
+    private var searcher: ActorRef = _
+    private var crawler: ActorRef = _
+    private var directory: ActorRef = _
+    private var gateway: ActorRef = _
+    private var cli: ActorRef = _
+
     override def preStart(): Unit = {
-        val indexStore = context.watch(context.actorOf(Props[IndexStore]
+        index = context.watch(context.actorOf(Props[IndexStore]
             .withDispatcher("echo.index.dispatcher"),
             name = "index"))
-        val parser = context.watch(context.actorOf(Props[ParserActor]
+        parser = context.watch(context.actorOf(Props[ParserActor]
             .withDispatcher("echo.parser.dispatcher"),
             name = "parser"))
-        val searcher = context.watch(context.actorOf(Props[SearcherActor], name = "searcher"))
+        searcher = context.watch(context.actorOf(Props[SearcherActor]
+            .withDispatcher("echo.searcher.dispatcher"),
+            name = "searcher"))
         /*
         val crawler = context.watch(context.actorOf(Props[CrawlerActor]
             .withDispatcher("echo.crawler.dispatcher"),
             name = "crawler"))
         */
         // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
-        val crawlerSupervisor = context.actorOf(Props[CrawlerSupervisor], name = "crawler-supervisor")
-        context watch crawlerSupervisor
+        crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler-supervisor")
+        context watch crawler
 
         /*
         val directoryStore = context.watch(context.actorOf(Props[DirectoryStore]
@@ -46,31 +56,33 @@ class MasterSupervisor extends Actor with ActorLogging {
             name = "directoryStore"))
         */
         // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
-        val directorySupervisor = context.actorOf(Props[DirectorySupervisor], name = "directory-supervisor")
-        context watch directorySupervisor
+        directory = context.actorOf(Props[DirectorySupervisor], name = "directory-supervisor")
+        context watch directory
 
-        val gateway = context.watch(context.actorOf(Props[GatewayActor], name = "gateway"))
+        gateway = context.watch(context.actorOf(Props[GatewayActor]
+            .withDispatcher("echo.gateway.dispatcher"),
+            name = "gateway"))
 
-        val cli = context.watch(context.actorOf(Props(new CliActor(indexStore, parser, searcher, crawlerSupervisor, directorySupervisor, gateway))
+        cli = context.watch(context.actorOf(Props(new CliActor(self, index, parser, searcher, crawler, directory, gateway))
             .withDispatcher("echo.cli.dispatcher"),
             name = "cli"))
 
         // pass around references not provided by constructors due to circular dependencies
-        crawlerSupervisor ! ActorRefParserActor(parser)
-        crawlerSupervisor ! ActorRefDirectoryStoreActor(directorySupervisor)
-        crawlerSupervisor ! ActorRefIndexStoreActor(indexStore)
+        crawler ! ActorRefParserActor(parser)
+        crawler ! ActorRefDirectoryStoreActor(directory)
+        crawler ! ActorRefIndexStoreActor(index)
 
-        parser ! ActorRefIndexStoreActor(indexStore)
-        parser ! ActorRefDirectoryStoreActor(directorySupervisor)
-        parser ! ActorRefCrawlerActor(crawlerSupervisor)
+        parser ! ActorRefIndexStoreActor(index)
+        parser ! ActorRefDirectoryStoreActor(directory)
+        parser ! ActorRefCrawlerActor(crawler)
 
-        searcher ! ActorRefIndexStoreActor(indexStore)
+        searcher ! ActorRefIndexStoreActor(index)
 
         gateway ! ActorRefSearcherActor(searcher)
-        gateway ! ActorRefDirectoryStoreActor(directorySupervisor)
+        gateway ! ActorRefDirectoryStoreActor(directory)
 
-        directorySupervisor ! ActorRefCrawlerActor(crawlerSupervisor)
-        directorySupervisor ! ActorRefIndexStoreActor(indexStore)
+        directory ! ActorRefCrawlerActor(crawler)
+        directory ! ActorRefIndexStoreActor(index)
 
         log.info("Echo:Master up and running")
     }
@@ -81,10 +93,27 @@ class MasterSupervisor extends Actor with ActorLogging {
 
     override def receive: Receive = {
         case Terminated(actor) => onTerminated(actor)
+        case ShutdownSystem()  => onSystemShutdown()
     }
 
     private def onTerminated(actor: ActorRef): Unit = {
-        log.error("Terminating the system because {} terminated!", actor)
+        log.error("Oh noh! A subsystem critically failed : {}", actor)
+    }
+
+    private def onSystemShutdown(): Unit = {
+        log.info("Received ShutdownSystem")
+
+        // it is important to shutdown all actor(supervisor) befor shutting down the actor system
+        // otherwise Akka HTTP might block ports etc
+        context.system.stop(crawler)
+        context.system.stop(gateway)
+        context.system.stop(index)
+        context.system.stop(directory)
+        context.system.stop(parser)
+        context.system.stop(searcher)
+        context.system.stop(cli)
+
+        // now its safe to shutdown
         context.system.terminate()
     }
 

@@ -14,7 +14,8 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-class CliActor(private val indexStore: ActorRef,
+class CliActor(private val master: ActorRef,
+               private val indexStore: ActorRef,
                private val parser: ActorRef,
                private val searcher: ActorRef,
                private val crawler: ActorRef,
@@ -94,7 +95,7 @@ class CliActor(private val indexStore: ActorRef,
         }
 
         log.info("Terminating the CLI due to user request")
-        context.system.terminate()
+        master ! ShutdownSystem()
     }
 
     private def usage(cmd: String) {

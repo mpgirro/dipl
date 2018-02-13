@@ -108,4 +108,7 @@ object ActorProtocol {
     trait CrawlExternalDirectory
     case class CrawlFyyd(count: Int) extends CrawlExternalDirectory
 
+    // CLI -> Master
+    case class ShutdownSystem()
+
 }

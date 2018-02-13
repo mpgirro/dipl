@@ -46,9 +46,7 @@ class CrawlerActor extends Actor with ActorLogging {
     private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
 
     override def postStop: Unit = {
-        Http().shutdownAllConnectionPools().onComplete {
-            case _ => log.info(s"${self.path.name} shut down")
-        }
+        http.shutdownAllConnectionPools().onComplete(_ => log.info(s"${self.path.name} shut down"))
     }
 
     override def receive: Receive = {
@@ -118,7 +116,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
         val (host,protocol) = analyzeUrl(url)
 
-        if(!requestQueueMap.contains(host)){
+        if(!requestQueueMap.contains(host)){ // TODO ||  requestQueueMap(host)==null --> can be freed after the idle timeout!
 
             log.debug("Creating Pool for : {} (due to {})", host, url)
 
@@ -128,7 +126,8 @@ class CrawlerActor extends Actor with ActorLogging {
                 http.cachedHostConnectionPool[Promise[HttpResponse]](host)
             }
 
-            val queue = Source.queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.dropNew)
+            val queue = Source
+                .queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.backpressure) // TODO try OverflowStrategy.backpressure
                 .via(pool)
                 .toMat(Sink.foreach({
                     case ((Success(resp), p)) => p.success(resp)
@@ -344,6 +343,7 @@ class CrawlerActor extends Actor with ActorLogging {
                         })
 
                         //implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher") // TODO
+                        log.debug("Collecting content toStrict for GET response : {}", url)
                         response.entity
                             .withSizeLimit(DOWNLOAD_MAXBYTES)
                             .toStrict(downloadTimeout)
@@ -351,6 +351,7 @@ class CrawlerActor extends Actor with ActorLogging {
                             .map(_.utf8String) // get a real `String`
                             .onComplete {
                                 case Success(data: String) =>
+                                    log.debug("Finished content toStrict for GET response : {}", url)
                                     jobType match {
                                         case JobKind.FEED_NEW_PODCAST =>
                                             parser ! ParseNewPodcastData(url, echoId, data)
