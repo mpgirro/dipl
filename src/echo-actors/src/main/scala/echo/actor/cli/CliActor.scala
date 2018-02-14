@@ -22,6 +22,9 @@ class CliActor(private val master: ActorRef,
                private val directoryStore: ActorRef,
                private val gateway: ActorRef) extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
+
     implicit val internalTimeout = Timeout(5 seconds)
 
     private var shutdown = false
@@ -54,6 +57,7 @@ class CliActor(private val master: ActorRef,
 
         while(!shutdown){
             val input = StdIn.readLine()
+            log.info("CLI read : {}", input)
             def exec(commands: Array[String]): Unit = {
                 commands.toList match {
                     case "help" :: _ => help()

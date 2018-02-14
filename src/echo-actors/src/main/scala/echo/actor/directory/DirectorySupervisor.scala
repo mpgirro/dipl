@@ -2,7 +2,7 @@ package echo.actor.directory
 
 import java.sql.{Connection, DriverManager}
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefIndexStoreActor}
 import liquibase.database.jvm.JdbcConnection
@@ -14,6 +14,8 @@ import liquibase.resource.ClassLoaderResourceAccessor
   * @author Maximilian Irro
   */
 class DirectorySupervisor extends Actor with ActorLogging {
+
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val WORKER_COUNT = 5 // TODO read this from config
     private var workerIndex = 1
@@ -55,8 +57,13 @@ class DirectorySupervisor extends Actor with ActorLogging {
             context watch directoryStore
             router = router.addRoutee(directoryStore)
 
+        case PoisonPill =>
+            log.debug("Received a PosionPill -> forwarding it to all routees")
+            router.routees.foreach(r => r.send(PoisonPill, sender()))
+
         case work =>
             router.route(work, sender())
+
     }
 
     private def createDirectoryActor(): ActorRef = {

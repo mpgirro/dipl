@@ -20,6 +20,8 @@ import scala.io.Source
   */
 class DirectoryStore extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 

@@ -1,6 +1,6 @@
 package echo.actor
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.util.Timeout
 import echo.actor.ActorProtocol._
 import echo.actor.cli.CliActor
@@ -13,14 +13,18 @@ import echo.actor.searcher.SearcherActor
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Success
 
 /**
   * @author Maximilian Irro
   */
 class MasterSupervisor extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 
+    implicit val executionContext = context.system.dispatcher
     implicit val internalTimeout = Timeout(5 seconds)
 
     private var index: ActorRef = _
@@ -92,8 +96,8 @@ class MasterSupervisor extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-        case Terminated(actor) => onTerminated(actor)
-        case ShutdownSystem()  => onSystemShutdown()
+        case Terminated(corpse) => onTerminated(corpse)
+        case ShutdownSystem()   => onSystemShutdown()
     }
 
     private def onTerminated(actor: ActorRef): Unit = {
@@ -103,6 +107,7 @@ class MasterSupervisor extends Actor with ActorLogging {
     private def onSystemShutdown(): Unit = {
         log.info("Received ShutdownSystem")
 
+        /*
         // it is important to shutdown all actor(supervisor) befor shutting down the actor system
         // otherwise Akka HTTP might block ports etc
         context.system.stop(crawler)
@@ -115,6 +120,29 @@ class MasterSupervisor extends Actor with ActorLogging {
 
         // now its safe to shutdown
         context.system.terminate()
+        */
+        context.system.stop(gateway)
+        context.system.stop(index)
+        context.system.stop(directory)
+        context.system.stop(parser)
+        context.system.stop(searcher)
+        context.system.stop(cli)
+
+        /*
+        gateway ! PoisonPill
+        index ! PoisonPill
+        directory ! PoisonPill
+        parser ! PoisonPill
+        searcher ! PoisonPill
+        cli ! PoisonPill
+        //crawler ! PoisonPill
+        */
+        context.system.stop(crawler) // these have a too full inbox usually to let them finish processing
+        context.stop(self)
+        context.system.terminate().onComplete {
+            case _ => log.info("system.terminate() finished")
+        }
+
     }
 
 }

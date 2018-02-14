@@ -1,13 +1,15 @@
 package echo.actor.crawler
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
+import akka.routing.{ActorRefRoutee, Broadcast, RoundRobinRoutingLogic, Router}
 import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefIndexStoreActor, ActorRefParserActor}
 
 /**
   * @author Maximilian Irro
   */
 class CrawlerSupervisor extends Actor with ActorLogging {
+
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val WORKER_COUNT = 1 // TODO read this from config
     private var workerIndex = 1
@@ -45,14 +47,19 @@ class CrawlerSupervisor extends Actor with ActorLogging {
             indexStore = ref
             router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
-        case Terminated(a) =>
-            log.info("Child '{}' terminated" + a.path.name)
+        case Terminated(corpse) =>
+            log.info("Child '{}' terminated" + corpse.path.name)
             /* TODO at some point we want to simply restart replace the worker
             router = router.removeRoutee(a)
             val crawler = createCrawler()
             context watch crawler
             router = router.addRoutee(crawler)
             */
+            log.info("We do not re-create terminated crawlers for now")
+
+        case PoisonPill =>
+            log.debug("Received a PosionPill -> forwarding it to all routees")
+            //router.routees.foreach(r => r.send(PoisonPill, sender()))
 
         case work =>
             router.route(work, sender())

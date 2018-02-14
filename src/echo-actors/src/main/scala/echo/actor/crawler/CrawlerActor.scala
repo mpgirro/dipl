@@ -2,7 +2,7 @@ package echo.actor.crawler
 
 import java.time.LocalDateTime
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, PoisonPill}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
@@ -15,7 +15,7 @@ import echo.core.parse.api.FyydAPI
 
 import scala.collection.mutable
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
@@ -24,11 +24,13 @@ import scala.util.{Failure, Success, Try}
   */
 class CrawlerActor extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     private final val DOWNLOAD_TIMEOUT = 3 // TODO read from config
-    private final val QUEUE_SIZE = 1500 // TODO read from config file
+    private final val QUEUE_SIZE = 500 // TODO read from config file
     private final val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
 
-    private val downloadTimeout = 60.seconds // TODO read value from config
+    private val downloadTimeout = 10.seconds // TODO read value from config
 
     // important, or we will experience starvation on processing many feeds at once
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher")
@@ -46,7 +48,7 @@ class CrawlerActor extends Actor with ActorLogging {
     private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
 
     override def postStop: Unit = {
-        http.shutdownAllConnectionPools().onComplete(_ => log.info(s"${self.path.name} shut down"))
+        Http().shutdownAllConnectionPools().onComplete(_ => log.info(s"${self.path.name} shut down"))
     }
 
     override def receive: Receive = {
@@ -90,6 +92,10 @@ class CrawlerActor extends Actor with ActorLogging {
                 directoryStore ! ProposeNewFeed(it.next())
             }
 
+        case PoisonPill =>
+            log.debug("Received a PosionPill -> shutting down connection pool")
+            http.shutdownAllConnectionPools()
+
         /*
         case HttpResponse(StatusCodes.OK, headers, entity, _) => {
             entity.dataBytes.runFold(ByteString(""))(_ ++ _).foreach { body =>
@@ -129,6 +135,7 @@ class CrawlerActor extends Actor with ActorLogging {
             val queue = Source
                 .queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.backpressure) // TODO try OverflowStrategy.backpressure
                 .via(pool)
+                //.idleTimeout(timeout) // TODO
                 .toMat(Sink.foreach({
                     case ((Success(resp), p)) => p.success(resp)
                     case ((Failure(e), p))    => p.failure(e)
@@ -251,7 +258,8 @@ class CrawlerActor extends Actor with ActorLogging {
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(headRequest)
-            queueRequest(url, headRequest)
+            val future = queueRequest(url, headRequest)
+            Await.ready(future, downloadTimeout)
                 .onComplete {
                     case Success(response) =>
                         try {
@@ -320,7 +328,8 @@ class CrawlerActor extends Actor with ActorLogging {
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
-            queueRequest(url, getRequest)
+            val future = queueRequest(url, getRequest)
+            Await.ready(future, downloadTimeout)
                 .onComplete {
                     case Success(response) =>
                         log.info("Just got GET response from : {}", url)

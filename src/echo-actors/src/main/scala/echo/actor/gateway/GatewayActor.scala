@@ -27,11 +27,14 @@ import scala.language.postfixOps
   */
 class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
-    private val GATEWAY_HOST = ConfigFactory.load().getString("echo.gateway.host")
-    private val GATEWAY_PORT = ConfigFactory.load().getInt("echo.gateway.port")
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
+    private val config = ConfigFactory.load()
+    private val GATEWAY_HOST = config.getString("echo.gateway.host")
+    private val GATEWAY_PORT = config.getInt("echo.gateway.port")
 
     // TODO see https://github.com/ArchDev/akka-http-rest/blob/master/src/main/scala/me/archdev/restapi/http/HttpRoute.scala
-    private val SECRET_KEY = ConfigFactory.load().getString("echo.gateway.secret-key")
+    private val SECRET_KEY = config.getString("echo.gateway.secret-key")
 
     private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _

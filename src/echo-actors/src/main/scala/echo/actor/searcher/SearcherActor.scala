@@ -8,6 +8,8 @@ import scala.language.postfixOps
 
 class SearcherActor extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
     private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
     private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.gateway.default-size")

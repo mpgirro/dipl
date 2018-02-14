@@ -11,6 +11,8 @@ import echo.core.util.EchoIdGenerator
 
 class ParserActor extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     private val feedParser: FeedParser = new RomeFeedParser()
 
     private var indexStore: ActorRef = _

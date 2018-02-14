@@ -15,6 +15,8 @@ import scala.language.postfixOps
 
 class IndexStore extends Actor with ActorLogging {
 
+    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
     private val INDEX_PATH = ConfigFactory.load().getString("echo.index.lucene-path")
 
     private val COMMIT_INTERVAL = 3 seconds // TODO read from config file
