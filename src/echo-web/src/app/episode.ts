@@ -5,6 +5,9 @@ export class Episode {
   link: string;
   description: string;
   pubDate: string;
+  contentEncoded: string;
+  enclosureUrl: string;
+  enclosureType: string;
   itunesImage: string;
   itunesDuration: string;
 }

@@ -22,13 +22,21 @@ export class EpisodeDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getEpisode();
+    this.initPlyr();
+  }
+
+  initPlyr(): void {
+    const el = document.createElement('script');
+    el.appendChild(document.createTextNode('plyr.setup("#plyr-audio");'));
+    document.body.appendChild(el);
   }
 
   getEpisode(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    // this.echoId = id;
     this.episodeService.get(id)
-      .subscribe(episode => this.episode = episode);
+      .subscribe(episode => {
+        this.episode = episode;
+      });
   }
 
   goBack(): void {
