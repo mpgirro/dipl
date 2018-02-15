@@ -18,7 +18,10 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
             "pubDate"        -> Option(e.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description"    -> Option(e.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage"    -> Option(e.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesDuration" -> Option(e.getItunesDuration).map(value => JsString(value)).getOrElse(JsNull)
+            "itunesDuration" -> Option(e.getItunesDuration).map(value => JsString(value)).getOrElse(JsNull),
+            "enclosureUrl"   -> Option(e.getEnclosureUrl).map(value => JsString(value)).getOrElse(JsNull),
+            "enclosureType"  -> Option(e.getEnclosureType).map(value => JsString(value)).getOrElse(JsNull),
+            "contentEncoded" -> Option(e.getContentEncoded).map(value => JsString(value)).getOrElse(JsNull)
         )
         def read(value: JsValue): EpisodeDTO = {
             value.asJsObject.getFields("echoId", "title", "link", "pubDate", "description", "itunesImage", "itunesDuration") match {
