@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/search', pathMatch: 'full' },
   { path: 'p/:id', component: PodcastDetailComponent },
   { path: 'e/:id', component: EpisodeDetailComponent },
-  { path: 'podcast-directory', component: PodcastDirectoryComponent }
+  { path: 'directory', component: PodcastDirectoryComponent }
 ];
 
 @NgModule({
