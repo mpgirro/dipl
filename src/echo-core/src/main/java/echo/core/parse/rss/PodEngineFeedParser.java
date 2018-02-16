@@ -8,6 +8,7 @@ import echo.core.exception.EchoException;
 import echo.core.exception.FeedParsingException;
 import echo.core.model.dto.EpisodeDTO;
 import echo.core.model.dto.PodcastDTO;
+import echo.core.util.UrlUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class PodEngineFeedParser implements FeedParser {
         try {
             final Podcast podcast = new Podcast(xmlData);
             final PodcastDTO dto = PodcastMapper.INSTANCE.podenginePodcastToPodcastDto(podcast);
-            dto.setLink(sanitizeUrl(dto.getLink()));
+            dto.setLink(UrlUtil.sanitize(dto.getLink()));
             return dto;
         } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed", e);
@@ -42,7 +43,7 @@ public class PodEngineFeedParser implements FeedParser {
             }
             final List<EpisodeDTO> episodes = EpisodeMapper.INSTANCE.podengineEpisodesToEpisodeDtos(podcast.getEpisodes());
             for (EpisodeDTO e : episodes) {
-                e.setLink(sanitizeUrl(e.getLink()));
+                e.setLink(UrlUtil.sanitize(e.getLink()));
             }
             return episodes;
         } catch (MalformedFeedException | EchoException e) {

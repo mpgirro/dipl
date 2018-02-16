@@ -21,15 +21,4 @@ public interface FeedParser {
 
     EpisodeDTO parseEpisode(String xmlData) throws FeedParsingException;
 
-    default String sanitizeUrl(String url) {
-        if(url == null){
-            return null;
-        }
-
-        return url
-            .replace("\n", "")
-            .replace("\t", "")
-            .replace("\r", "");
-    }
-
 }

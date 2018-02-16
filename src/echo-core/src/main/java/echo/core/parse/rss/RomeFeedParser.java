@@ -16,6 +16,7 @@ import echo.core.exception.FeedParsingException;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.modules.itunes.EntryInformation;
 import com.rometools.rome.feed.atom.Link;
+import echo.core.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -45,7 +46,7 @@ public class RomeFeedParser implements FeedParser {
             final PodcastDTO podcast = new PodcastDTO();
 
             podcast.setTitle(feed.getTitle());
-            podcast.setLink(sanitizeUrl(feed.getLink()));
+            podcast.setLink(UrlUtil.sanitize(feed.getLink()));
             podcast.setDescription(feed.getDescription());
             if(feed.getPublishedDate() != null){
                 podcast.setPubDate(LocalDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
@@ -132,7 +133,7 @@ public class RomeFeedParser implements FeedParser {
                 final EpisodeDTO episode = new EpisodeDTO();
 
                 episode.setTitle(e.getTitle());
-                episode.setLink(sanitizeUrl(e.getLink()));
+                episode.setLink(UrlUtil.sanitize(e.getLink()));
                 if(e.getPublishedDate() != null){
                     episode.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
