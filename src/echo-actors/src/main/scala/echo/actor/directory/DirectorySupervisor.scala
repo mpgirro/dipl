@@ -53,9 +53,12 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
         case Terminated(a) =>
             router = router.removeRoutee(a)
+            /* TODO at some point we want to simply restart replace the worker
             val directoryStore = createDirectoryActor()
             context watch directoryStore
             router = router.addRoutee(directoryStore)
+            */
+            log.info("We do not re-create terminated crawlers for now")
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> forwarding it to all routees")

@@ -258,8 +258,7 @@ class CrawlerActor extends Actor with ActorLogging {
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(headRequest)
-            val future = queueRequest(url, headRequest)
-            Await.ready(future, DOWNLOAD_TIMEOUT)
+            queueRequest(url, headRequest)
                 .onComplete {
                     case Success(response) =>
                         try {
@@ -298,18 +297,18 @@ class CrawlerActor extends Actor with ActorLogging {
                                             }
                                         case None =>
                                             log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
-                                            sendErrorNotificationIfFeasable(url, jobType)
+                                            sendErrorNotificationIfFeasable(echoId, url, jobType)
                                     }
                                 case Failure(reason) =>
                                     log.warning("HEAD response prevented downloading resource : {}", Option(reason.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                                    sendErrorNotificationIfFeasable(url, jobType)
+                                    sendErrorNotificationIfFeasable(echoId, url, jobType)
                             }
                         } finally {
                             //response.discardEntityBytes() // make sure the conncetion does not remain open longer than it must
                         }
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
-                        sendErrorNotificationIfFeasable(url, jobType)
+                        sendErrorNotificationIfFeasable(echoId, url, jobType)
                 }
         } catch {
             case e: java.util.concurrent.TimeoutException =>
@@ -317,7 +316,7 @@ class CrawlerActor extends Actor with ActorLogging {
             case e: Exception =>
                 log.error("Exception while testing HEAD : {} [reason : {}]", url, e.getMessage)
                 e.printStackTrace()
-                sendErrorNotificationIfFeasable(url, jobType)
+                sendErrorNotificationIfFeasable(echoId, url, jobType)
         } finally {
             //headRequest.discardEntityBytes()
         }
@@ -330,8 +329,7 @@ class CrawlerActor extends Actor with ActorLogging {
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
-            val future = queueRequest(url, getRequest)
-            Await.ready(future, DOWNLOAD_TIMEOUT)
+            queueRequest(url, getRequest)
                 .onComplete {
                     case Success(response) =>
                         log.info("Just got GET response from : {}", url)
@@ -366,10 +364,10 @@ class CrawlerActor extends Actor with ActorLogging {
                                     jobType match {
                                         case JobKind.FEED_NEW_PODCAST =>
                                             parser ! ParseNewPodcastData(url, echoId, data)
-                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                            directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                                         case JobKind.FEED_UPDATE_EPISODES =>
                                             parser ! ParseEpisodeData(url, echoId, data)
-                                            directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                            directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                                         case JobKind.WEBSITE =>
                                             parser ! ParseWebsiteData(echoId, data)
                                     }
@@ -383,12 +381,12 @@ class CrawlerActor extends Actor with ActorLogging {
                                             log.error("Failed to collect response body HTML into a String : {} [reason : {} from message type : {}]", url, e.getMessage, e.getClass)
                                             //e.printStackTrace()
                                     }
-                                    sendErrorNotificationIfFeasable(url, jobType)
+                                    sendErrorNotificationIfFeasable(echoId, url, jobType)
                             }
 
                     case Failure(reason) =>
                         log.warning("HTTP GET request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
-                        sendErrorNotificationIfFeasable(url, jobType)
+                        sendErrorNotificationIfFeasable(echoId, url, jobType)
                 }
         } catch {
             case e: java.util.concurrent.TimeoutException =>
@@ -396,17 +394,17 @@ class CrawlerActor extends Actor with ActorLogging {
             case e: Exception =>
                 log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
                 e.printStackTrace()
-                sendErrorNotificationIfFeasable(url, jobType)
+                sendErrorNotificationIfFeasable(echoId, url, jobType)
         } finally {
             //getRequest.discardEntityBytes()
         }
     }
 
-    private def sendErrorNotificationIfFeasable(url: String, jobType: JobKind.Value): Unit = {
+    private def sendErrorNotificationIfFeasable(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         jobType match {
             case JobKind.WEBSITE => // do nothing...
             case _ =>
-                directoryStore ! FeedStatusUpdate(url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
         }
     }
 

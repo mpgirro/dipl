@@ -57,8 +57,15 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
-    def findOneByUrl(url: String): Option[FeedDTO] = {
-        val result = feedRepository.findOneByUrl(url)
+    def findAllByUrl(url: String): List[FeedDTO] = {
+        val feeds = feedRepository.findAllByUrl(url)
+        val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
+        results.asScala.toList
+    }
+
+    @Transactional
+    def findOneByUrlAndPodcastEchoId(url: String, podcastId: String): Option[FeedDTO] = {
+        val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastId)
         Option(FeedMapper.INSTANCE.feedToFeedDto(result))
     }
 

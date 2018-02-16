@@ -57,7 +57,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
 
-        case FeedStatusUpdate(feedUrl, timestamp, status) => onFeedStatusUpdate(feedUrl, timestamp, status)
+        case FeedStatusUpdate(podcastId, feedUrl, timestamp, status) => onFeedStatusUpdate(podcastId, feedUrl, timestamp, status)
 
         case UpdatePodcastMetadata(echoId, url, podcast) => onUpdatePodcastMetadata(echoId, url, podcast)
 
@@ -116,10 +116,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO handle known and unknown
 
         def task = () => {
-            feedService.findOneByUrl(url).map(feed => {
-                log.info("Proposed feed is already in database: {}", url)
-                println(feed)
-            }).getOrElse({
+            if(feedService.findAllByUrl(url).isEmpty){
                 val fakePodcastId: String = EchoIdGenerator.getNewId()
                 var podcast = new PodcastDTO
                 podcast.setEchoId(fakePodcastId)
@@ -138,17 +135,19 @@ class DirectoryStore extends Actor with ActorLogging {
 
                     crawler ! FetchFeedForNewPodcast(url, fakePodcastId)
                 })
-            })
+            } else {
+                log.info("Proposed feed is already in database: {}", url)
+            }
         }
         doInTransaction(task, List(podcastService, feedService))
 
         log.debug("Finished msg proposing a new feed: " + url)
     }
 
-    private def onFeedStatusUpdate(url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
+    private def onFeedStatusUpdate(podcastId: String, url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
         def task = () => {
-            feedService.findOneByUrl(url).map(feed => {
+            feedService.findOneByUrlAndPodcastEchoId(url, podcastId).map(feed => {
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
                 feedService.save(feed)
@@ -217,12 +216,15 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
         log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
         def task = () => {
-            feedService.findOneByUrl(oldUrl).map(f => {
-                f.setUrl(newUrl)
-                feedService.save(f)
-            }).getOrElse({
+            val feeds = feedService.findAllByUrl(oldUrl)
+            if(feeds.nonEmpty){
+                feeds.foreach(f => {
+                    f.setUrl(newUrl)
+                    feedService.save(f)
+                })
+            } else {
                 log.error("No Feed found in database with url='{}'", oldUrl)
-            })
+            }
         }
         doInTransaction(task, List(feedService))
 

@@ -29,7 +29,7 @@ object ActorProtocol {
     case class DownloadAsync(echoId: String, url: String, jobKind: JobKind.Value)
 
     // Crawler -> DirectoryStore
-    case class FeedStatusUpdate(feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
+    case class FeedStatusUpdate(podcastId: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
     case class UpdateFeedUrl(oldUrl: String, newUrl: String)
     case class UpdateLinkByEchoId(echoId: String, newUrl: String)
 
