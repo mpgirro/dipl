@@ -4,11 +4,11 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.ActorProtocol._
-import echo.core.util.DocumentFormatter
+import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.io.StdIn
+import scala.io.{Source, StdIn}
 import scala.language.postfixOps
 
 /**
@@ -79,8 +79,8 @@ class CliActor(private val master: ActorRef,
 
                     case "load" :: Nil                          => help()
                     case "load" :: "feeds" :: Nil               => usage("load feeds")
-                    case "load" :: "feeds" :: "test" :: Nil     => directoryStore ! LoadTestFeeds
-                    case "load" :: "feeds" :: "massive" :: Nil  => directoryStore ! LoadMassiveFeeds
+                    case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
+                    case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
                     case "load" :: "feeds" :: _                 => usage("load feeds")
 
                     case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
@@ -105,7 +105,7 @@ class CliActor(private val master: ActorRef,
         master ! ShutdownSystem()
     }
 
-    private def usage(cmd: String) {
+    private def usage(cmd: String): Unit = {
         if (usageMap.contains(cmd)) {
             val args = usageMap.get(cmd)
             println("Command parsing error")
@@ -119,7 +119,7 @@ class CliActor(private val master: ActorRef,
         }
     }
 
-    private def help() {
+    private def help(): Unit = {
         println("This is an interactive REPL providing a CLI to the search engine. Functions are:\n")
         for ( (k,v) <- usageMap ) {
             println(k + "\t" + v)
@@ -161,6 +161,26 @@ class CliActor(private val master: ActorRef,
                 println("\n"+episode+"\n")
 //                println(DocumentFormatter.cliFormat(episode))
             case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")
+        }
+    }
+
+    private def loadTestFeeds(): Unit = {
+        log.info("Received LoadTestFeeds")
+
+        val filename = "../feeds.txt"
+        for (feed <- Source.fromFile(filename).getLines) {
+            directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
+            Thread.sleep(200) // to give the async system time to have the record in the DB bevore the results are there
+        }
+    }
+
+    private def loadMassiveFeeds(): Unit = {
+        log.info("Received LoadMassiveFeeds")
+
+        val filename = "../feeds_unique.txt"
+        for (feed <- Source.fromFile(filename).getLines) {
+            directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
+            Thread.sleep(200) // to give the async system time to have the record in the DB bevore the results are there
         }
     }
 

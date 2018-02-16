@@ -79,6 +79,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
 
+        /*
         case LoadTestFeeds =>
             log.info("Received LoadTestFeeds")
 
@@ -86,6 +87,15 @@ class DirectoryStore extends Actor with ActorLogging {
             for (feed <- Source.fromFile(filename).getLines) {
                 self ! ProposeNewFeed(feed)
             }
+
+        case LoadMassiveFeeds =>
+            log.info("Received LoadMassiveFeeds")
+
+            val filename = "../feeds_unique.txt"
+            for (feed <- Source.fromFile(filename).getLines) {
+                self ! ProposeNewFeed(feed)
+            }
+        */
 
     }
 
