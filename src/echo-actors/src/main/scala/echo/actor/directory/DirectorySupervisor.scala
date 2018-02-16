@@ -62,6 +62,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(PoisonPill, sender()))
 
         case work =>
+            log.debug("Routing work of kind : {}", work.getClass)
             router.route(work, sender())
 
     }

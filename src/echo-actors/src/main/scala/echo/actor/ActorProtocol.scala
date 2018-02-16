@@ -101,7 +101,8 @@ object ActorProtocol {
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore
     case class DebugPrintAllEpisodes()    // User/CLI -> DirectoryStore
-    case class LoadTestFeeds()            // (User/Web) Gateway -> DirectoryStore
+    case class LoadTestFeeds()            // CLI -> DirectoryStore
+    case class LoadMassiveFeeds()         // CLI -> DirectoryStore
 
     // User -> Crawler
     // TODO: automatic: Crawler -> Crawler on a regular basis

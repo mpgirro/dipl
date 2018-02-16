@@ -11,7 +11,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private val WORKER_COUNT = 1 // TODO read this from config
+    private val WORKER_COUNT = 5 // TODO read this from config
     private var workerIndex = 1
 
     private var parser: ActorRef = _
@@ -62,6 +62,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
             //router.routees.foreach(r => r.send(PoisonPill, sender()))
 
         case work =>
+            log.debug("Routing work of kind : {}", work.getClass)
             router.route(work, sender())
     }
 

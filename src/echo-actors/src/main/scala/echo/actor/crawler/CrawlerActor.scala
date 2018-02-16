@@ -7,7 +7,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.scaladsl.{Keep, Sink, Source, SourceQueueWithComplete}
-import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, QueueOfferResult}
+import akka.stream._
 import echo.actor.ActorProtocol._
 import echo.core.exception.EchoException
 import echo.core.model.feed.FeedStatus
@@ -26,11 +26,9 @@ class CrawlerActor extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private final val DOWNLOAD_TIMEOUT = 3 // TODO read from config
+    private final val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
     private final val QUEUE_SIZE = 500 // TODO read from config file
     private final val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
-
-    private val downloadTimeout = 10.seconds // TODO read value from config
 
     // important, or we will experience starvation on processing many feeds at once
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher")
@@ -75,7 +73,8 @@ class CrawlerActor extends Actor with ActorLogging {
 
         case FetchWebsite(echoId, url) =>
             log.debug("Received FetchWebsite({},'{}')", echoId, url)
-            testAndDownloadAsync(echoId, url, JobKind.WEBSITE)
+            // TODO we do not fetch websites for now
+            //testAndDownloadAsync(echoId, url, JobKind.WEBSITE)
 
         case DownloadAsync(echoId, url, jobType) =>
             log.debug("Received DownloadAsync({},'{}',{})", echoId, url, jobType)
@@ -135,6 +134,7 @@ class CrawlerActor extends Actor with ActorLogging {
             val queue = Source
                 .queue[(HttpRequest, Promise[HttpResponse])](QUEUE_SIZE, OverflowStrategy.backpressure) // TODO try OverflowStrategy.backpressure
                 .via(pool)
+                .throttle(1, 1.second, 1, ThrottleMode.shaping)
                 //.idleTimeout(timeout) // TODO
                 .toMat(Sink.foreach({
                     case ((Success(resp), p)) => p.success(resp)
@@ -150,7 +150,7 @@ class CrawlerActor extends Actor with ActorLogging {
             case QueueOfferResult.Dropped     => Future.failed(new RuntimeException("Queue overflowed. Try again later."))
             case QueueOfferResult.Failure(ex) => Future.failed(ex)
             case QueueOfferResult.QueueClosed => Future.failed(new RuntimeException("Queue was closed (pool shut down) while running the request. Try again later."))
-        }
+        } (executionContext)
     }
 
     private def analyzeUrl(url: String): (String, String) = {
@@ -259,7 +259,7 @@ class CrawlerActor extends Actor with ActorLogging {
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(headRequest)
             val future = queueRequest(url, headRequest)
-            Await.ready(future, downloadTimeout)
+            Await.ready(future, DOWNLOAD_TIMEOUT)
                 .onComplete {
                     case Success(response) =>
                         try {
@@ -305,19 +305,21 @@ class CrawlerActor extends Actor with ActorLogging {
                                     sendErrorNotificationIfFeasable(url, jobType)
                             }
                         } finally {
-                            response.discardEntityBytes() // make sure the conncetion does not remain open longer than it must
+                            //response.discardEntityBytes() // make sure the conncetion does not remain open longer than it must
                         }
                     case Failure(reason) =>
                         log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
                         sendErrorNotificationIfFeasable(url, jobType)
                 }
         } catch {
+            case e: java.util.concurrent.TimeoutException =>
+                log.error("Timeout on : {}", url)
             case e: Exception =>
                 log.error("Exception while testing HEAD : {} [reason : {}]", url, e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
         } finally {
-            headRequest.discardEntityBytes()
+            //headRequest.discardEntityBytes()
         }
     }
 
@@ -329,7 +331,7 @@ class CrawlerActor extends Actor with ActorLogging {
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
             val future = queueRequest(url, getRequest)
-            Await.ready(future, downloadTimeout)
+            Await.ready(future, DOWNLOAD_TIMEOUT)
                 .onComplete {
                     case Success(response) =>
                         log.info("Just got GET response from : {}", url)
@@ -355,7 +357,7 @@ class CrawlerActor extends Actor with ActorLogging {
                         log.debug("Collecting content toStrict for GET response : {}", url)
                         response.entity
                             .withSizeLimit(DOWNLOAD_MAXBYTES)
-                            .toStrict(downloadTimeout)
+                            .toStrict(DOWNLOAD_TIMEOUT)
                             .map { _.data }
                             .map(_.utf8String) // get a real `String`
                             .onComplete {
@@ -389,12 +391,14 @@ class CrawlerActor extends Actor with ActorLogging {
                         sendErrorNotificationIfFeasable(url, jobType)
                 }
         } catch {
+            case e: java.util.concurrent.TimeoutException =>
+                log.error("Timeout on : {}", url)
             case e: Exception =>
                 log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(url, jobType)
         } finally {
-            getRequest.discardEntityBytes()
+            //getRequest.discardEntityBytes()
         }
     }
 

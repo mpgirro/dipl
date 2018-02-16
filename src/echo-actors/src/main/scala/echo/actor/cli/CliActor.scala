@@ -33,7 +33,7 @@ class CliActor(private val master: ActorRef,
         "propose"        -> "feed [feed [feed]]",
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes]",
-        "test index"     -> "",
+        "load feeds"     -> "[test|massive]",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<echoId>",
         "get episode"    -> "<echoId>"
@@ -77,8 +77,11 @@ class CliActor(private val master: ActorRef,
                     case "print" :: "database" :: _                 => usage("print database")
                     case "print" :: _                               => help()
 
-                    case "test" :: "index" :: _ => directoryStore ! LoadTestFeeds
-                    case "test" :: _            => help()
+                    case "load" :: Nil                          => help()
+                    case "load" :: "feeds" :: Nil               => usage("load feeds")
+                    case "load" :: "feeds" :: "test" :: Nil     => directoryStore ! LoadTestFeeds
+                    case "load" :: "feeds" :: "massive" :: Nil  => directoryStore ! LoadMassiveFeeds
+                    case "load" :: "feeds" :: _                 => usage("load feeds")
 
                     case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
                     case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)

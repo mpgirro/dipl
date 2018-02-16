@@ -32,10 +32,14 @@ class IndexStore extends Actor with ActorLogging {
     //import context.dispatcher
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
+    /*
     private val commitMessager: Cancellable = context.system.scheduler.
         schedule(COMMIT_INTERVAL, COMMIT_INTERVAL) {
             self ! CommitIndex
         }
+        */
+
+    context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
     override def postStop: Unit = {
         indexCommitter.destroy()
@@ -48,6 +52,7 @@ class IndexStore extends Actor with ActorLogging {
 
         case CommitIndex =>
             commitIndexIfChanged()
+            context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
         case IndexStoreAddPodcast(podcast)  =>
             log.debug("Received IndexStoreAddPodcast({})", podcast.getEchoId)
