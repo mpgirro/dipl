@@ -28,7 +28,7 @@
 
 <p *ngIf="episode.link" class="my-3">
   <a href="{{episode.link}}">
-    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+    <!--<small class="text-muted"><span class="oi oi-link-intact"></span></small>-->
     {{domainService.removeProtocol(episode.link)}}
   </a>
 </p>
@@ -62,10 +62,8 @@
   </div>
 </div>
 
-<p class="mb-1"
-   [innerHTML]="episode.contentEncoded">
-</p>
-
+<p *ngIf="episode.contentEncoded" class="mb-1" [innerHTML]="episode.contentEncoded"></p>
+<p *ngIf="!episode.contentEncoded" class="mb-1" [innerHTML]="episode.description"></p>
 
 
 

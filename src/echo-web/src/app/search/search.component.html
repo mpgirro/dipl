@@ -1,150 +1,157 @@
 
 <app-navbar></app-navbar>
 
+<div class="input-group input-group my-5">
+  <input #searchBox id="search-box"
+         [(ngModel)]="query"
+         (keyup.enter)="onEnter(searchBox.value)"
+         type="text" class="form-control"
+         placeholder="every podcast leaves an echo...">
+</div>
+
+<div *ngIf="currPage === 0">
+  <div class="alert alert-danger" role="alert">
+    No Results found for '{{query}}'
+  </div>
+</div>
+
+<ul class="list-unstyled">
+
+  <li *ngFor="let result of results"
+      (click)="navigate(result)"
+      class="list-group-item-action media mb-5" >
+
+    <!--
+    <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}" class="list-group-item-action"><app-result-detail [result]="result"></app-result-detail></a>
+    <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}" class="list-group-item-action"><app-result-detail [result]="result"></app-result-detail></a>
+    -->
+
+    <img class="result-thumb mr-3"
+         src="{{result.itunesImage}}"
+         alt="Generic placeholder image">
+
+    <div class="media-body">
+
+      <h5 class="mt-0">{{result.title}}</h5>
+      <p class="mb-1">
+
+        <small class="text-muted">
+          <ng-container *ngIf="result.pubDate">
+            <span class="oi oi-calendar"></span>
+            <span class="mr-2">{{result.pubDate | date: 'd MMM yyyy' }}</span>
+          </ng-container>
+
+          <span class="badge badge-secondary text-uppercase">{{result.docType}}</span>
+
+          <fa [name]="calendar-alt"></fa>
+          <fa [name]="'rocket'"></fa>
+          <!-- rendered -->
+          <fa>
+            <i class="fa fa-rocket"></i>
+          </fa>
+
+          <i fa [name]="'rocket'"></i>
+          <!-- rendered -->
+          <i fa class="fa fa-rocket"></i>
+
+        </small>
+
+      </p>
+
+      <ng-container *ngIf="result.description">
+        <!--<p class="mb-1" [innerHTML]="result.description"></p>-->
+        <!--
+        <p class="mb-1">
+          {{result.description.substr(0, 600)}}
+        </p>
+        -->
+        <p class="mb-1" [innerHTML]="result.description.substr(0, 300) + '...'"></p>
+      </ng-container>
+
 
       <!--
-      <p>
-          <i>every podcast leaves an echo. you've just got to find it...</i>
+      <p *ngIf="result.link">
+        <a href="{{result.link}}">
+          <small class="text-muted"><span class="oi oi-link-intact"></span></small>
+          {{domainService.removeProtocol(result.link).substr(0,48)}}
+        </a>
       </p>
       -->
-      <div class="input-group input-group my-5">
-        <input #searchBox id="search-box"
-               [(ngModel)]="query"
-               (keyup.enter)="onEnter(searchBox.value)"
-               type="text" class="form-control"
-               placeholder="every podcast leaves an echo...">
-      </div>
 
-      <!--
-      <div *ngIf="query">
-        <p>Search results for '{{query}}':</p>
-      </div>
-      -->
+    </div>
 
-      <div *ngIf="currPage === 0">
-        <div class="alert alert-danger" role="alert">
-          No Results found for '{{query}}'
-        </div>
-      </div>
+  </li>
+</ul>
 
-      <ul class="list-unstyled">
+<div *ngIf="results && maxPage > 1">
 
-        <li *ngFor="let result of results"
-            (click)="onSelect(result)"
-            class="media mb-5" >
+  <ng-container *ngIf="currPage === maxPage">
+    <p>
+      <span class="oi oi-code"></span>
+      Congratulations, you've reached the end of the internet!
+    </p>
+  </ng-container>
 
-              <img class="result-thumb mr-3"
-                   src="{{result.itunesImage}}"
-                   alt="Generic placeholder image">
+  <div *ngIf="maxPage > 1">
+    <nav aria-label="Search result page navigation">
+      <ul class="pagination justify-content-center">
 
-              <div class="media-body">
-
-                <h5 class="mt-0">
-                  <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}" class="result-h">{{result.title}}</a>
-                  <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}" class="result-h">{{result.title}}</a>
-                </h5>
-                <p class="mb-1">
-
-                  <small class="text-muted">
-                    <span *ngIf="result.pubDate">
-                      <span class="oi oi-calendar"></span>
-                      <span class="mr-2">{{result.pubDate | date: 'd MMM yyyy' }}</span>
-                    </span>
-
-                    <span class="badge badge-secondary text-uppercase">{{result.docType}}</span>
-
-                    <fa [name]="calendar-alt"></fa>
-                    <fa [name]="'rocket'"></fa>
-                    <!-- rendered -->
-                    <fa>
-                      <i class="fa fa-rocket"></i>
-                    </fa>
-
-                    <i fa [name]="'rocket'"></i>
-                    <!-- rendered -->
-                    <i fa class="fa fa-rocket"></i>
-
-                  </small>
-
-                </p>
-
-                <p class="mb-1" [innerHTML]="result.description"></p>
-
-                <p *ngIf="result.link">
-                  <a href="{{result.link}}">
-                    <small class="text-muted"><span class="oi oi-link-intact"></span></small>
-                    {{domainService.removeProtocol(result.link).substr(0,48)}}
-                  </a>
-                </p>
+        <ng-container *ngIf="currPage > 1" >
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{query}}&p=1&s={{currSize}}"
+               aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+              <span class="sr-only">First</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{query}}&p={{currPage-1}}&s={{currSize}}"
+               aria-label="Previous">
+              <span aria-hidden="true">&lsaquo;</span>
+              <span class="sr-only">Previous</span>
+            </a>
+          </li>
+        </ng-container>
 
 
-              </div>
-
-
+        <li *ngFor="let page of pages"
+            class="page-item"
+            [class.active]="page === currPage">
+          <a *ngIf="page > (currPage-4) && page < (currPage+4)"
+             class="page-link"
+             href="/search?q={{query}}&p={{page}}&s={{currSize}}">
+            {{page}}
+          </a>
         </li>
+
+        <ng-container *ngIf="currPage < maxPage">
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{query}}&p={{currPage+1}}&s={{currSize}}"
+               aria-label="Next">
+              <span aria-hidden="true">&rsaquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{query}}&p={{maxPage}}&s={{currSize}}"
+               aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+              <span class="sr-only">Last</span>
+            </a>
+          </li>
+        </ng-container>
+
       </ul>
+    </nav>
+  </div>
 
-      <div *ngIf="results && maxPage > 1">
-        <div *ngIf="maxPage > 1">
-          <nav aria-label="Search result page navigation">
-            <ul class="pagination justify-content-center">
+  <div class="text-center">
+    <small class="text-muted">{{totalHits}} results total</small>
+  </div>
 
-              <ng-container *ngIf="currPage > 1" >
-                <li class="page-item">
-                  <a class="page-link"
-                     href="/search?q={{query}}&p=1&s={{currSize}}"
-                     aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">First</span>
-                  </a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link"
-                     href="/search?q={{query}}&p={{currPage-1}}&s={{currSize}}"
-                     aria-label="Previous">
-                    <span aria-hidden="true">&lsaquo;</span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                </li>
-              </ng-container>
-
-
-              <li *ngFor="let page of pages"
-                  class="page-item"
-                  [class.active]="page === currPage">
-                <a *ngIf="page > (currPage-4) && page < (currPage+4)"
-                   class="page-link"
-                   href="/search?q={{query}}&p={{page}}&s={{currSize}}">
-                  {{page}}
-                </a>
-              </li>
-
-              <ng-container *ngIf="currPage < maxPage">
-                <li class="page-item">
-                  <a class="page-link"
-                     href="/search?q={{query}}&p={{currPage+1}}&s={{currSize}}"
-                     aria-label="Next">
-                    <span aria-hidden="true">&rsaquo;</span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link"
-                     href="/search?q={{query}}&p={{maxPage}}&s={{currSize}}"
-                     aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Last</span>
-                  </a>
-                </li>
-              </ng-container>
-
-            </ul>
-          </nav>
-        </div>
-
-        <div class="text-center">
-          <small class="text-muted">{{totalHits}} results total</small>
-        </div>
-
-      </div>
+</div>
 

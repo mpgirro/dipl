@@ -24,7 +24,6 @@ export class SearchComponent implements OnInit {
   totalHits: number;
 
   results: Result[];
-  selectedResult: Result;
   query: string;
 
   constructor(private router: Router,
@@ -41,10 +40,6 @@ export class SearchComponent implements OnInit {
     this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
 
     this.search(q);
-  }
-
-  onSelect(result: Result): void {
-    this.selectedResult = result;
   }
 
   search(query: string): void {
@@ -85,6 +80,18 @@ export class SearchComponent implements OnInit {
 
     this.search(query);
 
+  }
+
+  navigate(result: Result): void {
+    let pre;
+    if (result.docType === 'podcast') {
+      pre = '/p/';
+    } else if (result.docType === 'episode') {
+      pre = '/e/';
+    } else {
+      console.log('Unknown docType : ' + result.docType);
+    }
+    this.router.navigate([pre + result.echoId]);
   }
 
 }

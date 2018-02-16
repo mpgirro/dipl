@@ -29,8 +29,8 @@ export class SearchService {
 
     console.log('sending search request: ' + request);
     return this.http.get<ResultWrapper>(request).pipe(
-      tap(_ => console.log(`found results matching "${query}"`)),
-      catchError(this.handleError<ResultWrapper>('search', new ResultWrapper()))
+      tap(_ => console.log(`found results matching GET "${request}"`)),
+      catchError(this.handleError<ResultWrapper>(`GET ${request}`, new ResultWrapper()))
     );
   }
 
