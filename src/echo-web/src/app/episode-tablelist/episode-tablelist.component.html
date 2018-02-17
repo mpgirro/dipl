@@ -1,7 +1,7 @@
 <ul class="list-group list-group-flush">
 
   <li class="list-group-item flex-column align-items-start px-0"
-      *ngFor="let episode of episodes">
+      *ngFor="let episode of episodes; let i = index">
 
     <div class="d-flex w-100">
       <div class="mr-auto">
@@ -20,9 +20,11 @@
       <div>
         <small class="text-muted">
           <a aria-expanded="true" data-toggle="collapse"
-             (click)="isCollapsed = !isCollapsed"
+             (click)="isCollapsed[i] = !isCollapsed[i]"
              [attr.href]="'#listTableItem-'+ episode.echoId" >
-            <span class="oi" [ngClass]="{'oi-chevron-right': !isCollapsed, 'oi-chevron-bottom': isCollapsed}"></span>
+            <span class="oi"
+                  [ngClass]="{'oi-chevron-right': !isCollapsed[i], 'oi-chevron-bottom': isCollapsed[i]}"
+                  style="width: 11px;"></span>
           </a>
         </small>
       </div>

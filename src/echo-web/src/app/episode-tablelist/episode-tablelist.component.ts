@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges} from '@angular/core';
 import {Episode} from '../episode';
 
 @Component({
@@ -6,14 +6,15 @@ import {Episode} from '../episode';
   templateUrl: './episode-tablelist.component.html',
   styleUrls: ['./episode-tablelist.component.css']
 })
-export class EpisodeTablelistComponent implements OnInit {
+export class EpisodeTablelistComponent implements OnChanges {
 
   @Input() episodes: Array<Episode>;
-  isCollapsed: boolean = false;
+  isCollapsed: boolean[];
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnChanges() {
+    this.isCollapsed = new Array(this.episodes.length); // will be default init with false values
   }
 
 }
