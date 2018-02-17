@@ -5,9 +5,12 @@ import java.time.LocalDateTime
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.ActorProtocol._
 import echo.core.exception.FeedParsingException
+import echo.core.mapper.IndexDocMapper
+import echo.core.model.dto.{DTO, EpisodeDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import echo.core.util.EchoIdGenerator
+import org.jsoup.Jsoup
 
 class ParserActor extends Actor with ActorLogging {
 
@@ -53,7 +56,8 @@ class ParserActor extends Actor with ActorLogging {
 
                         directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
 
-                        indexStore ! IndexStoreAddPodcast(p)
+                        //indexStore ! IndexStoreAddPodcast(p)
+                        sendToIndex(p)
 
                         // request that the website will get added to the index as well
                         Option(p.getLink) match {
@@ -108,13 +112,6 @@ class ParserActor extends Actor with ActorLogging {
                 episodes match {
                     case Some(es) =>
                         for(e <- es){
-
-                            //val fakeEpisodeId = "efake" + { mockEchoIdGenerator += 1; mockEchoIdGenerator }
-                            //val fakeEpisodeId =  Url62.encode(UUID.randomUUID())
-
-                            //val fakeEpisodeId: String = hashids.encode(System.currentTimeMillis());
-                            // add some random part to the seed, to avoid conflict in case we get the same millisecond (that can happen)
-                            //val fakeEpisodeId: String = hashids.encode((System.currentTimeMillis()*Math.random()).toLong)
                             val fakeEpisodeId: String = EchoIdGenerator.getNewId()
                             e.setEchoId(fakeEpisodeId)
 
@@ -128,7 +125,8 @@ class ParserActor extends Actor with ActorLogging {
                              */
                             directoryStore ! UpdateEpisodeMetadata(podcastId, e)
 
-                            indexStore ! IndexStoreAddEpisode(e)
+                            //indexStore ! IndexStoreAddEpisode(e)
+                            sendToIndex(e)
 
                             // request that the website will get added to the index as well
                             Option(e.getLink) match {
@@ -149,16 +147,27 @@ class ParserActor extends Actor with ActorLogging {
 
 
         case ParseWebsiteData(echoId: String, html: String) =>
-            // TODO we don't to any processing of raw website source code yet
             log.debug("Received ParseWebsiteData({},_)", echoId)
 
-            import org.jsoup.Jsoup
             val readableText = Jsoup.parse(html).text()
-
             indexStore ! IndexStoreUpdateDocWebsiteData(echoId, readableText)
 
             log.debug("Finished ParseWebsiteData({},_)", echoId)
 
+    }
+
+    def sendToIndex(dto: DTO): Unit = {
+        val doc = IndexDocMapper.INSTANCE.dtoToIndexDoc(dto)
+        Option(doc.getDescription).foreach(d => doc.setDescription(Jsoup.parse(d).text()))
+        dto match {
+            case p: PodcastDTO =>
+
+            case e: EpisodeDTO =>
+                // TODO strip and set content encoded
+            case _ =>
+                log.error("Forgot to handle DTO type : ", dto.getClass)
+        }
+        indexStore ! IndexStoreAddDoc(doc)
     }
 
 }

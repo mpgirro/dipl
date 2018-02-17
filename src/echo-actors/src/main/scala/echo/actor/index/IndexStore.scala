@@ -54,24 +54,34 @@ class IndexStore extends Actor with ActorLogging {
             commitIndexIfChanged()
             context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
+        case IndexStoreAddDoc(doc) =>
+            log.debug("Received IndexStoreAddDoc({})", doc.getEchoId)
+            indexCommitter.add(doc)
+            indexChanged = true
+            log.debug("Exit IndexStoreAddDoc({})", doc.getEchoId)
+
+        // TODO do not do this messages anymore
         case IndexStoreAddPodcast(podcast)  =>
             log.debug("Received IndexStoreAddPodcast({})", podcast.getEchoId)
             indexCommitter.add(podcast)
             indexChanged = true
             log.debug("Exit IndexStoreAddPodcast({})", podcast.getEchoId)
 
+        // TODO do not do this messages anymore
         case IndexStoreUpdatePodcast(podcast) =>
             log.debug("Received IndexStoreUpdatePodcast({})", podcast.getEchoId)
             indexCommitter.update(podcast)
             indexChanged = true
             log.debug("Exit IndexStoreUpdatePodcast({})", podcast.getEchoId)
 
+        // TODO do not do this messages anymore
         case IndexStoreAddEpisode(episode) =>
             log.debug("Received IndexStoreAddEpisode({})", episode.getEchoId)
             indexCommitter.add(episode)
             indexChanged = true
             log.debug("Exit IndexStoreAddEpisode({})", episode.getEchoId)
 
+        // TODO do not do this messages anymore
         case IndexStoreUpdateEpisode(episode) =>
             log.debug("Received IndexStoreUpdateEpisode({})", episode.getEchoId)
             indexCommitter.update(episode)

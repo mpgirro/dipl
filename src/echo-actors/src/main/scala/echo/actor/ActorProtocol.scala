@@ -3,7 +3,7 @@ package echo.actor
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.model.dto.{EpisodeDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.model.dto.{EpisodeDTO, IndexDocDTO, PodcastDTO, ResultWrapperDTO}
 import echo.core.model.feed.FeedStatus
 
 /**
@@ -50,6 +50,7 @@ object ActorProtocol {
     case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
     case class IndexStoreAddEpisode(episode: EpisodeDTO)
     case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
+    case class IndexStoreAddDoc(doc: IndexDocDTO)
     case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
 
     // Crawler -> IndexStore

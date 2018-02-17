@@ -24,7 +24,7 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>[%highlight(%-5level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%X{akkaSource}] - %msg%n</pattern>
+            <pattern>[%highlight(%-5level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%logger{36}] [%thread] [%X{akkaSource}] - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -45,6 +45,8 @@
     <logger name="org.hibernate" level="WARN"/>
     <logger name="org.springframework.jdbc" level="WARN"/>
     <logger name="org.springframework.orm" level="WARN"/>
+    <logger name="com.rometools.modules.mediarss.io" level="ERROR"/>
+    <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
