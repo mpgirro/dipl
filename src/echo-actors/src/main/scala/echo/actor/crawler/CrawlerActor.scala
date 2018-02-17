@@ -1,5 +1,6 @@
 package echo.actor.crawler
 
+import java.io.InputStreamReader
 import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, PoisonPill}
@@ -12,6 +13,9 @@ import echo.actor.ActorProtocol._
 import echo.core.exception.EchoException
 import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
+import org.apache.commons.io.IOUtils
+import org.apache.http.client.methods.HttpHead
+import org.apache.http.impl.nio.client.{CloseableHttpAsyncClient, HttpAsyncClients}
 
 import scala.collection.mutable
 import scala.concurrent.duration._
@@ -65,20 +69,24 @@ class CrawlerActor extends Actor with ActorLogging {
 
         case FetchFeedForNewPodcast(url, podcastId) =>
             log.info("Received FetchFeedForNewPodcast('{}', {})", url, podcastId)
-            testAndDownloadAsync(podcastId, url, JobKind.FEED_NEW_PODCAST)
+            //testAndDownloadAkka(podcastId, url, JobKind.FEED_NEW_PODCAST)
+            testAndDownloadApache(podcastId, url, JobKind.FEED_NEW_PODCAST)
 
         case FetchFeedForUpdateEpisodes(url, podcastId) =>
             log.info("Received FetchFeedForUpdateEpisodes('{}',{})", url, podcastId)
-            testAndDownloadAsync(podcastId, url, JobKind.FEED_UPDATE_EPISODES)
+            //testAndDownloadAkka(podcastId, url, JobKind.FEED_UPDATE_EPISODES)
+            testAndDownloadApache(podcastId, url, JobKind.FEED_UPDATE_EPISODES)
 
         case FetchWebsite(echoId, url) =>
             log.debug("Received FetchWebsite({},'{}')", echoId, url)
             // TODO we do not fetch websites for now
             //testAndDownloadAsync(echoId, url, JobKind.WEBSITE)
+            testAndDownloadApache(echoId, url, JobKind.WEBSITE)
 
         case DownloadAsync(echoId, url, jobType) =>
             log.debug("Received DownloadAsync({},'{}',{})", echoId, url, jobType)
-            downloadAsync(echoId, url, jobType)
+            //downloadAkka(echoId, url, jobType)
+            downloadApache(echoId, url, jobType)
 
         case CrawlFyyd(count) =>
             log.debug("Received CrawlFyyd({})", count)
@@ -115,7 +123,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
     }
 
-    private def queueRequest(url: String, request: HttpRequest): Future[HttpResponse] = {
+    private def queueRequestAkka(url: String, request: HttpRequest): Future[HttpResponse] = {
 
         // TODO remove elements from the queueMap after a certain to too prevent bloating
 
@@ -153,6 +161,27 @@ class CrawlerActor extends Actor with ActorLogging {
         } (executionContext)
     }
 
+    private def queueRequestApache(url: String, request: org.apache.http.client.methods.HttpRequestBase): Try[org.apache.http.HttpResponse] = {
+        val httpclient: CloseableHttpAsyncClient = HttpAsyncClients.createDefault() // TODO create with properties
+        httpclient.start() // Start the client
+        try {
+            // TODO this future should be turned into an akka future, so the actor wont block the thread
+            val future: java.util.concurrent.Future[org.apache.http.HttpResponse] = httpclient.execute(request, null)
+
+            val response: org.apache.http.HttpResponse = future.get()
+            httpclient.close() // TODO
+            Success(response)
+        } catch {
+            case e: java.net.ConnectException =>
+                log.error("Timeout on : {}", url)
+                Failure(e)
+            case e: Exception =>
+                log.error("Error : {}", e.getMessage)
+                e.printStackTrace()
+                Failure(e)
+        }
+    }
+
     private def analyzeUrl(url: String): (String, String) = {
 
         // http, https, ftp if provided
@@ -187,7 +216,7 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
-    private def evalResponse(url: String, response: HttpResponse): Try[(Option[String],Option[String],Option[String])] = {
+    private def evalAkkaResponse(url: String, response: HttpResponse): Try[(Option[String],Option[String],Option[String])] = {
 
         val statusCode = response.status.intValue
 
@@ -251,19 +280,83 @@ class CrawlerActor extends Actor with ActorLogging {
         Success((location, eTag, lastModified))
     }
 
-    private def testAndDownloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+    private def evalApacheResponse(url: String, response: org.apache.http.HttpResponse): Try[(Option[String],Option[String],Option[String])] = {
+        // TODO
+        val statusCode = response.getStatusLine.getStatusCode
+
+        // we assume we will use the known URL to download later, but maybe this changes...
+        var location: Option[String] = Some(url)
+        statusCode match {
+            case 200 => // all fine
+            case 301 => // Moved Permanently
+                // TODO do something with the new location, e.g. send message to directory to update episode, and use this to (re-)index the new website
+                location = response
+                    .getHeaders("location")
+                    .map(_.getValue)
+                    .headOption
+                log.debug("Redirecting {} to {}", url, location.getOrElse("NON PROVIDED"))
+            //log.warning("301 Moved Permanently reported, this is the new location : {} (of : {})", location.getOrElse("NON PROVIDED"), url)
+            // TODO once I have a propper procedure for 301 handling, should I fail here?
+            //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
+            case 302 => // odd, but ok
+            case 404 => // not found: nothing there worth processing
+                return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.getStatusLine.getReasonPhrase}")) // TODO make a dedicated exception
+            case 503 => // service unavailable
+                return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.getStatusLine.getReasonPhrase}")) // TODO make a dedicated exception
+            case _   =>
+                log.warning("Received unexpected status from HEAD request : {} {} on {}", statusCode, response.getStatusLine.getReasonPhrase, url)
+        }
+
+        val mimeType: Option[String] = Option(response.getLastHeader("Content-Type"))
+            .map(contentTypeHeader => Some(contentTypeHeader.getValue.split(";")(0).trim))
+            .getOrElse(None)
+
+        mimeType match {
+            case Some(mime) =>
+                if(!validMimeType(mime)){
+                    mime match {
+                        case _@("audio/mpeg" | "application/octet-stream") =>
+                            return Failure(new EchoException(s"Invalid MIME-type '$mime' of $url")) // TODO make a dedicated exception
+                        case _ =>
+                            //log.warning("Received unexpected MIME type '{}' from HEAD request to : '{}'", mime, url)
+                            return Failure(new EchoException(s"Unexpected MIME type '$mime' of '$url'")) // TODO make a dedicated exception
+                    }
+                }
+            case None =>
+                // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself
+                log.warning("Did not get a Content-Type from HEAD request")
+        }
+
+        //set the etag if existent
+        val eTag: Option[String] = response
+            .getHeaders("etag")
+            .map(_.getValue)
+            .headOption
+
+        //set the "last modified" header field if existent
+        val lastModified: Option[String] = response
+            .getHeaders("last-modified")
+            .map(_.getValue)
+            .headOption
+
+        Success((location, eTag, lastModified))
+    }
+
+    private def testAndDownloadAkka(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val headRequest = HttpRequest(
             HttpMethods.HEAD,
             uri = url,
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(headRequest)
-            queueRequest(url, headRequest)
+            queueRequestAkka(url, headRequest)
                 .onComplete {
+
+                    // TODO this match equals the code from the akka version 1:1
                     case Success(response) =>
                         try {
                             log.debug("Just got HEAD response from : {}", url)
-                            evalResponse(url, response) match {
+                            evalAkkaResponse(url, response) match {
                                 case Success((location, etag, lastMod)) =>
                                     location match {
                                         case Some(href) =>
@@ -322,14 +415,75 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
-    private def downloadAsync(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+    private def testAndDownloadApache(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+        // TODO
+        var headMethod = new HttpHead(url)
+        try {
+            queueRequestApache(url, headMethod) match {
+                case Success(response) =>
+                    log.debug("Just got HEAD response from : {}", url)
+                    evalApacheResponse(url, response) match {
+
+                        // TODO this match equals the code from the akka version 1:1
+                        case Success((location, etag, lastMod)) =>
+                            location match {
+                                case Some(href) =>
+                                    log.debug("Sending message to download async : {}", href)
+                                    jobType match {
+                                        case JobKind.WEBSITE =>
+
+                                            // if the link in the feed is redirected (which is often the case due
+                                            // to some feed analytic tools, we set our records to the new location
+                                            if(!url.equals(href)) {
+                                                directoryStore ! UpdateLinkByEchoId(echoId, href)
+                                                indexStore ! IndexStoreUpdateDocLink(echoId, href)
+                                            }
+
+                                            // we always download websites, because we only do it once anyway
+                                            self ! DownloadAsync(echoId, href, jobType)
+                                        case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
+
+                                            // if the feed moved to a new URL, we will inform the directory, so
+                                            // it will use the new location starting with the next update cycle
+                                            if(!url.equals(href)) {
+                                                directoryStore ! UpdateFeedUrl(url, href)
+                                            }
+
+                                            /*
+                                             * TODO
+                                             * here I have to do some voodoo with etag/lastMod to
+                                             * determine weither the feed changed and I really need to redownload
+                                             */
+                                            self ! DownloadAsync(echoId, href, jobType)
+                                    }
+                                case None =>
+                                    log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
+                                    sendErrorNotificationIfFeasable(echoId, url, jobType)
+                            }
+                        case Failure(reason) =>
+                            log.warning("HEAD response prevented downloading resource : {}", Option(reason.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                            sendErrorNotificationIfFeasable(echoId, url, jobType)
+                    }
+                case Failure(reason) =>
+                    log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
+                    sendErrorNotificationIfFeasable(echoId, url, jobType)
+            }
+        } catch {
+            case e: Exception =>
+                log.error("Exception while testing HEAD : {} [reason : {}]", url, e.getMessage)
+                e.printStackTrace()
+                sendErrorNotificationIfFeasable(echoId, url, jobType)
+        }
+    }
+
+    private def downloadAkka(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val getRequest = HttpRequest(
             HttpMethods.GET,
             uri = url,
             protocol = `HTTP/1.0`)
         try {
             //val responseFuture: Future[HttpResponse] = Http(context.system).singleRequest(getRequest)
-            queueRequest(url, getRequest)
+            queueRequestAkka(url, getRequest)
                 .onComplete {
                     case Success(response) =>
                         log.info("Just got GET response from : {}", url)
@@ -347,7 +501,8 @@ class CrawlerActor extends Actor with ActorLogging {
 
                         response.entity.contentLengthOption.foreach(cl => {
                             if(cl > DOWNLOAD_MAXBYTES){
-                                log.error("Refusing to download resource because content length exceeds maximum: {} > ", cl, DOWNLOAD_MAXBYTES)
+                                log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
+                                throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
                             }
                         })
 
@@ -398,6 +553,84 @@ class CrawlerActor extends Actor with ActorLogging {
         } finally {
             //getRequest.discardEntityBytes()
         }
+    }
+
+    private def downloadApache(echoId: String, url: String, jobType: JobKind.Value): Unit = {
+        // Execute request
+        val request: org.apache.http.client.methods.HttpGet = new org.apache.http.client.methods.HttpGet(url)
+        try {
+            queueRequestApache(url, request) match {
+                case Success(response) =>
+                    log.info("Just got GET response from : {}", url)
+                    // once again, ensure we do not accidentally fetch a media file and take it for text
+                    val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim
+                    if(!validMimeType(mimeType)){
+                        log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
+                        throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
+                    }
+
+                    /* TODO
+                    // ensure we do not accidentally fetch a neverending stream
+                    if(response.entity.isIndefiniteLength()){
+                        log.error("Refusing to download resource with indefinite length from : '{}'", url)
+                        throw new EchoException("Refusing to download resource with indefinite length") // TODO make dedicated exception
+                    }
+                    */
+
+                    val cl = response.getEntity.getContentLength
+                    if(cl > DOWNLOAD_MAXBYTES) {
+                        log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
+                        throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
+                    }
+
+                    log.debug("Collecting content toStrict for GET response : {}", url)
+                    def extractData(r: org.apache.http.HttpResponse): Try[String] = {
+                        try {
+                            val in = response.getEntity.getContent
+                            val data: String = IOUtils.toString(new InputStreamReader(in))
+                            Success(data)
+                        } catch {
+                            case e: Exception =>
+                                log.error("Error : {}", e.getMessage)
+                                Failure(e)
+                        }
+                    }
+                    extractData(response) match {
+                        case Success(data) =>
+                            log.debug("Finished content toStrict for GET response : {}", url)
+                            jobType match {
+                                case JobKind.FEED_NEW_PODCAST =>
+                                    parser ! ParseNewPodcastData(url, echoId, data)
+                                    directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                case JobKind.FEED_UPDATE_EPISODES =>
+                                    parser ! ParseEpisodeData(url, echoId, data)
+                                    directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                                case JobKind.WEBSITE =>
+                                    parser ! ParseWebsiteData(echoId, data)
+                            }
+                        case Failure(reason) =>
+                            /* TODO
+                            reason match {
+                                case e: java.util.concurrent.TimeoutException =>
+                                    log.warning("Failed to download resource due to timeout : {}", url)
+                                case e =>
+                                    log.error("Failed to collect response body HTML into a String : {} [reason : {} from message type : {}]", url, e.getMessage, e.getClass)
+                                //e.printStackTrace()
+                            }
+                            */
+                            sendErrorNotificationIfFeasable(echoId, url, jobType)
+                    }
+                case Failure(reason) =>
+                    log.warning("HTTP GET request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
+                    sendErrorNotificationIfFeasable(echoId, url, jobType)
+            }
+        } catch {
+            case e: Exception =>
+                log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
+                e.printStackTrace()
+                sendErrorNotificationIfFeasable(echoId, url, jobType)
+        }
+
     }
 
     private def sendErrorNotificationIfFeasable(echoId: String, url: String, jobType: JobKind.Value): Unit = {
