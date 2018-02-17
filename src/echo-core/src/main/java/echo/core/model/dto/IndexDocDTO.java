@@ -16,8 +16,10 @@ public class IndexDocDTO {
     private LocalDateTime pubDate;
     private String itunesImage;
     //private Set<String> itunesCategories;
+    private String contentEncoded;
     private String websiteData;
 
+    /*
     public IndexDocDTO(){
 
     }
@@ -32,6 +34,7 @@ public class IndexDocDTO {
         this.itunesImage = itunesImage;
         //this.itunesCategories = itunesCategories;
     }
+    */
 
     public String getDocType() {
         return docType;
@@ -89,6 +92,14 @@ public class IndexDocDTO {
         this.itunesImage = itunesImage;
     }
 
+    public String getContentEncoded() {
+        return contentEncoded;
+    }
+
+    public void setContentEncoded(String contentEncoded) {
+        this.contentEncoded = contentEncoded;
+    }
+
     /*
     public Set<String> getItunesCategories() {
         return itunesCategories;
@@ -117,6 +128,7 @@ public class IndexDocDTO {
             ", pubDate=" + pubDate +
             ", description='" + description + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
+            ", contentEncoded='" + contentEncoded + '\'' +
             //", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", websiteData='" + websiteData + '\'' +
             '}';
