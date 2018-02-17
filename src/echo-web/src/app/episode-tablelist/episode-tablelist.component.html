@@ -5,10 +5,7 @@
 
     <div class="d-flex w-100">
       <div class="mr-auto">
-        <a aria-expanded="true" data-toggle="collapse"
-           [attr.href]="'#listTableItem-'+ episode.echoId" >
-          {{episode.title}}
-        </a>
+        <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
       </div>
       <div>
         <small class="text-muted">
@@ -22,7 +19,11 @@
       </div>
       <div>
         <small class="text-muted">
-          <a href="/e/{{episode.echoId}}"><span class="oi oi-chevron-right"></span></a>
+          <a aria-expanded="true" data-toggle="collapse"
+             (click)="isCollapsed = !isCollapsed"
+             [attr.href]="'#listTableItem-'+ episode.echoId" >
+            <span class="oi" [ngClass]="{'oi-chevron-right': !isCollapsed, 'oi-chevron-bottom': isCollapsed}"></span>
+          </a>
         </small>
       </div>
     </div>

@@ -59,13 +59,8 @@
       </p>
 
       <ng-container *ngIf="result.description">
-        <!--<p class="mb-1" [innerHTML]="result.description"></p>-->
-        <!--
-        <p class="mb-1">
-          {{result.description.substr(0, 600)}}
-        </p>
-        -->
-        <p class="mb-1" [innerHTML]="result.description.substr(0, 300) + '...'"></p>
+        <!--<p class="mb-1" [innerHTML]="result.description.substr(0, 300) + '...'"></p>-->
+        <p class="mb-1">{{ (result.description.length > 250) ? result.description.substr(0, 250) + ' . . .' : result.description }}</p>
       </ng-container>
 
 

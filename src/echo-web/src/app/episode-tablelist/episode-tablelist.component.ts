@@ -9,6 +9,7 @@ import {Episode} from '../episode';
 export class EpisodeTablelistComponent implements OnInit {
 
   @Input() episodes: Array<Episode>;
+  isCollapsed: boolean = false;
 
   constructor() { }
 
