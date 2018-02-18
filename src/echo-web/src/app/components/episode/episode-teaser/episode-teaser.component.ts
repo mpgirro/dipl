@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import { Episode } from '../../../episode';
+import { Episode } from '../../../core/episode';
 
 @Component({
   selector: 'app-episode-teaser',

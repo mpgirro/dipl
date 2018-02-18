@@ -4,16 +4,16 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 
-import { SearchService } from './search.service';
+import { SearchService } from './core/search.service';
 import { SearchComponent } from './search/search.component';
 
-import { PodcastService } from './podcast.service';
+import { PodcastService } from './core/podcast.service';
 import { PodcastDetailComponent } from './components/podcast/podcast-detail/podcast-detail.component';
 
-import { EpisodeService } from './episode.service';
+import { EpisodeService } from './core/episode.service';
 import { EpisodeDetailComponent } from './components/episode/episode-detail/episode-detail.component';
 
-import { DomainService } from './domain.service';
+import { DomainService } from './core/domain.service';
 
 import { AppRoutingModule } from './/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
