@@ -21,8 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
 import { EpisodeTeaserComponent } from './components/episode/episode-teaser/episode-teaser.component';
-import { EpisodesRichlistComponent } from './components/episode/episodes-richlist/episodes-richlist.component';
-import { EpisodesTablelistComponent } from './components/episode/episodes-tablelist/episodes-tablelist.component';
+import { EpisodeRichlistComponent } from './components/episode/episode-richlist/episode-richlist.component';
+import { EpisodeTablelistComponent } from './components/episode/episode-tablelist/episode-tablelist.component';
 import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
@@ -33,8 +33,8 @@ import { NavbarComponent } from './navbar/navbar.component';
     SearchComponent,
     PodcastDirectoryComponent,
     EpisodeTeaserComponent,
-    EpisodesRichlistComponent,
-    EpisodesTablelistComponent,
+    EpisodeRichlistComponent,
+    EpisodeTablelistComponent,
     NavbarComponent
   ],
   imports: [

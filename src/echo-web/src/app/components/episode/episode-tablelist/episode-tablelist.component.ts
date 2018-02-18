@@ -2,11 +2,11 @@ import {Component, Input, OnChanges} from '@angular/core';
 import {Episode} from '../../../episode';
 
 @Component({
-  selector: 'app-episodes-tablelist',
-  templateUrl: './episodes-tablelist.component.html',
-  styleUrls: ['./episodes-tablelist.component.css']
+  selector: 'app-episode-tablelist',
+  templateUrl: './episode-tablelist.component.html',
+  styleUrls: ['./episode-tablelist.component.css']
 })
-export class EpisodesTablelistComponent implements OnChanges {
+export class EpisodeTablelistComponent implements OnChanges {
 
   @Input() episodes: Array<Episode>;
   isCollapsed: boolean[];
