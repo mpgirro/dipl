@@ -788,7 +788,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
             }
 
-            log.debug("Collecting content toStrict for GET response : {}", url)
+            log.debug("Collecting content from GET response : {}", url)
             def extractData(r: org.apache.http.HttpResponse): Try[String] = {
                 try {
                     val inputStream = response.getEntity.getContent
@@ -803,7 +803,7 @@ class CrawlerActor extends Actor with ActorLogging {
             }
             extractData(response) match {
                 case Success(data) =>
-                    log.debug("Finished content toStrict for GET response : {}", url)
+                    log.debug("Finished collecting content from GET response : {}", url)
                     jobType match {
                         case JobKind.FEED_NEW_PODCAST =>
                             parser ! ParseNewPodcastData(url, echoId, data)

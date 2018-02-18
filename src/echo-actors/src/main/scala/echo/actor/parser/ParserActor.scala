@@ -11,6 +11,7 @@ import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import echo.core.util.EchoIdGenerator
 import org.jsoup.Jsoup
+import org.jsoup.safety.Whitelist
 
 class ParserActor extends Actor with ActorLogging {
 
@@ -48,6 +49,8 @@ class ParserActor extends Actor with ActorLogging {
                         // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
                         p.setEchoId(podcastId)
+
+                        Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
                         /* TODO
                          * do the same as with episodes, directory will have to save out if we already have the podcast in the database
@@ -115,6 +118,9 @@ class ParserActor extends Actor with ActorLogging {
                             val fakeEpisodeId: String = EchoIdGenerator.getNewId()
                             e.setEchoId(fakeEpisodeId)
 
+                            Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
+                            Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
+
                             /* TODO
                              * for now, we always send the update episode and add to index messages, but eventually
                              * we'll have to find out weither the episode is already known, (directory will have to say).
@@ -158,15 +164,11 @@ class ParserActor extends Actor with ActorLogging {
 
     def sendToIndex(dto: DTO): Unit = {
         val doc = IndexDocMapper.INSTANCE.dtoToIndexDoc(dto)
-        Option(doc.getDescription).foreach(d => doc.setDescription(Jsoup.parse(d).text()))
-        dto match {
-            case p: PodcastDTO =>
+        // TODO see https://jsoup.org/apidocs/org/jsoup/safety/Whitelist.html for cleaning options
 
-            case e: EpisodeDTO =>
-                // TODO strip and set content encoded
-            case _ =>
-                log.error("Forgot to handle DTO type : ", dto.getClass)
-        }
+        // TODO am I doing all this already for every DTO in the usual parsing?
+        Option(doc.getDescription).foreach(d => doc.setDescription(Jsoup.clean(d, Whitelist.basic())))
+
         indexStore ! IndexStoreAddDoc(doc)
     }
 
