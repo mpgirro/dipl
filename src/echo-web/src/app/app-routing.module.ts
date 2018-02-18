@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SearchComponent } from './search/search.component';
-import { PodcastDetailComponent } from './components/podcast/podcast-detail/podcast-detail.component';
+import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
-import { EpisodeDetailComponent } from './components/episode/episode-detail/episode-detail.component';
+import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent },

@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { Podcast } from '../core/services/podcast/podcast.model';
-import { PodcastService } from '../core/services/podcast/podcast.service';
+import { Podcast } from '../podcast/shared/podcast.model';
+import { PodcastService } from '../podcast/shared/podcast.service';
 
 @Component({
   selector: 'app-podcast-directory',
