@@ -21,8 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
 import { EpisodeTeaserComponent } from './components/episode/episode-teaser/episode-teaser.component';
-import { EpisodesRichlistComponent } from './episodes-richlist/episodes-richlist.component';
-import { EpisodesTablelistComponent } from './episodes-tablelist/episodes-tablelist.component';
+import { EpisodesRichlistComponent } from './components/episode/episodes-richlist/episodes-richlist.component';
+import { EpisodesTablelistComponent } from './components/episode/episodes-tablelist/episodes-tablelist.component';
 import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({

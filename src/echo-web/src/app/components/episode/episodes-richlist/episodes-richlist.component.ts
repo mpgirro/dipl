@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Episode} from '../episode';
+import {Episode} from '../../../episode';
 
 @Component({
   selector: 'app-episodes-richlist',
