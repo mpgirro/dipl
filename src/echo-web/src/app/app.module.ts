@@ -8,7 +8,7 @@ import { SearchService } from './search.service';
 import { SearchComponent } from './search/search.component';
 
 import { PodcastService } from './podcast.service';
-import { PodcastDetailComponent } from './podcast-detail/podcast-detail.component';
+import { PodcastDetailComponent } from './components/podcast/podcast-detail/podcast-detail.component';
 
 import { EpisodeService } from './episode.service';
 import { EpisodeDetailComponent } from './components/episode/episode-detail/episode-detail.component';
