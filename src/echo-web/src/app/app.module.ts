@@ -11,7 +11,7 @@ import { PodcastService } from './podcast.service';
 import { PodcastDetailComponent } from './podcast-detail/podcast-detail.component';
 
 import { EpisodeService } from './episode.service';
-import { EpisodeDetailComponent } from './episode-detail/episode-detail.component';
+import { EpisodeDetailComponent } from './components/episode/episode-detail/episode-detail.component';
 
 import { DomainService } from './domain.service';
 
@@ -20,7 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
-import { EpisodeTeaserComponent } from './episode-teaser/episode-teaser.component';
+import { EpisodeTeaserComponent } from './components/episode/episode-teaser/episode-teaser.component';
 import { EpisodesRichlistComponent } from './episodes-richlist/episodes-richlist.component';
 import { EpisodesTablelistComponent } from './episodes-tablelist/episodes-tablelist.component';
 import { NavbarComponent } from './navbar/navbar.component';
