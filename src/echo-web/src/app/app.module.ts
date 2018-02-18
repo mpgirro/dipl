@@ -21,7 +21,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
 import { EpisodeTeaserComponent } from './episode-teaser/episode-teaser.component';
-import { EpisodeTableComponent } from './episode-table/episode-table.component';
 import { EpisodeListgroupComponent } from './episode-listgroup/episode-listgroup.component';
 import { EpisodeTablelistComponent } from './episode-tablelist/episode-tablelist.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -34,7 +33,6 @@ import { NavbarComponent } from './navbar/navbar.component';
     SearchComponent,
     PodcastDirectoryComponent,
     EpisodeTeaserComponent,
-    EpisodeTableComponent,
     EpisodeListgroupComponent,
     EpisodeTablelistComponent,
     NavbarComponent

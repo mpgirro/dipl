@@ -37,13 +37,6 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" role="tab"
-           id="episodes-table-tab" href="#episodes-table"
-           data-toggle="tab"  aria-controls="episodes-table" aria-selected="true">
-          <span class="oi oi-menu"></span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" role="tab"
            id="episodes-listgroup-tab" href="#episodes-listgroup"
            data-toggle="tab" aria-controls="episodes-listgroup" aria-selected="true">
           <span class="oi oi-list-rich"></span>
@@ -56,9 +49,6 @@
   <div class="tab-content" id="episodesTabContent">
     <div class="tab-pane fade show active" id="episodes-tablelist" role="tabpanel" aria-labelledby="episodes-tablelist-tab">
       <app-episode-tablelist [episodes]="episodes"></app-episode-tablelist>
-    </div>
-    <div class="tab-pane fade" id="episodes-table" role="tabpanel" aria-labelledby="episodes-table-tab">
-      <app-episode-table [episodes]="episodes"></app-episode-table>
     </div>
     <div class="tab-pane fade" id="episodes-listgroup" role="tabpanel" aria-labelledby="episodes-listgroup-tab">
       <app-episode-listgroup [episodes]="episodes"></app-episode-listgroup>
