@@ -7,8 +7,8 @@ import {PodcastService} from '../podcast/shared/podcast.service';
 
 @Component({
   selector: 'app-podcast-directory',
-  templateUrl: './podcast-directory.component.html',
-  styleUrls: ['./podcast-directory.component.css']
+  templateUrl: './directory.component.html',
+  styleUrls: ['./directory.component.css']
 })
 export class PodcastDirectoryComponent implements OnInit {
 

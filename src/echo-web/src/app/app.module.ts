@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { SearchComponent } from './search/search.component';
 import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
-import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
+import { PodcastDirectoryComponent } from './directory/directory.component';
 
 import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 import { EpisodeTeaserComponent } from './episode/episode-teaser/episode-teaser.component';

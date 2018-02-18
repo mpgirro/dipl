@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PodcastDirectoryComponent } from './podcast-directory.component';
+import { PodcastDirectoryComponent } from './directory.component';
 
 describe('PodcastDirectoryComponent', () => {
   let component: PodcastDirectoryComponent;
