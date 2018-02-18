@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { Episode } from '../../../core/episode';
-import { EpisodeService } from '../../../core/episode.service';
-import { DomainService } from '../../../core/domain.service';
+import { Episode } from '../../../core/services/episode/episode.model';
+import { EpisodeService } from '../../../core/services/episode/episode.service';
+import { DomainService } from '../../../core/services/domain.service';
 
 @Component({
   selector: 'app-episode-detail',

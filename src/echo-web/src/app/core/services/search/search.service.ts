@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Result } from './result';
-import { ResultWrapper } from './resultwrapper';
+import { Result } from './result.model';
+import { ResultWrapper } from './resultwrapper.model';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of'; // TODO brauch ich eh nimma, oder?

@@ -2,10 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { Podcast } from '../../../core/podcast';
-import { Episode } from '../../../core/episode';
-import { PodcastService } from '../../../core/podcast.service';
-import { DomainService } from '../../../core/domain.service';
+import { Podcast } from '../../../core/services/podcast/podcast.model';
+import { Episode } from '../../../core/services/episode/episode.model';
+import { PodcastService } from '../../../core/services/podcast/podcast.service';
+import { DomainService } from '../../../core/services/domain.service';
 
 @Component({
   selector: 'app-podcast-detail',

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { Episode } from './episode';
+import { Episode } from './episode.model';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
 

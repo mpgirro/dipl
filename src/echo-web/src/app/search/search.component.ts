@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { Result } from '../core/result';
-import { SearchService } from '../core/search.service';
-import { DomainService } from '../core/domain.service';
+import { Result } from '../core/services/search/result.model';
+import { SearchService } from '../core/services/search/search.service';
+import { DomainService } from '../core/services/domain.service';
 import {of} from 'rxjs/observable/of';
-import {ResultWrapper} from '../core/resultwrapper';
+import {ResultWrapper} from '../core/services/search/resultwrapper.model';
 
 @Component({
   selector: 'app-search',

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { Podcast } from './podcast';
-import { Episode } from './episode';
-import { ArrayWrapper } from './arraywrapper';
+import { Podcast } from './podcast.model';
+import { Episode } from '../episode/episode.model';
+import { ArrayWrapper } from '../arraywrapper.model';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
 
