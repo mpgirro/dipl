@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EpisodeListgroupComponent } from './episode-listgroup.component';
+import { EpisodesRichlistComponent } from './episodes-richlist.component';
 
-describe('EpisodeListgroupComponent', () => {
-  let component: EpisodeListgroupComponent;
-  let fixture: ComponentFixture<EpisodeListgroupComponent>;
+describe('EpisodesRichlistComponent', () => {
+  let component: EpisodesRichlistComponent;
+  let fixture: ComponentFixture<EpisodesRichlistComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EpisodeListgroupComponent ]
+      declarations: [ EpisodesRichlistComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EpisodeListgroupComponent);
+    fixture = TestBed.createComponent(EpisodesRichlistComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
