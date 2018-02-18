@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Podcast } from '../podcast/shared/podcast.model';
-import { PodcastService } from '../podcast/shared/podcast.service';
+import {PodcastService} from '../podcast/shared/podcast.service';
 
 @Component({
   selector: 'app-podcast-directory',

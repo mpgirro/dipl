@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
+
 import { PodcastService } from './shared/podcast.service';
 
 @NgModule({
-  providers: [
-    PodcastService
-  ],
+  providers: [PodcastService],
 })
 export class PodcastModule { }

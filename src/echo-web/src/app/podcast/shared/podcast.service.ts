@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Podcast } from './podcast.model';
 import { Episode } from '../../episode/shared/episode.model';
-import { ArrayWrapper } from '../../arraywrapper.model';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
+import {ArrayWrapper} from '../../arraywrapper.model';
 
 @Injectable()
 export class PodcastService {

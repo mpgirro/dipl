@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 
 import { SearchComponent } from './search/search.component';
 import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
-import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 import { PodcastDirectoryComponent } from './podcast-directory/podcast-directory.component';
+
+import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 import { EpisodeTeaserComponent } from './episode/episode-teaser/episode-teaser.component';
 import { EpisodeRichlistComponent } from './episode/episode-richlist/episode-richlist.component';
 import { EpisodeTablelistComponent } from './episode/episode-tablelist/episode-tablelist.component';
-import { NavbarComponent } from './navbar/navbar.component';
+
+import { NavbarComponent } from './core/navbar/navbar.component';
 
 import { DomainService } from './domain.service';
 import { SearchService } from './search.service';
@@ -26,13 +28,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
-    PodcastDetailComponent,
-    EpisodeDetailComponent,
     SearchComponent,
+    PodcastDetailComponent,
     PodcastDirectoryComponent,
+    EpisodeDetailComponent,
     EpisodeTeaserComponent,
     EpisodeRichlistComponent,
     EpisodeTablelistComponent,

@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 
 import { Episode } from '../shared/episode.model';
 import { EpisodeService } from '../shared/episode.service';
-import { DomainService} from '../../domain.service';
+import { DomainService } from '../../domain.service';
 
 @Component({
   selector: 'app-episode-detail',
