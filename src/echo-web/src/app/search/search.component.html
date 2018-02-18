@@ -28,7 +28,7 @@
 
     <img class="result-thumb mr-3"
          src="{{result.itunesImage}}"
-         alt="Generic placeholder image">
+         alt="Result Image">
 
     <div class="media-body">
 
@@ -59,8 +59,8 @@
       </p>
 
       <ng-container *ngIf="result.description">
-        <!--<p class="mb-1" [innerHTML]="result.description.substr(0, 300) + '...'"></p>-->
-        <p class="mb-1">{{ (result.description.length > 250) ? result.description.substr(0, 250) + ' . . .' : result.description }}</p>
+        <p class="mb-1" [innerHTML]="(result.description.length > 250) ? result.description.substr(0, 250) + ' . . .' : result.description"></p>
+        <!--<p class="mb-1">{{ (result.description.length > 250) ? result.description.substr(0, 250) + ' . . .' : result.description }}</p>-->
       </ng-container>
 
 

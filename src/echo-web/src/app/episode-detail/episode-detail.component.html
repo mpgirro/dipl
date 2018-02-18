@@ -5,16 +5,20 @@
 <div class="text-center my-5">
   <img class="w-100"
        src="{{episode.itunesImage}}"
-       alt="Generic placeholder image">
+       alt="Episode Image">
 </div>
 
 
-<h1 class="h5 my-3">
+<h1 class="h4 mt-3 mb-0">
   {{episode.title}}
 </h1>
 
+<p *ngIf="episode.link">
+  <a class="text-muted"  href="{{episode.link}}">{{domainService.removeProtocol(episode.link)}}</a>
+</p>
+
 <div class="mb-3">
-  <small class="text-muted">
+  <small>
     <span *ngIf="episode.pubDate">
       <span class="oi oi-calendar"></span>
       <span class="mr-2">{{episode.pubDate | date: 'd MMM yyyy' }}</span>
@@ -26,13 +30,7 @@
   </small>
 </div>
 
-<p *ngIf="episode.link" class="my-3">
-  <a href="{{episode.link}}">
-    <!--<small class="text-muted"><span class="oi oi-link-intact"></span></small>-->
-    {{domainService.removeProtocol(episode.link)}}
-  </a>
-</p>
-
+<!-- Deactivated Plyr player in favour of Podlove player
 <div id="plyr-audio" class="plyr plyr--audio plyr--ready plyr--stopped my-4">
   <audio class="plyr--setup">
     <source src="{{episode.enclosureUrl}}" type="{{episode.enclosureType}}">
@@ -61,9 +59,12 @@
     </svg>
   </div>
 </div>
+-->
 
-<p *ngIf="episode.contentEncoded" class="mb-1" [innerHTML]="episode.contentEncoded"></p>
-<p *ngIf="!episode.contentEncoded" class="mb-1" [innerHTML]="episode.description"></p>
+<div id="podlove-player" class="my-5"></div>
+
+<p *ngIf="episode.contentEncoded" [innerHTML]="episode.contentEncoded"></p>
+<p *ngIf="!episode.contentEncoded" [innerHTML]="episode.description"></p>
 
 
 

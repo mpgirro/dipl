@@ -22,12 +22,48 @@ export class EpisodeDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getEpisode();
-    this.initPlyr();
+    // this.initPlyr();
   }
 
   initPlyr(): void {
+    const plyrJS = 'plyr.setup("#plyr-audio");';
     const el = document.createElement('script');
-    el.appendChild(document.createTextNode('plyr.setup("#plyr-audio");'));
+    el.appendChild(document.createTextNode(plyrJS));
+    document.body.appendChild(el);
+  }
+
+  initPodlove(): void {
+    const configuration = '{' +
+//      '"poster" : "' + this.episode.itunesImage + '", ' +
+      '"duration" : "' + this.episode.itunesDuration + '",' +
+      '"audio" : [{' +
+        '"url" : "' + this.episode.enclosureUrl + '",' +
+      //        'size: 93260000,\n' +
+      //        'title: \'Audio MP4\'\n' +
+        '"mimeType" :"' + this.episode.enclosureType + '"' +
+      '}],' +
+      '"theme" : {' +
+        '"main" : "#ffffff",' +
+        '"highlight" : "#0785ff"' +
+      '},' +
+      '"visibleComponents": [' +
+        '"tabChapters",' +
+        '"tabAudio",' +
+        '"progressbar",' +
+        '"controlSteppers",' +
+        '"controlChapters"' +
+      ']' +
+      '}';
+    // console.log('configuration:');
+    // console.log(configuration);
+
+    const podloveJS = 'podlovePlayer(\'#podlove-player\',' + configuration + ');';
+    /*
+    let iframe_window = iframe.contentWindow;
+    iframe_window.document.getElementById('iFrameResizer0').height = '0';
+    */
+    const el = document.createElement('script');
+    el.appendChild(document.createTextNode(podloveJS));
     document.body.appendChild(el);
   }
 
@@ -36,6 +72,7 @@ export class EpisodeDetailComponent implements OnInit {
     this.episodeService.get(id)
       .subscribe(episode => {
         this.episode = episode;
+        this.initPodlove();
       });
   }
 
