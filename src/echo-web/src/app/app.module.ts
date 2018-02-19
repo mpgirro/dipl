@@ -5,8 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 
 import { SearchComponent } from './search/search.component';
+import { DirectoryComponent } from './directory/directory.component';
+
 import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
-import { PodcastDirectoryComponent } from './directory/directory.component';
+import { PodcastRichlistComponent } from './podcast/podcast-richlist/podcast-richlist.component';
+import { PodcastMatrixComponent } from './podcast/podcast-matrix/podcast-matrix.component';
 
 import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 import { EpisodeTeaserComponent } from './episode/episode-teaser/episode-teaser.component';
@@ -27,19 +30,19 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 
-
-
 @NgModule({
   declarations: [
     AppComponent,
     SearchComponent,
     PodcastDetailComponent,
-    PodcastDirectoryComponent,
+    DirectoryComponent,
     EpisodeDetailComponent,
     EpisodeTeaserComponent,
     EpisodeRichlistComponent,
     EpisodeTablelistComponent,
-    NavbarComponent
+    NavbarComponent,
+    PodcastRichlistComponent,
+    PodcastMatrixComponent
   ],
   imports: [
     CoreModule,

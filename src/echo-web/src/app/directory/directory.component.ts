@@ -6,11 +6,11 @@ import { Podcast } from '../podcast/shared/podcast.model';
 import {PodcastService} from '../podcast/shared/podcast.service';
 
 @Component({
-  selector: 'app-podcast-directory',
+  selector: 'app-directory',
   templateUrl: './directory.component.html',
   styleUrls: ['./directory.component.css']
 })
-export class PodcastDirectoryComponent implements OnInit {
+export class DirectoryComponent implements OnInit {
 
   @Input() podcasts: Array<Podcast>;
 
