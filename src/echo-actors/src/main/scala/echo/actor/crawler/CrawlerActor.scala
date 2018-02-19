@@ -169,45 +169,6 @@ class CrawlerActor extends Actor with ActorLogging {
         } (executionContext)
     }
 
-    @Deprecated
-    private def queueRequestApache(url: String, request: org.apache.http.client.methods.HttpRequestBase): Try[org.apache.http.client.methods.CloseableHttpResponse] = {
-        //val httpclient: CloseableHttpAsyncClient = HttpAsyncClients.createDefault() // TODO create with properties
-        //httpclient.start() // Start the client
-        val requestConfig = RequestConfig.custom.
-            setSocketTimeout(DOWNLOAD_TIMEOUT_MS)
-            .setConnectTimeout(DOWNLOAD_TIMEOUT_MS)
-            .build
-        val httpclient: CloseableHttpClient = HttpClientBuilder
-            .create
-            .setDefaultRequestConfig(requestConfig)
-            //.setConnectionManager(poolingHttpClientConnectionManager) // TODO
-            .build
-        try {
-            // TODO this future should be turned into an akka future, so the actor wont block the thread
-            /*
-            val future: java.util.concurrent.Future[org.apache.http.HttpResponse] = httpclient.execute(request, null)
-            val response: org.apache.http.HttpResponse = future.get()
-            */
-            val response: org.apache.http.client.methods.CloseableHttpResponse = httpclient.execute(request)
-            //httpclient.close() // TODO
-            Success(response)
-        } catch {
-            case e: java.net.ConnectException =>
-                log.error("Connection error on : {} [reason : {}]", e.getMessage, url)
-                Failure(e)
-            case e: java.net.UnknownHostException =>
-                log.error("Unknown host : {}", url)
-                Failure(e)
-            case e: java.io.IOException =>
-                log.error("IO error on : {} [reason : {}]", url, e.getMessage)
-                Failure(e)
-            case e: Exception =>
-                log.error("Error : {}", e.getMessage)
-                e.printStackTrace()
-                Failure(e)
-        }
-    }
-
     private def analyzeUrl(url: String): (String, String) = {
 
         // http, https, ftp if provided
@@ -444,68 +405,6 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     @Deprecated
-    private def testAndDownloadApache(echoId: String, url: String, jobType: JobKind.Value): Unit = {
-        // TODO
-        var headMethod = new HttpHead(url)
-        try {
-            queueRequestApache(url, headMethod) match {
-                case Success(response) =>
-                    log.debug("Just got HEAD response from : {}", url)
-                    evalApacheResponse(url, response) match {
-
-                        // TODO this match equals the code from the akka version 1:1
-                        case Success((location, etag, lastMod)) =>
-                            location match {
-                                case Some(href) =>
-                                    log.debug("Sending message to download async : {}", href)
-                                    jobType match {
-                                        case JobKind.WEBSITE =>
-
-                                            // if the link in the feed is redirected (which is often the case due
-                                            // to some feed analytic tools, we set our records to the new location
-                                            if(!url.equals(href)) {
-                                                directoryStore ! UpdateLinkByEchoId(echoId, href)
-                                                indexStore ! IndexStoreUpdateDocLink(echoId, href)
-                                            }
-
-                                            // we always download websites, because we only do it once anyway
-                                            self ! DownloadAsync(echoId, href, jobType)
-                                        case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
-
-                                            // if the feed moved to a new URL, we will inform the directory, so
-                                            // it will use the new location starting with the next update cycle
-                                            if(!url.equals(href)) {
-                                                directoryStore ! UpdateFeedUrl(url, href)
-                                            }
-
-                                            /*
-                                             * TODO
-                                             * here I have to do some voodoo with etag/lastMod to
-                                             * determine weither the feed changed and I really need to redownload
-                                             */
-                                            self ! DownloadAsync(echoId, href, jobType)
-                                    }
-                                case None =>
-                                    log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
-                                    sendErrorNotificationIfFeasable(echoId, url, jobType)
-                            }
-                        case Failure(reason) =>
-                            log.warning("HEAD response prevented downloading resource : {}", Option(reason.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                            sendErrorNotificationIfFeasable(echoId, url, jobType)
-                    }
-                case Failure(reason) =>
-                    log.warning("HTTP HEAD request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
-                    sendErrorNotificationIfFeasable(echoId, url, jobType)
-            }
-        } catch {
-            case e: Exception =>
-                log.error("Exception while testing HEAD : {} [reason : {}]", url, e.getMessage)
-                e.printStackTrace()
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-        }
-    }
-
-    @Deprecated
     private def downloadAkka(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val getRequest = HttpRequest(
             HttpMethods.GET,
@@ -583,88 +482,6 @@ class CrawlerActor extends Actor with ActorLogging {
         } finally {
             //getRequest.discardEntityBytes()
         }
-    }
-
-    @Deprecated
-    private def downloadApache(echoId: String, url: String, jobType: JobKind.Value): Unit = {
-        // Execute request
-        val request: org.apache.http.client.methods.HttpGet = new org.apache.http.client.methods.HttpGet(url)
-        try {
-            queueRequestApache(url, request) match {
-                case Success(response) =>
-                    log.info("Just got GET response from : {}", url)
-                    // once again, ensure we do not accidentally fetch a media file and take it for text
-                    val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim
-                    if(!validMimeType(mimeType)){
-                        log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
-                        throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
-                    }
-
-                    /* TODO
-                    // ensure we do not accidentally fetch a neverending stream
-                    if(response.entity.isIndefiniteLength()){
-                        log.error("Refusing to download resource with indefinite length from : '{}'", url)
-                        throw new EchoException("Refusing to download resource with indefinite length") // TODO make dedicated exception
-                    }
-                    */
-
-                    val cl = response.getEntity.getContentLength
-                    if(cl > DOWNLOAD_MAXBYTES) {
-                        log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
-                        throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
-                    }
-
-                    log.debug("Collecting content toStrict for GET response : {}", url)
-                    def extractData(r: org.apache.http.HttpResponse): Try[String] = {
-                        try {
-                            val inputStream = response.getEntity.getContent
-                            val data: String = IOUtils.toString(new InputStreamReader(inputStream))
-                            inputStream.close()
-                            Success(data)
-                        } catch {
-                            case e: Exception =>
-                                log.error("Error : {}", e.getMessage)
-                                Failure(e)
-                        }
-                    }
-                    extractData(response) match {
-                        case Success(data) =>
-                            log.debug("Finished content toStrict for GET response : {}", url)
-                            jobType match {
-                                case JobKind.FEED_NEW_PODCAST =>
-                                    parser ! ParseNewPodcastData(url, echoId, data)
-                                    directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                case JobKind.FEED_UPDATE_EPISODES =>
-                                    parser ! ParseEpisodeData(url, echoId, data)
-                                    directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                                case JobKind.WEBSITE =>
-                                    parser ! ParseWebsiteData(echoId, data)
-                            }
-                        case Failure(reason) =>
-                            /* TODO
-                            reason match {
-                                case e: java.util.concurrent.TimeoutException =>
-                                    log.warning("Failed to download resource due to timeout : {}", url)
-                                case e =>
-                                    log.error("Failed to collect response body HTML into a String : {} [reason : {} from message type : {}]", url, e.getMessage, e.getClass)
-                                //e.printStackTrace()
-                            }
-                            */
-                            sendErrorNotificationIfFeasable(echoId, url, jobType)
-                    }
-
-
-                case Failure(reason) =>
-                    log.warning("HTTP GET request failed on resource : '{}' [reason : {}]", url, reason.getMessage)
-                    sendErrorNotificationIfFeasable(echoId, url, jobType)
-            }
-        } catch {
-            case e: Exception =>
-                log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
-                e.printStackTrace()
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-        }
-
     }
 
     private def sendErrorNotificationIfFeasable(echoId: String, url: String, jobType: JobKind.Value): Unit = {
@@ -765,7 +582,7 @@ class CrawlerActor extends Actor with ActorLogging {
             val request = new org.apache.http.client.methods.HttpGet(url)
             val response: org.apache.http.client.methods.CloseableHttpResponse = httpclient.execute(request)
 
-            log.info("Just got GET response from : {}", url)
+            log.debug("Just got GET response from : {}", url)
 
             // once again, ensure we do not accidentally fetch a media file and take it for text
             val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim

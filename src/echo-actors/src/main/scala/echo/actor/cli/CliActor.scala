@@ -170,7 +170,6 @@ class CliActor(private val master: ActorRef,
         val filename = "../feeds.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
-            Thread.sleep(200) // to give the async system time to have the record in the DB bevore the results are there
         }
     }
 
@@ -180,7 +179,6 @@ class CliActor(private val master: ActorRef,
         val filename = "../feeds_unique.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
-            Thread.sleep(200) // to give the async system time to have the record in the DB bevore the results are there
         }
     }
 
