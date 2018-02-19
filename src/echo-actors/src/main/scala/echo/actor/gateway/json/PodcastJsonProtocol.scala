@@ -20,12 +20,25 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
             "link"        -> Option(p.getLink).map(value => JsString(value)).getOrElse(JsNull),
             "pubDate"     -> Option(p.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description" -> Option(p.getDescription).map(value => JsString(value)).getOrElse(JsNull),
+            "language" -> Option(p.getLanguage).map(value => JsString(value)).getOrElse(JsNull),
             "itunesImage" -> Option(p.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesCategories"  -> Option(p.getItunesCategories).map(value => JsArray(value.asScala.map(c => JsString(c)).toVector)).getOrElse(JsNull)
+            "itunesCategories"  -> Option(p.getItunesCategories).map(value => JsArray(value.asScala.map(c => JsString(c)).toVector)).getOrElse(JsNull),
+            "itunesSummary" -> Option(p.getItunesSummary).map(value => JsString(value)).getOrElse(JsNull),
+            "itunesAuthor" -> Option(p.getItunesAuthor).map(value => JsString(value)).getOrElse(JsNull),
+            "itunesKeywords" -> Option(p.getItunesKeywords).map(value => JsString(value)).getOrElse(JsNull)
         )
         def read(value: JsValue): PodcastDTO = {
-            value.asJsObject.getFields("echoId", "title", "link", "pubDate", "description", "itunesImage", "itunesCategories") match {
-                case Seq(JsString(echoId), JsString(title), JsString(link),  JsString(pubDate), JsString(description), JsString(itunesImage), JsArray(itunesCategories)) =>
+            value.asJsObject.getFields(
+                "echoId", "title", "link",
+                "pubDate", "description",
+                "itunesImage", "itunesCategories", "itunesSummary",
+                "itunesAuthor", "itunesKeywords") match {
+                case Seq(
+                    JsString(echoId), JsString(title), JsString(link),
+                    JsString(pubDate), JsString(description),
+                    JsString(itunesImage), JsArray(itunesCategories), JsString(itunesSummary),
+                    JsString(itunesAuthor), JsString(itunesKeywords)) =>
+
                     val podcast = new PodcastDTO()
                     podcast.setEchoId(echoId)
                     podcast.setTitle(title)
@@ -34,8 +47,11 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
                     podcast.setDescription(description)
                     podcast.setItunesImage(itunesImage)
                     podcast.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
+                    podcast.setItunesSummary(itunesSummary)
+                    podcast.setItunesAuthor(itunesAuthor)
+                    podcast.setItunesKeywords(itunesKeywords)
                     podcast
-                    //new PodcastDTO(echoId, title, link, description, itunesImage)
+
                 case _ => throw DeserializationException("PodcastDTO expected")
             }
         }
