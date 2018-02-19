@@ -1,4 +1,4 @@
-package echo.core.search;
+package echo.core.index;
 
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @author Maximilian Irro
  */
-public class LuceneSearcher implements echo.core.search.IndexSearcher{
+public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
     private static final Logger log = LoggerFactory.getLogger(LuceneSearcher.class);
 

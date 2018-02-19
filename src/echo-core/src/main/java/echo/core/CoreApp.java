@@ -12,8 +12,8 @@ import echo.core.parse.api.API;
 import echo.core.parse.api.FyydAPI;
 import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.PodEngineFeedParser;
-import echo.core.search.IndexSearcher;
-import echo.core.search.LuceneSearcher;
+import echo.core.index.IndexSearcher;
+import echo.core.index.LuceneSearcher;
 import echo.core.util.DocumentFormatter;
 
 import java.io.BufferedReader;

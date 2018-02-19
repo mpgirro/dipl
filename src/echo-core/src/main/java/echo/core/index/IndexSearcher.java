@@ -1,4 +1,4 @@
-package echo.core.search;
+package echo.core.index;
 
 import echo.core.model.dto.DTO;
 import echo.core.model.dto.IndexDocDTO;
