@@ -5,13 +5,17 @@
     <span class="navbar-text"><h1 class="h5">Podcast Directory</h1></span>
     <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
       <li class="nav-item">
-        <a class="nav-link active" id="directory-grid-tab" data-toggle="tab" href="#directory-grid" role="tab" aria-controls="directory-grid" aria-selected="false">
+        <a class="nav-link active" role="tab"
+           id="directory-matrix-tab" href="#directory-matrix"
+           data-toggle="tab" aria-controls="directory-matrix" aria-selected="false">
           <span class="oi oi-grid-three-up"></span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" id="directory-richlist-tab" data-toggle="tab" href="#directory-richlist" role="tab" aria-controls="directory-richlist" aria-selected="true">
+        <a class="nav-link" role="tab"
+           id="directory-richlist-tab" href="#directory-richlist"
+           data-toggle="tab" aria-controls="directory-richlist" aria-selected="true">
           <span class="oi oi-list-rich"></span>
         </a>
       </li>
@@ -22,13 +26,15 @@
   <!-- Tab panes -->
   <div class="tab-content" id="directoryTabContent">
 
-    <div class="tab-pane fade show active" id="directory-grid" role="tabpanel" aria-labelledby="directory-grid-tab">
+    <div class="tab-pane fade show active" role="tabpanel"
+         id="directory-matrix" aria-labelledby="directory-matrix-tab">
 
       <app-podcast-matrix [podcasts]="podcasts"></app-podcast-matrix>
 
     </div>
 
-    <div class="tab-pane fade" id="directory-richlist" role="tabpanel" aria-labelledby="directory-richlist-tab">
+    <div class="tab-pane fade" role="tabpanel"
+         id="directory-richlist" aria-labelledby="directory-richlist-tab">
 
       <app-podcast-richlist [podcasts]="podcasts"></app-podcast-richlist>
 
@@ -36,32 +42,3 @@
 
   </div>
 </div>
-
-
-
-
-
-<!--
-<div>
-
-  <div class="card p-1 my-2"
-       *ngFor="let podcast of podcasts">
-
-    <div class="media my-2">
-      <img class="episode-thumb mr-3"
-           src="{{podcast.itunesImage}}"
-           alt="Generic placeholder image">
-
-      <div class="media-body">
-        <h5 class="mt-0">
-          <a routerLink="/p/{{podcast.echoId}}" class="podcast-h">{{podcast.title}}</a>
-        </h5>
-        <p class="mb-1" [innerHTML]="podcast.description"></p>
-      </div>
-    </div>
-
-  </div>
-
-
-</div>
--->
