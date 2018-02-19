@@ -11,7 +11,7 @@
 </h1>
 
 <p *ngIf="episode.link">
-  <a class="text-muted"  href="{{episode.link}}">{{domainService.removeProtocol(episode.link)}}</a>
+  <a class="text-muted"  href="{{episode.link}}">{{domainService.prettyUrl(episode.link)}}</a>
 </p>
 
 <div class="mb-3">
@@ -60,8 +60,12 @@
 
 <div id="podlove-player" class="my-5"></div>
 
-<p *ngIf="episode.contentEncoded" [innerHTML]="episode.contentEncoded"></p>
-<p *ngIf="!episode.contentEncoded" [innerHTML]="episode.description"></p>
+<p *ngIf="episode.contentEncoded"
+   [innerHTML]="episode.contentEncoded"></p>
+<p *ngIf="!episode.contentEncoded"
+   [innerHTML]="episode.description"></p>
+<p *ngIf="!episode.contentEncoded && !episode.description"
+   [innerHTML]="episode.itunesSummary"></p>
 
 
 

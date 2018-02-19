@@ -1,5 +1,10 @@
+<!--
+<div class="mt-4 mb-2 text-center">
+  {{podcast.itunesAuthor}}
+</div>
+-->
 
-<div class="text-center my-4">
+<div class="text-center my-5">
   <img class="w-100"
        src="{{podcast.itunesImage}}"
        alt="Podcast Image">
@@ -8,18 +13,24 @@
 <h1 class="h4 mt-3 mb-0">{{podcast.title}}</h1>
 
 <div *ngIf="podcast.link">
-  <a class="text-muted" href="{{podcast.link}}">{{domainService.removeProtocol(podcast.link)}}</a>
+  <a class="text-muted" href="{{podcast.link}}">{{domainService.prettyUrl(podcast.link)}}</a>
 </div>
 
-<p class="podcast-description mt-4" [innerHTML]="podcast.description"></p>
+<p *ngIf="podcast.itunesSummary"
+   class="podcast-description mt-4"
+   [innerHTML]="podcast.itunesSummary"></p>
 
-<p class="mt-3">
+<p *ngIf="!podcast.itunesSummary"
+   class="podcast-description mt-4"
+   [innerHTML]="podcast.description"></p>
+
+<div class="mt-3">
   <span class="badge badge-light p-2 mr-1"
         *ngFor="let category of podcast.itunesCategories">
     <span class="oi oi-tag"></span>
     {{category}}
   </span>
-</p>
+</div>
 
 <div class="mt-2">
   <!-- Nav tabs -->

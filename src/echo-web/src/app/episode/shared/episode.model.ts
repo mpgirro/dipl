@@ -8,6 +8,10 @@ export class Episode {
   contentEncoded: string;
   enclosureUrl: string;
   enclosureType: string;
+  enclosureLength: number;
   itunesImage: string;
   itunesDuration: string;
+  itunesSubtitle: string;
+  itunesAuthor: string;
+  itunesSummary: string;
 }
