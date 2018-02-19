@@ -4,9 +4,7 @@ import akka.actor.{Actor, ActorLogging, Cancellable}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.exception.SearchException
-import echo.core.index.{IndexCommitter, LuceneCommitter}
-import echo.core.model.dto.EpisodeDTO
-import echo.core.search.{IndexSearcher, LuceneSearcher}
+import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
