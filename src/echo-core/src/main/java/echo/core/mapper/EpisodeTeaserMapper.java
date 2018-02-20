@@ -1,5 +1,6 @@
 package echo.core.mapper;
 
+import echo.core.model.domain.Episode;
 import echo.core.model.dto.EpisodeDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,6 +22,14 @@ public interface EpisodeTeaserMapper {
     @Mapping(target = "description")
     @Mapping(target = "itunesImage")
     @Mapping(target = "itunesDuration")
-    EpisodeDTO map(EpisodeDTO dto);
+    EpisodeDTO asTeaser(EpisodeDTO dto);
+
+    @Mapping(target = "echoId")
+    @Mapping(target = "title")
+    @Mapping(target = "pubDate")
+    @Mapping(target = "description")
+    @Mapping(target = "itunesImage")
+    @Mapping(target = "itunesDuration")
+    EpisodeDTO asTeaser(Episode episode);
 
 }

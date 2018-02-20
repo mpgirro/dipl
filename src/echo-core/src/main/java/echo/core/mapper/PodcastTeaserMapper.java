@@ -1,5 +1,6 @@
 package echo.core.mapper;
 
+import echo.core.model.domain.Podcast;
 import echo.core.model.dto.PodcastDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,7 +21,10 @@ public interface PodcastTeaserMapper {
     @Mapping(target = "echoId")
     @Mapping(target = "title")
     @Mapping(target = "itunesImage")
-    PodcastDTO map(PodcastDTO dto);
+    PodcastDTO asTeaser(PodcastDTO dto);
 
-    List<PodcastDTO> map(List<PodcastDTO> dtos);
+    @Mapping(target = "echoId")
+    @Mapping(target = "title")
+    @Mapping(target = "itunesImage")
+    PodcastDTO asTeaser(Podcast podcast);
 }
