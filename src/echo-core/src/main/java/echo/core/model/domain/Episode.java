@@ -78,6 +78,9 @@ public class Episode implements Serializable {
     @Column(name = "content_encoded")
     private String contentEncoded;
 
+    @Column(name = "registration_timestamp")
+    private Timestamp registrationTimestamp;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
@@ -242,6 +245,14 @@ public class Episode implements Serializable {
         this.contentEncoded = contentEncoded;
     }
 
+    public Timestamp getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(Timestamp registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
     public Podcast getPodcast() {
         return podcast;
     }
@@ -292,6 +303,7 @@ public class Episode implements Serializable {
             ", enclosureUrl='" + enclosureUrl + '\'' +
             ", enclosureLength=" + enclosureLength +
             ", enclosureType='" + enclosureType + '\'' +
+            ", registrationTimestamp=" + registrationTimestamp +
             ", contentEncoded='" + contentEncoded + '\'' +
             '}';
     }

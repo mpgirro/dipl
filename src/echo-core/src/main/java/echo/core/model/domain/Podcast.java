@@ -16,8 +16,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 //import org.hibernate.annotations.Cascade;
 //import org.hibernate.annotations.CascadeType;
 
-
-
 /**
  * @author Maximilian Irro
  */
@@ -108,6 +106,12 @@ public class Podcast implements Serializable {
 
     @Column(name = "episode_count")
     private Integer episodeCount;
+
+    @Column(name = "registration_timestamp")
+    private Timestamp registrationTimestamp;
+
+    @Column(name = "registration_complete")
+    private Boolean registrationComplete;
 
     @OneToMany(fetch=FetchType.LAZY,
                //cascade = CascadeType.ALL,
@@ -325,6 +329,22 @@ public class Podcast implements Serializable {
         this.episodeCount = episodeCount;
     }
 
+    public Timestamp getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(Timestamp registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
+    public Boolean getRegistrationComplete() {
+        return registrationComplete;
+    }
+
+    public void setRegistrationComplete(Boolean registrationComplete) {
+        this.registrationComplete = registrationComplete;
+    }
+
     public Set<Episode> getEpisodes() {
         return episodes;
     }
@@ -411,6 +431,8 @@ public class Podcast implements Serializable {
             ", feedpressLocale='" + feedpressLocale + '\'' +
             ", fyydVerify='" + fyydVerify + '\'' +
             ", episodeCount=" + episodeCount +
+            ", registrationTimestamp=" + registrationTimestamp +
+            ", registrationComplete=" + registrationComplete +
             '}';
     }
 }

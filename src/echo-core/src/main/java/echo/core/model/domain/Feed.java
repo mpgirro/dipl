@@ -41,6 +41,9 @@ public class Feed implements Serializable {
     @Column(name = "last_status")
     private FeedStatus lastStatus;
 
+    @Column(name = "registration_timestamp")
+    private Timestamp registrationTimestamp;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
     private Podcast podcast;
@@ -85,6 +88,14 @@ public class Feed implements Serializable {
         this.lastStatus = lastStatus;
     }
 
+    public Timestamp getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(Timestamp registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
     public Podcast getPodcast() {
         return podcast;
     }
@@ -121,6 +132,7 @@ public class Feed implements Serializable {
             ", url='" + url + '\'' +
             ", lastChecked=" + lastChecked +
             ", lastStatus=" + lastStatus +
+            ", registrationTimestamp=" + registrationTimestamp +
             '}';
     }
 }

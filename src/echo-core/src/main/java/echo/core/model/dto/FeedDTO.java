@@ -18,6 +18,8 @@ public class FeedDTO implements DTO {
     private LocalDateTime lastChecked;
     private FeedStatus lastStatus;
 
+    private LocalDateTime registrationTimestamp;
+
     public Long getId() {
         return id;
     }
@@ -68,6 +70,14 @@ public class FeedDTO implements DTO {
         this.lastStatus = lastStatus;
     }
 
+    public LocalDateTime getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(LocalDateTime registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,6 +102,7 @@ public class FeedDTO implements DTO {
             ", url='" + url + '\'' +
             ", lastChecked=" + lastChecked +
             ", lastStatus='" + lastStatus + '\'' +
+            ", registrationTimestamp=" + registrationTimestamp +
             '}';
     }
 }

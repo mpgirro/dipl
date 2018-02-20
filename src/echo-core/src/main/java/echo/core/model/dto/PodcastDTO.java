@@ -40,6 +40,9 @@ public class PodcastDTO implements DTO {
 
     private String websiteData;
 
+    private LocalDateTime registrationTimestamp;
+    private Boolean registrationComplete;
+
     public PodcastDTO() {
 
     }
@@ -263,6 +266,22 @@ public class PodcastDTO implements DTO {
         this.websiteData = websiteData;
     }
 
+    public LocalDateTime getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(LocalDateTime registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
+    public Boolean getRegistrationComplete() {
+        return registrationComplete;
+    }
+
+    public void setRegistrationComplete(Boolean registrationComplete) {
+        this.registrationComplete = registrationComplete;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -293,19 +312,22 @@ public class PodcastDTO implements DTO {
             ", copyright='" + copyright + '\'' +
             ", docs='" + docs + '\'' +
             ", managingEditor='" + managingEditor + '\'' +
+            ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", itunesSummary='" + itunesSummary + '\'' +
             ", itunesAuthor='" + itunesAuthor + '\'' +
             ", itunesKeywords='" + itunesKeywords + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
-            ", itunesExplicit='" + itunesExplicit + '\'' +
-            ", itunesBlock='" + itunesBlock + '\'' +
+            ", itunesCategories=" + itunesCategories +
+            ", itunesExplicit=" + itunesExplicit +
+            ", itunesBlock=" + itunesBlock +
             ", itunesType='" + itunesType + '\'' +
             ", itunesOwnerName='" + itunesOwnerName + '\'' +
             ", itunesOwnerEmail='" + itunesOwnerEmail + '\'' +
             ", feedpressLocale='" + feedpressLocale + '\'' +
             ", fyydVerify='" + fyydVerify + '\'' +
             ", episodeCount=" + episodeCount +
+            ", registrationTimestamp=" + registrationTimestamp +
+            ", registrationComplete=" + registrationComplete +
             ", websiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + '\'' +
             '}';
     }

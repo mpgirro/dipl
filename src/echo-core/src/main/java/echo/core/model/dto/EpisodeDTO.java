@@ -35,6 +35,8 @@ public class EpisodeDTO implements DTO {
     private String contentEncoded;
     private String websiteData;
 
+    private LocalDateTime registrationTimestamp;
+
     public EpisodeDTO() {
 
     }
@@ -225,6 +227,14 @@ public class EpisodeDTO implements DTO {
         this.websiteData = websiteData;
     }
 
+    public LocalDateTime getRegistrationTimestamp() {
+        return registrationTimestamp;
+    }
+
+    public void setRegistrationTimestamp(LocalDateTime registrationTimestamp) {
+        this.registrationTimestamp = registrationTimestamp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -263,6 +273,7 @@ public class EpisodeDTO implements DTO {
             ", enclosureUrl='" + enclosureUrl + '\'' +
             ", enclosureLength='" + enclosureLength + '\'' +
             ", enclosureType='" + enclosureType + '\'' +
+            ", registrationTimestamp=" + registrationTimestamp +
             ", contentEncoded='" + contentEncoded + '\'' +
             ", websiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + '\'' +
             '}';
