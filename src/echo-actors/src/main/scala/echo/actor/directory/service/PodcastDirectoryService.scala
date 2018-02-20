@@ -4,7 +4,7 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
-import echo.core.mapper.{PodcastMapper, PodcastTeaserMapper}
+import echo.core.mapper.{PodcastMapper, TeaserMapper}
 import echo.core.model.dto.PodcastDTO
 import echo.core.model.feed.FeedStatus
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
@@ -76,7 +76,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     def findAllRegistrationCompleteAsTeaser(): List[PodcastDTO] = {
         podcastRepository.findByRegistrationCompleteTrue()
             .asScala
-            .map(p => PodcastTeaserMapper.INSTANCE.asTeaser(p))
+            .map(p => TeaserMapper.INSTANCE.asTeaser(p))
             .toList
     }
 
