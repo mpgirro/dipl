@@ -5,7 +5,6 @@ import echo.core.model.domain.Podcast;
 import echo.core.model.dto.FeedDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -19,38 +18,25 @@ public interface FeedMapper {
 
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
-    @Mappings( {
-        @Mapping(source = "id", target = "id"),
-        @Mapping(source = "echoId", target = "echoId"),
-        @Mapping(source = "podcast.id", target = "podcastId"),
-        @Mapping(source = "url", target = "url"),
-        @Mapping(source = "lastChecked", target = "lastChecked"),
-        @Mapping(source = "lastStatus", target = "lastStatus")
-    } )
+    @Mapping(source = "podcast.id", target = "podcastId")
     FeedDTO feedToFeedDto(Feed feed);
 
     List<FeedDTO> feedsToFeedDtos(List<Feed> feeds);
 
     List<FeedDTO> feedsToFeedDtos(Set<Feed> feeds);
 
-    @Mappings( {
-        @Mapping(source = "id", target = "id"),
-        @Mapping(source = "echoId", target = "echoId"),
-        @Mapping(source = "podcastId", target = "podcast"),
-        @Mapping(source = "url", target = "url"),
-        @Mapping(source = "lastChecked", target = "lastChecked"),
-        @Mapping(source = "lastStatus", target = "lastStatus")
-    } )
+    @Mapping(source = "podcastId", target = "podcast")
     Feed feedDtoToFeed(FeedDTO feedDto);
 
     List<Feed> feedDtosToFeeds(List<FeedDTO> feedDtos);
 
     default Podcast podcastFromId(Long id) {
-        if (id == null) {
-            return null;
-        }
-        Podcast podcast = new Podcast();
+
+        if (id == null) return null;
+
+        final Podcast podcast = new Podcast();
         podcast.setId(id);
+
         return podcast;
     }
 
