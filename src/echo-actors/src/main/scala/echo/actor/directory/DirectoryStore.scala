@@ -182,7 +182,8 @@ class DirectoryStore extends Actor with ActorLogging {
             })
             podcastService.save(update)
 
-            crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
+            // TODO we will fetch feeds for checking new episodes, but not because we updated podcast metadata
+            // crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         }
         doInTransaction(task, List(podcastService))
 

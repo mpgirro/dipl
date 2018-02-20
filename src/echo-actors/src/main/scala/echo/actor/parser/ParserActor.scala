@@ -58,15 +58,16 @@ class ParserActor extends Actor with ActorLogging {
                          */
 
                         directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
-
-                        //indexStore ! IndexStoreAddPodcast(p)
-                        sendToIndex(p)
+                        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
 
                         // request that the website will get added to the index as well
                         Option(p.getLink) match {
                             case Some(link) => crawler ! FetchWebsite(p.getEchoId, link)
                             case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
                         }
+
+                        // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
+                        checkForNewEpisodes(feedUrl, podcastId, feedData)
                     case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
                 }
             } catch {
@@ -110,44 +111,8 @@ class ParserActor extends Actor with ActorLogging {
              */
 
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastId)
-            try {
-                val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(episodeFeedData))
-                episodes match {
-                    case Some(es) =>
-                        for(e <- es){
-                            val fakeEpisodeId: String = EchoIdGenerator.getNewId()
-                            e.setEchoId(fakeEpisodeId)
 
-                            Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
-                            Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
-
-                            /* TODO
-                             * for now, we always send the update episode and add to index messages, but eventually
-                             * we'll have to find out weither the episode is already known, (directory will have to say).
-                             * then we either do not update the episode (or we just do), and we will add to index only
-                             * of it is a new episode
-                             *
-                             * --> for starters, do not update in either directory nor index, for performance, only add new ones
-                             */
-                            directoryStore ! UpdateEpisodeMetadata(podcastId, e)
-
-                            //indexStore ! IndexStoreAddEpisode(e)
-                            sendToIndex(e)
-
-                            // request that the website will get added to the index as well
-                            Option(e.getLink) match {
-                                case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)
-                                case None => log.debug("No link set for episode {} --> no website data will be added to the index", e.getEchoId)
-                            }
-                        }
-                    case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
-                }
-            } catch {
-                case e: FeedParsingException =>
-                    log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                    directoryStore ! FeedStatusUpdate(podcastId, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-                case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
-            }
+            checkForNewEpisodes(feedUrl, podcastId, episodeFeedData)
 
             log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastId)
 
@@ -162,14 +127,55 @@ class ParserActor extends Actor with ActorLogging {
 
     }
 
-    def sendToIndex(dto: DTO): Unit = {
+    /*
+    private def prepareAndSendToIndex(dto: DTO): Unit = {
         val doc = IndexMapper.INSTANCE.map(dto)
         // TODO see https://jsoup.org/apidocs/org/jsoup/safety/Whitelist.html for cleaning options
 
         // TODO am I doing all this already for every DTO in the usual parsing?
         Option(doc.getDescription).foreach(d => doc.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
-        indexStore ! IndexStoreAddDoc(doc)
+        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(dto))
+    }
+    */
+
+    private def checkForNewEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
+        try {
+            val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData))
+            episodes match {
+                case Some(es) =>
+                    for(e <- es){
+                        val fakeEpisodeId: String = EchoIdGenerator.getNewId()
+                        e.setEchoId(fakeEpisodeId)
+
+                        Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
+                        Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
+
+                        /* TODO
+                         * for now, we always send the update episode and add to index messages, but eventually
+                         * we'll have to find out weither the episode is already known, (directory will have to say).
+                         * then we either do not update the episode (or we just do), and we will add to index only
+                         * of it is a new episode
+                         *
+                         * --> for starters, do not update in either directory nor index, for performance, only add new ones
+                         */
+                        directoryStore ! UpdateEpisodeMetadata(podcastId, e)
+                        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
+
+                        // request that the website will get added to the index as well
+                        Option(e.getLink) match {
+                            case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)
+                            case None => log.debug("No link set for episode {} --> no website data will be added to the index", e.getEchoId)
+                        }
+                    }
+                case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
+            }
+        } catch {
+            case e: FeedParsingException =>
+                log.error("FeedParsingException occured while processing feed: {}", feedUrl)
+                directoryStore ! FeedStatusUpdate(podcastId, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+            case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
+        }
     }
 
 }
