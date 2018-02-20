@@ -3,8 +3,8 @@ package echo.actor.gateway.json
 import java.time.LocalDateTime
 import java.util
 
+import echo.core.domain.dto.PodcastDTO
 import echo.core.mapper.DateMapper
-import echo.core.model.dto.PodcastDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._

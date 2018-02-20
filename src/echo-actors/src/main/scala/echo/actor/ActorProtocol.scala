@@ -3,8 +3,9 @@ package echo.actor
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.model.dto.{EpisodeDTO, IndexDocDTO, PodcastDTO, ResultWrapperDTO}
-import echo.core.model.feed.FeedStatus
+import echo.core.domain.dto.{EpisodeDTO, IndexDocDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.domain.feed.FeedStatus
+
 
 /**
   * @author Maximilian Irro

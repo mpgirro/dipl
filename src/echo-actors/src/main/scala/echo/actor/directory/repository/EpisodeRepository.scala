@@ -1,6 +1,6 @@
 package echo.actor.directory.repository
 
-import echo.core.model.domain.{Episode, Podcast}
+import echo.core.domain.entity.{Episode, Podcast}
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param
 

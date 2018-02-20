@@ -1,7 +1,7 @@
 package echo.actor.directory.repository
 
-import echo.core.model.domain.Podcast
-import echo.core.model.feed.FeedStatus
+import echo.core.domain.entity.Podcast
+import echo.core.domain.feed.FeedStatus
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param
 

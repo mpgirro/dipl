@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 import java.util
 import java.util.stream.Collectors
 
+import echo.core.domain.dto.IndexDocDTO
 import echo.core.mapper.DateMapper
-import echo.core.model.dto.IndexDocDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._

@@ -4,9 +4,9 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
+import echo.core.domain.dto.PodcastDTO
+import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.{PodcastMapper, TeaserMapper}
-import echo.core.model.dto.PodcastDTO
-import echo.core.model.feed.FeedStatus
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

@@ -11,7 +11,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.ActorProtocol.{EpisodeResult, GetEpisode, NoDocumentFound}
-import echo.core.model.dto.EpisodeDTO
+import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
 
 /**

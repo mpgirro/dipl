@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.util.Timeout
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.actor.ActorProtocol.{LoadTestFeeds, NoDocumentFound, PodcastResult}
-import echo.core.model.dto.FeedDTO
+import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 
 /**

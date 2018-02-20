@@ -4,8 +4,8 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{FeedRepository, RepositoryFactoryBuilder}
+import echo.core.domain.dto.FeedDTO
 import echo.core.mapper.FeedMapper
-import echo.core.model.dto.FeedDTO
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

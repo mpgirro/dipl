@@ -7,8 +7,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
-import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
-import echo.core.model.feed.FeedStatus
+import echo.core.domain.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
+import echo.core.domain.feed.FeedStatus
 import echo.core.util.EchoIdGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager

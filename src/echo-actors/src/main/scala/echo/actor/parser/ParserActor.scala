@@ -4,10 +4,10 @@ import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.ActorProtocol._
+import echo.core.domain.dto.DTO
+import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
 import echo.core.mapper.IndexDocMapper
-import echo.core.model.dto.{DTO, EpisodeDTO, PodcastDTO}
-import echo.core.model.feed.FeedStatus
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import echo.core.util.EchoIdGenerator
 import org.jsoup.Jsoup

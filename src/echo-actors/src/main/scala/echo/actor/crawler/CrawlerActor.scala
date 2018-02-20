@@ -10,8 +10,8 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.scaladsl.{Keep, Sink, Source, SourceQueueWithComplete}
 import akka.stream._
 import echo.actor.ActorProtocol._
+import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
-import echo.core.model.feed.FeedStatus
 import echo.core.parse.api.FyydAPI
 import org.apache.commons.io.IOUtils
 import org.apache.http.client.config.RequestConfig

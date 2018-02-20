@@ -2,9 +2,9 @@ package echo.actor.gateway
 
 import java.time.LocalDateTime
 
+import echo.core.domain.dto.FeedDTO
+import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.DateMapper
-import echo.core.model.dto.FeedDTO
-import echo.core.model.feed.FeedStatus
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**

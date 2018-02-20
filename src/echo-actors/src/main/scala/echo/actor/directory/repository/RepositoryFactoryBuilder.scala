@@ -87,7 +87,7 @@ class RepositoryFactoryBuilder {
         entityManagerFactoryBean.setJpaDialect(new HibernateJpaDialect)
         entityManagerFactoryBean.setPersistenceUnitName(persistanceUnitName)
         entityManagerFactoryBean.setDataSource(dataSource)
-        entityManagerFactoryBean.setPackagesToScan("echo.core.model.domain", "echo.core.actor.directory")
+        entityManagerFactoryBean.setPackagesToScan("echo.core.domain.entity", "echo.core.actor.directory")
 
         entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter)
         entityManagerFactoryBean.setJpaPropertyMap(jpaPropertiesMap)
