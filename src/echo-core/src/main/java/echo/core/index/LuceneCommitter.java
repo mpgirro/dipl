@@ -1,6 +1,6 @@
 package echo.core.index;
 
-import echo.core.mapper.LuceneMapper;
+import echo.core.mapper.IndexMapper;
 import echo.core.domain.dto.IndexDocDTO;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -56,7 +56,7 @@ public class LuceneCommitter implements IndexCommitter {
     public void add(IndexDocDTO indexDoc) {
         log.debug("Appending document to index : {}", indexDoc);
 
-        final Document luceneDoc = LuceneMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
         try {
             this.writer.addDocument(luceneDoc);
         } catch (IOException e) {
@@ -69,7 +69,7 @@ public class LuceneCommitter implements IndexCommitter {
     public void update(IndexDocDTO indexDoc) {
         log.debug("Updating document in index : {}", indexDoc);
 
-        final Document luceneDoc = LuceneMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
         try {
             writer.updateDocument(new Term("echo_id", indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {
@@ -101,17 +101,5 @@ public class LuceneCommitter implements IndexCommitter {
     public IndexWriter getIndexWriter(){
         return this.writer;
     }
-
-    /*
-    private Document toLuceneDocument(final DTO dto) {
-        if(dto instanceof PodcastDTO){
-            return LuceneMapper.INSTANCE.podcastDtoToLuceneDocument((PodcastDTO) dto);
-        } else if (dto instanceof EpisodeDTO){
-            return LuceneMapper.INSTANCE.episodeDtoToLuceneDocument((EpisodeDTO) dto);
-        } else {
-            throw new UnsupportedOperationException("I forgot to support a new document type : " + dto.getClass());
-        }
-    }
-    */
 
 }

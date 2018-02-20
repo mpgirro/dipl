@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
  * @author Maximilian Irro
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    uses={UrlMapper.class, DateMapper.class})
+        uses={UrlMapper.class, DateMapper.class})
 public interface TeaserMapper {
 
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );

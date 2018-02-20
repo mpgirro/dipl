@@ -2,7 +2,7 @@ package echo.core.index;
 
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
-import echo.core.mapper.IndexDocMapper;
+import echo.core.mapper.IndexMapper;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
@@ -125,7 +125,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             int j = 0;
             for(int i = windowStart; i < windowEnd; i++){
-                results[j] = toIndexDoc(indexSearcher.doc(hits[i].doc));
+                results[j] = IndexMapper.INSTANCE.map(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
@@ -162,7 +162,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
             if(topDocs.totalHits == 1){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return toIndexDoc(indexSearcher.doc(hits[0].doc));
+                return IndexMapper.INSTANCE.map(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
@@ -197,24 +197,14 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     /*
-    private DTO toDTO(Document doc) {
+    private IndexDocDTO toIndexDoc(Document doc){
         if(doc.get("doc_type").equals("podcast")) {
-            return PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc);
+            return IndexMapper.INSTANCE.map(PodcastMapper.INSTANCE.map(doc));
         } else if(doc.get("doc_type").equals("episode")) {
-            return EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc);
+            return IndexMapper.INSTANCE.map(EpisodeMapper.INSTANCE.map(doc));
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }
     }
     */
-
-    private IndexDocDTO toIndexDoc(Document doc){
-        if(doc.get("doc_type").equals("podcast")) {
-            return IndexDocMapper.INSTANCE.map(PodcastMapper.INSTANCE.map(doc));
-        } else if(doc.get("doc_type").equals("episode")) {
-            return IndexDocMapper.INSTANCE.map(EpisodeMapper.INSTANCE.map(doc));
-        } else {
-            throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
-        }
-    }
 }

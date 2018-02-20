@@ -1,20 +1,59 @@
 package echo.core.mapper;
 
+import echo.core.domain.dto.DTO;
+import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.PodcastDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper
-public interface LuceneMapper {
+@Mapper(uses={PodcastMapper.class, EpisodeMapper.class})
+public interface IndexMapper {
 
-    LuceneMapper INSTANCE = Mappers.getMapper( LuceneMapper.class );
+    IndexMapper INSTANCE = Mappers.getMapper( IndexMapper.class );
+
+    @Mapping(target = "docType", constant = "podcast")
+    @Mapping(target = "contentEncoded", ignore = true)
+    IndexDocDTO map(PodcastDTO podcast);
+
+    @Mapping(target = "docType", constant = "episode")
+    IndexDocDTO map(EpisodeDTO episodeDTO);
+
+
+    default IndexDocDTO map(DTO dto) {
+
+        if (dto == null) return null;
+
+        if (dto instanceof PodcastDTO) {
+            return map((PodcastDTO) dto);
+        } else if (dto instanceof EpisodeDTO) {
+            return map((EpisodeDTO) dto);
+        } else {
+            throw new RuntimeException("Unsupported echo DTO type : " + dto.getClass());
+        }
+    }
+
+
+    default IndexDocDTO map(Document doc) {
+
+        if (doc == null) return null;
+
+        if (doc.get("doc_type").equals("podcast")) {
+            return map(PodcastMapper.INSTANCE.map(doc));
+        } else if (doc.get("doc_type").equals("episode")) {
+            return map(EpisodeMapper.INSTANCE.map(doc));
+        } else {
+            throw new RuntimeException("Unsupported lucene document type : " + doc.get("doc_type"));
+        }
+    }
 
     default Document map(IndexDocDTO doc) {
 
