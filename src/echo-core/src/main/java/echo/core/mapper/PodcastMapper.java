@@ -25,17 +25,13 @@ public interface PodcastMapper {
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
     @Mapping(target = "websiteData", ignore = true)
-    PodcastDTO podcastToPodcastDto(Podcast podcast);
-
-    List<PodcastDTO> podcastsToPodcastDtos(List<Podcast> podcasts);
+    PodcastDTO map(Podcast podcast);
 
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
-    Podcast podcastDtoToPodcast(PodcastDTO podcastDto);
+    Podcast map(PodcastDTO podcastDto);
 
-    List<Podcast> podcastDtosToPodcasts(List<PodcastDTO> podcastDtos);
-
-    default PodcastDTO luceneDocumentToPodcastDto(org.apache.lucene.document.Document doc){
+    default PodcastDTO map(org.apache.lucene.document.Document doc){
 
         if (doc == null) return null;
 
@@ -51,9 +47,7 @@ public interface PodcastMapper {
         return dto;
     }
 
-    List<PodcastDTO> luceneDocumentsToPodcastDtos(List<org.apache.lucene.document.Document> docs);
-
-    default PodcastDTO podenginePodcastToPodcastDto(com.icosillion.podengine.models.Podcast podcast) throws ConversionException {
+    default PodcastDTO map(com.icosillion.podengine.models.Podcast podcast) throws ConversionException {
 
         if (podcast == null) return null;
 
@@ -74,7 +68,5 @@ public interface PodcastMapper {
 
         return dto;
     }
-
-    List<PodcastDTO> podenginePodcastsToPodcastDtos(List<com.icosillion.podengine.models.Podcast> podcasts) throws ConversionException;
 
 }

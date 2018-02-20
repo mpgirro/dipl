@@ -18,7 +18,7 @@ public interface LuceneMapper {
 
     LuceneMapper INSTANCE = Mappers.getMapper( LuceneMapper.class );
 
-    default Document indexDocDtoToLuceneDocument(IndexDocDTO doc) {
+    default Document map(IndexDocDTO doc) {
 
         if (doc == null) return null;
 
@@ -36,7 +36,5 @@ public interface LuceneMapper {
 
         return lucene;
     }
-
-    List<Document> indexDocDtosToLuceneDocuments(List<IndexDocDTO> docs);
 
 }

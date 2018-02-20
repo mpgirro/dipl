@@ -19,16 +19,10 @@ public interface FeedMapper {
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
     @Mapping(source = "podcast.id", target = "podcastId")
-    FeedDTO feedToFeedDto(Feed feed);
-
-    List<FeedDTO> feedsToFeedDtos(List<Feed> feeds);
-
-    List<FeedDTO> feedsToFeedDtos(Set<Feed> feeds);
+    FeedDTO map(Feed feed);
 
     @Mapping(source = "podcastId", target = "podcast")
-    Feed feedDtoToFeed(FeedDTO feedDto);
-
-    List<Feed> feedDtosToFeeds(List<FeedDTO> feedDtos);
+    Feed map(FeedDTO feedDto);
 
     default Podcast podcastFromId(Long id) {
 

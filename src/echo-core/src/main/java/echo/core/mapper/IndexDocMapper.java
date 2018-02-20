@@ -20,21 +20,17 @@ public interface IndexDocMapper {
 
     @Mapping(target = "docType", constant = "podcast")
     @Mapping(target = "contentEncoded", ignore = true)
-    IndexDocDTO podcastDtoToIndexResult(PodcastDTO podcast);
-
-    List<IndexDocDTO> podcastDtosToIndexResults(List<PodcastDTO> podcastDtos);
+    IndexDocDTO map(PodcastDTO podcast);
 
     @Mapping(target = "docType", constant = "episode")
-    IndexDocDTO episodeDtoToIndexResult(EpisodeDTO episodeDTO);
-
-    List<IndexDocDTO> episodeDtosToIndexResults(List<EpisodeDTO> episodeDtos);
+    IndexDocDTO map(EpisodeDTO episodeDTO);
 
     default IndexDocDTO dtoToIndexDoc(DTO dto) {
         final IndexDocDTO doc;
         if (dto instanceof PodcastDTO) {
-            doc = IndexDocMapper.INSTANCE.podcastDtoToIndexResult((PodcastDTO) dto);
+            doc = IndexDocMapper.INSTANCE.map((PodcastDTO) dto);
         } else if (dto instanceof EpisodeDTO) {
-            doc = IndexDocMapper.INSTANCE.episodeDtoToIndexResult((EpisodeDTO) dto);
+            doc = IndexDocMapper.INSTANCE.map((EpisodeDTO) dto);
         } else {
             throw new RuntimeException("Unsupported DTO type : " + dto.getClass());
         }

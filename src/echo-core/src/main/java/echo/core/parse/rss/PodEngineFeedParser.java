@@ -12,6 +12,7 @@ import echo.core.util.UrlUtil;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -22,7 +23,7 @@ public class PodEngineFeedParser implements FeedParser {
     public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
-            final PodcastDTO dto = PodcastMapper.INSTANCE.podenginePodcastToPodcastDto(podcast);
+            final PodcastDTO dto = PodcastMapper.INSTANCE.map(podcast);
             dto.setLink(UrlUtil.sanitize(dto.getLink()));
             return dto;
         } catch (MalformedFeedException | EchoException e) {
@@ -41,7 +42,7 @@ public class PodEngineFeedParser implements FeedParser {
             if (podcast.getEpisodes() == null) {
                 return new LinkedList<>();
             }
-            final List<EpisodeDTO> episodes = EpisodeMapper.INSTANCE.podengineEpisodesToEpisodeDtos(podcast.getEpisodes());
+            final List<EpisodeDTO> episodes = EpisodeMapper.INSTANCE.map(podcast.getEpisodes());
             for (EpisodeDTO e : episodes) {
                 e.setLink(UrlUtil.sanitize(e.getLink()));
             }

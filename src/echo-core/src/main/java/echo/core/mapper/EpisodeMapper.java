@@ -6,7 +6,6 @@ import echo.core.exception.ConversionException;
 import echo.core.model.domain.Episode;
 import echo.core.model.domain.Podcast;
 import echo.core.model.dto.EpisodeDTO;
-import org.apache.lucene.document.Document;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -27,16 +26,10 @@ public interface EpisodeMapper {
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(target = "websiteData", ignore = true)
-    EpisodeDTO episodeToEpisodeDto(Episode episode);
-
-    List<EpisodeDTO> episodesToEpisodesDtos(List<Episode> episodes);
-
-    List<EpisodeDTO> episodesToEpisodesDtos(Set<Episode> episodes);
+    EpisodeDTO map(Episode episode);
 
     @Mapping(source = "podcastId", target = "podcast")
-    Episode episodeDtoToEpisode(EpisodeDTO episodeDto);
-
-    Set<Episode> episodeDtosToEpisodes(List<EpisodeDTO> episodeDtos);
+    Episode map(EpisodeDTO episodeDto);
 
     // TODO unused because we use PodcastMapper.class ?
     default Podcast podcastFromId(Long id) {
@@ -49,7 +42,7 @@ public interface EpisodeMapper {
         return podcast;
     }
 
-    default EpisodeDTO luceneDocumentToEpisodeDto(Document doc){
+    default EpisodeDTO map(org.apache.lucene.document.Document doc){
 
         if (doc == null) return null;
 
@@ -66,9 +59,7 @@ public interface EpisodeMapper {
         return dto;
     }
 
-    List<EpisodeDTO> luceneDocumentsToEpisodeDtos(List<Document> docs);
-
-    default EpisodeDTO podengineEpisodeToEpisodeDto(com.icosillion.podengine.models.Episode episode) throws ConversionException {
+    default EpisodeDTO map(com.icosillion.podengine.models.Episode episode) throws ConversionException {
 
         if (episode == null) return null;
 
@@ -90,6 +81,6 @@ public interface EpisodeMapper {
         return dto;
     }
 
-    List<EpisodeDTO> podengineEpisodesToEpisodeDtos(List<com.icosillion.podengine.models.Episode> episodes) throws ConversionException;
+    List<EpisodeDTO> map(List<com.icosillion.podengine.models.Episode> episodes) throws ConversionException;
 
 }

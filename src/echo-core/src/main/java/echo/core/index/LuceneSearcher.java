@@ -210,9 +210,9 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
     private IndexDocDTO toIndexDoc(Document doc){
         if(doc.get("doc_type").equals("podcast")) {
-            return IndexDocMapper.INSTANCE.podcastDtoToIndexResult(PodcastMapper.INSTANCE.luceneDocumentToPodcastDto(doc));
+            return IndexDocMapper.INSTANCE.map(PodcastMapper.INSTANCE.map(doc));
         } else if(doc.get("doc_type").equals("episode")) {
-            return IndexDocMapper.INSTANCE.episodeDtoToIndexResult(EpisodeMapper.INSTANCE.luceneDocumentToEpisodeDto(doc));
+            return IndexDocMapper.INSTANCE.map(EpisodeMapper.INSTANCE.map(doc));
         } else {
             throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
         }
