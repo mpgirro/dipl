@@ -1,31 +1,27 @@
-package echo.core.model.vm;
+package echo.core.domain.vm;
 
 import java.time.LocalDateTime;
 
 /**
  * @author Maximilian Irro
  */
-public class PodcastVM {
+public class EpisodeVM {
 
     private String echoId;
 
     private String title;
     private String link;
-    private String description;
     private LocalDateTime pubDate;
-    private LocalDateTime lastBuildDate;
-    private String language;
+    private String description;
 
     private String itunesImage;
-    private String itunesCategory;
+    private String itunesDuration;
 
-    private int episodeCount;
-
-    public PodcastVM() {
+    public EpisodeVM() {
 
     }
 
-    public PodcastVM(String echoId, String title, String link, String description, String itunesImage) {
+    public EpisodeVM(String echoId, String title, String link, String description, String itunesImage) {
         this.echoId = echoId;
         this.title = title;
         this.link = link;
@@ -57,14 +53,6 @@ public class PodcastVM {
         this.link = link;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDateTime getPubDate() {
         return pubDate;
     }
@@ -73,20 +61,12 @@ public class PodcastVM {
         this.pubDate = pubDate;
     }
 
-    public LocalDateTime getLastBuildDate() {
-        return lastBuildDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setLastBuildDate(LocalDateTime lastBuildDate) {
-        this.lastBuildDate = lastBuildDate;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getItunesImage() {
@@ -97,20 +77,12 @@ public class PodcastVM {
         this.itunesImage = itunesImage;
     }
 
-    public String getItunesCategory() {
-        return itunesCategory;
+    public String getItunesDuration() {
+        return itunesDuration;
     }
 
-    public void setItunesCategory(String itunesCategory) {
-        this.itunesCategory = itunesCategory;
-    }
-
-    public int getEpisodeCount() {
-        return episodeCount;
-    }
-
-    public void setEpisodeCount(int episodeCount) {
-        this.episodeCount = episodeCount;
+    public void setItunesDuration(String itunesDuration) {
+        this.itunesDuration = itunesDuration;
     }
 
     /* TODO do I need these?
@@ -123,9 +95,9 @@ public class PodcastVM {
             return false;
         }
 
-        PodcastDTO d = (PodcastDTO) o;
+        EpisodeDTO d = (EpisodeDTO) o;
 
-        if ( ! PodcastDTO.equals(id, PodcastDTO.id)) return false;
+        if ( ! EpisodeDTO.equals(id, EpisodeDTO.id)) return false;
 
         return true;
     }
@@ -138,17 +110,14 @@ public class PodcastVM {
 
     @Override
     public String toString() {
-        return "PodcastDTO{" +
+        return "EpisodeVM{" +
             "echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
-            ", description='" + description + '\'' +
             ", pubDate=" + pubDate +
-            ", lastBuildDate=" + lastBuildDate +
-            ", language='" + language + '\'' +
+            ", description='" + description + '\'' +
             ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategory='" + itunesCategory + '\'' +
-            ", episodeCount=" + episodeCount + '\'' +
+            ", itunesDuration='" + itunesDuration + '\'' +
             '}';
     }
 

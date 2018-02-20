@@ -1,4 +1,4 @@
-package echo.core.model.feed;
+package echo.core.domain.feed;
 
 import java.util.Collections;
 import java.util.Map;

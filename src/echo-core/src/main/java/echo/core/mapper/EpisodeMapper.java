@@ -3,9 +3,9 @@ package echo.core.mapper;
 import com.icosillion.podengine.exceptions.DateFormatException;
 import com.icosillion.podengine.exceptions.MalformedFeedException;
 import echo.core.exception.ConversionException;
-import echo.core.model.domain.Episode;
-import echo.core.model.domain.Podcast;
-import echo.core.model.dto.EpisodeDTO;
+import echo.core.domain.entity.Episode;
+import echo.core.domain.entity.Podcast;
+import echo.core.domain.dto.EpisodeDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Maximilian Irro

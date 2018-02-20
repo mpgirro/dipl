@@ -1,8 +1,8 @@
 package echo.core.index;
 
 import echo.core.mapper.IndexDocMapper;
-import echo.core.model.dto.DTO;
-import echo.core.model.dto.IndexDocDTO;
+import echo.core.domain.dto.DTO;
+import echo.core.domain.dto.IndexDocDTO;
 
 /**
  * This interface is used to standardize writing to search indizes.

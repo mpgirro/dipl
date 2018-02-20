@@ -1,9 +1,8 @@
-package echo.core.model.dto;
+package echo.core.domain.dto;
 
-import echo.core.model.feed.FeedStatus;
+import echo.core.domain.feed.FeedStatus;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 /**
  * @author Maximilian Irro

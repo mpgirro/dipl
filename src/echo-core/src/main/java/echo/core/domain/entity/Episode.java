@@ -1,11 +1,9 @@
-package echo.core.model.domain;
+package echo.core.domain.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author Maximilian Irro

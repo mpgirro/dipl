@@ -1,7 +1,6 @@
-package echo.core.model.domain;
+package echo.core.domain.entity;
 
-import echo.core.model.feed.FeedStatus;
-import org.hibernate.annotations.*;
+import echo.core.domain.feed.FeedStatus;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -10,9 +9,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * @author Maximilian Irro

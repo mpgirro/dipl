@@ -6,13 +6,12 @@ import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.exception.EchoException;
 import echo.core.exception.FeedParsingException;
-import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.PodcastDTO;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.PodcastDTO;
 import echo.core.util.UrlUtil;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro

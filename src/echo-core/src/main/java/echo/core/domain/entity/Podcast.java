@@ -1,7 +1,4 @@
-package echo.core.model.domain;
-
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.Cache;
+package echo.core.domain.entity;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -10,9 +7,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 //import org.hibernate.annotations.Cascade;
 //import org.hibernate.annotations.CascadeType;
 

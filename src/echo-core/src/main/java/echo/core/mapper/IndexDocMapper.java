@@ -1,14 +1,12 @@
 package echo.core.mapper;
 
-import echo.core.model.dto.DTO;
-import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.IndexDocDTO;
-import echo.core.model.dto.PodcastDTO;
+import echo.core.domain.dto.DTO;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.PodcastDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 /**
  * @author Maximilian Irro

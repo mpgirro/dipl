@@ -1,14 +1,12 @@
 package echo.core.mapper;
 
-import echo.core.model.dto.IndexDocDTO;
+import echo.core.domain.dto.IndexDocDTO;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 /**
  * @author Maximilian Irro

@@ -1,10 +1,7 @@
 package echo.core.index;
 
 import echo.core.mapper.LuceneMapper;
-import echo.core.model.dto.DTO;
-import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.IndexDocDTO;
-import echo.core.model.dto.PodcastDTO;
+import echo.core.domain.dto.IndexDocDTO;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;

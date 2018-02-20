@@ -1,9 +1,9 @@
 package echo.core.mapper;
 
-import echo.core.model.domain.Episode;
-import echo.core.model.domain.Podcast;
-import echo.core.model.dto.EpisodeDTO;
-import echo.core.model.dto.PodcastDTO;
+import echo.core.domain.entity.Episode;
+import echo.core.domain.entity.Podcast;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.PodcastDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

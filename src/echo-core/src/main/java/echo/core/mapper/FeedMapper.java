@@ -1,14 +1,11 @@
 package echo.core.mapper;
 
-import echo.core.model.domain.Feed;
-import echo.core.model.domain.Podcast;
-import echo.core.model.dto.FeedDTO;
+import echo.core.domain.entity.Feed;
+import echo.core.domain.entity.Podcast;
+import echo.core.domain.dto.FeedDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Maximilian Irro

@@ -1,4 +1,4 @@
-package echo.core.model.dto;
+package echo.core.domain.dto;
 
 /**
  * @author Maximilian Irro
