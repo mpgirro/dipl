@@ -27,11 +27,43 @@ export class PodcastDetailComponent implements OnInit {
     this.getPodcast();
   }
 
+  initPodloveButton(): void {
+    // TODO we do not yet pass any feed information from the backend to the frontend
+    const podloveButtonJS = `
+        <script>
+            window.podcastData={
+              "title":"foobar",
+              "subtitle":"foobar",
+              "description":"foobar",
+              "cover":"",
+              "feeds":[{
+                "type":"audio",
+                "format":"mp3",
+                "url":"http://example.com"
+              }]
+            }
+        </script>
+        <script class="podlove-subscribe-button" 
+            src="https://cdn.podlove.org/subscribe-button/javascripts/app.js" 
+            data-language="${this.podcast.language}" 
+            data-size="medium" 
+            data-json-data="podcastData" 
+            data-color="#469cd1" 
+            data-format="square" 
+            data-style="frameless">
+        </script>
+        <noscript>
+            <a href="${this.podcast.link}">Subscribe to feed</a>
+        </noscript>`;
+  }
+
   getPodcast(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    // this.echoId = id;
     this.podcastService.get(id)
-      .subscribe(podcast => this.podcast = podcast);
+      .subscribe(podcast => {
+        this.podcast = podcast;
+        this.initPodloveButton();
+      });
     this.podcastService.getEpisodes(id)
       .subscribe(episodes => {
 

@@ -17,7 +17,7 @@
 
   <li *ngFor="let result of results"
       (click)="navigate(result)"
-      class="list-group-item-action media mb-5" >
+      class="search-result list-group-item-action media mb-5" >
 
     <!--
     <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}" class="list-group-item-action"><app-result-detail [result]="result"></app-result-detail></a>
@@ -30,7 +30,7 @@
 
     <div class="media-body">
 
-      <h5 class="mt-0">{{result.title}}</h5>
+      <h2 class="result-title mt-0">{{result.title}}</h2>
       <p class="mb-1">
 
         <small class="text-muted">

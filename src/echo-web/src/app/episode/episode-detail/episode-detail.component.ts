@@ -22,48 +22,38 @@ export class EpisodeDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getEpisode();
-    // this.initPlyr();
+    // this.initPlyrPlayer();
   }
 
-  initPlyr(): void {
+  initPlyrPlayer(): void {
     const plyrJS = 'plyr.setup("#plyr-audio");';
     const el = document.createElement('script');
     el.appendChild(document.createTextNode(plyrJS));
     document.body.appendChild(el);
   }
 
-  initPodlove(): void {
-    const configuration = '{' +
-//      '"poster" : "' + this.episode.itunesImage + '", ' +
-      '"duration" : "' + this.episode.itunesDuration + '",' +
-      '"audio" : [{' +
-        '"url" : "' + this.episode.enclosureUrl + '",' +
-      //        'size: 93260000,\n' +
-      //        'title: \'Audio MP4\'\n' +
-        '"mimeType" :"' + this.episode.enclosureType + '"' +
-      '}],' +
-      '"theme" : {' +
-        '"main" : "#ffffff",' +
-        '"highlight" : "#0785ff"' +
-      '},' +
-      '"visibleComponents": [' +
-        '"tabChapters",' +
-        '"tabAudio",' +
-        '"progressbar",' +
-        '"controlSteppers",' +
-        '"controlChapters"' +
-      ']' +
-      '}';
-    // console.log('configuration:');
-    // console.log(configuration);
-
-    const podloveJS = 'podlovePlayer(\'#podlove-player\',' + configuration + ');';
-    /*
-    let iframe_window = iframe.contentWindow;
-    iframe_window.document.getElementById('iFrameResizer0').height = '0';
-    */
+  initPodlovePlayer(): void {
+    const podlovePlayerJS = `podlovePlayer('#podlove-player',{
+      "duration" : "${this.episode.itunesDuration}",
+      "audio" : [{
+        "url" : "${this.episode.enclosureUrl}",
+        "size" : ${this.episode.enclosureLength},
+        "mimeType" :"${this.episode.enclosureType}"
+      }],
+      "theme" : {
+        "main" : "#ffffff",
+        "highlight" : "#0785ff"
+      },
+      "visibleComponents": [
+        "tabChapters",
+        "tabAudio",
+        "progressbar",
+        "controlSteppers",
+        "controlChapters"
+      ]});`;
+    // console.log(podlovePlayerJS);
     const el = document.createElement('script');
-    el.appendChild(document.createTextNode(podloveJS));
+    el.appendChild(document.createTextNode(podlovePlayerJS));
     document.body.appendChild(el);
   }
 
@@ -72,7 +62,7 @@ export class EpisodeDetailComponent implements OnInit {
     this.episodeService.get(id)
       .subscribe(episode => {
         this.episode = episode;
-        this.initPodlove();
+        this.initPodlovePlayer();
       });
   }
 

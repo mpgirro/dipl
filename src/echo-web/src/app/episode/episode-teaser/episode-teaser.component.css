@@ -3,7 +3,8 @@ img.episode-thumb {
 }
 
 .episode-title {
-
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .episode-description img {
