@@ -46,6 +46,7 @@
             <column name="enclosure_type" type="text"/>
             <column name="content_encoded" type="text"/>
             <column name="podcast_id" type="bigint"/>
+            <column name="registration_timestamp" type="timestamp"/>
         </createTable>
 
         <createIndex indexName="idx_episode_echo_id"
@@ -68,7 +69,7 @@
         -->
 
         <dropDefaultValue tableName="episode" columnName="pub_date" columnDataType="datetime"/>
-
+        <dropDefaultValue tableName="episode" columnName="registration_timestamp" columnDataType="datetime"/>
     </changeSet>
 
 </databaseChangeLog>

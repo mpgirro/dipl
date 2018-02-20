@@ -16,5 +16,6 @@ trait PodcastRepository extends JpaRepository[Podcast, java.lang.Long] {
     @Query("SELECT DISTINCT podcast FROM Podcast podcast LEFT JOIN FETCH podcast.feeds feed WHERE feed.lastStatus <> :status")
     def findAllWhereFeedStatusIsNot(@Param("status") status: FeedStatus): java.util.List[Podcast]
 
+    def findByRegistrationCompleteTrue(): java.util.List[Podcast]
 
 }

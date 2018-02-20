@@ -56,7 +56,7 @@ class PodcastGatewayService (private val log: LoggingAdapter)
         */
         log.info("GET /api/podcast")
 
-        onSuccess(directoryStore ? GetAllPodcasts) {
+        onSuccess(directoryStore ? GetAllPodcastsRegistrationComplete) { // TODO
             case AllPodcastsResult(results)  => {
                 log.info("PodcastGatewayService returns {} podcast entries on REST interface", results.size)
                 complete(StatusCodes.OK, ArrayWrapper(results))

@@ -31,6 +31,7 @@
             <column name="last_checked" type="timestamp"/>
             <column name="last_status" type="text"/>
             <column name="podcast_id" type="bigint"/>
+            <column name="registration_timestamp" type="timestamp"/>
         </createTable>
 
         <createIndex indexName="idx_feed_echo_id"
@@ -61,7 +62,7 @@
          -->
 
         <dropDefaultValue tableName="feed" columnName="last_checked" columnDataType="datetime"/>
-
+        <dropDefaultValue tableName="feed" columnName="registration_timestamp" columnDataType="datetime"/>
     </changeSet>
 
 </databaseChangeLog>

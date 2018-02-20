@@ -49,6 +49,8 @@
             <column name="feedpress_locale" type="text"/>
             <column name="fyyd_verify" type="text"/>
             <column name="episode_count" type="int"/>
+            <column name="registration_timestamp" type="timestamp"/>
+            <column name="registration_complete" type="bit"/>
         </createTable>
 
         <createIndex indexName="idx_podcast_echo_id"
@@ -81,6 +83,7 @@
 
         <dropDefaultValue tableName="podcast" columnName="pub_date" columnDataType="datetime"/>
         <dropDefaultValue tableName="podcast" columnName="last_build_date" columnDataType="datetime"/>
+        <dropDefaultValue tableName="podcast" columnName="registration_timestamp" columnDataType="datetime"/>
 
         <createTable tableName="itunes_category">
             <column name="podcast_id" type="bigint" />

@@ -7,6 +7,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
+import echo.core.mapper.PodcastTeaserMapper
 import echo.core.model.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.model.feed.FeedStatus
 import echo.core.util.EchoIdGenerator
@@ -71,6 +72,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetAllPodcasts => onGetAllPodcasts()
 
+        case GetAllPodcastsRegistrationComplete => onGetAllPodcastsRegistrationComplete()
+
         case GetEpisode(echoId) => onGetEpisode(echoId)
 
         case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
@@ -122,6 +125,8 @@ class DirectoryStore extends Actor with ActorLogging {
                 podcast.setEchoId(fakePodcastId)
                 podcast.setTitle(fakePodcastId)
                 podcast.setDescription(url)
+                podcast.setRegistrationComplete(false)
+                podcast.setRegistrationTimestamp(LocalDateTime.now())
                 podcastService.save(podcast).map(p => {
 
                     val fakeFeedId = EchoIdGenerator.getNewId()
@@ -131,6 +136,7 @@ class DirectoryStore extends Actor with ActorLogging {
                     feed.setLastChecked(LocalDateTime.now())
                     feed.setLastStatus(FeedStatus.NEVER_CHECKED)
                     feed.setPodcastId(p.getId)
+                    feed.setRegistrationTimestamp(LocalDateTime.now())
                     feedService.save(feed)
 
                     crawler ! FetchFeedForNewPodcast(url, fakePodcastId)
@@ -171,9 +177,10 @@ class DirectoryStore extends Actor with ActorLogging {
         def task = () => {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
                 podcast.setId(p.getId)
+                podcast.setRegistrationComplete(true)
                 podcast
             }).getOrElse({
-                log.info("Received a UpdatePodcastMetadata for a podcast that is not yet in the database: {}", podcastId)
+                log.error("Received a UpdatePodcastMetadata for a podcast that is not yet in the database (SHOULD THIS BE POSSIBLE?) : {}", podcastId)
                 podcast
             })
             podcastService.save(update)
@@ -193,6 +200,8 @@ class DirectoryStore extends Actor with ActorLogging {
                     episode.setId(e.getId)
                     episode
                 }).getOrElse({
+                    // this is a not yet known episode
+                    episode.setRegistrationTimestamp(LocalDateTime.now())
                     episode
                 })
                 updatedEpisode.setPodcastId(p.getId)
@@ -276,6 +285,17 @@ class DirectoryStore extends Actor with ActorLogging {
         doInTransaction(task, List(podcastService))
 
         log.debug("Finished GetAllPodcasts()")
+    }
+
+    private def onGetAllPodcastsRegistrationComplete(): Unit = {
+        log.debug("Received GetAllPodcastsRegistrationComplete()")
+        def task = () => {
+            val podcasts = podcastService.findAllRegistrationCompleteAsTeaser()
+            sender ! AllPodcastsResult(podcasts)
+        }
+        doInTransaction(task, List(podcastService))
+
+        log.debug("Finished GetAllPodcastsRegistrationComplete()")
     }
 
     private def onGetEpisode(episodeId: String): Unit= {

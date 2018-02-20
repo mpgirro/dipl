@@ -4,7 +4,7 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
-import echo.core.mapper.PodcastMapper
+import echo.core.mapper.{PodcastMapper, PodcastTeaserMapper}
 import echo.core.model.dto.PodcastDTO
 import echo.core.model.feed.FeedStatus
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
@@ -59,16 +59,21 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
-        val startTime = System.currentTimeMillis
-
         val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
         val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
-
-        val stopTime = System.currentTimeMillis
-        val elapsedTime = stopTime - startTime
-        println(s"PodcastDirectoryService.findAllWhereFeedStatusIsNot($status) took $elapsedTime ms, found ${result.size()} entries")
-
         result.asScala.toList
+    }
+
+    @Transactional
+    def findAllRegistrationComplete(): List[PodcastDTO] = {
+        val podcasts = podcastRepository.findByRegistrationCompleteTrue()
+        val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
+        result.asScala.toList
+    }
+
+    @Transactional
+    def findAllRegistrationCompleteAsTeaser(): List[PodcastDTO] = {
+        findAllRegistrationComplete().map(dto => PodcastTeaserMapper.INSTANCE.map(dto))
     }
 
 }
