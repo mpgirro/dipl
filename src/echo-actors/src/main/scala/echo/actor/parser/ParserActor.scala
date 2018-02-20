@@ -7,7 +7,7 @@ import echo.actor.ActorProtocol._
 import echo.core.domain.dto.DTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
-import echo.core.mapper.IndexDocMapper
+import echo.core.mapper.IndexMapper
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import echo.core.util.EchoIdGenerator
 import org.jsoup.Jsoup
@@ -163,7 +163,7 @@ class ParserActor extends Actor with ActorLogging {
     }
 
     def sendToIndex(dto: DTO): Unit = {
-        val doc = IndexDocMapper.INSTANCE.dtoToIndexDoc(dto)
+        val doc = IndexMapper.INSTANCE.map(dto)
         // TODO see https://jsoup.org/apidocs/org/jsoup/safety/Whitelist.html for cleaning options
 
         // TODO am I doing all this already for every DTO in the usual parsing?
