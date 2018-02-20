@@ -20,8 +20,6 @@ import scala.collection.JavaConverters._
 class EpisodeDirectoryService(private val log: LoggingAdapter,
                               private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
-    // private val episodeDao: EpisodeDao =  new EpisodeDaoImpl(emf)
-
     private var repositoryFactory: JpaRepositoryFactory = _
     private var episodeRepository: EpisodeRepository = _
 
@@ -51,17 +49,19 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAll(): List[EpisodeDTO] = {
-        val episodes = episodeRepository.findAll
-        val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
-        result.asScala.toList
+        episodeRepository.findAll
+            .asScala
+            .map(e => EpisodeMapper.INSTANCE.episodeToEpisodeDto(e))
+            .toList
     }
 
     @Transactional
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
         val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
-        val episodes = episodeRepository.findAllByPodcast(podcast)
-        val result = EpisodeMapper.INSTANCE.episodesToEpisodesDtos(episodes)
-        result.asScala.toList
+        episodeRepository.findAllByPodcast(podcast)
+            .asScala
+            .map(e => EpisodeMapper.INSTANCE.episodeToEpisodeDto(e))
+            .toList
     }
 
     @Transactional

@@ -21,8 +21,6 @@ import scala.collection.JavaConverters._
 class PodcastDirectoryService(private val log: LoggingAdapter,
                               private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
-    // private val podcastDao: PodcastDao = new PodcastDaoImpl(emf)
-
     private var repositoryFactory: JpaRepositoryFactory = _
     private var podcastRepository: PodcastRepository = _
 
@@ -52,23 +50,26 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAll(): List[PodcastDTO] = {
-        val podcasts = podcastRepository.findAll
-        val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
-        result.asScala.toList
+        podcastRepository.findAll
+            .asScala
+            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .toList
     }
 
     @Transactional
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
-        val podcasts = podcastRepository.findAllWhereFeedStatusIsNot(status)
-        val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
-        result.asScala.toList
+        podcastRepository.findAllWhereFeedStatusIsNot(status)
+            .asScala
+            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .toList
     }
 
     @Transactional
     def findAllRegistrationComplete(): List[PodcastDTO] = {
-        val podcasts = podcastRepository.findByRegistrationCompleteTrue()
-        val result = PodcastMapper.INSTANCE.podcastsToPodcastDtos(podcasts)
-        result.asScala.toList
+        podcastRepository.findByRegistrationCompleteTrue()
+            .asScala
+            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .toList
     }
 
     @Transactional

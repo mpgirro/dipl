@@ -20,8 +20,6 @@ import scala.collection.JavaConverters._
 class FeedDirectoryService(private val log: LoggingAdapter,
                            private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
-    // private val feedDao: FeedDao =  new FeedDaoImpl(emf)
-
     private var repositoryFactory: JpaRepositoryFactory = _
     private var feedRepository: FeedRepository = _
 
@@ -51,16 +49,18 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAll(): List[FeedDTO] = {
-        val feeds = feedRepository.findAll
-        val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
-        results.asScala.toList
+        feedRepository.findAll
+            .asScala
+            .map(f => FeedMapper.INSTANCE.feedToFeedDto(f))
+            .toList
     }
 
     @Transactional
     def findAllByUrl(url: String): List[FeedDTO] = {
-        val feeds = feedRepository.findAllByUrl(url)
-        val results = FeedMapper.INSTANCE.feedsToFeedDtos(feeds)
-        results.asScala.toList
+        feedRepository.findAllByUrl(url)
+            .asScala
+            .map(f => FeedMapper.INSTANCE.feedToFeedDto(f))
+            .toList
     }
 
     @Transactional
