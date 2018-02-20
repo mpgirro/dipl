@@ -317,7 +317,8 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
-                val episodes = episodeService.findAllByPodcastAsTeaser(p)
+                // TODO hier könnte ich den aufruf des Podcasts wegoptimieren
+                val episodes = episodeService.findAllByPodcastAsTeaser(podcastId)
                 sender ! EpisodesByPodcastResult(episodes)
             }).getOrElse({
                 log.error("Database does not contain Podcast with echoId={}", podcastId)

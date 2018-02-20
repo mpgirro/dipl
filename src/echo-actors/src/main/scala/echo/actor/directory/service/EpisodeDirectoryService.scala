@@ -65,8 +65,11 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
-    def findAllByPodcastAsTeaser(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
-        findAllByPodcast(podcastDTO).map(dto => EpisodeTeaserMapper.INSTANCE.map(dto))
+    def findAllByPodcastAsTeaser(echoId: String): List[EpisodeDTO] = {
+        episodeRepository.findAllByPodcastEchoId(echoId)
+            .asScala
+            .map(e => EpisodeTeaserMapper.INSTANCE.asTeaser(e))
+            .toList
     }
 
 }

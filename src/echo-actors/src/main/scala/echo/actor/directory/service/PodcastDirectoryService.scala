@@ -73,7 +73,10 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAllRegistrationCompleteAsTeaser(): List[PodcastDTO] = {
-        findAllRegistrationComplete().map(dto => PodcastTeaserMapper.INSTANCE.map(dto))
+        podcastRepository.findByRegistrationCompleteTrue()
+            .asScala
+            .map(p => PodcastTeaserMapper.INSTANCE.asTeaser(p))
+            .toList
     }
 
 }
