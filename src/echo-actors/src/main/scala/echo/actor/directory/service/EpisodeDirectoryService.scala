@@ -30,37 +30,37 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def save(episodeDTO: EpisodeDTO): Option[EpisodeDTO] = {
-        val episode = EpisodeMapper.INSTANCE.episodeDtoToEpisode(episodeDTO)
+        val episode = EpisodeMapper.INSTANCE.map(episodeDTO)
         val result = episodeRepository.save(episode)
-        Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
+        Option(EpisodeMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[EpisodeDTO] = {
         val result = episodeRepository.findOne(id)
-        Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
+        Option(EpisodeMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOneByEchoId(echoId: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEchoId(echoId)
-        Option(EpisodeMapper.INSTANCE.episodeToEpisodeDto(result))
+        Option(EpisodeMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findAll(): List[EpisodeDTO] = {
         episodeRepository.findAll
             .asScala
-            .map(e => EpisodeMapper.INSTANCE.episodeToEpisodeDto(e))
+            .map(e => EpisodeMapper.INSTANCE.map(e))
             .toList
     }
 
     @Transactional
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
-        val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
+        val podcast = PodcastMapper.INSTANCE.map(podcastDTO)
         episodeRepository.findAllByPodcast(podcast)
             .asScala
-            .map(e => EpisodeMapper.INSTANCE.episodeToEpisodeDto(e))
+            .map(e => EpisodeMapper.INSTANCE.map(e))
             .toList
     }
 

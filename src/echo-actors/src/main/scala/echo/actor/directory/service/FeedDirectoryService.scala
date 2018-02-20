@@ -30,28 +30,28 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def save(feedDTO: FeedDTO): Option[FeedDTO] = {
-        val feed = FeedMapper.INSTANCE.feedDtoToFeed(feedDTO)
+        val feed = FeedMapper.INSTANCE.map(feedDTO)
         val result = feedRepository.save(feed)
-        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+        Option(FeedMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[FeedDTO] = {
         val result = feedRepository.findOne(id)
-        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+        Option(FeedMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOneByEchoId(echoId: String): Option[FeedDTO] = {
         val result = feedRepository.findOneByEchoId(echoId)
-        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+        Option(FeedMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findAll(): List[FeedDTO] = {
         feedRepository.findAll
             .asScala
-            .map(f => FeedMapper.INSTANCE.feedToFeedDto(f))
+            .map(f => FeedMapper.INSTANCE.map(f))
             .toList
     }
 
@@ -59,14 +59,14 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     def findAllByUrl(url: String): List[FeedDTO] = {
         feedRepository.findAllByUrl(url)
             .asScala
-            .map(f => FeedMapper.INSTANCE.feedToFeedDto(f))
+            .map(f => FeedMapper.INSTANCE.map(f))
             .toList
     }
 
     @Transactional
     def findOneByUrlAndPodcastEchoId(url: String, podcastId: String): Option[FeedDTO] = {
         val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastId)
-        Option(FeedMapper.INSTANCE.feedToFeedDto(result))
+        Option(FeedMapper.INSTANCE.map(result))
     }
 
 }

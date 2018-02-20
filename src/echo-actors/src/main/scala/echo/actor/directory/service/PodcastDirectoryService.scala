@@ -31,28 +31,28 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def save(podcastDTO: PodcastDTO): Option[PodcastDTO] = {
-        val podcast = PodcastMapper.INSTANCE.podcastDtoToPodcast(podcastDTO)
+        val podcast = PodcastMapper.INSTANCE.map(podcastDTO)
         val result = podcastRepository.save(podcast)
-        Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
+        Option(PodcastMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[PodcastDTO] = {
         val result = podcastRepository.findOne(id)
-        Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
+        Option(PodcastMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findOneByEchoId(echoId: String): Option[PodcastDTO] = {
         val result = podcastRepository.findOneByEchoId(echoId)
-        Option(PodcastMapper.INSTANCE.podcastToPodcastDto(result))
+        Option(PodcastMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def findAll(): List[PodcastDTO] = {
         podcastRepository.findAll
             .asScala
-            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .map(p => PodcastMapper.INSTANCE.map(p))
             .toList
     }
 
@@ -60,7 +60,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     def findAllWhereFeedStatusIsNot(status: FeedStatus): List[PodcastDTO] = {
         podcastRepository.findAllWhereFeedStatusIsNot(status)
             .asScala
-            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .map(p => PodcastMapper.INSTANCE.map(p))
             .toList
     }
 
@@ -68,7 +68,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     def findAllRegistrationComplete(): List[PodcastDTO] = {
         podcastRepository.findByRegistrationCompleteTrue()
             .asScala
-            .map(p => PodcastMapper.INSTANCE.podcastToPodcastDto(p))
+            .map(p => PodcastMapper.INSTANCE.map(p))
             .toList
     }
 
