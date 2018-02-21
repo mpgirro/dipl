@@ -43,6 +43,11 @@ object ActorProtocol {
     case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)
     case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
+    // Questions: Parser -> DirectoryStore
+    case class IsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String)
+    case class EpisodeRegistered(episodeId: String)
+    case class EpisodeNotRegistered()
+
     // Crawler -> Parser
     case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
     case class ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)

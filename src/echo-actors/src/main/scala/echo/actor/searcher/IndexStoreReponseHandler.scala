@@ -29,6 +29,8 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) e
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
+    private val timeout = 5.seconds
+
     override def receive = LoggingReceive {
         case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
             log.info("Received " + results.getTotalHits + " results from index for query '" + query + "'")
@@ -52,17 +54,19 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) e
             sendResponseAndShutdown(SearchResults(new ResultWrapperDTO))
         case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
         case _ =>
+            log.debug("Stopping because received an unknown message : {}", self.path.name)
+            context.stop(self)
     }
 
     def sendResponseAndShutdown(response: Any): Unit = {
         originalSender ! response
-        log.debug("Stopping context capturing actor")
+        log.debug("Stopping : {}", self.path.name)
         context.stop(self)
     }
 
     import context.dispatcher
     val timeoutMessager: Cancellable = context.system.scheduler.
-        scheduleOnce(5 seconds) { // TODO read timeout val from config
+        scheduleOnce(timeout) { // TODO read timeout val from config
             self ! IndexRetrievalTimeout
         }
 }

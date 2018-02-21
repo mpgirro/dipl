@@ -84,6 +84,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
 
+        case IsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType) => onIsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType)
+
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
@@ -384,6 +386,21 @@ class DirectoryStore extends Actor with ActorLogging {
         // TODO
 
         log.debug("Finished CheckAllFeeds()")
+    }
+
+    private def onIsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Unit = {
+        log.debug("Received IsEpisodeRegistered('{}', {}, '{}')", enclosureUrl, enclosureLength, enclosureType)
+
+        def task = () => {
+            episodeService.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType).map(e => {
+                sender ! EpisodeRegistered(e.getEchoId)
+            }).getOrElse({
+                sender ! EpisodeNotRegistered
+            })
+        }
+        doInTransaction(task, List(episodeService))
+
+        log.debug("Finished IsEpisodeRegistered()")
     }
 
     private def debugPrintAllPodcasts(): Unit = {

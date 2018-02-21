@@ -73,4 +73,10 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
             .toList
     }
 
+    @Transactional
+    def findOneByEnlosure(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Option[EpisodeDTO] = {
+        val result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType)
+        Option(EpisodeMapper.INSTANCE.map(result))
+    }
+
 }
