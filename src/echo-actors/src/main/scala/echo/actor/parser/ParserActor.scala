@@ -23,6 +23,7 @@ class ParserActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
+    // TODO delete
     private var responseHandlerCounter = 0
 
     override def postStop: Unit = {
@@ -145,15 +146,17 @@ class ParserActor extends Actor with ActorLogging {
             case Some(es) =>
                 for(e <- es){
 
-                    responseHandlerCounter += 1
-                    val handler = context.actorOf(DirectoryStoreResponseHandler.props(podcastId, e, directoryStore, indexStore, crawler), s"${self.path.name}-response-handler-${responseHandlerCounter}")
+                    // cleanup some potentially markuped texts
+                    Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
+                    Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
 
-                    directoryStore.tell(IsEpisodeRegistered(e.getEnclosureUrl, e.getEnclosureLength, e.getEnclosureType), handler)
+                    directoryStore ! RegisterEpisodeIfNew(podcastId, e)
                 }
             case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
         }
     }
 
+    /*
     @Deprecated
     private def checkForNewEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
         try {
@@ -178,7 +181,6 @@ class ParserActor extends Actor with ActorLogging {
             case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
         }
     }
-
-
+    */
 
 }

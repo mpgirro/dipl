@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://viertausendhertz.de/wp-content/themes/viertausendhertz_child/feed-stylesheet.xsl"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+	xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0"
+	>
+
+<channel>
+	<title>Systemfehler</title>
+	<atom:link href="http://viertausendhertz.de/feed/podcast/systemfehler" rel="self" type="application/rss+xml" />
+	<link>http://viertausendhertz.de/</link>
+	<description>In dem Podcast “Systemfehler” geht Christian Conradi dem Defekt auf den Grund. Wieviel Platz haben Fehler, Defekte und Abweichungen in einer Gesellschaft, die in sämtlichen Bereichen nach Perfektion strebt? Projizieren wir die vermeintliche Plan- und Steuerbarkeit, die wir mit Technologie erreichen, zunehmend auch auf uns? Wie gehen wir mit Fehlern um? “Ich will die Vielfalt des Zufalls untersuchen und die Abweichung vom Normalwert erforschen. Kurz gesagt: Ich will Geschichten über den Defekt erzählen”, verspricht Christian. Unterhaltsam, lehrreich, akustisch bunt und kurzweilig. | Eine Produktion von Viertausendhertz.</description>
+	<lastBuildDate>Wed, 10 Jan 2018 14:11:43 +0000</lastBuildDate>
+	<language>de-DE</language>
+	<copyright>© 2017 Viertausendhertz</copyright>
+	<itunes:subtitle>Ein Podcast von Christian Conradi</itunes:subtitle>
+	<itunes:author>Viertausendhertz</itunes:author>
+	<googleplay:author>Viertausendhertz</googleplay:author>
+	<googleplay:email>kontakt@viertausendhertz.de</googleplay:email>
+	<itunes:summary>In dem Podcast “Systemfehler” geht Christian Conradi dem Defekt auf den Grund. Wieviel Platz haben Fehler, Defekte und Abweichungen in einer Gesellschaft, die in sämtlichen Bereichen nach Perfektion strebt? Projizieren wir die vermeintliche Plan- und Steuerbarkeit, die wir mit Technologie erreichen, zunehmend auch auf uns? Wie gehen wir mit Fehlern um? “Ich will die Vielfalt des Zufalls untersuchen und die Abweichung vom Normalwert erforschen. Kurz gesagt: Ich will Geschichten über den Defekt erzählen”, verspricht Christian. Unterhaltsam, lehrreich, akustisch bunt und kurzweilig. | Eine Produktion von Viertausendhertz.</itunes:summary>
+	<googleplay:description>In dem Podcast “Systemfehler” geht Christian Conradi dem Defekt auf den Grund. Wieviel Platz haben Fehler, Defekte und Abweichungen in einer Gesellschaft, die in sämtlichen Bereichen nach Perfektion strebt? Projizieren wir die vermeintliche Plan- und Steuerbarkeit, die wir mit Technologie erreichen, zunehmend auch auf uns? Wie gehen wir mit Fehlern um? “Ich will die Vielfalt des Zufalls untersuchen und die Abweichung vom Normalwert erforschen. Kurz gesagt: Ich will Geschichten über den Defekt erzählen”, verspricht Christian. Unterhaltsam, lehrreich, akustisch bunt und kurzweilig. | Eine Produktion von Viertausendhertz.</googleplay:description>
+	<itunes:owner>
+		<itunes:name>Viertausendhertz</itunes:name>
+		<itunes:email>kontakt@viertausendhertz.de</itunes:email>
+	</itunes:owner>
+	<itunes:explicit>clean</itunes:explicit>
+	<googleplay:explicit>No</googleplay:explicit>
+	<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/systemfehler-cover.jpg"></itunes:image>
+	<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/systemfehler-cover.jpg"></googleplay:image>
+	<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/systemfehler-cover.jpg"></image>
+			<itunes:category text="Society &amp; Culture">
+			</itunes:category>
+			<itunes:category text="Technology">
+			</itunes:category>
+			<itunes:category text="Science &amp; Medicine">
+			</itunes:category>
+		<generator>https://wordpress.org/?v=4.9.1</generator>
+    	<item>
+  		<title>
+  			Durch die Kälte  		</title>
+  		<link>http://viertausendhertz.de/sf22/</link>
+  		<pubDate>Fri, 22 Dec 2017 08:11:05 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=2918</guid>
+  		<description><![CDATA[Zwischen 3000 und 10000 Menschen leben schätzungsweise in Berlin auf der Straße und schlafen auf Bänken, unter Brücken, in Hauseingängen – auch heute Nacht. Wer obdachlosen Menschen in Not helfen möchte, kann den Kältebus der Berliner Stadtmission rufen. Ein Team von ehrenamtlichen Fahrer*innen ist von Anfang November bis Ende März jede Nacht von 21 bis 3 Uhr in der Hauptstadt unterwegs und rettet Menschen vor dem Kältetod. Wir haben Sophia und Lars bei ihrer lebenswichtigen Arbeit im Kältebus eine Nacht lang begleitet.
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf22">http://viertausendhertz.de/sf22</a>]]></description>
+  		<itunes:subtitle><![CDATA[Zwischen 3000 und 10000 Menschen leben schätzungsweise in Berlin auf der Straße und schlafen auf Bänken, unter Brücken, in Hauseingängen – auch heute Nacht. Wer obdachlosen Menschen in Not helfen möchte, kann den Kältebus der Berliner Stadtmission rufen.]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Zwischen 3000 und 10000 Menschen leben schätzungsweise in Berlin auf der Straße und schlafen auf Bänken, unter Brücken, in Hauseingängen – auch heute Nacht. Wer obdachlosen Menschen in Not helfen möchte, kann den Kältebus der Berliner Stadtmission rufen. Ein Team von ehrenamtlichen Fahrer*innen ist von Anfang November bis Ende März jede Nacht von 21 bis 3 Uhr in der Hauptstadt unterwegs und rettet Menschen vor dem Kältetod. Wir haben Sophia und Lars bei ihrer lebenswichtigen Arbeit im Kältebus eine Nacht lang begleitet.
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf22">http://viertausendhertz.de/sf22</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Zwischen 3000 und 10000 Menschen leben schätzungsweise in Berlin auf der Straße und schlafen auf Bänken, unter Brücken, in Hauseingängen – auch heute Nacht. Wer obdachlosen Menschen in Not helfen möchte, kann den Kältebus der Berliner Stadtmission rufen. Ein Team von ehrenamtlichen Fahrer*innen ist von Anfang November bis Ende März jede Nacht von 21 bis 3 Uhr in der Hauptstadt unterwegs und rettet Menschen vor dem Kältetod. Wir haben Sophia und Lars bei ihrer lebenswichtigen Arbeit im Kältebus eine Nacht lang begleitet.
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf22">http://viertausendhertz.de/sf22</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Zwischen 3000 und 10000 Menschen leben schätzungsweise in Berlin auf der Straße und schlafen auf Bänken, unter Brücken, in Hauseingängen – auch heute Nacht. Wer obdachlosen Menschen in Not helfen möchte, kann den Kältebus der Berliner Stadtmission rufen. Ein Team von ehrenamtlichen Fahrer*innen ist von Anfang November bis Ende März jede Nacht von 21 bis 3 Uhr in der Hauptstadt unterwegs und rettet Menschen vor dem Kältetod. Wir haben Sophia und Lars bei ihrer lebenswichtigen Arbeit im Kältebus eine Nacht lang begleitet.
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf22">http://viertausendhertz.de/sf22</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/12/sf22_feed.jpg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/12/sf22_feed.jpg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/12/sf22_feed.jpg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/2918/sf22.mp3?v=1513890321&#038;source=feed" length="77186482" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>01:03:40</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Hello Sir (Teil 3)  		</title>
+  		<link>http://viertausendhertz.de/sf21/</link>
+  		<pubDate>Mon, 27 Nov 2017 03:45:45 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=2820</guid>
+  		<description><![CDATA[Im dritten und letzten Teil der Miniserie "Hello Sir" erzählt Stephanie, wie und warum sie zur Scammerin wurde, wo sie aufgewachsen ist, was sie studiert hat und wo sie lebt. Aber kann man einer Person glauben, die ihr Leben mit Lügen und falschen Versprechen finanziert? Und wie kann Stephanie überhaupt Vertrauen zu Christians Alter Ego Georg aufbauen, der sie ebenfalls getäuscht hat und ein doppeltes Spiel spielt? Stephanie und Georg sind gefangen in ihren eigenen Erzählungen.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf21">http://viertausendhertz.de/sf21</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></description>
+  		<itunes:subtitle><![CDATA[Im dritten und letzten Teil der Miniserie Hello Sir erzählt Stephanie, wie und warum sie zur Scammerin wurde, wo sie aufgewachsen ist, was sie studiert hat und wo sie lebt. Aber kann man einer Person glauben, die ihr Leben mit Lügen und falschen Versprec]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Im dritten und letzten Teil der Miniserie "Hello Sir" erzählt Stephanie, wie und warum sie zur Scammerin wurde, wo sie aufgewachsen ist, was sie studiert hat und wo sie lebt. Aber kann man einer Person glauben, die ihr Leben mit Lügen und falschen Versprechen finanziert? Und wie kann Stephanie überhaupt Vertrauen zu Christians Alter Ego Georg aufbauen, der sie ebenfalls getäuscht hat und ein doppeltes Spiel spielt? Stephanie und Georg sind gefangen in ihren eigenen Erzählungen.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf21">http://viertausendhertz.de/sf21</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Im dritten und letzten Teil der Miniserie "Hello Sir" erzählt Stephanie, wie und warum sie zur Scammerin wurde, wo sie aufgewachsen ist, was sie studiert hat und wo sie lebt. Aber kann man einer Person glauben, die ihr Leben mit Lügen und falschen Versprechen finanziert? Und wie kann Stephanie überhaupt Vertrauen zu Christians Alter Ego Georg aufbauen, der sie ebenfalls getäuscht hat und ein doppeltes Spiel spielt? Stephanie und Georg sind gefangen in ihren eigenen Erzählungen.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf21">http://viertausendhertz.de/sf21</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Im dritten und letzten Teil der Miniserie "Hello Sir" erzählt Stephanie, wie und warum sie zur Scammerin wurde, wo sie aufgewachsen ist, was sie studiert hat und wo sie lebt. Aber kann man einer Person glauben, die ihr Leben mit Lügen und falschen Versprechen finanziert? Und wie kann Stephanie überhaupt Vertrauen zu Christians Alter Ego Georg aufbauen, der sie ebenfalls getäuscht hat und ein doppeltes Spiel spielt? Stephanie und Georg sind gefangen in ihren eigenen Erzählungen.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf21">http://viertausendhertz.de/sf21</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf21_feed.jpg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf21_feed.jpg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf21_feed.jpg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/2820/sf21.mp3?v=1514382222&#038;source=feed" length="38420353" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:31:22</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Hello Sir (Teil 2)  		</title>
+  		<link>http://viertausendhertz.de/sf20/</link>
+  		<pubDate>Tue, 07 Nov 2017 12:37:36 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=2744</guid>
+  		<description><![CDATA[Im April 2017 landet eine seltsame Nachricht im Emailpostfach von Viertausendhertz. Ein Geschäftsangebot und Hilferuf einer Frau, die sich Stephanie nennt. Es geht um 7,5 Millionen Dollar und um einen angeblichen Mord. Ein Scam-Versuch. Klar. Christian spielt mit, schreibt ihr und spannt das gesamte Viertausendhertz-Team in seinen Plan ein, herausfinden, wer hinter der ominösen Mail aus Abidjan steckt. In dem zweiten Teil von „Hello Sir“ sind wir nach wochenlangen Emails mit Stephanie das erste Mal zum Telefonieren verabredet. Das Gespräch verlief anders als wir erwarteten.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf20">http://viertausendhertz.de/sf20</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></description>
+  		<itunes:subtitle><![CDATA[Im April 2017 landet eine seltsame Nachricht im Emailpostfach von Viertausendhertz. Ein Geschäftsangebot und Hilferuf einer Frau, die sich Stephanie nennt. Es geht um 7,5 Millionen Dollar und um einen angeblichen Mord. Ein Scam-Versuch. Klar. Christian s]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Im April 2017 landet eine seltsame Nachricht im Emailpostfach von Viertausendhertz. Ein Geschäftsangebot und Hilferuf einer Frau, die sich Stephanie nennt. Es geht um 7,5 Millionen Dollar und um einen angeblichen Mord. Ein Scam-Versuch. Klar. Christian spielt mit, schreibt ihr und spannt das gesamte Viertausendhertz-Team in seinen Plan ein, herausfinden, wer hinter der ominösen Mail aus Abidjan steckt. In dem zweiten Teil von „Hello Sir“ sind wir nach wochenlangen Emails mit Stephanie das erste Mal zum Telefonieren verabredet. Das Gespräch verlief anders als wir erwarteten.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf20">http://viertausendhertz.de/sf20</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Im April 2017 landet eine seltsame Nachricht im Emailpostfach von Viertausendhertz. Ein Geschäftsangebot und Hilferuf einer Frau, die sich Stephanie nennt. Es geht um 7,5 Millionen Dollar und um einen angeblichen Mord. Ein Scam-Versuch. Klar. Christian spielt mit, schreibt ihr und spannt das gesamte Viertausendhertz-Team in seinen Plan ein, herausfinden, wer hinter der ominösen Mail aus Abidjan steckt. In dem zweiten Teil von „Hello Sir“ sind wir nach wochenlangen Emails mit Stephanie das erste Mal zum Telefonieren verabredet. Das Gespräch verlief anders als wir erwarteten.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf20">http://viertausendhertz.de/sf20</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Im April 2017 landet eine seltsame Nachricht im Emailpostfach von Viertausendhertz. Ein Geschäftsangebot und Hilferuf einer Frau, die sich Stephanie nennt. Es geht um 7,5 Millionen Dollar und um einen angeblichen Mord. Ein Scam-Versuch. Klar. Christian spielt mit, schreibt ihr und spannt das gesamte Viertausendhertz-Team in seinen Plan ein, herausfinden, wer hinter der ominösen Mail aus Abidjan steckt. In dem zweiten Teil von „Hello Sir“ sind wir nach wochenlangen Emails mit Stephanie das erste Mal zum Telefonieren verabredet. Das Gespräch verlief anders als wir erwarteten.<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf20">http://viertausendhertz.de/sf20</a>
+<br><br>
+Alle Teile von "Hello Sir":<br>
+<a href="http://viertausendhertz.de/hellosir">hellosir.viertausendhertz.de</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf20_feed.jpg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf20_feed.jpg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/11/sf20_feed.jpg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/2744/sf20.mp3?v=1510062237&#038;source=feed" length="29144099" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:23:37</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Hello Sir (Teil 1)  		</title>
+  		<link>http://viertausendhertz.de/sf19/</link>
+  		<pubDate>Wed, 11 Oct 2017 06:31:51 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=2525</guid>
+  		<description><![CDATA[Mitteilungen über Lottogewinne, Investitionsfonds mit riesigen Renditeversprechen, schmeichelhafte Flirts oder Beteiligungsangebote an Erbschaften. Alle Emailpostfächer sind voll mit solchen Nachrichten. Meistens landen die so genannten Scam-Mails automatisch im Papierkorb, hin und wieder mogeln sie sich aber doch durch und wollen unsere Aufmerksamkeit. Von Online-Abzocke und Email-Betrügereien hört man immer wieder mal aber wer sind die Menschen hinter den Scams? Die dreiteilige Miniserie "Hello Sir" geht dieser Frage nach und nimmt Kontakt mit einer Scammerin aus Abidjan, Elfenbeinküste auf. Stephanie.
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf19">http://viertausendhertz.de/sf19</a>]]></description>
+  		<itunes:subtitle><![CDATA[Mitteilungen über Lottogewinne, Investitionsfonds mit riesigen Renditeversprechen, schmeichelhafte Flirts oder Beteiligungsangebote an Erbschaften. Alle Emailpostfächer sind voll mit solchen Nachrichten. Meistens landen die so genannten Scam-Mails automa]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Mitteilungen über Lottogewinne, Investitionsfonds mit riesigen Renditeversprechen, schmeichelhafte Flirts oder Beteiligungsangebote an Erbschaften. Alle Emailpostfächer sind voll mit solchen Nachrichten. Meistens landen die so genannten Scam-Mails automatisch im Papierkorb, hin und wieder mogeln sie sich aber doch durch und wollen unsere Aufmerksamkeit. Von Online-Abzocke und Email-Betrügereien hört man immer wieder mal aber wer sind die Menschen hinter den Scams? Die dreiteilige Miniserie "Hello Sir" geht dieser Frage nach und nimmt Kontakt mit einer Scammerin aus Abidjan, Elfenbeinküste auf. Stephanie.
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf19">http://viertausendhertz.de/sf19</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Mitteilungen über Lottogewinne, Investitionsfonds mit riesigen Renditeversprechen, schmeichelhafte Flirts oder Beteiligungsangebote an Erbschaften. Alle Emailpostfächer sind voll mit solchen Nachrichten. Meistens landen die so genannten Scam-Mails automatisch im Papierkorb, hin und wieder mogeln sie sich aber doch durch und wollen unsere Aufmerksamkeit. Von Online-Abzocke und Email-Betrügereien hört man immer wieder mal aber wer sind die Menschen hinter den Scams? Die dreiteilige Miniserie "Hello Sir" geht dieser Frage nach und nimmt Kontakt mit einer Scammerin aus Abidjan, Elfenbeinküste auf. Stephanie.
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf19">http://viertausendhertz.de/sf19</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Mitteilungen über Lottogewinne, Investitionsfonds mit riesigen Renditeversprechen, schmeichelhafte Flirts oder Beteiligungsangebote an Erbschaften. Alle Emailpostfächer sind voll mit solchen Nachrichten. Meistens landen die so genannten Scam-Mails automatisch im Papierkorb, hin und wieder mogeln sie sich aber doch durch und wollen unsere Aufmerksamkeit. Von Online-Abzocke und Email-Betrügereien hört man immer wieder mal aber wer sind die Menschen hinter den Scams? Die dreiteilige Miniserie "Hello Sir" geht dieser Frage nach und nimmt Kontakt mit einer Scammerin aus Abidjan, Elfenbeinküste auf. Stephanie.
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf19">http://viertausendhertz.de/sf19</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/10/sf19_feed.jpg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/10/sf19_feed.jpg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/10/sf19_feed.jpg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/2525/sf19.mp3?v=1510085259&#038;source=feed" length="28384112" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:23:25</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Schöner scheitern  		</title>
+  		<link>http://viertausendhertz.de/sf18/</link>
+  		<pubDate>Mon, 11 Sep 2017 05:04:30 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=2376</guid>
+  		<description><![CDATA[Scheitern ist ein Teil der Welt, der viel zu wenig Aufmerksamkeit bekommt. Dabei heißt es doch, aus Fehlern lernt man. Dieses Motto hat sich Samuel West besonders zu Herzen genommen. Er berät als Organisationspsychologe Unternehmen dabei, wie sie Konzepte des Scheiterns in ihre Firmenphilosophie integrieren können. Außerdem ist Samuel Kurator und Gründer eines einzigartigen Museums. Im schwedischen Helsingborg beheimatet, präsentiert sein Museum of Failure eine handverlesene Ausstellung gescheiterter Produkte, Erfindungen und Ideen. 
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf18">http://viertausendhertz.de/sf18</a>]]></description>
+  		<itunes:subtitle><![CDATA[Scheitern ist ein Teil der Welt, der viel zu wenig Aufmerksamkeit bekommt. Dabei heißt es doch, aus Fehlern lernt man. Dieses Motto hat sich Samuel West besonders zu Herzen genommen. Er berät als Organisationspsychologe Unternehmen dabei, wie sie Konzept]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Scheitern ist ein Teil der Welt, der viel zu wenig Aufmerksamkeit bekommt. Dabei heißt es doch, aus Fehlern lernt man. Dieses Motto hat sich Samuel West besonders zu Herzen genommen. Er berät als Organisationspsychologe Unternehmen dabei, wie sie Konzepte des Scheiterns in ihre Firmenphilosophie integrieren können. Außerdem ist Samuel Kurator und Gründer eines einzigartigen Museums. Im schwedischen Helsingborg beheimatet, präsentiert sein Museum of Failure eine handverlesene Ausstellung gescheiterter Produkte, Erfindungen und Ideen. 
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf18">http://viertausendhertz.de/sf18</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Scheitern ist ein Teil der Welt, der viel zu wenig Aufmerksamkeit bekommt. Dabei heißt es doch, aus Fehlern lernt man. Dieses Motto hat sich Samuel West besonders zu Herzen genommen. Er berät als Organisationspsychologe Unternehmen dabei, wie sie Konzepte des Scheiterns in ihre Firmenphilosophie integrieren können. Außerdem ist Samuel Kurator und Gründer eines einzigartigen Museums. Im schwedischen Helsingborg beheimatet, präsentiert sein Museum of Failure eine handverlesene Ausstellung gescheiterter Produkte, Erfindungen und Ideen. 
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf18">http://viertausendhertz.de/sf18</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Scheitern ist ein Teil der Welt, der viel zu wenig Aufmerksamkeit bekommt. Dabei heißt es doch, aus Fehlern lernt man. Dieses Motto hat sich Samuel West besonders zu Herzen genommen. Er berät als Organisationspsychologe Unternehmen dabei, wie sie Konzepte des Scheiterns in ihre Firmenphilosophie integrieren können. Außerdem ist Samuel Kurator und Gründer eines einzigartigen Museums. Im schwedischen Helsingborg beheimatet, präsentiert sein Museum of Failure eine handverlesene Ausstellung gescheiterter Produkte, Erfindungen und Ideen. 
+<br><br>
+Link zur Episoden-Seite:<br>
+<a href="http://viertausendhertz.de/sf18">http://viertausendhertz.de/sf18</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/09/sf18_feed.jpg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/09/sf18_feed.jpg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/09/sf18_feed.jpg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/2376/sf18.mp3?v=1506884757&#038;source=feed" length="35797941" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:29:27</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Blinder Krieger (Teil 3) &#8211; Blind Warrior  		</title>
+  		<link>http://viertausendhertz.de/sf17/</link>
+  		<pubDate>Wed, 09 Aug 2017 22:02:49 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://viertausendhertz.de/?p=1783</guid>
+  		<description><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er mit sechs Jahren an Krebs erkrankte und erblindete. Im zweiten Kapitel schildert Sven, wie er es schaffte sein geliebtes Hobby - das Computerspielen - nur mit Sound zu meistern. Der dritte und letzte Teil dieser Miniserie erzählt von Svens erstem Street Fighter Turnier, an dem er in Spanien teilnahm und wie sehr das Spiel sein Leben verändert hat.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>
+]]></description>
+  		<itunes:subtitle><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er mit sechs Jahren an Krebs erkrankte und erblindete. Im zweiten Kapitel schildert Sven, wie er es schaffte sein geliebtes Hobby - das Computerspielen - nur mit Sound zu meistern. Der dritte und l]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er mit sechs Jahren an Krebs erkrankte und erblindete. Im zweiten Kapitel schildert Sven, wie er es schaffte sein geliebtes Hobby - das Computerspielen - nur mit Sound zu meistern. Der dritte und letzte Teil dieser Miniserie erzählt von Svens erstem Street Fighter Turnier, an dem er in Spanien teilnahm und wie sehr das Spiel sein Leben verändert hat.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>
+]]></content:encoded>
+  		<itunes:summary><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er mit sechs Jahren an Krebs erkrankte und erblindete. Im zweiten Kapitel schildert Sven, wie er es schaffte sein geliebtes Hobby - das Computerspielen - nur mit Sound zu meistern. Der dritte und letzte Teil dieser Miniserie erzählt von Svens erstem Street Fighter Turnier, an dem er in Spanien teilnahm und wie sehr das Spiel sein Leben verändert hat.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>
+]]></itunes:summary>
+  		<googleplay:description><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er mit sechs Jahren an Krebs erkrankte und erblindete. Im zweiten Kapitel schildert Sven, wie er es schaffte sein geliebtes Hobby - das Computerspielen - nur mit Sound zu meistern. Der dritte und letzte Teil dieser Miniserie erzählt von Svens erstem Street Fighter Turnier, an dem er in Spanien teilnahm und wie sehr das Spiel sein Leben verändert hat.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>
+]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf17_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf17_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf17_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1783/sf17.mp3?v=1502795801&#038;source=feed" length="18148887" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:14:27</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Blinder Krieger (Teil 2) &#8211; Der Neustart  		</title>
+  		<link>http://viertausendhertz.de/sf16/</link>
+  		<pubDate>Thu, 03 Aug 2017 09:19:18 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1650</guid>
+  		<description><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er schon mit drei Jahren das Computerspielen lieben gelernt hat. Wie es war, zu sehen. Mit sechs ist er erblindet. Der Grund war ein Tumor in seinem Kopf. Zwei lange Jahre hat der Kampf gegen den Krebs gedauert. Mitte der Neunziger stellt sich für ihn wieder so etwas wie ein Alltag ein und er tut alles dafür, wieder Spielen zu können. Dafür lernt er, Videospiele nur mit Sound-Effekten zu meistern.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></description>
+  		<itunes:subtitle><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er schon mit drei Jahren das Computerspielen lieben gelernt hat. Wie es war, zu sehen. Mit sechs ist er erblindet. Der Grund war ein Tumor in seinem Kopf. Zwei lange Jahre hat der Kampf gegen den K]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er schon mit drei Jahren das Computerspielen lieben gelernt hat. Wie es war, zu sehen. Mit sechs ist er erblindet. Der Grund war ein Tumor in seinem Kopf. Zwei lange Jahre hat der Kampf gegen den Krebs gedauert. Mitte der Neunziger stellt sich für ihn wieder so etwas wie ein Alltag ein und er tut alles dafür, wieder Spielen zu können. Dafür lernt er, Videospiele nur mit Sound-Effekten zu meistern.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er schon mit drei Jahren das Computerspielen lieben gelernt hat. Wie es war, zu sehen. Mit sechs ist er erblindet. Der Grund war ein Tumor in seinem Kopf. Zwei lange Jahre hat der Kampf gegen den Krebs gedauert. Mitte der Neunziger stellt sich für ihn wieder so etwas wie ein Alltag ein und er tut alles dafür, wieder Spielen zu können. Dafür lernt er, Videospiele nur mit Sound-Effekten zu meistern.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Im ersten Teil hat Sven von seiner Kindheit erzählt. Wie er schon mit drei Jahren das Computerspielen lieben gelernt hat. Wie es war, zu sehen. Mit sechs ist er erblindet. Der Grund war ein Tumor in seinem Kopf. Zwei lange Jahre hat der Kampf gegen den Krebs gedauert. Mitte der Neunziger stellt sich für ihn wieder so etwas wie ein Alltag ein und er tut alles dafür, wieder Spielen zu können. Dafür lernt er, Videospiele nur mit Sound-Effekten zu meistern.
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf16_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf16_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf16_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1650/sf16.mp3?v=1502791624&#038;source=feed" length="26489685" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:21:24</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Blinder Krieger (Teil 1) &#8211; Spiel um Leben und Tod  		</title>
+  		<link>http://viertausendhertz.de/sf15/</link>
+  		<pubDate>Mon, 24 Jul 2017 16:59:24 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1502</guid>
+  		<description><![CDATA[Sven ist blind. Und ein Meister des elektronischen Kampfsports. Die japanische Beat ’em up Videospielserie Street Fighter gehört seit den 90ern zu den Lieblingsgames des heute 31-jährigen Niederländers. Und sie hat sein Leben verändert. Das ist der erste Teil der dreiteiligen Miniserie "Blinder Krieger". Kapitel 1: "Spiel um Leben und Tod".
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></description>
+  		<itunes:subtitle><![CDATA[Sven ist blind. Und ein Meister des elektronischen Kampfsports. Die japanische Beat ’em up Videospielserie Street Fighter gehört seit den 90ern zu den Lieblingsgames des heute 31-jährigen Niederländers. Und sie hat sein Leben verändert. Das ist der erste]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Sven ist blind. Und ein Meister des elektronischen Kampfsports. Die japanische Beat ’em up Videospielserie Street Fighter gehört seit den 90ern zu den Lieblingsgames des heute 31-jährigen Niederländers. Und sie hat sein Leben verändert. Das ist der erste Teil der dreiteiligen Miniserie "Blinder Krieger". Kapitel 1: "Spiel um Leben und Tod".
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></content:encoded>
+  		<itunes:summary><![CDATA[Sven ist blind. Und ein Meister des elektronischen Kampfsports. Die japanische Beat ’em up Videospielserie Street Fighter gehört seit den 90ern zu den Lieblingsgames des heute 31-jährigen Niederländers. Und sie hat sein Leben verändert. Das ist der erste Teil der dreiteiligen Miniserie "Blinder Krieger". Kapitel 1: "Spiel um Leben und Tod".
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></itunes:summary>
+  		<googleplay:description><![CDATA[Sven ist blind. Und ein Meister des elektronischen Kampfsports. Die japanische Beat ’em up Videospielserie Street Fighter gehört seit den 90ern zu den Lieblingsgames des heute 31-jährigen Niederländers. Und sie hat sein Leben verändert. Das ist der erste Teil der dreiteiligen Miniserie "Blinder Krieger". Kapitel 1: "Spiel um Leben und Tod".
+<br><br>
+Alle Episoden der Miniserie "Blinder Krieger":<br>
+<a href="http://viertausendhertz.de/blinderkrieger">http://viertausendhertz.de/blinderkrieger</a>]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf15_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf15_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf15_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1502/sf15.mp3?v=1502985178&#038;source=feed" length="20800832" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:16:40</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Das Ende der Ruhe (Teil 4) &#8211; Mysteriöse Töne  		</title>
+  		<link>http://viertausendhertz.de/sf14/</link>
+  		<pubDate>Mon, 26 Jun 2017 17:08:12 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1506</guid>
+  		<description><![CDATA[Die Welt ist voll mit ungeklärten Klangphänomenen. Die Knister- und Flüstertöne der ASMR-Community bringen Millionen Köpfe zum Kribbeln und lösen bei einigen Menschen regelrechte Ekel- und Wutanfälle aus. Was steckt hinter dem Trendbegriff Misophonie und was hat der Mitmachmaler Bob Ross mit binauralen Flüstervideos zu tun? Christian Conradi geht in der letzten Folge seiner Miniserie "Das Ende der Ruhe" mysteriösen Tönen auf den Grund: Phantomhafte Geigerzählerklänge im Ohr, die wahnsinnig machen. Unheimliche "Bloops" aus der Tiefsee, die mehrere tausend Kilometer lange Klangspuren hinterlassen. Geheime Botschaften aus dem Weltall, an denen Wissenschaftler seit 40 Jahren rätseln.]]></description>
+  		<itunes:subtitle><![CDATA[Die Welt ist voll mit ungeklärten Klangphänomenen. Die Knister- und Flüstertöne der ASMR-Community bringen Millionen Köpfe zum Kribbeln und lösen bei einigen Menschen regelrechte Ekel- und Wutanfälle aus. Was steckt hinter dem Trendbegriff Misophonie und]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Die Welt ist voll mit ungeklärten Klangphänomenen. Die Knister- und Flüstertöne der ASMR-Community bringen Millionen Köpfe zum Kribbeln und lösen bei einigen Menschen regelrechte Ekel- und Wutanfälle aus. Was steckt hinter dem Trendbegriff Misophonie und was hat der Mitmachmaler Bob Ross mit binauralen Flüstervideos zu tun? Christian Conradi geht in der letzten Folge seiner Miniserie "Das Ende der Ruhe" mysteriösen Tönen auf den Grund: Phantomhafte Geigerzählerklänge im Ohr, die wahnsinnig machen. Unheimliche "Bloops" aus der Tiefsee, die mehrere tausend Kilometer lange Klangspuren hinterlassen. Geheime Botschaften aus dem Weltall, an denen Wissenschaftler seit 40 Jahren rätseln.]]></content:encoded>
+  		<itunes:summary><![CDATA[Die Welt ist voll mit ungeklärten Klangphänomenen. Die Knister- und Flüstertöne der ASMR-Community bringen Millionen Köpfe zum Kribbeln und lösen bei einigen Menschen regelrechte Ekel- und Wutanfälle aus. Was steckt hinter dem Trendbegriff Misophonie und was hat der Mitmachmaler Bob Ross mit binauralen Flüstervideos zu tun? Christian Conradi geht in der letzten Folge seiner Miniserie "Das Ende der Ruhe" mysteriösen Tönen auf den Grund: Phantomhafte Geigerzählerklänge im Ohr, die wahnsinnig machen. Unheimliche "Bloops" aus der Tiefsee, die mehrere tausend Kilometer lange Klangspuren hinterlassen. Geheime Botschaften aus dem Weltall, an denen Wissenschaftler seit 40 Jahren rätseln.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Die Welt ist voll mit ungeklärten Klangphänomenen. Die Knister- und Flüstertöne der ASMR-Community bringen Millionen Köpfe zum Kribbeln und lösen bei einigen Menschen regelrechte Ekel- und Wutanfälle aus. Was steckt hinter dem Trendbegriff Misophonie und was hat der Mitmachmaler Bob Ross mit binauralen Flüstervideos zu tun? Christian Conradi geht in der letzten Folge seiner Miniserie "Das Ende der Ruhe" mysteriösen Tönen auf den Grund: Phantomhafte Geigerzählerklänge im Ohr, die wahnsinnig machen. Unheimliche "Bloops" aus der Tiefsee, die mehrere tausend Kilometer lange Klangspuren hinterlassen. Geheime Botschaften aus dem Weltall, an denen Wissenschaftler seit 40 Jahren rätseln.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf14_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf14_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf14_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1506/sf14.mp3?v=1498470438&#038;source=feed" length="49723235" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:40:46</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Das Ende der Ruhe (Teil 3) &#8211; Im Klangrausch  		</title>
+  		<link>http://viertausendhertz.de/sf13/</link>
+  		<pubDate>Mon, 22 May 2017 17:15:29 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1508</guid>
+  		<description><![CDATA[Nach dem smarten Phone, der smarten Uhr und der smarten Brille, ist nun unser Ohr dran. Smarte Kopfhörer, klein und unscheinbar im Ohr versteckt, sind das nächste große Ding. Ziemlich sicher. Aber was passiert mit uns uns, wenn wir unsere Ohren ständig mit künstlichen Klängen beschallen und wie werden sich die künstlichen Klangwelten anhören, die unsere akustische Aufmerksamkeit fesseln? Christian hat sich für den dritten Teil seiner Miniserie "Das Ende der Ruhe" berauscht und ist mit seinen Viertausendhertz-Kollegen Hendrik und Nicolas  in unerforschte Klangwelten abgetaucht um es herauszufinden.]]></description>
+  		<itunes:subtitle><![CDATA[Nach dem smarten Phone, der smarten Uhr und der smarten Brille, ist nun unser Ohr dran. Smarte Kopfhörer, klein und unscheinbar im Ohr versteckt, sind das nächste große Ding. Ziemlich sicher. Aber was passiert mit uns uns, wenn wir unsere Ohren ständig m]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Nach dem smarten Phone, der smarten Uhr und der smarten Brille, ist nun unser Ohr dran. Smarte Kopfhörer, klein und unscheinbar im Ohr versteckt, sind das nächste große Ding. Ziemlich sicher. Aber was passiert mit uns uns, wenn wir unsere Ohren ständig mit künstlichen Klängen beschallen und wie werden sich die künstlichen Klangwelten anhören, die unsere akustische Aufmerksamkeit fesseln? Christian hat sich für den dritten Teil seiner Miniserie "Das Ende der Ruhe" berauscht und ist mit seinen Viertausendhertz-Kollegen Hendrik und Nicolas  in unerforschte Klangwelten abgetaucht um es herauszufinden.]]></content:encoded>
+  		<itunes:summary><![CDATA[Nach dem smarten Phone, der smarten Uhr und der smarten Brille, ist nun unser Ohr dran. Smarte Kopfhörer, klein und unscheinbar im Ohr versteckt, sind das nächste große Ding. Ziemlich sicher. Aber was passiert mit uns uns, wenn wir unsere Ohren ständig mit künstlichen Klängen beschallen und wie werden sich die künstlichen Klangwelten anhören, die unsere akustische Aufmerksamkeit fesseln? Christian hat sich für den dritten Teil seiner Miniserie "Das Ende der Ruhe" berauscht und ist mit seinen Viertausendhertz-Kollegen Hendrik und Nicolas  in unerforschte Klangwelten abgetaucht um es herauszufinden.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Nach dem smarten Phone, der smarten Uhr und der smarten Brille, ist nun unser Ohr dran. Smarte Kopfhörer, klein und unscheinbar im Ohr versteckt, sind das nächste große Ding. Ziemlich sicher. Aber was passiert mit uns uns, wenn wir unsere Ohren ständig mit künstlichen Klängen beschallen und wie werden sich die künstlichen Klangwelten anhören, die unsere akustische Aufmerksamkeit fesseln? Christian hat sich für den dritten Teil seiner Miniserie "Das Ende der Ruhe" berauscht und ist mit seinen Viertausendhertz-Kollegen Hendrik und Nicolas  in unerforschte Klangwelten abgetaucht um es herauszufinden.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf13_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf13_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf13_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1508/sf13.mp3?v=1498403492&#038;source=feed" length="49482267" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:40:34</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Das Ende der Ruhe (Teil 2) &#8211; Krachlöscher  		</title>
+  		<link>http://viertausendhertz.de/sf12/</link>
+  		<pubDate>Sat, 15 Apr 2017 17:33:59 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1521</guid>
+  		<description><![CDATA[Im zweiten Teil seiner Systemfehler Mini-Serie versucht Christian herauszufinden wie wir den Klangschmutz wieder loswerden können, den wir im Lauf der jüngsten Menschheitsgeschichte überall angehäuft haben. Vielleicht ist ja mehr Natur die Lösung? Oder vielleicht doch mehr Technik? Es geht um Ruhe durch Pflanzen, gelöschten Krach und Stimmen im Ohr.]]></description>
+  		<itunes:subtitle><![CDATA[Im zweiten Teil seiner Systemfehler Mini-Serie versucht Christian herauszufinden wie wir den Klangschmutz wieder loswerden können, den wir im Lauf der jüngsten Menschheitsgeschichte überall angehäuft haben. Vielleicht ist ja mehr Natur die Lösung? Oder v]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Im zweiten Teil seiner Systemfehler Mini-Serie versucht Christian herauszufinden wie wir den Klangschmutz wieder loswerden können, den wir im Lauf der jüngsten Menschheitsgeschichte überall angehäuft haben. Vielleicht ist ja mehr Natur die Lösung? Oder vielleicht doch mehr Technik? Es geht um Ruhe durch Pflanzen, gelöschten Krach und Stimmen im Ohr.]]></content:encoded>
+  		<itunes:summary><![CDATA[Im zweiten Teil seiner Systemfehler Mini-Serie versucht Christian herauszufinden wie wir den Klangschmutz wieder loswerden können, den wir im Lauf der jüngsten Menschheitsgeschichte überall angehäuft haben. Vielleicht ist ja mehr Natur die Lösung? Oder vielleicht doch mehr Technik? Es geht um Ruhe durch Pflanzen, gelöschten Krach und Stimmen im Ohr.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Im zweiten Teil seiner Systemfehler Mini-Serie versucht Christian herauszufinden wie wir den Klangschmutz wieder loswerden können, den wir im Lauf der jüngsten Menschheitsgeschichte überall angehäuft haben. Vielleicht ist ja mehr Natur die Lösung? Oder vielleicht doch mehr Technik? Es geht um Ruhe durch Pflanzen, gelöschten Krach und Stimmen im Ohr.]]></googleplay:description>  		<enclosure url="http://viertausendhertz.de/podcast-download/1521/sf12.mp3?v=1492162683&#038;source=feed" length="32137655" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:26:08</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Das Ende der Ruhe (Teil 1) &#8211; Klangschmutz  		</title>
+  		<link>http://viertausendhertz.de/sf11/</link>
+  		<pubDate>Wed, 15 Mar 2017 18:40:28 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1523</guid>
+  		<description><![CDATA[Die Welt wird immer lauter. Straßenlärm, Flugzeuge, tragbare Lautsprecher. Weghören geht nicht, denn wir können unsere Ohren nicht schließen - der Hörsinn befeuert uns mit akustischem Dauerfeuer. Was bleibt, ist jede Menge Klangschmutz. Genau darum geht’s in dieser Auftakt-Episode der Systemfehler Mini-Serie “Das Ende der Ruhe.” Christian erkundet den Krach in der Stadt, die Ruhe auf dem Land und die vermeintliche Stille der Wildnis.]]></description>
+  		<itunes:subtitle><![CDATA[Die Welt wird immer lauter. Straßenlärm, Flugzeuge, tragbare Lautsprecher. Weghören geht nicht, denn wir können unsere Ohren nicht schließen - der Hörsinn befeuert uns mit akustischem Dauerfeuer. Was bleibt, ist jede Menge Klangschmutz. Genau darum geht’]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Die Welt wird immer lauter. Straßenlärm, Flugzeuge, tragbare Lautsprecher. Weghören geht nicht, denn wir können unsere Ohren nicht schließen - der Hörsinn befeuert uns mit akustischem Dauerfeuer. Was bleibt, ist jede Menge Klangschmutz. Genau darum geht’s in dieser Auftakt-Episode der Systemfehler Mini-Serie “Das Ende der Ruhe.” Christian erkundet den Krach in der Stadt, die Ruhe auf dem Land und die vermeintliche Stille der Wildnis.]]></content:encoded>
+  		<itunes:summary><![CDATA[Die Welt wird immer lauter. Straßenlärm, Flugzeuge, tragbare Lautsprecher. Weghören geht nicht, denn wir können unsere Ohren nicht schließen - der Hörsinn befeuert uns mit akustischem Dauerfeuer. Was bleibt, ist jede Menge Klangschmutz. Genau darum geht’s in dieser Auftakt-Episode der Systemfehler Mini-Serie “Das Ende der Ruhe.” Christian erkundet den Krach in der Stadt, die Ruhe auf dem Land und die vermeintliche Stille der Wildnis.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Die Welt wird immer lauter. Straßenlärm, Flugzeuge, tragbare Lautsprecher. Weghören geht nicht, denn wir können unsere Ohren nicht schließen - der Hörsinn befeuert uns mit akustischem Dauerfeuer. Was bleibt, ist jede Menge Klangschmutz. Genau darum geht’s in dieser Auftakt-Episode der Systemfehler Mini-Serie “Das Ende der Ruhe.” Christian erkundet den Krach in der Stadt, die Ruhe auf dem Land und die vermeintliche Stille der Wildnis.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf11_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf11_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf11_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1523/sf11.mp3?v=1491815493&#038;source=feed" length="24414894" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:19:42</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Behindert  		</title>
+  		<link>http://viertausendhertz.de/sf10/</link>
+  		<pubDate>Tue, 21 Feb 2017 18:48:06 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1525</guid>
+  		<description><![CDATA[Defekte Fahrstühle, hohe Bordsteine und unebene Gehwege sind für die meisten Menschen nicht mehr als ein Ärgernis. Die fehlerhafte Ausrichtung der Umwelt kann aber auch zu Ausgrenzung und Diskriminierung führen. Wie sehr die Welt behindert, stellt man als "Durchschnittsmensch" eher selten fest. In dieser Episode beschäftigt sich Christian Conradi mit Barrieren im Alltag und Schranken im Kopf. Wie die entstehen und eingerissen werden können, bespricht er mit Kulturjournalistin Judyta Smykowski.]]></description>
+  		<itunes:subtitle><![CDATA[Defekte Fahrstühle, hohe Bordsteine und unebene Gehwege sind für die meisten Menschen nicht mehr als ein Ärgernis. Die fehlerhafte Ausrichtung der Umwelt kann aber auch zu Ausgrenzung und Diskriminierung führen. Wie sehr die Welt behindert, stellt man al]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Defekte Fahrstühle, hohe Bordsteine und unebene Gehwege sind für die meisten Menschen nicht mehr als ein Ärgernis. Die fehlerhafte Ausrichtung der Umwelt kann aber auch zu Ausgrenzung und Diskriminierung führen. Wie sehr die Welt behindert, stellt man als "Durchschnittsmensch" eher selten fest. In dieser Episode beschäftigt sich Christian Conradi mit Barrieren im Alltag und Schranken im Kopf. Wie die entstehen und eingerissen werden können, bespricht er mit Kulturjournalistin Judyta Smykowski.]]></content:encoded>
+  		<itunes:summary><![CDATA[Defekte Fahrstühle, hohe Bordsteine und unebene Gehwege sind für die meisten Menschen nicht mehr als ein Ärgernis. Die fehlerhafte Ausrichtung der Umwelt kann aber auch zu Ausgrenzung und Diskriminierung führen. Wie sehr die Welt behindert, stellt man als "Durchschnittsmensch" eher selten fest. In dieser Episode beschäftigt sich Christian Conradi mit Barrieren im Alltag und Schranken im Kopf. Wie die entstehen und eingerissen werden können, bespricht er mit Kulturjournalistin Judyta Smykowski.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Defekte Fahrstühle, hohe Bordsteine und unebene Gehwege sind für die meisten Menschen nicht mehr als ein Ärgernis. Die fehlerhafte Ausrichtung der Umwelt kann aber auch zu Ausgrenzung und Diskriminierung führen. Wie sehr die Welt behindert, stellt man als "Durchschnittsmensch" eher selten fest. In dieser Episode beschäftigt sich Christian Conradi mit Barrieren im Alltag und Schranken im Kopf. Wie die entstehen und eingerissen werden können, bespricht er mit Kulturjournalistin Judyta Smykowski.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf10_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf10_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf10_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1525/sf10.mp3?v=1487679026&#038;source=feed" length="35666991" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:29:03</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Irren ist menschlich  		</title>
+  		<link>http://viertausendhertz.de/sf09/</link>
+  		<pubDate>Thu, 12 Jan 2017 18:54:18 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1527</guid>
+  		<description><![CDATA[Errare humanum est. Schon Jahrhunderte vor unserer Zeitrechnung wurde diese Weisheit verbreitet. „Irren ist menschlich“. Fehler machen uns also auch zu dem was wir sind. Sie gehören zum Menschsein dazu. Wenn Maschinen Fehler machen, werden sie dann also menschlicher? Dieser Frage geht Christian Conradi nach. Es geht um künstliche Intelligenz und dem Versuch sie zu verbessern, in dem man der Maschine beibringt Fehler zu machen.]]></description>
+  		<itunes:subtitle><![CDATA[Errare humanum est. Schon Jahrhunderte vor unserer Zeitrechnung wurde diese Weisheit verbreitet. „Irren ist menschlich“. Fehler machen uns also auch zu dem was wir sind. Sie gehören zum Menschsein dazu. Wenn Maschinen Fehler machen, werden sie dann also ]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Errare humanum est. Schon Jahrhunderte vor unserer Zeitrechnung wurde diese Weisheit verbreitet. „Irren ist menschlich“. Fehler machen uns also auch zu dem was wir sind. Sie gehören zum Menschsein dazu. Wenn Maschinen Fehler machen, werden sie dann also menschlicher? Dieser Frage geht Christian Conradi nach. Es geht um künstliche Intelligenz und dem Versuch sie zu verbessern, in dem man der Maschine beibringt Fehler zu machen.]]></content:encoded>
+  		<itunes:summary><![CDATA[Errare humanum est. Schon Jahrhunderte vor unserer Zeitrechnung wurde diese Weisheit verbreitet. „Irren ist menschlich“. Fehler machen uns also auch zu dem was wir sind. Sie gehören zum Menschsein dazu. Wenn Maschinen Fehler machen, werden sie dann also menschlicher? Dieser Frage geht Christian Conradi nach. Es geht um künstliche Intelligenz und dem Versuch sie zu verbessern, in dem man der Maschine beibringt Fehler zu machen.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Errare humanum est. Schon Jahrhunderte vor unserer Zeitrechnung wurde diese Weisheit verbreitet. „Irren ist menschlich“. Fehler machen uns also auch zu dem was wir sind. Sie gehören zum Menschsein dazu. Wenn Maschinen Fehler machen, werden sie dann also menschlicher? Dieser Frage geht Christian Conradi nach. Es geht um künstliche Intelligenz und dem Versuch sie zu verbessern, in dem man der Maschine beibringt Fehler zu machen.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF09_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF09_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF09_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1527/sf09.mp3?v=1484221013&#038;source=feed" length="38150531" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:31:08</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Abfall als Chance  		</title>
+  		<link>http://viertausendhertz.de/sf08/</link>
+  		<pubDate>Fri, 09 Dec 2016 19:02:41 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1530</guid>
+  		<description><![CDATA[Wenn es um Lebensmittel geht, dann läuft einiges schief. Viel zu viel landet auf dem Müll. In Deutschland sind es etwa 18 Millionen Tonnen. Jedes Jahr. Christian Conradi schaut sich Lösungsansätze an. Und zwar ganz konkrete. Es geht um Ideen, die den Fehler bzw. den Abfall als Chance sehen. Er hat ein Startup besucht, das übrig gebliebene Portionen in Restaurants rettet und weiterverkauft, bevor sie in der Tonne landen. Er hat sich auf die Suche nach Abfällen von Supermärkten gemacht und einen Selbstversuch im Dumpster Diving unternommen. Außerdem hat Christian ein Restaurant besucht, das Lebensmittel verarbeitet, die andere wegwerfen.]]></description>
+  		<itunes:subtitle><![CDATA[Wenn es um Lebensmittel geht, dann läuft einiges schief. Viel zu viel landet auf dem Müll. In Deutschland sind es etwa 18 Millionen Tonnen. Jedes Jahr. Christian Conradi schaut sich Lösungsansätze an. Und zwar ganz konkrete. Es geht um Ideen, die den Feh]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Wenn es um Lebensmittel geht, dann läuft einiges schief. Viel zu viel landet auf dem Müll. In Deutschland sind es etwa 18 Millionen Tonnen. Jedes Jahr. Christian Conradi schaut sich Lösungsansätze an. Und zwar ganz konkrete. Es geht um Ideen, die den Fehler bzw. den Abfall als Chance sehen. Er hat ein Startup besucht, das übrig gebliebene Portionen in Restaurants rettet und weiterverkauft, bevor sie in der Tonne landen. Er hat sich auf die Suche nach Abfällen von Supermärkten gemacht und einen Selbstversuch im Dumpster Diving unternommen. Außerdem hat Christian ein Restaurant besucht, das Lebensmittel verarbeitet, die andere wegwerfen.]]></content:encoded>
+  		<itunes:summary><![CDATA[Wenn es um Lebensmittel geht, dann läuft einiges schief. Viel zu viel landet auf dem Müll. In Deutschland sind es etwa 18 Millionen Tonnen. Jedes Jahr. Christian Conradi schaut sich Lösungsansätze an. Und zwar ganz konkrete. Es geht um Ideen, die den Fehler bzw. den Abfall als Chance sehen. Er hat ein Startup besucht, das übrig gebliebene Portionen in Restaurants rettet und weiterverkauft, bevor sie in der Tonne landen. Er hat sich auf die Suche nach Abfällen von Supermärkten gemacht und einen Selbstversuch im Dumpster Diving unternommen. Außerdem hat Christian ein Restaurant besucht, das Lebensmittel verarbeitet, die andere wegwerfen.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Wenn es um Lebensmittel geht, dann läuft einiges schief. Viel zu viel landet auf dem Müll. In Deutschland sind es etwa 18 Millionen Tonnen. Jedes Jahr. Christian Conradi schaut sich Lösungsansätze an. Und zwar ganz konkrete. Es geht um Ideen, die den Fehler bzw. den Abfall als Chance sehen. Er hat ein Startup besucht, das übrig gebliebene Portionen in Restaurants rettet und weiterverkauft, bevor sie in der Tonne landen. Er hat sich auf die Suche nach Abfällen von Supermärkten gemacht und einen Selbstversuch im Dumpster Diving unternommen. Außerdem hat Christian ein Restaurant besucht, das Lebensmittel verarbeitet, die andere wegwerfen.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf08_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf08_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf08_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1530/sf08.mp3?v=1483378381&#038;source=feed" length="49988106" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:40:59</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Parasitennetz  		</title>
+  		<link>http://viertausendhertz.de/sf07/</link>
+  		<pubDate>Mon, 07 Nov 2016 19:09:57 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1532</guid>
+  		<description><![CDATA[Immer mehr Dinge haben Netzzugang. Kameras, Drucker, Waschmaschinen, Toaster, Thermostate. Weil es geht. Und weil es sich verkauft. Denn alles wird besser wenn ein Computerchip drin steckt, oder? Was kann da schon schief gehen? Genau die Frage stellt Christian Conradi in dieser Systemfehler-Episode. Es geht um digitale Parasiten, die sich unbemerkt in Computersysteme einschleichen und riesige Netzwerke bilden, die wie eine digitale Söldnerarmee auf Knopfdruck zum marodierenden Internet-Mob mutieren. Willkommen im schönen neuen Internet der Dinge!]]></description>
+  		<itunes:subtitle><![CDATA[Immer mehr Dinge haben Netzzugang. Kameras, Drucker, Waschmaschinen, Toaster, Thermostate. Weil es geht. Und weil es sich verkauft. Denn alles wird besser wenn ein Computerchip drin steckt, oder? Was kann da schon schief gehen? Genau die Frage stellt Chr]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Immer mehr Dinge haben Netzzugang. Kameras, Drucker, Waschmaschinen, Toaster, Thermostate. Weil es geht. Und weil es sich verkauft. Denn alles wird besser wenn ein Computerchip drin steckt, oder? Was kann da schon schief gehen? Genau die Frage stellt Christian Conradi in dieser Systemfehler-Episode. Es geht um digitale Parasiten, die sich unbemerkt in Computersysteme einschleichen und riesige Netzwerke bilden, die wie eine digitale Söldnerarmee auf Knopfdruck zum marodierenden Internet-Mob mutieren. Willkommen im schönen neuen Internet der Dinge!]]></content:encoded>
+  		<itunes:summary><![CDATA[Immer mehr Dinge haben Netzzugang. Kameras, Drucker, Waschmaschinen, Toaster, Thermostate. Weil es geht. Und weil es sich verkauft. Denn alles wird besser wenn ein Computerchip drin steckt, oder? Was kann da schon schief gehen? Genau die Frage stellt Christian Conradi in dieser Systemfehler-Episode. Es geht um digitale Parasiten, die sich unbemerkt in Computersysteme einschleichen und riesige Netzwerke bilden, die wie eine digitale Söldnerarmee auf Knopfdruck zum marodierenden Internet-Mob mutieren. Willkommen im schönen neuen Internet der Dinge!]]></itunes:summary>
+  		<googleplay:description><![CDATA[Immer mehr Dinge haben Netzzugang. Kameras, Drucker, Waschmaschinen, Toaster, Thermostate. Weil es geht. Und weil es sich verkauft. Denn alles wird besser wenn ein Computerchip drin steckt, oder? Was kann da schon schief gehen? Genau die Frage stellt Christian Conradi in dieser Systemfehler-Episode. Es geht um digitale Parasiten, die sich unbemerkt in Computersysteme einschleichen und riesige Netzwerke bilden, die wie eine digitale Söldnerarmee auf Knopfdruck zum marodierenden Internet-Mob mutieren. Willkommen im schönen neuen Internet der Dinge!]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf07_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf07_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf07_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1532/sf07.mp3?v=1483374501&#038;source=feed" length="39958327" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:32:35</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Hüter der Zeit  		</title>
+  		<link>http://viertausendhertz.de/sf06/</link>
+  		<pubDate>Mon, 10 Oct 2016 18:15:59 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1534</guid>
+  		<description><![CDATA[Tragt ihr eigentlich noch Armbanduhren? Mit dem Aufkommen der Handys sind die guten alten Zeiteisen von vielen Handgelenken verschwunden - denn die Zeit sagt uns längst der Computer. Kaum ein Blick ist routinierter als der auf die obere rechte Bildschirmecke. Die Zeit ist einfach da. Sie läuft. Immer weiter. Ohne auszusetzen. Das tut sie doch, oder? In dieser Podcast-Episode erzählt euch Christian Conradi eine Geschichte über verlorene Zeit und über gewonnene Zeit. Er zeigt euch auch, dass Zeitreisen möglich sind. Also nicht nur theoretisch oder in der Science Fiction sondern in echt, wirklich jetzt. Er hat sogar einen Zeitreisenden getroffen. Glaubt ihr nicht? Dann hört selbst.]]></description>
+  		<itunes:subtitle><![CDATA[Tragt ihr eigentlich noch Armbanduhren? Mit dem Aufkommen der Handys sind die guten alten Zeiteisen von vielen Handgelenken verschwunden - denn die Zeit sagt uns längst der Computer. Kaum ein Blick ist routinierter als der auf die obere rechte Bildschirm]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Tragt ihr eigentlich noch Armbanduhren? Mit dem Aufkommen der Handys sind die guten alten Zeiteisen von vielen Handgelenken verschwunden - denn die Zeit sagt uns längst der Computer. Kaum ein Blick ist routinierter als der auf die obere rechte Bildschirmecke. Die Zeit ist einfach da. Sie läuft. Immer weiter. Ohne auszusetzen. Das tut sie doch, oder? In dieser Podcast-Episode erzählt euch Christian Conradi eine Geschichte über verlorene Zeit und über gewonnene Zeit. Er zeigt euch auch, dass Zeitreisen möglich sind. Also nicht nur theoretisch oder in der Science Fiction sondern in echt, wirklich jetzt. Er hat sogar einen Zeitreisenden getroffen. Glaubt ihr nicht? Dann hört selbst.]]></content:encoded>
+  		<itunes:summary><![CDATA[Tragt ihr eigentlich noch Armbanduhren? Mit dem Aufkommen der Handys sind die guten alten Zeiteisen von vielen Handgelenken verschwunden - denn die Zeit sagt uns längst der Computer. Kaum ein Blick ist routinierter als der auf die obere rechte Bildschirmecke. Die Zeit ist einfach da. Sie läuft. Immer weiter. Ohne auszusetzen. Das tut sie doch, oder? In dieser Podcast-Episode erzählt euch Christian Conradi eine Geschichte über verlorene Zeit und über gewonnene Zeit. Er zeigt euch auch, dass Zeitreisen möglich sind. Also nicht nur theoretisch oder in der Science Fiction sondern in echt, wirklich jetzt. Er hat sogar einen Zeitreisenden getroffen. Glaubt ihr nicht? Dann hört selbst.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Tragt ihr eigentlich noch Armbanduhren? Mit dem Aufkommen der Handys sind die guten alten Zeiteisen von vielen Handgelenken verschwunden - denn die Zeit sagt uns längst der Computer. Kaum ein Blick ist routinierter als der auf die obere rechte Bildschirmecke. Die Zeit ist einfach da. Sie läuft. Immer weiter. Ohne auszusetzen. Das tut sie doch, oder? In dieser Podcast-Episode erzählt euch Christian Conradi eine Geschichte über verlorene Zeit und über gewonnene Zeit. Er zeigt euch auch, dass Zeitreisen möglich sind. Also nicht nur theoretisch oder in der Science Fiction sondern in echt, wirklich jetzt. Er hat sogar einen Zeitreisenden getroffen. Glaubt ihr nicht? Dann hört selbst.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf06_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf06_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf06_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1534/sf06.mp3?v=1477137823&#038;source=feed" length="41782049" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:34:07</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Die Relaismotte  		</title>
+  		<link>http://viertausendhertz.de/sf05/</link>
+  		<pubDate>Fri, 09 Sep 2016 18:21:32 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1536</guid>
+  		<description><![CDATA[Grafikfehler in Computerspielen, Programmdefekte, die den Akku im Smartphone auf unerklärliche Weise leersaugen oder fehlerhafte Codeschnipsel, die die Sicherheit des gesamten Internets gefährden; so genannte Bugs, also Computerfehler sind mittlerweile überall, denn wir leben in einer Welt, die zunehmend von Software und Rechnersystemen bestimmt wird. Aber warum nennt man diese Art von Fehler eigentlich “Bug”? Was haben Insekten damit zu tun, wenn sich Programmfehler in Computersysteme einschleichen? Christian Conradi erzählt euch die spannende Geschichte des Computerbugs, der am 9. September Geburtstag feiert.]]></description>
+  		<itunes:subtitle><![CDATA[Grafikfehler in Computerspielen, Programmdefekte, die den Akku im Smartphone auf unerklärliche Weise leersaugen oder fehlerhafte Codeschnipsel, die die Sicherheit des gesamten Internets gefährden; so genannte Bugs, also Computerfehler sind mittlerweile ü]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Grafikfehler in Computerspielen, Programmdefekte, die den Akku im Smartphone auf unerklärliche Weise leersaugen oder fehlerhafte Codeschnipsel, die die Sicherheit des gesamten Internets gefährden; so genannte Bugs, also Computerfehler sind mittlerweile überall, denn wir leben in einer Welt, die zunehmend von Software und Rechnersystemen bestimmt wird. Aber warum nennt man diese Art von Fehler eigentlich “Bug”? Was haben Insekten damit zu tun, wenn sich Programmfehler in Computersysteme einschleichen? Christian Conradi erzählt euch die spannende Geschichte des Computerbugs, der am 9. September Geburtstag feiert.]]></content:encoded>
+  		<itunes:summary><![CDATA[Grafikfehler in Computerspielen, Programmdefekte, die den Akku im Smartphone auf unerklärliche Weise leersaugen oder fehlerhafte Codeschnipsel, die die Sicherheit des gesamten Internets gefährden; so genannte Bugs, also Computerfehler sind mittlerweile überall, denn wir leben in einer Welt, die zunehmend von Software und Rechnersystemen bestimmt wird. Aber warum nennt man diese Art von Fehler eigentlich “Bug”? Was haben Insekten damit zu tun, wenn sich Programmfehler in Computersysteme einschleichen? Christian Conradi erzählt euch die spannende Geschichte des Computerbugs, der am 9. September Geburtstag feiert.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Grafikfehler in Computerspielen, Programmdefekte, die den Akku im Smartphone auf unerklärliche Weise leersaugen oder fehlerhafte Codeschnipsel, die die Sicherheit des gesamten Internets gefährden; so genannte Bugs, also Computerfehler sind mittlerweile überall, denn wir leben in einer Welt, die zunehmend von Software und Rechnersystemen bestimmt wird. Aber warum nennt man diese Art von Fehler eigentlich “Bug”? Was haben Insekten damit zu tun, wenn sich Programmfehler in Computersysteme einschleichen? Christian Conradi erzählt euch die spannende Geschichte des Computerbugs, der am 9. September Geburtstag feiert.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF05_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF05_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/SF05_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1536/sf05.mp3?v=1505731022&#038;source=feed" length="42318735" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:33:33</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Kunstfehler und Fehlerkunst  		</title>
+  		<link>http://viertausendhertz.de/sf04/</link>
+  		<pubDate>Fri, 12 Aug 2016 18:31:21 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1538</guid>
+  		<description><![CDATA[Fehler und Defekte haben einen schlechten Ruf. Völlig zu Unrecht! Christian Conradi zeigt euch in dieser Podcast-Episode, dass sie auch ästhetisch, überraschend und künstlerisch sein können. Einerseits. Es geht aber auch andersherum. Hin und wieder wird Kunst nämlich irrtümlich verändert, zerstört oder aus Unwissenheit zweckentfremdet. Geschichten über Fehler, die zu Kunst werden und Kunstwerke, die im Defekt enden.]]></description>
+  		<itunes:subtitle><![CDATA[Fehler und Defekte haben einen schlechten Ruf. Völlig zu Unrecht! Christian Conradi zeigt euch in dieser Podcast-Episode, dass sie auch ästhetisch, überraschend und künstlerisch sein können. Einerseits. Es geht aber auch andersherum. Hin und wieder wird ]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Fehler und Defekte haben einen schlechten Ruf. Völlig zu Unrecht! Christian Conradi zeigt euch in dieser Podcast-Episode, dass sie auch ästhetisch, überraschend und künstlerisch sein können. Einerseits. Es geht aber auch andersherum. Hin und wieder wird Kunst nämlich irrtümlich verändert, zerstört oder aus Unwissenheit zweckentfremdet. Geschichten über Fehler, die zu Kunst werden und Kunstwerke, die im Defekt enden.]]></content:encoded>
+  		<itunes:summary><![CDATA[Fehler und Defekte haben einen schlechten Ruf. Völlig zu Unrecht! Christian Conradi zeigt euch in dieser Podcast-Episode, dass sie auch ästhetisch, überraschend und künstlerisch sein können. Einerseits. Es geht aber auch andersherum. Hin und wieder wird Kunst nämlich irrtümlich verändert, zerstört oder aus Unwissenheit zweckentfremdet. Geschichten über Fehler, die zu Kunst werden und Kunstwerke, die im Defekt enden.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Fehler und Defekte haben einen schlechten Ruf. Völlig zu Unrecht! Christian Conradi zeigt euch in dieser Podcast-Episode, dass sie auch ästhetisch, überraschend und künstlerisch sein können. Einerseits. Es geht aber auch andersherum. Hin und wieder wird Kunst nämlich irrtümlich verändert, zerstört oder aus Unwissenheit zweckentfremdet. Geschichten über Fehler, die zu Kunst werden und Kunstwerke, die im Defekt enden.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf04_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf04_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf04_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1538/sf04.mp3?v=1470947681&#038;source=feed" length="34500699" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:28:31</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Der interne Systemfehler  		</title>
+  		<link>http://viertausendhertz.de/sf03/</link>
+  		<pubDate>Wed, 13 Jul 2016 18:38:19 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1540</guid>
+  		<description><![CDATA[Dan Bull ist Youtube-Musiker der allerersten Stunde. Seit knapp zehn Jahren veröffentlicht er eine kreative Mischung aus Gameraps, politischen Kommentaren und persönlichen Geschichten - die mittlerweile weltweit über eine Million Menschen regelmäßig mitverfolgen. Sein geliebtes Hobby, das längst zum Beruf und ein großer Teil seines Lebens geworden ist, steht plötzlich vor dem Aus. Sein Gehör macht nicht mehr mit. Und niemand kann ihm helfen. Der interne Systemfehler.]]></description>
+  		<itunes:subtitle><![CDATA[Dan Bull ist Youtube-Musiker der allerersten Stunde. Seit knapp zehn Jahren veröffentlicht er eine kreative Mischung aus Gameraps, politischen Kommentaren und persönlichen Geschichten - die mittlerweile weltweit über eine Million Menschen regelmäßig mitv]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Dan Bull ist Youtube-Musiker der allerersten Stunde. Seit knapp zehn Jahren veröffentlicht er eine kreative Mischung aus Gameraps, politischen Kommentaren und persönlichen Geschichten - die mittlerweile weltweit über eine Million Menschen regelmäßig mitverfolgen. Sein geliebtes Hobby, das längst zum Beruf und ein großer Teil seines Lebens geworden ist, steht plötzlich vor dem Aus. Sein Gehör macht nicht mehr mit. Und niemand kann ihm helfen. Der interne Systemfehler.]]></content:encoded>
+  		<itunes:summary><![CDATA[Dan Bull ist Youtube-Musiker der allerersten Stunde. Seit knapp zehn Jahren veröffentlicht er eine kreative Mischung aus Gameraps, politischen Kommentaren und persönlichen Geschichten - die mittlerweile weltweit über eine Million Menschen regelmäßig mitverfolgen. Sein geliebtes Hobby, das längst zum Beruf und ein großer Teil seines Lebens geworden ist, steht plötzlich vor dem Aus. Sein Gehör macht nicht mehr mit. Und niemand kann ihm helfen. Der interne Systemfehler.]]></itunes:summary>
+  		<googleplay:description><![CDATA[Dan Bull ist Youtube-Musiker der allerersten Stunde. Seit knapp zehn Jahren veröffentlicht er eine kreative Mischung aus Gameraps, politischen Kommentaren und persönlichen Geschichten - die mittlerweile weltweit über eine Million Menschen regelmäßig mitverfolgen. Sein geliebtes Hobby, das längst zum Beruf und ein großer Teil seines Lebens geworden ist, steht plötzlich vor dem Aus. Sein Gehör macht nicht mehr mit. Und niemand kann ihm helfen. Der interne Systemfehler.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf03_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf03_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf03_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1540/sf03.mp3?v=1467806450&#038;source=feed" length="38270134" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:31:39</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Klangverluste  		</title>
+  		<link>http://viertausendhertz.de/sf02/</link>
+  		<pubDate>Tue, 15 Mar 2016 19:48:03 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1542</guid>
+  		<description><![CDATA[So gut wie alles, was wir im Netz hören, ist nicht wirklich so, wie es ursprünglich mal war. Egal welchen Podcast, welche Musik man hört oder welchen Film man schaut - bis auf sehr wenige Ausnahmen wird alles, was im Netz veröffentlicht wird, komprimiert - also verkleinert, um den Datentransport zu optimieren. Und dabei gehen Informationen verloren. Was ist das also, was wir da täglich hören und was ist das, was wir nicht hören? Christian Grasse nimmt Euch mit auf eine klangliche Entdeckungsreise.]]></description>
+  		<itunes:subtitle><![CDATA[So gut wie alles, was wir im Netz hören, ist nicht wirklich so, wie es ursprünglich mal war. Egal welchen Podcast, welche Musik man hört oder welchen Film man schaut - bis auf sehr wenige Ausnahmen wird alles, was im Netz veröffentlicht wird, komprimiert]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[So gut wie alles, was wir im Netz hören, ist nicht wirklich so, wie es ursprünglich mal war. Egal welchen Podcast, welche Musik man hört oder welchen Film man schaut - bis auf sehr wenige Ausnahmen wird alles, was im Netz veröffentlicht wird, komprimiert - also verkleinert, um den Datentransport zu optimieren. Und dabei gehen Informationen verloren. Was ist das also, was wir da täglich hören und was ist das, was wir nicht hören? Christian Grasse nimmt Euch mit auf eine klangliche Entdeckungsreise.]]></content:encoded>
+  		<itunes:summary><![CDATA[So gut wie alles, was wir im Netz hören, ist nicht wirklich so, wie es ursprünglich mal war. Egal welchen Podcast, welche Musik man hört oder welchen Film man schaut - bis auf sehr wenige Ausnahmen wird alles, was im Netz veröffentlicht wird, komprimiert - also verkleinert, um den Datentransport zu optimieren. Und dabei gehen Informationen verloren. Was ist das also, was wir da täglich hören und was ist das, was wir nicht hören? Christian Grasse nimmt Euch mit auf eine klangliche Entdeckungsreise.]]></itunes:summary>
+  		<googleplay:description><![CDATA[So gut wie alles, was wir im Netz hören, ist nicht wirklich so, wie es ursprünglich mal war. Egal welchen Podcast, welche Musik man hört oder welchen Film man schaut - bis auf sehr wenige Ausnahmen wird alles, was im Netz veröffentlicht wird, komprimiert - also verkleinert, um den Datentransport zu optimieren. Und dabei gehen Informationen verloren. Was ist das also, was wir da täglich hören und was ist das, was wir nicht hören? Christian Grasse nimmt Euch mit auf eine klangliche Entdeckungsreise.]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf02_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf02_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf02_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1542/sf02.mp3?v=1467806450&#038;source=feed" length="50483347" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:41:50</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+      	<item>
+  		<title>
+  			Der Defekt ist vorinstalliert  		</title>
+  		<link>http://viertausendhertz.de/sf01/</link>
+  		<pubDate>Mon, 25 Jan 2016 09:20:55 +0000</pubDate>
+  		<dc:creator>Viertausendhertz</dc:creator>
+  		<guid isPermaLink="false">http://test.viertausendhertz.de/?p=1544</guid>
+  		<description><![CDATA[Smartphones und Tablets sind eine tolle Sache. Sie sind zu allwissenden Assistenten unseres digitalen Alltags geworden. Für den alltäglichen Gebrauch scheinen sie jedoch nicht konstruiert zu sein. In den meisten Fällen sind die smarten Geräte teure Wegwerfprodukte, die sich schwer bis gar nicht reparieren lassen, wenn ein Defekt auftritt. Zersplittertes Displayglas und Feuchtigkeitsschäden kennt jeder. Außerdem werden die Dinger immer schneller alt, ein Hardware-Upgrade ist nur selten möglich. Ziemlich dumm gelaufen. Sollten wir uns damit zufrieden geben?]]></description>
+  		<itunes:subtitle><![CDATA[Smartphones und Tablets sind eine tolle Sache. Sie sind zu allwissenden Assistenten unseres digitalen Alltags geworden. Für den alltäglichen Gebrauch scheinen sie jedoch nicht konstruiert zu sein. In den meisten Fällen sind die smarten Geräte teure Wegwe]]></itunes:subtitle>
+          		                                		<content:encoded><![CDATA[Smartphones und Tablets sind eine tolle Sache. Sie sind zu allwissenden Assistenten unseres digitalen Alltags geworden. Für den alltäglichen Gebrauch scheinen sie jedoch nicht konstruiert zu sein. In den meisten Fällen sind die smarten Geräte teure Wegwerfprodukte, die sich schwer bis gar nicht reparieren lassen, wenn ein Defekt auftritt. Zersplittertes Displayglas und Feuchtigkeitsschäden kennt jeder. Außerdem werden die Dinger immer schneller alt, ein Hardware-Upgrade ist nur selten möglich. Ziemlich dumm gelaufen. Sollten wir uns damit zufrieden geben?]]></content:encoded>
+  		<itunes:summary><![CDATA[Smartphones und Tablets sind eine tolle Sache. Sie sind zu allwissenden Assistenten unseres digitalen Alltags geworden. Für den alltäglichen Gebrauch scheinen sie jedoch nicht konstruiert zu sein. In den meisten Fällen sind die smarten Geräte teure Wegwerfprodukte, die sich schwer bis gar nicht reparieren lassen, wenn ein Defekt auftritt. Zersplittertes Displayglas und Feuchtigkeitsschäden kennt jeder. Außerdem werden die Dinger immer schneller alt, ein Hardware-Upgrade ist nur selten möglich. Ziemlich dumm gelaufen. Sollten wir uns damit zufrieden geben?]]></itunes:summary>
+  		<googleplay:description><![CDATA[Smartphones und Tablets sind eine tolle Sache. Sie sind zu allwissenden Assistenten unseres digitalen Alltags geworden. Für den alltäglichen Gebrauch scheinen sie jedoch nicht konstruiert zu sein. In den meisten Fällen sind die smarten Geräte teure Wegwerfprodukte, die sich schwer bis gar nicht reparieren lassen, wenn ein Defekt auftritt. Zersplittertes Displayglas und Feuchtigkeitsschäden kennt jeder. Außerdem werden die Dinger immer schneller alt, ein Hardware-Upgrade ist nur selten möglich. Ziemlich dumm gelaufen. Sollten wir uns damit zufrieden geben?]]></googleplay:description>  		<itunes:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf01_feed.jpeg"></itunes:image>
+  		<googleplay:image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf01_feed.jpeg"></googleplay:image>
+  		<image href="http://viertausendhertz.de/wp-content/uploads/2017/08/sf01_feed.jpeg"></image>  		<enclosure url="http://viertausendhertz.de/podcast-download/1544/sf01.mp3?v=1467806450&#038;source=feed" length="34486770" type="audio/mpeg"></enclosure>
+  		<itunes:explicit>clean</itunes:explicit>
+  		<googleplay:explicit>No</googleplay:explicit>
+  		<itunes:block>no</itunes:block>
+  		<googleplay:block>no</googleplay:block>
+  		<itunes:duration>00:28:30</itunes:duration>
+  		<itunes:author>Viertausendhertz</itunes:author>
+  	</item>
+  </channel>
+</rss>

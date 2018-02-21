@@ -41,12 +41,15 @@ object ActorProtocol {
 
     // Parser -> DirectoryStore
     case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)
-    case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
+    //case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
     // Questions: Parser -> DirectoryStore
+    /*
     case class IsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String)
     case class EpisodeRegistered(episodeId: String)
     case class EpisodeNotRegistered()
+    */
+    case class RegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO)
 
     // Crawler -> Parser
     case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)

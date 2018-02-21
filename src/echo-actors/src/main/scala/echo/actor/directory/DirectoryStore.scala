@@ -9,6 +9,7 @@ import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
 import echo.core.domain.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
+import echo.core.mapper.IndexMapper
 import echo.core.util.EchoIdGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -68,7 +69,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdatePodcastMetadata(echoId, url, podcast) => onUpdatePodcastMetadata(echoId, url, podcast)
 
-        case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
+        //case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
 
         case UpdateFeedUrl(oldUrl, newUrl) => onUpdateFeedMetadataUrl(oldUrl, newUrl)
 
@@ -84,7 +85,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
 
-        case IsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType) => onIsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType)
+        //case IsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType) => onIsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType)
+
+        case RegisterEpisodeIfNew(podcastId, episode) => onRegisterEpisodeIfNew(podcastId, episode)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
@@ -113,25 +116,12 @@ class DirectoryStore extends Actor with ActorLogging {
     private def proposeFeed(url: String): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
-        /*
-        Url62.create
-        // 7NLCAyd6sKR7kDHxgAWFPG
-
-        Url62.decode("7NLCAyd6sKR7kDHxgAWFPG")
-        // c3587ec5-0976-497f-8374-61e0c2ea3da5
-
-        Url62.encode(UUID.fromString("c3587ec5-0976-497f-8374-61e0c2ea3da5"))
-        */
-
-        // TODO check of feed is known yet
-        // TODO handle known and unknown
-
         def task = () => {
             if(feedService.findAllByUrl(url).isEmpty){
-                val fakePodcastId: String = EchoIdGenerator.getNewId()
+                val podcastId: String = EchoIdGenerator.getNewId()
                 var podcast = new PodcastDTO
-                podcast.setEchoId(fakePodcastId)
-                podcast.setTitle(fakePodcastId)
+                podcast.setEchoId(podcastId)
+                podcast.setTitle(podcastId)
                 podcast.setDescription(url)
                 podcast.setRegistrationComplete(false)
                 podcast.setRegistrationTimestamp(LocalDateTime.now())
@@ -147,7 +137,7 @@ class DirectoryStore extends Actor with ActorLogging {
                     feed.setRegistrationTimestamp(LocalDateTime.now())
                     feedService.save(feed)
 
-                    crawler ! FetchFeedForNewPodcast(url, fakePodcastId)
+                    crawler ! FetchFeedForNewPodcast(url, podcastId)
                 })
             } else {
                 log.info("Proposed feed is already in database: {}", url)
@@ -201,6 +191,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
     }
 
+    @Deprecated
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
         def task = () => {
@@ -388,6 +379,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished CheckAllFeeds()")
     }
 
+    /*
     private def onIsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Unit = {
         log.debug("Received IsEpisodeRegistered('{}', {}, '{}')", enclosureUrl, enclosureLength, enclosureType)
 
@@ -401,6 +393,40 @@ class DirectoryStore extends Actor with ActorLogging {
         doInTransaction(task, List(episodeService))
 
         log.debug("Finished IsEpisodeRegistered()")
+    }
+    */
+
+    private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {
+        log.debug("Received RegisterEpisodeIfNew({}, '{}', {}, '{}')", podcastId, episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
+
+        def task = () => {
+            episodeService.findOneByEnlosure(episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType).map(e => {
+                None
+            }).getOrElse({
+
+                // generate a new episode echoId - the generator is (almost) ensuring uniqueness
+                episode.setEchoId(EchoIdGenerator.getNewId)
+
+                episode.setRegistrationTimestamp(LocalDateTime.now())
+                episodeService.save(episode)
+            })
+        }
+        val registeredEpisode: Option[EpisodeDTO] = doInTransaction(task, List(episodeService)).asInstanceOf[Option[EpisodeDTO]]
+
+        // in case the episode was registered, we initiate some post processing
+        registeredEpisode match {
+            case Some(e) =>
+                indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
+
+                // request that the website will get added to the episodes index entry as well
+                Option(e.getLink) match {
+                    case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)
+                    case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getEchoId)
+                }
+            case None =>
+                log.debug("Episode is already registered : ('{}', {}, '{}')",episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
+        }
+        log.debug("Finished RegisterEpisodeIfNew()")
     }
 
     private def debugPrintAllPodcasts(): Unit = {
@@ -430,7 +456,7 @@ class DirectoryStore extends Actor with ActorLogging {
       * @param task the function to be executed inside a transaction
       * @param services all services used within the callable function, which therefore require a refresh before doing the work
       */
-    private def doInTransaction(task: () => Any, services: List[DirectoryService] ): Unit = {
+    private def doInTransaction(task: () => Any, services: List[DirectoryService] ): Any = {
         val em: EntityManager = emf.createEntityManager()
         TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
         try {

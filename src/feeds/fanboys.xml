@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sc="http://podlove.org/simple-chapters" version="2.0">
+    <channel>
+        <title>Fanboys</title>
+        <link>http://fanboys.fm</link>
+        <atom:link href="http://fanboys.fm/episodes.mp3.rss" rel="self" type="application/rss+xml" title="mp3 Audio"/>
+        <language>de-de</language>
+        <copyright>cc-by-nc-sa</copyright>
+        <itunes:subtitle>Wayne's World for radio</itunes:subtitle>
+        <itunes:author>fanboys</itunes:author>
+        <itunes:summary>Regelmässiges Kaffeekränzchen in Sachen Nerdkram</itunes:summary>
+        <itunes:explicit>no</itunes:explicit>
+        <description>Regelmässiges Kaffeekränzchen in Sachen Nerdkram</description>
+        <itunes:owner>
+            <itunes:name>fanboys</itunes:name>
+            <itunes:email>all@fanboys.fm</itunes:email>
+        </itunes:owner>
+        <itunes:image href="http://fanboys.fm/images/cover.jpg"/>
+        <itunes:category text="Technology"/>
+        <itunes:category text="Technology">
+            <itunes:category text="Gadgets"/>
+        </itunes:category>
+        <itunes:category text="Technology">
+            <itunes:category text="Tech News"/>
+        </itunes:category>
+        <itunes:type>episodic</itunes:type>
+        <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2Fepisodes.mp3.rss&amp;user_id=map&amp;title=Fanboys%20Feed&amp;tags=podcast&amp;category=audio" type="text/html" />
+
+        <item>
+            <title>Episode #313 - Donald Duck's Goaties</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Donald Duck's Goaties</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/369589268-martinpittenauer-fan313.mp3" length="28011877" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN313</guid>
+            <pubDate>Thu, 14 Dec 2017 20:12:17 +0000</pubDate>
+            <itunes:duration>00:58:13</itunes:duration>
+            <description><![CDATA[
+00:03:43 <a href="https://www.macstories.net/news/apple-opens-app-pre-orders-to-all-developers/">Apps Vorbestellen</a><br/>
+00:13:25 <a href="https://twitter.com/cabel/status/940668207387385857">iMac Pro</a><br/>
+00:16:42 <a href="https://www.theverge.com/2017/12/8/16753794/apple-jony-ive-design-management-role-change">Jony Ive returns</a><br/>
+00:18:39 <a href="https://www.theverge.com/2017/12/11/16761984/apple-shazam-acquisition">Apple kauft Shazam</a><br/>
+00:21:00 <a href="http://toucharcade.com/2017/12/13/polytron-just-released-fez-pocket-edition-on-the-app-store-for-4-99/">FEZ Pocket Edition</a><br/>
+00:22:53 <a href="http://itunes.apple.com/us/app/gorogoa/id1269225754?mt=8">Gorogoa (iOS)</a><br/>
+00:25:31 <a href="https://itunes.apple.com/de/app/playdeads-inside/id1201642309?mt=8">Inside (iOS) </a><br/>
+00:29:10 Marcel's GOTYs: Hob (PS4, Steam), Overcooked (Multiplattform), Horizon Zero Dawn (PS4), The Invisible Hours (PSVR), The House of DaVinci (iOS), Campfire Cooking (iOS)<br/>
+00:39:43 Map's GOTYs: HZD, Overcooked, BotW, Mario, HQ, Desert Bus<br/>
+00:52:02 Game Dev Tycoon<br/>
+00:56:24 <a href="https://www.youtube.com/watch?v=EdMIfphhBTU">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:03:43" title="Apps Vorbestellen" href="https://www.macstories.net/news/apple-opens-app-pre-orders-to-all-developers/" />
+			<sc:chapter start="00:13:25" title="iMac Pro" href="https://twitter.com/cabel/status/940668207387385857" />
+			<sc:chapter start="00:16:42" title="Jony Ive returns" href="https://www.theverge.com/2017/12/8/16753794/apple-jony-ive-design-management-role-change" />
+			<sc:chapter start="00:18:39" title="Apple kauft Shazam" href="https://www.theverge.com/2017/12/11/16761984/apple-shazam-acquisition" />
+			<sc:chapter start="00:21:00" title="FEZ Pocket Edition" href="http://toucharcade.com/2017/12/13/polytron-just-released-fez-pocket-edition-on-the-app-store-for-4-99/" />
+			<sc:chapter start="00:22:53" title="Gorogoa (iOS)" href="http://itunes.apple.com/us/app/gorogoa/id1269225754?mt=8" />
+			<sc:chapter start="00:25:31" title="Inside (iOS) " href="https://itunes.apple.com/de/app/playdeads-inside/id1201642309?mt=8" />
+			<sc:chapter start="00:29:10" title="Marcel's GOTYs: Hob (PS4, Steam), Overcooked (Multiplattform), Horizon Zero Dawn (PS4), The Invisible Hours (PSVR), The House of DaVinci (iOS), Campfire Cooking (iOS)" />
+			<sc:chapter start="00:39:43" title="Map's GOTYs: HZD, Overcooked, BotW, Mario, HQ, Desert Bus" />
+			<sc:chapter start="00:52:02" title="Game Dev Tycoon" />
+			<sc:chapter start="00:56:24" title="Rausschmeisser" href="https://www.youtube.com/watch?v=EdMIfphhBTU" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>313</itunes:episode>
+           	<itunes:title>Donald Duck's Goaties</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23313&amp;user_id=map&amp;title=Fanboys%20Episode%20313&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/313" />
+        </item>
+
+        <item>
+            <title>Episode #312 - Hey Siri, spiel!</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Hey Siri, spiel!</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/366670094-martinpittenauer-fan312.mp3" length="24782516" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN312</guid>
+            <pubDate>Fri, 08 Dec 2017 11:44:56 +0000</pubDate>
+            <itunes:duration>00:51:29</itunes:duration>
+            <description><![CDATA[
+00:02:10 iOS Local-Notifications-Schluckauf am 2.12<br/>
+00:03:55 <a href="https://arstechnica.com/gadgets/2017/12/updating-macos-can-bring-back-the-nasty-root-security-bug/">10.13.1 und der Security fix</a><br/>
+00:06:31 <a href="http://toucharcade.com/2017/12/07/the-best-ios-iphone-ipad-games-of-2017-apple-picks/">Best of 2017</a><br/>
+00:15:53 <a href="http://toucharcade.com/2017/12/06/portal-is-coming-to-the-app-store-bridge-constructor-portal/">Portal-Bridge-Constructor-Crossover</a><br/>
+00:18:02 <a href="https://daringfireball.net/linked/2017/12/06/amazon-prime-apple-tv">Amazon Prime Video auf Apple TV</a><br/>
+00:19:49 Game Dev Tycoon (iOS)<br/>
+00:24:00 <a href="http://coolghosts.net/cool-stuff/coolghostsepisode1">Cool Ghosts: Episode 1</a><br/>
+00:25:41 Reigns: Her Majesty (iOS)<br/>
+00:27:18 AirPods<br/>
+00:40:22 <a href="https://itunes.apple.com/us/app/hq-live-trivia-game-show/id1232278996?mt=8">HQ (referer code: map)</a><br/>
+00:42:18 Campfire Cooking<br/>
+00:43:37 <a href="https://www.pretty-terrible.com/funny-money-patreon-style/">Patreon Änderungen</a><br/>
+00:50:20 <a href="https://www.youtube.com/watch?v=b4tZCWC4CLA&amp;list=PLjVTojiDW0-6u5oI24JhHeHDwz73Xzc22">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:02:10" title="iOS Local-Notifications-Schluckauf am 2.12" />
+			<sc:chapter start="00:03:55" title="10.13.1 und der Security fix" href="https://arstechnica.com/gadgets/2017/12/updating-macos-can-bring-back-the-nasty-root-security-bug/" />
+			<sc:chapter start="00:06:31" title="Best of 2017" href="http://toucharcade.com/2017/12/07/the-best-ios-iphone-ipad-games-of-2017-apple-picks/" />
+			<sc:chapter start="00:15:53" title="Portal-Bridge-Constructor-Crossover" href="http://toucharcade.com/2017/12/06/portal-is-coming-to-the-app-store-bridge-constructor-portal/" />
+			<sc:chapter start="00:18:02" title="Amazon Prime Video auf Apple TV" href="https://daringfireball.net/linked/2017/12/06/amazon-prime-apple-tv" />
+			<sc:chapter start="00:19:49" title="Game Dev Tycoon (iOS)" />
+			<sc:chapter start="00:24:00" title="Cool Ghosts: Episode 1" href="http://coolghosts.net/cool-stuff/coolghostsepisode1" />
+			<sc:chapter start="00:25:41" title="Reigns: Her Majesty (iOS)" />
+			<sc:chapter start="00:27:18" title="AirPods" />
+			<sc:chapter start="00:40:22" title="HQ (referer code: map)" href="https://itunes.apple.com/us/app/hq-live-trivia-game-show/id1232278996?mt=8" />
+			<sc:chapter start="00:42:18" title="Campfire Cooking" />
+			<sc:chapter start="00:43:37" title="Patreon Änderungen" href="https://www.pretty-terrible.com/funny-money-patreon-style/" />
+			<sc:chapter start="00:50:20" title="Rausschmeisser" href="https://www.youtube.com/watch?v=b4tZCWC4CLA&amp;list=PLjVTojiDW0-6u5oI24JhHeHDwz73Xzc22" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>312</itunes:episode>
+           	<itunes:title>Hey Siri, spiel!</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23312&amp;user_id=map&amp;title=Fanboys%20Episode%20312&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/312" />
+        </item>
+
+        <item>
+            <title>Episode #311 - Just press Enter</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Just press Enter</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/363540416-martinpittenauer-fan311.mp3" length="19754467" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN311</guid>
+            <pubDate>Fri, 01 Dec 2017 16:21:43 +0000</pubDate>
+            <itunes:duration>00:41:01</itunes:duration>
+            <description><![CDATA[
+00:04:27 <a href="https://d.rip">drip</a><br/>
+00:08:01 <a href="https://objective-see.com/blog/blog_0x24.html">Just press Enter</a><br/>
+00:10:34 <a href="https://forums.macrumors.com/threads/security-update-2017-001-breaks-file-sharing.2091913/">Security Update und Filesharing</a><br/>
+00:11:10 Apple Watch Apps als Liste<br/>
+00:16:15 <a href="https://itunes.apple.com/us/app/campfire-cooking/id1226277306?mt=8">Campfire Cooking (iOS)</a><br/>
+00:19:39 <a href="https://itunes.apple.com/us/app/starman-tale-of-light/id1157484554?mt=8">starman (iOS)</a><br/>
+00:21:38 <a href="https://itunes.apple.com/us/app/the-house-of-da-vinci/id1062515791?mt=8">The House of Da Vinci (iOS)</a><br/>
+00:26:13 <a href="https://itunes.apple.com/us/app/returner-77/id1214904254?mt=8">Returner 77 (iOS)</a><br/>
+00:30:48 <a href="https://fishshell.com">fish</a><br/>
+00:37:31 <a href="https://itunes.apple.com/us/app/universal-paperclips/id1300634274?mt=8">Universal Paperclips (iOS, Broswer)</a><br/>
+00:39:48 <a href="https://www.youtube.com/watch?v=4u2gu84OteA">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:04:27" title="drip" href="https://d.rip" />
+			<sc:chapter start="00:08:01" title="Just press Enter" href="https://objective-see.com/blog/blog_0x24.html" />
+			<sc:chapter start="00:10:34" title="Security Update und Filesharing" href="https://forums.macrumors.com/threads/security-update-2017-001-breaks-file-sharing.2091913/" />
+			<sc:chapter start="00:11:10" title="Apple Watch Apps als Liste" />
+			<sc:chapter start="00:16:15" title="Campfire Cooking (iOS)" href="https://itunes.apple.com/us/app/campfire-cooking/id1226277306?mt=8" />
+			<sc:chapter start="00:19:39" title="starman (iOS)" href="https://itunes.apple.com/us/app/starman-tale-of-light/id1157484554?mt=8" />
+			<sc:chapter start="00:21:38" title="The House of Da Vinci (iOS)" href="https://itunes.apple.com/us/app/the-house-of-da-vinci/id1062515791?mt=8" />
+			<sc:chapter start="00:26:13" title="Returner 77 (iOS)" href="https://itunes.apple.com/us/app/returner-77/id1214904254?mt=8" />
+			<sc:chapter start="00:30:48" title="fish" href="https://fishshell.com" />
+			<sc:chapter start="00:37:31" title="Universal Paperclips (iOS, Broswer)" href="https://itunes.apple.com/us/app/universal-paperclips/id1300634274?mt=8" />
+			<sc:chapter start="00:39:48" title="Rausschmeisser" href="https://www.youtube.com/watch?v=4u2gu84OteA" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>311</itunes:episode>
+           	<itunes:title>Just press Enter</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23311&amp;user_id=map&amp;title=Fanboys%20Episode%20311&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/311" />
+        </item>
+
+        <item>
+            <title>Episode #310 - Der Podcast der Einheit</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Der Podcast der Einheit</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/354171863-martinpittenauer-fan310.mp3" length="20397288" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN310</guid>
+            <pubDate>Sat, 11 Nov 2017 08:11:45 +0000</pubDate>
+            <itunes:duration>00:42:21</itunes:duration>
+            <description><![CDATA[
+00:02:00 <a href="https://www.youtube.com/watch?v=A9k88sMyiJM">Apple Watch Spot</a><br/>
+00:03:40 <a href="http://appleinsider.com/articles/17/11/08/apple-ar-headset-codenamed-t288-said-to-run-new-ros-operating-system-launch-as-soon-as-2020">rOS?</a><br/>
+00:09:04 <a href="https://kotaku.com/big-layoffs-at-studio-behind-gigantic-studio-behind-to-1820120915">Runic Games wurde geschlossen</a><br/>
+00:13:58 <a href="http://www.fireproofgames.com/games/theroomoldsins">The Room - Old Sins verschoben auf 28. Januar 2018</a><br/>
+00:17:46 Horizon Zero Dawn: The Frozen Wilds (PS4)<br/>
+00:26:48 FROST (iOS)<br/>
+00:29:44 MechBox 2: DAS härteste Puzzle (iOS)<br/>
+00:33:59 <a href="http://desertbus.org">Desert Bus</a><br/>
+00:36:04 Schnelles Internet schon im April<br/>
+00:37:45 <a href="https://www.youtube.com/watch?v=PSWYutDXwsY">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:02:00" title="Apple Watch Spot" href="https://www.youtube.com/watch?v=A9k88sMyiJM" />
+			<sc:chapter start="00:03:40" title="rOS?" href="http://appleinsider.com/articles/17/11/08/apple-ar-headset-codenamed-t288-said-to-run-new-ros-operating-system-launch-as-soon-as-2020" />
+			<sc:chapter start="00:09:04" title="Runic Games wurde geschlossen" href="https://kotaku.com/big-layoffs-at-studio-behind-gigantic-studio-behind-to-1820120915" />
+			<sc:chapter start="00:13:58" title="The Room - Old Sins verschoben auf 28. Januar 2018" href="http://www.fireproofgames.com/games/theroomoldsins" />
+			<sc:chapter start="00:17:46" title="Horizon Zero Dawn: The Frozen Wilds (PS4)" />
+			<sc:chapter start="00:26:48" title="FROST (iOS)" />
+			<sc:chapter start="00:29:44" title="MechBox 2: DAS härteste Puzzle (iOS)" />
+			<sc:chapter start="00:33:59" title="Desert Bus" href="http://desertbus.org" />
+			<sc:chapter start="00:36:04" title="Schnelles Internet schon im April" />
+			<sc:chapter start="00:37:45" title="Rausschmeisser" href="https://www.youtube.com/watch?v=PSWYutDXwsY" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>310</itunes:episode>
+           	<itunes:title>Der Podcast der Einheit</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23310&amp;user_id=map&amp;title=Fanboys%20Episode%20310&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/310" />
+        </item>
+
+        <item>
+            <title>Episode #309 - tell applescript to go home</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>tell applescript to go home</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/351158998-martinpittenauer-fan309.mp3" length="37864847" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN309</guid>
+            <pubDate>Sat, 04 Nov 2017 19:17:31 +0000</pubDate>
+            <itunes:duration>01:18:45</itunes:duration>
+            <description><![CDATA[
+00:03:50 iPhone X Erste Eindrücke<br/>
+00:09:43 iPhone X und Carcassonne<br/>
+00:18:26 <a href="https://www.youtube.com/watch?v=Fm7pGcTpbVM">Papers Please Filmteaser</a><br/>
+00:21:11 <a href="https://gizmodo.com/weird-google-docs-bug-is-locking-people-out-of-their-dr-1820006886">Google Docs Bug</a><br/>
+00:22:34 Indesign Scripting<br/>
+00:29:55 <a href="https://www.youtube.com/watch?v=VvQ1NAzJQNo">Sony Paris Games Week</a><br/>
+00:33:44 Shadow of the Colossus (PS4) kommt am 6.2.2018<br/>
+00:41:36 PUSH (iOS)<br/>
+00:43:21 <a href="https://itunes.apple.com/us/app/hq-live-trivia-game-show/id1232278996?mt=8">HQ</a><br/>
+00:47:40 The Invisible Hours (PSVR, Oculus, Vive)<br/>
+01:00:39 Super Mario Odyssey<br/>
+01:08:37 <a href="https://itunes.apple.com/us/app/stranger-things-the-game/id1220479307?mt=8">Stranger Things</a><br/>
+01:10:58 <a href="http://toucharcade.com/2017/10/25/download-animal-crossing-pocket-camp-right-now-on-the-australian-app-store/">Animal Crossing: Pocket Camp</a><br/>
+01:15:40 Bring auf der Apple Watch<br/>
+01:17:00 <a href="https://www.youtube.com/watch?v=bs9dE8DpY8Q">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:03:50" title="iPhone X Erste Eindrücke" />
+			<sc:chapter start="00:09:43" title="iPhone X und Carcassonne" />
+			<sc:chapter start="00:18:26" title="Papers Please Filmteaser" href="https://www.youtube.com/watch?v=Fm7pGcTpbVM" />
+			<sc:chapter start="00:21:11" title="Google Docs Bug" href="https://gizmodo.com/weird-google-docs-bug-is-locking-people-out-of-their-dr-1820006886" />
+			<sc:chapter start="00:22:34" title="Indesign Scripting" />
+			<sc:chapter start="00:29:55" title="Sony Paris Games Week" href="https://www.youtube.com/watch?v=VvQ1NAzJQNo" />
+			<sc:chapter start="00:33:44" title="Shadow of the Colossus (PS4) kommt am 6.2.2018" />
+			<sc:chapter start="00:41:36" title="PUSH (iOS)" />
+			<sc:chapter start="00:43:21" title="HQ" href="https://itunes.apple.com/us/app/hq-live-trivia-game-show/id1232278996?mt=8" />
+			<sc:chapter start="00:47:40" title="The Invisible Hours (PSVR, Oculus, Vive)" />
+			<sc:chapter start="01:00:39" title="Super Mario Odyssey" />
+			<sc:chapter start="01:08:37" title="Stranger Things" href="https://itunes.apple.com/us/app/stranger-things-the-game/id1220479307?mt=8" />
+			<sc:chapter start="01:10:58" title="Animal Crossing: Pocket Camp" href="http://toucharcade.com/2017/10/25/download-animal-crossing-pocket-camp-right-now-on-the-australian-app-store/" />
+			<sc:chapter start="01:15:40" title="Bring auf der Apple Watch" />
+			<sc:chapter start="01:17:00" title="Rausschmeisser" href="https://www.youtube.com/watch?v=bs9dE8DpY8Q" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>309</itunes:episode>
+           	<itunes:title>tell applescript to go home</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23309&amp;user_id=map&amp;title=Fanboys%20Episode%20309&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/309" />
+        </item>
+
+        <item>
+            <title>Episode #308 - Kein guter Morgen</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Kein guter Morgen</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/347594533-martinpittenauer-fan308.mp3" length="34338944" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN308</guid>
+            <pubDate>Thu, 19 Oct 2017 09:05:29 +0000</pubDate>
+            <itunes:duration>01:11:24</itunes:duration>
+            <description><![CDATA[
+00:02:07 Nachhaltigkeit bei Digitalgütern<br/>
+00:33:51 <a href="https://insertmoin.de/im2031-feriencamp-2017-mit-fanboys/">Feriencamp bei InsertMoin</a><br/>
+00:35:11 Apple Watch: Jetzt besser aber mit weniger Apps<br/>
+00:37:18 Tipp: Screenshots und Text<br/>
+00:38:18 <a href="http://zuendfunk-netzkongress.de/">Zündfunk Netzkongress</a><br/>
+00:39:33 <a href="https://www.kickstarter.com/projects/1617633064/lonely-mountains-downhill?&amp;utm_source=twitter&amp;utm_campaign=kslaunch&amp;utm_content=trailerGif">Lonely Mountains: Downhill</a><br/>
+00:41:13 <a href="http://www.decisionproblem.com/paperclips/index2.html">Universal Paperclips</a><br/>
+00:54:45 <a href="https://www.amazon.de/QualityLand-Roman-dunkle-Marc-Uwe-Kling/dp/3550050151/ref=sr_1_1?ie=UTF8&amp;qid=1508345259&amp;sr=8-1&amp;keywords=qualityland">Qualityland</a><br/>
+00:56:30 &quot;Cosplay&quot;<br/>
+00:58:47 <a href="https://www.amazon.de/Provenance-English-Ann-Leckie-ebook/dp/B06X9BZNDM/ref=redir_mobile_desktop?_encoding=UTF8&amp;psc=1&amp;ref_=ya_aw_dod_pi">Provenance</a><br/>
+01:07:50 <a href="https://www.youtube.com/watch?v=tQuDE0mjnIs">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:02:07" title="Nachhaltigkeit bei Digitalgütern" />
+			<sc:chapter start="00:33:51" title="Feriencamp bei InsertMoin" href="https://insertmoin.de/im2031-feriencamp-2017-mit-fanboys/" />
+			<sc:chapter start="00:35:11" title="Apple Watch: Jetzt besser aber mit weniger Apps" />
+			<sc:chapter start="00:37:18" title="Tipp: Screenshots und Text" />
+			<sc:chapter start="00:38:18" title="Zündfunk Netzkongress" href="http://zuendfunk-netzkongress.de/" />
+			<sc:chapter start="00:39:33" title="Lonely Mountains: Downhill" href="https://www.kickstarter.com/projects/1617633064/lonely-mountains-downhill?&amp;utm_source=twitter&amp;utm_campaign=kslaunch&amp;utm_content=trailerGif" />
+			<sc:chapter start="00:41:13" title="Universal Paperclips" href="http://www.decisionproblem.com/paperclips/index2.html" />
+			<sc:chapter start="00:54:45" title="Qualityland" href="https://www.amazon.de/QualityLand-Roman-dunkle-Marc-Uwe-Kling/dp/3550050151/ref=sr_1_1?ie=UTF8&amp;qid=1508345259&amp;sr=8-1&amp;keywords=qualityland" />
+			<sc:chapter start="00:56:30" title="&quot;Cosplay&quot;" />
+			<sc:chapter start="00:58:47" title="Provenance" href="https://www.amazon.de/Provenance-English-Ann-Leckie-ebook/dp/B06X9BZNDM/ref=redir_mobile_desktop?_encoding=UTF8&amp;psc=1&amp;ref_=ya_aw_dod_pi" />
+			<sc:chapter start="01:07:50" title="Rausschmeisser" href="https://www.youtube.com/watch?v=tQuDE0mjnIs" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>308</itunes:episode>
+           	<itunes:title>Kein guter Morgen</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23308&amp;user_id=map&amp;title=Fanboys%20Episode%20308&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/308" />
+        </item>
+
+        <item>
+            <title>Episode #307 - Unbeampelt</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Unbeampelt</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/346528604-martinpittenauer-fan307.mp3" length="34437164" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN307</guid>
+            <pubDate>Thu, 12 Oct 2017 09:02:00 +0000</pubDate>
+            <itunes:duration>01:11:36</itunes:duration>
+            <description><![CDATA[
+00:02:15 <a href="http://appleinsider.com/articles/17/10/10/apples-cook-repeats-benefits-of-ar-in-interview-says-ar-glasses-tech-not-mature">Cook und AR</a><br/>
+00:10:18 <a href="https://www.macrumors.com/2017/10/09/apple-itunes-with-app-store-included/">iTunes &quot;for Business&quot;</a><br/>
+00:16:03 <a href="https://macoun.de">Macoun</a><br/>
+00:20:59 <a href="https://medium.com/building-ulysses/why-were-switching-ulysses-to-subscription-47f80b07a9cd">UlyssesApp wechselt auf Abomodell</a><br/>
+00:54:12 TIP: Screenshots und Scribbeln<br/>
+00:57:09 TIP: Notizen: In Fotos sichern<br/>
+01:00:49 <a href="https://itunes.apple.com/us/app/flower/id1279174518?mt=8">Flower (iOS)</a><br/>
+01:04:53 <a href="https://www.youtube.com/user/enyay">Tom Scott</a><br/>
+01:10:57 <a href="https://www.youtube.com/watch?v=Nx93MjsGwhw">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:02:15" title="Cook und AR" href="http://appleinsider.com/articles/17/10/10/apples-cook-repeats-benefits-of-ar-in-interview-says-ar-glasses-tech-not-mature" />
+			<sc:chapter start="00:10:18" title="iTunes &quot;for Business&quot;" href="https://www.macrumors.com/2017/10/09/apple-itunes-with-app-store-included/" />
+			<sc:chapter start="00:16:03" title="Macoun" href="https://macoun.de" />
+			<sc:chapter start="00:20:59" title="UlyssesApp wechselt auf Abomodell" href="https://medium.com/building-ulysses/why-were-switching-ulysses-to-subscription-47f80b07a9cd" />
+			<sc:chapter start="00:54:12" title="TIP: Screenshots und Scribbeln" />
+			<sc:chapter start="00:57:09" title="TIP: Notizen: In Fotos sichern" />
+			<sc:chapter start="01:00:49" title="Flower (iOS)" href="https://itunes.apple.com/us/app/flower/id1279174518?mt=8" />
+			<sc:chapter start="01:04:53" title="Tom Scott" href="https://www.youtube.com/user/enyay" />
+			<sc:chapter start="01:10:57" title="Rausschmeisser" href="https://www.youtube.com/watch?v=Nx93MjsGwhw" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>307</itunes:episode>
+           	<itunes:title>Unbeampelt</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23307&amp;user_id=map&amp;title=Fanboys%20Episode%20307&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/307" />
+        </item>
+
+        <item>
+            <title>Episode #306 - Angeschlagen</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Angeschlagen</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/345610520-martinpittenauer-fan306.mp3" length="32839306" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN306</guid>
+            <pubDate>Fri, 06 Oct 2017 10:41:05 +0000</pubDate>
+            <itunes:duration>01:08:17</itunes:duration>
+            <description><![CDATA[
+00:04:01 watchOS Update<br/>
+00:16:44 iOS11 Taschenrechner saugt<br/>
+00:21:33 Tipp: Vorlesemodus<br/>
+00:24:46 <a href="http://www.reuters.com/article/us-alphabet-hardware/google-launches-new-phones-speakers-in-hardware-push-idUSKBN1C92IQ">Google Pixel/Home Kram</a><br/>
+00:27:38 <a href="https://dropbox.design">Neues Dropbox Design</a><br/>
+00:31:29 <a href="https://www.meetup.com/de-DE/gamedevmuc/">GameDevMuc: Talk &amp; Dev</a><br/>
+00:34:08 <a href="https://www.nintendo.com/games/detail/picross-s-switch">Picross S</a><br/>
+00:36:09 Last day of June (PS4)<br/>
+00:37:51 <a href="https://keybase.io/blog/encrypted-git-for-everyone">Keybase</a><br/>
+00:42:14 <a href="https://www.amazon.de/AfterShokz-AS600SG-Kopfhörer-Conduction-Technologie-Grau/dp/B018XNGQOE">AfterShokz Trekz Titanium</a><br/>
+00:47:18 Hob (PS4/Steam)<br/>
+01:04:20 StreamOn<br/>
+01:07:20 <a href="https://www.youtube.com/watch?v=Fif3YPaiabc">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:04:01" title="watchOS Update" />
+			<sc:chapter start="00:16:44" title="iOS11 Taschenrechner saugt" />
+			<sc:chapter start="00:21:33" title="Tipp: Vorlesemodus" />
+			<sc:chapter start="00:24:46" title="Google Pixel/Home Kram" href="http://www.reuters.com/article/us-alphabet-hardware/google-launches-new-phones-speakers-in-hardware-push-idUSKBN1C92IQ" />
+			<sc:chapter start="00:27:38" title="Neues Dropbox Design" href="https://dropbox.design" />
+			<sc:chapter start="00:31:29" title="GameDevMuc: Talk &amp; Dev" href="https://www.meetup.com/de-DE/gamedevmuc/" />
+			<sc:chapter start="00:34:08" title="Picross S" href="https://www.nintendo.com/games/detail/picross-s-switch" />
+			<sc:chapter start="00:36:09" title="Last day of June (PS4)" />
+			<sc:chapter start="00:37:51" title="Keybase" href="https://keybase.io/blog/encrypted-git-for-everyone" />
+			<sc:chapter start="00:42:14" title="AfterShokz Trekz Titanium" href="https://www.amazon.de/AfterShokz-AS600SG-Kopfhörer-Conduction-Technologie-Grau/dp/B018XNGQOE" />
+			<sc:chapter start="00:47:18" title="Hob (PS4/Steam)" />
+			<sc:chapter start="01:04:20" title="StreamOn" />
+			<sc:chapter start="01:07:20" title="Rausschmeisser" href="https://www.youtube.com/watch?v=Fif3YPaiabc" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>306</itunes:episode>
+           	<itunes:title>Angeschlagen</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23306&amp;user_id=map&amp;title=Fanboys%20Episode%20306&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/306" />
+        </item>
+
+        <item>
+            <title>Episode #305 - Das Hivemind ist krank</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>Das Hivemind ist krank</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/344550967-martinpittenauer-fan305.mp3" length="2226304" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN305</guid>
+            <pubDate>Fri, 29 Sep 2017 09:37:18 +0000</pubDate>
+            <itunes:duration>00:04:30</itunes:duration>
+            <description><![CDATA[
+00:00:43 <a href="https://en.wikipedia.org/wiki/Hob_(video_game)">Hob (PS4, PC)</a><br/>
+00:00:58 <a href="https://ustwo.com/work/monument-valley-2">Monument Valley 2 (iOS)</a><br/>
+00:03:05 <a href="https://www.youtube.com/watch?v=ve1DJe8FtGg">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:00:43" title="Hob (PS4, PC)" href="https://en.wikipedia.org/wiki/Hob_(video_game)" />
+			<sc:chapter start="00:00:58" title="Monument Valley 2 (iOS)" href="https://ustwo.com/work/monument-valley-2" />
+			<sc:chapter start="00:03:05" title="Rausschmeisser" href="https://www.youtube.com/watch?v=ve1DJe8FtGg" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>305</itunes:episode>
+           	<itunes:title>Das Hivemind ist krank</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23305&amp;user_id=map&amp;title=Fanboys%20Episode%20305&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/305" />
+        </item>
+
+        <item>
+            <title>Episode #304 - In diesem Sinne</title>
+            <itunes:explicit>no</itunes:explicit>
+            <itunes:author>fanboys</itunes:author>
+            <itunes:subtitle>In diesem Sinne</itunes:subtitle>
+            <enclosure url="http://feeds.soundcloud.com/stream/343509235-martinpittenauer-fan304.mp3" length="36664259" type="audio/mpeg"/>
+            <guid isPermaLink="false">FAN304</guid>
+            <pubDate>Fri, 22 Sep 2017 08:16:32 +0000</pubDate>
+            <itunes:duration>01:16:15</itunes:duration>
+            <description><![CDATA[
+00:06:08 <a href="https://www.macstories.net/stories/ios-11-the-macstories-review/">iOS 11</a><br/>
+00:39:14 <a href="http://www.hobgame.com">Hob (PS4/Steam)</a><br/>
+00:40:20 <a href="http://supertop.co/castro/">Castro 2.5</a><br/>
+00:43:17 <a href="https://itunes.apple.com/us/app/housecraft/id1261483849?mt=8">Housecraft</a><br/>
+00:47:46 <a href="https://itunes.apple.com/us/app/the-witness/id1230231705?mt=8">The Witness (iOS)</a><br/>
+00:58:32 Obduction<br/>
+01:03:35 Uncharted - Lost Legacy<br/>
+01:11:51 <a href="https://www.youtube.com/watch?v=lul-Y8vSr0I">Rausschmeisser</a><br/>]]></description>
+            <sc:chapters version="1.0">
+			<sc:chapter start="00:06:08" title="iOS 11" href="https://www.macstories.net/stories/ios-11-the-macstories-review/" />
+			<sc:chapter start="00:39:14" title="Hob (PS4/Steam)" href="http://www.hobgame.com" />
+			<sc:chapter start="00:40:20" title="Castro 2.5" href="http://supertop.co/castro/" />
+			<sc:chapter start="00:43:17" title="Housecraft" href="https://itunes.apple.com/us/app/housecraft/id1261483849?mt=8" />
+			<sc:chapter start="00:47:46" title="The Witness (iOS)" href="https://itunes.apple.com/us/app/the-witness/id1230231705?mt=8" />
+			<sc:chapter start="00:58:32" title="Obduction" />
+			<sc:chapter start="01:03:35" title="Uncharted - Lost Legacy" />
+			<sc:chapter start="01:11:51" title="Rausschmeisser" href="https://www.youtube.com/watch?v=lul-Y8vSr0I" />
+           	</sc:chapters>
+           	<itunes:season>1</itunes:season>
+           	<itunes:episode>304</itunes:episode>
+           	<itunes:title>In diesem Sinne</itunes:title>
+            <atom:link rel="payment" href="https://flattr.com/submit/auto?url=http%3A%2F%2Ffanboys.fm%2F%23304&amp;user_id=map&amp;title=Fanboys%20Episode%20304&amp;tags=podcast&amp;category=audio&amp;language=de_DE" type="text/html" />
+            <atom:link rel="http://podlove.org/deep-link" href="http://fanboys.fm/304" />
+        </item>
+
+    </channel>
+</rss>
