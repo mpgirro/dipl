@@ -191,6 +191,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
     }
 
+    /*
     @Deprecated
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
@@ -221,6 +222,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         log.debug("Finished UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
     }
+    */
 
     private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
         log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
@@ -399,23 +401,41 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received RegisterEpisodeIfNew({}, '{}', {}, '{}')", podcastId, episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
 
-        def task = () => {
-            episodeService.findOneByEnlosure(episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType).map(e => {
-                None
+        def task: () => Option[EpisodeDTO] = () => {
+            Option(episode.getGuid).map(guid => {
+                episodeService.findOneByPodcastAndGuid(podcastId, guid)
             }).getOrElse({
+                episodeService.findOneByEnclosure(episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
+            }) match {
+                case Some(e) => None
+                case None =>
+                    // generate a new episode echoId - the generator is (almost) ensuring uniqueness
+                    episode.setEchoId(EchoIdGenerator.getNewId)
 
-                // generate a new episode echoId - the generator is (almost) ensuring uniqueness
-                episode.setEchoId(EchoIdGenerator.getNewId)
+                    podcastService.findOneByEchoId(podcastId).map(p => {
+                        episode.setPodcastId(p.getId)
 
-                episode.setRegistrationTimestamp(LocalDateTime.now())
-                episodeService.save(episode)
-            })
+                        // check if the episode has a cover image defined, and set the one of the episode
+                        Option(episode.getItunesImage).getOrElse({
+                            indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
+                            episode.setItunesImage(p.getItunesImage)
+                        })
+                    }).getOrElse({
+                        log.error("No Podcast found with echoId : {}", podcastId)
+                    })
+
+                    episode.setRegistrationTimestamp(LocalDateTime.now())
+                    episodeService.save(episode)
+            }
         }
-        val registeredEpisode: Option[EpisodeDTO] = doInTransaction(task, List(episodeService)).asInstanceOf[Option[EpisodeDTO]]
+
+        val registeredEpisode: Option[EpisodeDTO] = doInTransaction(task, List(episodeService, podcastService)).asInstanceOf[Option[EpisodeDTO]]
 
         // in case the episode was registered, we initiate some post processing
         registeredEpisode match {
             case Some(e) =>
+                log.debug("New Episode registered : {}", e.getEchoId)
+
                 indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
 
                 // request that the website will get added to the episodes index entry as well

@@ -18,6 +18,12 @@ trait EpisodeRepository extends JpaRepository[Episode, java.lang.Long] {
            "WHERE podcast.echoId = :echoId")
     def findAllByPodcastEchoId(@Param("echoId") echoId: String): java.util.List[Episode]
 
+    @Query("SELECT DISTINCT episode FROM Episode episode " +
+        "LEFT JOIN episode.podcast podcast " +
+        "WHERE podcast.echoId = :podcastId " +
+        "AND episode.guid = :guid")
+    def findOneByPodcastAndGuid(@Param("podcastId") podcastId: String, @Param("guid") guid: String): Episode
+
     @Query("SELECT DISTINCT episode FROM Episode episode " + "" +
            "WHERE episode.enclosureUrl = :enclosureUrl " +
            "AND episode.enclosureLength = :enclosureLength " +

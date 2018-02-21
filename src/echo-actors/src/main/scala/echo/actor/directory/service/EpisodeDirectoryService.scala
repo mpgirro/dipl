@@ -74,7 +74,13 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
-    def findOneByEnlosure(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Option[EpisodeDTO] = {
+    def findOneByPodcastAndGuid(podcastId: String, guid: String): Option[EpisodeDTO] = {
+        val result = episodeRepository.findOneByPodcastAndGuid(podcastId, guid)
+        Option(EpisodeMapper.INSTANCE.map(result))
+    }
+
+    @Transactional
+    def findOneByEnclosure(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Option[EpisodeDTO] = {
         val result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType)
         Option(EpisodeMapper.INSTANCE.map(result))
     }
