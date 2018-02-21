@@ -17,7 +17,12 @@ object ActorProtocol {
         val FEED_NEW_PODCAST, FEED_UPDATE_EPISODES, WEBSITE = Value
     }
 
-    case class ProposeNewFeed(url: String) // sent from User to FeedStore
+    // Web/CLI -> DirectoryStore
+    case class ProposeNewFeed(url: String)
+    case class CheckPodcast(echoId: String)
+    case class CheckFeed(echoId: String)
+    case class CheckAllPodcasts()
+    case class CheckAllFeeds()
 
     // DirectoryStore -> Crawler
     case class FetchFeedForNewPodcast(url: String, podcastId: String)
@@ -40,11 +45,8 @@ object ActorProtocol {
 
     // Crawler -> Parser
     case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
-    case class ParseEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
+    case class ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
     case class ParseWebsiteData(echoId: String, html: String)
-
-    // Index -> Index
-    case class ParsePodcastData(podcastId: String, podcastFeedData: String)
 
     // Parser -> IndexStore
     case class IndexStoreAddPodcast(podcast: PodcastDTO)

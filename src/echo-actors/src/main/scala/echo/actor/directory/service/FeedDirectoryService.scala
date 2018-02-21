@@ -69,4 +69,12 @@ class FeedDirectoryService(private val log: LoggingAdapter,
         Option(FeedMapper.INSTANCE.map(result))
     }
 
+    @Transactional
+    def findAllByPodcast(podcastId: String): List[FeedDTO] = {
+        feedRepository.findAllByPodcast(podcastId)
+            .asScala
+            .map(f => FeedMapper.INSTANCE.map(f))
+            .toList
+    }
+
 }

@@ -450,7 +450,7 @@ class CrawlerActor extends Actor with ActorLogging {
                                             parser ! ParseNewPodcastData(url, echoId, data)
                                             directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                                         case JobKind.FEED_UPDATE_EPISODES =>
-                                            parser ! ParseEpisodeData(url, echoId, data)
+                                            parser ! ParseUpdateEpisodeData(url, echoId, data)
                                             directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                                         case JobKind.WEBSITE =>
                                             parser ! ParseWebsiteData(echoId, data)
@@ -626,7 +626,7 @@ class CrawlerActor extends Actor with ActorLogging {
                             parser ! ParseNewPodcastData(url, echoId, data)
                             directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                         case JobKind.FEED_UPDATE_EPISODES =>
-                            parser ! ParseEpisodeData(url, echoId, data)
+                            parser ! ParseUpdateEpisodeData(url, echoId, data)
                             directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                         case JobKind.WEBSITE =>
                             parser ! ParseWebsiteData(echoId, data)

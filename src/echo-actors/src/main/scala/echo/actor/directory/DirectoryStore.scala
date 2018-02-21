@@ -49,11 +49,20 @@ class DirectoryStore extends Actor with ActorLogging {
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
+
         case ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
+
+        case CheckPodcast(echoId) => onCheckPodcast(echoId)
+
+        case CheckFeed(echoId) => onCheckFeed(echoId)
+
+        case CheckAllPodcasts => onCheckAllPodcasts()
+
+        case CheckAllFeeds => onCheckAllFeeds()
 
         case FeedStatusUpdate(podcastId, feedUrl, timestamp, status) => onFeedStatusUpdate(podcastId, feedUrl, timestamp, status)
 
@@ -326,6 +335,55 @@ class DirectoryStore extends Actor with ActorLogging {
         doInTransaction(task, List(podcastService, episodeService))
 
         log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
+    }
+
+    private def onCheckPodcast(podcastId: String): Unit = {
+        log.debug("Received CheckPodcast({})", podcastId)
+        def task = () => {
+            // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
+            val feeds = feedService.findAllByPodcast(podcastId)
+            if(feeds.nonEmpty){
+                crawler ! FetchFeedForUpdateEpisodes(feeds.head.getUrl, podcastId)
+            } else {
+                log.error("No Feeds registered for Podcast with echoId : {}", podcastId)
+            }
+        }
+        doInTransaction(task, List(feedService))
+
+        log.debug("Finished CheckPodcast({})", podcastId)
+    }
+
+    private def onCheckFeed(feedId: String): Unit = {
+        log.debug("Received CheckFeed({})", feedId)
+        def task = () => {
+            // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
+            feedService.findOneByEchoId(feedId).map(f => {
+                podcastService.findOneByFeed(feedId).map(p => {
+                    crawler ! FetchFeedForUpdateEpisodes(f.getUrl, p.getEchoId)
+                }).getOrElse({
+                    log.error("No Podcast found in Database for Feed with echoId : {}", feedId)
+                })
+            }).getOrElse({
+                log.error("No Feed in Database with echoId : {}", feedId)
+            })
+        }
+        doInTransaction(task, List(podcastService, feedService))
+
+        log.debug("Finished CheckFeed({})", feedId)
+    }
+
+    private def onCheckAllPodcasts(): Unit = {
+        log.debug("Received CheckAllPodcasts()")
+        // TODO
+
+        log.debug("Finished CheckAllPodcasts()")
+    }
+
+    private def onCheckAllFeeds(): Unit = {
+        log.debug("Received CheckAllFeeds()")
+        // TODO
+
+        log.debug("Finished CheckAllFeeds()")
     }
 
     private def debugPrintAllPodcasts(): Unit = {

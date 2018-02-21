@@ -31,6 +31,8 @@ class CliActor(private val master: ActorRef,
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
+        "check podcast"  -> "[all|<echoId>]",
+        "check feed"     -> "[all|<echoId>]",
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes]",
         "load feeds"     -> "[test|massive]",
@@ -65,6 +67,18 @@ class CliActor(private val master: ActorRef,
 
                     case "propose" :: Nil   => usage("propose")
                     case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
+
+                    case "check" :: "podcast" :: Nil           => usage("check podcast")
+                    case "check" :: "podcast" :: "all" :: Nil  => directoryStore ! CheckAllPodcasts
+                    case "check" :: "podcast" :: "all" :: _    => usage("check podcast")
+                    case "check" :: "podcast" :: echoId :: Nil => directoryStore ! CheckPodcast(echoId)
+                    case "check" :: "podcast" :: _ :: _        => usage("check podcast")
+
+                    case "check" :: "feed" :: Nil              => usage("check feed")
+                    case "check" :: "feed" :: "all" :: Nil     => directoryStore ! CheckAllFeeds
+                    case "check" :: "feed" :: "all" :: _       => usage("check feed")
+                    case "check" :: "feed" :: echoId :: Nil    => directoryStore ! CheckFeed(echoId)
+                    case "check" :: "feed" :: _ :: _           => usage("check feed")
 
                     case "search" :: Nil    => usage("search")
                     case "search" :: query  => search(query)

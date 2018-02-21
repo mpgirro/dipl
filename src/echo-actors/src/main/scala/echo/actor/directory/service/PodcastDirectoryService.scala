@@ -49,6 +49,12 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
+    def findOneByFeed(feedId: String): Option[PodcastDTO] = {
+        val result = podcastRepository.findOneByFeed(feedId)
+        Option(PodcastMapper.INSTANCE.map(result))
+    }
+
+    @Transactional
     def findAll(): List[PodcastDTO] = {
         podcastRepository.findAll
             .asScala
