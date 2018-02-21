@@ -369,14 +369,36 @@ class DirectoryStore extends Actor with ActorLogging {
 
     private def onCheckAllPodcasts(): Unit = {
         log.debug("Received CheckAllPodcasts()")
-        // TODO
+
+        def task = () => {
+            // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
+            podcastService.findAll().foreach(p => {
+                val feeds = feedService.findAllByPodcast(p.getEchoId)
+                if(feeds.nonEmpty){
+                    crawler ! FetchFeedForUpdateEpisodes(feeds.head.getUrl, p.getEchoId)
+                } else {
+                    log.error("No Feeds registered for Podcast with echoId : {}", p.getEchoId)
+                }
+            })
+        }
+        doInTransaction(task, List(podcastService, feedService))
 
         log.debug("Finished CheckAllPodcasts()")
     }
 
     private def onCheckAllFeeds(): Unit = {
         log.debug("Received CheckAllFeeds()")
-        // TODO
+
+        def task = () => {
+            feedService.findAll().foreach(f => {
+                podcastService.findOneByFeed(f.getEchoId).map{p => {
+                    crawler ! FetchFeedForUpdateEpisodes(f.getUrl, p.getEchoId)
+                }}.getOrElse({
+                    log.error("No Podcast found in Database for Feed with echoId : {}", f.getEchoId)
+                })
+            })
+        }
+        doInTransaction(task, List(podcastService, feedService))
 
         log.debug("Finished CheckAllFeeds()")
     }
@@ -399,7 +421,7 @@ class DirectoryStore extends Actor with ActorLogging {
     */
 
     private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {
-        log.debug("Received RegisterEpisodeIfNew({}, '{}', {}, '{}')", podcastId, episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
+        log.debug("Received RegisterEpisodeIfNew({}, '{}')", podcastId, episode.getTitle)
 
         def task: () => Option[EpisodeDTO] = () => {
             Option(episode.getGuid).map(guid => {
@@ -434,7 +456,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // in case the episode was registered, we initiate some post processing
         registeredEpisode match {
             case Some(e) =>
-                log.debug("New Episode registered : {}", e.getEchoId)
+                log.info("New Episode registered : '{}' [{},{}]", e.getTitle, podcastId, e.getEchoId)
 
                 indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
 

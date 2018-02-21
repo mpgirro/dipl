@@ -113,6 +113,7 @@ class ParserActor extends Actor with ActorLogging {
 
                     p.setEchoId(podcastId)
 
+                    Option(p.getTitle).foreach(t => p.setTitle(t.trim))
                     Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
                     // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
@@ -147,6 +148,7 @@ class ParserActor extends Actor with ActorLogging {
                 for(e <- es){
 
                     // cleanup some potentially markuped texts
+                    Option(e.getTitle).foreach(t => e.setTitle(t.trim))
                     Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
                     Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
 
