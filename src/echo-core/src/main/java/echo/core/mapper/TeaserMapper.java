@@ -18,30 +18,54 @@ public interface TeaserMapper {
 
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
 
-    @Mapping(target = "echoId")
-    @Mapping(target = "title")
-    @Mapping(target = "itunesImage")
-    PodcastDTO asTeaser(PodcastDTO dto);
+    default PodcastDTO asTeaser(PodcastDTO dto) {
+        if(dto == null) return null;
 
-    @Mapping(target = "echoId")
-    @Mapping(target = "title")
-    @Mapping(target = "itunesImage")
-    PodcastDTO asTeaser(Podcast podcast);
+        final PodcastDTO teaser = new PodcastDTO();
+        teaser.setEchoId(dto.getEchoId());
+        teaser.setTitle(dto.getTitle());
+        teaser.setItunesImage(dto.getItunesImage());
 
-    @Mapping(target = "echoId")
-    @Mapping(target = "title")
-    @Mapping(target = "pubDate")
-    @Mapping(target = "description")
-    @Mapping(target = "itunesImage")
-    @Mapping(target = "itunesDuration")
-    EpisodeDTO asTeaser(EpisodeDTO dto);
+        return teaser;
+    }
 
-    @Mapping(target = "echoId")
-    @Mapping(target = "title")
-    @Mapping(target = "pubDate")
-    @Mapping(target = "description")
-    @Mapping(target = "itunesImage")
-    @Mapping(target = "itunesDuration")
-    EpisodeDTO asTeaser(Episode episode);
+    default PodcastDTO asTeaser(Podcast podcast) {
+        if(podcast == null) return null;
+
+        final PodcastDTO teaser = new PodcastDTO();
+        teaser.setEchoId(podcast.getEchoId());
+        teaser.setTitle(podcast.getTitle());
+        teaser.setItunesImage(podcast.getItunesImage());
+
+        return teaser;
+    }
+
+    default EpisodeDTO asTeaser(EpisodeDTO dto) {
+        if(dto == null) return null;
+
+        final EpisodeDTO teaser = new EpisodeDTO();
+        teaser.setEchoId(dto.getEchoId());
+        teaser.setTitle(dto.getTitle());
+        teaser.setPubDate(dto.getPubDate());
+        teaser.setDescription(dto.getDescription());
+        teaser.setItunesImage(dto.getItunesImage());
+        teaser.setItunesDuration(dto.getItunesDuration());
+
+        return teaser;
+    }
+
+    default EpisodeDTO asTeaser(Episode episode) {
+        if(episode == null) return null;
+
+        final EpisodeDTO teaser = new EpisodeDTO();
+        teaser.setEchoId(episode.getEchoId());
+        teaser.setTitle(episode.getTitle());
+        teaser.setPubDate(DateMapper.INSTANCE.asLocalDateTime(episode.getPubDate()));
+        teaser.setDescription(episode.getDescription());
+        teaser.setItunesImage(episode.getItunesImage());
+        teaser.setItunesDuration(episode.getItunesDuration());
+
+        return teaser;
+    }
 
 }
