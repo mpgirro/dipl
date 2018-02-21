@@ -94,14 +94,14 @@ public class FeedDTO implements DTO {
 
     @Override
     public String toString() {
-        return "FeedDTO{" +
-            "id=" + id +
-            ", echoId='" + echoId + '\'' +
-            ", podcastId=" + podcastId +
-            ", url='" + url + '\'' +
-            ", lastChecked=" + lastChecked +
-            ", lastStatus='" + lastStatus + '\'' +
-            ", registrationTimestamp=" + registrationTimestamp +
+        return "FeedDTO{\n" +
+            "\tid=" + id + ",\n" +
+            "\techoId='" + echoId + "\',\n" +
+            "\tpodcastId=" + podcastId + ",\n" +
+            "\turl='" + url + "\',\n" +
+            "\tlastChecked=" + lastChecked + ",\n" +
+            "\tlastStatus='" + lastStatus + "\',\n" +
+            "\tregistrationTimestamp=" + registrationTimestamp + ",\n" +
             '}';
     }
 }

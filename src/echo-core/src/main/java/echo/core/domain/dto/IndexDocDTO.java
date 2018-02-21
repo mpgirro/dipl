@@ -120,17 +120,17 @@ public class IndexDocDTO {
 
     @Override
     public String toString() {
-        return "IndexDocDTO{" +
-            "docType='" + docType + '\'' +
-            ", echoId='" + echoId + '\'' +
-            ", title='" + title + '\'' +
-            ", link='" + link + '\'' +
-            ", pubDate=" + pubDate +
-            ", description='" + description + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
-            ", contentEncoded='" + contentEncoded + '\'' +
+        return "IndexDocDTO{\n" +
+            "\tdocType='" + docType + "\',\n" +
+            "\techoId='" + echoId + "\',\n" +
+            "\ttitle='" + title + "\',\n" +
+            "\tlink='" + link + "\',\n" +
+            "\tpubDate=" + pubDate + ",\n" +
+            "\tdescription='" + description + "\',\n" +
+            "\titunesImage='" + itunesImage + "\',\n" +
+            "\tcontentEncoded='" + (contentEncoded==null ? "null" : "<SOME TOO LONG DATA...>") + "\',\n" +
             //", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
-            ", websiteData='" + websiteData + '\'' +
+            "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
             '}';
     }
 }

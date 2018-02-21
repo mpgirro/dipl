@@ -251,30 +251,30 @@ public class EpisodeDTO implements DTO {
 
     @Override
     public String toString() {
-        return "EpisodeDTO{" +
-            "id=" + id +
-            ", echoId='" + echoId + '\'' +
-            ", podcastId=" + podcastId +
-            ", title='" + title + '\'' +
-            ", link='" + link + '\'' +
-            ", pubDate=" + pubDate +
-            ", guid='" + guid + '\'' +
-            ", guidIsPermaLink=" + guidIsPermaLink +
-            ", description='" + description + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
-            ", itunesDuration='" + itunesDuration + '\'' +
-            ", itunesSubtitle='" + itunesSubtitle + '\'' +
-            ", itunesAuthor='" + itunesAuthor + '\'' +
-            ", itunesSummary='" + itunesSummary + '\'' +
-            ", itunesSeason='" + itunesSeason + '\'' +
-            ", itunesEpisode='" + itunesEpisode + '\'' +
-            ", itunesEpisodeType='" + itunesEpisodeType + '\'' +
-            ", enclosureUrl='" + enclosureUrl + '\'' +
-            ", enclosureLength='" + enclosureLength + '\'' +
-            ", enclosureType='" + enclosureType + '\'' +
-            ", registrationTimestamp=" + registrationTimestamp +
-            ", contentEncoded='" + contentEncoded + '\'' +
-            ", websiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + '\'' +
+        return "EpisodeDTO{\n" +
+            "\tid=" + id + ",\n" +
+            "\techoId='" + echoId + "\',\n" +
+            "\tpodcastId=" + podcastId + "\',\n" +
+            "\ttitle='" + title + "\',\n" +
+            "\tlink='" + link + "\',\n" +
+            "\tpubDate=" + pubDate + ",\n" +
+            "\tguid='" + guid + "\',\n" +
+            "\tguidIsPermaLink=" + guidIsPermaLink + ",\n" +
+            "\titunesImage='" + itunesImage + "\',\n" +
+            "\titunesDuration='" + itunesDuration + "\',\n" +
+            "\titunesSubtitle='" + itunesSubtitle + "\',\n" +
+            "\titunesAuthor='" + itunesAuthor + "\',\n" +
+            "\titunesSummary='" + itunesSummary + "\',\n" +
+            "\titunesSeason='" + itunesSeason + "\',\n" +
+            "\titunesEpisode='" + itunesEpisode + "\',\n" +
+            "\titunesEpisodeType='" + itunesEpisodeType + "\',\n" +
+            "\tenclosureUrl='" + enclosureUrl + "\',\n" +
+            "\tenclosureLength='" + enclosureLength + "\',\n" +
+            "\tenclosureType='" + enclosureType + "\',\n" +
+            "\tregistrationTimestamp=" + registrationTimestamp + "\',\n" +
+            "\tdescription='" + description + "\',\n" +
+            "\tcontentEncoded='" + contentEncoded + "\',\n" +
+            "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
             '}';
     }
 }

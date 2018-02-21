@@ -142,6 +142,10 @@ public class RomeFeedParser implements FeedParser {
                     episode.setDescription(e.getDescription().getValue());
                 }
 
+                if (e.getUri() != null) {
+                    episode.setGuid(e.getUri());
+                }
+
                 if(e.getEnclosures() != null && e.getEnclosures().size() > 0){
                     final SyndEnclosure enclosure = e.getEnclosures().get(0);
                     episode.setEnclosureUrl(enclosure.getUrl());

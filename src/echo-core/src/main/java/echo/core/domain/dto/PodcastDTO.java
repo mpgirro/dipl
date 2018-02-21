@@ -299,36 +299,36 @@ public class PodcastDTO implements DTO {
 
     @Override
     public String toString() {
-        return "PodcastDTO{" +
-            "id=" + id +
-            ", echoId='" + echoId + '\'' +
-            ", title='" + title + '\'' +
-            ", link='" + link + '\'' +
-            ", description='" + description + '\'' +
-            ", pubDate=" + pubDate +
-            ", lastBuildDate=" + lastBuildDate +
-            ", language='" + language + '\'' +
-            ", generator='" + generator + '\'' +
-            ", copyright='" + copyright + '\'' +
-            ", docs='" + docs + '\'' +
-            ", managingEditor='" + managingEditor + '\'' +
-            ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
-            ", itunesSummary='" + itunesSummary + '\'' +
-            ", itunesAuthor='" + itunesAuthor + '\'' +
-            ", itunesKeywords='" + itunesKeywords + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
-            ", itunesCategories=" + itunesCategories +
-            ", itunesExplicit=" + itunesExplicit +
-            ", itunesBlock=" + itunesBlock +
-            ", itunesType='" + itunesType + '\'' +
-            ", itunesOwnerName='" + itunesOwnerName + '\'' +
-            ", itunesOwnerEmail='" + itunesOwnerEmail + '\'' +
-            ", feedpressLocale='" + feedpressLocale + '\'' +
-            ", fyydVerify='" + fyydVerify + '\'' +
-            ", episodeCount=" + episodeCount +
-            ", registrationTimestamp=" + registrationTimestamp +
-            ", registrationComplete=" + registrationComplete +
-            ", websiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + '\'' +
+        return "PodcastDTO{\n" +
+            "\tid=" + id + ",\n" +
+            "\techoId='" + echoId + "\',\n" +
+            "\ttitle='" + title + "\',\n" +
+            "\tlink='" + link + "\',\n" +
+            "\tpubDate=" + pubDate + ",\n" +
+            "\tlastBuildDate=" + lastBuildDate + ",\n" +
+            "\tlanguage='" + language + "\',\n" +
+            "\tgenerator='" + generator + "\',\n" +
+            "\tcopyright='" + copyright + "\',\n" +
+            "\tdocs='" + docs + "\',\n" +
+            "\tmanagingEditor='" + managingEditor + "\',\n" +
+            "\titunesCategories='" + String.join(", ", itunesCategories) + "\',\n" +
+            "\titunesSummary='" + itunesSummary + "\',\n" +
+            "\titunesAuthor='" + itunesAuthor + "\',\n" +
+            "\titunesKeywords='" + itunesKeywords + "\',\n" +
+            "\titunesImage='" + itunesImage + "\',\n" +
+            "\titunesCategories=" + itunesCategories + ",\n" +
+            "\titunesExplicit=" + itunesExplicit + ",\n" +
+            "\titunesBlock=" + itunesBlock + ",\n" +
+            "\titunesType='" + itunesType + "\',\n" +
+            "\titunesOwnerName='" + itunesOwnerName + "\',\n" +
+            "\titunesOwnerEmail='" + itunesOwnerEmail + "\',\n" +
+            "\tfeedpressLocale='" + feedpressLocale + "\',\n" +
+            "\tfyydVerify='" + fyydVerify + "\',\n" +
+            "\tepisodeCount=" + episodeCount + ",\n" +
+            "\tregistrationTimestamp=" + registrationTimestamp + ",\n" +
+            "\tregistrationComplete=" + registrationComplete + ",\n" +
+            "\tdescription='" + description + "\',\n" +
+            "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
             '}';
     }
 }
