@@ -28,7 +28,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
     }
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -50,11 +50,16 @@ class CrawlerSupervisor extends Actor with ActorLogging {
         case Terminated(corpse) =>
             log.info("Child '{}' terminated" + corpse.path.name)
             /* TODO at some point we want to simply restart replace the worker
-            router = router.removeRoutee(a)
+            router = router.removeRoutee(corpse)
             val crawler = createCrawler()
             context watch crawler
             router = router.addRoutee(crawler)
             */
+            router = router.removeRoutee(corpse)
+            if(router.routees.isEmpty) {
+                log.info("No more workers available")
+                context.stop(self)
+            }
             log.info("We do not re-create terminated crawlers for now")
 
         case PoisonPill =>
@@ -69,7 +74,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
     private def createCrawler(): ActorRef = {
         val crawler = context.actorOf(Props[CrawlerActor]
             .withDispatcher("echo.crawler.dispatcher"),
-            name = "crawler-" + workerIndex)
+            name = "worker-" + workerIndex)
 
         workerIndex += 1
 

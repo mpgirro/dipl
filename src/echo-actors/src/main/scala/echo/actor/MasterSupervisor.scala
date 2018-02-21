@@ -51,7 +51,7 @@ class MasterSupervisor extends Actor with ActorLogging {
             name = "crawler"))
         */
         // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
-        crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler-supervisor")
+        crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler")
         context watch crawler
 
         /*
@@ -60,7 +60,7 @@ class MasterSupervisor extends Actor with ActorLogging {
             name = "directoryStore"))
         */
         // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
-        directory = context.actorOf(Props[DirectorySupervisor], name = "directory-supervisor")
+        directory = context.actorOf(Props[DirectorySupervisor], name = "directory")
         context watch directory
 
         gateway = context.watch(context.actorOf(Props[GatewayActor]
@@ -92,7 +92,7 @@ class MasterSupervisor extends Actor with ActorLogging {
     }
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -100,8 +100,9 @@ class MasterSupervisor extends Actor with ActorLogging {
         case ShutdownSystem()   => onSystemShutdown()
     }
 
-    private def onTerminated(actor: ActorRef): Unit = {
-        log.error("Oh noh! A subsystem critically failed : {}", actor)
+    private def onTerminated(corpse: ActorRef): Unit = {
+        log.error("Oh noh! A critical subsystem died : {}", corpse)
+        self ! ShutdownSystem()
     }
 
     private def onSystemShutdown(): Unit = {

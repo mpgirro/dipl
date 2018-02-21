@@ -88,7 +88,7 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
     }
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {

@@ -42,7 +42,7 @@ class DirectoryStore extends Actor with ActorLogging {
     */
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -425,7 +425,17 @@ class DirectoryStore extends Actor with ActorLogging {
 
         def task: () => Option[EpisodeDTO] = () => {
             Option(episode.getGuid).map(guid => {
-                episodeService.findOneByPodcastAndGuid(podcastId, guid)
+                try {
+                    episodeService.findOneByPodcastAndGuid(podcastId, guid)
+                } catch {
+                    case e: javax.persistence.NonUniqueResultException =>
+                        e.printStackTrace()
+                        log.error("podcast={} and episode={}", podcastId, episode.getEchoId)
+                        context.stop(self)
+                    case e: Throwable =>
+                        e.printStackTrace()
+                        None
+                }
             }).getOrElse({
                 episodeService.findOneByEnclosure(episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
             }) match {
@@ -456,7 +466,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // in case the episode was registered, we initiate some post processing
         registeredEpisode match {
             case Some(e) =>
-                log.info("New Episode registered : '{}' [{},{}]", e.getTitle, podcastId, e.getEchoId)
+                log.info("New Episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
 
                 indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
 

@@ -37,7 +37,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
     }
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -51,13 +51,19 @@ class DirectorySupervisor extends Actor with ActorLogging {
             indexStore = ref
             router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
-        case Terminated(a) =>
-            router = router.removeRoutee(a)
+        case Terminated(corpse) =>
+            router = router.removeRoutee(corpse)
             /* TODO at some point we want to simply restart replace the worker
+            router = router.removeRoutee(corpse)
             val directoryStore = createDirectoryActor()
             context watch directoryStore
             router = router.addRoutee(directoryStore)
             */
+            router = router.removeRoutee(corpse)
+            if(router.routees.isEmpty) {
+                log.info("No more workers available")
+                context.stop(self)
+            }
             log.info("We do not re-create terminated crawlers for now")
 
         case PoisonPill =>
@@ -73,7 +79,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
     private def createDirectoryActor(): ActorRef = {
         val directoryStore = context.actorOf(Props[DirectoryStore]
             .withDispatcher("echo.directory.dispatcher"),
-            name = "directory-" + workerIndex)
+            name = "worker-" + workerIndex)
 
         workerIndex += 1
 

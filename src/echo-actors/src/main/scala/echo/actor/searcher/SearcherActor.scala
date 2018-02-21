@@ -19,7 +19,7 @@ class SearcherActor extends Actor with ActorLogging {
     private var responseHandlerCounter = 0
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {

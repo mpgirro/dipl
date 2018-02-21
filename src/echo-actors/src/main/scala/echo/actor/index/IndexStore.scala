@@ -43,7 +43,7 @@ class IndexStore extends Actor with ActorLogging {
         indexCommitter.destroy()
         indexSearcher.destroy()
 
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -166,7 +166,7 @@ class IndexStore extends Actor with ActorLogging {
             case Some(doc) =>
                 doc.setWebsiteData(html)
                 indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index: echoId={}", echoId)
+            case None => log.error("Could not retrieve from index for update website: echoId={}", echoId)
         }
 
         processWebsiteQueue(queue)
@@ -182,7 +182,7 @@ class IndexStore extends Actor with ActorLogging {
             case Some(doc) =>
                 doc.setItunesImage(itunesImage)
                 indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index: echoId={}", echoId)
+            case None => log.error("Could not retrieve from index for update image: echoId={}", echoId)
         }
 
         processImageQueue(queue)
@@ -198,7 +198,7 @@ class IndexStore extends Actor with ActorLogging {
             case Some(doc) =>
                 doc.setLink(link)
                 indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index: echoId={}", echoId)
+            case None => log.error("Could not retrieve from index for update link: echoId={}", echoId)
         }
 
         processLinkQueue(queue)

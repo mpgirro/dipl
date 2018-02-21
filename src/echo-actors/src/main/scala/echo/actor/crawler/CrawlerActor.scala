@@ -53,7 +53,7 @@ class CrawlerActor extends Actor with ActorLogging {
     private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
 
     override def postStop: Unit = {
-        Http().shutdownAllConnectionPools().onComplete(_ => log.info(s"${self.path.name} shut down"))
+        Http().shutdownAllConnectionPools().onComplete(_ => log.info("shutting down"))
     }
 
     override def receive: Receive = {

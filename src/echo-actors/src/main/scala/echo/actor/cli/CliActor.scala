@@ -46,7 +46,7 @@ class CliActor(private val master: ActorRef,
     repl()
 
     override def postStop: Unit = {
-        log.info(s"${self.path.name} shut down")
+        log.info("shutting down")
     }
 
     override def receive: Receive = {
@@ -55,7 +55,7 @@ class CliActor(private val master: ActorRef,
 
     private def repl() {
 
-        log.info("Echo:CLI read to take commands")
+        log.info("CLI read to take commands")
 
         while(!shutdown){
             val input = StdIn.readLine()
@@ -115,7 +115,7 @@ class CliActor(private val master: ActorRef,
             exec(input.split(" "))
         }
 
-        log.info("Terminating the CLI due to user request")
+        log.info("Terminating due to user request")
         master ! ShutdownSystem()
     }
 
