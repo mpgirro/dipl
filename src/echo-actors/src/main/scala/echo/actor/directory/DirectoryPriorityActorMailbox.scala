@@ -24,5 +24,9 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
         case UpdateEpisodeMetadata(_,_) => 3
 //        case UsePodcastItunesImage(_)   => 4
         case ProposeNewFeed(_)          => 4
-        case _                          => 5
+        case CheckPodcast(_)            => 5
+        case CheckFeed(_)               => 5
+        case CheckAllPodcasts()         => 5
+        case CheckAllFeeds()            => 5
+        case _                          => 6
     })
