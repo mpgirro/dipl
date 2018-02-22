@@ -427,17 +427,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         def task: () => Option[EpisodeDTO] = () => {
             Option(episode.getGuid).map(guid => {
-                try {
-                    episodeService.findOneByPodcastAndGuid(podcastId, guid)
-                } catch {
-                    case e: javax.persistence.NonUniqueResultException =>
-                        e.printStackTrace()
-                        log.error("podcast={} and episode={}", podcastId, episode)
-                        context.stop(self)
-                    case e: Throwable =>
-                        e.printStackTrace()
-                        None
-                }
+                episodeService.findAllByPodcastAndGuid(podcastId, guid).headOption
             }).getOrElse({
                 episodeService.findOneByEnclosure(episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
             }) match {
