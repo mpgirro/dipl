@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 class SearcherActor extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
     private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
@@ -29,7 +29,7 @@ class SearcherActor extends Actor with ActorLogging {
             indexStore = ref
 
         case SearchRequest(query, page, size) =>
-            log.info("Received SearchRequest('{}',{},{})", query, page, size)
+            log.debug("Received SearchRequest('{}',{},{})", query, page, size)
 
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
 
@@ -45,9 +45,11 @@ class SearcherActor extends Actor with ActorLogging {
             val originalSender = Some(sender) // this is important to not expose the handler
 
             responseHandlerCounter += 1
-            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), s"${self.path.name}-response-handler-${responseHandlerCounter}")
+            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), s"handler-${responseHandlerCounter}")
 
             indexStore.tell(SearchIndex(query, p, s), handler)
+
+            log.debug("Finished SearchRequest('{}',{},{})", query, page, size)
 
     }
 }

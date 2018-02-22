@@ -44,11 +44,6 @@ object ActorProtocol {
     //case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
 
     // Questions: Parser -> DirectoryStore
-    /*
-    case class IsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String)
-    case class EpisodeRegistered(episodeId: String)
-    case class EpisodeNotRegistered()
-    */
     case class RegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO)
 
     // Crawler -> Parser
@@ -57,10 +52,6 @@ object ActorProtocol {
     case class ParseWebsiteData(echoId: String, html: String)
 
     // Parser -> IndexStore
-    case class IndexStoreAddPodcast(podcast: PodcastDTO)
-    case class IndexStoreUpdatePodcast(podcast: PodcastDTO)
-    case class IndexStoreAddEpisode(episode: EpisodeDTO)
-    case class IndexStoreUpdateEpisode(episode: EpisodeDTO)
     case class IndexStoreAddDoc(doc: IndexDocDTO)
     case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
 

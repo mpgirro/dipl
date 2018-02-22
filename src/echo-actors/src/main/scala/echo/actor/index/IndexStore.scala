@@ -58,39 +58,12 @@ class IndexStore extends Actor with ActorLogging {
             indexChanged = true
             log.debug("Exit IndexStoreAddDoc({})", doc.getEchoId)
 
-        // TODO do not do this messages anymore
-        case IndexStoreAddPodcast(podcast)  =>
-            log.debug("Received IndexStoreAddPodcast({})", podcast.getEchoId)
-            indexCommitter.add(podcast)
-            indexChanged = true
-            log.debug("Exit IndexStoreAddPodcast({})", podcast.getEchoId)
-
-        // TODO do not do this messages anymore
-        case IndexStoreUpdatePodcast(podcast) =>
-            log.debug("Received IndexStoreUpdatePodcast({})", podcast.getEchoId)
-            indexCommitter.update(podcast)
-            indexChanged = true
-            log.debug("Exit IndexStoreUpdatePodcast({})", podcast.getEchoId)
-
-        // TODO do not do this messages anymore
-        case IndexStoreAddEpisode(episode) =>
-            log.debug("Received IndexStoreAddEpisode({})", episode.getEchoId)
-            indexCommitter.add(episode)
-            indexChanged = true
-            log.debug("Exit IndexStoreAddEpisode({})", episode.getEchoId)
-
-        // TODO do not do this messages anymore
-        case IndexStoreUpdateEpisode(episode) =>
-            log.debug("Received IndexStoreUpdateEpisode({})", episode.getEchoId)
-            indexCommitter.update(episode)
-            indexChanged = true
-            log.debug("Exit IndexStoreUpdateEpisode({})", episode.getEchoId)
-
         case IndexStoreUpdateDocWebsiteData(echoId, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
             updateWebsiteQueue.enqueue((echoId,html))
             log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", echoId)
 
+        // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
             log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
             updateImageQueue.enqueue((echoId, itunesImage))
@@ -102,7 +75,7 @@ class IndexStore extends Actor with ActorLogging {
             log.debug("Exit IndexStoreUpdateDocLink({},'{}')", echoId, link)
 
         case SearchIndex(query, page, size) =>
-            log.info("Received SearchIndex('{}',{},{}) message", query, page, size)
+            log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
             indexSearcher.refresh()
             try {
@@ -118,7 +91,7 @@ class IndexStore extends Actor with ActorLogging {
                     log.error("Error trying to search the index [reason: {}]", e.getMessage)
                     sender ! NoIndexResultsFound(query) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
             }
-            log.info("Exit SearchIndex('{}',{},{}) message", query, page, size)
+            log.debug("Exit SearchIndex('{}',{},{}) message", query, page, size)
 
     }
 

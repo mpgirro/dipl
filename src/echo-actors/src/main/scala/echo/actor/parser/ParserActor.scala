@@ -51,48 +51,14 @@ class ParserActor extends Actor with ActorLogging {
         case ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
 
-            parse(podcastId, feedUrl, feedData, true)
+            parse(podcastId, feedUrl, feedData, isNewPodcast = true)
 
-            /*
-            try {
-                val podcast = Option(feedParser.parseFeed(feedData))
-                podcast match {
-                    case Some(p) =>
-                        // TODO try-catch for Feedparseerror here, send update
-                        // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-
-                        p.setEchoId(podcastId)
-
-                        Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
-
-                        directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
-                        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
-
-                        // request that the website will get added to the index as well
-                        Option(p.getLink) match {
-                            case Some(link) => crawler ! FetchWebsite(p.getEchoId, link)
-                            case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
-                        }
-
-                        // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
-                        checkForNewEpisodes(feedUrl, podcastId, feedData)
-                    case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
-                }
-            } catch {
-                case e: FeedParsingException =>
-                    log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                    directoryStore ! FeedStatusUpdate(podcastId, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-                case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
-            }
-
-            log.debug("Finished ParseNewPodcastData for feed: " + feedUrl)
-            */
+            log.debug("Finished ParseNewPodcastData({},{},_)", feedUrl, podcastId)
 
         case ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String) =>
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastId)
 
-            // checkForNewEpisodes(feedUrl, podcastId, episodeFeedData)
-            parse(podcastId, feedUrl, episodeFeedData, false)
+            parse(podcastId, feedUrl, episodeFeedData, isNewPodcast = false)
 
             log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastId)
 
@@ -120,14 +86,14 @@ class ParserActor extends Actor with ActorLogging {
                     Option(p.getTitle).foreach(t => p.setTitle(t.trim))
                     Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
-
-
                     if (isNewPodcast) {
 
-                        // experimental
+                        /* TODO
+                        // experimental: this works but has terrible performance and assumes we have a GUI app
                         Option(p.getItunesImage).foreach(img => {
                             p.setItunesImage(base64Image(img))
                         })
+                        */
 
                         indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
 
@@ -164,10 +130,12 @@ class ParserActor extends Actor with ActorLogging {
                     Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
                     Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
 
-                    // experimental
+                    /* TODO
+                    // experimental: this works but has terrible performance and assumes we have a GUI app
                     Option(e.getItunesImage).foreach(img => {
                         e.setItunesImage(base64Image(img))
                     })
+                    */
 
                     directoryStore ! RegisterEpisodeIfNew(podcastId, e)
                 }
@@ -190,32 +158,5 @@ class ParserActor extends Actor with ActorLogging {
                 null
         }
     }
-
-    /*
-    @Deprecated
-    private def checkForNewEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
-        try {
-            val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData))
-            episodes match {
-                case Some(es) =>
-                    for(e <- es){
-
-                        //val originalSender = Some(sender) // this is important to not expose the handler
-
-                        responseHandlerCounter += 1
-                        val handler = context.actorOf(DirectoryStoreResponseHandler.props(podcastId, e, directoryStore, indexStore, crawler), s"${self.path.name}-response-handler-${responseHandlerCounter}")
-
-                        directoryStore.tell(IsEpisodeRegistered(e.getEnclosureUrl, e.getEnclosureLength, e.getEnclosureType), handler)
-                    }
-                case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
-            }
-        } catch {
-            case e: FeedParsingException =>
-                log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                directoryStore ! FeedStatusUpdate(podcastId, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-            case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
-        }
-    }
-    */
 
 }

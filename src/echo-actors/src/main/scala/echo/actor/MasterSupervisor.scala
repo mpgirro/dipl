@@ -36,30 +36,22 @@ class MasterSupervisor extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     override def preStart(): Unit = {
+
         index = context.watch(context.actorOf(Props[IndexStore]
             .withDispatcher("echo.index.dispatcher"),
             name = "index"))
+
         parser = context.watch(context.actorOf(Props[ParserActor]
             .withDispatcher("echo.parser.dispatcher"),
             name = "parser"))
+
         searcher = context.watch(context.actorOf(Props[SearcherActor]
             .withDispatcher("echo.searcher.dispatcher"),
             name = "searcher"))
-        /*
-        val crawler = context.watch(context.actorOf(Props[CrawlerActor]
-            .withDispatcher("echo.crawler.dispatcher"),
-            name = "crawler"))
-        */
-        // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
+
         crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler")
         context watch crawler
 
-        /*
-        val directoryStore = context.watch(context.actorOf(Props[DirectoryStore]
-            .withDispatcher("echo.directory.dispatcher"),
-            name = "directoryStore"))
-        */
-        // TODO brauchen nicht die supervisor den eigenen threadpool? sodass sich maximal children gegenseitig blockieren?
         directory = context.actorOf(Props[DirectorySupervisor], name = "directory")
         context watch directory
 
@@ -108,38 +100,16 @@ class MasterSupervisor extends Actor with ActorLogging {
     private def onSystemShutdown(): Unit = {
         log.info("Received ShutdownSystem")
 
-        /*
         // it is important to shutdown all actor(supervisor) befor shutting down the actor system
-        // otherwise Akka HTTP might block ports etc
-        context.system.stop(crawler)
+        context.system.stop(cli)
+        context.system.stop(crawler)    // these have a too full inbox usually to let them finish processing
+        context.system.stop(directory)
         context.system.stop(gateway)
         context.system.stop(index)
-        context.system.stop(directory)
         context.system.stop(parser)
         context.system.stop(searcher)
-        context.system.stop(cli)
 
-        // now its safe to shutdown
-        context.system.terminate()
-        */
-        context.system.stop(gateway)
-        context.system.stop(index)
-        context.system.stop(directory)
-        context.system.stop(parser)
-        context.system.stop(searcher)
-        context.system.stop(cli)
-
-        /*
-        gateway ! PoisonPill
-        index ! PoisonPill
-        directory ! PoisonPill
-        parser ! PoisonPill
-        searcher ! PoisonPill
-        cli ! PoisonPill
-        //crawler ! PoisonPill
-        */
-        context.system.stop(crawler) // these have a too full inbox usually to let them finish processing
-        context.stop(self)
+        context.stop(self)  // master
         context.system.terminate().onComplete {
             case _ => log.info("system.terminate() finished")
         }

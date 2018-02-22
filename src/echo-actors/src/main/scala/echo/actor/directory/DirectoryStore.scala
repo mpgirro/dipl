@@ -87,31 +87,11 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
 
-        //case IsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType) => onIsEpisodeRegistered(enclosureUrl, enclosureLength, enclosureType)
-
         case RegisterEpisodeIfNew(podcastId, episode) => onRegisterEpisodeIfNew(podcastId, episode)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
-
-        /*
-        case LoadTestFeeds =>
-            log.info("Received LoadTestFeeds")
-
-            val filename = "../feeds.txt"
-            for (feed <- Source.fromFile(filename).getLines) {
-                self ! ProposeNewFeed(feed)
-            }
-
-        case LoadMassiveFeeds =>
-            log.info("Received LoadMassiveFeeds")
-
-            val filename = "../feeds_unique.txt"
-            for (feed <- Source.fromFile(filename).getLines) {
-                self ! ProposeNewFeed(feed)
-            }
-        */
 
     }
 
@@ -404,23 +384,6 @@ class DirectoryStore extends Actor with ActorLogging {
 
         log.debug("Finished CheckAllFeeds()")
     }
-
-    /*
-    private def onIsEpisodeRegistered(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Unit = {
-        log.debug("Received IsEpisodeRegistered('{}', {}, '{}')", enclosureUrl, enclosureLength, enclosureType)
-
-        def task = () => {
-            episodeService.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType).map(e => {
-                sender ! EpisodeRegistered(e.getEchoId)
-            }).getOrElse({
-                sender ! EpisodeNotRegistered
-            })
-        }
-        doInTransaction(task, List(episodeService))
-
-        log.debug("Finished IsEpisodeRegistered()")
-    }
-    */
 
     private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received RegisterEpisodeIfNew({}, '{}')", podcastId, episode.getTitle)
