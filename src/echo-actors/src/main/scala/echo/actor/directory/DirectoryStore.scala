@@ -441,7 +441,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
                         // check if the episode has a cover image defined, and set the one of the episode
                         Option(episode.getItunesImage).getOrElse({
-                            indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
+                            // indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
                             episode.setItunesImage(p.getItunesImage)
                         })
                     }).getOrElse({
