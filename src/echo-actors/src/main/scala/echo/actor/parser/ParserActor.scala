@@ -1,8 +1,14 @@
 package echo.actor.parser
 
+import java.awt.image.BufferedImage
+import java.io.{ByteArrayOutputStream, IOException, InputStream}
+import java.net.{URL, URLConnection}
 import java.time.LocalDateTime
+import java.util.Base64
+import javax.imageio.ImageIO
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
@@ -114,10 +120,15 @@ class ParserActor extends Actor with ActorLogging {
                     Option(p.getTitle).foreach(t => p.setTitle(t.trim))
                     Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
-                    // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
+
 
                     if (isNewPodcast) {
+
+                        // experimental
+                        Option(p.getItunesImage).foreach(img => {
+                            p.setItunesImage(base64Image(img))
+                        })
+
                         indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
 
                         // request that the podcasts website will get added to the index as well, if possible
@@ -126,6 +137,9 @@ class ParserActor extends Actor with ActorLogging {
                             case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
                         }
                     }
+
+                    // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
+                    directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                     processEpisodes(feedUrl, podcastId, feedData)
@@ -150,9 +164,30 @@ class ParserActor extends Actor with ActorLogging {
                     Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
                     Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
 
+                    // experimental
+                    Option(e.getItunesImage).foreach(img => {
+                        e.setItunesImage(base64Image(img))
+                    })
+
                     directoryStore ! RegisterEpisodeIfNew(podcastId, e)
                 }
             case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
+        }
+    }
+
+    private def base64Image(imageUrl: String): String = {
+        try {
+            val sourceImage: BufferedImage = ImageIO.read(new URL(imageUrl))
+            if(sourceImage == null) return null
+            val resampleOp: ResampleOp = new ResampleOp(400,400)
+            val scaledImage = resampleOp.filter(sourceImage, null)
+            val outputStream: ByteArrayOutputStream = new ByteArrayOutputStream()
+            ImageIO.write(scaledImage, "jpg", outputStream)
+            val base64 = Base64.getEncoder.encodeToString(outputStream.toByteArray)
+            "data:image/png;base64," + base64
+        } catch {
+            case e: IOException =>
+                null
         }
     }
 
