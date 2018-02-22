@@ -487,7 +487,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
         def task = () => {
-            podcastService.findAll(1, MAX_PAGE_SIZE).foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
+            podcastService.findAll(0, MAX_PAGE_SIZE).foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
         }
         doInTransaction(task, List(podcastService))
 

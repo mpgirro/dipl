@@ -28,8 +28,8 @@ class PodcastGatewayService (private val log: LoggingAdapter)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
-    private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.gateway.default-size")
+    private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.directory.default-page")
+    private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.directory.default-size")
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
@@ -64,8 +64,8 @@ class PodcastGatewayService (private val log: LoggingAdapter)
         parameters('p.as[Int].?, 's.as[Int].?) { (page, size) =>
             log.info("GET /api/podcast?p={}&s={}", page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
 
-            val p: Int = page.getOrElse(DEFAULT_PAGE)
-            val s: Int = size.getOrElse(DEFAULT_SIZE)
+            val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
+            val s: Int = size.map(s => s-1).getOrElse(DEFAULT_SIZE)
 
             onSuccess(directoryStore ? GetAllPodcastsRegistrationComplete(p,s)) { // TODO
                 case AllPodcastsResult(results) => {
