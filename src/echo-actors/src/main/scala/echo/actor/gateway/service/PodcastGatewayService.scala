@@ -65,7 +65,7 @@ class PodcastGatewayService (private val log: LoggingAdapter)
             log.info("GET /api/podcast?p={}&s={}", page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
 
             val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
-            val s: Int = size.map(s => s-1).getOrElse(DEFAULT_SIZE)
+            val s: Int = size.getOrElse(DEFAULT_SIZE)
 
             onSuccess(directoryStore ? GetAllPodcastsRegistrationComplete(p,s)) { // TODO
                 case AllPodcastsResult(results) => {
