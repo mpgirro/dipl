@@ -27,9 +27,6 @@ class ParserActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
-    // TODO delete
-    private var responseHandlerCounter = 0
-
     override def postStop: Unit = {
         log.info("shutting down")
     }

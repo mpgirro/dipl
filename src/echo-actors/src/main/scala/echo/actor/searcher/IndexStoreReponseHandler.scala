@@ -20,16 +20,14 @@ object IndexStoreReponseHandler {
 
     case object IndexRetrievalTimeout
 
-    def props(indexStore: ActorRef, originalSender: Option[ActorRef]): Props = {
-        Props(new IndexStoreReponseHandler(indexStore, originalSender.get))
+    def props(indexStore: ActorRef, originalSender: Option[ActorRef], internalTimeout: FiniteDuration): Props = {
+        Props(new IndexStoreReponseHandler(indexStore, originalSender.get, internalTimeout))
     }
 }
 
-class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) extends Actor with ActorLogging {
+class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef, internalTimeout: FiniteDuration) extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
-
-    private val timeout = 5.seconds
 
     override def receive = LoggingReceive {
         case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
@@ -66,7 +64,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef) e
 
     import context.dispatcher
     val timeoutMessager: Cancellable = context.system.scheduler.
-        scheduleOnce(timeout) { // TODO read timeout val from config
+        scheduleOnce(internalTimeout) { // TODO read timeout val from config
             self ! IndexRetrievalTimeout
         }
 }

@@ -4,15 +4,18 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 
+import scala.concurrent.duration._
 import scala.language.postfixOps
 
 class SearcherActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
+    private val CONFIG = ConfigFactory.load()
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    private val DEFAULT_PAGE: Int = ConfigFactory.load().getInt("echo.gateway.default-page")
-    private val DEFAULT_SIZE: Int = ConfigFactory.load().getInt("echo.gateway.default-size")
+    private val DEFAULT_PAGE: Int = Option(CONFIG.getInt("echo.gateway.default-page")).getOrElse(1)
+    private val DEFAULT_SIZE: Int = Option(CONFIG.getInt("echo.gateway.default-size")).getOrElse(20)
+    private val INTERNAL_TIMEOUT: FiniteDuration = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
 
     private var indexStore: ActorRef = _
 
@@ -45,7 +48,7 @@ class SearcherActor extends Actor with ActorLogging {
             val originalSender = Some(sender) // this is important to not expose the handler
 
             responseHandlerCounter += 1
-            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender), s"handler-${responseHandlerCounter}")
+            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
 
             indexStore.tell(SearchIndex(query, p, s), handler)
 

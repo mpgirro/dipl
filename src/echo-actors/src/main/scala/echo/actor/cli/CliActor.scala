@@ -3,6 +3,7 @@ package echo.actor.cli
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
@@ -24,8 +25,8 @@ class CliActor(private val master: ActorRef,
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-
-    implicit val internalTimeout = Timeout(5 seconds)
+    private val CONFIG = ConfigFactory.load()
+    private implicit val INTERNAL_TIMEOUT: Timeout = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
 
     private var shutdown = false
 
@@ -143,7 +144,7 @@ class CliActor(private val master: ActorRef,
 
     private def search(query: List[String]): Unit = {
         val future = searcher ? SearchRequest(query.mkString(" "), Some(1), Some(100))
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[SearchResults]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[SearchResults]
         response match {
             case SearchResults(results) => {
                 println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'")
@@ -158,7 +159,7 @@ class CliActor(private val master: ActorRef,
 
     private def getAndPrintPodcast(echoId: String) = {
         val future = directoryStore ? GetPodcast(echoId)
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case PodcastResult(podcast)     => println(DocumentFormatter.cliFormat(podcast))
             case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Podcast with echoId=$unknownId")
@@ -167,7 +168,7 @@ class CliActor(private val master: ActorRef,
 
     private def getAndPrintEpisode(echoId: String) = {
         val future = directoryStore ? GetEpisode(echoId)
-        val response = Await.result(future, internalTimeout.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case EpisodeResult(episode)     => println(DocumentFormatter.cliFormat(episode))
             case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")

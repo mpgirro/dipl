@@ -24,7 +24,7 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>[%highlight(%-5level)] %gray([%d{yyyy-MM-dd HH:mm:ss.SSS}]) %cyan([%X{akkaSource}]) - %msg%n</pattern>
+            <pattern>%highlight([%-5level]) %gray([%d{yyyy-MM-dd HH:mm:ss.SSS}]) %cyan([%X{akkaSource}]) - %msg%n</pattern>
         </encoder>
     </appender>
 

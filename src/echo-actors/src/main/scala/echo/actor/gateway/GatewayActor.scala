@@ -29,17 +29,17 @@ class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private val config = ConfigFactory.load()
-    private val GATEWAY_HOST = config.getString("echo.gateway.host")
-    private val GATEWAY_PORT = config.getInt("echo.gateway.port")
+    private val CONFIG = ConfigFactory.load()
+    private val GATEWAY_HOST = CONFIG.getString("echo.gateway.host")
+    private val GATEWAY_PORT = CONFIG.getInt("echo.gateway.port")
 
     // TODO see https://github.com/ArchDev/akka-http-rest/blob/master/src/main/scala/me/archdev/restapi/http/HttpRoute.scala
-    private val SECRET_KEY = config.getString("echo.gateway.secret-key")
+    private val SECRET_KEY = CONFIG.getString("echo.gateway.secret-key")
 
     private var searcher: ActorRef = _
     private var directoryStore: ActorRef = _
 
-    private implicit val internalTimeout = Timeout(5 seconds) // TODO read value from config
+    private implicit val INTERNAL_TIMEOUT: Timeout = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
 
     private val searchService = new SearchGatewayService(log)
     private val podcastService = new PodcastGatewayService(log)

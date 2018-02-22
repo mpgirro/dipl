@@ -2,6 +2,7 @@ package echo.actor.crawler
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, Broadcast, RoundRobinRoutingLogic, Router}
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefIndexStoreActor, ActorRefParserActor}
 
 /**
@@ -11,7 +12,8 @@ class CrawlerSupervisor extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private val WORKER_COUNT = 5 // TODO read this from config
+    private val CONFIG = ConfigFactory.load()
+    private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.crawler.worker-count")).getOrElse(5)
     private var workerIndex = 1
 
     private var parser: ActorRef = _

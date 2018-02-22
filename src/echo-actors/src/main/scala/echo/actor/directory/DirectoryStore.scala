@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
@@ -21,7 +22,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    val MAX_PAGE_SIZE = 10000 // TODO
+    private val CONFIG = ConfigFactory.load()
+    private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _

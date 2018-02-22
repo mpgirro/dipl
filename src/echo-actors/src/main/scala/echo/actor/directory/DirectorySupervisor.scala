@@ -4,6 +4,7 @@ import java.sql.{Connection, DriverManager}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefIndexStoreActor}
 import liquibase.database.jvm.JdbcConnection
 import liquibase.{Contexts, LabelExpression, Liquibase}
@@ -17,7 +18,9 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private val WORKER_COUNT = 5 // TODO read this from config
+    private val CONFIG = ConfigFactory.load()
+    private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.directory.worker-count")).getOrElse(5)
+
     private var workerIndex = 1
 
     private var crawler: ActorRef = _

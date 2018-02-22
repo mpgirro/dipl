@@ -2,6 +2,7 @@ package echo.actor
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
@@ -24,8 +25,10 @@ class MasterSupervisor extends Actor with ActorLogging {
 
     override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 
-    implicit val executionContext = context.system.dispatcher
-    implicit val internalTimeout = Timeout(5 seconds)
+    private implicit val executionContext = context.system.dispatcher
+
+    private val CONFIG = ConfigFactory.load()
+    private implicit val INTERNAL_TIMEOUT = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
 
     private var index: ActorRef = _
     private var parser: ActorRef = _
@@ -80,7 +83,7 @@ class MasterSupervisor extends Actor with ActorLogging {
         directory ! ActorRefCrawlerActor(crawler)
         directory ! ActorRefIndexStoreActor(index)
 
-        log.info("Echo:Master up and running")
+        log.info("up and running")
     }
 
     override def postStop: Unit = {
@@ -98,7 +101,7 @@ class MasterSupervisor extends Actor with ActorLogging {
     }
 
     private def onSystemShutdown(): Unit = {
-        log.info("Received ShutdownSystem")
+        log.info("initiating shutdown sequence")
 
         // it is important to shutdown all actor(supervisor) befor shutting down the actor system
         context.system.stop(cli)
@@ -109,10 +112,8 @@ class MasterSupervisor extends Actor with ActorLogging {
         context.system.stop(parser)
         context.system.stop(searcher)
 
+        context.system.terminate().onComplete(_ => log.info("system.terminate() finished"))
         context.stop(self)  // master
-        context.system.terminate().onComplete {
-            case _ => log.info("system.terminate() finished")
-        }
 
     }
 

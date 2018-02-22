@@ -1,6 +1,7 @@
 package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging, Cancellable}
+import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.exception.SearchException
@@ -15,9 +16,10 @@ class IndexStore extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    private val INDEX_PATH = ConfigFactory.load().getString("echo.index.lucene-path")
+    private val CONFIG = ConfigFactory.load()
+    private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
 
-    private val COMMIT_INTERVAL = 3 seconds // TODO read from config file
+    private val COMMIT_INTERVAL: FiniteDuration = Option(CONFIG.getInt("echo.index.commit-interval")).getOrElse(3).seconds
 
     private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
@@ -27,16 +29,9 @@ class IndexStore extends Actor with ActorLogging {
     private val updateImageQueue: mutable.Queue[(String,String)] = new mutable.Queue
     private val updateLinkQueue: mutable.Queue[(String,String)] = new mutable.Queue
 
-    //import context.dispatcher
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
-    /*
-    private val commitMessager: Cancellable = context.system.scheduler.
-        schedule(COMMIT_INTERVAL, COMMIT_INTERVAL) {
-            self ! CommitIndex
-        }
-        */
-
+    // kickoff the committing play
     context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
     override def postStop: Unit = {
@@ -129,9 +124,8 @@ class IndexStore extends Actor with ActorLogging {
     }
 
     private def processWebsiteQueue(queue: mutable.Queue[(String,String)]): Unit = {
-        if(queue.isEmpty) {
-            return
-        }
+
+        if(queue.isEmpty) return
 
         val (echoId,html) = queue.dequeue()
         val entry = Option(indexSearcher.findByEchoId(echoId))
