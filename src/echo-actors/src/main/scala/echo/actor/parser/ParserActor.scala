@@ -4,12 +4,10 @@ import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import echo.actor.ActorProtocol._
-import echo.core.domain.dto.{DTO, EpisodeDTO}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
 import echo.core.mapper.IndexMapper
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
-import echo.core.util.EchoIdGenerator
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 
