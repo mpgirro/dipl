@@ -14,16 +14,26 @@ export class DirectoryComponent implements OnInit {
 
   @Input() podcasts: Array<Podcast>;
 
+  DEFAULT_PAGE = 1;
+  DEFAULT_SIZE = 48;
+
+  currPage: number;
+  currSize: number;
+
   constructor(private route: ActivatedRoute,
               private podcastService: PodcastService,
               private location: Location) { }
 
   ngOnInit() {
+    const p = this.route.snapshot.queryParamMap.get('p');
+    const s = this.route.snapshot.queryParamMap.get('s');
+    this.currPage = (p) ? Number(p) : this.DEFAULT_PAGE;
+    this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
     this.getAllPodcasts();
   }
 
   getAllPodcasts(): void {
-    this.podcastService.getAll()
+    this.podcastService.getAll(this.currPage, this.currSize)
       .subscribe(podcasts => {
 
         // reverse sort by date

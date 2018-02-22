@@ -10,28 +10,34 @@ import {ArrayWrapper} from '../../arraywrapper.model';
 @Injectable()
 export class PodcastService {
 
+  private baseUrl = '/api/podcast';  // URL to web API
+
   constructor(private http: HttpClient) { }
 
   get(echoId: string): Observable<Podcast> {
-
-    console.log('requesting get podcast from backend with echoId: ' + echoId);
-    return this.http.get<Podcast>(`/api/podcast/${echoId}`).pipe(
+    const request = this.baseUrl + '/' + echoId;
+    console.log('GET ' + request);
+    return this.http.get<Podcast>(request).pipe(
       tap(_ => console.log(`found podcast matching "${echoId}"`)),
       catchError(this.handleError<Podcast>('getPodcast', new Podcast()))
     );
   }
 
   getEpisodes(echoId: string): Observable<Array<Episode>> {
-    console.log(`GET /api/podcast/${echoId}/episodes`);
-    return this.http.get<Array<Episode>>(`/api/podcast/${echoId}/episodes`).pipe(
+    const request = this.baseUrl + '/' + echoId + '/episodes';
+    console.log('GET ' + request);
+    return this.http.get<Array<Episode>>(request).pipe(
       tap(_ => console.log(`found episodes for podcast matching "${echoId}"`)),
       catchError(this.handleError<Array<Episode>>('getPodcastEpisodes', new Array<Episode>()))
     );
   }
 
-  getAll(): Observable<ArrayWrapper<Podcast>> {
-    console.log(`GET /api/podcast`);
-    return this.http.get<ArrayWrapper<Podcast>>(`/api/podcast`).pipe(
+  getAll(page: number, size: number): Observable<ArrayWrapper<Podcast>> {
+    const p = (page) ? `&p=${page}` : '';
+    const s = (size) ? `&s=${size}` : '';
+    const request = this.baseUrl + '?' + p + s;
+    console.log('GET ' + request);
+    return this.http.get<ArrayWrapper<Podcast>>(request).pipe(
       tap(_ => console.log(`found all podcasts`)),
       catchError(this.handleError<ArrayWrapper<Podcast>>('allPodcasts', new ArrayWrapper<Podcast>()))
     );

@@ -8,14 +8,16 @@ import { Episode } from './episode.model';
 @Injectable()
 export class EpisodeService {
 
+  private baseUrl = '/api/episode';  // URL to web API
+
   constructor(private http: HttpClient) { }
 
   get(echoId: string): Observable<Episode> {
-
-    console.log('requesting get episode from backend with echoId: ' + echoId);
-    return this.http.get<Episode>(`/api/episode/${echoId}`).pipe(
+    const request = this.baseUrl + '/' + echoId;
+    console.log('GET ' + request);
+    return this.http.get<Episode>(request).pipe(
       tap(_ => console.log(`found episode matching "${echoId}"`)),
-      catchError(this.handleError<Episode>('search', new Episode()))
+      catchError(this.handleError<Episode>('get episode', new Episode()))
     );
   }
 

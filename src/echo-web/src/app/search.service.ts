@@ -11,7 +11,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 @Injectable()
 export class SearchService {
 
-  private searchUrl = '/api/search?';  // URL to web api
+  private baseUrl = '/api/search?';  // URL to web API
 
   constructor(private http: HttpClient) { }
 
@@ -25,9 +25,9 @@ export class SearchService {
     const p = (page) ? `&p=${page}` : '';
     const s = (size) ? `&s=${size}` : '';
 
-    const request = this.searchUrl + q + p + s;
+    const request = this.baseUrl + q + p + s;
 
-    console.log('sending search request: ' + request);
+    console.log('GET ' + request);
     return this.http.get<ResultWrapper>(request).pipe(
       tap(_ => console.log(`found results matching GET "${request}"`)),
       catchError(this.handleError<ResultWrapper>(`GET ${request}`, new ResultWrapper()))
