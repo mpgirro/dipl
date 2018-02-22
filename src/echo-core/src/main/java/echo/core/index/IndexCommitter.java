@@ -1,7 +1,7 @@
 package echo.core.index;
 
+import echo.core.domain.dto.EntityDTO;
 import echo.core.mapper.IndexMapper;
-import echo.core.domain.dto.DTO;
 import echo.core.domain.dto.IndexDocDTO;
 
 /**
@@ -15,14 +15,14 @@ public interface IndexCommitter {
 
     void add(IndexDocDTO doc);
 
-    default void add(DTO dto) {
+    default void add(EntityDTO dto) {
         final IndexDocDTO doc = IndexMapper.INSTANCE.map(dto);
         add(doc);
     }
 
     void update(IndexDocDTO doc);
 
-    default void update(DTO dto) {
+    default void update(EntityDTO dto) {
         final IndexDocDTO doc = IndexMapper.INSTANCE.map(dto);
         update(doc);
     }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 /**
  * @author Maximilian Irro
  */
-public class FeedDTO implements DTO {
+public class FeedDTO implements EntityDTO {
 
     private Long id;
     private String echoId;

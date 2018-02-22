@@ -19,23 +19,6 @@ public class IndexDocDTO {
     private String contentEncoded;
     private String websiteData;
 
-    /*
-    public IndexDocDTO(){
-
-    }
-
-    public IndexDocDTO(String docType, String echoId, String title, String link, LocalDateTime pubDate, String description, String itunesImage) {
-        this.docType = docType;
-        this.echoId = echoId;
-        this.title = title;
-        this.link = link;
-        this.pubDate = pubDate;
-        this.description = description;
-        this.itunesImage = itunesImage;
-        //this.itunesCategories = itunesCategories;
-    }
-    */
-
     public String getDocType() {
         return docType;
     }

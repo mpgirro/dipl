@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * @author Maximilian Irro
  */
-public class PodcastDTO implements DTO {
+public class PodcastDTO implements EntityDTO {
 
     private Long id;
     private String echoId;
@@ -42,19 +42,6 @@ public class PodcastDTO implements DTO {
 
     private LocalDateTime registrationTimestamp;
     private Boolean registrationComplete;
-
-    public PodcastDTO() {
-
-    }
-
-    @Deprecated
-    public PodcastDTO(String echoId, String title, String link, String description, String itunesImage) {
-        this.echoId = echoId;
-        this.title = title;
-        this.link = link;
-        this.description = description;
-        this.itunesImage = itunesImage;
-    }
 
     public Long getId() {
         return id;

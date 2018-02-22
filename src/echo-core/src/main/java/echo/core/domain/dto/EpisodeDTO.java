@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 /**
  * @author Maximilian Irro
  */
-public class EpisodeDTO implements DTO {
+public class EpisodeDTO implements EntityDTO {
 
     private Long id;
     private String echoId;
@@ -35,18 +35,6 @@ public class EpisodeDTO implements DTO {
     private String websiteData;
 
     private LocalDateTime registrationTimestamp;
-
-    public EpisodeDTO() {
-
-    }
-
-    public EpisodeDTO(String echoId, String title, String link, String description, String itunesImage) {
-        this.echoId = echoId;
-        this.title = title;
-        this.link = link;
-        this.description = description;
-        this.itunesImage = itunesImage;
-    }
 
     public Long getId() {
         return id;

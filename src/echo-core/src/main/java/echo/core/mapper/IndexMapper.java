@@ -1,6 +1,6 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.DTO;
+import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.PodcastDTO;
@@ -28,7 +28,7 @@ public interface IndexMapper {
     IndexDocDTO map(EpisodeDTO episodeDTO);
 
 
-    default IndexDocDTO map(DTO dto) {
+    default IndexDocDTO map(EntityDTO dto) {
 
         if (dto == null) return null;
 
@@ -37,7 +37,7 @@ public interface IndexMapper {
         } else if (dto instanceof EpisodeDTO) {
             return map((EpisodeDTO) dto);
         } else {
-            throw new RuntimeException("Unsupported echo DTO type : " + dto.getClass());
+            throw new RuntimeException("Unsupported echo EntityDTO type : " + dto.getClass());
         }
     }
 

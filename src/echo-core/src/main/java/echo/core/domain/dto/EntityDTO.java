@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  *
  * @author Maximilian Irro
  */
-public interface DTO extends Serializable {
+public interface EntityDTO extends Serializable {
 
     String getEchoId();
     void setEchoId(String echoId);

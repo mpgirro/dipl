@@ -1,6 +1,6 @@
 package echo.core.util;
 
-import echo.core.domain.dto.DTO;
+import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.PodcastDTO;
@@ -13,7 +13,7 @@ public class DocumentFormatter {
 
     final StringBuilder builder = new StringBuilder();
 
-    public static String cliFormat(DTO dto){
+    public static String cliFormat(EntityDTO dto){
         final StringBuilder builder = new StringBuilder();
         if(dto instanceof PodcastDTO){
             final PodcastDTO podcast = (PodcastDTO) dto;
@@ -37,7 +37,7 @@ public class DocumentFormatter {
             appendString(builder, Jsoup.parse(episode.getDescription()).text());
             appendString(builder, episode.getLink());
         } else {
-            throw new RuntimeException("Forgot to support new Echo DTO type: "+dto.getClass());
+            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+dto.getClass());
         }
         return builder.toString();
     }
@@ -66,13 +66,13 @@ public class DocumentFormatter {
             appendString(builder, Jsoup.parse(doc.getDescription()).text());
             appendString(builder, doc.getLink());
         } else {
-            throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
+            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+doc.getClass());
         }
         return builder.toString();
     }
 
     /*
-    public static DTO stripHTML(DTO doc){
+    public static EntityDTO stripHTML(EntityDTO doc){
         if(doc instanceof PodcastDTO){
             final PodcastDTO podcast = (PodcastDTO) doc;
             podcast.setDescription(Jsoup.parse(podcast.getDescription()).text());
@@ -82,7 +82,7 @@ public class DocumentFormatter {
             episode.setDescription(Jsoup.parse(episode.getDescription()).text());
             return episode;
         } else {
-            throw new RuntimeException("Forgot to support new Echo DTO type: "+doc.getClass());
+            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+doc.getClass());
         }
     }
     */
