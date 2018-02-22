@@ -52,19 +52,24 @@ class DirectorySupervisor extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case Terminated(corpse) =>
-            router = router.removeRoutee(corpse)
             /* TODO at some point we want to simply restart replace the worker
             router = router.removeRoutee(corpse)
             val directoryStore = createDirectoryActor()
             context watch directoryStore
             router = router.addRoutee(directoryStore)
             */
+
+            /*
             router = router.removeRoutee(corpse)
             if(router.routees.isEmpty) {
                 log.info("No more workers available")
                 context.stop(self)
             }
             log.info("We do not re-create terminated crawlers for now")
+            */
+
+            log.error(s"A ${self.path} worker died : {}", corpse.path.name)
+            context.stop(self)
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> forwarding it to all routees")
@@ -83,8 +88,8 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
         workerIndex += 1
 
-        Option(crawler).map(c => directoryStore ! ActorRefCrawlerActor(c) )
-        Option(indexStore).map(i => directoryStore ! ActorRefIndexStoreActor(i))
+        Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
+        Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
 
         directoryStore
     }

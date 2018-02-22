@@ -101,7 +101,7 @@ class MasterSupervisor extends Actor with ActorLogging {
     }
 
     private def onTerminated(corpse: ActorRef): Unit = {
-        log.error("Oh noh! A critical subsystem died : {}", corpse)
+        log.error("Oh noh! A critical subsystem died : {}", corpse.path)
         self ! ShutdownSystem()
     }
 

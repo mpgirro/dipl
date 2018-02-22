@@ -48,19 +48,26 @@ class CrawlerSupervisor extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case Terminated(corpse) =>
-            log.info("Child '{}' terminated" + corpse.path.name)
+            //log.info("Child '{}' terminated" + corpse.path.name)
+
             /* TODO at some point we want to simply restart replace the worker
             router = router.removeRoutee(corpse)
             val crawler = createCrawler()
             context watch crawler
             router = router.addRoutee(crawler)
             */
+
+            /*
             router = router.removeRoutee(corpse)
             if(router.routees.isEmpty) {
                 log.info("No more workers available")
                 context.stop(self)
             }
             log.info("We do not re-create terminated crawlers for now")
+            */
+
+            log.error(s"A ${self.path} worker died : {}", corpse.path.name)
+            context.stop(self)
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> forwarding it to all routees")
@@ -78,8 +85,8 @@ class CrawlerSupervisor extends Actor with ActorLogging {
 
         workerIndex += 1
 
-        Option(parser).map(p => directory ! ActorRefParserActor(p) )
-        Option(directory).map(d => directory ! ActorRefDirectoryStoreActor(d))
+        Option(parser).foreach(p => directory ! ActorRefParserActor(p) )
+        Option(directory).foreach(d => directory ! ActorRefDirectoryStoreActor(d))
 
         crawler
     }
