@@ -11,84 +11,53 @@ import org.jsoup.*;
  */
 public class DocumentFormatter {
 
-    final StringBuilder builder = new StringBuilder();
+    private static final String NEWLINE = System.getProperty("line.separator");
 
     public static String cliFormat(EntityDTO dto){
-        final StringBuilder builder = new StringBuilder();
-        if(dto instanceof PodcastDTO){
-            final PodcastDTO podcast = (PodcastDTO) dto;
-            appendString(builder, "[Podcast]");
-            appendString(builder, podcast.getTitle());
-            if(podcast.getPubDate() != null){
-                builder.append(podcast.getPubDate());
-            }
-            appendString(builder, Jsoup.parse(podcast.getDescription()).text());
-            appendString(builder, podcast.getLink());
-        } else if(dto instanceof EpisodeDTO){
-            final EpisodeDTO episode = (EpisodeDTO) dto;
-            appendString(builder, "[Episode]");
-            appendString(builder, episode.getTitle());
-            if(episode.getPubDate() != null){
-                appendString(builder, episode.getPubDate().toString());
-            }
-            if(episode.getItunesDuration() != null){
-                appendString(builder, "Duration: "+ episode.getItunesDuration());
-            }
-            appendString(builder, Jsoup.parse(episode.getDescription()).text());
-            appendString(builder, episode.getLink());
-        } else {
-            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+dto.getClass());
-        }
-        return builder.toString();
+        return dto.toString();
     }
 
     public static String cliFormat(IndexDocDTO doc){
         final StringBuilder builder = new StringBuilder();
-        if(doc.getDocType().equals("podcast")){
-            appendString(builder, "[Podcast]");
-            appendString(builder, doc.getTitle());
-            if(doc.getPubDate() != null){
-                builder.append(doc.getPubDate());
-            }
-            appendString(builder, Jsoup.parse(doc.getDescription()).text());
-            appendString(builder, doc.getLink());
-        } else if(doc.getDocType().equals("episode")){
-            appendString(builder, "[Episode]");
-            appendString(builder, doc.getTitle());
-            if(doc.getPubDate() != null){
-                appendString(builder, doc.getPubDate().toString());
-            }
-            /* TODO
-            if(result.getItunesDuration() != null){
-                appendString(builder, "Duration: "+result.getItunesDuration().toString());
-            }
-            */
-            appendString(builder, Jsoup.parse(doc.getDescription()).text());
-            appendString(builder, doc.getLink());
-        } else {
-            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+doc.getClass());
+        switch (doc.getDocType()) {
+            case "podcast":
+                builder
+                    .append("[Podcast]")
+                    .append(NEWLINE)
+                    .append(doc.getTitle())
+                    .append(NEWLINE);
+                if (doc.getPubDate() != null) {
+                    builder
+                        .append(doc.getPubDate())
+                        .append(NEWLINE);
+                }
+                builder
+                    .append(Jsoup.parse(doc.getDescription()).text())
+                    .append(NEWLINE)
+                    .append(doc.getLink())
+                    .append(NEWLINE);
+                break;
+            case "episode":
+                builder
+                    .append("[Episode]")
+                    .append(NEWLINE)
+                    .append(doc.getTitle())
+                    .append(NEWLINE);
+                if (doc.getPubDate() != null) {
+                    builder
+                        .append(doc.getPubDate())
+                        .append(NEWLINE);
+                }
+                builder
+                    .append(Jsoup.parse(doc.getDescription()).text())
+                    .append(NEWLINE)
+                    .append(doc.getLink())
+                    .append(NEWLINE);
+                break;
+            default:
+                throw new RuntimeException("Forgot to support new Echo EntityDTO type: " + doc.getClass());
         }
         return builder.toString();
-    }
-
-    /*
-    public static EntityDTO stripHTML(EntityDTO doc){
-        if(doc instanceof PodcastDTO){
-            final PodcastDTO podcast = (PodcastDTO) doc;
-            podcast.setDescription(Jsoup.parse(podcast.getDescription()).text());
-            return podcast;
-        } else if( doc instanceof EpisodeDTO){
-            final EpisodeDTO episode = (EpisodeDTO) doc;
-            episode.setDescription(Jsoup.parse(episode.getDescription()).text());
-            return episode;
-        } else {
-            throw new RuntimeException("Forgot to support new Echo EntityDTO type: "+doc.getClass());
-        }
-    }
-    */
-
-    private static void appendString(StringBuilder builder, String value) {
-        builder.append(value + System.getProperty("line.separator"));
     }
 
 }
