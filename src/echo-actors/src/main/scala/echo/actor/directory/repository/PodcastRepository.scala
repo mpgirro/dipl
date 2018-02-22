@@ -2,6 +2,7 @@ package echo.actor.directory.repository
 
 import echo.core.domain.entity.Podcast
 import echo.core.domain.feed.FeedStatus
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param
 
@@ -21,6 +22,6 @@ trait PodcastRepository extends JpaRepository[Podcast, java.lang.Long] {
     @Query("SELECT DISTINCT podcast FROM Podcast podcast LEFT JOIN FETCH podcast.feeds feed WHERE feed.lastStatus <> :status")
     def findAllWhereFeedStatusIsNot(@Param("status") status: FeedStatus): java.util.List[Podcast]
 
-    def findByRegistrationCompleteTrue(): java.util.List[Podcast]
+    def findByRegistrationCompleteTrue(pageable: Pageable): java.util.List[Podcast]
 
 }

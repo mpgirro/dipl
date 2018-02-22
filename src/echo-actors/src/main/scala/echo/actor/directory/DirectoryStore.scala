@@ -21,6 +21,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
     log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
+    val MAX_PAGE_SIZE = 10000 // TODO
+
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 
@@ -61,7 +63,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case CheckFeed(echoId) => onCheckFeed(echoId)
 
-        case CheckAllPodcasts => onCheckAllPodcasts()
+        case CheckAllPodcasts => onCheckAllPodcasts(1, MAX_PAGE_SIZE)
 
         case CheckAllFeeds => onCheckAllFeeds()
 
@@ -77,9 +79,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetPodcast(echoId) => onGetPodcast(echoId)
 
-        case GetAllPodcasts => onGetAllPodcasts()
+        case GetAllPodcasts(page, size) => onGetAllPodcasts(page, size)
 
-        case GetAllPodcastsRegistrationComplete => onGetAllPodcastsRegistrationComplete()
+        case GetAllPodcastsRegistrationComplete(page, size) => onGetAllPodcastsRegistrationComplete(page, size)
 
         case GetEpisode(echoId) => onGetEpisode(echoId)
 
@@ -277,11 +279,11 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished GetPodcast('{}')", podcastId)
     }
 
-    private def onGetAllPodcasts(): Unit = {
-        log.debug("Received GetAllPodcasts()")
+    private def onGetAllPodcasts(page: Int, size: Int): Unit = {
+        log.debug("Received GetAllPodcasts({},{})", page, size)
         def task = () => {
             //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
-            val podcasts = podcastService.findAll()
+            val podcasts = podcastService.findAll(page, size)
             sender ! AllPodcastsResult(podcasts)
         }
         doInTransaction(task, List(podcastService))
@@ -289,10 +291,10 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished GetAllPodcasts()")
     }
 
-    private def onGetAllPodcastsRegistrationComplete(): Unit = {
-        log.debug("Received GetAllPodcastsRegistrationComplete()")
+    private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
+        log.debug("Received GetAllPodcastsRegistrationComplete({},{})", page, size)
         def task = () => {
-            val podcasts = podcastService.findAllRegistrationCompleteAsTeaser()
+            val podcasts = podcastService.findAllRegistrationCompleteAsTeaser(page, size)
             sender ! AllPodcastsResult(podcasts)
         }
         doInTransaction(task, List(podcastService))
@@ -367,12 +369,12 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished CheckFeed({})", feedId)
     }
 
-    private def onCheckAllPodcasts(): Unit = {
+    private def onCheckAllPodcasts(page: Int, size: Int): Unit = {
         log.debug("Received CheckAllPodcasts()")
 
         def task = () => {
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
-            podcastService.findAll().foreach(p => {
+            podcastService.findAll(page, size).foreach(p => {
                 val feeds = feedService.findAllByPodcast(p.getEchoId)
                 if(feeds.nonEmpty){
                     crawler ! FetchFeedForUpdateEpisodes(feeds.head.getUrl, p.getEchoId)
@@ -430,7 +432,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 } catch {
                     case e: javax.persistence.NonUniqueResultException =>
                         e.printStackTrace()
-                        log.error("podcast={} and episode={}", podcastId, episode.getEchoId)
+                        log.error("podcast={} and episode={}", podcastId, episode)
                         context.stop(self)
                     case e: Throwable =>
                         e.printStackTrace()
@@ -485,7 +487,7 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received DebugPrintAllPodcasts")
         log.info("All Podcasts in database:")
         def task = () => {
-            podcastService.findAll().foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
+            podcastService.findAll(1, MAX_PAGE_SIZE).foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
         }
         doInTransaction(task, List(podcastService))
 

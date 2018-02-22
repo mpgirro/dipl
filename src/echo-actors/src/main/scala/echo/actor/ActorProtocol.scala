@@ -98,8 +98,8 @@ object ActorProtocol {
 
     // Gateway -> DirectoryStore
     case class GetPodcast(echoId: String)
-    case class GetAllPodcasts()
-    case class GetAllPodcastsRegistrationComplete()
+    case class GetAllPodcasts(page: Int, size: Int)
+    case class GetAllPodcastsRegistrationComplete(page: Int, size: Int)
     case class GetEpisode(echoId: String)
     case class GetEpisodesByPodcast(echoId: String)
 
