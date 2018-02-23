@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 
 import { SearchComponent } from './search/search.component';
-import { DirectoryComponent } from './directory/directory.component';
+import { DirectoryOverviewComponent } from './directory/directory-overview/directory-overview.component';
 
 import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
 import { PodcastRichlistComponent } from './podcast/podcast-richlist/podcast-richlist.component';
@@ -35,7 +35,7 @@ import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawe
     AppComponent,
     SearchComponent,
     PodcastDetailComponent,
-    DirectoryComponent,
+    DirectoryOverviewComponent,
     EpisodeDetailComponent,
     EpisodeTeaserComponent,
     EpisodeRichlistComponent,

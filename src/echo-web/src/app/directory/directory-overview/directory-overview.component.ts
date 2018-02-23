@@ -2,15 +2,15 @@ import {Component, Input, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { Podcast } from '../podcast/shared/podcast.model';
-import {PodcastService} from '../podcast/shared/podcast.service';
+import { Podcast } from '../../podcast/shared/podcast.model';
+import {PodcastService} from '../../podcast/shared/podcast.service';
 
 @Component({
   selector: 'app-directory',
-  templateUrl: './directory.component.html',
-  styleUrls: ['./directory.component.css']
+  templateUrl: './directory-overview.component.html',
+  styleUrls: ['./directory-overview.component.css']
 })
-export class DirectoryComponent implements OnInit {
+export class DirectoryOverviewComponent implements OnInit {
 
   @Input() podcasts: Array<Podcast>;
 
