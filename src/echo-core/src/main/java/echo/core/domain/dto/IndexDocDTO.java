@@ -15,9 +15,12 @@ public class IndexDocDTO {
     private String description;
     private LocalDateTime pubDate;
     private String itunesImage;
+    private String itunesAuthor;
+    private String itunesSummary;
     //private Set<String> itunesCategories;
     private String contentEncoded;
     private String websiteData;
+    private String chapterMarks;
 
     public String getDocType() {
         return docType;
@@ -101,6 +104,30 @@ public class IndexDocDTO {
         this.websiteData = websiteData;
     }
 
+    public String getItunesAuthor() {
+        return itunesAuthor;
+    }
+
+    public void setItunesAuthor(String itunesAuthor) {
+        this.itunesAuthor = itunesAuthor;
+    }
+
+    public String getItunesSummary() {
+        return itunesSummary;
+    }
+
+    public void setItunesSummary(String itunesSummary) {
+        this.itunesSummary = itunesSummary;
+    }
+
+    public String getChapterMarks() {
+        return chapterMarks;
+    }
+
+    public void setChapterMarks(String chapterMarks) {
+        this.chapterMarks = chapterMarks;
+    }
+
     @Override
     public String toString() {
         return "IndexDocDTO{\n" +
@@ -111,6 +138,9 @@ public class IndexDocDTO {
             "\tpubDate=" + pubDate + ",\n" +
             "\tdescription='" + description + "\',\n" +
             "\titunesImage='" + itunesImage + "\',\n" +
+            "\titunesAuthor='" + itunesAuthor + "\',\n" +
+            "\titunesSummary='" + itunesSummary + "\',\n" +
+            "\tchapterMarks='" + chapterMarks + "\',\n" +
             "\tcontentEncoded='" + (contentEncoded==null ? "null" : "<SOME TOO LONG DATA...>") + "\',\n" +
             //", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
