@@ -4,6 +4,7 @@ import { SearchComponent } from './search/search.component';
 import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.component';
 import { DirectoryOverviewComponent } from './directory/directory-overview/directory-overview.component';
 import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
+import {DirectoryListComponent} from './directory/directory-list/directory-list.component';
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent },
@@ -11,7 +12,8 @@ const routes: Routes = [
   { path: '', redirectTo: '/search', pathMatch: 'full' },
   { path: 'p/:id', component: PodcastDetailComponent },
   { path: 'e/:id', component: EpisodeDetailComponent },
-  { path: 'directory', component: DirectoryOverviewComponent }
+  { path: 'directory', component: DirectoryOverviewComponent },
+  { path: 'directory/list', component: DirectoryListComponent }
 ];
 
 @NgModule({

@@ -29,6 +29,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
+import { DirectoryListComponent } from './directory/directory-list/directory-list.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawe
     EpisodeTablelistComponent,
     NavbarComponent,
     PodcastRichlistComponent,
-    PodcastMatrixComponent
+    PodcastMatrixComponent,
+    DirectoryListComponent
   ],
   imports: [
     CoreModule,
