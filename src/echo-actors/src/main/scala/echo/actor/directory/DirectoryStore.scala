@@ -429,7 +429,7 @@ class DirectoryStore extends Actor with ActorLogging {
                     val result = episodeService.save(episode)
 
                     // we must register the episodes chapters as well
-                    result.foreach(e => chapterService.saveAll(e.getId, episode.getChapters))
+                    result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs)))
 
                     result
             }
