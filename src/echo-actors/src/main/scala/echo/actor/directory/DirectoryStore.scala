@@ -100,6 +100,12 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
 
+        case DebugPrintCountAllPodcasts => debugPrintCountAllPodcasts()
+
+        case DebugPrintCountAllEpisodes => debugPrintCountAllEpisodes()
+
+        case DebugPrintCountAllFeeds => debugPrintCountAllFeeds()
+
     }
 
     private def proposeFeed(url: String): Unit = {
@@ -440,7 +446,7 @@ class DirectoryStore extends Actor with ActorLogging {
         // in case the episode was registered, we initiate some post processing
         registeredEpisode match {
             case Some(e) =>
-                log.info("New Episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
+                log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
 
                 indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
 
@@ -475,6 +481,36 @@ class DirectoryStore extends Actor with ActorLogging {
         doInTransaction(task, List(episodeService))
 
         log.debug("Finished DebugPrintAllEpisodes")
+    }
+
+    private def debugPrintCountAllPodcasts(): Unit = {
+        log.debug("Received DebugPrintCountAllPodcasts")
+        def task = () => {
+            podcastService.countAll()
+        }
+        val count = doInTransaction(task, List(podcastService))
+        log.info("Podcasts in Database : {}", count)
+        log.debug("Finished DebugPrintCountAllPodcasts")
+    }
+
+    private def debugPrintCountAllEpisodes(): Unit = {
+        log.debug("Received DebugPrintCountAllEpisodes")
+        def task = () => {
+            episodeService.countAll()
+        }
+        val count = doInTransaction(task, List(episodeService))
+        log.info("Episodes in Database : {}", count)
+        log.debug("Finished DebugPrintCountAllEpisodes")
+    }
+
+    private def debugPrintCountAllFeeds(): Unit = {
+        log.debug("Received DebugPrintCountAllFeeds")
+        def task = () => {
+            feedService.countAll()
+        }
+        val count = doInTransaction(task, List(feedService))
+        log.info("Feeds in Database : {}", count)
+        log.debug("Finished DebugPrintCountAllFeeds")
     }
 
     /**

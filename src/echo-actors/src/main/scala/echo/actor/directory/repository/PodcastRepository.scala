@@ -13,6 +13,7 @@ trait PodcastRepository extends JpaRepository[Podcast, java.lang.Long] {
 
     def findOneByEchoId(echoId: String): Podcast
 
+
     @Query("SELECT DISTINCT podcast FROM Podcast podcast " +
            "LEFT JOIN podcast.feeds feed " +
            "WHERE feed.echoId = :feedId")
@@ -24,4 +25,9 @@ trait PodcastRepository extends JpaRepository[Podcast, java.lang.Long] {
 
     def findByRegistrationCompleteTrue(pageable: Pageable): java.util.List[Podcast]
 
+    @Query("SELECT count(podcast) FROM Podcast podcast")
+    def countAll(): Long
+
+    @Query("SELECT count(podcast) FROM Podcast podcast WHERE podcast.registrationComplete = true")
+    def countAllRegistrationCompleteTrue(): Long
 }

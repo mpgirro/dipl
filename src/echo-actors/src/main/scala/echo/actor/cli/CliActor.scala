@@ -34,6 +34,7 @@ class CliActor(private val master: ActorRef,
         "propose"        -> "feed [feed [feed]]",
         "check podcast"  -> "[all|<echoId>]",
         "check feed"     -> "[all|<echoId>]",
+        "count"          -> "[podcasts|episodes|feeds]",
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes]",
         "load feeds"     -> "[test|massive]",
@@ -80,6 +81,14 @@ class CliActor(private val master: ActorRef,
                     case "check" :: "feed" :: "all" :: _       => usage("check feed")
                     case "check" :: "feed" :: echoId :: Nil    => directoryStore ! CheckFeed(echoId)
                     case "check" :: "feed" :: _ :: _           => usage("check feed")
+
+                    case "count" :: "podcasts" :: Nil => directoryStore ! DebugPrintCountAllPodcasts
+                    case "count" :: "podcasts" :: _   => usage("count")
+                    case "count" :: "episodes" :: Nil => directoryStore ! DebugPrintCountAllEpisodes
+                    case "count" :: "episodes" :: _   => usage("count")
+                    case "count" :: "feeds" :: Nil    => directoryStore ! DebugPrintCountAllFeeds
+                    case "count" :: "feeds" :: _      => usage("count")
+                    case "count" :: _                 => usage("count")
 
                     case "search" :: Nil    => usage("search")
                     case "search" :: query  => search(query)

@@ -87,4 +87,9 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
         Option(EpisodeMapper.INSTANCE.map(result))
     }
 
+    @Transactional
+    def countAll(): Long = {
+        episodeRepository.countAll()
+    }
+
 }

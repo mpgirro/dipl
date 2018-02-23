@@ -96,4 +96,13 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
             .toList
     }
 
+    @Transactional
+    def countAll(): Long = {
+        podcastRepository.countAll()
+    }
+
+    @Transactional
+    def countAllRegistrationComplete(): Long = {
+        podcastRepository.countAllRegistrationCompleteTrue()
+    }
 }

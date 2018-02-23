@@ -77,4 +77,9 @@ class FeedDirectoryService(private val log: LoggingAdapter,
             .toList
     }
 
+    @Transactional
+    def countAll(): Long = {
+        feedRepository.countAll()
+    }
+
 }
