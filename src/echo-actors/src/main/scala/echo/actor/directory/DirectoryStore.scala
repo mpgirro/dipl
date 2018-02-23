@@ -270,10 +270,10 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetAllPodcasts({},{})", page, size)
         def task = () => {
             //val podcasts = podcastService.findAllWhereFeedStatusIsNot(FeedStatus.NEVER_CHECKED) // TODO broken
-            val podcasts = podcastService.findAll(page, size)
-            sender ! AllPodcastsResult(podcasts)
+            podcastService.findAll(page, size)
         }
-        doInTransaction(task, List(podcastService))
+        val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
+        sender ! AllPodcastsResult(podcasts)
 
         log.debug("Finished GetAllPodcasts()")
     }
@@ -281,10 +281,10 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
         log.debug("Received GetAllPodcastsRegistrationComplete({},{})", page, size)
         def task = () => {
-            val podcasts = podcastService.findAllRegistrationCompleteAsTeaser(page, size)
-            sender ! AllPodcastsResult(podcasts)
+            podcastService.findAllRegistrationCompleteAsTeaser(page, size)
         }
-        doInTransaction(task, List(podcastService))
+        val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
+        sender ! AllPodcastsResult(podcasts)
 
         log.debug("Finished GetAllPodcastsRegistrationComplete()")
     }
@@ -306,21 +306,12 @@ class DirectoryStore extends Actor with ActorLogging {
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
+
         def task = () => {
-            /*
-            podcastService.findOneByEchoId(podcastId).map(p => {
-                // TODO hier könnte ich den aufruf des Podcasts wegoptimieren
-                val episodes = episodeService.findAllByPodcastAsTeaser(podcastId)
-                sender ! EpisodesByPodcastResult(episodes)
-            }).getOrElse({
-                log.error("Database does not contain Podcast with echoId={}", podcastId)
-                sender ! NothingFound(podcastId)
-            })
-            */
-            val episodes = episodeService.findAllByPodcastAsTeaser(podcastId)
-            sender ! EpisodesByPodcastResult(episodes)
+            episodeService.findAllByPodcastAsTeaser(podcastId)
         }
-        doInTransaction(task, List(podcastService, episodeService))
+        val episodes = doInTransaction(task, List(episodeService)).asInstanceOf[List[EpisodeDTO]]
+        sender ! EpisodesByPodcastResult(episodes)
 
         log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
     }
@@ -329,14 +320,10 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Received GetChaptersByEpisode('{}')", episodeId)
 
         def task = () => {
-            val chapters = chapterService.findAllByEpisode(episodeId)
-            println("Found these chapters:")
-            for(c <- chapters){
-                println(c)
-            }
-            sender ! ChaptersByEpisodeResult(chapters)
+            chapterService.findAllByEpisode(episodeId)
         }
-        doInTransaction(task, List(chapterService))//.asInstanceOf[List[ChapterDTO]]
+        val chapters = doInTransaction(task, List(chapterService)).asInstanceOf[List[ChapterDTO]]
+        sender ! ChaptersByEpisodeResult(chapters)
 
         log.debug("Finished GetChaptersByEpisode('{}')", episodeId)
     }
