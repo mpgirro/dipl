@@ -15,6 +15,8 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
     implicit object EpisodeJsonFormat extends RootJsonFormat[EpisodeDTO] {
         def write(e: EpisodeDTO) = JsObject(
             "echoId"          -> Option(e.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "podcastEchoId"   -> Option(e.getPodcastEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "podcastTitle"    -> Option(e.getPodcastTitle).map(value => JsString(value)).getOrElse(JsNull),
             "title"           -> Option(e.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"            -> Option(e.getLink).map(value => JsString(value)).getOrElse(JsNull),
             "pubDate"         -> Option(e.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
@@ -31,18 +33,20 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
         )
         def read(value: JsValue): EpisodeDTO = {
             value.asJsObject.getFields(
-                "echoId", "title", "link",
-                "pubDate", "description",
-                "itunesImage", "itunesDuration", "itunesSubtitle",
-                "itunesAuthor", "itunesSummary", "enclosureLength, chapters") match {
+                "echoId", "title", "link", "podcastEchoId", "podcastTitle",
+                "pubDate", "description", "itunesImage", "itunesDuration",
+                "itunesSubtitle", "itunesAuthor", "itunesSummary",
+                "enclosureLength, chapters") match {
                 case Seq(
-                    JsString(echoId), JsString(title), JsString(link),
-                    JsString(pubDate), JsString(description),
-                    JsString(itunesImage), JsString(itunesDuration), JsString(itunesSubtitle),
-                    JsString(itunesAuthor), JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
+                    JsString(echoId), JsString(title), JsString(link), JsString(podcastEchoId),
+                    JsString(podcastTitle), JsString(pubDate), JsString(description), JsString(itunesImage),
+                    JsString(itunesDuration), JsString(itunesSubtitle), JsString(itunesAuthor),
+                    JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
 
                     val episode = new EpisodeDTO()
                     episode.setEchoId(echoId)
+                    episode.setPodcastEchoId(podcastEchoId)
+                    episode.setPodcastTitle(podcastTitle)
                     episode.setTitle(title)
                     episode.setLink(link)
                     episode.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
