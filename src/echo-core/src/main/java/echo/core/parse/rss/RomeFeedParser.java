@@ -202,6 +202,8 @@ public class RomeFeedParser implements FeedParser {
                         }
                         episode.setChapters(chapters);
                     }
+                } else {
+                    log.warn("PSC Module is NULL");
                 }
 
                 results.add(episode);

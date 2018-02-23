@@ -25,17 +25,21 @@ public class PodcastSimpleChapterParser implements ModuleParser {
 
     @Override
     public Module parse(Element element, Locale locale) {
-        final PodloveSimpleChapterModuleImpl mod = new PodloveSimpleChapterModuleImpl();
-        if (element.getName().equals("chapters")) {
-            final List<Element> chapters = element.getChildren("chapter", PSC_NS);
-            final List<SimpleChapter> result = new LinkedList<>();
-            for (Element chapter : chapters) {
-                SimpleChapter sc = parseChapter(chapter);
-                result.add(sc);
+        final Element chaptersElement = element.getChild("chapters", PSC_NS);
+        if (chaptersElement != null) {
+            final PodloveSimpleChapterModuleImpl mod = new PodloveSimpleChapterModuleImpl();
+            final List<Element> chapterElements = chaptersElement.getChildren("chapter", PSC_NS);
+            if (!chapterElements.isEmpty()) {
+                final List<SimpleChapter> result = new LinkedList<>();
+                for (Element chapter : chapterElements) {
+                    final SimpleChapter sc = parseChapter(chapter);
+                    result.add(sc);
+                }
+                mod.setChapters(result);
+                return mod;
             }
-            mod.setChapters(result);
-            return mod;
         }
+
         return null;
     }
 
