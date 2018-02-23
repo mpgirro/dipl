@@ -204,7 +204,7 @@ public class RomeFeedParser implements FeedParser {
                         episode.setChapters(chapters);
                     }
                 } else {
-                    log.warn("PSC Module is NULL");
+                    log.debug("No Podlove Simple Chapter marks found in Episode");
                 }
 
                 results.add(episode);
