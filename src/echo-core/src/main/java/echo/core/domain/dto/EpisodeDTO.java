@@ -14,6 +14,8 @@ public class EpisodeDTO implements EntityDTO {
     private Long id;
     private String echoId;
     private Long podcastId;
+    private String podcastEchoId;
+    private String podcastTitle;
 
     private String title;
     private String link;
@@ -66,6 +68,22 @@ public class EpisodeDTO implements EntityDTO {
 
     public void setPodcastId(Long podcastId) {
         this.podcastId = podcastId;
+    }
+
+    public String getPodcastEchoId() {
+        return podcastEchoId;
+    }
+
+    public void setPodcastEchoId(String podcastEchoId) {
+        this.podcastEchoId = podcastEchoId;
+    }
+
+    public String getPodcastTitle() {
+        return podcastTitle;
+    }
+
+    public void setPodcastTitle(String podcastTitle) {
+        this.podcastTitle = podcastTitle;
     }
 
     public String getTitle() {
@@ -257,6 +275,8 @@ public class EpisodeDTO implements EntityDTO {
             "\tid=" + id + ",\n" +
             "\techoId='" + echoId + "\',\n" +
             "\tpodcastId=" + podcastId + "\',\n" +
+            "\tpodcastEchoId=" + podcastEchoId + "\',\n" +
+            "\tpodcastTitle=" + podcastTitle + "\',\n" +
             "\ttitle='" + title + "\',\n" +
             "\tlink='" + link + "\',\n" +
             "\tpubDate=" + pubDate + ",\n" +

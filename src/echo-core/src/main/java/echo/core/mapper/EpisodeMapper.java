@@ -24,6 +24,8 @@ public interface EpisodeMapper {
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );
 
     @Mapping(source = "podcast.id", target = "podcastId")
+    @Mapping(source = "podcast.echoId", target = "podcastEchoId")
+    @Mapping(source = "podcast.title", target = "podcastTitle")
     @Mapping(target = "websiteData", ignore = true)
     EpisodeDTO map(Episode episode);
 
