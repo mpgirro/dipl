@@ -27,7 +27,7 @@ object IndexStoreReponseHandler {
 
 class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef, internalTimeout: FiniteDuration) extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     override def receive = LoggingReceive {
         case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
