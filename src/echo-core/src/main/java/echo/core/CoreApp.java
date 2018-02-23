@@ -14,6 +14,7 @@ import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.PodEngineFeedParser;
 import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneSearcher;
+import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
 
 import java.io.BufferedReader;
@@ -52,7 +53,8 @@ public class CoreApp {
 
     public CoreApp() throws IOException {
 
-        this.feedParser = new PodEngineFeedParser();
+        //this.feedParser = new PodEngineFeedParser();
+        this.feedParser = new RomeFeedParser();
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
         this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
 
@@ -182,11 +184,12 @@ public class CoreApp {
 
             this.committer.add(podcastDoc);
 
-            final List<EpisodeDTO> episodes = ((PodEngineFeedParser) feedParser).extractEpisodes(feedData);
+            final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
             for (EpisodeDTO episode : episodes) {
                 out.println("  Episode: " + episode.getTitle());
 
                 episode.setEchoId(episode.getGuid()); // TODO verifiy good GUID!
+                out.println(DocumentFormatter.cliFormat(episode));
 
                 this.committer.add(episode);
             }

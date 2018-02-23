@@ -31,21 +31,17 @@ public class PodEngineFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDTO parseEpisode(String xmlData) throws FeedParsingException {
-        throw new UnsupportedOperationException("PodEngineFeedParser.parseEpisode not yet implemented");
-    }
-
-    public List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException {
+    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final Podcast podcast = new Podcast(xmlData);
             if (podcast.getEpisodes() == null) {
-                return new LinkedList<>();
+                return new EpisodeDTO[0];
             }
             final List<EpisodeDTO> episodes = EpisodeMapper.INSTANCE.map(podcast.getEpisodes());
             for (EpisodeDTO e : episodes) {
                 e.setLink(UrlUtil.sanitize(e.getLink()));
             }
-            return episodes;
+            return episodes.toArray(new EpisodeDTO[episodes.size()]);
         } catch (MalformedFeedException | EchoException e) {
             throw new FeedParsingException("PodEngine could not parse the feed (trying to extract the episodes)", e);
         }

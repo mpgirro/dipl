@@ -11,11 +11,14 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.feed.Chapter;
 import echo.core.exception.FeedParsingException;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.modules.itunes.EntryInformation;
 import com.rometools.rome.feed.atom.Link;
+import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
+import echo.core.parse.rss.rome.SimpleChapter;
 import echo.core.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +60,8 @@ public class RomeFeedParser implements FeedParser {
             podcast.setDocs(feed.getDocs());
             podcast.setManagingEditor(feed.getManagingEditor());
 
-            final Module itunesFeedModule = feed.getModule(NAMESPACE_ITUNES);
+            // access the <itunes:...> entries
+            final Module itunesFeedModule = feed.getModule(FeedInformation.URI);
             final FeedInformation itunes = (FeedInformation) itunesFeedModule;
             if(itunes != null){
                 podcast.setItunesSummary(itunes.getSummary());
@@ -118,10 +122,6 @@ public class RomeFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDTO parseEpisode(String xmlData) throws FeedParsingException {
-        throw new UnsupportedOperationException("RomeFeedParser.parseEpisode not yet implemented");
-    }
-
     public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
@@ -156,7 +156,8 @@ public class RomeFeedParser implements FeedParser {
                     }
                 }
 
-                final Module contentModule = e.getModule(NAMESPACE_CONTENT);
+                // access the <content:encoded> entries
+                final Module contentModule = e.getModule(ContentModule.URI);
                 final ContentModule content = (ContentModule) contentModule;
                 if (content != null) {
                     if(content.getEncodeds().size() > 0){
@@ -167,7 +168,8 @@ public class RomeFeedParser implements FeedParser {
                     }
                 }
 
-                final Module itunesEntryModule = e.getModule(NAMESPACE_ITUNES);
+                // access the <itunes:...> entries
+                final Module itunesEntryModule = e.getModule(EntryInformation.URI);
                 final EntryInformation itunes = (EntryInformation) itunesEntryModule;
                 if (itunes != null) {
                     if(itunes.getImage() != null){
@@ -186,6 +188,22 @@ public class RomeFeedParser implements FeedParser {
                     log.debug("No iTunes Namespace elements found in Episode");
                 }
 
+                // access the <psc:chapter> entries
+                final Module pscEntryModule = e.getModule(PodloveSimpleChapterModule.URI);
+                final PodloveSimpleChapterModule simpleChapters = ((PodloveSimpleChapterModule) pscEntryModule);
+                if (simpleChapters != null) {
+                    if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
+                        final List<Chapter> chapters = new LinkedList<>();
+                        for (SimpleChapter sc : simpleChapters.getChapters()) {
+                            final Chapter c = new Chapter();
+                            c.setStart(sc.getStart());
+                            c.setTitle(sc.getTitle());
+                            chapters.add(c);
+                        }
+                        episode.setChapters(chapters);
+                    }
+                }
+
                 results.add(episode);
             }
             return results.toArray(new EpisodeDTO[0]);
@@ -195,7 +213,7 @@ public class RomeFeedParser implements FeedParser {
     }
 
     private List<Link> getAtomLinks(SyndFeed syndFeed){
-        final Module atomFeedModule = syndFeed.getModule(NAMESPACE_ATOM);
+        final Module atomFeedModule = syndFeed.getModule(AtomLinkModule.URI);
         final AtomLinkModule atomLinkModule = (AtomLinkModule) atomFeedModule;
         if(atomLinkModule != null){
             return atomLinkModule.getLinks();

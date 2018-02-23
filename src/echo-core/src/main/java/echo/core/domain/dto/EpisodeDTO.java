@@ -1,6 +1,11 @@
 package echo.core.domain.dto;
 
+import echo.core.domain.feed.Chapter;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -35,6 +40,8 @@ public class EpisodeDTO implements EntityDTO {
     private String websiteData;
 
     private LocalDateTime registrationTimestamp;
+
+    private List<Chapter> chapters;
 
     public Long getId() {
         return id;
@@ -222,6 +229,14 @@ public class EpisodeDTO implements EntityDTO {
         this.registrationTimestamp = registrationTimestamp;
     }
 
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -260,6 +275,7 @@ public class EpisodeDTO implements EntityDTO {
             "\tenclosureLength='" + enclosureLength + "\',\n" +
             "\tenclosureType='" + enclosureType + "\',\n" +
             "\tregistrationTimestamp=" + registrationTimestamp + "\',\n" +
+            "\tchapters='" + ((chapters!=null) ? String.join("\n", chapters.stream().map(Chapter::toString).collect(Collectors.toList())) : null) + "\',\n" +
             "\tdescription='" + description + "\',\n" +
             "\tcontentEncoded='" + contentEncoded + "\',\n" +
             "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
