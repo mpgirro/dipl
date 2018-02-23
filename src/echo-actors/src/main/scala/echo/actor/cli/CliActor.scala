@@ -162,7 +162,7 @@ class CliActor(private val master: ActorRef,
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case PodcastResult(podcast)     => println(DocumentFormatter.cliFormat(podcast))
-            case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Podcast with echoId=$unknownId")
+            case NothingFound(unknownId) => println(s"DirectoryStore responded that there is no Podcast with echoId=$unknownId")
         }
     }
 
@@ -171,7 +171,7 @@ class CliActor(private val master: ActorRef,
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case EpisodeResult(episode)     => println(DocumentFormatter.cliFormat(episode))
-            case NoDocumentFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")
+            case NothingFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")
         }
     }
 

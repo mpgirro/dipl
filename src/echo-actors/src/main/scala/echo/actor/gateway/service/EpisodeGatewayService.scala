@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.ActorProtocol.{EpisodeResult, GetEpisode, NoDocumentFound}
+import echo.actor.ActorProtocol._
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
 
@@ -31,7 +31,10 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
     override val route: Route = pathPrefix("episode") { pathEndOrSingleSlash { getAllEpisodes ~ postEpisode } } ~
-                    pathPrefix("episode" / Segment) { id => getEpisode(id) ~ putEpisode(id) ~ deleteEpisode(id) }
+                    pathPrefix("episode" / Segment) { id =>
+                        pathEndOrSingleSlash{ getEpisode(id) ~ putEpisode(id) ~ deleteEpisode(id)  } ~
+                            getChaptersByEpisode(id)
+                    }
 
 
     def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
@@ -56,15 +59,19 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
                   httpMethod = "GET",
                   response = classOf[EpisodeDTO])
     def getEpisode(id: String): Route = get {
-
         log.info("GET /api/episode/{}", id)
-
         onSuccess(directoryStore ? GetEpisode(id)) {
             case EpisodeResult(episode)     => complete(StatusCodes.OK, episode)
-            case NoDocumentFound(unknownId) => {
+            case NothingFound(unknownId) =>
                 log.error("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
                 complete(StatusCodes.NotFound)
-            }
+        }
+    }
+
+    def getChaptersByEpisode(id: String): Route = get {
+        log.info("GET /api/episode/{}/chapters", id)
+        onSuccess(directoryStore ? GetChaptersByEpisode(id)) {
+            case ChaptersByEpisodeResult(chapters) => complete(StatusCodes.OK, chapters)
         }
     }
 

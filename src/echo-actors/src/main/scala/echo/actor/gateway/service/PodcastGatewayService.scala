@@ -87,7 +87,7 @@ class PodcastGatewayService (private val log: LoggingAdapter)
 
         onSuccess(directoryStore ? GetPodcast(id)) {
             case PodcastResult(podcast)     => complete(StatusCodes.OK, podcast)
-            case NoDocumentFound(unknownId) => {
+            case NothingFound(unknownId) => {
                 log.error("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
                 complete(StatusCodes.NotFound)
             }
@@ -96,13 +96,8 @@ class PodcastGatewayService (private val log: LoggingAdapter)
 
     def getEpisodesByPodcast(id: String): Route = get {
         log.info("GET /api/podcast/{}/episodes", id)
-
         onSuccess(directoryStore ? GetEpisodesByPodcast(id)) {
-            case EpisodesByPodcastResult(episodes)  => complete(StatusCodes.OK, episodes)
-            case NoDocumentFound(unknownId)         => {
-                log.error("DirectoryStore responded that there are not Episodes for Podcast with echoId={}", unknownId)
-                complete(StatusCodes.NotFound)
-            }
+            case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, episodes)
         }
     }
 

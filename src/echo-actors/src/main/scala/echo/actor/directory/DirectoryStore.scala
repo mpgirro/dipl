@@ -7,13 +7,15 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
-import echo.actor.directory.service.{DirectoryService, EpisodeDirectoryService, FeedDirectoryService, PodcastDirectoryService}
+import echo.actor.directory.service._
 import echo.core.domain.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
-import echo.core.domain.feed.FeedStatus
+import echo.core.domain.feed.{ChapterDTO, FeedStatus}
 import echo.core.mapper.IndexMapper
 import echo.core.util.EchoIdGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -38,6 +40,7 @@ class DirectoryStore extends Actor with ActorLogging {
     private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
     private val episodeService = new EpisodeDirectoryService(log, repositoryFactoryBuilder)
     private val feedService = new FeedDirectoryService(log, repositoryFactoryBuilder)
+    private val chapterService = new ChapterDirectoryService(log, repositoryFactoryBuilder)
 
     /* TODO could I use this to run liquibase manually?
     val liquibase = new SpringLiquibase()
@@ -79,15 +82,17 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case UpdateLinkByEchoId(echoId, newUrl) => onUpdateLinkByEchoId(echoId, newUrl)
 
-        case GetPodcast(echoId) => onGetPodcast(echoId)
+        case GetPodcast(podcastId) => onGetPodcast(podcastId)
 
         case GetAllPodcasts(page, size) => onGetAllPodcasts(page, size)
 
         case GetAllPodcastsRegistrationComplete(page, size) => onGetAllPodcastsRegistrationComplete(page, size)
 
-        case GetEpisode(echoId) => onGetEpisode(echoId)
+        case GetEpisode(episodeId) => onGetEpisode(episodeId)
 
-        case GetEpisodesByPodcast(echoId) => onGetEpisodesByPodcast(echoId)
+        case GetEpisodesByPodcast(podcastId) => onGetEpisodesByPodcast(podcastId)
+
+        case GetChaptersByEpisode(episodeId) => onGetChaptersByEpisode(episodeId)
 
         case RegisterEpisodeIfNew(podcastId, episode) => onRegisterEpisodeIfNew(podcastId, episode)
 
@@ -253,7 +258,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! PodcastResult(p)
             }).getOrElse({
                 log.error("Database does not contain Podcast with echoId={}", podcastId)
-                sender ! NoDocumentFound(podcastId)
+                sender ! NothingFound(podcastId)
             })
         }
         doInTransaction(task, List(podcastService))
@@ -291,7 +296,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 sender ! EpisodeResult(e)
             }).getOrElse({
                 log.error("Database does not contain Episode with echoId={}", episodeId)
-                sender ! NoDocumentFound(episodeId)
+                sender ! NothingFound(episodeId)
             })
         }
         doInTransaction(task, List(episodeService))
@@ -302,18 +307,38 @@ class DirectoryStore extends Actor with ActorLogging {
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
         log.debug("Received GetEpisodesByPodcast('{}')", podcastId)
         def task = () => {
+            /*
             podcastService.findOneByEchoId(podcastId).map(p => {
                 // TODO hier könnte ich den aufruf des Podcasts wegoptimieren
                 val episodes = episodeService.findAllByPodcastAsTeaser(podcastId)
                 sender ! EpisodesByPodcastResult(episodes)
             }).getOrElse({
                 log.error("Database does not contain Podcast with echoId={}", podcastId)
-                sender ! NoDocumentFound(podcastId)
+                sender ! NothingFound(podcastId)
             })
+            */
+            val episodes = episodeService.findAllByPodcastAsTeaser(podcastId)
+            sender ! EpisodesByPodcastResult(episodes)
         }
         doInTransaction(task, List(podcastService, episodeService))
 
         log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
+    }
+
+    private def onGetChaptersByEpisode(episodeId: String): Unit = {
+        log.debug("Received GetChaptersByEpisode('{}')", episodeId)
+
+        def task = () => {
+            val chapters = chapterService.findAllByEpisode(episodeId)
+            println("Found these chapters:")
+            for(c <- chapters){
+                println(c)
+            }
+            sender ! ChaptersByEpisodeResult(chapters)
+        }
+        doInTransaction(task, List(chapterService))//.asInstanceOf[List[ChapterDTO]]
+
+        log.debug("Finished GetChaptersByEpisode('{}')", episodeId)
     }
 
     private def onCheckPodcast(podcastId: String): Unit = {
@@ -414,11 +439,16 @@ class DirectoryStore extends Actor with ActorLogging {
                     })
 
                     episode.setRegistrationTimestamp(LocalDateTime.now())
-                    episodeService.save(episode)
+                    val result = episodeService.save(episode)
+
+                    // we must register the episodes chapters as well
+                    result.foreach(e => chapterService.saveAll(e.getId, episode.getChapters))
+
+                    result
             }
         }
 
-        val registeredEpisode: Option[EpisodeDTO] = doInTransaction(task, List(episodeService, podcastService)).asInstanceOf[Option[EpisodeDTO]]
+        val registeredEpisode: Option[EpisodeDTO] = doInTransaction(task, List(episodeService, podcastService, chapterService)).asInstanceOf[Option[EpisodeDTO]]
 
         // in case the episode was registered, we initiate some post processing
         registeredEpisode match {

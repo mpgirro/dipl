@@ -18,5 +18,6 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     implicit val podcastFormat = PodcastJsonProtocol.PodcastJsonFormat
     implicit val episodeFormat = EpisodeJsonProtocol.EpisodeJsonFormat
     implicit val feedFormat = FeedJsonProtocol.FeedJsonFormat
+    implicit val chapterFormat = ChapterJsonProtocol.ChapterJsonFormat
     implicit val resultWrapperFormat = ResultWrapperJsonProtocol.ResultWrapperJsonFormat
 }

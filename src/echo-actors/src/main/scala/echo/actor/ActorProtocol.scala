@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import akka.actor.ActorRef
 import echo.core.domain.dto.{EpisodeDTO, IndexDocDTO, PodcastDTO, ResultWrapperDTO}
-import echo.core.domain.feed.FeedStatus
+import echo.core.domain.feed.{ChapterDTO, FeedStatus}
 
 
 /**
@@ -88,11 +88,12 @@ object ActorProtocol {
     case class ActorRefGatewayActor(ref: ActorRef)
 
     // Gateway -> DirectoryStore
-    case class GetPodcast(echoId: String)
+    case class GetPodcast(podcastId: String)
     case class GetAllPodcasts(page: Int, size: Int)
     case class GetAllPodcastsRegistrationComplete(page: Int, size: Int)
-    case class GetEpisode(echoId: String)
-    case class GetEpisodesByPodcast(echoId: String)
+    case class GetEpisode(episodeId: String)
+    case class GetEpisodesByPodcast(podcastId: String)
+    case class GetChaptersByEpisode(episodeId: String)
 
     // DirectoryStore -> Gateway
     trait DirectoryResult
@@ -100,7 +101,8 @@ object ActorProtocol {
     case class AllPodcastsResult(results: List[PodcastDTO]) extends DirectoryResult
     case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
     case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends DirectoryResult
-    case class NoDocumentFound(echoId: String) extends DirectoryResult
+    case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends DirectoryResult
+    case class NothingFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore

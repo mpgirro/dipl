@@ -9,6 +9,7 @@
         <class>echo.core.domain.entity.Podcast</class>
         <class>echo.core.domain.entity.Episode</class>
         <class>echo.core.domain.entity.Feed</class>
+        <class>echo.core.domain.entity.Chapter</class>
         <properties>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
             <!-- <property name="hibernate.connection.url" value="jdbc:h2:/Users/max/volumes/echo/db;AUTO_SERVER=TRUE;MVCC=true" /> -->

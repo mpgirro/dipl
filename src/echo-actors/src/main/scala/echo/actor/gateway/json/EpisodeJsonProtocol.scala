@@ -1,10 +1,12 @@
 package echo.actor.gateway.json
 
-import java.time.LocalDateTime
-
+import echo.actor.gateway.json.ChapterJsonProtocol.ChapterJsonFormat
 import echo.core.domain.dto.EpisodeDTO
+import echo.core.domain.feed.ChapterDTO
 import echo.core.mapper.DateMapper
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -32,12 +34,12 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                 "echoId", "title", "link",
                 "pubDate", "description",
                 "itunesImage", "itunesDuration", "itunesSubtitle",
-                "itunesAuthor", "itunesSummary", "enclosureLength") match {
+                "itunesAuthor", "itunesSummary", "enclosureLength, chapters") match {
                 case Seq(
                     JsString(echoId), JsString(title), JsString(link),
                     JsString(pubDate), JsString(description),
                     JsString(itunesImage), JsString(itunesDuration), JsString(itunesSubtitle),
-                    JsString(itunesAuthor), JsString(itunesSummary), JsNumber(enclosureLength)) =>
+                    JsString(itunesAuthor), JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
 
                     val episode = new EpisodeDTO()
                     episode.setEchoId(echoId)
@@ -51,6 +53,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                     episode.setItunesAuthor(itunesAuthor)
                     episode.setItunesSummary(itunesSummary)
                     Option(enclosureLength).foreach(cl => episode.setEnclosureLength(cl.toLong))
+
                     episode
 
                 case _ => throw DeserializationException("EpisodeDTO expected")
