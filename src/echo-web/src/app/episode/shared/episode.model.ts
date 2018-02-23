@@ -1,6 +1,8 @@
 export class Episode {
   docType: string;
   echoId: string;
+  podcastEchoId: string;
+  podcastTitle: string;
   title: string;
   link: string;
   description: string;

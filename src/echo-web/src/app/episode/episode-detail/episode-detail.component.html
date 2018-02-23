@@ -1,5 +1,9 @@
 
-<div *ngIf="episode.itunesImage" class="text-center my-4">
+<div *ngIf="episode.podcastEchoId && episode.podcastTitle" class="text-center mb-1">
+  <a href="/p/{{episode.podcastEchoId}}" class="badge badge-light">{{episode.podcastTitle}}</a>
+</div>
+
+<div *ngIf="episode.itunesImage" class="text-center mb-4">
   <img class="w-100"
        src="{{episode.itunesImage}}"
        alt="Episode Image">
@@ -11,7 +15,7 @@
 </h1>
 
 <p *ngIf="episode.link">
-  <a class="text-muted"  href="{{episode.link}}">{{domainService.prettyUrl(episode.link)}}</a>
+  <a class="text-muted" href="{{episode.link}}">{{domainService.prettyUrl(episode.link)}}</a>
 </p>
 
 <div class="mb-3">

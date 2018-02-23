@@ -45,7 +45,7 @@ export class EpisodeDetailComponent implements OnInit {
       "chapters" : ${JSON.stringify(this.chapters)},
       "theme" : {
         "main" : "#ffffff",
-        "highlight" : "#0785ff"
+        "highlight" : "#007bff"
       },
       "visibleComponents": [
         "tabChapters",
