@@ -1,0 +1,33 @@
+package echo.core.mapper;
+
+import echo.core.domain.entity.Chapter;
+import echo.core.domain.entity.Episode;
+import echo.core.domain.feed.ChapterDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+/**
+ * @author Maximilian Irro
+ */
+@Mapper(uses={EpisodeMapper.class})
+public interface ChapterMapper {
+
+    ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );
+
+    @Mapping(source = "episode.id", target = "episodeId")
+    ChapterDTO map(Chapter entity);
+
+    @Mapping(source = "episodeId", target = "episode")
+    Chapter map(ChapterDTO dto);
+
+    default Episode episodeFromId(Long id) {
+
+        if (id == null) return null;
+
+        final Episode episode = new Episode();
+        episode.setId(id);
+
+        return episode;
+    }
+}

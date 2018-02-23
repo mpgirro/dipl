@@ -3,20 +3,30 @@ package echo.core.domain.feed;
 /**
  * @author Maximilian Irro
  */
-public class Chapter {
+public class ChapterDTO {
 
+    private Long id;
     private String start;
     private String title;
     private String href;
     private String image;
+    private Long episodeId;
 
-    public Chapter() { }
+    public ChapterDTO() { }
 
-    public Chapter(Chapter c) {
+    public ChapterDTO(ChapterDTO c) {
         this.start = c.getStart();
         this.title = c.getTitle();
         this.href = c.getHref();
         this.image = c.getImage();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getStart() {
@@ -51,13 +61,23 @@ public class Chapter {
         this.image = image;
     }
 
+    public Long getEpisodeId() {
+        return episodeId;
+    }
+
+    public void setEpisodeId(Long episodeId) {
+        this.episodeId = episodeId;
+    }
+
     @Override
     public String toString() {
-        return "Chapter{" +
-            "start='" + start + '\'' +
+        return "ChapterDTO{" +
+            "id=" + id +
+            ", start='" + start + '\'' +
             ", title='" + title + '\'' +
             ", href='" + href + '\'' +
             ", image='" + image + '\'' +
+            ", episodeId=" + episodeId +
             '}';
     }
 }

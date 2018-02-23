@@ -1,9 +1,13 @@
 package echo.core.domain.entity;
 
+import echo.core.domain.feed.ChapterDTO;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -78,6 +82,12 @@ public class Episode implements Serializable {
 
     @Column(name = "registration_timestamp")
     private Timestamp registrationTimestamp;
+
+    @OneToMany(fetch=FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        mappedBy="episode")
+    private Set<Chapter> chapters = new LinkedHashSet();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
@@ -251,12 +261,30 @@ public class Episode implements Serializable {
         this.registrationTimestamp = registrationTimestamp;
     }
 
+    public Set<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(Set<Chapter> chapters) {
+        this.chapters = chapters;
+    }
+
     public Podcast getPodcast() {
         return podcast;
     }
 
     public void setPodcast(Podcast podcast) {
         this.podcast = podcast;
+    }
+
+    public void addChapter(Chapter chapter) {
+        this.chapters.add(chapter);
+        chapter.setEpisode(this);
+    }
+
+    public void removeChapter(Chapter chapter) {
+        this.chapters.remove(chapter);
+        chapter.setEpisode(null);
     }
 
     @Override

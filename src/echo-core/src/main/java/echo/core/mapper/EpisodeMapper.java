@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, DateMapper.class})
+@Mapper(uses={PodcastMapper.class, ChapterMapper.class, DateMapper.class})
 public interface EpisodeMapper {
 
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );

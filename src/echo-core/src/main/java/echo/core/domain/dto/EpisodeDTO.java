@@ -1,10 +1,9 @@
 package echo.core.domain.dto;
 
-import echo.core.domain.feed.Chapter;
+import echo.core.domain.feed.ChapterDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +40,7 @@ public class EpisodeDTO implements EntityDTO {
 
     private LocalDateTime registrationTimestamp;
 
-    private List<Chapter> chapters;
+    private List<ChapterDTO> chapters;
 
     public Long getId() {
         return id;
@@ -229,11 +228,11 @@ public class EpisodeDTO implements EntityDTO {
         this.registrationTimestamp = registrationTimestamp;
     }
 
-    public List<Chapter> getChapters() {
+    public List<ChapterDTO> getChapters() {
         return chapters;
     }
 
-    public void setChapters(List<Chapter> chapters) {
+    public void setChapters(List<ChapterDTO> chapters) {
         this.chapters = chapters;
     }
 
@@ -275,7 +274,7 @@ public class EpisodeDTO implements EntityDTO {
             "\tenclosureLength='" + enclosureLength + "\',\n" +
             "\tenclosureType='" + enclosureType + "\',\n" +
             "\tregistrationTimestamp=" + registrationTimestamp + "\',\n" +
-            "\tchapters='" + ((chapters!=null) ? String.join("\n", chapters.stream().map(Chapter::toString).collect(Collectors.toList())) : null) + "\',\n" +
+            "\tchapters='" + ((chapters!=null) ? String.join("\n", chapters.stream().map(ChapterDTO::toString).collect(Collectors.toList())) : null) + "\',\n" +
             "\tdescription='" + description + "\',\n" +
             "\tcontentEncoded='" + contentEncoded + "\',\n" +
             "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +

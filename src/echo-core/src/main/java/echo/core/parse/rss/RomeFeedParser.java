@@ -11,7 +11,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.feed.Chapter;
+import echo.core.domain.feed.ChapterDTO;
 import echo.core.exception.FeedParsingException;
 
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -193,9 +193,9 @@ public class RomeFeedParser implements FeedParser {
                 final PodloveSimpleChapterModule simpleChapters = ((PodloveSimpleChapterModule) pscEntryModule);
                 if (simpleChapters != null) {
                     if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
-                        final List<Chapter> chapters = new LinkedList<>();
+                        final List<ChapterDTO> chapters = new LinkedList<>();
                         for (PodloveSimpleChapterItem sci : simpleChapters.getChapters()) {
-                            final Chapter c = new Chapter();
+                            final ChapterDTO c = new ChapterDTO();
                             c.setStart(sci.getStart());
                             c.setTitle(sci.getTitle());
                             c.setHref(sci.getHref());
