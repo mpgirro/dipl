@@ -18,7 +18,7 @@ export class PodcastService {
     const request = this.baseUrl + '/' + echoId;
     console.log('GET ' + request);
     return this.http.get<Podcast>(request).pipe(
-      tap(_ => console.log(`found podcast matching "${echoId}"`)),
+      tap(_ => console.log(`found podcast : "${echoId}"`)),
       catchError(this.handleError<Podcast>('getPodcast', new Podcast()))
     );
   }
@@ -27,7 +27,7 @@ export class PodcastService {
     const request = this.baseUrl + '/' + echoId + '/episodes';
     console.log('GET ' + request);
     return this.http.get<Array<Episode>>(request).pipe(
-      tap(_ => console.log(`found episodes for podcast matching "${echoId}"`)),
+      tap(_ => console.log(`found episodes for podcast : "${echoId}"`)),
       catchError(this.handleError<Array<Episode>>('getPodcastEpisodes', new Array<Episode>()))
     );
   }

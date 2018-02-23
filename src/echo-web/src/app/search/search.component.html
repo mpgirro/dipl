@@ -31,30 +31,28 @@
     <div class="media-body">
 
       <h2 class="result-title mt-0">{{result.title}}</h2>
-      <p class="mb-1">
+      <div class="mb-1">
+        <small>
+          <span class="text-muted">
+            <ng-container *ngIf="result.pubDate">
+              <span class="oi oi-calendar"></span>
+              <span class="mr-2">{{result.pubDate | date: 'd MMM yyyy' }}</span>
+            </ng-container>
 
-        <small class="text-muted">
-          <ng-container *ngIf="result.pubDate">
-            <span class="oi oi-calendar"></span>
-            <span class="mr-2">{{result.pubDate | date: 'd MMM yyyy' }}</span>
+            <fa [name]="calendar-alt"></fa>
+            <fa [name]="'rocket'"></fa>
+            <fa><i class="fa fa-rocket"></i></fa>
+            <i fa [name]="'rocket'"></i>
+            <i fa class="fa fa-rocket"></i>
+          </span>
+
+          <ng-container [ngSwitch]="result.docType">
+            <span *ngSwitchCase="'podcast'" class="badge badge-warning">Podcast</span>
+            <span *ngSwitchCase="'episode'" class="badge badge-info">Episode</span>
           </ng-container>
 
-          <span class="badge badge-secondary text-uppercase">{{result.docType}}</span>
-
-          <fa [name]="calendar-alt"></fa>
-          <fa [name]="'rocket'"></fa>
-          <!-- rendered -->
-          <fa>
-            <i class="fa fa-rocket"></i>
-          </fa>
-
-          <i fa [name]="'rocket'"></i>
-          <!-- rendered -->
-          <i fa class="fa fa-rocket"></i>
-
         </small>
-
-      </p>
+      </div>
 
       <ng-container *ngIf="result.description">
         <p class="mb-1" [innerHTML]="(result.description.length > 250) ? result.description.substr(0, 250) + ' . . .' : result.description"></p>
@@ -87,7 +85,7 @@
 
   <div *ngIf="maxPage > 1">
     <nav aria-label="Search result page navigation">
-      <ul class="pagination justify-content-center">
+      <ul class="pagination pagination-sm justify-content-center">
 
         <ng-container *ngIf="currPage > 1" >
           <li class="page-item">

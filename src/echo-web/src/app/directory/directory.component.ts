@@ -15,7 +15,7 @@ export class DirectoryComponent implements OnInit {
   @Input() podcasts: Array<Podcast>;
 
   DEFAULT_PAGE = 1;
-  DEFAULT_SIZE = 48;
+  DEFAULT_SIZE = 24;
 
   currPage: number;
   currSize: number;
