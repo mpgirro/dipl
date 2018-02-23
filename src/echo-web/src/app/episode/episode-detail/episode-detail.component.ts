@@ -54,7 +54,7 @@ export class EpisodeDetailComponent implements OnInit {
         "controlSteppers",
         "controlChapters"
       ]});`;
-    console.log(podlovePlayerJS);
+    // console.log(podlovePlayerJS);
     const el = document.createElement('script');
     el.appendChild(document.createTextNode(podlovePlayerJS));
     document.body.appendChild(el);
