@@ -12,6 +12,6 @@ public interface PodloveSimpleChapterModule extends Module, CopyFrom {
 
     String URI = "http://podlove.org/simple-chapters";
 
-    List<SimpleChapter> getChapters();
-    void setChapters(List<SimpleChapter> chapters);
+    List<PodloveSimpleChapterItem> getChapters();
+    void setChapters(List<PodloveSimpleChapterItem> chapters);
 }

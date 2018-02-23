@@ -2,7 +2,6 @@ package echo.core.parse.rss.rome;
 
 import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.io.ModuleParser;
-import echo.core.domain.feed.Chapter;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -30,9 +29,9 @@ public class PodcastSimpleChapterParser implements ModuleParser {
             final PodloveSimpleChapterModuleImpl mod = new PodloveSimpleChapterModuleImpl();
             final List<Element> chapterElements = chaptersElement.getChildren("chapter", PSC_NS);
             if (!chapterElements.isEmpty()) {
-                final List<SimpleChapter> result = new LinkedList<>();
-                for (Element chapter : chapterElements) {
-                    final SimpleChapter sc = parseChapter(chapter);
+                final List<PodloveSimpleChapterItem> result = new LinkedList<>();
+                for (Element eChapter : chapterElements) {
+                    final PodloveSimpleChapterItem sc = parseChapter(eChapter);
                     result.add(sc);
                 }
                 mod.setChapters(result);
@@ -43,8 +42,8 @@ public class PodcastSimpleChapterParser implements ModuleParser {
         return null;
     }
 
-    private SimpleChapter parseChapter(Element eChapter) {
-        final SimpleChapter chapter = new SimpleChapter();
+    private PodloveSimpleChapterItem parseChapter(Element eChapter) {
+        final PodloveSimpleChapterItem chapter = new PodloveSimpleChapterItem();
 
         final String start = getAttributeValue(eChapter, "start");
         if (start != null) {
@@ -54,6 +53,11 @@ public class PodcastSimpleChapterParser implements ModuleParser {
         final String title = getAttributeValue(eChapter, "title");
         if (title != null) {
             chapter.setTitle(title);
+        }
+
+        final String href = getAttributeValue(eChapter, "href");
+        if (href != null) {
+            chapter.setHref(href);
         }
 
         return chapter;

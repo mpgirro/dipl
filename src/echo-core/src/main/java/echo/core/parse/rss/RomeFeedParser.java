@@ -18,7 +18,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.modules.itunes.EntryInformation;
 import com.rometools.rome.feed.atom.Link;
 import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
-import echo.core.parse.rss.rome.SimpleChapter;
+import echo.core.parse.rss.rome.PodloveSimpleChapterItem;
 import echo.core.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,10 +194,11 @@ public class RomeFeedParser implements FeedParser {
                 if (simpleChapters != null) {
                     if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
                         final List<Chapter> chapters = new LinkedList<>();
-                        for (SimpleChapter sc : simpleChapters.getChapters()) {
+                        for (PodloveSimpleChapterItem sci : simpleChapters.getChapters()) {
                             final Chapter c = new Chapter();
-                            c.setStart(sc.getStart());
-                            c.setTitle(sc.getTitle());
+                            c.setStart(sci.getStart());
+                            c.setTitle(sci.getTitle());
+                            c.setHref(sci.getHref());
                             chapters.add(c);
                         }
                         episode.setChapters(chapters);

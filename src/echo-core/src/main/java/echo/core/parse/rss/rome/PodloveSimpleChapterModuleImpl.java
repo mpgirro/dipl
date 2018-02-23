@@ -15,21 +15,19 @@ import java.util.List;
 
 public class PodloveSimpleChapterModuleImpl extends ModuleImpl implements PodloveSimpleChapterModule, Cloneable, Serializable {
 
-    private List<SimpleChapter> chapters;
-
+    private List<PodloveSimpleChapterItem> chapters;
 
     public PodloveSimpleChapterModuleImpl() {
         super(PodloveSimpleChapterModule.class, PodloveSimpleChapterModule.URI);
     }
 
-
     @Override
-    public List<SimpleChapter> getChapters() {
+    public List<PodloveSimpleChapterItem> getChapters() {
         return (chapters==null) ? (chapters= new LinkedList<>()) : chapters;
     }
 
     @Override
-    public void setChapters(List<SimpleChapter> chapters) {
+    public void setChapters(List<PodloveSimpleChapterItem> chapters) {
         this.chapters = chapters;
     }
 
@@ -40,13 +38,11 @@ public class PodloveSimpleChapterModuleImpl extends ModuleImpl implements Podlov
 
     @Override
     public void copyFrom(CopyFrom obj) {
-        final PodloveSimpleChapterModule sm = (PodloveSimpleChapterModule) obj;
-        final List<SimpleChapter> chapters = new LinkedList<>();
-        for(SimpleChapter chapter : sm.getChapters()) {
-            final SimpleChapter sc = new SimpleChapter();
+        final PodloveSimpleChapterModule mod = (PodloveSimpleChapterModule) obj;
+        final List<PodloveSimpleChapterItem> chapters = new LinkedList<>();
+        for(PodloveSimpleChapterItem chapter : mod.getChapters()) {
+            final PodloveSimpleChapterItem sc = new PodloveSimpleChapterItem();
             sc.copyFrom(chapter);
-            //sc.setTitle(chapter.getTitle());
-            //sc.setStart(chapter.getStart());
             chapters.add(sc);
         }
         setChapters(chapters);
@@ -59,18 +55,16 @@ public class PodloveSimpleChapterModuleImpl extends ModuleImpl implements Podlov
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        final PodloveSimpleChapterModuleImpl m = new PodloveSimpleChapterModuleImpl();
-        final List<SimpleChapter> result = new LinkedList<>();
-        for (SimpleChapter chapter : this.chapters){
-            SimpleChapter sc = new SimpleChapter();
+        final PodloveSimpleChapterModuleImpl mod = new PodloveSimpleChapterModuleImpl();
+        final List<PodloveSimpleChapterItem> result = new LinkedList<>();
+        for (PodloveSimpleChapterItem chapter : this.chapters){
+            PodloveSimpleChapterItem sc = new PodloveSimpleChapterItem();
             sc.copyFrom(chapter);
-            //sc.setTitle(chapter.getTitle());
-            //sc.setStart(chapter.getStart());
             result.add(sc);
         }
         result.subList(0, result.size()); // not sure why I need to do this
-        m.setChapters(result);
-        return m;
+        mod.setChapters(result);
+        return mod;
     }
 
     @Override
