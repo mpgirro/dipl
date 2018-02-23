@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { Episode } from '../shared/episode.model';
 import { EpisodeService } from '../shared/episode.service';
 import { DomainService } from '../../domain.service';
+import {Chapter} from '../shared/chapter.model';
 
 @Component({
   selector: 'app-episode-detail',
@@ -14,6 +15,7 @@ import { DomainService } from '../../domain.service';
 export class EpisodeDetailComponent implements OnInit {
 
   @Input() episode: Episode;
+  chapters: Chapter[];
 
   constructor(private route: ActivatedRoute,
               private episodeService: EpisodeService,
@@ -40,6 +42,7 @@ export class EpisodeDetailComponent implements OnInit {
         "size" : ${this.episode.enclosureLength},
         "mimeType" :"${this.episode.enclosureType}"
       }],
+      "chapters" : ${JSON.stringify(this.chapters)},
       "theme" : {
         "main" : "#ffffff",
         "highlight" : "#0785ff"
@@ -51,7 +54,7 @@ export class EpisodeDetailComponent implements OnInit {
         "controlSteppers",
         "controlChapters"
       ]});`;
-    // console.log(podlovePlayerJS);
+    console.log(podlovePlayerJS);
     const el = document.createElement('script');
     el.appendChild(document.createTextNode(podlovePlayerJS));
     document.body.appendChild(el);
@@ -62,7 +65,19 @@ export class EpisodeDetailComponent implements OnInit {
     this.episodeService.get(id)
       .subscribe(episode => {
         this.episode = episode;
-        this.initPodlovePlayer();
+        this.episodeService.getChapters(id).subscribe(chapters => {
+          chapters.sort((a: Chapter, b: Chapter) => {
+            if (a.start < b.start) {
+              return -1;
+            } else if (a.start > b.start) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+          this.chapters = chapters;
+          this.initPodlovePlayer();
+        });
       });
   }
 

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
 import { Episode } from './episode.model';
+import {Chapter} from './chapter.model';
 
 @Injectable()
 export class EpisodeService {
@@ -16,8 +17,17 @@ export class EpisodeService {
     const request = this.baseUrl + '/' + echoId;
     console.log('GET ' + request);
     return this.http.get<Episode>(request).pipe(
-      tap(_ => console.log(`found episode matching "${echoId}"`)),
+      tap(_ => console.log(`episode : "${echoId}"`)),
       catchError(this.handleError<Episode>('get episode', new Episode()))
+    );
+  }
+
+  getChapters(echoId: string): Observable<Array<Chapter>> {
+    const request = this.baseUrl + '/' + echoId + '/chapters';
+    console.log('GET ' + request);
+    return this.http.get<Array<Chapter>>(request).pipe(
+      tap(_ => console.log(`found chapters for episode : "${echoId}"`)),
+      catchError(this.handleError<Array<Chapter>>('getEpisodeChapters', new Array<Chapter>()))
     );
   }
 
