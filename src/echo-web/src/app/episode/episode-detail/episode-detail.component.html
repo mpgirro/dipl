@@ -1,6 +1,10 @@
 
-<div *ngIf="episode.podcastEchoId && episode.podcastTitle" class="text-center mb-1">
-  <a href="/p/{{episode.podcastEchoId}}" class="badge badge-light">{{episode.podcastTitle}}</a>
+<div *ngIf="episode.podcastEchoId && episode.podcastTitle" class="text-center mb-2">
+
+  <a class="badge badge-light" href="/p/{{episode.podcastEchoId}}">
+    <h6 class=" mb-0">{{episode.podcastTitle}}</h6>
+  </a>
+
 </div>
 
 <div *ngIf="episode.itunesImage" class="text-center mb-4">
