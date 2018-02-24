@@ -6,6 +6,7 @@ import echo.core.exception.ConversionException;
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;
 import echo.core.domain.dto.EpisodeDTO;
+import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -49,13 +50,18 @@ public interface EpisodeMapper {
 
         final EpisodeDTO dto = new EpisodeDTO();
 
-        if (doc.get("echo_id")         != null) { dto.setEchoId(doc.get("echo_id")); }
-        if (doc.get("title")           != null) { dto.setTitle(doc.get("title")); }
-        if (doc.get("link")            != null) { dto.setLink(doc.get("link")); }
-        if (doc.get("pub_date")        != null) { dto.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get("pub_date"))); }
-        if (doc.get("description")     != null) { dto.setDescription(doc.get("description")); }
-        if (doc.get("itunes_image")    != null) { dto.setItunesImage(doc.get("itunes_image")); }
-        if (doc.get("itunes_duration") != null) { dto.setItunesDuration(doc.get("itunes_duration")); }
+        if (doc.get(IndexField.ECHO_ID)         != null) { dto.setEchoId(doc.get(IndexField.ECHO_ID)); }
+        if (doc.get(IndexField.TITLE)           != null) { dto.setTitle(doc.get(IndexField.TITLE)); }
+        if (doc.get(IndexField.LINK)            != null) { dto.setLink(doc.get(IndexField.LINK)); }
+        if (doc.get(IndexField.PUB_DATE)        != null) { dto.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get(IndexField.PUB_DATE))); }
+        if (doc.get(IndexField.PODCAST_TITLE)   != null) { dto.setPodcastTitle(doc.get(IndexField.PODCAST_TITLE)); }
+        if (doc.get(IndexField.ITUNES_SUMMARY) != null) {
+            dto.setDescription(doc.get(IndexField.ITUNES_SUMMARY));
+        } else if (doc.get(IndexField.DESCRIPTION) != null) {
+            dto.setDescription(doc.get(IndexField.DESCRIPTION));
+        }
+        if (doc.get(IndexField.ITUNES_IMAGE)    != null) { dto.setItunesImage(doc.get(IndexField.ITUNES_IMAGE)); }
+        if (doc.get(IndexField.ITUNES_DURATION) != null) { dto.setItunesDuration(doc.get(IndexField.ITUNES_DURATION)); }
 
         return dto;
     }

@@ -46,14 +46,15 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
         this.analyzer = new StandardAnalyzer();
         this.queryParser = new MultiFieldQueryParser(
             new String[] {
-                "title",
-                "description",
-                "link",
-                "content_encoded",
-                "website_data",
-                "itunes_author",
-                "itunes_summary",
-                "chapter_marks"
+                IndexField.TITLE,
+                IndexField.DESCRIPTION,
+                IndexField.LINK,
+                IndexField.PODCAST_TITLE,
+                IndexField.CONTENT_ENCODED,
+                IndexField.WEBSITE_DATA,
+                IndexField.ITUNES_AUTHOR,
+                IndexField.ITUNES_SUMMARY,
+                IndexField.CHAPTER_MARKS
             }, this.analyzer);
     }
 

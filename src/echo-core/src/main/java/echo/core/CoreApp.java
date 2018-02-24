@@ -16,6 +16,7 @@ import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneSearcher;
 import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
+import echo.core.util.EchoIdGenerator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -179,18 +180,16 @@ public class CoreApp {
         try {
             final String feedData = download(feed);
 
-            final PodcastDTO podcastDoc = this.feedParser.parseFeed(feedData);
-            podcastDoc.setEchoId(feed);
+            final PodcastDTO podcast = this.feedParser.parseFeed(feedData);
+            podcast.setEchoId(feed);
 
-            this.committer.add(podcastDoc);
+            this.committer.add(podcast);
 
             final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
             for (EpisodeDTO episode : episodes) {
+                episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
-
-                episode.setEchoId(episode.getGuid()); // TODO verifiy good GUID!
-                out.println(DocumentFormatter.cliFormat(episode));
-
+                episode.setEchoId(EchoIdGenerator.getNewId());
                 this.committer.add(episode);
             }
         } catch (IOException | FeedParsingException e) {

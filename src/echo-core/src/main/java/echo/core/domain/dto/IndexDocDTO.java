@@ -17,6 +17,7 @@ public class IndexDocDTO {
     private String itunesImage;
     private String itunesAuthor;
     private String itunesSummary;
+    private String podcastTitle; // will be the same as the title if marshalled from a PodcastDTO
     //private Set<String> itunesCategories;
     private String contentEncoded;
     private String websiteData;
@@ -128,6 +129,14 @@ public class IndexDocDTO {
         this.chapterMarks = chapterMarks;
     }
 
+    public String getPodcastTitle() {
+        return podcastTitle;
+    }
+
+    public void setPodcastTitle(String podcastTitle) {
+        this.podcastTitle = podcastTitle;
+    }
+
     @Override
     public String toString() {
         return "IndexDocDTO{\n" +
@@ -140,6 +149,7 @@ public class IndexDocDTO {
             "\titunesImage='" + itunesImage + "\',\n" +
             "\titunesAuthor='" + itunesAuthor + "\',\n" +
             "\titunesSummary='" + itunesSummary + "\',\n" +
+            "\tpodcastTitle='" + podcastTitle + "\',\n" +
             "\tchapterMarks='" + chapterMarks + "\',\n" +
             "\tcontentEncoded='" + (contentEncoded==null ? "null" : "<SOME TOO LONG DATA...>") + "\',\n" +
             //", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +

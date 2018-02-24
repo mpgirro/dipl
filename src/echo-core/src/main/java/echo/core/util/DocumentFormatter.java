@@ -22,16 +22,13 @@ public class DocumentFormatter {
         switch (doc.getDocType()) {
             case "podcast":
                 builder
-                    .append("[Podcast]")
-                    .append(NEWLINE)
                     .append(doc.getTitle())
+                    .append(NEWLINE)
+                    .append("[Podcast] ")
                     .append(NEWLINE);
-                if (doc.getPubDate() != null) {
-                    builder
-                        .append(doc.getPubDate())
-                        .append(NEWLINE);
-                }
+                if (doc.getPubDate() != null) builder.append(doc.getPubDate());
                 builder
+                    .append(NEWLINE)
                     .append(Jsoup.parse(doc.getDescription()).text())
                     .append(NEWLINE)
                     .append(doc.getLink())
@@ -39,16 +36,14 @@ public class DocumentFormatter {
                 break;
             case "episode":
                 builder
-                    .append("[Episode]")
-                    .append(NEWLINE)
                     .append(doc.getTitle())
-                    .append(NEWLINE);
-                if (doc.getPubDate() != null) {
-                    builder
-                        .append(doc.getPubDate())
-                        .append(NEWLINE);
-                }
+                    .append(NEWLINE)
+                    .append(doc.getPodcastTitle())
+                    .append(NEWLINE)
+                    .append("[Episode] ");
+                if (doc.getPubDate() != null) builder.append(doc.getPubDate());
                 builder
+                    .append(NEWLINE)
                     .append(Jsoup.parse(doc.getDescription()).text())
                     .append(NEWLINE)
                     .append(doc.getLink())
