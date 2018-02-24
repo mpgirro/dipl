@@ -14,7 +14,7 @@ import scala.language.postfixOps
 
 class IndexStore extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")

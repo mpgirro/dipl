@@ -19,7 +19,7 @@ import org.jsoup.safety.Whitelist
 
 class ParserActor extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val feedParser: FeedParser = new RomeFeedParser()
 

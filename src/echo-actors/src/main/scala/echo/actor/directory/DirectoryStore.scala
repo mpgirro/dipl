@@ -22,7 +22,7 @@ import scala.collection.JavaConverters._
   */
 class DirectoryStore extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)

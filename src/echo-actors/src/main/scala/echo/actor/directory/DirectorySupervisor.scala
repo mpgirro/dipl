@@ -16,7 +16,7 @@ import liquibase.resource.ClassLoaderResourceAccessor
   */
 class DirectorySupervisor extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.directory.worker-count")).getOrElse(5)

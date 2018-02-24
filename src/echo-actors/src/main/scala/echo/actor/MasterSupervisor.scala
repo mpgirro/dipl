@@ -21,7 +21,7 @@ import scala.util.Success
   */
 class MasterSupervisor extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 

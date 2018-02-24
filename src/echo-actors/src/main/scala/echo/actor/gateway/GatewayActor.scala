@@ -27,7 +27,7 @@ import scala.language.postfixOps
   */
 class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val GATEWAY_HOST = CONFIG.getString("echo.gateway.host")

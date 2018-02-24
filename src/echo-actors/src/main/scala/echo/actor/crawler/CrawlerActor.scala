@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
   */
 class CrawlerActor extends Actor with ActorLogging {
 
-    log.info("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private final val DOWNLOAD_TIMEOUT_MS = 5 * 1000
     private final val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
