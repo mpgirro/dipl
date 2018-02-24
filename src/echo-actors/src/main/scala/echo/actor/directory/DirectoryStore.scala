@@ -421,6 +421,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
                     podcastService.findOneByEchoId(podcastId).map(p => {
                         episode.setPodcastId(p.getId)
+                        episode.setPodcastTitle(p.getTitle) // we'll not re-use this DTO, but extract the info again a bit further down
 
                         // check if the episode has a cover image defined, and set the one of the episode
                         Option(episode.getItunesImage).getOrElse({
@@ -436,6 +437,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
                     // we must register the episodes chapters as well
                     result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs)))
+
+                    // we'll need this info when we send the episode to the index in just a moment
+                    result.foreach(e => e.setPodcastTitle(episode.getPodcastTitle))
 
                     result
             }

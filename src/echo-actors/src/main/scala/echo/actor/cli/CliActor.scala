@@ -61,7 +61,7 @@ class CliActor(private val master: ActorRef,
 
         while(!shutdown){
             val input = StdIn.readLine()
-            log.info("CLI read : {}", input)
+            log.debug("CLI read : {}", input)
             def exec(commands: Array[String]): Unit = {
                 commands.toList match {
                     case "help" :: _ => help()
