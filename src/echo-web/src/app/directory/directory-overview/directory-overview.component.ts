@@ -1,9 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Podcast } from '../../podcast/shared/podcast.model';
 import {PodcastService} from '../../podcast/shared/podcast.service';
+import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'app-directory',
@@ -25,34 +26,28 @@ export class DirectoryOverviewComponent implements OnInit {
               private location: Location) { }
 
   ngOnInit() {
-    const p = this.route.snapshot.queryParamMap.get('p');
-    const s = this.route.snapshot.queryParamMap.get('s');
-    this.currPage = (p) ? Number(p) : this.DEFAULT_PAGE;
-    this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
-    this.getAllPodcasts();
-  }
+    this.route.paramMap
+      .switchMap((params: ParamMap) => {
+        const p = params.get('p');
+        const s = params.get('s');
+        this.currPage = (p) ? Number(p) : this.DEFAULT_PAGE;
+        this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
+        return this.podcastService.getAll(this.currPage, this.currSize);
+      }).subscribe(podcasts => {
 
-  getAllPodcasts(): void {
-    this.podcastService.getAll(this.currPage, this.currSize)
-      .subscribe(podcasts => {
+      // reverse sort by date
+      podcasts.results.sort((a: Podcast, b: Podcast) => {
+        if (a.title < b.title) {
+          return -1;
+        } else if (a.title > b.title) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
 
-        // reverse sort by date
-        podcasts.results.sort((a: Podcast, b: Podcast) => {
-          if (a.title < b.title) {
-            return -1;
-          } else if (a.title > b.title) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
-
-        this.podcasts = podcasts.results;
+      this.podcasts = podcasts.results;
     });
-  }
-
-  goBack(): void {
-    this.location.back();
   }
 
 }
