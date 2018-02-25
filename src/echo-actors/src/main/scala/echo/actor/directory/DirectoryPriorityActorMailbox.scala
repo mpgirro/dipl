@@ -29,7 +29,7 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
         case ProposeNewFeed(_)          => 4
         case CheckPodcast(_)            => 5
         case CheckFeed(_)               => 5
-        case CheckAllPodcasts()         => 5
-        case CheckAllFeeds()            => 5
+        case CheckAllPodcasts           => 5
+        case CheckAllFeeds              => 5
         case _                          => 6
     })

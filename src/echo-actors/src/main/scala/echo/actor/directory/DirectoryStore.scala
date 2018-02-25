@@ -68,7 +68,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case CheckFeed(echoId) => onCheckFeed(echoId)
 
-        case CheckAllPodcasts => onCheckAllPodcasts(1, MAX_PAGE_SIZE)
+        case CheckAllPodcasts => onCheckAllPodcasts(0, MAX_PAGE_SIZE)
 
         case CheckAllFeeds => onCheckAllFeeds()
 
@@ -370,7 +370,7 @@ class DirectoryStore extends Actor with ActorLogging {
     }
 
     private def onCheckAllPodcasts(page: Int, size: Int): Unit = {
-        log.debug("Received CheckAllPodcasts()")
+        log.debug("Received CheckAllPodcasts({}, {})", page, size)
 
         def task = () => {
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
@@ -385,7 +385,7 @@ class DirectoryStore extends Actor with ActorLogging {
         }
         doInTransaction(task, List(podcastService, feedService))
 
-        log.debug("Finished CheckAllPodcasts()")
+        log.debug("Finished CheckAllPodcasts({}, {})", page, size)
     }
 
     private def onCheckAllFeeds(): Unit = {
