@@ -85,13 +85,13 @@ export class SearchComponent implements OnInit {
   navigate(result: Result): void {
     let pre;
     if (result.docType === 'podcast') {
-      pre = '/p/';
+      pre = '/p';
     } else if (result.docType === 'episode') {
-      pre = '/e/';
+      pre = '/e';
     } else {
       console.log('Unknown docType : ' + result.docType);
     }
-    this.router.navigate([pre + result.echoId]);
+    this.router.navigate([pre,  result.echoId]);
   }
 
 }

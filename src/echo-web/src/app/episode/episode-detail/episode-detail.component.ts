@@ -47,6 +47,9 @@ export class EpisodeDetailComponent implements OnInit {
         "main" : "#ffffff",
         "highlight" : "#007bff"
       },
+      "tabs": {
+        "chapters" : true
+      },
       "visibleComponents": [
         "tabChapters",
         "tabAudio",

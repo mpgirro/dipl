@@ -2,7 +2,7 @@
 
   <div *ngIf="episode.podcastEchoId && episode.podcastTitle" class="text-center mb-2">
 
-    <a class="badge badge-light" href="/p/{{episode.podcastEchoId}}">
+    <a class="badge badge-light" [routerLink]="['/p', episode.podcastEchoId]">
       <h6 class=" mb-0">{{episode.podcastTitle}}</h6>
     </a>
 

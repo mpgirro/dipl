@@ -5,7 +5,7 @@
 
     <div class="d-flex w-100">
       <div class="mr-auto">
-        <a href="/e/{{episode.echoId}}">{{episode.title}}</a>
+        <a [routerLink]="['/e', episode.echoId]">{{episode.title}}</a>
       </div>
       <div>
         <small class="text-muted">

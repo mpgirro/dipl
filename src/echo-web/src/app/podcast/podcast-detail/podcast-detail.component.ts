@@ -32,24 +32,24 @@ export class PodcastDetailComponent implements OnInit {
     const podloveButtonJS = `
         <script>
             window.podcastData={
-              "title":"foobar",
-              "subtitle":"foobar",
-              "description":"foobar",
-              "cover":"",
-              "feeds":[{
-                "type":"audio",
-                "format":"mp3",
-                "url":"http://example.com"
+              "title" : "foobar",
+              "subtitle" : "foobar",
+              "description" : "foobar",
+              "cover" : "",
+              "feeds" : [{
+                "type" : "audio",
+                "format" : "mp3",
+                "url" : "http://example.com"
               }]
             }
         </script>
-        <script class="podlove-subscribe-button" 
-            src="https://cdn.podlove.org/subscribe-button/javascripts/app.js" 
-            data-language="${this.podcast.language}" 
-            data-size="medium" 
-            data-json-data="podcastData" 
-            data-color="#469cd1" 
-            data-format="square" 
+        <script class="podlove-subscribe-button"
+            src="https://cdn.podlove.org/subscribe-button/javascripts/app.js"
+            data-language="${this.podcast.language}"
+            data-size="medium"
+            data-json-data="podcastData"
+            data-color="#469cd1"
+            data-format="square"
             data-style="frameless">
         </script>
         <noscript>
