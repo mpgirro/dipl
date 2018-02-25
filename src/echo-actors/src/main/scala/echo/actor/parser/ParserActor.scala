@@ -34,15 +34,15 @@ class ParserActor extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor")
+            log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
         case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor")
+            log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
 
         case ActorRefCrawlerActor(ref) =>
-            log.debug("Received ActorRefCrawlerActor")
+            log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
         case ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String) =>

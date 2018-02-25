@@ -28,7 +28,7 @@ class SearcherActor extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor")
+            log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
         case SearchRequest(query, page, size) =>

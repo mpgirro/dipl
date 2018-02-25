@@ -87,6 +87,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
 
         workerIndex += 1
 
+        // forward the actor refs to the worker, but only if those references haven't died
         Option(parser).foreach(p => directory ! ActorRefParserActor(p) )
         Option(directory).foreach(d => directory ! ActorRefDirectoryStoreActor(d))
 

@@ -91,6 +91,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
         workerIndex += 1
 
+        // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
         Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
 

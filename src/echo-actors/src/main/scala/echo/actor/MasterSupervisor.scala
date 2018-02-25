@@ -9,7 +9,7 @@ import echo.actor.crawler.CrawlerSupervisor
 import echo.actor.directory.DirectorySupervisor
 import echo.actor.gateway.GatewayActor
 import echo.actor.index.IndexStore
-import echo.actor.parser.ParserActor
+import echo.actor.parser.{ParserActor, ParserSupervisor}
 import echo.actor.searcher.SearcherActor
 
 import scala.concurrent.duration._
@@ -44,9 +44,13 @@ class MasterSupervisor extends Actor with ActorLogging {
             .withDispatcher("echo.index.dispatcher"),
             name = "index"))
 
+        /*
         parser = context.watch(context.actorOf(Props[ParserActor]
             .withDispatcher("echo.parser.dispatcher"),
             name = "parser"))
+            */
+        parser = context.actorOf(Props[ParserSupervisor], name = "parser")
+        context watch parser
 
         searcher = context.watch(context.actorOf(Props[SearcherActor]
             .withDispatcher("echo.searcher.dispatcher"),
