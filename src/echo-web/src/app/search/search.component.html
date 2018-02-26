@@ -20,11 +20,6 @@
         (click)="navigate(result)"
         class="search-result list-group-item-action media mb-5" >
 
-      <!--
-      <a *ngIf="result.docType === 'podcast'" routerLink="/p/{{result.echoId}}" class="list-group-item-action"><app-result-detail [result]="result"></app-result-detail></a>
-      <a *ngIf="result.docType === 'episode'" routerLink="/e/{{result.echoId}}" class="list-group-item-action"><app-result-detail [result]="result"></app-result-detail></a>
-      -->
-
       <img class="result-thumb mr-3"
            src="{{result.itunesImage}}"
            alt="Result Image">
@@ -36,8 +31,8 @@
         <div class="mb-1">
           <small>
             <ng-container [ngSwitch]="result.docType">
-              <span *ngSwitchCase="'podcast'" class="badge badge-warning">PODCAST</span>
-              <span *ngSwitchCase="'episode'" class="badge badge-info">EPISODE</span>
+              <span *ngSwitchCase="'podcast'" class="pt-1 badge badge-warning">PODCAST</span>
+              <span *ngSwitchCase="'episode'" class="pt-1 badge badge-info">EPISODE</span>
             </ng-container>
 
             <span class="ml-2">
@@ -54,16 +49,6 @@
           <p class="mb-1" [innerHTML]="(result.description.length > 130) ? result.description.substr(0, 130) + ' . . .' : result.description"></p>
           <!--<p class="mb-1">{{ (result.description.length > 130) ? result.description.substr(0, 130) + ' . . .' : result.description }}</p>-->
         </ng-container>
-
-
-        <!--
-        <p *ngIf="result.link">
-          <a href="{{result.link}}">
-            <small class="text-muted"><span class="oi oi-link-intact"></span></small>
-            {{domainService.removeProtocol(result.link).substr(0,48)}}
-          </a>
-        </p>
-        -->
 
       </div>
 

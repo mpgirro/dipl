@@ -17,6 +17,8 @@ export class EpisodeDetailComponent implements OnInit {
   @Input() episode: Episode;
   chapters: Chapter[];
 
+  HIGHLIGHT_COLOR = '#007bff';
+
   constructor(private route: ActivatedRoute,
               private episodeService: EpisodeService,
               private domainService: DomainService,
@@ -24,9 +26,9 @@ export class EpisodeDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getEpisode();
-    // this.initPlyrPlayer();
   }
 
+  // TODO unused
   initPlyrPlayer(): void {
     const plyrJS = 'plyr.setup("#plyr-audio");';
     const el = document.createElement('script');
@@ -45,7 +47,7 @@ export class EpisodeDetailComponent implements OnInit {
       "chapters" : ${JSON.stringify(this.chapters)},
       "theme" : {
         "main" : "#ffffff",
-        "highlight" : "#007bff"
+        "highlight" : "${this.HIGHLIGHT_COLOR}"
       },
       "tabs": {
         "chapters" : true
@@ -57,7 +59,7 @@ export class EpisodeDetailComponent implements OnInit {
         "controlSteppers",
         "controlChapters"
       ]});`;
-    // console.log(podlovePlayerJS);
+
     const el = document.createElement('script');
     el.appendChild(document.createTextNode(podlovePlayerJS));
     document.body.appendChild(el);
