@@ -4,9 +4,7 @@ import {Router, ActivatedRoute, ParamMap} from '@angular/router';
 import { Result } from '../result.model';
 import { SearchService } from '../search.service';
 import { DomainService } from '../domain.service';
-import {of} from 'rxjs/observable/of';
 import {ResultWrapper} from '../resultwrapper.model';
-import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-search',
@@ -16,8 +14,8 @@ import {Observable} from 'rxjs/Observable';
 export class SearchComponent implements OnInit {
 
   DEFAULT_SIZE = 20;
-  currSize: number;
 
+  currSize: number;
   currPage: number;
   maxPage: number;
   pages: number[];
@@ -33,6 +31,10 @@ export class SearchComponent implements OnInit {
               private domainService: DomainService) { }
 
   ngOnInit() {
+    this.search();
+  }
+
+  search(): void {
     this.route.paramMap
       .switchMap((params: ParamMap) => {
         const q = params.get('q');
@@ -45,19 +47,6 @@ export class SearchComponent implements OnInit {
       }).subscribe(response => this.onSearchResponse(response));
   }
 
-  search(query: string): void {
-
-    if (query) {
-      const q = query;
-      const p = this.currPage;
-      const s = this.currSize;
-
-      this.query = q;
-      this.searchService.search(q, p, s)
-        .subscribe(response => this.onSearchResponse(response));
-    }
-  }
-
   onSearchResponse(response: ResultWrapper) {
     this.currPage  = response.currPage;
     this.maxPage   = response.maxPage;
@@ -68,24 +57,12 @@ export class SearchComponent implements OnInit {
   }
 
   onEnter(query: string): void {
-
-    // TODO set the currPage via the paging-navbar
-    // this.currPage = (this.currPage) ? this.currPage : 1;
-
-    this.query = query;
-    this.currPage = 1; // query has changed, so we need to reset the page counter!
-
-    /* TODO delete
-    const navigationExtras = {
-      queryParams: { 'q': query, 'p' : this.currPage, 's': this.currSize }
-    };
-    */
-
-    // Navigate to the search page with extras
-    this.router.navigate(['/search', { 'q': query, 'p' : this.currPage, 's': this.currSize }]);
-
-    this.search(query);
-
+    if (query) {
+      this.router.navigate(['/search', { 'q': query, 'p' : 1, 's': this.currSize }]);
+      this.search();
+    } else {
+      this.router.navigate(['/search']);
+    }
   }
 
   navigate(result: Result): void {

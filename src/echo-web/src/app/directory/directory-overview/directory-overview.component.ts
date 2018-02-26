@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 
 import { Podcast } from '../../podcast/shared/podcast.model';
 import {PodcastService} from '../../podcast/shared/podcast.service';
+import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/switchMap';
 
 @Component({

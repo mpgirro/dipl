@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { Result } from './result.model';
 import { ResultWrapper } from './resultwrapper.model';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of'; // TODO brauch ich eh nimma, oder?
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs/operators';
+import { HttpClient} from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class SearchService {
