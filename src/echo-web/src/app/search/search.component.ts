@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import {Router, ActivatedRoute, ParamMap} from '@angular/router';
 
 import { Result } from '../result.model';
 import { SearchService } from '../search.service';
 import { DomainService } from '../domain.service';
 import {of} from 'rxjs/observable/of';
 import {ResultWrapper} from '../resultwrapper.model';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-search',
@@ -32,14 +33,16 @@ export class SearchComponent implements OnInit {
               private domainService: DomainService) { }
 
   ngOnInit() {
-    const q = this.route.snapshot.queryParamMap.get('q');
-    const p = this.route.snapshot.queryParamMap.get('p');
-    const s = this.route.snapshot.queryParamMap.get('s');
-
-    this.currPage = (p) ? Number(p) : 1;
-    this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
-
-    this.search(q);
+    this.route.paramMap
+      .switchMap((params: ParamMap) => {
+        const q = params.get('q');
+        const p = params.get('p');
+        const s = params.get('s');
+        this.query = q;
+        this.currPage = (p) ? Number(p) : 1;
+        this.currSize = (s) ? Number(s) : this.DEFAULT_SIZE;
+        return this.searchService.search(this.query, this.currPage, this.currSize);
+      }).subscribe(response => this.onSearchResponse(response));
   }
 
   search(query: string): void {
@@ -49,19 +52,19 @@ export class SearchComponent implements OnInit {
       const p = this.currPage;
       const s = this.currSize;
 
-      this.query = q; // TODO hier wird scheinbar das textfeld in der UI nicht richtig befüllt, wenn man die seite nur per URL param aufruft
+      this.query = q;
       this.searchService.search(q, p, s)
-        .subscribe(response => {
-
-          this.currPage  = response.currPage;
-          this.maxPage   = response.maxPage;
-          this.totalHits = response.totalHits;
-          this.results   = response.results;
-
-          this.pages = new Array(this.maxPage).fill(0 ).map((x, i) => i + 1);
-
-        });
+        .subscribe(response => this.onSearchResponse(response));
     }
+  }
+
+  onSearchResponse(response: ResultWrapper) {
+    this.currPage  = response.currPage;
+    this.maxPage   = response.maxPage;
+    this.totalHits = response.totalHits;
+    this.results   = response.results;
+
+    this.pages = new Array(this.maxPage).fill(0 ).map((x, i) => i + 1);
   }
 
   onEnter(query: string): void {
@@ -69,14 +72,17 @@ export class SearchComponent implements OnInit {
     // TODO set the currPage via the paging-navbar
     // this.currPage = (this.currPage) ? this.currPage : 1;
 
+    this.query = query;
     this.currPage = 1; // query has changed, so we need to reset the page counter!
 
+    /* TODO delete
     const navigationExtras = {
       queryParams: { 'q': query, 'p' : this.currPage, 's': this.currSize }
     };
+    */
 
     // Navigate to the search page with extras
-    this.router.navigate(['/search'], navigationExtras);
+    this.router.navigate(['/search', { 'q': query, 'p' : this.currPage, 's': this.currSize }]);
 
     this.search(query);
 

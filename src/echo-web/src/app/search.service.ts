@@ -16,7 +16,7 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   search(query: string, page: number, size: number): Observable<ResultWrapper> {
-    if (!query.trim()) {
+    if (!query || !query.trim()) {
       // if not search term, return empty result array.
       return of(new ResultWrapper());
     }

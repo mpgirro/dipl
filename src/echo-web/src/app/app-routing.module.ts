@@ -8,7 +8,7 @@ import {DirectoryListComponent} from './directory/directory-list/directory-list.
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent },
-  { path: 'search?query=:q', component: SearchComponent },
+  /*{ path: 'search?query=:q', component: SearchComponent },*/
   { path: '', redirectTo: '/search', pathMatch: 'full' },
   { path: 'p/:id', component: PodcastDetailComponent },
   { path: 'e/:id', component: EpisodeDetailComponent },
