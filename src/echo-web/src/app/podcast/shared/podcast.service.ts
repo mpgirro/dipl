@@ -6,6 +6,7 @@ import { Episode } from '../../episode/shared/episode.model';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
 import {ArrayWrapper} from '../../arraywrapper.model';
+import {Feed} from './feed.model';
 
 @Injectable()
 export class PodcastService {
@@ -23,12 +24,21 @@ export class PodcastService {
     );
   }
 
-  getEpisodes(echoId: string): Observable<Array<Episode>> {
-    const request = this.baseUrl + '/' + echoId + '/episodes';
+  getEpisodes(podcastId: string): Observable<Array<Episode>> {
+    const request = this.baseUrl + '/' + podcastId + '/episodes';
     console.log('GET ' + request);
     return this.http.get<Array<Episode>>(request).pipe(
-      tap(_ => console.log(`found episodes for podcast : "${echoId}"`)),
+      tap(_ => console.log(`found episodes for podcast : "${podcastId}"`)),
       catchError(this.handleError<Array<Episode>>('getPodcastEpisodes', new Array<Episode>()))
+    );
+  }
+
+  getFeeds(podcastId: string): Observable<Array<Feed>> {
+    const request = this.baseUrl + '/' + podcastId + '/feeds';
+    console.log('GET ' + request);
+    return this.http.get<Array<Feed>>(request).pipe(
+      tap(_ => console.log(`found feeds for podcast : "${podcastId}"`)),
+      catchError(this.handleError<Array<Feed>>('getPodcastFeeds', new Array<Feed>()))
     );
   }
 
