@@ -9,7 +9,7 @@
   <h1 class="h4 mt-3 mb-0">{{podcast.title}}</h1>
 
   <div *ngIf="podcast.link">
-    <a class="text-muted" href="{{podcast.link}}">{{domainService.prettyUrl(podcast.link)}}</a>
+    <a class="website-link text-muted" href="{{podcast.link}}">{{domainService.prettyUrl(podcast.link)}}</a>
   </div>
 
   <p *ngIf="podcast.itunesSummary"
