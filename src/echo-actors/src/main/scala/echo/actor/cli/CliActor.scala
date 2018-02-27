@@ -36,7 +36,7 @@ class CliActor(private val master: ActorRef,
         "check feed"     -> "[all|<echoId>]",
         "count"          -> "[podcasts|episodes|feeds]",
         "search"         -> "query [query [query]]",
-        "print database" -> "[podcasts|episodes]",
+        "print database" -> "[podcasts|episodes|feeds]",
         "load feeds"     -> "[test|massive]",
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
@@ -99,6 +99,8 @@ class CliActor(private val master: ActorRef,
                     case "print" :: "database" :: "podcasts" :: _   => usage("print database")
                     case "print" :: "database" :: "episodes" :: Nil => directoryStore ! DebugPrintAllEpisodes
                     case "print" :: "database" :: "episodes" :: _   => usage("print database")
+                    case "print" :: "database" :: "feeds" :: Nil    => directoryStore ! DebugPrintAllFeeds
+                    case "print" :: "database" :: "feeds" :: _      => usage("print database")
                     case "print" :: "database" :: _                 => usage("print database")
                     case "print" :: _                               => help()
 
@@ -161,14 +163,14 @@ class CliActor(private val master: ActorRef,
         val future = searcher ? SearchRequest(query.mkString(" "), Some(1), Some(100))
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[SearchResults]
         response match {
-            case SearchResults(results) => {
+            case SearchResults(results) =>
                 println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'")
                 println("Results:")
                 for (result <- results.getResults) {
                     println(s"\n${DocumentFormatter.cliFormat(result)}\n")
                 }
                 println()
-            }
+            case other => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
     }
 
@@ -178,6 +180,7 @@ class CliActor(private val master: ActorRef,
         response match {
             case PodcastResult(podcast)  => println(DocumentFormatter.cliFormat(podcast))
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with echoId : {}", unknownId)
+            case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
     }
 
@@ -187,6 +190,7 @@ class CliActor(private val master: ActorRef,
         response match {
             case EpisodeResult(episode)  => println(DocumentFormatter.cliFormat(episode))
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with echoId : {}", unknownId)
+            case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
     }
 
@@ -213,16 +217,16 @@ class CliActor(private val master: ActorRef,
     private def saveFeeds(dest: String): Unit = {
         log.debug("Received SaveFeeds : {}", dest)
 
-        val future = directoryStore ? GetAllFeeds(1, 10000)
+        val future = directoryStore ? GetAllFeeds(0, 10000)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case AllFeedsResult(feeds)  =>
                 import java.io._
                 val pw = new PrintWriter(new File(dest))
-                for (f <- feeds) {
-                    pw.write(f.getUrl)
-                }
+                log.info("Writing {} feeds to file : {}", feeds.size, dest)
+                feeds.foreach(f => pw.write(f.getUrl+ "\n"))
                 pw.close()
+            case other => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
         log.debug("Finished SaveFeeds : {}", dest)
     }

@@ -51,8 +51,9 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findAll(page: Int, size: Int): List[FeedDTO] = {
-        val sort = new Sort(new Sort.Order(Direction.ASC, "registration_timestamp"))
-        val pageable = new PageRequest(page, size, sort)
+        //val sort = new Sort(new Sort.Order(Direction.ASC, "registration_timestamp"))
+        //val pageable = new PageRequest(page, size, sort)
+        val pageable = new PageRequest(page, size)
         feedRepository.findAll(pageable)
             .asScala
             .map(f => FeedMapper.INSTANCE.map(f))

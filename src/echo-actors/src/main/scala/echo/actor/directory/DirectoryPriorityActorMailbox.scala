@@ -15,6 +15,7 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
         case ActorRefIndexStoreActor(_) => 0
         case DebugPrintAllPodcasts      => 0
         case DebugPrintAllEpisodes      => 0
+        case DebugPrintAllFeeds         => 0
         case DebugPrintCountAllPodcasts => 0
         case DebugPrintCountAllEpisodes => 0
         case DebugPrintCountAllFeeds    => 0

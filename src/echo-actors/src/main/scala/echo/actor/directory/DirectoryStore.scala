@@ -104,6 +104,8 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case DebugPrintAllEpisodes => debugPrintAllEpisodes()
 
+        case DebugPrintAllFeeds => debugPrintAllFeeds()
+
         case DebugPrintCountAllPodcasts => debugPrintCountAllPodcasts()
 
         case DebugPrintCountAllEpisodes => debugPrintCountAllEpisodes()
@@ -511,6 +513,17 @@ class DirectoryStore extends Actor with ActorLogging {
         doInTransaction(task, List(episodeService))
 
         log.debug("Finished DebugPrintAllEpisodes")
+    }
+
+    private def debugPrintAllFeeds(): Unit = {
+        log.debug("Received DebugPrintAllFeeds")
+        log.info("All Feeds in database:")
+        def task = () => {
+            feedService.findAll(0, MAX_PAGE_SIZE).foreach(f => println(s"${f.getEchoId} : ${f.getUrl}"))
+        }
+        doInTransaction(task, List(feedService))
+
+        log.debug("Finished DebugPrintAllFeeds")
     }
 
     private def debugPrintCountAllPodcasts(): Unit = {

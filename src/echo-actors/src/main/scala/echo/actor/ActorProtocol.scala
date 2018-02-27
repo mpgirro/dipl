@@ -111,6 +111,7 @@ object ActorProtocol {
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore
     case class DebugPrintAllEpisodes()    // User/CLI -> DirectoryStore
+    case class DebugPrintAllFeeds()
     case class DebugPrintCountAllPodcasts()
     case class DebugPrintCountAllEpisodes()
     case class DebugPrintCountAllFeeds()
