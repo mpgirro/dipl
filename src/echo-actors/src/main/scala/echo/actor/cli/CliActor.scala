@@ -130,7 +130,7 @@ class CliActor(private val master: ActorRef,
                     case _  => help()
                 }
             }
-            exec(input.split(" "))
+            Option(input).foreach(i => exec(i.split(" ")))
         }
 
         log.info("Terminating due to user request")
