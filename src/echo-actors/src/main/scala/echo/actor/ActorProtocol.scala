@@ -24,6 +24,7 @@ object ActorProtocol {
     case class CheckAllPodcasts()
     case class CheckAllFeeds()
 
+    /*
     // DirectoryStore -> Crawler
     case class FetchFeedForNewPodcast(podcastId: String, feedUrl: String)
     case class FetchFeedForUpdateEpisodes(podcastId: String, feedUrl: String)
@@ -31,16 +32,17 @@ object ActorProtocol {
     // Parser -> Crawler
     case class FetchWebsite(echoId: String, url: String)
 
+    // Crawler -> Crawler
+    case class DownloadAsync(echoId: String, url: String, jobKind: JobKind.Value)
+    */
+
     trait FetchJob
     case class NewPodcastFetchJob() extends FetchJob
     case class UpdateEpisodesFetchJob(etag: String, lastMod: String) extends FetchJob
     case class WebsiteFetchJob() extends FetchJob
 
-    // Crawler -> Crawler
-    case class DownloadAsync(echoId: String, url: String, jobKind: JobKind.Value)
-
     case class DownloadWithHeadCheck(echoId: String, url: String, job: FetchJob)
-    case class Download(echoId: String, url: String, job: FetchJob)
+    case class DownloadContent(echoId: String, url: String, job: FetchJob)
 
     // Crawler -> DirectoryStore
     case class FeedStatusUpdate(podcastId: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)

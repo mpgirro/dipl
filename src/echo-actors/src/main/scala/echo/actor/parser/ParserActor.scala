@@ -96,7 +96,9 @@ class ParserActor extends Actor with ActorLogging {
 
                         // request that the podcasts website will get added to the index as well, if possible
                         Option(p.getLink) match {
-                            case Some(link) => crawler ! FetchWebsite(p.getEchoId, link)
+                            case Some(link) =>
+                                // crawler ! FetchWebsite(p.getEchoId, link)
+                                crawler ! DownloadWithHeadCheck(p.getEchoId, link, WebsiteFetchJob())
                             case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
                         }
                     }

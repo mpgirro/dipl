@@ -71,13 +71,15 @@ class CrawlerActor extends Actor with ActorLogging {
             indexStore = ref
 
         case DownloadWithHeadCheck(echoId, url, job) =>
-            log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass)
+            log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
             headCheck(echoId, url, job)
 
-        case Download(echoId, url, job) =>
-            log.debug("Received Download({},'{}',{})", echoId, url, job.getClass)
+
+        case DownloadContent(echoId, url, job) =>
+            log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
             download(echoId, url, job)
 
+        /*
         case FetchFeedForNewPodcast(podcastId, url) =>
             log.info("Received FetchFeedForNewPodcast('{}', {})", podcastId, url)
             //testAndDownloadAkka(podcastId, url, JobKind.FEED_NEW_PODCAST)
@@ -98,7 +100,7 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Received DownloadAsync({},'{}',{})", echoId, url, jobType)
             //downloadAkka(echoId, url, jobType)
             download(echoId, url, jobType)
-
+        */
         case CrawlFyyd(count) =>
             log.debug("Received CrawlFyyd({})", count)
             val feeds = fyydAPI.getFeedUrls(count)
@@ -334,6 +336,7 @@ class CrawlerActor extends Actor with ActorLogging {
         Success((location, eTag, lastModified))
     }
 
+    /*
     @Deprecated
     private def testAndDownloadAkka(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         val headRequest = HttpRequest(
@@ -487,7 +490,9 @@ class CrawlerActor extends Actor with ActorLogging {
             //getRequest.discardEntityBytes()
         }
     }
+    */
 
+    /* TODO delete?
     private def sendErrorNotificationIfFeasable(echoId: String, url: String, jobType: JobKind.Value): Unit = {
         jobType match {
             case JobKind.WEBSITE => // do nothing...
@@ -665,6 +670,7 @@ class CrawlerActor extends Actor with ActorLogging {
             httpclient.close()
         }
     }
+    */
 
     private def headCheck(echoId: String, url: String, job: FetchJob): Unit = {
         val requestConfig = RequestConfig.custom.
@@ -685,7 +691,7 @@ class CrawlerActor extends Actor with ActorLogging {
                 case Success((location, etag, lastMod)) =>
                     location match {
                         case Some(href) =>
-                            log.debug("Sending message to download async : {}", href)
+                            log.debug("Sending message to download content : {}", href)
                             job match {
                                 case WebsiteFetchJob() =>
                                     // if the link in the feed is redirected (which is often the case due
@@ -696,7 +702,7 @@ class CrawlerActor extends Actor with ActorLogging {
                                     }
 
                                     // we always download websites, because we only do it once anyway
-                                    self ! Download(echoId, href, job)
+                                    self ! DownloadContent(echoId, href, job)
                                 case _ =>
                                     // if the feed moved to a new URL, we will inform the directory, so
                                     // it will use the new location starting with the next update cycle
@@ -709,7 +715,7 @@ class CrawlerActor extends Actor with ActorLogging {
                                      * here I have to do some voodoo with etag/lastMod to
                                      * determine weither the feed changed and I really need to redownload
                                      */
-                                    self ! Download(echoId, href, job)
+                                    self ! DownloadContent(echoId, href, job)
                             }
                         case None =>
                             log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")

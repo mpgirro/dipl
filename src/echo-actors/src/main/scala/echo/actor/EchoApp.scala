@@ -16,7 +16,7 @@ object EchoApp {
 
         system.actorOf(Props(new MasterSupervisor), "master")
 
-        Await.ready(system.whenTerminated, Duration.Inf)
+        //Await.ready(system.whenTerminated, Duration.Inf)
 
         /*
         system.whenTerminated onComplete {

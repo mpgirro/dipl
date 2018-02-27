@@ -498,7 +498,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 Option(e.getLink) match {
                     case Some(link) =>
                         // crawler ! FetchWebsite(e.getEchoId, link)
-                        crawler ! DownloadWithHeadCheck(podcastId, link, WebsiteFetchJob())
+                        crawler ! DownloadWithHeadCheck(e.getEchoId, link, WebsiteFetchJob())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getEchoId)
                 }
             case None =>
