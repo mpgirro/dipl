@@ -1,0 +1,12 @@
+version: '2'
+services:
+    echo-actors:
+        image: echo-actors:latest
+        ports:
+            - 3030:3030
+    echo-web:
+        image: echo-web:latest
+        links:
+          - echo-actors
+        ports:
+          - 80:80
