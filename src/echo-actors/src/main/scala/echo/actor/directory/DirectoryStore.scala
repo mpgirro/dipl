@@ -20,6 +20,11 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
+
+object DirectoryStore {
+
+}
+
 class DirectoryStore extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
@@ -136,9 +141,10 @@ class DirectoryStore extends Actor with ActorLogging {
                     feed.setLastStatus(FeedStatus.NEVER_CHECKED)
                     feed.setPodcastId(p.getId)
                     feed.setRegistrationTimestamp(LocalDateTime.now())
-                    feedService.save(feed)
-
-                    crawler ! FetchFeedForNewPodcast(url, podcastId)
+                    feedService.save(feed).map(f => {
+                        // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
+                        crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, NewPodcastFetchJob())
+                    })
                 })
             } else {
                 log.info("Proposed feed is already in database: {}", url)
@@ -368,7 +374,9 @@ class DirectoryStore extends Actor with ActorLogging {
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             val feeds = feedService.findAllByPodcast(podcastId)
             if(feeds.nonEmpty){
-                crawler ! FetchFeedForUpdateEpisodes(feeds.head.getUrl, podcastId)
+                // crawler ! FetchFeedForUpdateEpisodes(podcastId, feeds.head.getUrl)
+                val f = feeds.head
+                crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
             } else {
                 log.error("No Feeds registered for Podcast with echoId : {}", podcastId)
             }
@@ -384,7 +392,8 @@ class DirectoryStore extends Actor with ActorLogging {
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             feedService.findOneByEchoId(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
-                    crawler ! FetchFeedForUpdateEpisodes(f.getUrl, p.getEchoId)
+                    //crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, f.getUrl)
+                    crawler ! DownloadWithHeadCheck(p.getEchoId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 }).getOrElse({
                     log.error("No Podcast found in Database for Feed with echoId : {}", feedId)
                 })
@@ -405,7 +414,9 @@ class DirectoryStore extends Actor with ActorLogging {
             podcastService.findAll(page, size).foreach(p => {
                 val feeds = feedService.findAllByPodcast(p.getEchoId)
                 if(feeds.nonEmpty){
-                    crawler ! FetchFeedForUpdateEpisodes(feeds.head.getUrl, p.getEchoId)
+                    // crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, feeds.head.getUrl) // TODO
+                    val f = feeds.head
+                    crawler ! DownloadWithHeadCheck(p.getEchoId, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 } else {
                     log.error("No Feeds registered for Podcast with echoId : {}", p.getEchoId)
                 }
@@ -422,7 +433,8 @@ class DirectoryStore extends Actor with ActorLogging {
         def task = () => {
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getEchoId).map{p => {
-                    crawler ! FetchFeedForUpdateEpisodes(f.getUrl, p.getEchoId)
+                    // crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, f.getUrl) // TODO
+                    crawler ! DownloadWithHeadCheck(p.getEchoId, f.getUrl, NewPodcastFetchJob())
                 }}.getOrElse({
                     log.error("No Podcast found in Database for Feed with echoId : {}", f.getEchoId)
                 })
@@ -484,7 +496,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
-                    case Some(link) => crawler ! FetchWebsite(e.getEchoId, link)
+                    case Some(link) =>
+                        // crawler ! FetchWebsite(e.getEchoId, link)
+                        crawler ! DownloadWithHeadCheck(podcastId, link, WebsiteFetchJob())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getEchoId)
                 }
             case None =>
