@@ -20,6 +20,15 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
+### Docker image
+
+After a production build, a Docker image can be built with:
+
+```
+docker build -t echo-web:latest . 
+docker run -p 80:80 --name echo-web echo-web 
+```
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
