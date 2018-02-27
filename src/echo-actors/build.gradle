@@ -15,14 +15,17 @@ buildscript {
 
 plugins {
     id 'org.liquibase.gradle' version '1.2.4'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
 defaultTasks 'run'
 
+apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'scalaStyle'
 apply plugin: 'project-report'
 apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 //apply plugin: 'org.liquibase.gradle'
 
 sourceCompatibility=1.8
@@ -115,6 +118,14 @@ jar {
     baseName = project.name
     manifest {
         attributes("Main-Class": mainClassName)
+    }
+}
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+shadowJar {
+    baseName = project.name
+    transform(AppendingTransformer) {
+        resource = 'reference.conf'
     }
 }
 
