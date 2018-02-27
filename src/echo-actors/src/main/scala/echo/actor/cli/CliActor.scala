@@ -38,6 +38,7 @@ class CliActor(private val master: ActorRef,
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes]",
         "load feeds"     -> "[test|massive]",
+        "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<echoId>",
         "get episode"    -> "<echoId>"
@@ -107,6 +108,11 @@ class CliActor(private val master: ActorRef,
                     case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
                     case "load" :: "feeds" :: _                 => usage("load feeds")
 
+                    case "save" :: Nil                          => help()
+                    case "save" :: "feeds" :: Nil               => usage("save feeds")
+                    case "save" :: "feeds" :: dest :: Nil       => saveFeeds(dest)
+                    case "save" :: "feeds" :: _                 => usage("save feeds")
+
                     case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
                     case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
                     case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
@@ -170,8 +176,8 @@ class CliActor(private val master: ActorRef,
         val future = directoryStore ? GetPodcast(echoId)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
-            case PodcastResult(podcast)     => println(DocumentFormatter.cliFormat(podcast))
-            case NothingFound(unknownId) => println(s"DirectoryStore responded that there is no Podcast with echoId=$unknownId")
+            case PodcastResult(podcast)  => println(DocumentFormatter.cliFormat(podcast))
+            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with echoId : {}", unknownId)
         }
     }
 
@@ -179,27 +185,46 @@ class CliActor(private val master: ActorRef,
         val future = directoryStore ? GetEpisode(echoId)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
-            case EpisodeResult(episode)     => println(DocumentFormatter.cliFormat(episode))
-            case NothingFound(unknownId) => println(s"DirectoryStore responded that there is no Episode with echoId=$unknownId")
+            case EpisodeResult(episode)  => println(DocumentFormatter.cliFormat(episode))
+            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with echoId : {}", unknownId)
         }
     }
 
     private def loadTestFeeds(): Unit = {
-        log.info("Received LoadTestFeeds")
+        log.debug("Received LoadTestFeeds")
 
         val filename = "../feeds.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
         }
+        log.debug("Finished LoadTestFeeds")
     }
 
     private def loadMassiveFeeds(): Unit = {
-        log.info("Received LoadMassiveFeeds")
+        log.debug("Received LoadMassiveFeeds")
 
         val filename = "../feeds_unique.txt"
         for (feed <- Source.fromFile(filename).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
         }
+        log.debug("Finished LoadMassiveFeeds")
+    }
+
+    private def saveFeeds(dest: String): Unit = {
+        log.debug("Received SaveFeeds : {}", dest)
+
+        val future = directoryStore ? GetAllFeeds(1, 10000)
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
+        response match {
+            case AllFeedsResult(feeds)  =>
+                import java.io._
+                val pw = new PrintWriter(new File(dest))
+                for (f <- feeds) {
+                    pw.write(f.getUrl)
+                }
+                pw.close()
+        }
+        log.debug("Finished SaveFeeds : {}", dest)
     }
 
 }

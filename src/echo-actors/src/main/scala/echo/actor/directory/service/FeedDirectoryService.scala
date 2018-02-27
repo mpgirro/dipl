@@ -6,6 +6,8 @@ import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{FeedRepository, RepositoryFactoryBuilder}
 import echo.core.domain.dto.FeedDTO
 import echo.core.mapper.FeedMapper
+import org.springframework.data.domain.{PageRequest, Sort}
+import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -48,8 +50,10 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
-    def findAll(): List[FeedDTO] = {
-        feedRepository.findAll
+    def findAll(page: Int, size: Int): List[FeedDTO] = {
+        val sort = new Sort(new Sort.Order(Direction.ASC, "registration_timestamp"))
+        val pageable = new PageRequest(page, size, sort)
+        feedRepository.findAll(pageable)
             .asScala
             .map(f => FeedMapper.INSTANCE.map(f))
             .toList

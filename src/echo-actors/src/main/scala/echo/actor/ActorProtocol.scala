@@ -3,7 +3,7 @@ package echo.actor
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
-import echo.core.domain.dto.{EpisodeDTO, IndexDocDTO, PodcastDTO, ResultWrapperDTO}
+import echo.core.domain.dto._
 import echo.core.domain.feed.{ChapterDTO, FeedStatus}
 
 
@@ -91,16 +91,20 @@ object ActorProtocol {
     case class GetPodcast(podcastId: String)
     case class GetAllPodcasts(page: Int, size: Int)
     case class GetAllPodcastsRegistrationComplete(page: Int, size: Int)
+    case class GetAllFeeds(page: Int, size: Int)
     case class GetEpisode(episodeId: String)
     case class GetEpisodesByPodcast(podcastId: String)
+    case class GetFeedsByPodcast(podcastId: String)
     case class GetChaptersByEpisode(episodeId: String)
 
     // DirectoryStore -> Gateway
     trait DirectoryResult
     case class PodcastResult(podcast: PodcastDTO) extends DirectoryResult
     case class AllPodcastsResult(results: List[PodcastDTO]) extends DirectoryResult
+    case class AllFeedsResult(results: List[FeedDTO]) extends DirectoryResult
     case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
     case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends DirectoryResult
+    case class FeedsByPodcastResult(feeds: List[FeedDTO]) extends DirectoryResult
     case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends DirectoryResult
     case class NothingFound(echoId: String) extends DirectoryResult
 

@@ -70,7 +70,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case CheckAllPodcasts => onCheckAllPodcasts(0, MAX_PAGE_SIZE)
 
-        case CheckAllFeeds => onCheckAllFeeds()
+        case CheckAllFeeds => onCheckAllFeeds(0, MAX_PAGE_SIZE)
 
         case FeedStatusUpdate(podcastId, feedUrl, timestamp, status) => onFeedStatusUpdate(podcastId, feedUrl, timestamp, status)
 
@@ -88,9 +88,13 @@ class DirectoryStore extends Actor with ActorLogging {
 
         case GetAllPodcastsRegistrationComplete(page, size) => onGetAllPodcastsRegistrationComplete(page, size)
 
+        case GetAllFeeds(page, size) => onGetAllFeeds(page, size)
+
         case GetEpisode(episodeId) => onGetEpisode(episodeId)
 
         case GetEpisodesByPodcast(podcastId) => onGetEpisodesByPodcast(podcastId)
+
+        case GetFeedsByPodcast(podcastId) => onGetFeedsByPodcast(podcastId)
 
         case GetChaptersByEpisode(episodeId) => onGetChaptersByEpisode(episodeId)
 
@@ -281,7 +285,7 @@ class DirectoryStore extends Actor with ActorLogging {
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
         sender ! AllPodcastsResult(podcasts)
 
-        log.debug("Finished GetAllPodcasts()")
+        log.debug("Finished GetAllPodcasts({},{})", page, size)
     }
 
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
@@ -292,7 +296,18 @@ class DirectoryStore extends Actor with ActorLogging {
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
         sender ! AllPodcastsResult(podcasts)
 
-        log.debug("Finished GetAllPodcastsRegistrationComplete()")
+        log.debug("Finished GetAllPodcastsRegistrationComplete({},{})", page, size)
+    }
+
+    private def onGetAllFeeds(page: Int, size: Int): Unit = {
+        log.debug("Received GetAllFeeds({},{})", page, size)
+        def task = () => {
+            feedService.findAll(page, size)
+        }
+        val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
+        sender ! AllFeedsResult(feeds)
+
+        log.debug("Finished GetAllFeeds({},{})", page, size)
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
@@ -320,6 +335,17 @@ class DirectoryStore extends Actor with ActorLogging {
         sender ! EpisodesByPodcastResult(episodes)
 
         log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
+    }
+
+    private def onGetFeedsByPodcast(podcastId: String): Unit = {
+        log.debug("Received GetFeedsByPodcast('{}')", podcastId)
+        def task = () => {
+            feedService.findAllByPodcast(podcastId)
+        }
+        val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
+        sender ! FeedsByPodcastResult(feeds)
+
+        log.debug("Finished GetFeedsByPodcast('{}')", podcastId)
     }
 
     private def onGetChaptersByEpisode(episodeId: String): Unit = {
@@ -388,11 +414,11 @@ class DirectoryStore extends Actor with ActorLogging {
         log.debug("Finished CheckAllPodcasts({}, {})", page, size)
     }
 
-    private def onCheckAllFeeds(): Unit = {
-        log.debug("Received CheckAllFeeds()")
+    private def onCheckAllFeeds(page: Int, size: Int): Unit = {
+        log.debug("Received CheckAllFeeds({},{})", page, size)
 
         def task = () => {
-            feedService.findAll().foreach(f => {
+            feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getEchoId).map{p => {
                     crawler ! FetchFeedForUpdateEpisodes(f.getUrl, p.getEchoId)
                 }}.getOrElse({
@@ -402,7 +428,7 @@ class DirectoryStore extends Actor with ActorLogging {
         }
         doInTransaction(task, List(podcastService, feedService))
 
-        log.debug("Finished CheckAllFeeds()")
+        log.debug("Finished CheckAllFeeds({},{})", page, size)
     }
 
     private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {

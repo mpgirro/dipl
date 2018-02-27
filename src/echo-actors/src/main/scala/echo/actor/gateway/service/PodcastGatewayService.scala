@@ -44,7 +44,10 @@ class PodcastGatewayService (private val log: LoggingAdapter)
     override val route: Route = pathPrefix("podcast") { pathEndOrSingleSlash { getAllPodcasts ~ postPodcast } } ~
                     pathPrefix("podcast" / Segment) { id =>
                         pathEndOrSingleSlash{ getPodcast(id) ~ putPodcast(id) ~ deletePodcast(id) } ~
-                            getEpisodesByPodcast(id) ~ getFeedsByPodcast(id)
+                            pathPrefix("episodes") {
+                                pathEndOrSingleSlash { getEpisodesByPodcast(id) } } ~
+                            pathPrefix("feeds") {
+                                pathEndOrSingleSlash { getFeedsByPodcast(id) } }
                     }
 
 
@@ -103,10 +106,9 @@ class PodcastGatewayService (private val log: LoggingAdapter)
 
     def getFeedsByPodcast(id: String): Route = get {
         log.info("GET /api/podcast/{}/feeds", id)
-
-        // TODO
-
-        complete(StatusCodes.NotImplemented)
+        onSuccess(directoryStore ? GetFeedsByPodcast(id)) {
+            case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, feeds)
+        }
     }
 
     @ApiOperation(value = "Create new user", nickname = "userPost", httpMethod = "POST", produces = "text/plain")
