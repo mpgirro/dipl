@@ -1,6 +1,6 @@
 <div *ngFor="let podcast of podcasts; let i = index">
 
-  <div class="row mt-4" *ngIf="i%4===0">
+  <div class="row mt-4" *ngIf="i%6===0">
 
     <div class="mx-auto">
       <a [routerLink]="['/p', podcasts[i].echoId]" class="podcast-cell">
@@ -39,6 +39,27 @@
         </a>
       </div>
     </div>
+
+    <div class="mx-auto">
+      <div *ngIf="podcasts[i + 4]">
+        <a [routerLink]="['/p', podcasts[i + 4].echoId]" class="podcast-cell">
+          <img class="podcast-thumb"
+               src="{{podcasts[i + 4].itunesImage}}"
+               alt="Podcast Image">
+        </a>
+      </div>
+    </div>
+
+    <div class="mx-auto">
+      <div *ngIf="podcasts[i + 5]">
+        <a [routerLink]="['/p', podcasts[i + 5].echoId]" class="podcast-cell">
+          <img class="podcast-thumb"
+               src="{{podcasts[i + 5].itunesImage}}"
+               alt="Podcast Image">
+        </a>
+      </div>
+    </div>
+
   </div>
 
 </div>

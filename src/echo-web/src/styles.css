@@ -12,6 +12,10 @@ body {
     padding: 16px;
 }
 
+.container {
+  /*max-width: 800px;*/
+}
+
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: 'Quicksand', sans-serif;
@@ -21,10 +25,8 @@ h1, h2, h3, h4, h5, h6,
   font-family: 'Quicksand', sans-serif;
 }
 
-.navbar-brand {
-  font-family: 'Comfortaa', sans-serif;
+.navbar-brand, .nav-link {
+  font-family: 'Quicksand', sans-serif; /* use Comfortaa for chi symbol &#967; */
 }
 
-.container {
-  max-width: 800px;
-}
+

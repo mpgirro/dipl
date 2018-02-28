@@ -1,4 +1,4 @@
-<div class="col-6 offset-3 px-0">
+<div class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 col-12-x px-0">
 
   <!-- Nav tabs -->
   <nav class="navbar navbar-expand px-0 mt-5">
@@ -21,27 +21,26 @@
       </li>
     </ul>
   </nav>
+</div>
 
+<!-- Tab panes -->
+<div class="tab-content" id="directoryTabContent">
 
-  <!-- Tab panes -->
-  <div class="tab-content" id="directoryTabContent">
+  <div class="tab-pane fade show active" role="tabpanel"
+       id="directory-matrix" aria-labelledby="directory-matrix-tab">
 
-    <div class="tab-pane fade show active" role="tabpanel"
-         id="directory-matrix" aria-labelledby="directory-matrix-tab">
+    <app-podcast-matrix [podcasts]="podcasts"></app-podcast-matrix>
 
-      <app-podcast-matrix [podcasts]="podcasts"></app-podcast-matrix>
+  </div>
 
-    </div>
+  <div class="tab-pane fade col-4 offset-4" role="tabpanel"
+       id="directory-richlist" aria-labelledby="directory-richlist-tab">
 
-    <div class="tab-pane fade" role="tabpanel"
-         id="directory-richlist" aria-labelledby="directory-richlist-tab">
-
-      <app-podcast-richlist [podcasts]="podcasts"></app-podcast-richlist>
-
-    </div>
+    <app-podcast-richlist [podcasts]="podcasts"></app-podcast-richlist>
 
   </div>
 </div>
+
 
 
 <div *ngIf="podcasts.length > 0">

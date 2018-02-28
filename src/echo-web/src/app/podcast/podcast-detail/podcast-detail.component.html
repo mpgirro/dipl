@@ -1,4 +1,4 @@
-<div class="col-6 offset-3 px-0">
+<div class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 col-12-xs px-0">
 
   <div *ngIf="podcast.itunesImage" class="text-center mb-4">
     <img class="w-100"
@@ -24,7 +24,7 @@
   <div id="podlove-button"></div>
 
   <div class="mt-3">
-    <span class="badge badge-light mr-1"
+    <span class="badge badge-light py-2 mr-1"
           *ngFor="let category of podcast.itunesCategories">
       <span class="oi oi-tag"></span>
       {{category}}
@@ -37,7 +37,7 @@
       <h2 class="navbar-text h5 my-2">Episodes</h2>
       <ul class="nav nav-pills ml-auto" id="episodesTab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link active" role="tab"
+          <a class="nav-link" role="tab"
              id="episodes-tablelist-tab" href="#episodes-tablelist"
              data-toggle="tab" aria-controls="episodes-tablelist" aria-selected="false">
             <!--<i class="fa fa-list"></i>-->
@@ -45,7 +45,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="tab"
+          <a class="nav-link active" role="tab"
              id="episodes-listgroup-tab" href="#episodes-listgroup"
              data-toggle="tab" aria-controls="episodes-listgroup" aria-selected="true">
             <span class="oi oi-list-rich"></span>
@@ -57,10 +57,10 @@
 
     <!-- Tab panes -->
     <div class="tab-content" id="episodesTabContent">
-      <div class="tab-pane fade show active" id="episodes-tablelist" role="tabpanel" aria-labelledby="episodes-tablelist-tab">
+      <div class="tab-pane fade" id="episodes-tablelist" role="tabpanel" aria-labelledby="episodes-tablelist-tab">
         <app-episode-tablelist [episodes]="episodes"></app-episode-tablelist>
       </div>
-      <div class="tab-pane fade" id="episodes-listgroup" role="tabpanel" aria-labelledby="episodes-listgroup-tab">
+      <div class="tab-pane fade show active" id="episodes-listgroup" role="tabpanel" aria-labelledby="episodes-listgroup-tab">
         <app-episode-richlist [episodes]="episodes"></app-episode-richlist>
       </div>
     </div>
