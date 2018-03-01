@@ -79,7 +79,7 @@ class CrawlerActor extends Actor with ActorLogging {
             job match {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
-                        headCheck(echoId, url, job) 
+                        headCheck(echoId, url, job)
                     }
                 case _ => headCheck(echoId, url, job)
             }

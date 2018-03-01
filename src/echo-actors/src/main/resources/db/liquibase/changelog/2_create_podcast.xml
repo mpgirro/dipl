@@ -37,7 +37,7 @@
             <column name="copyright" type="text"/>
             <column name="docs" type="text"/>
             <column name="managing_editor" type="text"/>
-            <column name="itunes_image" type="text"/>
+            <column name="image" type="text"/>
             <column name="itunes_summary" type="text"/>
             <column name="itunes_author" type="text"/>
             <column name="itunes_keywords" type="text"/>

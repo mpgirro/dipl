@@ -464,9 +464,9 @@ class DirectoryStore extends Actor with ActorLogging {
                         episode.setPodcastTitle(p.getTitle) // we'll not re-use this DTO, but extract the info again a bit further down
 
                         // check if the episode has a cover image defined, and set the one of the episode
-                        Option(episode.getItunesImage).getOrElse({
+                        Option(episode.getImage).getOrElse({
                             // indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
-                            episode.setItunesImage(p.getItunesImage)
+                            episode.setImage(p.getImage)
                         })
                     }).getOrElse({
                         log.error("No Podcast found with echoId : {}", podcastId)

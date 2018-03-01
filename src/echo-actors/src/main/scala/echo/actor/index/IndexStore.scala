@@ -143,11 +143,11 @@ class IndexStore extends Actor with ActorLogging {
 
         if(queue.isEmpty) return
 
-        val (echoId,itunesImage) = queue.dequeue()
+        val (echoId,image) = queue.dequeue()
         val entry = Option(indexSearcher.findByEchoId(echoId))
         entry match {
             case Some(doc) =>
-                doc.setItunesImage(itunesImage)
+                doc.setImage(image)
                 indexCommitter.update(doc)
             case None => log.error("Could not retrieve from index for update image: echoId={}", echoId)
         }

@@ -33,7 +33,7 @@
             <column name="pub_date" type="timestamp"/>
             <column name="guid" type="text"/>
             <column name="guid_is_permalink" type="bit"/>
-            <column name="itunes_image" type="text"/>
+            <column name="image" type="text"/>
             <column name="itunes_duration" type="text"/>
             <column name="itunes_subtitle" type="text"/>
             <column name="itunes_author" type="text"/>

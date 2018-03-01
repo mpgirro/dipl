@@ -21,7 +21,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
             "link"            -> Option(e.getLink).map(value => JsString(value)).getOrElse(JsNull),
             "pubDate"         -> Option(e.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description"     -> Option(e.getDescription).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesImage"     -> Option(e.getItunesImage).map(value => JsString(value)).getOrElse(JsNull),
+            "image"           -> Option(e.getImage).map(value => JsString(value)).getOrElse(JsNull),
             "itunesDuration"  -> Option(e.getItunesDuration).map(value => JsString(value)).getOrElse(JsNull),
             "itunesSubtitle"  -> Option(e.getItunesSubtitle).map(value => JsString(value)).getOrElse(JsNull),
             "itunesAuthor"    -> Option(e.getItunesAuthor).map(value => JsString(value)).getOrElse(JsNull),
@@ -34,12 +34,12 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue): EpisodeDTO = {
             value.asJsObject.getFields(
                 "echoId", "title", "link", "podcastEchoId", "podcastTitle",
-                "pubDate", "description", "itunesImage", "itunesDuration",
+                "pubDate", "description", "image", "itunesDuration",
                 "itunesSubtitle", "itunesAuthor", "itunesSummary",
                 "enclosureLength, chapters") match {
                 case Seq(
                     JsString(echoId), JsString(title), JsString(link), JsString(podcastEchoId),
-                    JsString(podcastTitle), JsString(pubDate), JsString(description), JsString(itunesImage),
+                    JsString(podcastTitle), JsString(pubDate), JsString(description), JsString(image),
                     JsString(itunesDuration), JsString(itunesSubtitle), JsString(itunesAuthor),
                     JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
 
@@ -51,7 +51,7 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                     episode.setLink(link)
                     episode.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     episode.setDescription(description)
-                    episode.setItunesImage(itunesImage)
+                    episode.setImage(image)
                     episode.setItunesDuration(itunesDuration)
                     episode.setItunesSubtitle(itunesSubtitle)
                     episode.setItunesAuthor(itunesAuthor)

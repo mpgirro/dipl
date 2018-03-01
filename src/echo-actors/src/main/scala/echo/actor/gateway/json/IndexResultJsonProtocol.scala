@@ -23,12 +23,12 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
             "pubDate"      -> Option(r.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
             "description"  -> Option(r.getDescription).map(value => JsString(value)).getOrElse(JsNull),
             "podcastTitle" -> Option(r.getPodcastTitle).map(value => JsString(value)).getOrElse(JsNull),
-            "itunesImage"  -> Option(r.getItunesImage).map(value => JsString(value)).getOrElse(JsNull)
+            "image"        -> Option(r.getImage).map(value => JsString(value)).getOrElse(JsNull)
             //"itunesCategories"  -> Option(r.getItunesCategories).map(value => JsArray(value.asScala.map(c => JsString(c)).toVector)).getOrElse(JsNull)
         )
         def read(value: JsValue): IndexDocDTO = {
-            value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "podcastTitle", "itunesImage", "itunesCategories") match {
-                case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(podcastTitle), JsString(description), JsString(itunesImage)) =>
+            value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "podcastTitle", "image", "itunesCategories") match {
+                case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(podcastTitle), JsString(description), JsString(image)) =>
                     val result = new IndexDocDTO()
                     result.setDocType(docType)
                     result.setEchoId(echoId)
@@ -37,7 +37,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
                     result.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
                     result.setPodcastTitle(podcastTitle)
                     result.setDescription(description)
-                    result.setItunesImage(itunesImage)
+                    result.setImage(image)
                     //result.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
                     result
                 case _ => throw DeserializationException("IndexDocDTO expected")
