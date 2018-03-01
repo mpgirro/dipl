@@ -44,7 +44,7 @@ export class PodcastDetailComponent implements OnInit {
       window.podcastData = {
         "title" : "${this.podcast.title}",
         "description" : "${this.podcast.description}",
-        "cover" : "${this.podcast.itunesImage}",
+        "cover" : "${this.podcast.image}",
         "feeds" : [ ${feedsArr} ]
       }`;
 

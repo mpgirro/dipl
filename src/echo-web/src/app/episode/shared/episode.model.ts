@@ -11,7 +11,7 @@ export class Episode {
   enclosureUrl: string;
   enclosureType: string;
   enclosureLength: number;
-  itunesImage: string;
+  image: string;
   itunesDuration: string;
   itunesSubtitle: string;
   itunesAuthor: string;
