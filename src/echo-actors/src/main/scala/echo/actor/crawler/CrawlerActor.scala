@@ -9,6 +9,7 @@ import akka.http.scaladsl.model.HttpProtocols.`HTTP/1.0`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.scaladsl.{Keep, Sink, Source, SourceQueueWithComplete}
 import akka.stream._
+import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
@@ -31,6 +32,9 @@ import scala.util.{Failure, Success, Try}
 class CrawlerActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
+    private val CONFIG = ConfigFactory.load()
+    private val WEBSITE_JOBS: Boolean = Option(CONFIG.getBoolean("echo.crawler.website-jobs")).getOrElse(false)
 
     private final val DOWNLOAD_TIMEOUT_MS = 5 * 1000
     private final val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
@@ -72,8 +76,13 @@ class CrawlerActor extends Actor with ActorLogging {
 
         case DownloadWithHeadCheck(echoId, url, job) =>
             log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
-            headCheck(echoId, url, job)
-
+            job match {
+                case WebsiteFetchJob() =>
+                    if (WEBSITE_JOBS) {
+                        headCheck(echoId, url, job) 
+                    }
+                case _ => headCheck(echoId, url, job)
+            }
 
         case DownloadContent(echoId, url, job) =>
             log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
@@ -763,11 +772,13 @@ class CrawlerActor extends Actor with ActorLogging {
             log.debug("Just got GET response from : {}", url)
 
             // once again, ensure we do not accidentally fetch a media file and take it for text
-            val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim
-            if(!validMimeType(mimeType)){
-                log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
-                throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
-            }
+            Option(response.getEntity.getContentType).foreach(ct => {
+                val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim
+                if(!validMimeType(mimeType)){
+                    log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
+                    throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
+                }
+            })
 
             /* TODO
             // ensure we do not accidentally fetch a neverending stream
