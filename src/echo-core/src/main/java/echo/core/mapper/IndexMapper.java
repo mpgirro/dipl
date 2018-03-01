@@ -29,11 +29,13 @@ public interface IndexMapper {
     @Mapping(target = "podcastTitle", ignore = true)
     @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
+    @Mapping(target = "websiteData", ignore = true)
     IndexDocDTO map(PodcastDTO podcast);
 
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
+    @Mapping(target = "websiteData", ignore = true)
     IndexDocDTO map(EpisodeDTO episodeDTO);
 
     default String map(List<ChapterDTO> chapters){

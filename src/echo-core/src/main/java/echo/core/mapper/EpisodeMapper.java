@@ -27,7 +27,6 @@ public interface EpisodeMapper {
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
-    @Mapping(target = "websiteData", ignore = true)
     EpisodeDTO map(Episode episode);
 
     @Mapping(source = "podcastId", target = "podcast")

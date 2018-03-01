@@ -38,7 +38,6 @@ public class EpisodeDTO implements EntityDTO {
     private String enclosureType;
 
     private String contentEncoded;
-    private String websiteData;
 
     private LocalDateTime registrationTimestamp;
 
@@ -230,14 +229,6 @@ public class EpisodeDTO implements EntityDTO {
         this.contentEncoded = contentEncoded;
     }
 
-    public String getWebsiteData() {
-        return websiteData;
-    }
-
-    public void setWebsiteData(String websiteData) {
-        this.websiteData = websiteData;
-    }
-
     public LocalDateTime getRegistrationTimestamp() {
         return registrationTimestamp;
     }
@@ -297,7 +288,6 @@ public class EpisodeDTO implements EntityDTO {
             "\tchapters='" + ((chapters!=null) ? String.join("\n", chapters.stream().map(ChapterDTO::toString).collect(Collectors.toList())) : null) + "\',\n" +
             "\tdescription='" + description + "\',\n" +
             "\tcontentEncoded='" + contentEncoded + "\',\n" +
-            "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
             '}';
     }
 }

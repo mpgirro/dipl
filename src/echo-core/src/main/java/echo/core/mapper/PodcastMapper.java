@@ -24,7 +24,6 @@ public interface PodcastMapper {
 
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
-    @Mapping(target = "websiteData", ignore = true)
     PodcastDTO map(Podcast podcast);
 
     @Mapping(target = "episodes", ignore = true)

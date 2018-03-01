@@ -38,8 +38,6 @@ public class PodcastDTO implements EntityDTO {
 
     private int episodeCount;
 
-    private String websiteData;
-
     private LocalDateTime registrationTimestamp;
     private Boolean registrationComplete;
 
@@ -245,14 +243,6 @@ public class PodcastDTO implements EntityDTO {
         this.episodeCount = episodeCount;
     }
 
-    public String getWebsiteData() {
-        return websiteData;
-    }
-
-    public void setWebsiteData(String websiteData) {
-        this.websiteData = websiteData;
-    }
-
     public LocalDateTime getRegistrationTimestamp() {
         return registrationTimestamp;
     }
@@ -315,7 +305,6 @@ public class PodcastDTO implements EntityDTO {
             "\tregistrationTimestamp=" + registrationTimestamp + ",\n" +
             "\tregistrationComplete=" + registrationComplete + ",\n" +
             "\tdescription='" + description + "\',\n" +
-            "\twebsiteData='" + (websiteData==null ? "null" : "<html>SOME TOO LONG DATA...</html>") + "\',\n" +
             '}';
     }
 }
