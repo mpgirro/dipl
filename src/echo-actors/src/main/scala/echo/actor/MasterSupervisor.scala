@@ -66,9 +66,12 @@ class MasterSupervisor extends Actor with ActorLogging {
             .withDispatcher("echo.gateway.dispatcher"),
             name = "gateway"))
 
+        createCLI()
+        /*
         cli = context.watch(context.actorOf(Props(new CliActor(self, index, parser, searcher, crawler, directory, gateway))
             .withDispatcher("echo.cli.dispatcher"),
             name = "cli"))
+            */
 
         // pass around references not provided by constructors due to circular dependencies
         crawler ! ActorRefParserActor(parser)
@@ -99,9 +102,20 @@ class MasterSupervisor extends Actor with ActorLogging {
         case ShutdownSystem()   => onSystemShutdown()
     }
 
+    private def createCLI(): Unit = {
+        cli = context.actorOf(Props(new CliActor(self, index, parser, searcher, crawler, directory, gateway))
+            .withDispatcher("echo.cli.dispatcher"),
+            name = "cli")
+        context watch cli
+    }
+
     private def onTerminated(corpse: ActorRef): Unit = {
-        log.error("Oh noh! A critical subsystem died : {}", corpse.path)
-        self ! ShutdownSystem()
+        if (corpse == cli) {
+            createCLI() // we simply re-create the CLI
+        } else {
+            log.error("Oh noh! A critical subsystem died : {}", corpse.path)
+            self ! ShutdownSystem()
+        }
     }
 
     private def onSystemShutdown(): Unit = {
