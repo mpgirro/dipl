@@ -5,12 +5,14 @@
     <thead>
       <tr>
         <th>Title</th>
+        <th>Lang</th>
       </tr>
     </thead>
 
     <tbody>
       <tr *ngFor="let podcast of podcasts">
         <td><a routerLink="/p/{{podcast.echoId}}">{{podcast.title}}</a></td>
+        <td>{{podcast.language}}</td>
       </tr>
     </tbody>
 

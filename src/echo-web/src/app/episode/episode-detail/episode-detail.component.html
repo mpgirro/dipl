@@ -2,7 +2,7 @@
 
   <div *ngIf="episode.podcastEchoId && episode.podcastTitle" class="text-center mb-2">
 
-    <a class="badge badge-light" [routerLink]="['/p', episode.podcastEchoId]">
+    <a class="text-dark" [routerLink]="['/p', episode.podcastEchoId]">
       <h6 class=" mb-0">{{episode.podcastTitle}}</h6>
     </a>
 
@@ -11,7 +11,7 @@
   <div *ngIf="episode.itunesImage" class="text-center mb-4">
     <img class="w-100"
          src="{{episode.itunesImage}}"
-         alt="Episode Image">
+         alt="cover image">
   </div>
 
 
