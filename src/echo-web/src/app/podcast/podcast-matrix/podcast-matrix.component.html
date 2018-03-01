@@ -5,7 +5,7 @@
     <div class="mx-auto">
       <a [routerLink]="['/p', podcasts[i].echoId]" class="podcast-cell">
         <img class="podcast-thumb"
-             src="{{podcasts[i].itunesImage}}"
+             src="{{podcasts[i].image}}"
              alt="cover image">
       </a>
     </div>
@@ -14,7 +14,7 @@
       <div *ngIf="podcasts[i + 1]">
         <a [routerLink]="['/p', podcasts[i + 1].echoId]" class="podcast-cell">
           <img class="podcast-thumb"
-               src="{{podcasts[i + 1].itunesImage}}"
+               src="{{podcasts[i + 1].image}}"
                alt="cover image">
         </a>
       </div>
@@ -24,7 +24,7 @@
       <div *ngIf="podcasts[i + 2]">
         <a [routerLink]="['/p', podcasts[i + 2].echoId]" class="podcast-cell">
           <img class="podcast-thumb"
-               src="{{podcasts[i + 2].itunesImage}}"
+               src="{{podcasts[i + 2].image}}"
                alt="cover image">
         </a>
       </div>
@@ -34,7 +34,7 @@
       <div *ngIf="podcasts[i + 3]">
         <a [routerLink]="['/p', podcasts[i + 3].echoId]" class="podcast-cell">
           <img class="podcast-thumb"
-               src="{{podcasts[i + 3].itunesImage}}"
+               src="{{podcasts[i + 3].image}}"
                alt="cover image">
         </a>
       </div>
@@ -44,7 +44,7 @@
       <div *ngIf="podcasts[i + 4]">
         <a [routerLink]="['/p', podcasts[i + 4].echoId]" class="podcast-cell">
           <img class="podcast-thumb"
-               src="{{podcasts[i + 4].itunesImage}}"
+               src="{{podcasts[i + 4].image}}"
                alt="cover image">
         </a>
       </div>
@@ -54,7 +54,7 @@
       <div *ngIf="podcasts[i + 5]">
         <a [routerLink]="['/p', podcasts[i + 5].echoId]" class="podcast-cell">
           <img class="podcast-thumb"
-               src="{{podcasts[i + 5].itunesImage}}"
+               src="{{podcasts[i + 5].image}}"
                alt="cover image">
         </a>
       </div>
