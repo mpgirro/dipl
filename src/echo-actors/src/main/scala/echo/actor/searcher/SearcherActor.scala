@@ -3,6 +3,7 @@ package echo.actor.searcher
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -43,6 +44,14 @@ class SearcherActor extends Actor with ActorLogging {
             val s: Int = size match {
                 case Some(x) => x
                 case None    => DEFAULT_SIZE
+            }
+
+            if (p < 0) {
+                sender ! SearchResults(new ResultWrapperDTO)
+            }
+
+            if (s < 0) {
+                sender ! SearchResults(new ResultWrapperDTO)
             }
 
             val originalSender = Some(sender) // this is important to not expose the handler
