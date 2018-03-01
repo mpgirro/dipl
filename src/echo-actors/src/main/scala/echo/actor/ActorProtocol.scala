@@ -64,6 +64,8 @@ object ActorProtocol {
     // Parser -> IndexStore
     case class IndexStoreAddDoc(doc: IndexDocDTO)
     case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
+    // DirectoryStore -> IndexStore
+    case class IndexStoreUpdateDocImage(echoId: String, itunesImage: String)
 
     // Crawler -> IndexStore
     case class IndexStoreUpdateDocLink(echoId: String, newLink: String)
@@ -71,8 +73,7 @@ object ActorProtocol {
     // IndexStore -> IndexStore
     case class CommitIndex()
 
-    // DirectoryStore -> IndexStore
-    case class IndexStoreUpdateDocItunesImage(echoId: String, itunesImage: String)
+
 
     // Gateway(= Web) -> Searcher
     case class SearchRequest(query: String, page: Option[Int], size: Option[Int])

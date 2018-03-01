@@ -14,7 +14,7 @@ class IndexStorePriorityActorMailbox(settings: ActorSystem.Settings, config: Con
     PriorityGenerator {
         case SearchIndex(_,_,_)                         => 0
         case IndexStoreAddDoc(_)                        => 1
-        case IndexStoreUpdateDocItunesImage(_,_)        => 2
+        case IndexStoreUpdateDocImage(_,_)        => 2
         case IndexStoreUpdateDocWebsiteData(_,_)        => 2
         case IndexStoreUpdateDocLink(_,_)               => 2
         case _                                          => 3 // other messages

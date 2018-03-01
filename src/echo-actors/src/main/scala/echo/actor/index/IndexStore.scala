@@ -59,10 +59,10 @@ class IndexStore extends Actor with ActorLogging {
             log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", echoId)
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
-        case IndexStoreUpdateDocItunesImage(echoId, itunesImage) =>
-            log.debug("Received IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
-            updateImageQueue.enqueue((echoId, itunesImage))
-            log.debug("Exit IndexStoreUpdateDocItunesImage({},{})", echoId, itunesImage)
+        case IndexStoreUpdateDocImage(echoId, image) =>
+            log.debug("Received IndexStoreUpdateDocImage({},{})", echoId, image)
+            updateImageQueue.enqueue((echoId, image))
+            log.debug("Exit IndexStoreUpdateDocImage({},{})", echoId, image)
 
         case IndexStoreUpdateDocLink(echoId, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", echoId, link)
