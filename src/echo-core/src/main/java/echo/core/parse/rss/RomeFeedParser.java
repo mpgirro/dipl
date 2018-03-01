@@ -7,6 +7,7 @@ import com.rometools.modules.itunes.types.Category;
 import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndImage;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import echo.core.domain.dto.EpisodeDTO;
@@ -51,7 +52,27 @@ public class RomeFeedParser implements FeedParser {
             podcast.setTitle(feed.getTitle());
             podcast.setLink(UrlUtil.sanitize(feed.getLink()));
             podcast.setDescription(feed.getDescription());
-            if(feed.getPublishedDate() != null){
+
+            if (feed.getImage() != null) {
+                final SyndImage img = feed.getImage();
+                if(img.getUrl() != null){
+                    podcast.setImage(img.getUrl());
+                }
+
+                // now, it title/link/description were NULL, we use the values set in
+                // the image tag as fallbacks because they usually have the same values
+                if (podcast.getTitle() == null && img.getTitle() != null) {
+                    podcast.setTitle(img.getTitle());
+                }
+                if (podcast.getLink() == null && img.getLink() != null) {
+                    podcast.setLink(UrlUtil.sanitize(img.getLink()));
+                }
+                if (podcast.getDescription() == null && img.getDescription() != null) {
+                    podcast.setDescription(img.getDescription());
+                }
+            }
+
+            if (feed.getPublishedDate() != null) {
                 podcast.setPubDate(LocalDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
             }
             podcast.setLanguage(feed.getLanguage());
@@ -63,12 +84,16 @@ public class RomeFeedParser implements FeedParser {
             // access the <itunes:...> entries
             final Module itunesFeedModule = feed.getModule(FeedInformation.URI);
             final FeedInformation itunes = (FeedInformation) itunesFeedModule;
-            if(itunes != null){
+            if (itunes != null) {
                 podcast.setItunesSummary(itunes.getSummary());
                 podcast.setItunesAuthor(itunes.getAuthor());
                 podcast.setItunesKeywords(String.join(", ", itunes.getKeywords()));
-                if(itunes.getImage() != null){
-                    podcast.setImage(itunes.getImage().toExternalForm());
+
+                // we set the itunes image as a fallback only
+                if (itunes.getImage() != null) {
+                    if (podcast.getImage() == null) {
+                        podcast.setImage(itunes.getImage().toExternalForm());
+                    }
                 }
                 podcast.setItunesCategories(new LinkedHashSet<>(
                     itunes.getCategories().stream()
