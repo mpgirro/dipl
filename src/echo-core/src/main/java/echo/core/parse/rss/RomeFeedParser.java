@@ -107,10 +107,11 @@ public class RomeFeedParser implements FeedParser {
                     // TODO
                 } else if(atomLink.getRel().equals("via")) {
                     // TODO
-                } else if(atomLink.getRel().equals("related")){
+                } else if(atomLink.getRel().equals("related")) {
                     // TODO
+                } else if (atomLink.getRel().equals("prev-archive")) {
                 } else {
-                    log.warn("Came across an <atom:link> with a relation I do not handle: '{}'", atomLink.getRel());
+                    log.warn("Came across an <atom:link> with a relation I do not handle : '{}'", atomLink.getRel());
                 }
             }
 
