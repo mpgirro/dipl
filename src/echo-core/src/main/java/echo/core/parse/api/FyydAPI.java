@@ -1,9 +1,14 @@
 package echo.core.parse.api;
 
 import com.google.gson.reflect.TypeToken;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.mapper.DateMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +23,8 @@ import java.util.stream.Collectors;
  * @author Maximilian Irro
  */
 public class FyydAPI extends API {
+
+    private static final Logger log = LoggerFactory.getLogger(FyydAPI.class);
 
     private static String API_URL = "https://api.fyyd.de/0.2";
 
@@ -48,11 +55,67 @@ public class FyydAPI extends API {
         return get(API_URL+"/podcasts?count="+count);
     }
 
-    public String getPodcast(String id) throws IOException {
+    public String getPodcastJSON(String id) throws IOException {
         return get(API_URL+"/podcast/?podcast_id="+id); // TODO schaut die API wirklich so aus?
     }
 
+    public String getEpisodesByPodcastIdJSON(Long id) throws IOException {
+        return getEpisodesByPodcastIdJSON(id, 500);
+    }
 
+    public String getEpisodesByPodcastIdJSON(Long id, int count) throws IOException {
+        final String endpoint = API_URL+"/podcast/episodes?podcast_id="+id+"&count="+count;
+        log.info("GET " + endpoint);
+        return get(endpoint);
+    }
 
+    public String getEpisodesByPodcastSlugJSON(String slug) throws IOException {
+        return getEpisodesByPodcastSlugJSON(slug, 500);
+    }
+
+    public String getEpisodesByPodcastSlugJSON(String slug, int count) throws IOException {
+        final String endpoint = API_URL+"/podcast/episodes?podcast_slug="+slug+"&count="+count;
+        log.info("GET " + endpoint);
+        return get(endpoint);
+    }
+
+    public List<EpisodeDTO> getEpisodes(String json) {
+        final Map<String,Object> apiData = jsonToMap(json);
+        if (apiData.containsKey("data")) {
+            final Map<String,Object> data = (Map<String,Object>) apiData.get("data");
+            if (data.containsKey("episodes")) {
+                final List<Map<String,Object>> episodes = (List<Map<String,Object>>) data.get("episodes");
+                if (episodes != null) {
+                    log.info("JSON contains {} episode JSON objects", episodes.size());
+                    return episodes.stream()
+                        .map(d -> {
+                            final EpisodeDTO e = new EpisodeDTO();
+                            e.setTitle((String) d.get("title"));
+                            e.setLink((String) d.get("url"));
+                            e.setDescription((String) d.get("description"));
+                            try {
+                                // Fyyd produces ZonedDateTime timestamps, therefore I do String -> ZonedDateTime -> LocalDateTime
+                                e.setPubDate(DateMapper.INSTANCE.asLocalDateTime(DateMapper.INSTANCE.asZonedDateTime((String) d.get("pubdate"))));
+                            } catch (RuntimeException ex) {
+                                log.warn("Error parsing pubDate : '{}' [reason : {}]", (String) d.get("pubdate"), ex.getMessage());
+                            }
+                            // e.setItunesDuration(TODO); // duration is in int format, we need to convert, or save as int as well?
+                            e.setGuid((String) d.get("guid"));
+                            e.setItunesSeason(((Double) d.get("num_season")).intValue());
+                            e.setItunesEpisode(((Double) d.get("num_episode")).intValue());
+                            e.setEnclosureUrl((String) d.get("enclosure"));
+                            e.setEnclosureType((String) d.get("content_type"));
+                            return e;
+                        })
+                        .collect(Collectors.toList());
+                }
+            } else {
+                log.info("JSON does not contain key 'episodes'");
+            }
+        } else {
+            log.info("JSON does not contain key 'data'");
+        }
+        return new LinkedList<>();
+    }
 
 }

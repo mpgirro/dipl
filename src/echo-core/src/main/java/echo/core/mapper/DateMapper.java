@@ -36,6 +36,14 @@ public class DateMapper {
         }
     }
 
+    public LocalDateTime asLocalDateTime(ZonedDateTime zonedDateTime) {
+        try {
+            return (zonedDateTime == null ? null : LocalDateTime.from(zonedDateTime));
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException( e );
+        }
+    }
+
     public ZonedDateTime asZonedDateTime(String zonedDateTime){
         try {
             return (zonedDateTime == null ? null : ZonedDateTime.parse(zonedDateTime));

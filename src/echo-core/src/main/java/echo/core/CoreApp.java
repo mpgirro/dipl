@@ -45,7 +45,7 @@ public class CoreApp {
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
 
-    private final API fyydAPI = new FyydAPI();
+    private final FyydAPI fyydAPI = new FyydAPI();
 
     public static void main(String[] args) throws Exception {
         final CoreApp app = new CoreApp();
@@ -127,6 +127,18 @@ public class CoreApp {
                     out.println("These are "+count+" feed URLs from fyyd.de");
                     for(String feed : fyydAPI.getFeedUrls(count)){
                         out.println("\t"+feed);
+                    }
+                } else {
+                    usage(cmd);
+                }
+            } else if (isCmd(cmd,"load-fyyd-episodes")) {
+                if (commands.length == 2) {
+                    final long fyydId = Long.valueOf(commands[1]);
+                    final String json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId);
+                    final List<EpisodeDTO> episodes = fyydAPI.getEpisodes(json);
+                    out.println("These are "+episodes.size()+" episodes for podcast="+fyydId+" from fyyd.de");
+                    for(EpisodeDTO episode : episodes){
+                        out.println("\t"+episode.getTitle());
                     }
                 } else {
                     usage(cmd);
