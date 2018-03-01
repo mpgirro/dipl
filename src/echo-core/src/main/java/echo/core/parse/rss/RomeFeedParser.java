@@ -68,7 +68,7 @@ public class RomeFeedParser implements FeedParser {
                 podcast.setItunesAuthor(itunes.getAuthor());
                 podcast.setItunesKeywords(String.join(", ", itunes.getKeywords()));
                 if(itunes.getImage() != null){
-                    podcast.setItunesImage(itunes.getImage().toExternalForm());
+                    podcast.setImage(itunes.getImage().toExternalForm());
                 }
                 podcast.setItunesCategories(new LinkedHashSet<>(
                     itunes.getCategories().stream()
@@ -174,7 +174,7 @@ public class RomeFeedParser implements FeedParser {
                 final EntryInformation itunes = (EntryInformation) itunesEntryModule;
                 if (itunes != null) {
                     if(itunes.getImage() != null){
-                        episode.setItunesImage(itunes.getImage().toExternalForm());
+                        episode.setImage(itunes.getImage().toExternalForm());
                     }
                     if(itunes.getDuration() != null){
                         episode.setItunesDuration(itunes.getDuration().toString());

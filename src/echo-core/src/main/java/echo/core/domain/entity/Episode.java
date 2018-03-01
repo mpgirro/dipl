@@ -1,7 +1,5 @@
 package echo.core.domain.entity;
 
-import echo.core.domain.feed.ChapterDTO;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -44,8 +42,8 @@ public class Episode implements Serializable {
     @Column(name = "guid_is_permalink")
     private Boolean guidIsPermaLink;
 
-    @Column(name = "itunes_image")
-    private String itunesImage;
+    @Column(name = "image")
+    private String image;
 
     @Column(name = "itunes_duration")
     private String itunesDuration;
@@ -157,12 +155,12 @@ public class Episode implements Serializable {
         this.guidIsPermaLink = guidIsPermaLink;
     }
 
-    public String getItunesImage() {
-        return itunesImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setItunesImage(String itunesImage) {
-        this.itunesImage = itunesImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getItunesDuration() {
@@ -318,7 +316,7 @@ public class Episode implements Serializable {
             ", pubDate=" + pubDate +
             ", guid='" + guid + '\'' +
             ", guidIsPermaLink=" + guidIsPermaLink +
-            ", itunesImage='" + itunesImage + '\'' +
+            ", image='" + image + '\'' +
             ", itunesDuration='" + itunesDuration + '\'' +
             ", itunesSubtitle='" + itunesSubtitle + '\'' +
             ", itunesAuthor='" + itunesAuthor + '\'' +

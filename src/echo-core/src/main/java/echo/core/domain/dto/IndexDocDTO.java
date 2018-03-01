@@ -1,7 +1,6 @@
 package echo.core.domain.dto;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * @author Maximilian Irro
@@ -14,7 +13,7 @@ public class IndexDocDTO {
     private String link;
     private String description;
     private LocalDateTime pubDate;
-    private String itunesImage;
+    private String image;
     private String itunesAuthor;
     private String itunesSummary;
     private String podcastTitle; // will be the same as the title if marshalled from a PodcastDTO
@@ -71,12 +70,12 @@ public class IndexDocDTO {
         this.description = description;
     }
 
-    public String getItunesImage() {
-        return itunesImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setItunesImage(String itunesImage) {
-        this.itunesImage = itunesImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getContentEncoded() {
@@ -146,7 +145,7 @@ public class IndexDocDTO {
             "\tlink='" + link + "\',\n" +
             "\tpubDate=" + pubDate + ",\n" +
             "\tdescription='" + description + "\',\n" +
-            "\titunesImage='" + itunesImage + "\',\n" +
+            "\timage='" + image + "\',\n" +
             "\titunesAuthor='" + itunesAuthor + "\',\n" +
             "\titunesSummary='" + itunesSummary + "\',\n" +
             "\tpodcastTitle='" + podcastTitle + "\',\n" +

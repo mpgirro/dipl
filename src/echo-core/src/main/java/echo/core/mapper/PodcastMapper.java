@@ -46,7 +46,7 @@ public interface PodcastMapper {
         } else if (doc.get(IndexField.DESCRIPTION) != null) {
             dto.setDescription(doc.get(IndexField.DESCRIPTION));
         }
-        if (doc.get(IndexField.ITUNES_IMAGE) != null) { dto.setItunesImage(doc.get(IndexField.ITUNES_IMAGE)); }
+        if (doc.get(IndexField.ITUNES_IMAGE) != null) { dto.setImage(doc.get(IndexField.ITUNES_IMAGE)); }
 
         return dto;
     }
@@ -65,7 +65,7 @@ public interface PodcastMapper {
             if (podcast.getLanguage()      != null) { dto.setLanguage(podcast.getLanguage()); }
             if (podcast.getGenerator()     != null) { dto.setGenerator(podcast.getGenerator()); }
             if (podcast.getCategories()    != null) { dto.setItunesCategories(new HashSet<>(Arrays.asList(podcast.getCategories()))); }
-            if (podcast.getITunesInfo()    != null) { dto.setItunesImage(podcast.getITunesInfo().getImageString()); }
+            if (podcast.getITunesInfo()    != null) { dto.setImage(podcast.getITunesInfo().getImageString()); }
         } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
             throw new ConversionException("Exception during converting podengine.Podcast to PodcastDTO [reason: {}]", e);
         }

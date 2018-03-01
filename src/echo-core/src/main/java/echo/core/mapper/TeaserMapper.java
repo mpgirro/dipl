@@ -5,7 +5,6 @@ import echo.core.domain.entity.Podcast;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -26,7 +25,7 @@ public interface TeaserMapper {
 
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
-        teaser.setItunesImage(dto.getItunesImage());
+        teaser.setImage(dto.getImage());
 
         return teaser;
     }
@@ -39,7 +38,7 @@ public interface TeaserMapper {
 
         teaser.setEchoId(podcast.getEchoId());
         teaser.setTitle(podcast.getTitle());
-        teaser.setItunesImage(podcast.getItunesImage());
+        teaser.setImage(podcast.getImage());
         teaser.setLanguage(podcast.getLanguage());
 
         return teaser;
@@ -55,7 +54,7 @@ public interface TeaserMapper {
         teaser.setTitle(dto.getTitle());
         teaser.setPubDate(dto.getPubDate());
         teaser.setDescription(dto.getDescription());
-        teaser.setItunesImage(dto.getItunesImage());
+        teaser.setImage(dto.getImage());
         teaser.setItunesDuration(dto.getItunesDuration());
 
         return teaser;
@@ -71,7 +70,7 @@ public interface TeaserMapper {
         teaser.setTitle(episode.getTitle());
         teaser.setPubDate(DateMapper.INSTANCE.asLocalDateTime(episode.getPubDate()));
         teaser.setDescription(episode.getDescription());
-        teaser.setItunesImage(episode.getItunesImage());
+        teaser.setImage(episode.getImage());
         teaser.setItunesDuration(episode.getItunesDuration());
 
         return teaser;

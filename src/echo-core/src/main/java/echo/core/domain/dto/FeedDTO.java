@@ -13,6 +13,9 @@ public class FeedDTO implements EntityDTO {
     private String echoId;
     private Long podcastId;
 
+    // TODO save MIME type of feed
+    // TODO title
+
     private String url;
     private LocalDateTime lastChecked;
     private FeedStatus lastStatus;

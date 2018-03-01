@@ -21,11 +21,11 @@ public class PodcastDTO implements EntityDTO {
     private String copyright;
     private String docs;
     private String managingEditor;
+    private String image;
 
     private String itunesSummary;
     private String itunesAuthor;
     private String itunesKeywords;
-    private String itunesImage;
     private Set<String> itunesCategories;
     private Boolean itunesExplicit;
     private Boolean itunesBlock;
@@ -165,12 +165,12 @@ public class PodcastDTO implements EntityDTO {
         this.itunesKeywords = itunesKeywords;
     }
 
-    public String getItunesImage() {
-        return itunesImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setItunesImage(String itunesImage) {
-        this.itunesImage = itunesImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Set<String> getItunesCategories() {
@@ -302,7 +302,7 @@ public class PodcastDTO implements EntityDTO {
             "\titunesSummary='" + itunesSummary + "\',\n" +
             "\titunesAuthor='" + itunesAuthor + "\',\n" +
             "\titunesKeywords='" + itunesKeywords + "\',\n" +
-            "\titunesImage='" + itunesImage + "\',\n" +
+            "\timage='" + image + "\',\n" +
             "\titunesCategories=" + itunesCategories + ",\n" +
             "\titunesExplicit=" + itunesExplicit + ",\n" +
             "\titunesBlock=" + itunesBlock + ",\n" +

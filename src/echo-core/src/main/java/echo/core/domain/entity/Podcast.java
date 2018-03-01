@@ -57,8 +57,8 @@ public class Podcast implements Serializable {
     @Column(name = "managing_editor")
     private String managingEditor;
 
-    @Column(name = "itunes_image")
-    private String itunesImage;
+    @Column(name = "image")
+    private String image;
 
     @Column(name = "category")
     @ElementCollection(targetClass=String.class)
@@ -219,12 +219,12 @@ public class Podcast implements Serializable {
         this.managingEditor = managingEditor;
     }
 
-    public String getItunesImage() {
-        return itunesImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setItunesImage(String itunesImage) {
-        this.itunesImage = itunesImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Set<String> getItunesCategories() {
@@ -412,7 +412,7 @@ public class Podcast implements Serializable {
             ", copyright=" + copyright + '\'' +
             ", docs=" + docs + '\'' +
             ", managingEditor=" + managingEditor + '\'' +
-            ", itunesImage='" + itunesImage + '\'' +
+            ", image='" + image + '\'' +
             ", itunesCategories='" + String.join(", ", itunesCategories) + '\'' +
             ", itunesSummary='" + itunesSummary + '\'' +
             ", itunesAuthor='" + itunesAuthor + '\'' +

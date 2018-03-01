@@ -24,7 +24,7 @@ public class EpisodeDTO implements EntityDTO {
     private Boolean guidIsPermaLink;
     private String description;
 
-    private String itunesImage;
+    private String image;
     private String itunesDuration;
     private String itunesSubtitle;
     private String itunesAuthor;
@@ -134,12 +134,12 @@ public class EpisodeDTO implements EntityDTO {
         this.description = description;
     }
 
-    public String getItunesImage() {
-        return itunesImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setItunesImage(String itunesImage) {
-        this.itunesImage = itunesImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getItunesDuration() {
@@ -282,7 +282,7 @@ public class EpisodeDTO implements EntityDTO {
             "\tpubDate=" + pubDate + ",\n" +
             "\tguid='" + guid + "\',\n" +
             "\tguidIsPermaLink=" + guidIsPermaLink + ",\n" +
-            "\titunesImage='" + itunesImage + "\',\n" +
+            "\timage='" + image + "\',\n" +
             "\titunesDuration='" + itunesDuration + "\',\n" +
             "\titunesSubtitle='" + itunesSubtitle + "\',\n" +
             "\titunesAuthor='" + itunesAuthor + "\',\n" +

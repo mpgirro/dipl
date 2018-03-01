@@ -60,7 +60,7 @@ public interface EpisodeMapper {
         } else if (doc.get(IndexField.DESCRIPTION) != null) {
             dto.setDescription(doc.get(IndexField.DESCRIPTION));
         }
-        if (doc.get(IndexField.ITUNES_IMAGE)    != null) { dto.setItunesImage(doc.get(IndexField.ITUNES_IMAGE)); }
+        if (doc.get(IndexField.ITUNES_IMAGE)    != null) { dto.setImage(doc.get(IndexField.ITUNES_IMAGE)); }
         if (doc.get(IndexField.ITUNES_DURATION) != null) { dto.setItunesDuration(doc.get(IndexField.ITUNES_DURATION)); }
 
         return dto;
@@ -78,7 +78,7 @@ public interface EpisodeMapper {
             if (episode.getGUID()        != null) { dto.setGuid(episode.getGUID()); }
             if (episode.getDescription() != null) { dto.setDescription(episode.getDescription()); }
             if (episode.getITunesInfo()  != null) {
-                if (episode.getITunesInfo().getImageString() != null) { dto.setItunesImage(episode.getITunesInfo().getImageString()); }
+                if (episode.getITunesInfo().getImageString() != null) { dto.setImage(episode.getITunesInfo().getImageString()); }
                 if (episode.getITunesInfo().getDuration()    != null) { dto.setItunesDuration(episode.getITunesInfo().getDuration()); }
             }
         } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
