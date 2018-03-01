@@ -89,17 +89,11 @@ class CrawlerActor extends Actor with ActorLogging {
         case DownloadContent(echoId, url, job) =>
             log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
             download(echoId, url, job)
+            log.debug("Finished Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
 
-        case CrawlFyyd(count) =>
-            log.debug("Received CrawlFyyd({})", count)
-            val feeds = fyydAPI.getFeedUrls(count)
-            log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
+        case CrawlFyyd(count) => onCrawlFyyd(count)
 
-            log.debug("Proposing these feeds to the internal directory now")
-            val it = feeds.iterator()
-            while(it.hasNext){
-                directoryStore ! ProposeNewFeed(it.next())
-            }
+        case LoadFyydEpisodes(podcastId, fyydId) => onLoadFyydEpisodes(podcastId, fyydId)
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> shutting down connection pool")
@@ -162,6 +156,28 @@ class CrawlerActor extends Actor with ActorLogging {
             case QueueOfferResult.Failure(ex) => Future.failed(ex)
             case QueueOfferResult.QueueClosed => Future.failed(new RuntimeException("Queue was closed (pool shut down) while running the request. Try again later."))
         } (executionContext)
+    }
+
+    private def onCrawlFyyd(count: Int) = {
+        log.debug("Received CrawlFyyd({})", count)
+        val feeds = fyydAPI.getFeedUrls(count)
+        log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
+
+        log.debug("Proposing these feeds to the internal directory now")
+        val it = feeds.iterator()
+        while(it.hasNext){
+            directoryStore ! ProposeNewFeed(it.next())
+        }
+        log.debug("Finished CrawlFyyd({})", count)
+    }
+
+    private def onLoadFyydEpisodes(podcastId: String, fyydId: Long) = {
+        log.debug("Received LoadFyydEpisodes({},'{}')", podcastId, fyydId)
+
+        val json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId)
+        parser ! ParseFyydEpisodes(podcastId, json)
+
+        log.debug("Finished LoadFyydEpisodes({},'{}')", podcastId, fyydId)
     }
 
     private def analyzeUrl(url: String): (String, String) = {

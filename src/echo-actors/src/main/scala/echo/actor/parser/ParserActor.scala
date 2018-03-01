@@ -10,18 +10,23 @@ import javax.imageio.ImageIO
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
+import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
 import echo.core.mapper.IndexMapper
+import echo.core.parse.api.FyydAPI
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
+
+import scala.collection.JavaConverters._
 
 class ParserActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val feedParser: FeedParser = new RomeFeedParser()
+    private val fyydAPI: FyydAPI = new FyydAPI()
 
     private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
@@ -67,6 +72,17 @@ class ParserActor extends Actor with ActorLogging {
             indexStore ! IndexStoreUpdateDocWebsiteData(echoId, readableText)
 
             log.debug("Finished ParseWebsiteData({},_)", echoId)
+
+        case ParseFyydEpisodes(podcastId, json) =>
+            log.debug("Received ParseFyydEpisodes({},_)", podcastId)
+
+            val episodes: List[EpisodeDTO] = fyydAPI.getEpisodes(json).asScala.toList
+            log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastId)
+            for(episode <- episodes){
+                registerEpisode(podcastId, episode)
+            }
+
+            log.debug("Finished ParseFyydEpisodes({},_)", podcastId)
 
     }
 
@@ -123,23 +139,26 @@ class ParserActor extends Actor with ActorLogging {
         episodes match {
             case Some(es) =>
                 for(e <- es){
-
-                    // cleanup some potentially markuped texts
-                    Option(e.getTitle).foreach(t => e.setTitle(t.trim))
-                    Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
-                    Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
-
-                    /* TODO
-                    // experimental: this works but has terrible performance and assumes we have a GUI app
-                    Option(e.getItunesImage).foreach(img => {
-                        e.setItunesImage(base64Image(img))
-                    })
-                    */
-
-                    directoryStore ! RegisterEpisodeIfNew(podcastId, e)
+                    registerEpisode(podcastId, e)
                 }
             case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
         }
+    }
+
+    private def registerEpisode(podcastId: String, e: EpisodeDTO): Unit = {
+        // cleanup some potentially markuped texts
+        Option(e.getTitle).foreach(t => e.setTitle(t.trim))
+        Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
+        Option(e.getContentEncoded).foreach(c => e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())))
+
+        /* TODO
+        // experimental: this works but has terrible performance and assumes we have a GUI app
+        Option(e.getItunesImage).foreach(img => {
+            e.setItunesImage(base64Image(img))
+        })
+        */
+
+        directoryStore ! RegisterEpisodeIfNew(podcastId, e)
     }
 
     private def base64Image(imageUrl: String): String = {

@@ -43,6 +43,7 @@ object ActorProtocol {
     case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
     case class ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
     case class ParseWebsiteData(echoId: String, html: String)
+    case class ParseFyydEpisodes(podcastId: String, episodesData: String)
 
     // Crawler/Parser/DirectoryStore -> IndexStore
     case class IndexStoreAddDoc(doc: IndexDocDTO) // from Parser with love
@@ -111,6 +112,7 @@ object ActorProtocol {
     // TODO: automatic: Crawler -> Crawler on a regular basis
     trait CrawlExternalDirectory
     case class CrawlFyyd(count: Int) extends CrawlExternalDirectory
+    case class LoadFyydEpisodes(podcastId: String, fyydId: Long) extends CrawlExternalDirectory
 
     // CLI -> Master
     case class ShutdownSystem()

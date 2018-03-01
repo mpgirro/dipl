@@ -38,6 +38,7 @@ class CliActor(private val master: ActorRef,
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes|feeds]",
         "load feeds"     -> "[test|massive]",
+        "load fyyd"      -> "[episodes <podcastId> <fyydId>]",
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<echoId>",
@@ -109,6 +110,9 @@ class CliActor(private val master: ActorRef,
                     case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
                     case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
                     case "load" :: "feeds" :: _                 => usage("load feeds")
+
+                    case "load" :: "fyyd" :: "episodes" :: podcastId :: fyydId :: Nil => crawler ! LoadFyydEpisodes(podcastId, fyydId.toLong)
+                    case "load" :: "fyyd" :: _                                        => usage("load fyyd")
 
                     case "save" :: Nil                          => help()
                     case "save" :: "feeds" :: Nil               => usage("save feeds")
