@@ -75,41 +75,21 @@ class CrawlerActor extends Actor with ActorLogging {
             indexStore = ref
 
         case DownloadWithHeadCheck(echoId, url, job) =>
-            log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
             job match {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
+                        log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
                         headCheck(echoId, url, job)
                     }
-                case _ => headCheck(echoId, url, job)
+                case _ =>
+                    log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
+                    headCheck(echoId, url, job)
             }
 
         case DownloadContent(echoId, url, job) =>
             log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
             download(echoId, url, job)
 
-        /*
-        case FetchFeedForNewPodcast(podcastId, url) =>
-            log.info("Received FetchFeedForNewPodcast('{}', {})", podcastId, url)
-            //testAndDownloadAkka(podcastId, url, JobKind.FEED_NEW_PODCAST)
-            testHead(podcastId, url, JobKind.FEED_NEW_PODCAST)
-
-        case FetchFeedForUpdateEpisodes(podcastId, url) =>
-            log.info("Received FetchFeedForUpdateEpisodes('{}',{})", podcastId, url)
-            //testAndDownloadAkka(podcastId, url, JobKind.FEED_UPDATE_EPISODES)
-            testHead(podcastId, url, JobKind.FEED_UPDATE_EPISODES)
-
-        case FetchWebsite(echoId, url) =>
-            log.debug("Received FetchWebsite({},'{}')", echoId, url)
-            // TODO we do not fetch websites for now
-            //testAndDownloadAsync(echoId, url, JobKind.WEBSITE)
-            testHead(echoId, url, JobKind.WEBSITE)
-
-        case DownloadAsync(echoId, url, jobType) =>
-            log.debug("Received DownloadAsync({},'{}',{})", echoId, url, jobType)
-            //downloadAkka(echoId, url, jobType)
-            download(echoId, url, jobType)
-        */
         case CrawlFyyd(count) =>
             log.debug("Received CrawlFyyd({})", count)
             val feeds = fyydAPI.getFeedUrls(count)
@@ -497,186 +477,6 @@ class CrawlerActor extends Actor with ActorLogging {
                 sendErrorNotificationIfFeasable(echoId, url, jobType)
         } finally {
             //getRequest.discardEntityBytes()
-        }
-    }
-    */
-
-    /* TODO delete?
-    private def sendErrorNotificationIfFeasable(echoId: String, url: String, jobType: JobKind.Value): Unit = {
-        jobType match {
-            case JobKind.WEBSITE => // do nothing...
-            case _ =>
-                directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-        }
-    }
-
-    private def testHead(echoId: String, url: String, jobType: JobKind.Value): Unit = {
-        val requestConfig = RequestConfig.custom.
-            setSocketTimeout(DOWNLOAD_TIMEOUT_MS)
-            .setConnectTimeout(DOWNLOAD_TIMEOUT_MS)
-            .build
-        val httpclient: CloseableHttpClient = HttpClientBuilder
-            .create
-            .setDefaultRequestConfig(requestConfig)
-            //.setConnectionManager(poolingHttpClientConnectionManager) // TODO
-            .build
-        try {
-            var request = new org.apache.http.client.methods.HttpHead(url)
-            val response: org.apache.http.client.methods.CloseableHttpResponse = httpclient.execute(request)
-
-            log.debug("Just got HEAD response from : {}", url)
-            evalApacheResponse(url, response) match {
-                case Success((location, etag, lastMod)) =>
-                    location match {
-                        case Some(href) =>
-                            log.debug("Sending message to download async : {}", href)
-                            jobType match {
-                                case JobKind.WEBSITE =>
-
-                                    // if the link in the feed is redirected (which is often the case due
-                                    // to some feed analytic tools, we set our records to the new location
-                                    if(!url.equals(href)) {
-                                        directoryStore ! UpdateLinkByEchoId(echoId, href)
-                                        indexStore ! IndexStoreUpdateDocLink(echoId, href)
-                                    }
-
-                                    // we always download websites, because we only do it once anyway
-                                    self ! DownloadAsync(echoId, href, jobType)
-                                case _ => // either FEED_NEW_PODCAST or FEED_UPDATE_EPISODES
-
-                                    // if the feed moved to a new URL, we will inform the directory, so
-                                    // it will use the new location starting with the next update cycle
-                                    if(!url.equals(href)) {
-                                        directoryStore ! UpdateFeedUrl(url, href)
-                                    }
-
-                                    /*
-                                     * TODO
-                                     * here I have to do some voodoo with etag/lastMod to
-                                     * determine weither the feed changed and I really need to redownload
-                                     */
-                                    self ! DownloadAsync(echoId, href, jobType)
-                            }
-                        case None =>
-                            log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
-                            sendErrorNotificationIfFeasable(echoId, url, jobType)
-                    }
-                case Failure(reason) =>
-                    log.warning("HEAD response prevented downloading resource : {} [reason : {}]", url, Option(reason.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                    sendErrorNotificationIfFeasable(echoId, url, jobType)
-            }
-
-            Success(response)
-        } catch {
-            case e: java.net.ConnectException =>
-                log.error("Connection error on : {} [reason : {}]", e.getMessage, url)
-                Failure(e)
-            case e: java.net.UnknownHostException =>
-                log.error("Unknown host : {}", url)
-                Failure(e)
-            case e: java.io.IOException =>
-                log.error("IO error on : {} [reason : {}]", url, e.getMessage)
-                Failure(e)
-            case e: Exception =>
-                log.error("Error : {}", e.getMessage)
-                e.printStackTrace()
-                Failure(e)
-        } finally {
-            httpclient.close() // TODO
-        }
-    }
-
-    private def download(echoId: String, url: String, jobType: JobKind.Value): Unit = {
-        val requestConfig = RequestConfig.custom.
-            setSocketTimeout(DOWNLOAD_TIMEOUT_MS)
-            .setConnectTimeout(DOWNLOAD_TIMEOUT_MS)
-            .build
-        val httpclient: CloseableHttpClient = HttpClientBuilder
-            .create
-            .setDefaultRequestConfig(requestConfig)
-            //.setConnectionManager(poolingHttpClientConnectionManager) // TODO
-            .build
-        try {
-            val request = new org.apache.http.client.methods.HttpGet(url)
-            val response: org.apache.http.client.methods.CloseableHttpResponse = httpclient.execute(request)
-
-            log.debug("Just got GET response from : {}", url)
-
-            // once again, ensure we do not accidentally fetch a media file and take it for text
-            val mimeType = response.getEntity.getContentType.getValue.split(";")(0).trim
-            if(!validMimeType(mimeType)){
-                log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
-                throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
-            }
-
-            /* TODO
-            // ensure we do not accidentally fetch a neverending stream
-            if(response.entity.isIndefiniteLength()){
-                log.error("Refusing to download resource with indefinite length from : '{}'", url)
-                throw new EchoException("Refusing to download resource with indefinite length") // TODO make dedicated exception
-            }
-            */
-
-            val cl = response.getEntity.getContentLength
-            if(cl > DOWNLOAD_MAXBYTES) {
-                log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
-                throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
-            }
-
-            log.debug("Collecting content from GET response : {}", url)
-            def extractData(r: org.apache.http.HttpResponse): Try[String] = {
-                try {
-                    val inputStream = response.getEntity.getContent
-                    val data: String = IOUtils.toString(new InputStreamReader(inputStream))
-                    inputStream.close()
-                    Success(data)
-                } catch {
-                    case e: Exception =>
-                        log.error("Error : {}", e.getMessage)
-                        Failure(e)
-                }
-            }
-            extractData(response) match {
-                case Success(data) =>
-                    log.debug("Finished collecting content from GET response : {}", url)
-                    jobType match {
-                        case JobKind.FEED_NEW_PODCAST =>
-                            parser ! ParseNewPodcastData(url, echoId, data)
-                            directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                        case JobKind.FEED_UPDATE_EPISODES =>
-                            parser ! ParseUpdateEpisodeData(url, echoId, data)
-                            directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                        case JobKind.WEBSITE =>
-                            parser ! ParseWebsiteData(echoId, data)
-                    }
-                case Failure(reason) =>
-                    /* TODO
-                    reason match {
-                        case e: java.util.concurrent.TimeoutException =>
-                            log.warning("Failed to download resource due to timeout : {}", url)
-                        case e =>
-                            log.error("Failed to collect response body HTML into a String : {} [reason : {} from message type : {}]", url, e.getMessage, e.getClass)
-                        //e.printStackTrace()
-                    }
-                    */
-                    sendErrorNotificationIfFeasable(echoId, url, jobType)
-            }
-        } catch {
-            case e: java.net.ConnectException =>
-                log.error("Connection error on : {} [reason : {}]", e.getMessage, url)
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-            case e: java.net.UnknownHostException =>
-                log.error("Unknown host : {}", url)
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-            case e: java.io.IOException =>
-                log.error("IO error on : {} [reason : {}]", url, e.getMessage)
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-            case e: Exception =>
-                log.error("Exception while downloading resource : {} [reason : {}]", e.getMessage)
-                e.printStackTrace()
-                sendErrorNotificationIfFeasable(echoId, url, jobType)
-        } finally {
-            httpclient.close()
         }
     }
     */

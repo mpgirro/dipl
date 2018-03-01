@@ -12,29 +12,12 @@ import echo.core.domain.feed.{ChapterDTO, FeedStatus}
   */
 object ActorProtocol {
 
-    // TODO name this something better
-    object JobKind extends Enumeration {
-        val FEED_NEW_PODCAST, FEED_UPDATE_EPISODES, WEBSITE = Value
-    }
-
     // Web/CLI -> DirectoryStore
     case class ProposeNewFeed(url: String)
     case class CheckPodcast(echoId: String)
     case class CheckFeed(echoId: String)
     case class CheckAllPodcasts()
     case class CheckAllFeeds()
-
-    /*
-    // DirectoryStore -> Crawler
-    case class FetchFeedForNewPodcast(podcastId: String, feedUrl: String)
-    case class FetchFeedForUpdateEpisodes(podcastId: String, feedUrl: String)
-
-    // Parser -> Crawler
-    case class FetchWebsite(echoId: String, url: String)
-
-    // Crawler -> Crawler
-    case class DownloadAsync(echoId: String, url: String, jobKind: JobKind.Value)
-    */
 
     trait FetchJob
     case class NewPodcastFetchJob() extends FetchJob
@@ -61,19 +44,14 @@ object ActorProtocol {
     case class ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
     case class ParseWebsiteData(echoId: String, html: String)
 
-    // Parser -> IndexStore
-    case class IndexStoreAddDoc(doc: IndexDocDTO)
-    case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) // used for all document types
-    // DirectoryStore -> IndexStore
-    case class IndexStoreUpdateDocImage(echoId: String, itunesImage: String)
-
-    // Crawler -> IndexStore
-    case class IndexStoreUpdateDocLink(echoId: String, newLink: String)
+    // Crawler/Parser/DirectoryStore -> IndexStore
+    case class IndexStoreAddDoc(doc: IndexDocDTO) // from Parser with love
+    case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String)  // from Parser with love
+    case class IndexStoreUpdateDocImage(echoId: String, itunesImage: String) // from DirectoryStore with love
+    case class IndexStoreUpdateDocLink(echoId: String, newLink: String)      // from Crawler with love
 
     // IndexStore -> IndexStore
     case class CommitIndex()
-
-
 
     // Gateway(= Web) -> Searcher
     case class SearchRequest(query: String, page: Option[Int], size: Option[Int])

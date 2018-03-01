@@ -85,7 +85,7 @@ public interface IndexMapper {
         if (doc.getDescription()    != null) { lucene.add(new TextField(IndexField.DESCRIPTION, doc.getDescription(), Field.Store.YES)); }
         if (doc.getPodcastTitle()   != null) { lucene.add(new TextField(IndexField.PODCAST_TITLE, doc.getPodcastTitle(), Field.Store.YES)); }
         if (doc.getPubDate()        != null) { lucene.add(new StringField(IndexField.PUB_DATE, DateMapper.INSTANCE.asString(doc.getPubDate()), Field.Store.YES)); }
-        if (doc.getImage()    != null) { lucene.add(new TextField(IndexField.ITUNES_IMAGE, doc.getImage(), Field.Store.YES)); }
+        if (doc.getImage()          != null) { lucene.add(new TextField(IndexField.ITUNES_IMAGE, doc.getImage(), Field.Store.YES)); }
         if (doc.getItunesAuthor()   != null) { lucene.add(new TextField(IndexField.ITUNES_AUTHOR, doc.getItunesAuthor(), Field.Store.NO)); }
         if (doc.getItunesSummary()  != null) { lucene.add(new TextField(IndexField.ITUNES_SUMMARY, doc.getItunesSummary(), Field.Store.YES)); }
         if (doc.getChapterMarks()   != null) { lucene.add(new TextField(IndexField.CHAPTER_MARKS, doc.getChapterMarks(), Field.Store.NO)); }
