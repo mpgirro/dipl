@@ -19,9 +19,11 @@ public interface TeaserMapper {
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
 
     default PodcastDTO asTeaser(PodcastDTO dto) {
+
         if(dto == null) return null;
 
         final PodcastDTO teaser = new PodcastDTO();
+
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
         teaser.setItunesImage(dto.getItunesImage());
@@ -30,20 +32,25 @@ public interface TeaserMapper {
     }
 
     default PodcastDTO asTeaser(Podcast podcast) {
+
         if(podcast == null) return null;
 
         final PodcastDTO teaser = new PodcastDTO();
+
         teaser.setEchoId(podcast.getEchoId());
         teaser.setTitle(podcast.getTitle());
         teaser.setItunesImage(podcast.getItunesImage());
+        teaser.setLanguage(podcast.getLanguage());
 
         return teaser;
     }
 
     default EpisodeDTO asTeaser(EpisodeDTO dto) {
+
         if(dto == null) return null;
 
         final EpisodeDTO teaser = new EpisodeDTO();
+
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
         teaser.setPubDate(dto.getPubDate());
@@ -55,9 +62,11 @@ public interface TeaserMapper {
     }
 
     default EpisodeDTO asTeaser(Episode episode) {
+
         if(episode == null) return null;
 
         final EpisodeDTO teaser = new EpisodeDTO();
+
         teaser.setEchoId(episode.getEchoId());
         teaser.setTitle(episode.getTitle());
         teaser.setPubDate(DateMapper.INSTANCE.asLocalDateTime(episode.getPubDate()));
