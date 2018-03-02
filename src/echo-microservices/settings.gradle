@@ -1,5 +1,6 @@
 rootProject.name = 'echo-microservices'
 
+include 'app-directory'
 include 'app-crawler'
-include 'app-indexer'
+include 'app-parser'
 include 'app-searcher'

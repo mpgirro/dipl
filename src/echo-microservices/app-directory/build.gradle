@@ -1,0 +1,45 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.10.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+defaultTasks 'clean build runBoot'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility=1.8
+targetCompatibility=1.8
+assert System.properties['java.specification.version'] == '1.8'
+
+group = 'echo.microservices.directory'
+version = '0.0.1-SNAPSHOT'
+
+description = ''
+
+//mainClassName = 'echo.microservice.directory.DirectoryApp'
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenLocal()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
