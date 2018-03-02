@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -84,10 +82,10 @@ public class FyydAPI extends API {
         if (apiData.containsKey("data")) {
             final Map<String,Object> data = (Map<String,Object>) apiData.get("data");
             if (data.containsKey("episodes")) {
-                final List<Map<String,Object>> episodes = (List<Map<String,Object>>) data.get("episodes");
-                if (episodes != null) {
-                    log.info("JSON contains {} episode JSON objects", episodes.size());
-                    return episodes.stream()
+                final List<Map<String,Object>> episodesObj = (List<Map<String,Object>>) data.get("episodes");
+                if (episodesObj != null) {
+                    log.info("JSON contains {} episode JSON objects", episodesObj.size());
+                    final List<EpisodeDTO> episodes =  episodesObj.stream()
                         .map(d -> {
                             final EpisodeDTO e = new EpisodeDTO();
                             e.setTitle((String) d.get("title"));
@@ -108,6 +106,15 @@ public class FyydAPI extends API {
                             return e;
                         })
                         .collect(Collectors.toList());
+
+                    // fyyd has a duplicate entry problem, therefore we only take on DTO per occuring title
+                    // this way we could loose some episode entries that are actually different but have bad
+                    // quality titles, but this is still better then to import us lots of triple episode
+                    final Map<String, EpisodeDTO> map = new HashMap<>();
+                    for (EpisodeDTO e : episodes) {
+                       map.put(e.getTitle(), e);
+                    }
+                    return new LinkedList<>(map.values());
                 }
             } else {
                 log.info("JSON does not contain key 'episodes'");
