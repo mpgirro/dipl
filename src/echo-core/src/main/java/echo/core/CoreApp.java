@@ -42,6 +42,8 @@ public class CoreApp {
     private IndexCommitter committer;
     private IndexSearcher searcher;
 
+    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1);
+
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
 
@@ -136,13 +138,31 @@ public class CoreApp {
                     final long fyydId = Long.valueOf(commands[1]);
                     final String json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId);
                     final List<EpisodeDTO> episodes = fyydAPI.getEpisodes(json);
-                    out.println("These are "+episodes.size()+" episodes for podcast="+fyydId+" from fyyd.de");
-                    for(EpisodeDTO episode : episodes){
-                        out.println("\t"+episode.getTitle());
+                    out.println("These are " + episodes.size() + " episodes for podcast=" + fyydId + " from fyyd.de");
+                    for (EpisodeDTO episode : episodes) {
+                        out.println("\t" + episode.getTitle());
                     }
                 } else {
                     usage(cmd);
                 }
+            } else if (isCmd(cmd,"test-id-generator")) {
+                final Map<String,Integer> occurences = new HashMap<>();
+                for (int i=0; i<100000; i++) {
+                    final String id = idGenerator.getNewId();
+                    if (occurences.containsKey(id)) {
+                        occurences.put(id, occurences.get(id) + 1);
+                    } else {
+                        occurences.put(id, 1);
+                    }
+                }
+                out.println("These are the top most occurences of generated IDs:");
+                occurences.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .collect(Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new))
+                    .entrySet().stream()
+                    .limit(10)
+                    .forEach(e -> out.println(e.getKey() + " :  " + e.getValue()));
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
             }
@@ -201,7 +221,7 @@ public class CoreApp {
             for (EpisodeDTO episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
-                episode.setEchoId(EchoIdGenerator.getNewId());
+                episode.setEchoId(idGenerator.getNewId());
                 this.committer.add(episode);
             }
         } catch (IOException | FeedParsingException e) {
