@@ -21,7 +21,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
     private val CONFIG = ConfigFactory.load()
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.directory.worker-count")).getOrElse(5)
 
-    private var workerIndex = 1
+    private var currentWorkerIndex = 1
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
@@ -85,11 +85,11 @@ class DirectorySupervisor extends Actor with ActorLogging {
     }
 
     private def createDirectoryActor(): ActorRef = {
-        val directoryStore = context.actorOf(Props[DirectoryStore]
+        val workerIndex = currentWorkerIndex
+        val directoryStore = context.actorOf(Props(new DirectoryStore(workerIndex))
             .withDispatcher("echo.directory.dispatcher"),
             name = "worker-" + workerIndex)
-
-        workerIndex += 1
+        currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )

@@ -25,12 +25,14 @@ object DirectoryStore {
 
 }
 
-class DirectoryStore extends Actor with ActorLogging {
+class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
+
+    private val idGenerator: EchoIdGenerator = new EchoIdGenerator(workerIndex)
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
@@ -124,18 +126,20 @@ class DirectoryStore extends Actor with ActorLogging {
 
         def task = () => {
             if(feedService.findAllByUrl(url).isEmpty){
-                val podcastId: String = EchoIdGenerator.getNewId()
+                val podcastId = idGenerator.getNewId
+                log.info("Generated podcastId : {}", podcastId)
                 var podcast = new PodcastDTO
                 podcast.setEchoId(podcastId)
                 podcast.setTitle(podcastId)
                 podcast.setDescription(url)
                 podcast.setRegistrationComplete(false)
                 podcast.setRegistrationTimestamp(LocalDateTime.now())
-                podcastService.save(podcast).map(p => {
 
-                    val fakeFeedId = EchoIdGenerator.getNewId()
+                podcastService.save(podcast).map(p => {
+                    val feedId = idGenerator.getNewId
+                    log.info("Generated feedId : {}", feedId)
                     val feed = new FeedDTO
-                    feed.setEchoId(fakeFeedId)
+                    feed.setEchoId(feedId)
                     feed.setUrl(url)
                     feed.setLastChecked(LocalDateTime.now())
                     feed.setLastStatus(FeedStatus.NEVER_CHECKED)
@@ -457,7 +461,7 @@ class DirectoryStore extends Actor with ActorLogging {
                 case Some(e) => None
                 case None =>
                     // generate a new episode echoId - the generator is (almost) ensuring uniqueness
-                    episode.setEchoId(EchoIdGenerator.getNewId)
+                    episode.setEchoId(idGenerator.getNewId)
 
                     podcastService.findOneByEchoId(podcastId).map(p => {
                         episode.setPodcastId(p.getId)
