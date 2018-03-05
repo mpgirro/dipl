@@ -44,6 +44,11 @@ ext {
     akkaVersion = '2.5.8'
     akkaHttpVersion = '10.0.11'
     logbackVersion = '1.2.3'
+    echoCoreVersion = '1.0-SNAPSHOT'
+    springDataJpaVersion = '1.11.10.RELEASE'
+    h2Version = '1.4.196'
+    liquibaseVersion = '3.5.3'
+    liquibaseSlf4jVersion = '2.0.0'
 }
 
 repositories {
@@ -73,29 +78,29 @@ dependencies {
     }
     */
 
-    compile 'net.irro.echo:echo-core:1.0-SNAPSHOT'
+    compile "net.irro.echo:echo-core:$echoCoreVersion"
 
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
 
     compile "com.github.swagger-akka-http:swagger-akka-http_$scalaMajor:0.11.2"
     compile "ch.megard:akka-http-cors_$scalaMajor:0.2.2"
 
-    compile 'com.devskiller.friendly-id:friendly-id:1.0.0'
+    compile 'com.devskiller.friendly-id:friendly-id:1.0.0' // TODO unused?
 
-    compile 'org.hashids:hashids:1.0.3'
+    compile 'org.hashids:hashids:1.0.3' // TODO unused because in core now?
 
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.14.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '1.11.10.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: "$springDataJpaVersion"
     //compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.0.Beta1'  // note: not needed when using Spring-Data JPA --> produces an error
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
 
     //testCompile 'com.h2database:h2:1.4.196' // TODO only use H2 in test phase
-    compile 'com.h2database:h2:1.4.196'
+    compile group: 'com.h2database', name: 'h2', version: "$h2Version"
 
-    compile group: 'org.liquibase', name: 'liquibase-core', version: '3.5.3'
-    runtime group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    compile group: 'org.liquibase', name: 'liquibase-core', version: "$liquibaseVersion"
+    runtime group: 'com.mattbertolini', name: 'liquibase-slf4j', version: "$liquibaseSlf4jVersion"
 
     // compile group: 'com.sendgrid', name: 'java-http-client', version: '4.2.0'
 
