@@ -11,7 +11,8 @@ public class EchoIdGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(EchoIdGenerator.class);
 
-    private final Hashids hashids = new Hashids("Bit useless for my purpose, but why not");
+    private final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private final Hashids hashids = new Hashids("Bit useless for my purpose, but why not", 0, ALPHABET);
     private final Integer shardId;
     private Integer seq;
 
