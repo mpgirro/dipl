@@ -13,23 +13,38 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.liquibase.gradle' version '1.2.4'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+}
+
 defaultTasks 'clean build runBoot'
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-group = 'echo.microservices.directory'
-version = '0.0.1-SNAPSHOT'
-
+group = 'net.irro.echo'
+version = '1.0-SNAPSHOT'
 description = ''
 
 //mainClassName = 'echo.microservice.directory.DirectoryApp'
+
+ext {
+    echoCoreVersion = '1.0-SNAPSHOT'
+    logbackVersion = '1.2.3'
+    springDataJpaVersion = '1.11.10.RELEASE'
+    h2Version = '1.4.196'
+    liquibaseVersion = '3.5.3'
+    liquibaseSlf4jVersion = '2.0.0'
+}
 
 repositories {
     mavenLocal()
@@ -37,9 +52,30 @@ repositories {
     mavenLocal()
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
+    maven { url 'https://maven.icosillion.com/artifactory/open-source/' }
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compile('org.springframework.boot:spring-boot-starter-aop')
+    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: "$springDataJpaVersion"
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.liquibase:liquibase-core')
+    runtime('org.springframework.boot:spring-boot-devtools')
+    runtime group: 'com.h2database', name: 'h2', version: "$h2Version"
+    compile group: 'org.liquibase', name: 'liquibase-core', version: "$liquibaseVersion"
+    runtime group: 'com.mattbertolini', name: 'liquibase-slf4j', version: "$liquibaseSlf4jVersion"
+    runtime('org.postgresql:postgresql')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+
+    compile "net.irro.echo:echo-core:$echoCoreVersion"
+
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+}
+
+// Generating gradle wrapper so people don't have to have the Gradle version preinstalled
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.5'
 }
