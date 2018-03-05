@@ -127,7 +127,6 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
         def task = () => {
             if(feedService.findAllByUrl(url).isEmpty){
                 val podcastId = idGenerator.getNewId
-                log.info("Generated podcastId : {}", podcastId)
                 var podcast = new PodcastDTO
                 podcast.setEchoId(podcastId)
                 podcast.setTitle(podcastId)
@@ -137,7 +136,6 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
 
                 podcastService.save(podcast).map(p => {
                     val feedId = idGenerator.getNewId
-                    log.info("Generated feedId : {}", feedId)
                     val feed = new FeedDTO
                     feed.setEchoId(feedId)
                     feed.setUrl(url)
