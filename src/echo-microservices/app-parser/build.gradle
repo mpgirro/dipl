@@ -4,12 +4,12 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-group = 'echo.microservices.indexer'
+group = 'echo.microservices.parser'
 version = '0.0.1-SNAPSHOT'
 
 description = ''
 
-mainClassName = 'echo.microservice.indexer.IndexerApp'
+mainClassName = 'echo.microservice.parser.ParserApp'
 
 dependencies {
 }
