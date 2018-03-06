@@ -1,7 +1,5 @@
 package echo.core.domain.dto;
 
-import echo.core.domain.feed.ChapterDTO;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

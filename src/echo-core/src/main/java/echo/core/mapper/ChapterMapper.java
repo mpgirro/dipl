@@ -2,7 +2,7 @@ package echo.core.mapper;
 
 import echo.core.domain.entity.Chapter;
 import echo.core.domain.entity.Episode;
-import echo.core.domain.feed.ChapterDTO;
+import echo.core.domain.dto.ChapterDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

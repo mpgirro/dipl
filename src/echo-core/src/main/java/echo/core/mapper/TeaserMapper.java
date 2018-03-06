@@ -26,6 +26,15 @@ public interface TeaserMapper {
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
         teaser.setImage(dto.getImage());
+        teaser.setLanguage(dto.getLanguage());
+        teaser.setGenerator(dto.getGenerator());
+        teaser.setCopyright(dto.getCopyright());
+        teaser.setEpisodeCount(dto.getEpisodeCount());
+        teaser.setItunesAuthor(dto.getItunesAuthor());
+        teaser.setItunesExplicit(dto.getItunesExplicit());
+        teaser.setItunesBlock(dto.getItunesBlock());
+        teaser.setRegistrationComplete(dto.getRegistrationComplete());
+        teaser.setRegistrationTimestamp(dto.getRegistrationTimestamp());
 
         return teaser;
     }

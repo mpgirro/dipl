@@ -4,7 +4,7 @@ import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.feed.ChapterDTO;
+import echo.core.domain.dto.ChapterDTO;
 import echo.core.index.IndexField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

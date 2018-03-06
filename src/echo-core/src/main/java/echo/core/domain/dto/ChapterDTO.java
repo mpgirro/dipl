@@ -1,4 +1,4 @@
-package echo.core.domain.feed;
+package echo.core.domain.dto;
 
 /**
  * @author Maximilian Irro
