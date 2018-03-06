@@ -5,7 +5,13 @@
     <thead>
       <tr>
         <th>Title</th>
-        <th>Lang</th>
+        <th>Lang.</th>
+        <th>expl.</th>
+        <th>block</th>
+        <th>iType</th>
+        <th>Count</th>
+        <th>regT</th>
+        <th>regC</th>
       </tr>
     </thead>
 
@@ -13,6 +19,12 @@
       <tr *ngFor="let podcast of podcasts">
         <td><a routerLink="/p/{{podcast.echoId}}">{{podcast.title}}</a></td>
         <td>{{podcast.language}}</td>
+        <td>{{podcast.itunesExplicit}}</td>
+        <td>{{podcast.itunesBlock}}</td>
+        <td>{{podcast.itunesType}}</td>
+        <td>{{podcast.episodeCount}}</td>
+        <td>{{podcast.registrationTimestamp}}</td>
+        <td>{{podcast.registrationComplete}}</td>
       </tr>
     </tbody>
 
