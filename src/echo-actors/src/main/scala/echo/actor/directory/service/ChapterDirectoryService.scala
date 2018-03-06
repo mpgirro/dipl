@@ -4,8 +4,7 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{ChapterRepository, RepositoryFactoryBuilder}
-import echo.core.domain.dto.EpisodeDTO
-import echo.core.domain.feed.ChapterDTO
+import echo.core.domain.dto.ChapterDTO
 import echo.core.mapper.ChapterMapper
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.transaction.annotation.Transactional

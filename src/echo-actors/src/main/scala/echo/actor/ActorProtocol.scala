@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import akka.actor.ActorRef
 import echo.core.domain.dto._
-import echo.core.domain.feed.{ChapterDTO, FeedStatus}
+import echo.core.domain.feed.FeedStatus
 
 
 /**

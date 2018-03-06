@@ -32,5 +32,5 @@ trait EpisodeRepository extends JpaRepository[Episode, java.lang.Long] {
     def countAll(): Long
 
     @Query("SELECT count(episode) FROM Episode episode WHERE episode.podcast.echoId = :podcastId")
-    def countByPodcast(@Param("podcastId") podcastId: String)
+    def countByPodcast(@Param("podcastId") podcastId: String): Long
 }

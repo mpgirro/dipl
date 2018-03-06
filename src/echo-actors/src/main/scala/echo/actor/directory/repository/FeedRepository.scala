@@ -24,6 +24,6 @@ trait FeedRepository extends JpaRepository[Feed, java.lang.Long] {
     def countAll(): Long
 
     @Query("SELECT count(feed) FROM Feed feed WHERE feed.podcast.echoId = :podcastId")
-    def countByPodcast(@Param("podcastId") podcastId: String)
+    def countByPodcast(@Param("podcastId") podcastId: String): Long
 
 }

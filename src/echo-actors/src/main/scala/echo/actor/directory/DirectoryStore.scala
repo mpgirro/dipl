@@ -8,8 +8,8 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
-import echo.core.domain.dto.{EpisodeDTO, FeedDTO, PodcastDTO}
-import echo.core.domain.feed.{ChapterDTO, FeedStatus}
+import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
+import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.IndexMapper
 import echo.core.util.EchoIdGenerator
 import org.springframework.orm.jpa.EntityManagerHolder

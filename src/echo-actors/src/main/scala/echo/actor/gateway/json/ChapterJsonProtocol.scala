@@ -1,6 +1,6 @@
 package echo.actor.gateway.json
 
-import echo.core.domain.feed.ChapterDTO
+import echo.core.domain.dto.ChapterDTO
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**
@@ -11,7 +11,7 @@ object ChapterJsonProtocol extends DefaultJsonProtocol {
         def write(c: ChapterDTO) = JsObject(
             "start" -> Option(c.getStart).map(value => JsString(value)).getOrElse(JsNull),
             "title" -> Option(c.getTitle).map(value => JsString(value)).getOrElse(JsNull),
-            "href" -> Option(c.getHref).map(value => JsString(value)).getOrElse(JsNull),
+            "href"  -> Option(c.getHref).map(value => JsString(value)).getOrElse(JsNull),
             "image" -> Option(c.getImage).map(value => JsString(value)).getOrElse(JsNull)
         )
         def read(value: JsValue): ChapterDTO = {
