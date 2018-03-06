@@ -16,7 +16,7 @@
 
           <div class="media-body">
             <h6 class="mb-1">
-              <a [routerLink]="['/e', episode.echoId]">{{episode.title}}</a>
+              <a [routerLink]="['/e', episode.echoId]" class="text-dark">{{episode.title}}</a>
             </h6>
             <small class="text-muted">
                 <span *ngIf="episode.pubDate">

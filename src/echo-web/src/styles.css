@@ -28,3 +28,15 @@ h1, h2, h3, h4, h5, h6,
 .navbar-brand, .nav-link {
   font-family: 'Quicksand', sans-serif; /* use Comfortaa for chi symbol &#967; */
 }
+
+a {
+  color: #007bff; /* fc7e0f, 8400ff*/
+}
+
+/* make the scaling better with our centered narrow column we use in most views */
+@media (min-width: 576px) {
+  .col-sm-12 {
+    max-width: 380px;
+  }
+}
+
