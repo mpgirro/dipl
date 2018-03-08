@@ -30,6 +30,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { Angular2FontawesomeModule } from 'angular2-fontawesome/angular2-fontawesome';
 import { DirectoryListComponent } from './directory/directory-list/directory-list.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { DirectoryListComponent } from './directory/directory-list/directory-lis
     NavbarComponent,
     PodcastRichlistComponent,
     PodcastMatrixComponent,
-    DirectoryListComponent
+    DirectoryListComponent,
+    LoginComponent
   ],
   imports: [
     CoreModule,

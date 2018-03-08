@@ -5,6 +5,7 @@ import { PodcastDetailComponent } from './podcast/podcast-detail/podcast-detail.
 import { DirectoryOverviewComponent } from './directory/directory-overview/directory-overview.component';
 import { EpisodeDetailComponent } from './episode/episode-detail/episode-detail.component';
 import {DirectoryListComponent} from './directory/directory-list/directory-list.component';
+import {LoginComponent} from './login/login.component';
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'p/:id', component: PodcastDetailComponent },
   { path: 'e/:id', component: EpisodeDetailComponent },
   { path: 'directory', component: DirectoryOverviewComponent },
-  { path: 'directory/list', component: DirectoryListComponent }
+  { path: 'directory/list', component: DirectoryListComponent },
+  { path: 'login', component: LoginComponent }
 ];
 
 @NgModule({
