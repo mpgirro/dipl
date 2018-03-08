@@ -61,6 +61,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile group: 'org.springframework.data', name: 'spring-data-jpa', version: "$springDataJpaVersion"
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile group: 'org.springframework', name: 'spring-aspects', version: '4.3.14.RELEASE'
     compile('org.liquibase:liquibase-core')
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime group: 'com.h2database', name: 'h2', version: "$h2Version"

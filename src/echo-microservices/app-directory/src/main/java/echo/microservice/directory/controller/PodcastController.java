@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/directory")
 public class PodcastController {
 
     private final Logger log = LoggerFactory.getLogger(PodcastController.class);
