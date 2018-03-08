@@ -56,13 +56,14 @@ export class PodcastDetailComponent implements OnInit {
 
     const el2 = document.createElement('script');
     el2.setAttribute('class', 'podlove-subscribe-button');
-    el2.setAttribute('src', '/assets/podlove/subscribe-button/javascripts/app.js');
+    // el2.setAttribute('src', '/assets/podlove/subscribe-button/javascripts/app.js'); // TODO loading locally for some reason does not work
+    el2.setAttribute('src', 'https://cdn.podlove.org/subscribe-button/javascripts/app.js');
     el2.setAttribute('data-language', 'en');
     el2.setAttribute('data-size', 'small');
     el2.setAttribute('data-json-data', 'podcastData');
     el2.setAttribute('data-color', this.HIGHLIGHT_COLOR);
-    el2.setAttribute('data-format', 'square');
-    el2.setAttribute('data-style', 'frameless');
+    el2.setAttribute('data-format', 'rectangle');
+    el2.setAttribute('data-style', 'outline');
     buttom.appendChild(el2);
 
     const el3 = document.createElement('noscript');
