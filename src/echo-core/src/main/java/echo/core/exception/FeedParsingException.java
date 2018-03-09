@@ -1,9 +1,5 @@
 package echo.core.exception;
 
-import com.icosillion.podengine.exceptions.MalformedFeedException;
-
-import java.io.IOException;
-
 /**
  * @author Maximilian Irro
  */

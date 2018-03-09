@@ -65,7 +65,6 @@ dependencies {
     compile "org.apache.lucene:lucene-queryparser:$luceneVersion"
     compile "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
 
-    compile 'com.icosillion.podengine:podengine:2.2'    // podcast feed parser
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
     compile 'com.google.code.gson:gson:2.8.2'           // gson parser
     compile 'com.rometools:rome:1.9.0'

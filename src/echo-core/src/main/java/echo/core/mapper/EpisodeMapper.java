@@ -1,20 +1,12 @@
 package echo.core.mapper;
 
-import com.icosillion.podengine.exceptions.DateFormatException;
-import com.icosillion.podengine.exceptions.MalformedFeedException;
-import echo.core.exception.ConversionException;
+import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;
-import echo.core.domain.dto.EpisodeDTO;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.net.MalformedURLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
 
 /**
  * @author Maximilian Irro
@@ -64,29 +56,5 @@ public interface EpisodeMapper {
 
         return dto;
     }
-
-    default EpisodeDTO map(com.icosillion.podengine.models.Episode episode) throws ConversionException {
-
-        if (episode == null) return null;
-
-        final EpisodeDTO dto = new EpisodeDTO();
-        try {
-            if (episode.getTitle()       != null) { dto.setTitle(episode.getTitle()); }
-            if (episode.getLink()        != null) { dto.setLink(episode.getLink().toExternalForm()); }
-            if (episode.getPubDate()     != null) { dto.setPubDate(LocalDateTime.ofInstant(episode.getPubDate().toInstant(), ZoneId.systemDefault())); }
-            if (episode.getGUID()        != null) { dto.setGuid(episode.getGUID()); }
-            if (episode.getDescription() != null) { dto.setDescription(episode.getDescription()); }
-            if (episode.getITunesInfo()  != null) {
-                if (episode.getITunesInfo().getImageString() != null) { dto.setImage(episode.getITunesInfo().getImageString()); }
-                if (episode.getITunesInfo().getDuration()    != null) { dto.setItunesDuration(episode.getITunesInfo().getDuration()); }
-            }
-        } catch (MalformedFeedException | MalformedURLException | DateFormatException e) {
-            throw new ConversionException("Exception during converting podengine.Episode to EpisodeDTO [reason: {}]", e);
-        }
-
-        return dto;
-    }
-
-    List<EpisodeDTO> map(List<com.icosillion.podengine.models.Episode> episodes) throws ConversionException;
 
 }
