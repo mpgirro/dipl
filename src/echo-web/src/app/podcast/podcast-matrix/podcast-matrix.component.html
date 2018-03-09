@@ -1,6 +1,7 @@
-<div *ngFor="let podcast of podcasts; let i = index">
+<div *ngFor="let podcast of podcasts; let i = index"
+     class="matrix-content">
 
-  <div class="row mt-4" *ngIf="i%6===0">
+  <div class="row no-gutters" *ngIf="i%6===0">
 
     <div class="mx-auto">
       <a [routerLink]="['/p', podcasts[i].echoId]" class="podcast-cell">
