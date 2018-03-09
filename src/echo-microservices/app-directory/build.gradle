@@ -9,6 +9,7 @@ buildscript {
         maven { url 'https://repo.spring.io/milestone' }
     }
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
@@ -74,6 +75,12 @@ dependencies {
     compile "net.irro.echo:echo-core:$echoCoreVersion"
 
     compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+    implementation 'com.google.guava:guava:23.0'
+
+    testImplementation 'junit:junit:4.12'
+
+    testCompile 'org.mockito:mockito-core:2.13.0'
 }
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
