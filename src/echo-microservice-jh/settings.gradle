@@ -1,4 +1,4 @@
-rootProject.name = 'echo-microservices-jh'
+rootProject.name = 'echo-microservice-jh'
 
 include 'app-catalog'
 include 'app-crawler'
