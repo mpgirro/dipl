@@ -1,0 +1,4 @@
+// Generating gradle wrapper so people don't have to have the Gradle version preinstalled
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.5'
+}

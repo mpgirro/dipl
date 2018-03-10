@@ -1,0 +1,11 @@
+version: '2'
+services:
+    catalog-postgresql:
+        image: postgres:9.6.5
+        # volumes:
+        #     - ~/volumes/jhipster/catalog/postgresql/:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=catalog
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432
