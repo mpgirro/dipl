@@ -1,8 +1,12 @@
 package echo.microservice.searcher;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class SearcherApp {
 
   public static void main(String[] args) {
-    System.out.println("Hello, I'm SearcherApp!");
+      SpringApplication.run(SearcherApp.class, args);
   }
 }
