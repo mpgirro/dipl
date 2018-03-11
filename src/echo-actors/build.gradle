@@ -39,16 +39,16 @@ description = ''
 mainClassName = 'echo.actor.EchoApp'
 
 ext {
-    scalaMajor = '2.12'
-    scalaMinor = '4'
-    akkaVersion = '2.5.8'
-    akkaHttpVersion = '10.0.11'
-    logbackVersion = '1.2.3'
-    echoCoreVersion = '1.0-SNAPSHOT'
-    springDataJpaVersion = '1.11.10.RELEASE'
-    h2Version = '1.4.196'
-    liquibaseVersion = '3.5.3'
-    liquibaseSlf4jVersion = '2.0.0'
+    scala_major_version = '2.12'
+    scala_minor_version = '4'
+    akka_version = '2.5.8'
+    akka_http_version = '10.0.11'
+    logback_version = '1.2.3'
+    echo_core_version = '1.0-SNAPSHOT'
+    spring_data_jpa_version = '1.11.10.RELEASE'
+    h2_version = '1.4.196'
+    liquibase_version = '3.5.3'
+    liquibase_slf4j_version = '2.0.0'
 }
 
 repositories {
@@ -59,17 +59,17 @@ repositories {
 
 dependencies {
     compile(
-        [group: 'org.scala-lang', name: 'scala-compiler', version: "$scalaMajor.$scalaMinor"],
-        [group: 'org.scala-lang', name: 'scala-library', version: "$scalaMajor.$scalaMinor"],
-        [group: 'com.typesafe.akka', name: "akka-actor_$scalaMajor", version: akkaVersion],
+        [group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"],
+        [group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"],
+        [group: 'com.typesafe.akka', name: "akka-actor_${scala_major_version}", version: akka_version],
     )
 
-    compile "com.typesafe.akka:akka-slf4j_$scalaMajor:$akkaVersion"
-    compile "com.typesafe.akka:akka-stream_$scalaMajor:$akkaVersion"
-    compile "com.typesafe.akka:akka-http_$scalaMajor:$akkaHttpVersion"
-    compile "com.typesafe.akka:akka-http-spray-json_$scalaMajor:$akkaHttpVersion"
+    compile "com.typesafe.akka:akka-slf4j_${scala_major_version}:${akka_version}"
+    compile "com.typesafe.akka:akka-stream_${scala_major_version}:${akka_version}"
+    compile "com.typesafe.akka:akka-http_${scala_major_version}:${akka_http_version}"
+    compile "com.typesafe.akka:akka-http-spray-json_${scala_major_version}:${akka_http_version}"
 
-    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "ch.qos.logback:logback-classic:${logback_version}"
     //compile group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.8.0-beta0'
     //compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.8.0-beta0'
     /*
@@ -78,12 +78,12 @@ dependencies {
     }
     */
 
-    compile "net.irro.echo:echo-core:$echoCoreVersion"
+    compile "net.irro.echo:echo-core:$echo_core_version"
 
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
 
-    compile "com.github.swagger-akka-http:swagger-akka-http_$scalaMajor:0.11.2"
-    compile "ch.megard:akka-http-cors_$scalaMajor:0.2.2"
+    compile "com.github.swagger-akka-http:swagger-akka-http_${scala_major_version}:0.11.2"
+    compile "ch.megard:akka-http-cors_${scala_major_version}:0.2.2"
 
     compile 'com.devskiller.friendly-id:friendly-id:1.0.0' // TODO unused?
 
@@ -91,16 +91,16 @@ dependencies {
 
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.14.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: "$springDataJpaVersion"
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: "${spring_data_jpa_version}"
     //compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.0.Beta1'  // note: not needed when using Spring-Data JPA --> produces an error
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
 
     //testCompile 'com.h2database:h2:1.4.196' // TODO only use H2 in test phase
-    compile group: 'com.h2database', name: 'h2', version: "$h2Version"
+    compile group: 'com.h2database', name: 'h2', version: "${h2_version}"
 
-    compile group: 'org.liquibase', name: 'liquibase-core', version: "$liquibaseVersion"
-    runtime group: 'com.mattbertolini', name: 'liquibase-slf4j', version: "$liquibaseSlf4jVersion"
+    compile group: 'org.liquibase', name: 'liquibase-core', version: "${liquibase_version}"
+    runtime group: 'com.mattbertolini', name: 'liquibase-slf4j', version: "${liquibase_slf4j_version}"
 
     // compile group: 'com.sendgrid', name: 'java-http-client', version: '4.2.0'
 
@@ -115,8 +115,8 @@ dependencies {
 
     testCompile(
         [group: 'junit', name: 'junit', version: '4.12'],
-        [group: 'org.specs2', name: "specs2-core_$scalaMajor", version: '4.0.2'],
-        [group: 'org.specs2', name: "specs2-junit_$scalaMajor", version: '4.0.2'],
+        [group: 'org.specs2', name: "specs2-core_${scala_major_version}", version: '4.0.2'],
+        [group: 'org.specs2', name: "specs2-junit_${scala_major_version}", version: '4.0.2'],
     )
 }
 
