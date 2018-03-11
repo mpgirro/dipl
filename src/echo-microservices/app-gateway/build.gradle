@@ -41,7 +41,7 @@ version = '1.0-SNAPSHOT'
 description = ''
 
 bootRepackage {
-    mainClass = 'echo.microservice.crawler.CrawlerApp'
+    mainClass = 'echo.microservice.gateway.GatewayApp'
 }
 
 /* TODO why does this not work?
@@ -51,7 +51,7 @@ war {
 */
 
 springBoot {
-    mainClass = 'echo.microservice.crawler.CrawlerApp'
+    mainClass = 'echo.microservice.gateway.GatewayApp'
     executable = true
     buildInfo()
 }
