@@ -42,7 +42,7 @@ version = '1.0-SNAPSHOT'
 description = ''
 
 bootRepackage {
-    mainClass = 'echo.microservice.directory.DirectoryApp'
+    mainClass = 'echo.microservice.catalog.CatalogApp'
 }
 
 /* TODO why does this not work?
@@ -52,7 +52,7 @@ war {
 */
 
 springBoot {
-    mainClass = 'echo.microservice.directory.DirectoryApp'
+    mainClass = 'echo.microservice.catalog.CatalogApp'
     executable = true
     buildInfo()
 }
