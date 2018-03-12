@@ -46,7 +46,7 @@ public class ChapterService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChapterDTO> findAllbyEpisode(String episodeExo) {
+    public List<ChapterDTO> findAllByEpisode(String episodeExo) {
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo);
         return chapterRepository.findAllByEpisodeEchoId(episodeExo).stream()
             .map(chapterMapper::map)

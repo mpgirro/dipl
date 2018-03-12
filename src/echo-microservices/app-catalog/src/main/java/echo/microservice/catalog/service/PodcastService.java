@@ -62,9 +62,11 @@ public class PodcastService {
     }
 
     @Transactional(readOnly = true)
-    public List<PodcastDTO> findAll() {
-        log.debug("Request to get all Podcasts");
-        return podcastRepository.findAll().stream()
+    public List<PodcastDTO> findAll(int page, int size) {
+        log.debug("Request to get all Podcasts by page : {} and size : {}", page, size);
+        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
+        final PageRequest pageable = new PageRequest(page, size, sort);
+        return podcastRepository.findAll(pageable).getContent().stream()
             .map(podcastMapper::map)
             .collect(Collectors.toList());
     }
@@ -84,6 +86,16 @@ public class PodcastService {
         final PageRequest pageable =  new PageRequest(page, size, sort);
         return podcastRepository.findByRegistrationCompleteTrue(pageable).stream()
             .map(podcastMapper::map)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PodcastDTO> findAllRegistrationCompleteAsTeaser(int page, int size) {
+        log.debug("Request to get all Podcasts as teaser where registration is complete by page : {} and size : {}", page, size);
+        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
+        final PageRequest pageable =  new PageRequest(page, size, sort);
+        return podcastRepository.findByRegistrationCompleteTrue(pageable).stream()
+            .map(teaserMapper::asTeaser)
             .collect(Collectors.toList());
     }
 

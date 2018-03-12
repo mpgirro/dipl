@@ -35,7 +35,7 @@ public class EpisodeService {
 
     @Transactional
     public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
-        log.debug("Request to save Podcast : {}", episodeDTO);
+        log.debug("Request to save Episode : {}", episodeDTO);
         final Episode episode = episodeMapper.map(episodeDTO);
         final Episode result = episodeRepository.save(episode);
         return Optional.of(episodeMapper.map(result));
@@ -49,9 +49,9 @@ public class EpisodeService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<EpisodeDTO> findOneByEchoId(String echoId) {
-        log.debug("Request to get Episode (EXO) : {}", echoId);
-        final Episode result = episodeRepository.findOneByEchoId(echoId);
+    public Optional<EpisodeDTO> findOneByEchoId(String exo) {
+        log.debug("Request to get Episode (EXO) : {}", exo);
+        final Episode result = episodeRepository.findOneByEchoId(exo);
         return Optional.ofNullable(episodeMapper.map(result));
     }
 
@@ -73,10 +73,17 @@ public class EpisodeService {
     }
 
     @Transactional(readOnly = true)
-    public List<EpisodeDTO> findAllByPodcastAsTeaser(PodcastDTO podcastDTO) {
-        log.debug("Request to get all Episodes by Podcast as teaser : ", podcastDTO);
-        final Podcast podcast = podcastMapper.map(podcastDTO);
-        return episodeRepository.findAllByPodcast(podcast).stream()
+    public List<EpisodeDTO> findAllByPodcast(String podcastExo) {
+        log.debug("Request to get all Episodes by Podcast (EXO) : ", podcastExo);
+        return episodeRepository.findAllByPodcastEchoId(podcastExo).stream()
+            .map(episodeMapper::map)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<EpisodeDTO> findAllByPodcastAsTeaser(String podcastExo) {
+        log.debug("Request to get all Episodes by Podcast (EXO) as teaser : ", podcastExo);
+        return episodeRepository.findAllByPodcastEchoId(podcastExo).stream()
             .map(teaserMapper::asTeaser)
             .collect(Collectors.toList());
     }
