@@ -47,8 +47,6 @@ ext {
 repositories {
     mavenLocal()
     jcenter()
-    mavenLocal()
-    maven { url 'https://maven.icosillion.com/artifactory/open-source/' }
 }
 
 dependencies {
