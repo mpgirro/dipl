@@ -489,3 +489,4 @@ http://hubb360.libsyn.com/rss
 http://sendecasten.de/iliketomoveit/feed/pod/
 http://feed.podigious.com/podigious
 http://inoteccast.de/feed/mp3/
+http://mintros.de/feed/mp3/
