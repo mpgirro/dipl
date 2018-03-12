@@ -1,7 +1,7 @@
-package echo.microservice.directory.web.rest;
+package echo.microservice.catalog.web.rest;
 
 import echo.core.domain.dto.PodcastDTO;
-import echo.microservice.directory.service.PodcastService;
+import echo.microservice.catalog.service.PodcastService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

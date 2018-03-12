@@ -1,4 +1,4 @@
-package echo.microservice.directory.repository;
+package echo.microservice.catalog.repository;
 
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;

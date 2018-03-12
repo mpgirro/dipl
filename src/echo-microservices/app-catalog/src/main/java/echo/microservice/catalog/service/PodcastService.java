@@ -1,7 +1,7 @@
-package echo.microservice.directory.service;
+package echo.microservice.catalog.service;
 
 import echo.core.domain.dto.PodcastDTO;
-import echo.microservice.directory.repository.PodcastRepository;
+import echo.microservice.catalog.repository.PodcastRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

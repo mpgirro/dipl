@@ -1,4 +1,4 @@
 /**
  * Spring Framework configuration files.
  */
-package echo.microservice.directory.config;
+package echo.microservice.catalog.config;

@@ -1,4 +1,4 @@
-package echo.microservice.directory.config;
+package echo.microservice.catalog.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EntityScan("echo.core.domain.entity")
 @PropertySource("classpath:application.properties")
-@EnableJpaRepositories("echo.microservice.directory.repository")
+@EnableJpaRepositories("echo.microservice.catalog.repository")
 //@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware") // TODO guess I'll need this at some point
 @EnableTransactionManagement
 public class DatabaseConfig {

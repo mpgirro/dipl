@@ -1,7 +1,7 @@
-package echo.microservice.directory.web.rest;
+package echo.microservice.catalog.web.rest;
 
-import echo.core.domain.dto.FeedDTO;
-import echo.microservice.directory.service.FeedService;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.microservice.catalog.service.EpisodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +18,21 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-public class FeedResource {
+public class EpisodeResource {
 
-    private final Logger log = LoggerFactory.getLogger(FeedResource.class);
+    private final Logger log = LoggerFactory.getLogger(EpisodeResource.class);
 
     @Autowired
-    private FeedService feedService;
+    private EpisodeService episodeService;
 
-    @RequestMapping(value = "/feed/{echoId}",
+    @RequestMapping(value = "/episode/{echoId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<FeedDTO> getPodcast(@PathVariable String echoId) {
-        log.debug("REST request to get Feed : {}", echoId);
-        final Optional<FeedDTO> feed = feedService.findOneByEchoId(echoId);
-        return feed
+    public ResponseEntity<EpisodeDTO> getPodcast(@PathVariable String echoId) {
+        log.debug("REST request to get Episode : {}", echoId);
+        final Optional<EpisodeDTO> episode = episodeService.findOneByEchoId(echoId);
+        return episode
                 .map(result -> new ResponseEntity<>(
                         result,
                         HttpStatus.OK))
