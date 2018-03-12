@@ -1,4 +1,4 @@
-package echo.microservice.directory.controller;
+package echo.microservice.directory.web.rest;
 
 import echo.core.domain.dto.PodcastDTO;
 import echo.microservice.directory.service.PodcastService;
@@ -19,9 +19,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/directory")
-public class PodcastController {
+public class PodcastResource {
 
-    private final Logger log = LoggerFactory.getLogger(PodcastController.class);
+    private final Logger log = LoggerFactory.getLogger(PodcastResource.class);
 
     @Autowired
     private PodcastService podcastService;
