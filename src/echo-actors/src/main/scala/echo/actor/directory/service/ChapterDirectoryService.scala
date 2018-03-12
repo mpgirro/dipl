@@ -20,6 +20,8 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
     private var repositoryFactory: JpaRepositoryFactory = _
     private var chapterRepository: ChapterRepository = _
 
+    private val chapterMapper = ChapterMapper.INSTANCE
+
     override def refresh(em: EntityManager): Unit = {
         repositoryFactory = rfb.createRepositoryFactory(em)
         chapterRepository = repositoryFactory.getRepository(classOf[ChapterRepository])
@@ -27,13 +29,15 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def save(chapterDTO: ChapterDTO): Option[ChapterDTO] = {
-        val chapter = ChapterMapper.INSTANCE.map(chapterDTO)
+        log.debug("Request to save Chapter : {}", chapterDTO)
+        val chapter = chapterMapper.map(chapterDTO)
         val result = chapterRepository.save(chapter)
         Option(ChapterMapper.INSTANCE.map(result))
     }
 
     @Transactional
     def saveAll(episodeId: Long, chapters: java.util.List[ChapterDTO]): Unit = {
+        log.debug("Request to save Chapters for Episode (ID) : {}", episodeId)
         for(c <- chapters.asScala){
             c.setEpisodeId(episodeId)
             save(c)
@@ -41,10 +45,11 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
     }
 
     @Transactional
-    def findAllByEpisode(episodeId: String): List[ChapterDTO] = {
-        chapterRepository.findAllByEpisodeEchoId(episodeId)
+    def findAllByEpisode(episodeExo: String): List[ChapterDTO] = {
+        log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo)
+        chapterRepository.findAllByEpisodeEchoId(episodeExo)
             .asScala
-            .map(c => ChapterMapper.INSTANCE.map(c))
+            .map(c => chapterMapper.map(c))
             .toList
     }
 

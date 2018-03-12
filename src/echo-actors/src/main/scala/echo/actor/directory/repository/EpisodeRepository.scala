@@ -13,11 +13,11 @@ trait EpisodeRepository extends JpaRepository[Episode, java.lang.Long] {
 
     def findAllByPodcast(podcast: Podcast): java.util.List[Episode]
 
-    @Query("SELECT DISTINCT episode FROM Episode episode WHERE episode.podcast.echoId = :echoId")
-    def findAllByPodcastEchoId(@Param("echoId") echoId: String): java.util.List[Episode]
+    @Query("SELECT DISTINCT episode FROM Episode episode WHERE episode.podcast.echoId = :podcastExo")
+    def findAllByPodcastEchoId(@Param("podcastExo") podcastExo: String): java.util.List[Episode]
 
-    @Query("SELECT DISTINCT episode FROM Episode episode WHERE episode.podcast.echoId = :podcastId AND episode.guid = :guid")
-    def findAllByPodcastAndGuid(@Param("podcastId") podcastId: String,
+    @Query("SELECT DISTINCT episode FROM Episode episode WHERE episode.podcast.echoId = :podcastExo AND episode.guid = :guid")
+    def findAllByPodcastAndGuid(@Param("podcastExo") podcastExo: String,
                                 @Param("guid") guid: String): java.util.List[Episode]
 
     @Query("SELECT DISTINCT episode FROM Episode episode " + "" +
@@ -31,6 +31,6 @@ trait EpisodeRepository extends JpaRepository[Episode, java.lang.Long] {
     @Query("SELECT count(episode) FROM Episode episode")
     def countAll(): Long
 
-    @Query("SELECT count(episode) FROM Episode episode WHERE episode.podcast.echoId = :podcastId")
-    def countByPodcast(@Param("podcastId") podcastId: String): Long
+    @Query("SELECT count(episode) FROM Episode episode WHERE episode.podcast.echoId = :podcastExo")
+    def countByPodcast(@Param("podcastExo") podcastExo: String): Long
 }

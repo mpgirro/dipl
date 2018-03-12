@@ -25,6 +25,8 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     private var repositoryFactory: JpaRepositoryFactory = _
     private var feedRepository: FeedRepository = _
 
+    private val feedMapper = FeedMapper.INSTANCE
+
     override def refresh(em: EntityManager): Unit = {
         repositoryFactory = rfb.createRepositoryFactory(em)
         feedRepository = repositoryFactory.getRepository(classOf[FeedRepository])
@@ -32,58 +34,66 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def save(feedDTO: FeedDTO): Option[FeedDTO] = {
+        log.debug("Request to save Feed : {}", feedDTO)
         val feed = FeedMapper.INSTANCE.map(feedDTO)
         val result = feedRepository.save(feed)
-        Option(FeedMapper.INSTANCE.map(result))
+        Option(feedMapper.map(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[FeedDTO] = {
+        log.debug("Request to get Feed (ID) : {}", id)
         val result = feedRepository.findOne(id)
-        Option(FeedMapper.INSTANCE.map(result))
+        Option(feedMapper.map(result))
     }
 
     @Transactional
-    def findOneByEchoId(echoId: String): Option[FeedDTO] = {
-        val result = feedRepository.findOneByEchoId(echoId)
-        Option(FeedMapper.INSTANCE.map(result))
+    def findOneByEchoId(exo: String): Option[FeedDTO] = {
+        log.debug("Request to get Feed (EXO) : {}", exo)
+        val result = feedRepository.findOneByEchoId(exo)
+        Option(feedMapper.map(result))
     }
 
     @Transactional
     def findAll(page: Int, size: Int): List[FeedDTO] = {
+        log.debug("Request to get all Feeds by page : {} and size : {}", page, size)
         //val sort = new Sort(new Sort.Order(Direction.ASC, "registration_timestamp"))
         //val pageable = new PageRequest(page, size, sort)
         val pageable = new PageRequest(page, size)
         feedRepository.findAll(pageable)
             .asScala
-            .map(f => FeedMapper.INSTANCE.map(f))
+            .map(f => feedMapper.map(f))
             .toList
     }
 
     @Transactional
     def findAllByUrl(url: String): List[FeedDTO] = {
+        log.debug("Request to get all Feeds by URL : {}", url)
         feedRepository.findAllByUrl(url)
             .asScala
-            .map(f => FeedMapper.INSTANCE.map(f))
+            .map(f => feedMapper.map(f))
             .toList
     }
 
     @Transactional
-    def findOneByUrlAndPodcastEchoId(url: String, podcastId: String): Option[FeedDTO] = {
-        val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastId)
-        Option(FeedMapper.INSTANCE.map(result))
+    def findOneByUrlAndPodcastEchoId(url: String, podcastExo: String): Option[FeedDTO] = {
+        log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo)
+        val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo)
+        Option(feedMapper.map(result))
     }
 
     @Transactional
-    def findAllByPodcast(podcastId: String): List[FeedDTO] = {
-        feedRepository.findAllByPodcast(podcastId)
+    def findAllByPodcast(podcastExo: String): List[FeedDTO] = {
+        log.debug("Request to get all Feeds by Podcast (EXO) : ", podcastExo)
+        feedRepository.findAllByPodcast(podcastExo)
             .asScala
-            .map(f => FeedMapper.INSTANCE.map(f))
+            .map(f => feedMapper.map(f))
             .toList
     }
 
     @Transactional
     def countAll(): Long = {
+        log.debug("Request to count all Feeds")
         feedRepository.countAll()
     }
 

@@ -13,17 +13,17 @@ trait FeedRepository extends JpaRepository[Feed, java.lang.Long] {
 
     def findAllByUrl(url: String): java.util.List[Feed]
 
-    @Query("SELECT DISTINCT feed FROM Feed feed WHERE feed.podcast.echoId = :podcastId")
-    def findAllByPodcast(@Param("podcastId") podcastId: String): java.util.List[Feed]
+    @Query("SELECT DISTINCT feed FROM Feed feed WHERE feed.podcast.echoId = :podcastExo")
+    def findAllByPodcast(@Param("podcastExo") podcastExo: String): java.util.List[Feed]
 
-    @Query("SELECT DISTINCT feed FROM Feed feed WHERE feed.url = :url AND feed.podcast.echoId = :podcastId")
+    @Query("SELECT DISTINCT feed FROM Feed feed WHERE feed.url = :url AND feed.podcast.echoId = :podcastExo")
     def findOneByUrlAndPodcastEchoId(@Param("url") url: String,
-                                     @Param("podcastId") podcastId: String): Feed
+                                     @Param("podcastExo") podcastExo: String): Feed
 
     @Query("SELECT count(feed) FROM Feed feed")
     def countAll(): Long
 
-    @Query("SELECT count(feed) FROM Feed feed WHERE feed.podcast.echoId = :podcastId")
-    def countByPodcast(@Param("podcastId") podcastId: String): Long
+    @Query("SELECT count(feed) FROM Feed feed WHERE feed.podcast.echoId = :podcastExo")
+    def countByPodcast(@Param("podcastExo") podcastExo: String): Long
 
 }

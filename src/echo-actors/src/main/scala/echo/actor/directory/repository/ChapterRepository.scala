@@ -11,7 +11,7 @@ trait ChapterRepository extends JpaRepository[Chapter, java.lang.Long] {
 
     def findAllByEpisode(episode: Episode): java.util.List[Chapter]
 
-    @Query("SELECT DISTINCT chapter FROM Chapter chapter WHERE chapter.episode.echoId = :echoId")
-    def findAllByEpisodeEchoId(@Param("echoId") echoId: String): java.util.List[Chapter]
+    @Query("SELECT DISTINCT chapter FROM Chapter chapter WHERE chapter.episode.echoId = :episodeExo")
+    def findAllByEpisodeEchoId(@Param("episodeExo") episodeExo: String): java.util.List[Chapter]
 
 }
