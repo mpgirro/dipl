@@ -70,6 +70,8 @@ dependencies {
 
     compile 'org.hashids:hashids:1.0.3'
 
+    compile 'com.google.guava:guava:24.0-jre'
+
     compile 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
     testCompile 'org.testng:testng:6.10', 'org.easytesting:fest-assert:1.4'
     apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
