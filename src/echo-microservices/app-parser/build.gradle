@@ -134,6 +134,8 @@ repositories {
 dependencies {
     compile "net.irro.echo:echo-core:${echo_core_version}"
 
+    compile 'org.jsoup:jsoup:1.11.2' // HTTP parser
+
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
 
     compile "org.springframework.boot:spring-boot-starter-cache"
