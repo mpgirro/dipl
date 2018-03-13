@@ -28,9 +28,7 @@ public class EpisodeService {
     private EpisodeRepository episodeRepository;
 
     private PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
-
     private EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
-
     private TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
     @Transactional

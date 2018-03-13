@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/catalog")
 public class FeedResource {
 
     private final Logger log = LoggerFactory.getLogger(FeedResource.class);
@@ -25,13 +25,13 @@ public class FeedResource {
     @Autowired
     private FeedService feedService;
 
-    @RequestMapping(value = "/feed/{echoId}",
+    @RequestMapping(value = "/feed/{exo}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<FeedDTO> getPodcast(@PathVariable String echoId) {
-        log.debug("REST request to get Feed : {}", echoId);
-        final Optional<FeedDTO> feed = feedService.findOneByEchoId(echoId);
+    public ResponseEntity<FeedDTO> getPodcast(@PathVariable String exo) {
+        log.debug("REST request to get Feed (EXO) : {}", exo);
+        final Optional<FeedDTO> feed = feedService.findOneByEchoId(exo);
         return feed
                 .map(result -> new ResponseEntity<>(
                         result,

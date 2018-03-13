@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/catalog")
 public class EpisodeResource {
 
     private final Logger log = LoggerFactory.getLogger(EpisodeResource.class);
@@ -25,13 +25,13 @@ public class EpisodeResource {
     @Autowired
     private EpisodeService episodeService;
 
-    @RequestMapping(value = "/episode/{echoId}",
+    @RequestMapping(value = "/episode/{exo}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<EpisodeDTO> getPodcast(@PathVariable String echoId) {
-        log.debug("REST request to get Episode : {}", echoId);
-        final Optional<EpisodeDTO> episode = episodeService.findOneByEchoId(echoId);
+    public ResponseEntity<EpisodeDTO> getPodcast(@PathVariable String exo) {
+        log.debug("REST request to get Episode (EXO) : {}", exo);
+        final Optional<EpisodeDTO> episode = episodeService.findOneByEchoId(exo);
         return episode
                 .map(result -> new ResponseEntity<>(
                         result,

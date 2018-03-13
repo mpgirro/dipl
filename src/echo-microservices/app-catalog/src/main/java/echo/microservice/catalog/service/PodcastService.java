@@ -29,7 +29,6 @@ public class PodcastService {
     private PodcastRepository podcastRepository;
 
     private PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
-
     private TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
     @Transactional
@@ -64,6 +63,17 @@ public class PodcastService {
     @Transactional(readOnly = true)
     public List<PodcastDTO> findAll(int page, int size) {
         log.debug("Request to get all Podcasts by page : {} and size : {}", page, size);
+
+        if (page < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
+        if (size < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
         final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
         final PageRequest pageable = new PageRequest(page, size, sort);
         return podcastRepository.findAll(pageable).getContent().stream()
