@@ -41,8 +41,7 @@ public class IndexResource {
     }
 
     @RequestMapping(value = "/doc",
-        method = RequestMethod.POST,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
         log.debug("REST request to save doc : {}", doc);
         indexService.add(doc);
