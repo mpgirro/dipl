@@ -26,12 +26,6 @@ public class PodcastResource {
 
     private final Logger log = LoggerFactory.getLogger(PodcastResource.class);
 
-    @Value("${echo.catalog.default-page:1}")
-    private Integer DEFAULT_PAGE;
-
-    @Value("${echo.catalog.default-size:20}")
-    private Integer DEFAULT_SIZE;
-
     @Autowired
     private PodcastService podcastService;
 
@@ -59,8 +53,7 @@ public class PodcastResource {
     public ResponseEntity<List<EpisodeDTO>> getEpisodesByPodcast(@PathVariable String exo) {
         log.debug("REST request to get Podcast (EXO) : {}", exo);
         final List<EpisodeDTO> episodes = episodeService.findAllByPodcast(exo);
-        final HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<>(episodes, headers, HttpStatus.OK);
+        return new ResponseEntity<>(episodes, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/podcast",
@@ -70,12 +63,8 @@ public class PodcastResource {
     @Transactional(readOnly = true)
     public ResponseEntity<List<PodcastDTO>> getAll(@RequestParam("page") Integer page,
                                                    @RequestParam("size") Integer size) {
-        log.debug("REST request to get all Podcasts");
-
-        final int p = MoreObjects.firstNonNull(page, DEFAULT_PAGE) - 1;
-        final int s = MoreObjects.firstNonNull(size, DEFAULT_SIZE);
-
-        final List<PodcastDTO> podcasts = podcastService.findAll(p, s);
+        log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
+        final List<PodcastDTO> podcasts = podcastService.findAll(page, size);
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts"); // TODO
         final HttpHeaders headers = new HttpHeaders();
         return new ResponseEntity<>(podcasts, headers, HttpStatus.OK);
@@ -83,11 +72,13 @@ public class PodcastResource {
 
     @RequestMapping(value = "/podcast/teaser",
         method = RequestMethod.GET,
+        params = { "page", "size" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<List<PodcastDTO>> getAllAsTeasers() {
-        log.debug("REST request to get all Podcasts as teaser");
-        final List<PodcastDTO> teasers = podcastService.findAllAsTeaser();
+    public ResponseEntity<List<PodcastDTO>> getAllAsTeasers(@RequestParam("page") Integer page,
+                                                            @RequestParam("size") Integer size) {
+        log.debug("REST request to get all Podcasts as teaser by page/size : ({},{})", page, size);
+        final List<PodcastDTO> teasers = podcastService.findAllAsTeaser(page, size);
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts/teasers"); // TODO
         final HttpHeaders headers = new HttpHeaders();
         return new ResponseEntity<>(teasers, headers, HttpStatus.OK);

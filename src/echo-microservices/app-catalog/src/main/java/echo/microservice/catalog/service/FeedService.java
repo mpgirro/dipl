@@ -1,5 +1,6 @@
 package echo.microservice.catalog.service;
 
+import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.entity.Feed;
 import echo.core.mapper.FeedMapper;
@@ -7,6 +8,7 @@ import echo.microservice.catalog.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,12 @@ import java.util.stream.Collectors;
 public class FeedService {
 
     private final Logger log = LoggerFactory.getLogger(FeedService.class);
+
+    @Value("${echo.catalog.default-page:1}")
+    private Integer DEFAULT_PAGE;
+
+    @Value("${echo.catalog.default-size:20}")
+    private Integer DEFAULT_SIZE;
 
     @Autowired
     private FeedRepository feedRepository;
@@ -49,9 +57,9 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public List<FeedDTO> findAll(int page, int size) {
+    public List<FeedDTO> findAll(Integer page, Integer size) {
         log.debug("Request to get all Feeds by page : {} and size : {}", page, size);
-        final PageRequest pageable = new PageRequest(page, size);
+        final PageRequest pageable = getPageable(page, size);
         return feedRepository.findAll(pageable).getContent().stream()
             .map(feedMapper::map)
             .collect(Collectors.toList());
@@ -84,6 +92,23 @@ public class FeedService {
     public Long countAll() {
         log.debug("Request to count all Feeds");
         return feedRepository.countAll();
+    }
+
+    private PageRequest getPageable(Integer page, Integer size) {
+        final int p = MoreObjects.firstNonNull(page, DEFAULT_PAGE) - 1;
+        final int s = MoreObjects.firstNonNull(size, DEFAULT_SIZE);
+
+        if (p < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
+        if (s < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
+        return new PageRequest(page, size);
     }
 
 }

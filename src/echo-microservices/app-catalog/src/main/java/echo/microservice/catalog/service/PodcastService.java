@@ -1,14 +1,15 @@
 package echo.microservice.catalog.service;
 
+import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.Podcast;
-import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
 import echo.microservice.catalog.repository.PodcastRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -24,6 +25,12 @@ import java.util.stream.Collectors;
 public class PodcastService {
 
     private final Logger log = LoggerFactory.getLogger(PodcastService.class);
+
+    @Value("${echo.catalog.default-page:1}")
+    private Integer DEFAULT_PAGE;
+
+    @Value("${echo.catalog.default-size:20}")
+    private Integer DEFAULT_SIZE;
 
     @Autowired
     private PodcastRepository podcastRepository;
@@ -61,49 +68,36 @@ public class PodcastService {
     }
 
     @Transactional(readOnly = true)
-    public List<PodcastDTO> findAll(int page, int size) {
-        log.debug("Request to get all Podcasts by page : {} and size : {}", page, size);
-
-        if (page < 0) {
-            // TODO throw exception
-            // TODO in the Actors version, this is NOT done in the service --> should it better be?
-        }
-
-        if (size < 0) {
-            // TODO throw exception
-            // TODO in the Actors version, this is NOT done in the service --> should it better be?
-        }
-
-        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
-        final PageRequest pageable = new PageRequest(page, size, sort);
+    public List<PodcastDTO> findAll(Integer page, Integer size) {
+        log.debug("Request to get all Podcasts by page/size : ({},{})", page, size);
+        final PageRequest pageable = getPageableSortedByTitle(page, size);
         return podcastRepository.findAll(pageable).getContent().stream()
             .map(podcastMapper::map)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<PodcastDTO> findAllAsTeaser() {
-        log.debug("Request to get all Podcasts as teaser");
-        return podcastRepository.findAll().stream()
+    public List<PodcastDTO> findAllAsTeaser(Integer page, Integer size) {
+        log.debug("Request to get all Podcasts as teaser by page/size : ({},{})", page, size);
+        final PageRequest pageable = getPageableSortedByTitle(page, size);
+        return podcastRepository.findAll(pageable).getContent().stream()
             .map(teaserMapper::asTeaser)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<PodcastDTO> findAllRegistrationComplete(int page, int size) {
+    public List<PodcastDTO> findAllRegistrationComplete(Integer page, Integer size) {
         log.debug("Request to get all Podcasts where registration is complete by page : {} and size : {}", page, size);
-        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
-        final PageRequest pageable =  new PageRequest(page, size, sort);
+        final PageRequest pageable = getPageableSortedByTitle(page, size);
         return podcastRepository.findByRegistrationCompleteTrue(pageable).stream()
             .map(podcastMapper::map)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<PodcastDTO> findAllRegistrationCompleteAsTeaser(int page, int size) {
+    public List<PodcastDTO> findAllRegistrationCompleteAsTeaser(Integer page, Integer size) {
         log.debug("Request to get all Podcasts as teaser where registration is complete by page : {} and size : {}", page, size);
-        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
-        final PageRequest pageable =  new PageRequest(page, size, sort);
+        final PageRequest pageable = getPageableSortedByTitle(page, size);
         return podcastRepository.findByRegistrationCompleteTrue(pageable).stream()
             .map(teaserMapper::asTeaser)
             .collect(Collectors.toList());
@@ -119,6 +113,24 @@ public class PodcastService {
     public Long countAllRegistrationComplete() {
         log.debug("Request to count all Podcasts where registration is complete");
         return podcastRepository.countAllRegistrationCompleteTrue();
+    }
+
+    private PageRequest getPageableSortedByTitle(Integer page, Integer size) {
+        final int p = MoreObjects.firstNonNull(page, DEFAULT_PAGE) - 1;
+        final int s = MoreObjects.firstNonNull(size, DEFAULT_SIZE);
+
+        if (p < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
+        if (s < 0) {
+            // TODO throw exception
+            // TODO in the Actors version, this is NOT done in the service --> should it better be?
+        }
+
+        final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
+        return new PageRequest(page, size, sort);
     }
 
 }
