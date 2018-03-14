@@ -9,7 +9,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -19,11 +21,13 @@ import static com.google.common.base.Strings.isNullOrEmpty;
  * @author Maximilian Irro
  */
 @Service
-public class ParsingService {
+public class ParserService {
 
-    private final Logger log = LoggerFactory.getLogger(ParsingService.class);
+    private final Logger log = LoggerFactory.getLogger(ParserService.class);
 
     private final FeedParser feedParser = new RomeFeedParser();
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public void parseFeed(String podcastExo, String feedUrl, String feedData, Boolean isNewPodcast) {
         try {
@@ -33,27 +37,29 @@ public class ParsingService {
                 final PodcastDTO p = podcast.get();
                 p.setEchoId(podcastExo);
 
-                if (isNullOrEmpty(p.getTitle())) {
-                    p.setTitle(p.getTitle().trim());
-                }
-
-                if (isNullOrEmpty(p.getDescription())) {
-                    final String d = Jsoup.clean(p.getDescription(), Whitelist.basic());
-                    p.setDescription(d);
-                }
+                Optional.ofNullable(p.getTitle()).ifPresent(t -> p.setTitle(t.trim()));
+                Optional.ofNullable(p.getDescription()).ifPresent(d -> p.setDescription(Jsoup.clean(d, Whitelist.basic())));
 
                 if (isNewPodcast) {
-                    // TODO send podcast to index
+                    // TODO replace by sending job to queue
+                    final String indexAddDocUrl = "http://localhost:3032/api/index/doc";
+                    final HttpEntity<PodcastDTO> request = new HttpEntity<>(p);
+                    restTemplate.postForEntity(indexAddDocUrl, request, PodcastDTO.class);
 
-                    if (isNullOrEmpty(p.getLink())) {
+                    if (!isNullOrEmpty(p.getLink())) {
                         // TODO tell crawler to download website content for podcast website
+                    } else {
+                        log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId());
                     }
                 }
 
-                // TODO tell catalog to update podcast metadata
+                // TODO replace by async job?
+                // tell catalog to update podcast metadata
+                final String catalogUpdateUrl = "http://localhost:3031/api/catalog/podcast";
+                restTemplate.put(catalogUpdateUrl, p);
 
-                // TODO process episode data from feed
-                throw new UnsupportedOperationException("ParsingService.parseFeed");
+
+                processEpisodes(podcastExo, feedUrl, feedData);
             } else {
                 log.warn("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl);
             }
@@ -77,17 +83,10 @@ public class ParsingService {
     private void processEpisodes(String podcastExo, String feedUrl, String feedData) throws FeedParsingException {
         final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
         for (EpisodeDTO e : episodes) {
-            if (isNullOrEmpty(e.getTitle())) {
-                e.setTitle(e.getTitle().trim());
-            }
 
-            if (isNullOrEmpty(e.getDescription())) {
-                e.setDescription(Jsoup.clean(e.getDescription(), Whitelist.basic()));
-            }
-
-            if (isNullOrEmpty(e.getContentEncoded())) {
-                e.setContentEncoded(Jsoup.clean(e.getContentEncoded(), Whitelist.basic()));
-            }
+            Optional.ofNullable(e.getTitle()).ifPresent(t -> e.setTitle(t.trim()));
+            Optional.ofNullable(e.getDescription()).ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
+            Optional.ofNullable(e.getContentEncoded()).ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
 
             // TODO tell catalog to register episode if unknown
             throw new UnsupportedOperationException("ParsingService.processEpisodes");
