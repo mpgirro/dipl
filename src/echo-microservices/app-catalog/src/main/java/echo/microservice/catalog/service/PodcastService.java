@@ -46,6 +46,19 @@ public class PodcastService {
         return Optional.of(podcastMapper.map(result));
     }
 
+    @Transactional
+    public Optional<PodcastDTO> update(PodcastDTO podcastDTO) {
+        log.debug("Request to update Podcast : {}", podcastDTO);
+        return findOneByEchoId(podcastDTO.getEchoId())
+            .map(podcast -> {
+                final long id = podcast.getId();
+                podcastMapper.update(podcastDTO, podcast);
+                podcast.setId(id);
+                return save(podcast);
+            })
+            .orElse(Optional.empty());
+    }
+
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOne(Long id) {
         log.debug("Request to get Podcast (ID) : {}", id);

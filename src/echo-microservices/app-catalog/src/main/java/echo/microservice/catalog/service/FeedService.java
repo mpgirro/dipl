@@ -42,6 +42,19 @@ public class FeedService {
         return Optional.of(feedMapper.map(result));
     }
 
+    @Transactional
+    public Optional<FeedDTO> update(FeedDTO feedDTO) {
+        log.debug("Request to update Feed : {}", feedDTO);
+        return findOneByEchoId(feedDTO.getEchoId())
+            .map(feed -> {
+                final long id = feed.getId();
+                feedMapper.update(feedDTO, feed);
+                feed.setId(id);
+                return save(feed);
+            })
+            .orElse(Optional.empty());
+    }
+
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOne(Long id) {
         log.debug("Request to get Feed (ID) : {}", id);

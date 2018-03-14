@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +33,30 @@ public class PodcastResource {
 
     @Autowired
     private EpisodeService episodeService;
+
+    @PostMapping("/podcast")
+    @Transactional
+    public ResponseEntity<PodcastDTO> createPodcast(@RequestBody PodcastDTO podcastDTO) throws URISyntaxException {
+        log.debug("REST request to save Podcast : {}", podcastDTO);
+        final Optional<PodcastDTO> created = podcastService.save(podcastDTO);
+        return created
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.CREATED))
+            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @PutMapping("/podcast")
+    @Transactional
+    public ResponseEntity<PodcastDTO> updatePodcast(@RequestBody PodcastDTO podcastDTO) {
+        log.debug("REST request to update Podcast : {}", podcastDTO);
+        final Optional<PodcastDTO> updated = podcastService.update(podcastDTO);
+        return updated
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     @RequestMapping(value = "/podcast/{exo}",
         method = RequestMethod.GET,

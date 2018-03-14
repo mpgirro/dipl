@@ -39,6 +39,19 @@ public class EpisodeService {
         return Optional.of(episodeMapper.map(result));
     }
 
+    @Transactional
+    public Optional<EpisodeDTO> update(EpisodeDTO episodeDTO) {
+        log.debug("Request to update Episode : {}", episodeDTO);
+        return findOneByEchoId(episodeDTO.getEchoId())
+            .map(episode -> {
+                final long id = episode.getId();
+                episodeMapper.update(episodeDTO, episode);
+                episode.setId(id);
+                return save(episode);
+            })
+            .orElse(Optional.empty());
+    }
+
     @Transactional(readOnly = true)
     public Optional<EpisodeDTO> findOne(Long id) {
         log.debug("Request to get Episode (ID) : {}", id);
