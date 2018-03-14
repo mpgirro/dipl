@@ -27,8 +27,8 @@ public class SearchService {
 
     public ResultWrapperDTO search(String query, Integer page, Integer size) {
 
-        final int p = Optional.ofNullable(page).orElse(page);
-        final int s = Optional.ofNullable(size).orElse(size);
+        final int p = Optional.ofNullable(page).orElse(DEFAULT_PAGE);
+        final int s = Optional.ofNullable(size).orElse(DEFAULT_SIZE);
 
         if (p < 0) return new ResultWrapperDTO();
         if (s < 0) return new ResultWrapperDTO();
