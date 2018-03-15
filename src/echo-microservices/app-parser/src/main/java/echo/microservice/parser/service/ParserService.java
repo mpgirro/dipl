@@ -42,7 +42,7 @@ public class ParserService {
 
                 if (isNewPodcast) {
                     // TODO replace by sending job to queue
-                    final String indexAddDocUrl = "http://localhost:3032/api/index/doc";
+                    final String indexAddDocUrl = "http://localhost:3032/index/doc";
                     final HttpEntity<PodcastDTO> request = new HttpEntity<>(p);
                     restTemplate.postForEntity(indexAddDocUrl, request, PodcastDTO.class);
 
@@ -55,7 +55,7 @@ public class ParserService {
 
                 // TODO replace by async job?
                 // tell catalog to update podcast metadata
-                final String catalogUpdateUrl = "http://localhost:3031/api/catalog/podcast";
+                final String catalogUpdateUrl = "http://localhost:3031/catalog/podcast";
                 restTemplate.put(catalogUpdateUrl, p);
 
 

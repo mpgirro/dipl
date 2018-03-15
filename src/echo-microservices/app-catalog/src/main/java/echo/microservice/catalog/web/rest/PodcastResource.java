@@ -2,8 +2,10 @@ package echo.microservice.catalog.web.rest;
 
 import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.microservice.catalog.service.EpisodeService;
+import echo.microservice.catalog.service.FeedService;
 import echo.microservice.catalog.service.PodcastService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/catalog")
+@RequestMapping("/catalog")
 public class PodcastResource {
 
     private final Logger log = LoggerFactory.getLogger(PodcastResource.class);
@@ -33,6 +35,9 @@ public class PodcastResource {
 
     @Autowired
     private EpisodeService episodeService;
+
+    @Autowired
+    private FeedService feedService;
 
     @PostMapping("/podcast")
     @Transactional
@@ -77,9 +82,19 @@ public class PodcastResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<List<EpisodeDTO>> getEpisodesByPodcast(@PathVariable String exo) {
-        log.debug("REST request to get Podcast (EXO) : {}", exo);
+        log.debug("REST request to get Episodes by Podcast (EXO) : {}", exo);
         final List<EpisodeDTO> episodes = episodeService.findAllByPodcast(exo);
         return new ResponseEntity<>(episodes, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/podcast/{exo}/feeds",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<FeedDTO>> getFeedsByPodcast(@PathVariable String exo) {
+        log.debug("REST request to get Feeds by Podcast (EXO) : {}", exo);
+        final List<FeedDTO> feeds = feedService.findAllByPodcast(exo);
+        return new ResponseEntity<>(feeds, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/podcast",

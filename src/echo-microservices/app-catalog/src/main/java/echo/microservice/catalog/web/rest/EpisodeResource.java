@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/catalog")
+@RequestMapping("/catalog")
 public class EpisodeResource {
 
     private final Logger log = LoggerFactory.getLogger(EpisodeResource.class);
@@ -51,7 +51,7 @@ public class EpisodeResource {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<EpisodeDTO> getPodcast(@PathVariable String exo) {
+    public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.debug("REST request to get Episode (EXO) : {}", exo);
         final Optional<EpisodeDTO> episode = episodeService.findOneByEchoId(exo);
         return episode

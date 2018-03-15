@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
  * @author Maximilian Irro
  */
 @RestController
-@RequestMapping("/api/index")
+@RequestMapping("/index")
 public class IndexResource {
 
     private final Logger log = LoggerFactory.getLogger(IndexResource.class);
@@ -42,6 +42,7 @@ public class IndexResource {
 
     @RequestMapping(value = "/doc",
         method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
         log.debug("REST request to save doc : {}", doc);
         indexService.add(doc);

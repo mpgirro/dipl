@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/catalog")
+@RequestMapping("/catalog")
 public class FeedResource {
 
     private final Logger log = LoggerFactory.getLogger(FeedResource.class);
@@ -51,14 +51,14 @@ public class FeedResource {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<FeedDTO> getPodcast(@PathVariable String exo) {
+    public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);
         final Optional<FeedDTO> feed = feedService.findOneByEchoId(exo);
         return feed
-                .map(result -> new ResponseEntity<>(
-                        result,
-                        HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

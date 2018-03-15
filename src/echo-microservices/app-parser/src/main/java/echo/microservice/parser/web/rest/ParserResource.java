@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Maximilian Irro
  */
 @RestController
-@RequestMapping("/api/parser")
+@RequestMapping("/parser")
 public class ParserResource {
 
     private final Logger log = LoggerFactory.getLogger(ParserResource.class);
