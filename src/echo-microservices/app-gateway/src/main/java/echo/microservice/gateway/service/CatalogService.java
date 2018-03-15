@@ -52,7 +52,7 @@ public class CatalogService {
 
         String url = CATALOG_URL+"/podcast?";
         if (page != null) url += "page="+page;
-        if (size != null) url += "size="+size;
+        if (size != null) url += "&size="+size;
 
         //and do I need this JSON media type for my use case?
         final HttpHeaders headers = new HttpHeaders();

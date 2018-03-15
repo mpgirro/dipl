@@ -28,8 +28,8 @@ public class SearcherService {
         log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);
 
         String url = SEARCHER_URL+"/search?query="+query;
-        if (page != null) url += "page="+page;
-        if (size != null) url += "size="+size;
+        if (page != null) url += "&page="+page;
+        if (size != null) url += "&size="+size;
 
         //and do I need this JSON media type for my use case?
         final HttpHeaders headers = new HttpHeaders();
