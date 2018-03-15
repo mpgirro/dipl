@@ -143,7 +143,7 @@ public class PodcastService {
         }
 
         final Sort sort = new Sort(new Sort.Order(Direction.ASC, "title"));
-        return new PageRequest(page, size, sort);
+        return new PageRequest(p, s, sort);
     }
 
 }
