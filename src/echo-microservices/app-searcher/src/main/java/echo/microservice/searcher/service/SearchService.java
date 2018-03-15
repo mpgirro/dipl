@@ -34,7 +34,7 @@ public class SearchService {
         if (s < 0) return new ResultWrapperDTO();
 
         // TODO do not hardcode this
-        final String url = "http://localhost:3032/api/index/search?query="+query+"&page="+p+"&size="+s;
+        final String url = "http://localhost:3032/index/search?query="+query+"&page="+p+"&size="+s;
 
         return restTemplate.getForObject(url, ResultWrapperDTO.class);
     }

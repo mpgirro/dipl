@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Maximilian Irro
  */
 @RestController
-@RequestMapping("/api/searcher")
+@RequestMapping("/searcher")
 public class SearchResource {
 
     private final Logger log = LoggerFactory.getLogger(SearchResource.class);
