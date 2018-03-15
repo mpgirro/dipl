@@ -5,6 +5,7 @@ import echo.core.domain.entity.Episode;
 import echo.core.domain.dto.ChapterDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -20,6 +21,8 @@ public interface ChapterMapper {
 
     @Mapping(source = "episodeId", target = "episode")
     Chapter map(ChapterDTO dto);
+
+    ChapterDTO update(ChapterDTO src, @MappingTarget ChapterDTO target);
 
     default Episode episodeFromId(Long id) {
 

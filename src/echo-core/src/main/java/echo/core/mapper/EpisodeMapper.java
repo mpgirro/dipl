@@ -6,6 +6,7 @@ import echo.core.domain.entity.Podcast;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -23,6 +24,8 @@ public interface EpisodeMapper {
 
     @Mapping(source = "podcastId", target = "podcast")
     Episode map(EpisodeDTO episodeDto);
+
+    EpisodeDTO update(EpisodeDTO src, @MappingTarget EpisodeDTO target);
 
     // TODO unused because we use PodcastMapper.class ?
     default Podcast podcastFromId(Long id) {

@@ -5,6 +5,7 @@ import echo.core.domain.entity.Podcast;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -20,6 +21,8 @@ public interface PodcastMapper {
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
     Podcast map(PodcastDTO podcastDto);
+
+    PodcastDTO update(PodcastDTO src, @MappingTarget PodcastDTO target);
 
     default PodcastDTO map(org.apache.lucene.document.Document doc){
 

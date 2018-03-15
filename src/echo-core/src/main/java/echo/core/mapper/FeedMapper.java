@@ -5,6 +5,7 @@ import echo.core.domain.entity.Podcast;
 import echo.core.domain.dto.FeedDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -20,6 +21,8 @@ public interface FeedMapper {
 
     @Mapping(source = "podcastId", target = "podcast")
     Feed map(FeedDTO feedDto);
+
+    FeedDTO update(FeedDTO src, @MappingTarget FeedDTO target);
 
     default Podcast podcastFromId(Long id) {
 
