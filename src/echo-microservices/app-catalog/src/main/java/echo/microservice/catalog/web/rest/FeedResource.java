@@ -37,7 +37,7 @@ public class FeedResource {
 
     @RequestMapping(value = "/feed/propose",
         method = RequestMethod.POST,
-        params = { "ur" })
+        params = { "url" })
     @Transactional
     @ResponseStatus(HttpStatus.OK)
     public void proposeFeed(@RequestParam("url") String url) throws URISyntaxException {
