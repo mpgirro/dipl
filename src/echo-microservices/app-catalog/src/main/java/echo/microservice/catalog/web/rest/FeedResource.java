@@ -35,6 +35,16 @@ public class FeedResource {
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
+    @RequestMapping(value = "/feed/propose",
+        method = RequestMethod.POST,
+        params = { "ur" })
+    @Transactional
+    @ResponseStatus(HttpStatus.OK)
+    public void proposeFeed(@RequestParam("url") String url) throws URISyntaxException {
+        log.debug("REST request to propose Feed by URL : {}", url);
+        feedService.propose(url);
+    }
+
     @PutMapping("/feed")
     @Transactional
     public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feedDTO) {

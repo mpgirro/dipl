@@ -7,6 +7,7 @@ import echo.core.domain.entity.Podcast;
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
+import echo.core.util.EchoIdGenerator;
 import echo.microservice.catalog.repository.EpisodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Service
 @Transactional
@@ -31,9 +34,14 @@ public class EpisodeService {
     private EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
     private TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
+    private EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+
     @Transactional
     public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
         log.debug("Request to save Episode : {}", episodeDTO);
+        if (isNullOrEmpty(episodeDTO.getEchoId())) {
+            episodeDTO.setEchoId(idGenerator.getNewId());
+        }
         final Episode episode = episodeMapper.map(episodeDTO);
         final Episode result = episodeRepository.save(episode);
         return Optional.of(episodeMapper.map(result));
