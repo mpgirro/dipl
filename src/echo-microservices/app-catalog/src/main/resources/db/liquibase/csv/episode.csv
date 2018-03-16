@@ -1,1 +1,2 @@
 id;echo_id;title;link;description;pub_date;guid;guid_is_permalink;image;itunes_duration;itunes_subtitle;itunes_author;itunes_summary;itunes_season;itunes_episode;itunes_episode_type;enclosure_url;enclosure_length;enclosure_type;content_encoded;podcast_id;registration_timestamp
+1;abc;episode title;http;episode description;2018-01-01 00:00:00.001;ABC;f;img;30:00;episode subtitle;episode author;episode summary;1;1;;;1;;;1;2018-01-01 00:00:00.001
