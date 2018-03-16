@@ -288,7 +288,7 @@ public class PodcastDTO implements EntityDTO {
             "\tcopyright='" + copyright + "\',\n" +
             "\tdocs='" + docs + "\',\n" +
             "\tmanagingEditor='" + managingEditor + "\',\n" +
-            "\titunesCategories='" + String.join(", ", itunesCategories) + "\',\n" +
+            "\titunesCategories='" + (itunesCategories==null ? null : String.join(", ", itunesCategories)) + "\',\n" +
             "\titunesSummary='" + itunesSummary + "\',\n" +
             "\titunesAuthor='" + itunesAuthor + "\',\n" +
             "\titunesKeywords='" + itunesKeywords + "\',\n" +
