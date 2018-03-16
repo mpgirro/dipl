@@ -1,0 +1,82 @@
+import org.gradle.internal.os.OperatingSystem
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+    }
+}
+
+defaultTasks 'clean build run'
+
+apply plugin: 'scala'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility=1.8
+targetCompatibility=1.8
+assert System.properties['java.specification.version'] == '1.8'
+
+group = 'net.irro.echo'
+version = '1.0-SNAPSHOT'
+description = ''
+
+mainClassName = 'echo.microservice.cli.CliApp'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+ext {
+    scala_major_version = '2.12'
+    scala_minor_version = '4'
+    scala_logging_version = '3.8.0'
+    logback_version = '1.2.3'
+    echo_core_version = '1.0-SNAPSHOT'
+}
+
+dependencies {
+    compile "net.irro.echo:echo-core:${echo_core_version}"
+    compile group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"
+    compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
+    compile "ch.qos.logback:logback-classic:${logback_version}"
+    compile group: 'com.typesafe.scala-logging', name: "scala-logging_${scala_major_version}", version: scala_logging_version
+}
+
+// Specifying the main class for the 'application' plugin
+jar {
+    baseName = project.name
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+// Workaround for Gradle 3.+ and IDEA (https://discuss.gradle.org/t/idea-integration-with-scala-plugin-broken-since-gradle-3-0-no-such-property-daemonserver/19159/2)
+ScalaCompileOptions.metaClass.daemonServer = true
+ScalaCompileOptions.metaClass.fork = true
+ScalaCompileOptions.metaClass.useAnt = false
+ScalaCompileOptions.metaClass.useCompileDaemon = false
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-unchecked", "-deprecation", "-feature", "-Xfatal-warnings", "-encoding", "utf8"]
+}
+
+task cleanResources(type: Delete) {
+    delete 'build/resources'
+}
+
+// Generating gradle wrapper so people don't have to have the Gradle version preinstalled
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.5'
+}
+
+run {
+    standardInput = System.in
+}
