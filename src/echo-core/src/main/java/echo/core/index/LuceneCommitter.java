@@ -71,7 +71,7 @@ public class LuceneCommitter implements IndexCommitter {
 
         final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
         try {
-            writer.updateDocument(new Term("echo_id", indexDoc.getEchoId()), luceneDoc);
+            writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {
             log.error("Error updating index entry for : {}" + indexDoc);
             e.printStackTrace();
