@@ -13,8 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,6 +48,8 @@ public class FeedService {
     private FeedMapper feedMapper = FeedMapper.INSTANCE;
 
     private EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
@@ -122,29 +128,35 @@ public class FeedService {
     }
 
     @Transactional
-    public void propose(String url) {
-        log.debug("Request to propose Feed by URL : {}", url);
-        if (findAllByUrl(url).isEmpty()) {
+    public void propose(String feedUrl) {
+        log.debug("Request to propose Feed by URL : {}", feedUrl);
+        if (findAllByUrl(feedUrl).isEmpty()) {
 
             // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
 
             PodcastDTO podcast = new PodcastDTO();
-            podcast.setDescription(url);
+            podcast.setDescription(feedUrl);
             podcast.setRegistrationComplete(true);
             podcast.setRegistrationTimestamp(LocalDateTime.now());
             podcast = podcastService.save(podcast).get();
 
             FeedDTO feed = new FeedDTO();
-            feed.setUrl(url);
+            feed.setPodcastId(podcast.getId());
+            feed.setUrl(feedUrl);
             feed.setLastChecked(LocalDateTime.now());
             feed.setLastStatus(FeedStatus.NEVER_CHECKED);
             feed.setRegistrationTimestamp(LocalDateTime.now());
             feed = this.save(feed).get();
 
             // TODO send url to crawler for download
+            // TODO replace by sending job to queue
+            final String parserUrl = "http://localhost:3033/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
+            final HttpEntity<String> request = new HttpEntity<>(""); // TODO dummy, we do not send a body that should be created (as is custom with POST)
+            final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
+
 
         } else {
-            log.info("Proposed feed is already in database: {}", url);
+            log.info("Proposed feed is already in database: {}", feedUrl);
         }
 
     }

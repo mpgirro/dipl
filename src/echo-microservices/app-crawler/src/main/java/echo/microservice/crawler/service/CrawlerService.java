@@ -1,5 +1,6 @@
 package echo.microservice.crawler.service;
 
+import echo.core.async.job.ParserJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,15 @@ public class CrawlerService {
         final String feedData = restTemplate.getForObject(feedUrl, String.class);
 
         // TODO replace by sending job to queue
+        final ParserJob job = new ParserJob();
+        job.setExo(podcastExo);
+        job.setUrl(feedUrl);
+        job.setData(feedData);
 
-        final String parserUrl = "http://localhost:3034/parser/new-podcast?podcastExo="+podcastExo+"&url="+feedUrl;
+        final String parserUrl = "http://localhost:3034/parser/new-podcast";
         log.debug("Sending feed-data to parser with request : {}", parserUrl);
-        final HttpEntity<String> request = new HttpEntity<>(feedData);
-        final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
+        final HttpEntity<ParserJob> request = new HttpEntity<>(job);
+        final ResponseEntity<Void> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, Void.class);
 
         // TODO
         // assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
