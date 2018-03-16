@@ -2,13 +2,13 @@
 <div class="row justify-content-center">
   <div class="col-sm-12 col-xs-12 px-0">
 
-    <div class="input-group input-group my-5">
+    <div class="input-group my-5">
       <input #searchBox id="search-box"
              [(ngModel)]="query"
              (keyup.enter)="onEnter(searchBox.value)"
              type="text" class="form-control"
              autocomplete="off"
-             placeholder="every podcast leaves an echo...">
+             placeholder="every word leaves an echo...">
     </div>
 
     <div *ngIf="currPage === 0">
