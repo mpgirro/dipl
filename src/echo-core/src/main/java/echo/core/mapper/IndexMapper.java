@@ -68,7 +68,7 @@ public interface IndexMapper {
         switch (doc.get(IndexField.DOC_TYPE)) {
             case "podcast": return map(PodcastMapper.INSTANCE.map(doc));
             case "episode": return map(EpisodeMapper.INSTANCE.map(doc));
-            default: throw new RuntimeException("Unsupported lucene document type : " + doc.get("doc_type"));
+            default: throw new RuntimeException("Unsupported lucene document type : " + doc.get(IndexField.DOC_TYPE));
         }
     }
 
