@@ -126,6 +126,9 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
 
         def task = () => {
             if(feedService.findAllByUrl(url).isEmpty){
+
+                // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
+
                 val podcastId = idGenerator.getNewId
                 var podcast = new PodcastDTO
                 podcast.setEchoId(podcastId)
@@ -480,6 +483,7 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
                     // we must register the episodes chapters as well
                     result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs)))
 
+                    // TODO why is this really necessary here?
                     // we'll need this info when we send the episode to the index in just a moment
                     result.foreach(e => e.setPodcastTitle(episode.getPodcastTitle))
 

@@ -24,7 +24,8 @@ import scala.concurrent.Await
 @Api(value = "/api/search",
     produces = "application/json")
 class SearchGatewayService (private val log: LoggingAdapter)
-                           (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
+                           (private implicit val context: ActorContext,
+                            private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     private val CONFIG = ConfigFactory.load()
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
@@ -53,14 +54,12 @@ class SearchGatewayService (private val log: LoggingAdapter)
             onSuccess(searcher ? SearchRequest(query, page, size)) {
                 case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
                 case NoIndexResultsFound(_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
-                case IndexRetrievalTimeout  => {
+                case IndexRetrievalTimeout  =>
                     log.error("Timeout during search in SearchService")
-                    complete(StatusCodes.RequestTimeout)                            // 408 search took too long
-                }
-                case _ => {
+                    complete(StatusCodes.RequestTimeout) // 408 search took too long
+                case _ =>
                     log.error("Received unhandled message on search request")
-                    complete(StatusCodes.InternalServerError)                       // 500 generic server side error
-                }
+                    complete(StatusCodes.InternalServerError) // 500 generic server side error
             }
 
         }
