@@ -33,6 +33,8 @@ public class FeedService {
 
     private final Logger log = LoggerFactory.getLogger(FeedService.class);
 
+    private final String CRAWLER_URL = "http://localhost:3033"; // TODO
+
     @Value("${echo.catalog.default-page:1}")
     private Integer DEFAULT_PAGE;
 
@@ -150,7 +152,7 @@ public class FeedService {
 
             // TODO send url to crawler for download
             // TODO replace by sending job to queue
-            final String parserUrl = "http://localhost:3033/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
+            final String parserUrl = CRAWLER_URL+"/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
             final HttpEntity<String> request = new HttpEntity<>(""); // TODO dummy, we do not send a body that should be created (as is custom with POST)
             final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
 

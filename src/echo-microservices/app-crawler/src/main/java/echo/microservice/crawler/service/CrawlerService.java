@@ -20,6 +20,8 @@ public class CrawlerService {
 
     private final Logger log = LoggerFactory.getLogger(CrawlerService.class);
 
+    private final String PARSER_URL = "http://localhost:3034"; // TODO
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
@@ -34,7 +36,7 @@ public class CrawlerService {
         job.setUrl(feedUrl);
         job.setData(feedData);
 
-        final String parserUrl = "http://localhost:3034/parser/new-podcast";
+        final String parserUrl = PARSER_URL+"/parser/new-podcast";
         log.debug("Sending feed-data to parser with request : {}", parserUrl);
         final HttpEntity<ParserJob> request = new HttpEntity<>(job);
         final ResponseEntity<Void> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, Void.class);

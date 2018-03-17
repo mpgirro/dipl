@@ -17,6 +17,8 @@ public class SearchService {
 
     private final Logger log = LoggerFactory.getLogger(SearchService.class);
 
+    private final String INDEX_URL = "http://localhost:3032"; // TODO
+
     @Value("${echo.searcher.default-page:1}")
     private Integer DEFAULT_PAGE;
 
@@ -34,7 +36,7 @@ public class SearchService {
         if (s < 0) return new ResultWrapperDTO();
 
         // TODO do not hardcode this
-        final String url = "http://localhost:3032/index/search?query="+query+"&page="+p+"&size="+s;
+        final String url = INDEX_URL+"/index/search?query="+query+"&page="+p+"&size="+s;
 
         return restTemplate.getForObject(url, ResultWrapperDTO.class);
     }

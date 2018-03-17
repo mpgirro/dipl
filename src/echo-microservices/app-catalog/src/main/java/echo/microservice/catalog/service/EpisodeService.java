@@ -34,6 +34,8 @@ public class EpisodeService {
 
     private final Logger log = LoggerFactory.getLogger(EpisodeService.class);
 
+    private final String INDEX_URL = "http://localhost:3032"; // TODO
+
     @Autowired
     private EpisodeRepository episodeRepository;
 
@@ -109,7 +111,7 @@ public class EpisodeService {
                 log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getEchoId());
 
                 // TODO replace by sending job to queue
-                final String indexAddDocUrl = "http://localhost:3032/index/doc";
+                final String indexAddDocUrl = INDEX_URL+"/index/doc";
                 log.debug("Sending doc to index with request : {}", indexAddDocUrl);
                 final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.map(r));
                 restTemplate.postForEntity(indexAddDocUrl, request, IndexDocDTO.class);
