@@ -38,10 +38,10 @@ public class PodcastService {
     @Autowired
     private PodcastRepository podcastRepository;
 
-    private PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
-    private TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
+    private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
+    private final TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
-    private EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
 
     @Transactional
     public Optional<PodcastDTO> save(PodcastDTO podcastDTO) {

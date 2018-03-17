@@ -17,13 +17,13 @@ public class SearchService {
 
     private final Logger log = LoggerFactory.getLogger(SearchService.class);
 
-    @Value("${echo.gateway.default-page:1}")
+    @Value("${echo.searcher.default-page:1}")
     private Integer DEFAULT_PAGE;
 
-    @Value("${echo.gateway.default-size:20}")
+    @Value("${echo.searcher.default-size:20}")
     private Integer DEFAULT_SIZE;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public ResultWrapperDTO search(String query, Integer page, Integer size) {
 

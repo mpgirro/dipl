@@ -1,5 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
+import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.microservice.catalog.service.EpisodeService;
 import org.slf4j.Logger;
@@ -33,6 +34,13 @@ public class EpisodeResource {
                 result,
                 HttpStatus.CREATED))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @PostMapping("/episode/register")
+    @ResponseStatus(HttpStatus.OK)
+    public void registerEpisode(@RequestBody EpisodeRegisterJob job) throws URISyntaxException {
+        log.debug("REST request to register episode by podcast(EXO) : {}", job.getPodcastExo());
+        episodeService.register(job);
     }
 
     @PutMapping("/episode")

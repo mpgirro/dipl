@@ -45,11 +45,11 @@ public class FeedService {
     @Autowired
     private PodcastService podcastService;
 
-    private FeedMapper feedMapper = FeedMapper.INSTANCE;
+    private final FeedMapper feedMapper = FeedMapper.INSTANCE;
 
-    private EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {

@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,8 +20,9 @@ public class CrawlerService {
 
     private final Logger log = LoggerFactory.getLogger(CrawlerService.class);
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
+    @Async
     public void downloadFeed(String podcastExo, String feedUrl) {
         // TODO
         log.debug("Retrieving feed-data as String : {}", feedUrl);
@@ -42,7 +44,7 @@ public class CrawlerService {
 
     }
 
-
+    @Async
     public void downloadWebsite(String podcastExo, String url) {
         // TODO
     }

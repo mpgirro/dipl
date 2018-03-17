@@ -25,7 +25,7 @@ public class CatalogService {
 
     private final String CATALOG_URL = "http://localhost:3031/catalog";
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public Optional<PodcastDTO> getPodcast(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);

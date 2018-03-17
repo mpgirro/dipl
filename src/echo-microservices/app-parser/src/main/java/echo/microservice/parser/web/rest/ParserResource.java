@@ -1,5 +1,6 @@
 package echo.microservice.parser.web.rest;
 
+import echo.core.async.job.ParserJob;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,35 +20,28 @@ public class ParserResource {
     @Autowired
     private ParserService parserService;
 
-    @RequestMapping(value = "/new-podcast/{podcastExo}",
-        method = RequestMethod.POST,
-        params = { "podcastExo", "feedUrl" })
-    @ResponseStatus(HttpStatus.OK)
-    public void parseNewPodcastData(@PathVariable("podcastExo") String podcastExo,
-                                    @RequestParam("feedUrl") String feedUrl,
-                                    @RequestBody String feedData) {
-        log.debug("REST request to parseFeed feed-data for new podcast(EXO)/feed : ({},'{}')", podcastExo, feedUrl);
-        parserService.parseFeed(podcastExo, feedUrl, feedData, true);
-    }
-
-    @RequestMapping(value = "/update-episodes/{podcastExo}",
-        method = RequestMethod.POST,
-        params = { "podcastExo", "feedUrl" })
-    @ResponseStatus(HttpStatus.OK)
-    public void parseUpdateEpisodeData(@PathVariable("podcastExo") String podcastExo,
-                                       @RequestParam("feedUrl") String feedUrl,
-                                       @RequestBody String feedData) {
-        log.debug("REST request to parseFeed feed-data to update episodes for podcast(EXO)/feed : ({},'{}')", podcastExo, feedUrl);
-        parserService.parseFeed(podcastExo, feedUrl, feedData, false);
-    }
-
-    @RequestMapping(value = "/parse-website/{exo}",
+    @RequestMapping(value = "/new-podcast",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void parseWebsiteData(@PathVariable("exo") String exo,
-                                 @RequestBody String html) {
-        log.debug("REST request to parseFeed website-data for EXO : {}", exo);
-        parserService.parseWebsite(exo, html);
+    public void parseNewPodcastData(@RequestBody ParserJob job) {
+        log.debug("REST request to parseFeed feed-data for new podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
+        parserService.parseFeed(job, true);
+    }
+
+    @RequestMapping(value = "/update-episodes",
+        method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void parseUpdateEpisodeData(@RequestBody ParserJob job) {
+        log.debug("REST request to parseFeed feed-data to update episodes for podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
+        parserService.parseFeed(job, false);
+    }
+
+    @RequestMapping(value = "/parse-website",
+        method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void parseWebsiteData(@RequestBody ParserJob job) {
+        log.debug("REST request to parseFeed website-data for EXO : {}", job.getExo());
+        parserService.parseWebsite(job);
     }
 
 }

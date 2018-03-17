@@ -22,7 +22,7 @@ public class SearcherService {
 
     private final String SEARCHER_URL = "http://localhost:3035/searcher";
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public Optional<ResultWrapperDTO> search(String query, Integer page, Integer size) {
         log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);

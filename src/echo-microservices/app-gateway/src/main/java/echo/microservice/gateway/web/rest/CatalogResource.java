@@ -62,10 +62,10 @@ public class CatalogResource {
 
     @RequestMapping(value = "/podcast",
         method = RequestMethod.GET,
-        params = { "page", "size" },
+        params = { "p", "s" },
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PodcastDTO>> getAllPodcasts(@RequestParam("page") Integer page,
-                                                           @RequestParam("size") Integer size) {
+    public ResponseEntity<List<PodcastDTO>> getAllPodcasts(@RequestParam("p") Integer page,
+                                                           @RequestParam("s") Integer size) {
         log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
         return new ResponseEntity<>(podcasts, HttpStatus.OK);

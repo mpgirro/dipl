@@ -26,7 +26,7 @@ public class ChapterService {
     @Autowired
     private ChapterRepository chapterRepository;
 
-    private ChapterMapper chapterMapper = ChapterMapper.INSTANCE;
+    private final ChapterMapper chapterMapper = ChapterMapper.INSTANCE;
 
     @Transactional
     public Optional<ChapterDTO> save(ChapterDTO chapterDTO) {
