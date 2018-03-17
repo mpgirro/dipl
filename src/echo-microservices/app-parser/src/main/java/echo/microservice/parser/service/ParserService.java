@@ -1,5 +1,6 @@
 package echo.microservice.parser.service;
 
+import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.async.job.ParserJob;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
@@ -29,6 +30,9 @@ public class ParserService {
 
     private final Logger log = LoggerFactory.getLogger(ParserService.class);
 
+    private final String CATALOG_URL = "http://localhost:3031"; // TODO
+    private final String INDEX_URL = "http://localhost:3032"; // TODO
+
     private final FeedParser feedParser = new RomeFeedParser();
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
@@ -52,7 +56,7 @@ public class ParserService {
 
                 if (isNewPodcast) {
                     // TODO replace by sending job to queue
-                    final String indexAddDocUrl = "http://localhost:3032/index/doc";
+                    final String indexAddDocUrl = INDEX_URL+"/index/doc";
                     log.debug("Sending doc to index with request : {}", indexAddDocUrl);
                     final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.map(p));
                     restTemplate.postForEntity(indexAddDocUrl, request, IndexDocDTO.class);
@@ -66,11 +70,11 @@ public class ParserService {
 
                 // TODO replace by async job?
                 // tell catalog to update podcast metadata
-                final String catalogUpdateUrl = "http://localhost:3031/catalog/podcast";
+                final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
                 log.debug("Sending podcast for update to catalog with request : {}", catalogUpdateUrl);
                 restTemplate.put(catalogUpdateUrl, p);
 
-                processEpisodes(podcastExo, feedUrl, feedData);
+                processEpisodes(podcastExo, feedData);
             } else {
                 log.warn("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl);
             }
@@ -95,7 +99,7 @@ public class ParserService {
         throw new UnsupportedOperationException("ParsingService.parseWebsite");
     }
 
-    private void processEpisodes(String podcastExo, String feedUrl, String feedData) throws FeedParsingException {
+    private void processEpisodes(String podcastExo, String feedData) throws FeedParsingException {
         final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
         for (EpisodeDTO e : episodes) {
 
@@ -103,8 +107,15 @@ public class ParserService {
             Optional.ofNullable(e.getDescription()).ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
             Optional.ofNullable(e.getContentEncoded()).ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
 
-            // TODO tell catalog to register episode if unknown
-            throw new UnsupportedOperationException("ParsingService.processEpisodes");
+            // TODO replace by async job?
+            // tell catalog to register episode if unknown
+            final String catalogRegistrationUrl = CATALOG_URL+"/catalog/episode/register";
+            log.debug("Sending episode for registration to catalog with request : {}", catalogRegistrationUrl);
+            final EpisodeRegisterJob job = new EpisodeRegisterJob();
+            job.setPodcastExo(podcastExo);
+            job.setEpisode(e);
+            final HttpEntity<EpisodeRegisterJob> request = new HttpEntity<>(job);
+            restTemplate.postForEntity(catalogRegistrationUrl, request, EpisodeRegisterJob.class);
         }
     }
 
