@@ -1,7 +1,9 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.async.job.EpisodeRegisterJob;
+import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
+import echo.microservice.catalog.service.ChapterService;
 import echo.microservice.catalog.service.EpisodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +26,9 @@ public class EpisodeResource {
 
     @Autowired
     private EpisodeService episodeService;
+
+    @Autowired
+    private ChapterService chapterService;
 
     @PostMapping("/episode")
     @Transactional
@@ -67,6 +73,16 @@ public class EpisodeResource {
                 result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/episode/{exo}/chapters",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<ChapterDTO>> getChaptersByEpisode(@PathVariable String exo) {
+        log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
+        final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo);
+        return new ResponseEntity<>(chapters, HttpStatus.OK);
     }
 
 }
