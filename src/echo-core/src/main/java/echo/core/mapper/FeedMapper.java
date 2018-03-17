@@ -6,12 +6,14 @@ import echo.core.domain.dto.FeedDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, DateMapper.class})
+@Mapper(uses={PodcastMapper.class, DateMapper.class},
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface FeedMapper {
 
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );

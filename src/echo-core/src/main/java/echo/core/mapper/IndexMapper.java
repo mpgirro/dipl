@@ -12,6 +12,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, EpisodeMapper.class})
+@Mapper(uses={PodcastMapper.class, EpisodeMapper.class},
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface IndexMapper {
 
     IndexMapper INSTANCE = Mappers.getMapper( IndexMapper.class );

@@ -7,12 +7,14 @@ import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, ChapterMapper.class, DateMapper.class})
+@Mapper(uses={PodcastMapper.class, ChapterMapper.class, DateMapper.class},
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface EpisodeMapper {
 
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );

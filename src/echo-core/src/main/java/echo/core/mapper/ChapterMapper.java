@@ -6,12 +6,14 @@ import echo.core.domain.dto.ChapterDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={EpisodeMapper.class})
+@Mapper(uses={EpisodeMapper.class},
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface ChapterMapper {
 
     ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );

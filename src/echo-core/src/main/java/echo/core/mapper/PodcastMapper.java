@@ -6,12 +6,14 @@ import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={UrlMapper.class, DateMapper.class})
+@Mapper(uses={UrlMapper.class, DateMapper.class},
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface PodcastMapper {
 
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );

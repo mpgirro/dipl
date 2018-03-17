@@ -5,14 +5,16 @@ import echo.core.domain.entity.Podcast;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Maximilian Irro
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses={UrlMapper.class, DateMapper.class})
+@Mapper(uses={UrlMapper.class, DateMapper.class},
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface TeaserMapper {
 
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
