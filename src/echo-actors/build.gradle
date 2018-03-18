@@ -32,7 +32,7 @@ sourceCompatibility=1.8
 targetCompatibility=1.8
 assert System.properties['java.specification.version'] == '1.8'
 
-group 'net.irro.echo'
+group 'at.irro.dipl'
 version '1.0-SNAPSHOT'
 description = ''
 
@@ -77,7 +77,7 @@ dependencies {
     }
     */
 
-    compile "net.irro.echo:echo-core:$echo_core_version"
+    compile "at.irro.dipl:echo-core:$echo_core_version"
 
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
 
