@@ -16,7 +16,7 @@ defaultTasks 'ngServe'
 apply plugin: 'com.moowork.node'
 apply plugin: 'com.wiredforcode.spawn'
 
-group 'net.irro.echo'
+group 'at.irro.dipl'
 version '1.0-SNAPSHOT'
 description = ''
 
