@@ -100,14 +100,14 @@ class PodcastGatewayService (private val log: LoggingAdapter)
     def getEpisodesByPodcast(id: String): Route = get {
         log.info("GET /api/podcast/{}/episodes", id)
         onSuccess(directoryStore ? GetEpisodesByPodcast(id)) {
-            case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, episodes)
+            case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, ArrayWrapper(episodes))
         }
     }
 
     def getFeedsByPodcast(id: String): Route = get {
         log.info("GET /api/podcast/{}/feeds", id)
         onSuccess(directoryStore ? GetFeedsByPodcast(id)) {
-            case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, feeds)
+            case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, ArrayWrapper(feeds))
         }
     }
 

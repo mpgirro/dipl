@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
-import echo.actor.gateway.json.JsonSupport
+import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.actor.ActorProtocol._
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
@@ -71,7 +71,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
     def getChaptersByEpisode(id: String): Route = get {
         log.info("GET /api/episode/{}/chapters", id)
         onSuccess(directoryStore ? GetChaptersByEpisode(id)) {
-            case ChaptersByEpisodeResult(chapters) => complete(StatusCodes.OK, chapters)
+            case ChaptersByEpisodeResult(chapters) => complete(StatusCodes.OK, ArrayWrapper(chapters))
         }
     }
 
