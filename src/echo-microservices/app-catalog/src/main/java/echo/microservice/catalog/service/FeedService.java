@@ -6,7 +6,7 @@ import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.Feed;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
-import echo.core.util.EchoIdGenerator;
+import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class FeedService {
 
     private final FeedMapper feedMapper = FeedMapper.INSTANCE;
 
-    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -60,7 +60,7 @@ public class FeedService {
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
         log.debug("Request to save Feed : {}", feedDTO);
         if (isNullOrEmpty(feedDTO.getEchoId())) {
-            feedDTO.setEchoId(idGenerator.getNewId());
+            feedDTO.setEchoId(exoGenerator.getNewExo());
         }
         final Feed feed = feedMapper.map(feedDTO);
         final Feed result = feedRepository.save(feed);

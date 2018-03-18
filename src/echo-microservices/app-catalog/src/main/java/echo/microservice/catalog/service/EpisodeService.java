@@ -10,7 +10,7 @@ import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
-import echo.core.util.EchoIdGenerator;
+import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.repository.EpisodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class EpisodeService {
     private final TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
-    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -61,7 +61,7 @@ public class EpisodeService {
     public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
         log.debug("Request to save Episode : {}", episodeDTO);
         if (isNullOrEmpty(episodeDTO.getEchoId())) {
-            episodeDTO.setEchoId(idGenerator.getNewId());
+            episodeDTO.setEchoId(exoGenerator.getNewExo());
         }
         final Episode episode = episodeMapper.map(episodeDTO);
         final Episode result = episodeRepository.save(episode);

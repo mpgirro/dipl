@@ -5,7 +5,7 @@ import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.Podcast;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
-import echo.core.util.EchoIdGenerator;
+import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.repository.PodcastRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +44,13 @@ public class PodcastService {
     private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
     private final TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
-    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1); // TODO set the microservice worker count
+    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
     @Transactional
     public Optional<PodcastDTO> save(PodcastDTO podcastDTO) {
         log.debug("Request to save Podcast : {}", podcastDTO);
         if (isNullOrEmpty(podcastDTO.getEchoId())) {
-            podcastDTO.setEchoId(idGenerator.getNewId());
+            podcastDTO.setEchoId(exoGenerator.getNewExo());
         }
         final Podcast podcast = podcastMapper.map(podcastDTO);
         final Podcast result = podcastRepository.save(podcast);
