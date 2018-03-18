@@ -1,0 +1,131 @@
+~ Categories and Subject Descriptors
+Language Constructs and Features, Concurrent programming structures
+~
+
+~ Keywords
+Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architecture
+~
+
+# Actor-based Concurrent Programming versus Reactive Microservices
+
+* Abstract
+* Preface
+* Acknowledgements
+* Table of Contents
+* Introduction
+    * Motivation
+    * Scope of this Thesis
+    * Methodology used
+    * Road Map
+* Programming Paradigms
+    * Imperative and Procedual Programming
+    * Object-oriented Programming
+    * Functional Programming
+    * Event-Driven and Flow-Driven Programming
+    * Logic and Constraint Programming
+    * Other Programming Paradigms
+
+* Models of Concurrent Computation
+    * Basic Concepts in Concurrency
+        * Execution Order and Nondeterminism
+        * Concurrency at the Programming Language Level
+        * Concurrency at the Operating System Level
+    * Threads, Locks and Shared State
+    * Actors and Active Objects
+    * Software Transactional Memory
+    * Other Approaches and Concurrency Primitives
+
+* The Microservice Architecture Style
+
+
+* Event-driven Microservices
+    * Event-driven Architectures
+
+
+
+* Distributed Actors
+    * From concurrent to distributed computing
+
+    * Distribution Transparency
+      : see [@Wal96] zu transparent RPC
+    * Actor addressing
+
+    * Virtual Distributed Actors
+    * Autonomous Agents
+
+    * Erlang Actors
+    * Akka
+    * (Other Frameworks: Orleans, Scala Actors)
+
+* Similarities of Actors and Microservices
+
+* Differences of Actors and Microservices
+
+* Experiment
+    * Scenario
+    * Microservice-based Architecture
+    * Actor-based Architecture
+    * Discussion
+
+
+* Discussion
+    * Isolation
+    * Open/well-defined Communication Interface
+    * Scalability and Parallelization
+    * Fault-tolerance
+    * Resilience
+    * Mobility
+
+
+* Conclusion
+
+
+--------
+
+
+* Introduction
+    * Motivation
+    * Scope of this Thesis
+    * Methodology used
+    * Road Map
+* Concurrent Programming
+    * Sequential vs Concurrent Execution
+    * Actor Model
+    * Active Objects
+    * Parallel and Distributed Execution
+    * Distributed Actors (and Autonomouse Agents)
+        * Distribution Transparency
+          : see [@Wal96] zu transparent RPC
+* Microservice Architecture
+    * 
+
+* A highly concurrent and distributed domain specific search engine
+    * Search Engines Design and System Components
+    * Podcasts: Decentralized media syndication
+
+* Discussion
+    * Isolation
+    * Open/well-defined Communication Interface
+    * Scalability and Parallelization
+    * Fault-tolerance
+    * Resilience
+    * Mobility
+* Conclusion
+
+
+--------
+
+
+* Introduction
+* Concurrent Programming
+* Distributed Programming
+    * The Process
+    * Inter-process Communication
+    * Inherent Concurrency
+* Microservice Architecture
+    * OO-Perspective
+    * Communication Channels
+    * Synchronous and Asynchronous Communication
+* Actor-based Programming
+    * Isolation
+    * Immutable Message Passing
