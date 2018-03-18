@@ -23,7 +23,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 assert System.properties['java.specification.version'] == '1.8'
 
-group = 'net.irro.echo'
+group 'at.irro.dipl'
 version '1.0-SNAPSHOT'
 description = ''
 
