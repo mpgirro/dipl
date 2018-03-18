@@ -1,9 +1,7 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
+import echo.microservice.gateway.web.dto.ArrayWrapperDTO;
 import echo.microservice.gateway.service.CatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,30 +43,33 @@ public class CatalogResource {
     @RequestMapping(value = "/podcast/{exo}/episodes",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EpisodeDTO>> getEpisodesByPodcast(@PathVariable String exo) {
+    public ResponseEntity<ArrayWrapperDTO> getEpisodesByPodcast(@PathVariable String exo) {
         log.debug("REST request to get Episodes by Podcast (EXO) : {}", exo);
         final List<EpisodeDTO> episodes = catalogService.getEpisodesByPodcast(exo);
-        return new ResponseEntity<>(episodes, HttpStatus.OK);
+        final ArrayWrapperDTO<EpisodeDTO> result = new ArrayWrapperDTO<>(episodes);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/podcast/{exo}/feeds",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FeedDTO>> getFeedsByPodcast(@PathVariable String exo) {
+    public ResponseEntity<ArrayWrapperDTO> getFeedsByPodcast(@PathVariable String exo) {
         log.debug("REST request to get Feeds by Podcast (EXO) : {}", exo);
         final List<FeedDTO> feeds = catalogService.getFeedsByPodcast(exo);
-        return new ResponseEntity<>(feeds, HttpStatus.OK);
+        final ArrayWrapperDTO<FeedDTO> result = new ArrayWrapperDTO<>(feeds);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/podcast",
         method = RequestMethod.GET,
         params = { "p", "s" },
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PodcastDTO>> getAllPodcasts(@RequestParam("p") Integer page,
+    public ResponseEntity<ArrayWrapperDTO> getAllPodcasts(@RequestParam("p") Integer page,
                                                            @RequestParam("s") Integer size) {
         log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
-        return new ResponseEntity<>(podcasts, HttpStatus.OK);
+        final ArrayWrapperDTO<PodcastDTO> result = new ArrayWrapperDTO<>(podcasts);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/episode/{exo}",
@@ -87,10 +88,11 @@ public class CatalogResource {
     @RequestMapping(value = "/episode/{exo}/chapters",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ChapterDTO>> getChaptersByEpisode(@PathVariable String exo) {
+    public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
         final List<ChapterDTO> chapters = catalogService.getChaptersByEpisode(exo);
-        return new ResponseEntity<>(chapters, HttpStatus.OK);
+        final ArrayWrapperDTO<ChapterDTO> result = new ArrayWrapperDTO<>(chapters);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
