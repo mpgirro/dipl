@@ -42,6 +42,7 @@ ext {
     slf4j_version = '1.7.25'
     logback_version = '1.2.3'
     lucene_version = '7.2.0'
+    jackson_version = '2.9.4'
 }
 
 repositories {
@@ -79,6 +80,12 @@ dependencies {
     //compile group: 'javax.persistence', name: 'persistence-api', version: '1.0'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
+
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: jackson_version
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jackson_version
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-guava', version: jackson_version
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version
 
     /*
     compile "joda-time:joda-time:2.9.9"
