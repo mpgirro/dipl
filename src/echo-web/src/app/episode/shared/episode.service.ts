@@ -26,7 +26,7 @@ export class EpisodeService {
   getChapters(echoId: string): Observable<ArrayWrapper<Chapter>> {
     const request = this.baseUrl + '/' + echoId + '/chapters';
     console.log('GET ' + request);
-    return this.http.get<Array<ArrayWrapper>>(request).pipe(
+    return this.http.get<ArrayWrapper<Chapter>>(request).pipe(
       tap(_ => console.log(`found chapters for episode : "${echoId}"`)),
       catchError(this.handleError<ArrayWrapper<Chapter>>('getChaptersByEpisode', new ArrayWrapper<Chapter>()))
     );
