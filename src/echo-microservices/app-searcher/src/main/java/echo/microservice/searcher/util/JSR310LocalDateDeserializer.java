@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatterBuilder;
 /**
  * Custom Jackson deserializer for transforming a JSON object (using the ISO 8601 date formatwith optional time)
  * to a JSR310 LocalDate object.
+ *
+ * @author Maximilian Irro
  */
 public class JSR310LocalDateDeserializer extends JsonDeserializer<LocalDate> {
 

@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * @author Maximilian Irro
+ */
 public interface PodcastRepository extends JpaRepository<Podcast,Long> {
 
     Podcast findOneByEchoId(String echoId);

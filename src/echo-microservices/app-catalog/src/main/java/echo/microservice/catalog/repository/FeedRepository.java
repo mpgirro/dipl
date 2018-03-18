@@ -7,6 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * @author Maximilian Irro
+ */
 public interface FeedRepository extends JpaRepository<Feed,Long> {
 
     Feed findOneByEchoId(String echoId);

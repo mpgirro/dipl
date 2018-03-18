@@ -28,6 +28,9 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+/**
+ * @author Maximilian Irro
+ */
 @Service
 @Transactional
 public class EpisodeService {

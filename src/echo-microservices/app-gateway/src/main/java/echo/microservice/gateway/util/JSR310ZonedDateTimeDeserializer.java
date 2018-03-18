@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatterBuilder;
 /**
  * Custom Jackson deserializer for transforming a JSON object (using the ISO 8601 date formatwith time)
  * to a JSR310 ZonedDateTime object.
+ *
+ * @author Maximilian Irro
  */
 public class JSR310ZonedDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> {
 

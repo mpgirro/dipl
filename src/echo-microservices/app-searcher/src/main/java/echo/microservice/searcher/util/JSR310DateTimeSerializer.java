@@ -9,6 +9,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
+/**
+ * @author Maximilian Irro
+ */
 public final class JSR310DateTimeSerializer extends JsonSerializer<TemporalAccessor> {
 
     private static final DateTimeFormatter ISOFormatter =

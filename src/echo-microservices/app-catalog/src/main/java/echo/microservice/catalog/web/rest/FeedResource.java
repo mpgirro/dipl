@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+/**
+ * @author Maximilian Irro
+ */
 @RestController
 @RequestMapping("/catalog")
 public class FeedResource {

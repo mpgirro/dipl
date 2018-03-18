@@ -18,6 +18,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Maximilian Irro
+ */
 @RestController
 @RequestMapping("/catalog")
 public class EpisodeResource {

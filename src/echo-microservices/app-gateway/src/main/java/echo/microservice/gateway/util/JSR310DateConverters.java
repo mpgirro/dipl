@@ -8,6 +8,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+/**
+ * @author Maximilian Irro
+ */
 public final class JSR310DateConverters {
 
     private JSR310DateConverters() {}
