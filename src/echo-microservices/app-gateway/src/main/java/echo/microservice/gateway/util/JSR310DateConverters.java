@@ -1,10 +1,10 @@
 package echo.microservice.gateway.util;
 
+import echo.core.mapper.DateMapper;
 import org.springframework.core.convert.converter.Converter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -12,6 +12,8 @@ import java.util.Date;
  * @author Maximilian Irro
  */
 public final class JSR310DateConverters {
+
+    private static DateMapper dateMapper = DateMapper.INSTANCE;
 
     private JSR310DateConverters() {}
 
@@ -23,7 +25,7 @@ public final class JSR310DateConverters {
 
         @Override
         public Date convert(LocalDate source) {
-            return source == null ? null : Date.from(source.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            return dateMapper.asDate(source);
         }
     }
 
@@ -33,7 +35,7 @@ public final class JSR310DateConverters {
 
         @Override
         public LocalDate convert(Date source) {
-            return source == null ? null : ZonedDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault()).toLocalDate();
+            return dateMapper.asLocalDate(source);
         }
     }
 
@@ -43,7 +45,7 @@ public final class JSR310DateConverters {
 
         @Override
         public Date convert(ZonedDateTime source) {
-            return source == null ? null : Date.from(source.toInstant());
+            return dateMapper.asDate(source);
         }
     }
 
@@ -53,7 +55,7 @@ public final class JSR310DateConverters {
 
         @Override
         public ZonedDateTime convert(Date source) {
-            return source == null ? null : ZonedDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault());
+            return dateMapper.asZonedDateTime(source);
         }
     }
 
@@ -63,7 +65,7 @@ public final class JSR310DateConverters {
 
         @Override
         public Date convert(LocalDateTime source) {
-            return source == null ? null : Date.from(source.atZone(ZoneId.systemDefault()).toInstant());
+            return dateMapper.asDate(source);
         }
     }
 
@@ -73,7 +75,7 @@ public final class JSR310DateConverters {
 
         @Override
         public LocalDateTime convert(Date source) {
-            return source == null ? null : LocalDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault());
+            return dateMapper.asLocalDateTime(source);
         }
     }
 }
