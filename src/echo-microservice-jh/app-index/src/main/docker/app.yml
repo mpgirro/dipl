@@ -1,7 +1,0 @@
-version: '2'
-services:
-    index-app:
-        image: index
-        environment:
-            - SPRING_PROFILES_ACTIVE=prod,swagger
-            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
