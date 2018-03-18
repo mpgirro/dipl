@@ -118,7 +118,7 @@ public class FeedService {
     @Transactional(readOnly = true)
     public List<FeedDTO> findAllByPodcast(String podcastExo) {
         log.debug("Request to get all Feeds by Podcast (EXO) : ", podcastExo);
-        return feedRepository.findAllByUrl(podcastExo).stream()
+        return feedRepository.findAllByPodcast(podcastExo).stream()
             .map(feedMapper::map)
             .collect(Collectors.toList());
     }
