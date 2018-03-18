@@ -24,21 +24,21 @@ export class PodcastService {
     );
   }
 
-  getEpisodes(podcastId: string): Observable<Array<Episode>> {
+  getEpisodes(podcastId: string): Observable<ArrayWrapper<Episode>> {
     const request = this.baseUrl + '/' + podcastId + '/episodes';
     console.log('GET ' + request);
-    return this.http.get<Array<Episode>>(request).pipe(
+    return this.http.get<ArrayWrapper<Episode>>(request).pipe(
       tap(_ => console.log(`found episodes for podcast : "${podcastId}"`)),
-      catchError(this.handleError<Array<Episode>>('getPodcastEpisodes', new Array<Episode>()))
+      catchError(this.handleError<ArrayWrapper<Episode>>('getEpisodesByPodcast', new ArrayWrapper<Episode>()))
     );
   }
 
-  getFeeds(podcastId: string): Observable<Array<Feed>> {
+  getFeeds(podcastId: string): Observable<ArrayWrapper<Feed>> {
     const request = this.baseUrl + '/' + podcastId + '/feeds';
     console.log('GET ' + request);
-    return this.http.get<Array<Feed>>(request).pipe(
+    return this.http.get<ArrayWrapper<Feed>>(request).pipe(
       tap(_ => console.log(`found feeds for podcast : "${podcastId}"`)),
-      catchError(this.handleError<Array<Feed>>('getPodcastFeeds', new Array<Feed>()))
+      catchError(this.handleError<ArrayWrapper<Feed>>('getFeedsByPodcast', new ArrayWrapper<Feed>()))
     );
   }
 
@@ -49,7 +49,7 @@ export class PodcastService {
     console.log('GET ' + request);
     return this.http.get<ArrayWrapper<Podcast>>(request).pipe(
       tap(_ => console.log(`found all podcasts`)),
-      catchError(this.handleError<ArrayWrapper<Podcast>>('allPodcasts', new ArrayWrapper<Podcast>()))
+      catchError(this.handleError<ArrayWrapper<Podcast>>('getAllPodcasts', new ArrayWrapper<Podcast>()))
     );
   }
 

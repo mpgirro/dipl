@@ -71,7 +71,8 @@ export class EpisodeDetailComponent implements OnInit {
       .subscribe(episode => {
         this.episode = episode;
         this.episodeService.getChapters(id).subscribe(chapters => {
-          chapters.sort((a: Chapter, b: Chapter) => {
+          this.chapters = chapters.results;
+          this.chapters.sort((a: Chapter, b: Chapter) => {
             if (a.start < b.start) {
               return -1;
             } else if (a.start > b.start) {
@@ -80,7 +81,6 @@ export class EpisodeDetailComponent implements OnInit {
               return 0;
             }
           });
-          this.chapters = chapters;
           this.initPodlovePlayer();
         });
       });

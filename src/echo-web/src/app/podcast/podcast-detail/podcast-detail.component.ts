@@ -80,8 +80,10 @@ export class PodcastDetailComponent implements OnInit {
     this.podcastService.getEpisodes(id)
       .subscribe(episodes => {
 
+        this.episodes = episodes.results;
+
         // reverse sort by date
-        episodes.sort((a: Episode, b: Episode) => {
+        this.episodes.sort((a: Episode, b: Episode) => {
           if (a.pubDate > b.pubDate) {
             return -1;
           } else if (a.pubDate < b.pubDate) {
@@ -97,12 +99,10 @@ export class PodcastDetailComponent implements OnInit {
             }
           }
         });
-
-        this.episodes = episodes;
       });
     this.podcastService.getFeeds(id)
       .subscribe(feeds => {
-        this.feeds = feeds;
+        this.feeds = feeds.results;
         this.initPodloveSubscribeButton();
       });
   }
