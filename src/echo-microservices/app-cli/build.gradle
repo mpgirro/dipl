@@ -48,6 +48,8 @@ dependencies {
     compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
     compile "ch.qos.logback:logback-classic:${logback_version}"
     compile group: 'com.typesafe.scala-logging', name: "scala-logging_${scala_major_version}", version: scala_logging_version
+
+    compile group: 'com.softwaremill.sttp', name: "core_${scala_major_version}", version: '1.1.10'
 }
 
 // Specifying the main class for the 'application' plugin

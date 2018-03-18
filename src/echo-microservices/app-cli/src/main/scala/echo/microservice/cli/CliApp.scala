@@ -1,7 +1,7 @@
 package echo.microservice.cli
 
 import com.typesafe.scalalogging.Logger
-
+import com.softwaremill.sttp._
 import scala.io.{Source, StdIn}
 
 class CliApp {
@@ -24,6 +24,11 @@ class CliApp {
         "get podcast"    -> "<echoId>",
         "get episode"    -> "<echoId>"
     )
+
+    // TODO
+    private val CATALOG_URL = "http://localhost:3031/catalog"
+
+    private implicit val backend = HttpURLConnectionBackend()
 
     private def repl() {
         log.info("CLI read to take commands")
@@ -69,7 +74,7 @@ class CliApp {
     }
 
     private def propose(url: String): Unit = {
-        // TODO
+        sttp.post(uri"${CATALOG_URL}/feed/propose?url=${url}").send()
     }
 }
 
