@@ -14,7 +14,7 @@ import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneSearcher;
 import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
-import echo.core.util.EchoIdGenerator;
+import echo.core.util.ExoGenerator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class CoreApp {
     private IndexCommitter committer;
     private IndexSearcher searcher;
 
-    private final EchoIdGenerator idGenerator = new EchoIdGenerator(1);
+    private final ExoGenerator idGenerator = new ExoGenerator(1);
 
     private boolean shutdown = false;
     private Map<String,String> usageMap = new HashMap();
@@ -146,7 +146,7 @@ public class CoreApp {
             } else if (isCmd(cmd,"test-id-generator")) {
                 final Map<String,Integer> occurences = new HashMap<>();
                 for (int i=0; i<100000; i++) {
-                    final String id = idGenerator.getNewId();
+                    final String id = idGenerator.getNewExo();
                     if (occurences.containsKey(id)) {
                         occurences.put(id, occurences.get(id) + 1);
                     } else {
@@ -219,7 +219,7 @@ public class CoreApp {
             for (EpisodeDTO episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
-                episode.setEchoId(idGenerator.getNewId());
+                episode.setEchoId(idGenerator.getNewExo());
                 this.committer.add(episode);
             }
         } catch (IOException | FeedParsingException e) {
