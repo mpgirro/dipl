@@ -11,7 +11,7 @@ import echo.actor.directory.service._
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.IndexMapper
-import echo.core.util.EchoIdGenerator
+import echo.core.util.ExoGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
@@ -32,7 +32,7 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
     private val CONFIG = ConfigFactory.load()
     private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
 
-    private val idGenerator: EchoIdGenerator = new EchoIdGenerator(workerIndex)
+    private val exoGenerator: ExoGenerator = new ExoGenerator(workerIndex)
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
@@ -129,7 +129,7 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
 
                 // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
 
-                val podcastId = idGenerator.getNewId
+                val podcastId = exoGenerator.getNewExo
                 var podcast = new PodcastDTO
                 podcast.setEchoId(podcastId)
                 podcast.setTitle(podcastId)
@@ -138,7 +138,7 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
                 podcast.setRegistrationTimestamp(LocalDateTime.now())
 
                 podcastService.save(podcast).map(p => {
-                    val feedId = idGenerator.getNewId
+                    val feedId = exoGenerator.getNewExo
                     val feed = new FeedDTO
                     feed.setEchoId(feedId)
                     feed.setUrl(url)
@@ -462,7 +462,7 @@ class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
                 case Some(e) => None
                 case None =>
                     // generate a new episode echoId - the generator is (almost) ensuring uniqueness
-                    episode.setEchoId(idGenerator.getNewId)
+                    episode.setEchoId(exoGenerator.getNewExo)
 
                     podcastService.findOneByEchoId(podcastId).map(p => {
                         episode.setPodcastId(p.getId)
