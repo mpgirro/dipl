@@ -13,6 +13,7 @@ buildscript {
 defaultTasks 'clean build publishToMavenLocal'
 
 apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'application'
 //apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
@@ -38,6 +39,8 @@ compileJava {
 }
 
 ext {
+    scala_major_version = '2.12'
+    scala_minor_version = '4'
 //    log4j_version = '2.9.1'
     slf4j_version = '1.7.25'
     logback_version = '1.2.3'
@@ -54,6 +57,12 @@ dependencies {
 //  compile 'com.google.guava:guava:23.6-jre' // Google Core Libraries for Java
 
 //    testImplementation 'junit:junit:4.12'
+    compile group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"
+    compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
+
+    compile group: 'org.scala-lang.modules', name: "scala-java8-compat_${scala_major_version}", version: '0.8.0'
+
+    compile group: 'com.typesafe.scala-logging', name: "scala-logging_${scala_major_version}", version: '3.8.0'
 
     compile "org.slf4j:slf4j-api:${slf4j_version}"
     //compile "org.slf4j:slf4j-simple:$slf4j_version"
@@ -72,6 +81,8 @@ dependencies {
     compile 'org.hashids:hashids:1.0.3'
 
     compile 'com.google.guava:guava:24.0-jre'
+
+    compile group: 'com.softwaremill.sttp', name: "core_${scala_major_version}", version: '1.1.10'
 
     compile 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
     testCompile 'org.testng:testng:6.10', 'org.easytesting:fest-assert:1.4'
