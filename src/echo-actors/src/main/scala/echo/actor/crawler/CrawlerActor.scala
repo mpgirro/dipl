@@ -12,12 +12,14 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
+import echo.core.http.HttpClient
 import echo.core.parse.api.FyydAPI
 
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Promise}
 import scala.language.postfixOps
+import scala.compat.java8.OptionConverters._
 
 /**
   * @author Maximilian Irro
@@ -32,16 +34,14 @@ class CrawlerActor extends Actor with ActorLogging {
     // TODO define CONN_TIMEOUT
     // TODO define READ_TIMEOUT
 
-    private final val DOWNLOAD_TIMEOUT_MS = 5 * 1000
-    private final val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
-    private final val QUEUE_SIZE = 500 // TODO read from config file
-    private final val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
+    private val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
+    private val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
 
     // important, or we will experience starvation on processing many feeds at once
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher")
 
-    private final implicit val actorSystem: ActorSystem = context.system
-    private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
+    private implicit val actorSystem: ActorSystem = context.system
+    private implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
 
     private implicit val sttpBackend = HttpURLConnectionBackend(options = SttpBackendOptions.connectionTimeout(DOWNLOAD_TIMEOUT))
 
@@ -49,15 +49,13 @@ class CrawlerActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
     private var indexStore: ActorRef = _
 
-    private val http = Http()
     private val fyydAPI: FyydAPI = new FyydAPI()
 
-    private val requestQueueMap: mutable.Map[String, (SourceQueueWithComplete[(HttpRequest, Promise[HttpResponse])])] = mutable.Map.empty
+    private val httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT)
 
     override def postStop: Unit = {
-        Http().shutdownAllConnectionPools().onComplete(_ => log.info("shutting down"))
-
         sttpBackend.close()
+        httpClient.close()
     }
 
     override def receive: Receive = {
@@ -79,40 +77,36 @@ class CrawlerActor extends Actor with ActorLogging {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
                         log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
-                        headSttp(echoId, url, job)
+                        headCheck(echoId, url, job)
                     }
                 case _ =>
                     log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
-                    headSttp(echoId, url, job)
+                    headCheck(echoId, url, job)
             }
 
 
         case DownloadContent(echoId, url, job) =>
             log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
-            downloadSttp(echoId, url, job)
-            log.debug("Finished Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
+            fetchContent(echoId, url, job)
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
         case LoadFyydEpisodes(podcastId, fyydId) => onLoadFyydEpisodes(podcastId, fyydId)
 
-        case PoisonPill =>
-            log.debug("Received a PosionPill -> shutting down connection pool")
-            http.shutdownAllConnectionPools()
-
     }
 
     private def onCrawlFyyd(count: Int) = {
         log.debug("Received CrawlFyyd({})", count)
-        val feeds = fyydAPI.getFeedUrls(count)
-        log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
 
+        val feeds = fyydAPI.getFeedUrls(count)
+
+        log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
         log.debug("Proposing these feeds to the internal directory now")
+
         val it = feeds.iterator()
-        while(it.hasNext){
+        while (it.hasNext) {
             directoryStore ! ProposeNewFeed(it.next())
         }
-        log.debug("Finished CrawlFyyd({})", count)
     }
 
     private def onLoadFyydEpisodes(podcastId: String, fyydId: Long) = {
@@ -120,14 +114,12 @@ class CrawlerActor extends Actor with ActorLogging {
 
         val json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId)
         parser ! ParseFyydEpisodes(podcastId, json)
-
-        log.debug("Finished LoadFyydEpisodes({},'{}')", podcastId, fyydId)
     }
 
     private def analyzeUrl(url: String): (String, String) = {
 
         // http, https, ftp if provided
-        val protocol = if(url.indexOf("://") > -1) {
+        val protocol = if (url.indexOf("://") > -1) {
             url.split("://")(0)
         } else {
             ""
@@ -138,23 +130,24 @@ class CrawlerActor extends Actor with ActorLogging {
                 url.split('/')(2)
             else
                 url.split('/')(0)
-        }  .split(':')(0) // find & remove port number
+            }
+            .split(':')(0) // find & remove port number
             .split('?')(0) // find & remove "?"
-           // .split('/')(0) // find & remove the "/" that might still stick at the end of the hostname
+            // .split('/')(0) // find & remove the "/" that might still stick at the end of the hostname
 
         (hostname, protocol)
     }
 
-    private def validMimeType(mime: String): Boolean = {
+    private def isValidMime(mime: String): Boolean = {
         mime match {
-            case "application/rss+xml"  => true // feed
-            case "application/xml"      => true // feed
-            case "text/xml"             => true // feed
-            case "text/html"            => true // website
-            case "text/plain"           => true // might be ok and might be not -> will have to check manually
-            case "none/none"            => true // might be ok and might be not -> will have to check manually
+            case "application/rss+xml"      => true // feed
+            case "application/xml"          => true // feed
+            case "text/xml"                 => true // feed
+            case "text/html"                => true // website
+            case "text/plain"               => true // might be ok and might be not -> will have to check manually
+            case "none/none"                => true // might be ok and might be not -> will have to check manually
             case "application/octet-stream" => true // some sites use this, but might also be used for media files
-            case _                      => false
+            case _                          => false
         }
     }
 
@@ -166,8 +159,9 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
-    private def headSttp(exo: String, url: String, job: FetchJob): Unit = {
+    private def headCheck(exo: String, url: String, job: FetchJob): Unit = {
         try {
+            /*
             val response = emptyRequest // use empty request, because standard req uses header "Accept-Encoding: gzip" which can cause problems with HEAD requests
                 .response(ignore)
                 .readTimeout(DOWNLOAD_TIMEOUT)
@@ -207,7 +201,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
             mimeType match {
                 case Some(mime) =>
-                    if (!validMimeType(mime)) {
+                    if (!isValidMime(mime)) {
                         mime match {
                             case _@("audio/mpeg" | "application/octet-stream") =>
                                 //return Failure(new EchoException(s"Invalid MIME-type '$mime' of $url")) // TODO make a dedicated exception
@@ -229,8 +223,12 @@ class CrawlerActor extends Actor with ActorLogging {
                 //set the etag if existent
                 val eTag: Option[String] = response.header("etag")
 
+                // TODO check if eTag differs from last known value
+
                 //set the "last modified" header field if existent
                 val lastModified: Option[String] = response.header("last-modified")
+
+                // TODO check if lastMod differs from last known value
 
                 location match {
                     case Some(href) =>
@@ -239,7 +237,7 @@ class CrawlerActor extends Actor with ActorLogging {
                             case WebsiteFetchJob() =>
                                 // if the link in the feed is redirected (which is often the case due
                                 // to some feed analytic tools, we set our records to the new location
-                                if(!url.equals(href)) {
+                                if (!url.equals(href)) {
                                     directoryStore ! UpdateLinkByEchoId(exo, href)
                                     indexStore ! IndexStoreUpdateDocLink(exo, href)
                                 }
@@ -249,7 +247,7 @@ class CrawlerActor extends Actor with ActorLogging {
                             case _ =>
                                 // if the feed moved to a new URL, we will inform the directory, so
                                 // it will use the new location starting with the next update cycle
-                                if(!url.equals(href)) {
+                                if (!url.equals(href)) {
                                     directoryStore ! UpdateFeedUrl(url, href)
                                 }
 
@@ -265,9 +263,51 @@ class CrawlerActor extends Actor with ActorLogging {
                         sendErrorNotificationIfFeasable(exo, url, job)
                 }
             }
+            */
+
+            val headResult = httpClient.headCheck(url)
+
+            // TODO check if eTag differs from last known value
+
+            // TODO check if lastMod differs from last known value
+
+            headResult.getLocation.asScala match {
+                case Some(href) =>
+                    log.debug("Sending message to download content : {}", href)
+                    job match {
+                        case WebsiteFetchJob() =>
+                            // if the link in the feed is redirected (which is often the case due
+                            // to some feed analytic tools, we set our records to the new location
+                            if (!url.equals(href)) {
+                                directoryStore ! UpdateLinkByEchoId(exo, href)
+                                indexStore ! IndexStoreUpdateDocLink(exo, href)
+                            }
+
+                            // we always download websites, because we only do it once anyway
+                            self ! DownloadContent(exo, href, job)
+                        case _ =>
+                            // if the feed moved to a new URL, we will inform the directory, so
+                            // it will use the new location starting with the next update cycle
+                            if (!url.equals(href)) {
+                                directoryStore ! UpdateFeedUrl(url, href)
+                            }
+
+                            /*
+                             * TODO
+                             * here I have to do some voodoo with etag/lastMod to
+                             * determine weither the feed changed and I really need to redownload
+                             */
+                            self ! DownloadContent(exo, href, job)
+                    }
+                case None =>
+                    log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
+                    sendErrorNotificationIfFeasable(exo, url, job)
+            }
+
+
         } catch {
             case e: Exception =>
-                log.warning("HEAD response prevented downloading resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.warning("HEAD response prevented fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(exo, url, job)
         }
@@ -281,31 +321,30 @@ class CrawlerActor extends Actor with ActorLogging {
       * @param url
       * @param job
       */
-    private def downloadSttp(exo: String, url: String, job: FetchJob): Unit = {
+    private def fetchContent(exo: String, url: String, job: FetchJob): Unit = {
         try {
             val response = sttp
                 .get(uri"${url}")
                 .readTimeout(DOWNLOAD_TIMEOUT)
-                //.response(asStream[Source[ByteString, Any]])
                 .response(asString)
                 .send()
 
             if (!response.isSuccess) {
-                log.error("Download resulted in a non-success response code : {}", response.code)
+                //log.error("Download resulted in a non-success response code : {}", response.code)
                 throw new EchoException(s"Download resulted in a non-success response code : ${response.code}") // TODO make dedicated exception
             }
 
             response.contentType.foreach(ct => {
                 val mimeType = ct.split(";")(0).trim
-                if (!validMimeType(mimeType)) {
-                    log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
+                if (!isValidMime(mimeType)) {
+                    //log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
                     throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
                 }
             })
 
             response.contentLength.foreach(cl => {
                 if (cl > DOWNLOAD_MAXBYTES) {
-                    log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
+                    //log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
                     throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
                 }
             })
@@ -313,26 +352,25 @@ class CrawlerActor extends Actor with ActorLogging {
             // TODO
             response.body match {
                 case Left(errorMessage) =>
-                    log.error("Error collecting download body, message : {}", errorMessage)
+                    //log.error("Error collecting download body, message : {}", errorMessage)
                     throw new EchoException(s"Error collecting download body, message : ${errorMessage}") // TODO make dedicated exception
                 case Right(deserializedBody) =>
-                    val data = deserializedBody
                     log.debug("Finished collecting content from GET response : {}", url)
                     job match {
                         case NewPodcastFetchJob() =>
-                            parser ! ParseNewPodcastData(url, exo, data)
+                            parser ! ParseNewPodcastData(url, exo, deserializedBody)
                             directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                         case UpdateEpisodesFetchJob(etag, lastMod) =>
-                            parser ! ParseUpdateEpisodeData(url, exo, data)
+                            parser ! ParseUpdateEpisodeData(url, exo, deserializedBody)
                             directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                         case WebsiteFetchJob() =>
-                            parser ! ParseWebsiteData(exo, data)
+                            parser ! ParseWebsiteData(exo, deserializedBody)
                     }
             }
         } catch {
             case e: Exception =>
                 // TODO
-                log.error("Error downloading resource : {} [reason : {}]", url, e.getMessage)
+                log.error("Error fetching content : {} [reason : {}]", url, e.getMessage)
                 //throw new EchoException(s"Error downloading resource : ${url} [reason : ${reason.getMessage}]") // TODO make dedicated exception
                 sendErrorNotificationIfFeasable(exo, url, job)
         }

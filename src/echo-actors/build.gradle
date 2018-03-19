@@ -57,16 +57,18 @@ repositories {
 }
 
 dependencies {
-    compile(
-        [group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"],
-        [group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"],
-        [group: 'com.typesafe.akka', name: "akka-actor_${scala_major_version}", version: akka_version],
-    )
+    compile group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"
+    compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
 
+    compile group: 'org.scala-lang.modules', name: "scala-java8-compat_${scala_major_version}", version: '0.8.0'
+
+    compile group: 'com.typesafe.akka', name: "akka-actor_${scala_major_version}", version: akka_version
     compile "com.typesafe.akka:akka-slf4j_${scala_major_version}:${akka_version}"
     compile "com.typesafe.akka:akka-stream_${scala_major_version}:${akka_version}"
     compile "com.typesafe.akka:akka-http_${scala_major_version}:${akka_http_version}"
     compile "com.typesafe.akka:akka-http-spray-json_${scala_major_version}:${akka_http_version}"
+
+    compile group: 'com.typesafe.scala-logging', name: "scala-logging_${scala_major_version}", version: '3.8.0'
 
     compile "ch.qos.logback:logback-classic:${logback_version}"
     //compile group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.8.0-beta0'
