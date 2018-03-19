@@ -53,9 +53,13 @@ class CrawlerActor extends Actor with ActorLogging {
     private final implicit val actorSystem: ActorSystem = context.system
     private final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
 
+    private implicit val sttpBackend = HttpURLConnectionBackend(options = SttpBackendOptions.connectionTimeout(DOWNLOAD_TIMEOUT))
+    //private implicit val sttpBackend = TryHttpURLConnectionBackend(options = SttpBackendOptions.connectionTimeout(DOWNLOAD_TIMEOUT))
+    /* TODO
     private implicit val sttpBackend = AkkaHttpBackend
             .usingActorSystem(actorSystem,
                               options = SttpBackendOptions.connectionTimeout(DOWNLOAD_TIMEOUT))
+    */
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
@@ -68,6 +72,8 @@ class CrawlerActor extends Actor with ActorLogging {
 
     override def postStop: Unit = {
         Http().shutdownAllConnectionPools().onComplete(_ => log.info("shutting down"))
+
+        sttpBackend.close()
     }
 
     override def receive: Receive = {
@@ -97,7 +103,17 @@ class CrawlerActor extends Actor with ActorLogging {
                     headCheck(echoId, url, job)
             }
             */
-            headSttp(echoId, url, job)
+            job match {
+                case WebsiteFetchJob() =>
+                    if (WEBSITE_JOBS) {
+                        log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
+                        headSttp(echoId, url, job)
+                    }
+                case _ =>
+                    log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
+                    headSttp(echoId, url, job)
+            }
+
 
         case DownloadContent(echoId, url, job) =>
             log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
@@ -681,12 +697,120 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     private def headSttp(exo: String, url: String, job: FetchJob): Unit = {
+
+        try {
+            val response = emptyRequest // use empty request, because standard req uses header "Accept-Encoding: gzip" which can cause problems with HEAD requests
+                .response(ignore)
+                .readTimeout(DOWNLOAD_TIMEOUT)
+                .head(uri"${url}")
+                .send()
+
+            // TODO
+            var saveToDownload = true
+
+            // we assume we will use the known URL to download later, but maybe this changes...
+            var location: Option[String] = Some(url)
+            response.code match {
+                case 200 => // all fine
+                case 301 => // Moved Permanently
+                    // TODO do something with the new location, e.g. send message to directory to update episode, and use this to (re-)index the new website
+                    location = response.header("location")
+                    log.debug("Redirecting {} to {}", url, location.getOrElse("NON PROVIDED"))
+                //log.warning("301 Moved Permanently reported, this is the new location : {} (of : {})", location.getOrElse("NON PROVIDED"), url)
+                // TODO once I have a propper procedure for 301 handling, should I fail here?
+                //return Failure(new EchoException(s"HEAD request reported status $statusCode : ${response.status.reason()}")) // TODO make a dedicated exception
+                case 302 => // odd, but ok
+                case 404 => // not found: nothing there worth processing
+                    //return Failure(new EchoException(s"HEAD request reported status ${response.code} : ${response.statusText}")) // TODO make a dedicated exception
+                    log.warning("HEAD request reported status {} : {}", response.code, response.statusText)
+                    saveToDownload = false
+                case 503 => // service unavailable
+                    //return Failure(new EchoException(s"HEAD request reported status ${response.code} : ${response.statusText}")) // TODO make a dedicated exception
+                    log.warning("HEAD request reported status {} : {}", response.code, response.statusText)
+                    saveToDownload = false
+                case _   =>
+                    log.warning("Received unexpected status from HEAD request : {} {} on {}", response.code, response.statusText, url)
+            }
+
+            val mimeType: Option[String] = response.contentType
+                .map(ct => Some(ct.split(";")(0).trim))
+                .getOrElse(None)
+
+            mimeType match {
+                case Some(mime) =>
+                    if (!validMimeType(mime)) {
+                        mime match {
+                            case _@("audio/mpeg" | "application/octet-stream") =>
+                                //return Failure(new EchoException(s"Invalid MIME-type '$mime' of $url")) // TODO make a dedicated exception
+                                log.warning("Invalid MIME-type '{}' of '{}'", mime, url)
+                                saveToDownload = false
+                            case _ =>
+                                //log.warning("Received unexpected MIME type '{}' from HEAD request to : '{}'", mime, url)
+                                //return Failure(new EchoException(s"Unexpected MIME type '$mime' of '$url'")) // TODO make a dedicated exception
+                                log.error("Unexpected MIME type '{}' of '{}'", mime, url)
+                                saveToDownload = false
+                        }
+                    }
+                case None =>
+                    // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself
+                    log.warning("Did not get a Content-Type from HEAD request")
+            }
+
+            if (saveToDownload) {
+                //set the etag if existent
+                val eTag: Option[String] = response.header("etag")
+
+                //set the "last modified" header field if existent
+                val lastModified: Option[String] = response.header("last-modified")
+
+                location match {
+                    case Some(href) =>
+                        log.debug("Sending message to download content : {}", href)
+                        job match {
+                            case WebsiteFetchJob() =>
+                                // if the link in the feed is redirected (which is often the case due
+                                // to some feed analytic tools, we set our records to the new location
+                                if(!url.equals(href)) {
+                                    directoryStore ! UpdateLinkByEchoId(exo, href)
+                                    indexStore ! IndexStoreUpdateDocLink(exo, href)
+                                }
+
+                                // we always download websites, because we only do it once anyway
+                                self ! DownloadContent(exo, href, job)
+                            case _ =>
+                                // if the feed moved to a new URL, we will inform the directory, so
+                                // it will use the new location starting with the next update cycle
+                                if(!url.equals(href)) {
+                                    directoryStore ! UpdateFeedUrl(url, href)
+                                }
+
+                                /*
+                                 * TODO
+                                 * here I have to do some voodoo with etag/lastMod to
+                                 * determine weither the feed changed and I really need to redownload
+                                 */
+                                self ! DownloadContent(exo, href, job)
+                        }
+                    case None =>
+                        log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
+                        sendErrorNotificationIfFeasable(exo, url, job)
+                }
+            }
+        } catch {
+            case e: Exception =>
+                log.warning("HEAD response prevented downloading resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                e.printStackTrace()
+                sendErrorNotificationIfFeasable(exo, url, job)
+        }
+
+
+
+        /*
         sttp
             .head(uri"${url}")
+            .response(ignore)
             .readTimeout(DOWNLOAD_TIMEOUT)
-            .response(asString)
-            .send()
-            .onComplete {
+            .send() match {
                 case Success(response) =>
                     // TODO
                     var saveToDownload = true
@@ -783,11 +907,10 @@ class CrawlerActor extends Actor with ActorLogging {
                 case Failure(reason) =>
                     // TODO
                     log.warning("HEAD response prevented downloading resource : {} [reason : {}]", url, Option(reason.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                    reason.printStackTrace()
                     sendErrorNotificationIfFeasable(exo, url, job)
             }
-
-
-        // TODO
+            */
     }
 
     /**
@@ -800,13 +923,71 @@ class CrawlerActor extends Actor with ActorLogging {
       */
     private def downloadSttp(exo: String, url: String, job: FetchJob): Unit = {
         //val response: Future[Response[Source[ByteString, Any]]] = sttp.get(...
+
+        try {
+            val response = sttp
+                .get(uri"${url}")
+                .readTimeout(DOWNLOAD_TIMEOUT)
+                //.response(asStream[Source[ByteString, Any]])
+                .response(asString)
+                .send()
+
+            if (!response.isSuccess) {
+                log.error("Download resulted in a non-success response code : {}", response.code)
+                throw new EchoException(s"Download resulted in a non-success response code : ${response.code}") // TODO make dedicated exception
+            }
+
+            response.contentType.foreach(ct => {
+                val mimeType = ct.split(";")(0).trim
+                if (!validMimeType(mimeType)) {
+                    log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
+                    throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
+                }
+            })
+
+            response.contentLength.foreach(cl => {
+                if (cl > DOWNLOAD_MAXBYTES) {
+                    log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
+                    throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
+                }
+            })
+
+            // TODO
+            response.body match {
+                case Left(errorMessage) =>
+                    log.error("Error collecting download body, message : {}", errorMessage)
+                    throw new EchoException(s"Error collecting download body, message : ${errorMessage}") // TODO make dedicated exception
+                case Right(deserializedBody) =>
+                    val data = deserializedBody
+                    log.debug("Finished collecting content from GET response : {}", url)
+                    job match {
+                        case NewPodcastFetchJob() =>
+                            parser ! ParseNewPodcastData(url, exo, data)
+                            directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                        case UpdateEpisodesFetchJob(etag, lastMod) =>
+                            parser ! ParseUpdateEpisodeData(url, exo, data)
+                            directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                        case WebsiteFetchJob() =>
+                            parser ! ParseWebsiteData(exo, data)
+                    }
+            }
+        } catch {
+            case e: Exception =>
+                // TODO
+                log.error("Error downloading resource : {} [reason : {}]", url, e.getMessage)
+                //throw new EchoException(s"Error downloading resource : ${url} [reason : ${reason.getMessage}]") // TODO make dedicated exception
+                sendErrorNotificationIfFeasable(exo, url, job)
+        }
+
+
+
+        /*
         sttp
             .get(uri"${url}")
             .readTimeout(DOWNLOAD_TIMEOUT)
             //.response(asStream[Source[ByteString, Any]])
-            .response(asString)
-            .send()
-            .onComplete {
+            .response(asString("utf-8"))
+            .send() match {
                 case Success(response) =>
 
                     if (!response.isSuccess) {
@@ -855,6 +1036,7 @@ class CrawlerActor extends Actor with ActorLogging {
                     //throw new EchoException(s"Error downloading resource : ${url} [reason : ${reason.getMessage}]") // TODO make dedicated exception
                     sendErrorNotificationIfFeasable(exo, url, job)
             }
+        */
     }
 
 }
