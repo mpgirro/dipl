@@ -10,7 +10,8 @@ import scala.compat.java8.OptionConverters._
 /**
   * @author Maximilian Irro
   */
-class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration) {
+class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration,
+                  val DOWNLOAD_MAXBYTES: Long) {
 
     private val log = Logger(classOf[HttpClient])
 
@@ -21,6 +22,9 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration) {
     }
 
     @throws(classOf[EchoException])
+    @throws(classOf[java.net.ConnectException])
+    @throws(classOf[java.net.UnknownHostException])
+    @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def headCheck(url: String): HeadResult = {
 
         val response = emptyRequest // use empty request, because standard req uses header "Accept-Encoding: gzip" which can cause problems with HEAD requests
@@ -87,6 +91,49 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration) {
         result.setLocation(location.asJava)
 
         result
+    }
+
+    @throws(classOf[EchoException])
+    @throws(classOf[java.net.ConnectException])
+    @throws(classOf[java.net.UnknownHostException])
+    @throws(classOf[javax.net.ssl.SSLHandshakeException])
+    def fetchContent(url: String): String = {
+
+        val response = sttp
+            .get(uri"${url}")
+            .readTimeout(DOWNLOAD_TIMEOUT)
+            .response(asString)
+            .send()
+
+        if (!response.isSuccess) {
+            //log.error("Download resulted in a non-success response code : {}", response.code)
+            throw new EchoException(s"Download resulted in a non-success response code : ${response.code}") // TODO make dedicated exception
+        }
+
+        response.contentType.foreach(ct => {
+            val mimeType = ct.split(";")(0).trim
+            if (!isValidMime(mimeType)) {
+                //log.error("Aborted before downloading a file with invalid MIME-type : '{}' from : '{}'", mimeType, url)
+                throw new EchoException(s"Aborted before downloading a file with invalid MIME-type : '${mimeType}'") // TODO make dedicated exception
+            }
+        })
+
+        response.contentLength.foreach(cl => {
+            if (cl > DOWNLOAD_MAXBYTES) {
+                //log.error("Refusing to download resource because content length exceeds maximum: {} > {}", cl, DOWNLOAD_MAXBYTES)
+                throw new EchoException(s"Refusing to download resource because content length exceeds maximum: ${cl} > ${DOWNLOAD_MAXBYTES}")
+            }
+        })
+
+        // TODO
+        response.body match {
+            case Left(errorMessage) =>
+                //log.error("Error collecting download body, message : {}", errorMessage)
+                throw new EchoException(s"Error collecting download body, message : ${errorMessage}") // TODO make dedicated exception
+            case Right(deserializedBody) =>
+                log.debug("Finished collecting content from GET response : {}", url)
+                deserializedBody // this will be returned
+        }
     }
 
     private def analyzeUrl(url: String): (String, String) = {
