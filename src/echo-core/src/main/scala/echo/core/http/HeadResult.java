@@ -7,20 +7,11 @@ import java.util.Optional;
  */
 public class HeadResult {
 
-    private Boolean saveToDownload;
     private Integer statusCode;
     private Optional<String> location;
     private Optional<String> mimeType;
     private Optional<String> eTag;
     private Optional<String> lastModified;
-
-    public Boolean getSaveToDownload() {
-        return saveToDownload;
-    }
-
-    public void setSaveToDownload(Boolean saveToDownload) {
-        this.saveToDownload = saveToDownload;
-    }
 
     public Integer getStatusCode() {
         return statusCode;
@@ -65,8 +56,7 @@ public class HeadResult {
     @Override
     public String toString() {
         return "HeadResult{" +
-            "saveToDownload=" + saveToDownload +
-            ", statusCode=" + statusCode +
+            "statusCode=" + statusCode +
             ", location=" + location +
             ", mimeType=" + mimeType +
             ", eTag=" + eTag +

@@ -23,6 +23,7 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration,
 
     @throws(classOf[EchoException])
     @throws(classOf[java.net.ConnectException])
+    @throws(classOf[java.net.SocketTimeoutException])
     @throws(classOf[java.net.UnknownHostException])
     @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def headCheck(url: String): HeadResult = {
@@ -32,9 +33,6 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration,
             .readTimeout(DOWNLOAD_TIMEOUT)
             .head(uri"${url}")
             .send()
-
-
-        var saveToDownload = true // TODO do I still need this boolean?
 
         // we assume we will use the known URL to download later, but maybe this changes...
         var location: Option[String] = Some(url)
@@ -73,7 +71,6 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration,
             case None =>
                 // got no content type from HEAD request, therefore I'll just have to download the whole thing and look for myself
                 log.warn("Did not get a Content-Type from HEAD request : {}", url)
-                saveToDownload = false // TODO
         }
 
         //set the etag if existent
@@ -83,18 +80,18 @@ class HttpClient (val DOWNLOAD_TIMEOUT: FiniteDuration,
         val lastModified: Option[String] = response.header("last-modified")
 
         val result: HeadResult = new HeadResult
-        result.seteTag(eTag.asJava)
-        result.setLastModified(lastModified.asJava)
         result.setStatusCode(response.code)
         result.setMimeType(mimeType.asJava)
-        result.setSaveToDownload(saveToDownload)
         result.setLocation(location.asJava)
+        result.seteTag(eTag.asJava)
+        result.setLastModified(lastModified.asJava)
 
         result
     }
 
     @throws(classOf[EchoException])
     @throws(classOf[java.net.ConnectException])
+    @throws(classOf[java.net.SocketTimeoutException])
     @throws(classOf[java.net.UnknownHostException])
     @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def fetchContent(url: String): String = {
