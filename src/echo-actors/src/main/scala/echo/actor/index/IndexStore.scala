@@ -35,8 +35,8 @@ class IndexStore extends Actor with ActorLogging {
     context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
     override def postStop: Unit = {
-        indexCommitter.destroy()
-        indexSearcher.destroy()
+        Option(indexCommitter).foreach(_.destroy())
+        Option(indexSearcher).foreach(_.destroy())
 
         log.info("shutting down")
     }
