@@ -123,9 +123,27 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Inter-process Communication
     * Inherent Concurrency
 * Microservice Architecture
-    * OO-Perspective
+    * Principles of MS
+        : No shared state, etc
+    * MS from an OO-Perspective
     * Communication Channels
-    * Synchronous and Asynchronous Communication
 * Actor-based Programming
     * Isolation
     * Immutable Message Passing
+    * Typed Actors/Active Objects
+* Principles of Concurrent, Parallel and Distributed Programming
+    * ??? --> hier die allgemeinen anforderungen beschreiben
+* Actors for Concurrent, Parallel and Distributed Programming
+    * Synchronous and Asynchronous Communication
+    * Persistence
+    * Load balancing: Mailbox and Dispatcher
+    * Fault Tolerance: Supervision and Error Kernel
+    * Remoting / Cluster
+    * ...
+* Microservices for Concurrent, Parallel and Distributed Programming
+    * Synchronous and Asynchronous Communication
+        : REST and lightweight MQs
+    * Persistence
+        : One DB per MS
+    * Fault Tolerance
+        : What Hysterix is used for

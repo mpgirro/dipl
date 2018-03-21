@@ -1,3 +1,5 @@
+[TOC]
+
 # Design by contract
 
 * Zusicherungen
@@ -117,3 +119,15 @@ Drittens das Argument des Kommunikationskanals dieser Services. An sich obliegt 
 
 Discovery ist ein Argument, auf das mir derzeit aus dem stehgreif keine Argumentation einfallen mag.
 ~
+
+# Asynchrone Jobs
+
+* In Actors/Akka sind Jobs immer async (als per default)
+  * Je nach Routing-Strategy wird ein Job auch nur an einen Worker geleitet (zB Random, round robin, etc)
+  * Der tatsächliche Empfänger ist dem Sender unbekannt, nur der Typ des Empfängers (bei Types Actors durch Compiler gecheckt, bei Untyped Actors halt nicht)
+* In MS ist der default das man via REST den Emfänger direkt anspricht
+  * Kann durch eine API Gateway, die eine Routing Strategy für Load-balancing macht, geändert werden
+  * Alternativ Kann eine MQ verwendet werden
+    * zB AMQP ist neutrales Protokol (--> Polyglott, offener Kommunikationskanal)
+    * RabbitMQ ist lightweight und skalierbar
+    * AMQP nur MQ verhalten (also Queue von JMS, kein Topic/PubSub wie es zB Kafka nur umsetzt)
