@@ -34,16 +34,14 @@ class CrawlerActor extends Actor with ActorLogging {
     // TODO define CONN_TIMEOUT
     // TODO define READ_TIMEOUT
 
-    private val DOWNLOAD_TIMEOUT = 10.seconds // TODO read from config
-    private val DOWNLOAD_MAXBYTES = 5  * 1024 * 1024 // TODO load from config file
+    private val DOWNLOAD_TIMEOUT = 10 // TODO read from config
+    private val DOWNLOAD_MAXBYTES = 5242880 // = 5  * 1024 * 1024 // TODO load from config file
 
     // important, or we will experience starvation on processing many feeds at once
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.crawler.dispatcher")
 
     private implicit val actorSystem: ActorSystem = context.system
     private implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
-
-    private implicit val sttpBackend = HttpURLConnectionBackend(options = SttpBackendOptions.connectionTimeout(DOWNLOAD_TIMEOUT))
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
@@ -54,7 +52,6 @@ class CrawlerActor extends Actor with ActorLogging {
     private val httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
     override def postStop: Unit = {
-        sttpBackend.close()
         httpClient.close()
     }
 
@@ -85,9 +82,9 @@ class CrawlerActor extends Actor with ActorLogging {
             }
 
 
-        case DownloadContent(echoId, url, job) =>
-            log.debug("Received Download({},'{}',{})", echoId, url, job.getClass.getSimpleName)
-            fetchContent(echoId, url, job)
+        case DownloadContent(echoId, url, job, encoding) =>
+            log.debug("Received Download({},'{}',{},{})", echoId, url, job.getClass.getSimpleName, encoding)
+            fetchContent(echoId, url, job, encoding) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
@@ -128,11 +125,15 @@ class CrawlerActor extends Actor with ActorLogging {
         try {
             val headResult = httpClient.headCheck(url)
 
+            val encoding = headResult.getContentEncoding.asScala
+
+            val location = headResult.getLocation.asScala
+
             // TODO check if eTag differs from last known value
 
             // TODO check if lastMod differs from last known value
 
-            headResult.getLocation.asScala match {
+            location match {
                 case Some(href) =>
                     log.debug("Sending message to download content : {}", href)
                     job match {
@@ -145,7 +146,9 @@ class CrawlerActor extends Actor with ActorLogging {
                             }
 
                             // we always download websites, because we only do it once anyway
-                            self ! DownloadContent(exo, href, job)
+                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                            //fetchContent(exo, href, job, encoding)
+
                         case _ =>
                             // if the feed moved to a new URL, we will inform the directory, so
                             // it will use the new location starting with the next update cycle
@@ -158,7 +161,8 @@ class CrawlerActor extends Actor with ActorLogging {
                              * here I have to do some voodoo with etag/lastMod to
                              * determine weither the feed changed and I really need to redownload
                              */
-                            self ! DownloadContent(exo, href, job)
+                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                            //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
                     log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
@@ -168,11 +172,23 @@ class CrawlerActor extends Actor with ActorLogging {
 
         } catch {
             case e: EchoException =>
-                log.warning("HEAD response prevented fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("HEAD response prevented fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 sendErrorNotificationIfFeasable(exo, url, job)
+            case e: java.net.ConnectException =>
+                log.error("java.net.ConnectException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: java.net.SocketTimeoutException =>
+                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: java.net.UnknownHostException =>
+                log.error("java.net.UnknownHostException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: javax.net.ssl.SSLHandshakeException =>
+                log.error("javax.net.ssl.SSLHandshakeException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
             case e: Exception =>
                 // TODO
-                log.warning("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(exo, url, job)
         }
@@ -186,9 +202,9 @@ class CrawlerActor extends Actor with ActorLogging {
       * @param url
       * @param job
       */
-    private def fetchContent(exo: String, url: String, job: FetchJob): Unit = {
+    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String]): Unit = {
         try {
-            val data = httpClient.fetchContent(url)
+            val data = httpClient.fetchContent(url, encoding.asJava)
             job match {
                 case NewPodcastFetchJob() =>
                     parser ! ParseNewPodcastData(url, exo, data)
@@ -204,11 +220,23 @@ class CrawlerActor extends Actor with ActorLogging {
 
         } catch {
             case e: EchoException =>
-                log.warning("Error on fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("Error on fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 sendErrorNotificationIfFeasable(exo, url, job)
+            case e: java.net.ConnectException =>
+                log.error("java.net.ConnectException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: java.net.SocketTimeoutException =>
+                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: java.net.UnknownHostException =>
+                log.error("java.net.UnknownHostException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
+            case e: javax.net.ssl.SSLHandshakeException =>
+                log.error("javax.net.ssl.SSLHandshakeException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
             case e: Exception =>
                 // TODO
-                log.warning("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(exo, url, job)
         }

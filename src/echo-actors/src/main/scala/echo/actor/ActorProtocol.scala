@@ -25,7 +25,7 @@ object ActorProtocol {
     case class WebsiteFetchJob() extends FetchJob
 
     case class DownloadWithHeadCheck(echoId: String, url: String, job: FetchJob)
-    case class DownloadContent(echoId: String, url: String, job: FetchJob)
+    case class DownloadContent(echoId: String, url: String, job: FetchJob, encoding: Option[String])
 
     // Crawler -> DirectoryStore
     case class FeedStatusUpdate(podcastId: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
