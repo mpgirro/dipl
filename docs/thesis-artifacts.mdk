@@ -131,3 +131,7 @@ Discovery ist ein Argument, auf das mir derzeit aus dem stehgreif keine Argument
     * zB AMQP ist neutrales Protokol (--> Polyglott, offener Kommunikationskanal)
     * RabbitMQ ist lightweight und skalierbar
     * AMQP nur MQ verhalten (also Queue von JMS, kein Topic/PubSub wie es zB Kafka nur umsetzt)
+
+# Case study: Akka AMQP Proxies
+
+see [Akka AMQP proxies: Simple distributed load-balancing](http://letitcrash.com/post/29988753572/akka-amqp-proxies)

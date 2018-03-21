@@ -127,23 +127,32 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
         : No shared state, etc
     * MS from an OO-Perspective
     * Communication Channels
+        : Point to Point, Publish/Subscribe
 * Actor-based Programming
     * Isolation
     * Immutable Message Passing
     * Typed Actors/Active Objects
+    * Combining Actor and Future based Concurrent Programming
 * Principles of Concurrent, Parallel and Distributed Programming
     * ??? --> hier die allgemeinen anforderungen beschreiben
 * Actors for Concurrent, Parallel and Distributed Programming
     * Synchronous and Asynchronous Communication
+        : Channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
     * Persistence
     * Load balancing: Mailbox and Dispatcher
     * Fault Tolerance: Supervision and Error Kernel
-    * Remoting / Cluster
+    * Cluster / Remoting
     * ...
+    * Configuration, logging, and deployment
+    * Performance measurement of Actors
 * Microservices for Concurrent, Parallel and Distributed Programming
     * Synchronous and Asynchronous Communication
-        : REST and lightweight MQs
+        : REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
     * Persistence
         : One DB per MS
     * Fault Tolerance
         : What Hysterix is used for
+    * Cluster / Remoting
+        : Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+    * Configuration, logging, and deployment
+    * Performance measurement of Microservices
