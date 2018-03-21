@@ -14,8 +14,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -35,6 +37,12 @@ public class IndexService {
     private void init() throws IOException {
         this.indexCommitter = new LuceneCommitter(INDEX_PATH, true); // TODO do not alway re-create the index
         this.indexSearcher = new LuceneSearcher(((LuceneCommitter) indexCommitter).getIndexWriter());
+    }
+
+    @PreDestroy
+    private void destroy() {
+        Optional.ofNullable(indexCommitter).ifPresent(IndexCommitter::destroy);
+        Optional.ofNullable(indexSearcher).ifPresent(IndexSearcher::destroy);
     }
 
     @Async
