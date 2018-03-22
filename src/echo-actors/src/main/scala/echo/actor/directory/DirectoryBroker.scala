@@ -12,7 +12,7 @@ import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryQuery}
 class DirectoryBroker extends Actor with ActorLogging {
 
     private val CONFIG = ConfigFactory.load()
-    private val STORE_COUNT: Int = 1 // Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
+    private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
     private val DATABASE_URLs = Array("jdbc:h2:mem:echo")// TODO I'll have to thing about a better solution in a distributed context
 
     private var crawler: ActorRef = _
@@ -26,7 +26,7 @@ class DirectoryBroker extends Actor with ActorLogging {
     private var commandRouter: Router = _
     private var queryRouter: Router = _ ;
     {
-        val routees: Vector[ActorRefRoutee] = (1 to STORE_COUNT)
+        val routees: Vector[ActorRefRoutee] = (1 to List(STORE_COUNT, DATABASE_URLs.length).min)
             .map(i => {
                 val databaseUrl = DATABASE_URLs(i-1)
                 val directoryStore = createDirectoryStore(i, databaseUrl)
@@ -35,13 +35,6 @@ class DirectoryBroker extends Actor with ActorLogging {
             })
             .to[Vector]
 
-        /*
-        val routees: Vector[ActorRefRoutee] = Vector.fill(STORE_COUNT) {
-            val directoryStore = createDirectoryStore()
-            context watch directoryStore
-            ActorRefRoutee(directoryStore)
-        }
-        */
         commandRouter = Router(BroadcastRoutingLogic(), routees)
         queryRouter = Router(RoundRobinRoutingLogic(), routees)
     }

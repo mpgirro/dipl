@@ -11,7 +11,7 @@ import echo.actor.index.IndexProtocol.{IndexCommand, IndexQuery}
 class IndexBroker extends Actor with ActorLogging {
 
     private val CONFIG = ConfigFactory.load()
-    private val STORE_COUNT: Int = 1 // Option(CONFIG.getInt("echo.index.store-count")).getOrElse(1) // TODO
+    private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.index.store-count")).getOrElse(1) // TODO
     private val INDEX_PATHs = Array("/Users/max/volumes/echo/index") // TODO I'll have to thing about a better solution in a distributed context
     private val CREATE_INDEX: Boolean = Option(CONFIG.getBoolean("echo.index.create-index")).getOrElse(false)
 
@@ -24,7 +24,7 @@ class IndexBroker extends Actor with ActorLogging {
     private var queryRouter: Router = _ ;
     {
         // TODO 1 to List(STORE_COUNT, INDEX_PATHs.length).min
-        val routees: Vector[ActorRefRoutee] = (1 to STORE_COUNT)
+        val routees: Vector[ActorRefRoutee] = (1 to List(STORE_COUNT, INDEX_PATHs.length).min)
             .map(i => {
                 val indexPath = INDEX_PATHs(i-1)
                 val indexStore = createIndexStore(i, indexPath)
