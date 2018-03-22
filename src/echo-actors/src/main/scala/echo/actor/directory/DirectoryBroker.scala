@@ -13,8 +13,7 @@ class DirectoryBroker extends Actor with ActorLogging {
 
     private val CONFIG = ConfigFactory.load()
     private val STORE_COUNT: Int = 1 // Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
-
-    private var currentStoreIndex = 1
+    private val DATABASE_URLs = Array("jdbc:h2:mem:echo")// TODO I'll have to thing about a better solution in a distributed context
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
@@ -27,11 +26,22 @@ class DirectoryBroker extends Actor with ActorLogging {
     private var commandRouter: Router = _
     private var queryRouter: Router = _ ;
     {
+        val routees: Vector[ActorRefRoutee] = (1 to STORE_COUNT)
+            .map(i => {
+                val databaseUrl = DATABASE_URLs(i-1)
+                val directoryStore = createDirectoryStore(i, databaseUrl)
+                context watch directoryStore
+                ActorRefRoutee(directoryStore)
+            })
+            .to[Vector]
+
+        /*
         val routees: Vector[ActorRefRoutee] = Vector.fill(STORE_COUNT) {
             val directoryStore = createDirectoryStore()
             context watch directoryStore
             ActorRefRoutee(directoryStore)
         }
+        */
         commandRouter = Router(BroadcastRoutingLogic(), routees)
         queryRouter = Router(RoundRobinRoutingLogic(), routees)
     }
@@ -70,12 +80,10 @@ class DirectoryBroker extends Actor with ActorLogging {
             commandRouter.route(message, sender())
     }
 
-    private def createDirectoryStore(): ActorRef = {
-        val storeIndex = currentStoreIndex
-        val directoryStore = context.actorOf(Props(new DirectoryStore())
+    private def createDirectoryStore(storeIndex: Int, databaseUrl: String): ActorRef = {
+        val directoryStore = context.actorOf(Props(new DirectoryStore(databaseUrl))
             .withDispatcher("echo.directory.dispatcher"),
             name = "store-" + storeIndex)
-        currentStoreIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )

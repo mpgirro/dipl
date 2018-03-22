@@ -21,7 +21,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class RepositoryFactoryBuilder {
+class RepositoryFactoryBuilder (val databaseUrl: String) {
 
     private val persistanceUnitName = "EchoActorEnginePersistenceUnit" + (100 + (new scala.util.Random).nextInt(( 999 - 100) + 1))
 
@@ -57,7 +57,7 @@ class RepositoryFactoryBuilder {
         val dataSource: DriverManagerDataSource = new DriverManagerDataSource
         dataSource.setDriverClassName("org.h2.Driver")
         //dataSource.setUrl("jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;INIT=CREATE SCHEMA IF NOT EXISTS echo")
-        dataSource.setUrl("jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false")
+        dataSource.setUrl(s"${databaseUrl};DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false")
         //dataSource.setSchema("echo")
         dataSource.setUsername("sa")
         dataSource.setPassword("")

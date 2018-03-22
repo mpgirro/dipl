@@ -14,7 +14,7 @@ import liquibase.resource.ClassLoaderResourceAccessor
 /**
   * @author Maximilian Irro
   */
-class DirectoryStore extends Actor with ActorLogging {
+class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -28,7 +28,7 @@ class DirectoryStore extends Actor with ActorLogging {
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
-            val directoryStore = createDirectoryStoreWorkerActor()
+            val directoryStore = createDirectoryStoreWorkerActor(databaseUrl)
             context watch directoryStore
             ActorRefRoutee(directoryStore)
         }
@@ -84,9 +84,9 @@ class DirectoryStore extends Actor with ActorLogging {
 
     }
 
-    private def createDirectoryStoreWorkerActor(): ActorRef = {
+    private def createDirectoryStoreWorkerActor(databaseUrl: String): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(Props(new DirectoryStoreWorker(workerIndex))
+        val directoryStore = context.actorOf(Props(new DirectoryStoreWorker(workerIndex, databaseUrl))
             .withDispatcher("echo.directory.dispatcher"),
             name = "worker-" + workerIndex)
         currentWorkerIndex += 1
@@ -103,7 +103,7 @@ class DirectoryStore extends Actor with ActorLogging {
         try {
             Class.forName("org.h2.Driver")
             val conn: Connection = DriverManager.getConnection(
-                "jdbc:h2:mem:echo;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false",
+                s"${databaseUrl};DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false",
                 "sa",
                 "")
 

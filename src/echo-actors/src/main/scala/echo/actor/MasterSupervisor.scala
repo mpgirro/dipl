@@ -8,7 +8,7 @@ import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
 import echo.actor.directory.{DirectoryBroker, DirectoryStore}
 import echo.actor.gateway.GatewayActor
-import echo.actor.index.IndexStore
+import echo.actor.index.{IndexBroker, IndexStore}
 import echo.actor.parser.{ParserActor, ParserSupervisor}
 import echo.actor.searcher.SearcherActor
 
@@ -40,7 +40,7 @@ class MasterSupervisor extends Actor with ActorLogging {
 
     override def preStart(): Unit = {
 
-        index = context.watch(context.actorOf(Props[IndexStore]
+        index = context.watch(context.actorOf(Props[IndexBroker]
             .withDispatcher("echo.index.dispatcher"),
             name = "index"))
 

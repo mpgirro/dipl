@@ -3,7 +3,7 @@ package echo.actor.index
 import akka.actor.ActorSystem
 import akka.dispatch.{PriorityGenerator, UnboundedPriorityMailbox}
 import com.typesafe.config.Config
-import echo.actor.ActorProtocol._
+import echo.actor.index.IndexProtocol._
 
 /**
   * @author Maximilian Irro

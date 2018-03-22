@@ -3,7 +3,8 @@ package echo.actor.searcher
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import akka.event.LoggingReceive
 import akka.util.Timeout
-import echo.actor.ActorProtocol.{IndexResultsFound, NoIndexResultsFound, SearchResults}
+import echo.actor.ActorProtocol.SearchResults
+import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.domain.dto.ResultWrapperDTO
 import org.jsoup.Jsoup

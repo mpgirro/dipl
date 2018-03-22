@@ -9,6 +9,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
+import echo.actor.index.IndexProtocol.IndexStoreAddDoc
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.IndexMapper
@@ -22,7 +23,8 @@ import scala.collection.JavaConverters._
   * @author Maximilian Irro
   */
 
-class DirectoryStoreWorker(val workerIndex: Int) extends Actor with ActorLogging {
+class DirectoryStoreWorker(val workerIndex: Int,
+                           val databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -37,7 +39,7 @@ class DirectoryStoreWorker(val workerIndex: Int) extends Actor with ActorLogging
     // I need this to run liquibase
     //val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
 
-    private val repositoryFactoryBuilder = new RepositoryFactoryBuilder()
+    private val repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     //private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 

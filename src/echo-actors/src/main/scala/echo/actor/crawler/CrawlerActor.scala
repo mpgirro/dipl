@@ -2,25 +2,20 @@ package echo.actor.crawler
 
 import java.time.LocalDateTime
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, PoisonPill}
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
 import akka.stream._
-import akka.stream.scaladsl.SourceQueueWithComplete
-import com.softwaremill.sttp._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByEchoId}
+import echo.actor.index.IndexProtocol.IndexStoreUpdateDocLink
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
 import echo.core.parse.api.FyydAPI
 
-import scala.collection.mutable
-import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Promise}
-import scala.language.postfixOps
 import scala.compat.java8.OptionConverters._
+import scala.concurrent.ExecutionContext
+import scala.language.postfixOps
 
 /**
   * @author Maximilian Irro

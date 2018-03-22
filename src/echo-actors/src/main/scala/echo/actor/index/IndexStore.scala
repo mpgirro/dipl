@@ -1,9 +1,8 @@
 package echo.actor.index
 
-import akka.actor.{Actor, ActorLogging, Cancellable}
-import akka.util.Timeout
+import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol._
+import echo.actor.index.IndexProtocol._
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
 
@@ -12,16 +11,17 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class IndexStore extends Actor with ActorLogging {
+class IndexStore (val indexPath: String, val createIndex: Boolean) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
-    private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
-
     private val COMMIT_INTERVAL: FiniteDuration = Option(CONFIG.getInt("echo.index.commit-interval")).getOrElse(3).seconds
+    /*
+    private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
+    */
 
-    private val indexCommitter: IndexCommitter = new LuceneCommitter(INDEX_PATH, true) // TODO do not alway re-create the index
+    private val indexCommitter: IndexCommitter = new LuceneCommitter(indexPath, createIndex) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
 
     private var indexChanged = false

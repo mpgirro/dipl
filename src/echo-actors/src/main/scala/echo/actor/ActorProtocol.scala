@@ -26,28 +26,11 @@ object ActorProtocol {
     case class ParseWebsiteData(echoId: String, html: String)
     case class ParseFyydEpisodes(podcastId: String, episodesData: String)
 
-    // Crawler/Parser/DirectoryStore -> IndexStore
-    case class IndexStoreAddDoc(doc: IndexDocDTO) // from Parser with love
-    case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String)  // from Parser with love
-    case class IndexStoreUpdateDocImage(echoId: String, itunesImage: String) // from DirectoryStore with love
-    case class IndexStoreUpdateDocLink(echoId: String, newLink: String)      // from Crawler with love
-
-    // IndexStore -> IndexStore
-    case class CommitIndex()
-
     // Gateway(= Web) -> Searcher
     case class SearchRequest(query: String, page: Option[Int], size: Option[Int])
 
     // Searcher -> User
     case class SearchResults(results: ResultWrapperDTO)
-
-    // Searcher -> IndexStore
-    case class SearchIndex(query: String, page: Int, size: Int)
-
-    // IndexStore -> Searcher
-    trait IndexResult
-    case class IndexResultsFound(query: String, results: ResultWrapperDTO) extends IndexResult
-    case class NoIndexResultsFound(query: String) extends IndexResult
 
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
     case class ActorRefDirectoryStoreActor(ref: ActorRef)

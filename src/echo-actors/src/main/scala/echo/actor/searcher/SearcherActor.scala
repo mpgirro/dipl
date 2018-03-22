@@ -3,6 +3,7 @@ package echo.actor.searcher
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.index.IndexProtocol.SearchIndex
 import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
