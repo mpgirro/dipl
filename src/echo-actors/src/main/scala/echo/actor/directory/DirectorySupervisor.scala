@@ -28,7 +28,7 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
-            val directoryStore = createDirectoryActor()
+            val directoryStore = createDirectoryStoreWorkerActor()
             context watch directoryStore
             ActorRefRoutee(directoryStore)
         }
@@ -84,9 +84,9 @@ class DirectorySupervisor extends Actor with ActorLogging {
 
     }
 
-    private def createDirectoryActor(): ActorRef = {
+    private def createDirectoryStoreWorkerActor(): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(Props(new DirectoryStore(workerIndex))
+        val directoryStore = context.actorOf(Props(new DirectoryStoreWorker(workerIndex))
             .withDispatcher("echo.directory.dispatcher"),
             name = "worker-" + workerIndex)
         currentWorkerIndex += 1

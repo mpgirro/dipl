@@ -21,11 +21,11 @@ import scala.collection.JavaConverters._
   * @author Maximilian Irro
   */
 
-object DirectoryStore {
+object DirectoryStoreWorker {
 
 }
 
-class DirectoryStore (val workerIndex: Int) extends Actor with ActorLogging {
+class DirectoryStoreWorker(val workerIndex: Int) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

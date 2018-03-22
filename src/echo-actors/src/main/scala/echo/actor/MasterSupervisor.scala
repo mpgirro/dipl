@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
-import echo.actor.directory.DirectorySupervisor
+import echo.actor.directory.{DirectoryBroker, DirectorySupervisor}
 import echo.actor.gateway.GatewayActor
 import echo.actor.index.IndexStore
 import echo.actor.parser.{ParserActor, ParserSupervisor}
@@ -59,7 +59,7 @@ class MasterSupervisor extends Actor with ActorLogging {
         crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler")
         context watch crawler
 
-        directory = context.actorOf(Props[DirectorySupervisor], name = "directory")
+        directory = context.actorOf(Props[DirectoryBroker], name = "directory")
         context watch directory
 
         gateway = context.watch(context.actorOf(Props[GatewayActor]
