@@ -125,31 +125,47 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
 * Microservice Architecture
     * Principles of MS
         : No shared state, etc
-    * MS from an OO-Perspective
     * Communication Channels
         : Point to Point, Publish/Subscribe
+    * OO-Perspective
+        * Are MS just Distributed Objects (done right)?
 * Actor-based Programming
     * Isolation
     * Immutable Message Passing
     * Typed Actors/Active Objects
     * Combining Actor and Future based Concurrent Programming
+    * OO-Perspective
+        * Are Actors (and Active Objects) just Distributed Objects?
 * Principles of Concurrent, Parallel and Distributed Programming
     * ??? --> hier die allgemeinen anforderungen beschreiben
-* Actors for Concurrent, Parallel and Distributed Programming
+* A Concurrent, Parallel and Distributed Problem Scenario: Domain Specific Search Engine 
+    * Domain Description
+    * Concurrent Tasks
+    * Scalability Opportunities
+        * Scalability through Parallelization 
+        * Scalability through Distribution
+* Actor-based Architecture for Concurrent, Parallel and Distributed Programming
     * Synchronous and Asynchronous Communication
         : Channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
+    * Data Coupling
+        : Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen)
     * Persistence
+        : Example of Database access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections
     * Load balancing: Mailbox and Dispatcher
     * Fault Tolerance: Supervision and Error Kernel
     * Cluster / Remoting
     * ...
     * Configuration, logging, and deployment
     * Performance measurement of Actors
-* Microservices for Concurrent, Parallel and Distributed Programming
+* Microservice Architecture for Concurrent, Parallel and Distributed Programming
     * Synchronous and Asynchronous Communication
         : REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+    * Data Coupling
+        * No direct referencing via REST, async messages same temporal decoupling as with Actors
     * Persistence
         : One DB per MS
+    * Load balancing    
+        * to be done manually in API gateway, or via MQ 
     * Fault Tolerance
         : What Hysterix is used for
     * Cluster / Remoting
