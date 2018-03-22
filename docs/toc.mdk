@@ -144,20 +144,21 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Scalability Opportunities
         * Scalability through Parallelization 
         * Scalability through Distribution
-* Actor-based Architecture for Concurrent, Parallel and Distributed Programming
+* An Actor-based Search Engine Architecture
     * Synchronous and Asynchronous Communication
         : Channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
     * Data Coupling
         : Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen)
     * Persistence
         : Example of Database access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections
-    * Load balancing: Mailbox and Dispatcher
+    * Load balancing: 
+        : Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store)
     * Fault Tolerance: Supervision and Error Kernel
     * Cluster / Remoting
     * ...
     * Configuration, logging, and deployment
     * Performance measurement of Actors
-* Microservice Architecture for Concurrent, Parallel and Distributed Programming
+* A Microservice-based Search Engine Architecture
     * Synchronous and Asynchronous Communication
         : REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
     * Data Coupling
@@ -172,3 +173,9 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
         : Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
     * Configuration, logging, and deployment
     * Performance measurement of Microservices
+* Discussion
+    * The Case for Actors
+        * Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
+    * The Case for Microservices
+    * Empirical Indications
+        : Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refactorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
