@@ -1,9 +1,17 @@
 package echo.actor.crawler
 
-import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
+import java.net.{ConnectException, SocketTimeoutException, UnknownHostException}
+import java.nio.charset.IllegalCharsetNameException
+import javax.net.ssl.SSLHandshakeException
+
+import akka.actor.SupervisorStrategy.{Escalate, Restart, Resume, Stop}
+import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.routing.{ActorRefRoutee, Broadcast, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefIndexStoreActor, ActorRefParserActor}
+import echo.core.exception.EchoException
+
+import scala.concurrent.duration._
 
 /**
   * @author Maximilian Irro
@@ -28,6 +36,17 @@ class CrawlerSupervisor extends Actor with ActorLogging {
         }
         Router(RoundRobinRoutingLogic(), routees) // TODO hier gibt es vll einen besseren router als roundrobin. balanced mailbox?
     }
+
+    override val supervisorStrategy: SupervisorStrategy =
+        OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
+            case _: EchoException               => Resume
+            case _: ConnectException            => Resume
+            case _: SocketTimeoutException      => Resume
+            case _: UnknownHostException        => Resume
+            case _: SSLHandshakeException       => Resume
+            case _: IllegalCharsetNameException => Resume
+            case _: Exception                   => Escalate
+        }
 
     override def postStop: Unit = {
         log.info("shutting down")

@@ -2,7 +2,7 @@ package echo.actor.gateway.service
 
 import javax.ws.rs.Path
 
-import akka.actor.{ActorContext, ActorLogging, ActorRef}
+import akka.actor.{ActorContext, ActorRef}
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
@@ -10,10 +10,8 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
-import echo.actor.gateway.json.JsonSupport
-import com.typesafe.config.ConfigFactory
+import echo.actor.directory.DirectoryProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.actor.ActorProtocol._
 import echo.core.domain.dto.PodcastDTO
 import io.swagger.annotations._
 

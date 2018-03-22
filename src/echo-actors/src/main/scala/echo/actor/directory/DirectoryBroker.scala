@@ -1,9 +1,10 @@
 package echo.actor.directory
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, Router}
+import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefIndexStoreActor}
+import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryQuery}
 
 /**
   * @author Maximilian Irro
@@ -18,13 +19,21 @@ class DirectoryBroker extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
 
-    private var router: Router = {
-        val routees = Vector.fill(STORE_COUNT) {
+    /*
+     * We define two separate routings, based on the Command–query separation principle
+     * - Command messages (create/update/delete) are PubSub sent to all stores
+     * - Query messages (read) are sent to one store
+     */
+    private var commandRouter: Router = _
+    private var queryRouter: Router = _ ;
+    {
+        val routees: Vector[ActorRefRoutee] = Vector.fill(STORE_COUNT) {
             val directoryStore = createDirectoryStore()
             context watch directoryStore
             ActorRefRoutee(directoryStore)
         }
-        Router(BroadcastRoutingLogic(), routees)
+        commandRouter = Router(BroadcastRoutingLogic(), routees)
+        queryRouter = Router(RoundRobinRoutingLogic(), routees)
     }
 
     override def postStop: Unit = {
@@ -35,30 +44,35 @@ class DirectoryBroker extends Actor with ActorLogging {
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            router.routees.foreach(r => r.send(ActorRefCrawlerActor(crawler), sender()))
+            //commandRouter.routees.foreach(r => r.send(ActorRefCrawlerActor(crawler), sender()))
+            commandRouter.route(ActorRefCrawlerActor(crawler), sender())
 
         case ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
-            router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
+            //commandRouter.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
+            commandRouter.route(ActorRefIndexStoreActor(indexStore), sender())
+
+        case command: DirectoryCommand =>
+            log.debug("Routing command: {}", command.getClass)
+            commandRouter.route(command, sender())
+
+        case query: DirectoryQuery =>
+            log.debug("Routing query : {}", query.getClass)
+            queryRouter.route(query, sender())
 
         case Terminated(corpse) =>
             log.warning(s"A ${self.path} store died : {}", corpse.path.name)
-            router = router.removeRoutee(corpse)
-            if(router.routees.isEmpty) {
-                log.error("Broker shutting down due to no more stores available")
-                context.stop(self)
-            }
+            removeStore(corpse)
 
-        case work =>
-            log.debug("Routing work of kind : {}", work.getClass)
-            router.route(work, sender())
-
+        case message =>
+            log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
+            commandRouter.route(message, sender())
     }
 
     private def createDirectoryStore(): ActorRef = {
         val storeIndex = currentStoreIndex
-        val directoryStore = context.actorOf(Props(new DirectorySupervisor())
+        val directoryStore = context.actorOf(Props(new DirectoryStore())
             .withDispatcher("echo.directory.dispatcher"),
             name = "store-" + storeIndex)
         currentStoreIndex += 1
@@ -68,6 +82,15 @@ class DirectoryBroker extends Actor with ActorLogging {
         Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
 
         directoryStore
+    }
+
+    private def removeStore(routee: ActorRef): Unit = {
+        commandRouter = commandRouter.removeRoutee(routee)
+        queryRouter = queryRouter.removeRoutee(routee)
+        if (commandRouter.routees.isEmpty || queryRouter.routees.isEmpty) {
+            log.error("Broker shutting down due to no more stores available")
+            context.stop(self)
+        }
     }
 
 }

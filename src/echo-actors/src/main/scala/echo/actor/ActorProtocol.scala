@@ -12,13 +12,6 @@ import echo.core.domain.feed.FeedStatus
   */
 object ActorProtocol {
 
-    // Web/CLI -> DirectoryStore
-    case class ProposeNewFeed(url: String)
-    case class CheckPodcast(echoId: String)
-    case class CheckFeed(echoId: String)
-    case class CheckAllPodcasts()
-    case class CheckAllFeeds()
-
     trait FetchJob
     case class NewPodcastFetchJob() extends FetchJob
     case class UpdateEpisodesFetchJob(etag: String, lastMod: String) extends FetchJob
@@ -26,18 +19,6 @@ object ActorProtocol {
 
     case class DownloadWithHeadCheck(echoId: String, url: String, job: FetchJob)
     case class DownloadContent(echoId: String, url: String, job: FetchJob, encoding: Option[String])
-
-    // Crawler -> DirectoryStore
-    case class FeedStatusUpdate(podcastId: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus)
-    case class UpdateFeedUrl(oldUrl: String, newUrl: String)
-    case class UpdateLinkByEchoId(echoId: String, newUrl: String)
-
-    // Parser -> DirectoryStore
-    case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO)
-    //case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO)
-
-    // Questions: Parser -> DirectoryStore
-    case class RegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO)
 
     // Crawler -> Parser
     case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
@@ -76,27 +57,6 @@ object ActorProtocol {
     case class ActorRefIndexStoreActor(ref: ActorRef)
     case class ActorRefSearcherActor(ref: ActorRef)
     case class ActorRefGatewayActor(ref: ActorRef)
-
-    // Gateway -> DirectoryStore
-    case class GetPodcast(podcastId: String)
-    case class GetAllPodcasts(page: Int, size: Int)
-    case class GetAllPodcastsRegistrationComplete(page: Int, size: Int)
-    case class GetAllFeeds(page: Int, size: Int)
-    case class GetEpisode(episodeId: String)
-    case class GetEpisodesByPodcast(podcastId: String)
-    case class GetFeedsByPodcast(podcastId: String)
-    case class GetChaptersByEpisode(episodeId: String)
-
-    // DirectoryStore -> Gateway
-    trait DirectoryResult
-    case class PodcastResult(podcast: PodcastDTO) extends DirectoryResult
-    case class AllPodcastsResult(results: List[PodcastDTO]) extends DirectoryResult
-    case class AllFeedsResult(results: List[FeedDTO]) extends DirectoryResult
-    case class EpisodeResult(episode: EpisodeDTO) extends DirectoryResult
-    case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends DirectoryResult
-    case class FeedsByPodcastResult(feeds: List[FeedDTO]) extends DirectoryResult
-    case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends DirectoryResult
-    case class NothingFound(echoId: String) extends DirectoryResult
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore

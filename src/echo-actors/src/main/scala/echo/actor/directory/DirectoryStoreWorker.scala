@@ -6,6 +6,7 @@ import javax.persistence.{EntityManager, EntityManagerFactory}
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
@@ -20,10 +21,6 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-
-object DirectoryStoreWorker {
-
-}
 
 class DirectoryStoreWorker(val workerIndex: Int) extends Actor with ActorLogging {
 

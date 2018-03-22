@@ -9,8 +9,8 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.ask
 import akka.util.Timeout
+import echo.actor.directory.DirectoryProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.actor.ActorProtocol._
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
 

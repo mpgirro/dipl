@@ -10,6 +10,7 @@ import javax.imageio.ImageIO
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
+import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcastMetadata}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException

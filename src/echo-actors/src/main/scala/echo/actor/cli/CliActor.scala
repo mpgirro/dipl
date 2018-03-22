@@ -5,6 +5,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.directory.DirectoryProtocol._
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.concurrent.Await

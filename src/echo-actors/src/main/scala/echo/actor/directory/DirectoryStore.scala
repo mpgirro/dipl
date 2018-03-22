@@ -14,7 +14,7 @@ import liquibase.resource.ClassLoaderResourceAccessor
 /**
   * @author Maximilian Irro
   */
-class DirectorySupervisor extends Actor with ActorLogging {
+class DirectoryStore extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

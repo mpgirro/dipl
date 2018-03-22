@@ -8,8 +8,7 @@ import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.util.Timeout
-import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.actor.ActorProtocol.{LoadTestFeeds, NothingFound, PodcastResult}
+import echo.actor.gateway.json.JsonSupport
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 

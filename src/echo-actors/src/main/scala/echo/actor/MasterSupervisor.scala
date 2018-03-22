@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
-import echo.actor.directory.{DirectoryBroker, DirectorySupervisor}
+import echo.actor.directory.{DirectoryBroker, DirectoryStore}
 import echo.actor.gateway.GatewayActor
 import echo.actor.index.IndexStore
 import echo.actor.parser.{ParserActor, ParserSupervisor}

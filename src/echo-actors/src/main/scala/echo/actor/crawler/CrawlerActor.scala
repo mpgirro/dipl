@@ -10,6 +10,7 @@ import akka.stream.scaladsl.SourceQueueWithComplete
 import com.softwaremill.sttp._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByEchoId}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -51,8 +52,33 @@ class CrawlerActor extends Actor with ActorLogging {
 
     private val httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
+    private var currUrl: String = _
+    private var currJob: FetchJob = _
+
     override def postStop: Unit = {
         httpClient.close()
+    }
+
+    override def postRestart(cause: Throwable): Unit = {
+        // TODO
+        super.postRestart(cause)
+        log.info("I was restarted")
+        cause match {
+            case e: EchoException =>
+                log.error("HEAD response prevented fetching resource : {} [reason : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: java.net.ConnectException =>
+                log.error("java.net.ConnectException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: java.net.SocketTimeoutException =>
+                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: java.net.UnknownHostException =>
+                log.error("java.net.UnknownHostException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: javax.net.ssl.SSLHandshakeException =>
+                log.error("javax.net.ssl.SSLHandshakeException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: Exception =>
+                // TODO
+                log.error("Unhandled Exception on {} : {}", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                e.printStackTrace()
+        }
     }
 
     override def receive: Receive = {
@@ -70,6 +96,10 @@ class CrawlerActor extends Actor with ActorLogging {
             indexStore = ref
 
         case DownloadWithHeadCheck(echoId, url, job) =>
+
+            this.currUrl = url
+            this.currJob = job
+
             job match {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
@@ -84,6 +114,10 @@ class CrawlerActor extends Actor with ActorLogging {
 
         case DownloadContent(echoId, url, job, encoding) =>
             log.debug("Received Download({},'{}',{},{})", echoId, url, job.getClass.getSimpleName, encoding)
+
+            this.currUrl = url
+            this.currJob = job
+
             fetchContent(echoId, url, job, encoding) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
@@ -122,7 +156,9 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     private def headCheck(exo: String, url: String, job: FetchJob): Unit = {
+
         try {
+
             val headResult = httpClient.headCheck(url)
 
             val encoding = headResult.getContentEncoding.asScala
@@ -147,7 +183,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
                             // we always download websites, because we only do it once anyway
                             self ! DownloadContent(exo, href, job, encoding) // TODO
-                            //fetchContent(exo, href, job, encoding)
+                        //fetchContent(exo, href, job, encoding)
 
                         case _ =>
                             // if the feed moved to a new URL, we will inform the directory, so
@@ -162,13 +198,12 @@ class CrawlerActor extends Actor with ActorLogging {
                              * determine weither the feed changed and I really need to redownload
                              */
                             self ! DownloadContent(exo, href, job, encoding) // TODO
-                            //fetchContent(exo, href, job, encoding)
+                        //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
                     log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
                     sendErrorNotificationIfFeasable(exo, url, job)
             }
-
 
         } catch {
             case e: EchoException =>
@@ -188,10 +223,11 @@ class CrawlerActor extends Actor with ActorLogging {
                 //sendErrorNotificationIfFeasable(exo, url, job) // TODO
             case e: Exception =>
                 // TODO
-                log.error("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("Unhandled Exception during HEAD on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(exo, url, job)
         }
+
     }
 
     /**
@@ -203,7 +239,9 @@ class CrawlerActor extends Actor with ActorLogging {
       * @param job
       */
     private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String]): Unit = {
+
         try {
+
             val data = httpClient.fetchContent(url, encoding.asJava)
             job match {
                 case NewPodcastFetchJob() =>
@@ -236,10 +274,11 @@ class CrawlerActor extends Actor with ActorLogging {
                 //sendErrorNotificationIfFeasable(exo, url, job) // TODO
             case e: Exception =>
                 // TODO
-                log.error("Unhandled Exception on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("Unhandled Exception during GET on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
                 sendErrorNotificationIfFeasable(exo, url, job)
         }
+
     }
 
 }
