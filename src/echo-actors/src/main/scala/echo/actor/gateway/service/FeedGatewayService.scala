@@ -7,10 +7,13 @@ import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
+import akka.pattern.CircuitBreaker
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
+
+import scala.concurrent.duration.FiniteDuration
 
 /**
   * @author Maximilian Irro
@@ -18,7 +21,7 @@ import io.swagger.annotations._
 @Path("/api/feed")  // @Path annotation required for Swagger
 @Api(value = "/api/feed",
     produces = "application/json")
-class FeedGatewayService (private val log: LoggingAdapter)
+class FeedGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
                          (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -32,7 +35,9 @@ class FeedGatewayService (private val log: LoggingAdapter)
             pathEndOrSingleSlash{ getFeed(id) ~ putFeed(id) ~ deleteFeed(id) }
         }
 
+
     def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
+
 
     def getAllFeeds: Route = get {
 

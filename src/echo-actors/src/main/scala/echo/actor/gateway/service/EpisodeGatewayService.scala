@@ -5,14 +5,17 @@ import javax.ws.rs.Path
 import akka.actor.{ActorContext, ActorRef}
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.{Directives, Route}
-import akka.pattern.ask
+import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
 import echo.actor.directory.DirectoryProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
+
+import scala.util.{Failure, Success}
 
 /**
   * @author Maximilian Irro
@@ -21,7 +24,7 @@ import io.swagger.annotations._
 @Path("/api/episode")  // @Path annotation required for Swagger
 @Api(value = "/api/episode",
      produces = "application/json")
-class EpisodeGatewayService (private val log: LoggingAdapter)
+class EpisodeGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -46,32 +49,69 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
                   response = classOf[Set[EpisodeDTO]],
                   responseContainer = "Set")
     def getAllEpisodes: Route = get {
-        /*
-        complete {
-            //(userRepository ? UserRepository.GetUsers).mapTo[Set[UserRepository.User]]
-        }
-        */
-        complete(StatusCodes.NotImplemented)
+        complete(NotImplemented)
     }
 
-    @ApiOperation(value = "Get episode",
-                  nickname = "getEpisode",
-                  httpMethod = "GET",
-                  response = classOf[EpisodeDTO])
-    def getEpisode(id: String): Route = get {
-        log.info("GET /api/episode/{}", id)
-        onSuccess(directoryStore ? GetEpisode(id)) {
-            case EpisodeResult(episode)     => complete(StatusCodes.OK, episode)
-            case NothingFound(unknownId) =>
-                log.error("DirectoryStore responded that there is no Episode with echoId={}", unknownId)
-                complete(StatusCodes.NotFound)
+    /*
+    @Path("/episode/{exo}")
+    @ApiOperation(
+        value = "Return the episode corresponding to the EXO.",
+        nickname = "getEpisode",
+        httpMethod = "GET")
+    @ApiImplicitParams(Array(
+        new ApiImplicitParam(
+            name = "exo",
+            value = "The EXO (= external ID) for an episode, which you find in the url https://exo.fm/e/___EXO___",
+            example = "bhAShaNAni",
+            required = true,
+            dataType = "string",
+            paramType = "path")))
+    @ApiResponses(Array(
+        new ApiResponse(code = 200, message = "Return episode", response = classOf[EpisodeDTO]),
+        new ApiResponse(code = 500, message = "Internal server error")))
+    */
+    def getEpisode(exo: String): Route = get {
+        log.info("GET /api/episode/{}", exo)
+        onCompleteWithBreaker(breaker)(directoryStore ? GetEpisode(exo)) {
+            case Success(res) =>
+                res match {
+                    case EpisodeResult(episode) => complete(OK, episode)
+                    case NothingFound(unknown)  =>
+                        log.warning("CatalogStore responded that there is no Episode with EXO : {}", unknown)
+                        complete(NotFound)
+                }
+
+            //Circuit breaker opened handling
+            case Failure(ex: CircuitBreakerOpenException) =>
+                log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
+
+            //General exception handling
+            case Failure(ex) =>
+                log.error("Exception while getting episode from catalog : {}", exo)
+                ex.printStackTrace()
+                complete(InternalServerError)
         }
     }
 
-    def getChaptersByEpisode(id: String): Route = get {
-        log.info("GET /api/episode/{}/chapters", id)
-        onSuccess(directoryStore ? GetChaptersByEpisode(id)) {
-            case ChaptersByEpisodeResult(chapters) => complete(StatusCodes.OK, ArrayWrapper(chapters))
+    def getChaptersByEpisode(exo: String): Route = get {
+        log.info("GET /api/episode/{}/chapters", exo)
+        onCompleteWithBreaker(breaker)(directoryStore ? GetChaptersByEpisode(exo)) {
+            case Success(res) =>
+                res match {
+                    case ChaptersByEpisodeResult(chapters) => complete(OK, ArrayWrapper(chapters))
+                }
+
+            //Circuit breaker opened handling
+            case Failure(ex: CircuitBreakerOpenException) =>
+                log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
+
+            //General exception handling
+            case Failure(ex) =>
+                log.error("Exception while getting chapters by episode from catalog : {}", exo)
+                ex.printStackTrace()
+                complete(InternalServerError)
         }
     }
 
@@ -93,7 +133,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
             }
             */
 
-          complete(StatusCodes.NotImplemented)
+          complete(NotImplemented)
         }
     }
 
@@ -102,7 +142,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
 
             // TODO update podcast with echoId
 
-            complete(StatusCodes.NotImplemented)
+            complete(NotImplemented)
         }
     }
 
@@ -110,7 +150,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter)
 
         // TODO delete podcast -  I guess this should not be supported?
 
-        complete(StatusCodes.NotImplemented)
+        complete(NotImplemented)
     }
 
 

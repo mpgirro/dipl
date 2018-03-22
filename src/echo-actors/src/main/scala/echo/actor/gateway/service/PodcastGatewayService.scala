@@ -5,15 +5,18 @@ import javax.ws.rs.Path
 import akka.actor.{ActorContext, ActorRef}
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.{Directives, Route}
-import akka.pattern.ask
+import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.directory.DirectoryProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.core.domain.dto.PodcastDTO
 import io.swagger.annotations._
+
+import scala.util.{Failure, Success}
 
 /**
   * @author Maximilian Irro
@@ -22,7 +25,7 @@ import io.swagger.annotations._
 @Path("/api/podcast")  // @Path annotation required for Swagger
 @Api(value = "/api/podcast",
      produces = "application/json")
-class PodcastGatewayService (private val log: LoggingAdapter)
+class PodcastGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     private val CONFIG = ConfigFactory.load()
@@ -33,9 +36,6 @@ class PodcastGatewayService (private val log: LoggingAdapter)
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
     private var directoryStore: ActorRef = _
-
-    // TODO better use the logger of the actor, for cluster use later, via constructor --> log: LoggingAdapter
-    // val log = Logging(context.system, classOf[EpisodeService])
 
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
@@ -58,22 +58,30 @@ class PodcastGatewayService (private val log: LoggingAdapter)
                   response = classOf[ArrayWrapper[Set[PodcastDTO]]],
                   responseContainer = "Set")
     def getAllPodcasts: Route = get {
-        /*
-        complete {
-            //(userRepository ? UserRepository.GetUsers).mapTo[Set[UserRepository.User]]
-        }
-        */
         parameters('p.as[Int].?, 's.as[Int].?) { (page, size) =>
             log.info("GET /api/podcast?p={}&s={}", page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
 
             val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
             val s: Int = size.getOrElse(DEFAULT_SIZE)
 
-            onSuccess(directoryStore ? GetAllPodcastsRegistrationComplete(p,s)) { // TODO
-                case AllPodcastsResult(results) => {
-                    log.info("PodcastGatewayService returns {} podcast entries on REST interface", results.size)
-                    complete(StatusCodes.OK, ArrayWrapper(results))
-                }
+            onCompleteWithBreaker(breaker)(directoryStore ? GetAllPodcastsRegistrationComplete(p,s)) {
+                case Success(res) =>
+                    res match {
+                        case AllPodcastsResult(results) =>
+                            log.info("PodcastGatewayService returns {} podcast entries on REST interface", results.size)
+                            complete(StatusCodes.OK, ArrayWrapper(results))
+                    }
+
+                //Circuit breaker opened handling
+                case Failure(ex: CircuitBreakerOpenException) =>
+                    log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                    complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
+
+                //General exception handling
+                case Failure(ex) =>
+                    log.error("Exception while getting all podcasts from catalog")
+                    ex.printStackTrace()
+                    complete(InternalServerError)
             }
         }
     }
@@ -82,41 +90,72 @@ class PodcastGatewayService (private val log: LoggingAdapter)
                   nickname = "getPodcast",
                   httpMethod = "GET",
                   response = classOf[PodcastDTO])
-    def getPodcast(id: String): Route = get {
+    def getPodcast(exo: String): Route = get {
+        log.info("GET /api/podcast/{}", exo)
+        onCompleteWithBreaker(breaker)(directoryStore ? GetPodcast(exo)) {
+            case Success(res) =>
+                res match {
+                    case PodcastResult(podcast) => complete(StatusCodes.OK, podcast)
+                    case NothingFound(unknown)  =>
+                        log.error("DirectoryStore responded that there is no Podcast : {}", unknown)
+                        complete(StatusCodes.NotFound)
+                }
 
-        log.info("GET /api/podcast/{}", id)
+            //Circuit breaker opened handling
+            case Failure(ex: CircuitBreakerOpenException) =>
+                log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
 
-        onSuccess(directoryStore ? GetPodcast(id)) {
-            case PodcastResult(podcast)     => complete(StatusCodes.OK, podcast)
-            case NothingFound(unknownId) => {
-                log.error("DirectoryStore responded that there is no Podcast with echoId={}", unknownId)
-                complete(StatusCodes.NotFound)
-            }
+            //General exception handling
+            case Failure(ex) =>
+                log.error("Exception while getting podcasts from catalog : {}", exo)
+                ex.printStackTrace()
+                complete(InternalServerError)
         }
     }
 
-    def getEpisodesByPodcast(id: String): Route = get {
-        log.info("GET /api/podcast/{}/episodes", id)
-        onSuccess(directoryStore ? GetEpisodesByPodcast(id)) {
-            case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, ArrayWrapper(episodes))
+    def getEpisodesByPodcast(exo: String): Route = get {
+        log.info("GET /api/podcast/{}/episodes", exo)
+        onCompleteWithBreaker(breaker)(directoryStore ? GetEpisodesByPodcast(exo)) {
+            case Success(res) =>
+                res match {
+                    case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, ArrayWrapper(episodes))
+                }
+
+            //Circuit breaker opened handling
+            case Failure(ex: CircuitBreakerOpenException) =>
+                log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
+
+            //General exception handling
+            case Failure(ex) =>
+                log.error("Exception while getting episodes by podcast from catalog : {}", exo)
+                ex.printStackTrace()
+                complete(InternalServerError)
         }
     }
 
-    def getFeedsByPodcast(id: String): Route = get {
-        log.info("GET /api/podcast/{}/feeds", id)
-        onSuccess(directoryStore ? GetFeedsByPodcast(id)) {
-            case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, ArrayWrapper(feeds))
+    def getFeedsByPodcast(exo: String): Route = get {
+        log.info("GET /api/podcast/{}/feeds", exo)
+        onCompleteWithBreaker(breaker)(directoryStore ? GetFeedsByPodcast(exo)) {
+            case Success(res) =>
+                res match {
+                    case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, ArrayWrapper(feeds))
+                }
+
+            //Circuit breaker opened handling
+            case Failure(ex: CircuitBreakerOpenException) =>
+                log.error("CircuitBreakerOpenException calling CatalogStore -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
+                complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
+
+            //General exception handling
+            case Failure(ex) =>
+                log.error("Exception while getting feeds by podcast from catalog : {}", exo)
+                ex.printStackTrace()
+                complete(InternalServerError)
         }
     }
 
-    @ApiOperation(value = "Create new user", nickname = "userPost", httpMethod = "POST", produces = "text/plain")
-    @ApiImplicitParams(Array(
-        new ApiImplicitParam(name = "user", dataType = "nl.codecentric.UserRepository$User", paramType = "body", required = true)
-    ))
-    @ApiResponses(Array(
-        new ApiResponse(code = 201, message = "User created"),
-        new ApiResponse(code = 409, message = "User already exists")
-    ))
     def postPodcast: Route = post {
         entity(as[PodcastDTO]) { podcast =>
 
