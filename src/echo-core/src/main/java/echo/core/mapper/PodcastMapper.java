@@ -1,6 +1,9 @@
 package echo.core.mapper;
 
 import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.immutable.ImmutableTestPodcast;
+import echo.core.domain.dto.immutable.ModifiableTestPodcast;
+import echo.core.domain.dto.immutable.TestPodcast;
 import echo.core.domain.entity.Podcast;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
@@ -22,11 +25,12 @@ public interface PodcastMapper {
 
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
-    Podcast map(PodcastDTO podcastDto);
+    Podcast map(PodcastDTO dto);
 
     PodcastDTO update(PodcastDTO src, @MappingTarget PodcastDTO target);
 
-    default PodcastDTO map(org.apache.lucene.document.Document doc){
+    @Deprecated // TODO delete method once migrated to immutability
+    default PodcastDTO map(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 
@@ -45,5 +49,6 @@ public interface PodcastMapper {
 
         return dto;
     }
+
 
 }

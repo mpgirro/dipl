@@ -1,10 +1,6 @@
 package echo.core.mapper;
 
 import echo.core.domain.dto.EntityDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.immutable.*;
 import echo.core.index.IndexField;
 import org.apache.lucene.document.Document;
@@ -22,65 +18,59 @@ import java.util.stream.Collectors;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, EpisodeMapper.class},
+@Mapper(uses={TestPodcastMapper.class, TestEpisodeMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface IndexMapper {
+public interface TestIndexMapper {
 
-    IndexMapper INSTANCE = Mappers.getMapper( IndexMapper.class );
+    TestIndexMapper INSTANCE = Mappers.getMapper( TestIndexMapper.class );
 
-    @Deprecated // TODO delete method once migrated to immutability
     @Mapping(target = "docType", constant = "podcast")
     @Mapping(target = "podcastTitle", ignore = true)
     @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    IndexDocDTO map(PodcastDTO podcast);
+    ModifiableTestIndexDoc map(TestPodcast podcast);
 
-    @Deprecated // TODO delete method once migrated to immutability
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    IndexDocDTO map(EpisodeDTO episodeDTO);
+    ModifiableTestIndexDoc map(TestEpisode episodeDTO);
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default String map(List<ChapterDTO> chapters){
+    default String map(List<TestChapter> chapters){
 
         if(chapters == null) return null;
 
         return String.join("\n", chapters.stream()
-            .map(ChapterDTO::getTitle)
+            .map(TestChapter::getTitle)
             .collect(Collectors.toList()));
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default IndexDocDTO map(EntityDTO dto) {
+    default TestIndexDoc map(EntityDTO dto) {
 
         if (dto == null) return null;
 
-        if (dto instanceof PodcastDTO) {
-            return map((PodcastDTO) dto);
-        } else if (dto instanceof EpisodeDTO) {
-            return map((EpisodeDTO) dto);
+        if (dto instanceof TestPodcast) {
+            return map((TestPodcast) dto);
+        } else if (dto instanceof TestEpisode) {
+            return map((TestEpisode) dto);
         } else {
             throw new RuntimeException("Unsupported echo EntityDTO type : " + dto.getClass());
         }
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default IndexDocDTO map(Document doc) {
+    default TestIndexDoc map(Document doc) {
 
         if (doc == null) return null;
 
         switch (doc.get(IndexField.DOC_TYPE)) {
-            case "podcast": return map(PodcastMapper.INSTANCE.map(doc));
-            case "episode": return map(EpisodeMapper.INSTANCE.map(doc));
+            case "podcast": return map(TestPodcastMapper.INSTANCE.map(doc));
+            case "episode": return map(TestEpisodeMapper.INSTANCE.map(doc));
             default: throw new RuntimeException("Unsupported lucene document type : " + doc.get(IndexField.DOC_TYPE));
         }
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default Document map(IndexDocDTO doc) {
+    default Document map(TestIndexDoc doc) {
 
         if (doc == null) return null;
 
@@ -102,5 +92,4 @@ public interface IndexMapper {
 
         return lucene;
     }
-
 }

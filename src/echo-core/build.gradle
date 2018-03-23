@@ -19,6 +19,7 @@ apply plugin: 'application'
 //apply plugin: 'com.github.johnrengelman.shadow' // to build fat jars with gradle
 apply plugin: 'maven-publish'
 apply plugin: 'net.ltgt.apt' // required by mapstruct
+apply plugin: 'net.ltgt.apt-idea'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -46,6 +47,7 @@ ext {
     logback_version = '1.2.3'
     lucene_version = '7.2.0'
     jackson_version = '2.9.4'
+    immutables_version = '2.5.6'
 }
 
 repositories {
@@ -87,6 +89,13 @@ dependencies {
     compile 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
     testCompile 'org.testng:testng:6.10', 'org.easytesting:fest-assert:1.4'
     apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
+
+    //compile fileTree(dir: "libs", include: ["*.jar"])
+    //apt "org.immutables:value:${immutables_version}" // for annotation processing only
+    //compileOnly "org.immutables:value:${immutables_version}:annotations" // compilation-only annotations artifact
+
+    compileOnly         "org.immutables:value:2.5.6:annotations" // compilation-only annotations artifact
+    apt          "org.immutables:value:2.5.6"
 
     //compile group: 'javax.persistence', name: 'persistence-api', version: '1.0'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.0.Final'

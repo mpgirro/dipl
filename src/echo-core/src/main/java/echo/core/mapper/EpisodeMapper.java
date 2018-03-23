@@ -40,7 +40,8 @@ public interface EpisodeMapper {
         return podcast;
     }
 
-    default EpisodeDTO map(org.apache.lucene.document.Document doc){
+    @Deprecated // TODO delete method once migrated to immutability
+    default EpisodeDTO map(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 

@@ -1,5 +1,6 @@
 package echo.core;
 
+import echo.core.domain.dto.immutable.TestEpisode;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
@@ -52,8 +53,7 @@ public class CoreApp {
         app.repl();
     }
 
-    public CoreApp() throws IOException {
-
+    private CoreApp() throws IOException {
         //this.feedParser = new PodEngineFeedParser();
         this.feedParser = new RomeFeedParser();
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
