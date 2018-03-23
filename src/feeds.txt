@@ -490,3 +490,15 @@ http://sendecasten.de/iliketomoveit/feed/pod/
 http://feed.podigious.com/podigious
 http://inoteccast.de/feed/mp3/
 http://mintros.de/feed/mp3/
+http://feeds.soundcloud.com/users/soundcloud:users:116257077/sounds.rss
+https://audioboom.com/channels/2402227.rss
+http://feeds.feedburner.com/SuperSenpaiPodcast
+http://indiefilmtalk.de/?feed=mp3
+http://defunctland.podbean.com/feed/
+http://feeds.soundcloud.com/users/soundcloud:users:150958693/sounds.rss
+https://www.animenewsnetwork.com/anncast/rss.xml?podcast=audio
+http://community.european-woodworking.org/feed/wrp-mp3/
+http://feeds.feedburner.com/HeroesThreePodcast
+http://feeds.feedburner.com/HDW_NNN
+http://feeds.soundcloud.com/users/soundcloud:users:164028316/sounds.rss
+https://rss.prod.firstlook.media/deconstructed/podcast.rss
