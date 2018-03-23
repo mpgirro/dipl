@@ -17,13 +17,7 @@ import echo.core.mapper.TestIndexMapper;
  */
 public interface IndexCommitter {
 
-    void add(IndexDocDTO doc); // TODO delete
-
     void add(TestIndexDoc doc);
-
-    default void add(EntityDTO dto) {
-        add(IndexMapper.INSTANCE.map(dto));
-    }
 
     default void add(TestPodcast podcast) {
         add(TestIndexMapper.INSTANCE.map(podcast));
@@ -33,13 +27,7 @@ public interface IndexCommitter {
         add(TestIndexMapper.INSTANCE.map(episode));
     }
 
-    void update(IndexDocDTO doc);
-
     void update(TestIndexDoc doc);
-
-    default void update(EntityDTO dto) {
-        update(IndexMapper.INSTANCE.map(dto));
-    }
 
     default void update(TestPodcast podcast) {
         update(TestIndexMapper.INSTANCE.map(podcast));

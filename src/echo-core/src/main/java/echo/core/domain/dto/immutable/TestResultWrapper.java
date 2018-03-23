@@ -19,9 +19,9 @@ import javax.annotation.Nullable;
     defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
 public interface TestResultWrapper {
 
-    @Nullable Integer currPage();
-    @Nullable Integer maxPage();
-    @Nullable Integer totalHits();
-    @Nullable TestIndexDoc[] results();
+    @Nullable Integer getCurrPage();
+    @Nullable Integer getMaxPage();
+    @Nullable Integer getTotalHits();
+    @Nullable TestIndexDoc[] getResults();
 
 }

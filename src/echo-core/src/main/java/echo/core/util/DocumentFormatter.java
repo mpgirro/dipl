@@ -4,6 +4,7 @@ import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.immutable.TestIndexDoc;
 import org.jsoup.*;
 
 /**
@@ -12,12 +13,8 @@ import org.jsoup.*;
 public class DocumentFormatter {
 
     private static final String NEWLINE = System.getProperty("line.separator");
-
-    public static String cliFormat(EntityDTO dto){
-        return dto.toString();
-    }
-
-    public static String cliFormat(IndexDocDTO doc){
+    
+    public static String cliFormat(TestIndexDoc doc){
         final StringBuilder builder = new StringBuilder();
         switch (doc.getDocType()) {
             case "podcast":
@@ -54,5 +51,4 @@ public class DocumentFormatter {
         }
         return builder.toString();
     }
-
 }

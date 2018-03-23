@@ -3,8 +3,7 @@ package echo.core;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
-import echo.core.domain.dto.immutable.ModifiableTestEpisode;
-import echo.core.domain.dto.immutable.ModifiableTestPodcast;
+import echo.core.domain.dto.immutable.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
@@ -119,7 +118,7 @@ public class CoreApp {
 
             } else if(isCmd(cmd,"test-index-search")){
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
-                searcher.refresh(); // I need to manually refresh here, otherwise there will be no results because auto-refresh has not triggered yet
+                searcher.refresh(); // I need to manually refresh here, otherwise there will be no getResults because auto-refresh has not triggered yet
                 search(new String[]{"Sendung"});
             } else if (isCmd(cmd,"print-fyyd-feeds")) {
                 if (commands.length == 2) {
@@ -135,9 +134,9 @@ public class CoreApp {
                 if (commands.length == 2) {
                     final long fyydId = Long.valueOf(commands[1]);
                     final String json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId);
-                    final List<EpisodeDTO> episodes = fyydAPI.getEpisodes(json);
+                    final List<TestEpisode> episodes = fyydAPI.getEpisodes(json);
                     out.println("These are " + episodes.size() + " episodes for podcast=" + fyydId + " from fyyd.de");
-                    for (EpisodeDTO episode : episodes) {
+                    for (TestEpisode episode : episodes) {
                         out.println("\t" + episode.getTitle());
                     }
                 } else {
@@ -244,10 +243,10 @@ public class CoreApp {
         searcher.refresh(); // ensure there is data accessible to us in the index
 
         final String query = String.join(" ", querys);
-        final ResultWrapperDTO results = this.searcher.search(query, 1, 100);
-        out.println("Found "+results.getTotalHits()+" results for query '" + query + "'");
+        final TestResultWrapper results = this.searcher.search(query, 1, 100);
+        out.println("Found "+results.getTotalHits()+" getResults for query '" + query + "'");
         out.println("Results:");
-        for(IndexDocDTO doc : results.getResults()){
+        for(TestIndexDoc doc : results.getResults()){
             out.println();
             out.println(DocumentFormatter.cliFormat(doc));
             out.println();
