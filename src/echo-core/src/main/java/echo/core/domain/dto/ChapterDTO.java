@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
     create     = "new",// generates public no args constructor
     //builder = "new", // construct builder using 'new' instead of factory method
     build      = "create", // rename 'build' method on builder to 'create'
-    visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
-    defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
+    visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
+)
 public interface ChapterDTO {
 
     @Nullable Long getId();

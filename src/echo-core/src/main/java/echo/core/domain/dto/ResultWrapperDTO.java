@@ -15,13 +15,29 @@ import javax.annotation.Nullable;
     create     = "new",// generates public no args constructor
     //builder = "new", // construct builder using 'new' instead of factory method
     build      = "create", // rename 'build' method on builder to 'create'
-    visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
-    defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
-public interface ResultWrapperDTO {
+    visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
+)
+public abstract class ResultWrapperDTO {
 
-    @Nullable Integer getCurrPage();
-    @Nullable Integer getMaxPage();
-    @Nullable Integer getTotalHits();
-    @Nullable IndexDocDTO[] getResults();
+    @Nullable
+    public abstract Integer getCurrPage();
+
+    @Nullable
+    public abstract Integer getMaxPage();
+
+    @Nullable
+    public abstract Integer getTotalHits();
+
+    @Nullable
+    public abstract IndexDocDTO[] getResults();
+
+    public static ResultWrapperDTO empty() {
+        return ImmutableResultWrapperDTO.builder()
+            .setCurrPage(0)
+            .setMaxPage(0)
+            .setTotalHits(0)
+            .setResults(new IndexDocDTO[0])
+            .create();
+    }
 
 }
