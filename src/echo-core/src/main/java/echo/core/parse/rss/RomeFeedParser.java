@@ -156,7 +156,6 @@ public class RomeFeedParser implements FeedParser {
 
             final List<TestEpisode> results = new LinkedList<>();
             for(SyndEntry e : feed.getEntries()){
-                //final EpisodeDTO episode = new EpisodeDTO();
                 final ImmutableTestEpisode.Builder builder = ImmutableTestEpisode.builder();
 
                 builder.setTitle(e.getTitle());

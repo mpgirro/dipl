@@ -1,7 +1,5 @@
 package echo.core.parse.api;
 
-import com.google.gson.reflect.TypeToken;
-import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.immutable.ImmutableTestEpisode;
 import echo.core.domain.dto.immutable.TestEpisode;
 import echo.core.mapper.DateMapper;
@@ -9,9 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +88,6 @@ public class FyydAPI extends API {
                     log.info("JSON contains {} episode JSON objects", episodesObj.size());
                     final List<TestEpisode> episodes =  episodesObj.stream()
                         .map(d -> {
-                            //final EpisodeDTO e = new EpisodeDTO();
                             final ImmutableTestEpisode.Builder e = ImmutableTestEpisode.builder();
                             e.setTitle((String) d.get("title"));
                             e.setLink((String) d.get("url"));

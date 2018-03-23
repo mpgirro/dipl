@@ -1,6 +1,5 @@
 package echo.core.domain.dto.immutable;
 
-import echo.core.domain.dto.EntityDTO;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * This class represents an immutable version of echo.core.domain.dto.PodcastDTO.
+ * This class represents an immutable Data Transfer Object.
  * The implementation is generated using https://immutables.github.io
  * Instances should be created using the builder pattern (required methods will be
  * generated), but to be able to generate MapStruct mapper methods, also setter will

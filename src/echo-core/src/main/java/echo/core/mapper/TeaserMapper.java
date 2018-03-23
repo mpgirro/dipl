@@ -1,9 +1,11 @@
 package echo.core.mapper;
 
+import echo.core.domain.dto.immutable.ImmutableTestEpisode;
+import echo.core.domain.dto.immutable.ImmutableTestPodcast;
+import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.immutable.TestPodcast;
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.PodcastDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
@@ -19,11 +21,11 @@ public interface TeaserMapper {
 
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
 
-    default PodcastDTO asTeaser(PodcastDTO dto) {
+    default TestPodcast asTeaser(TestPodcast dto) {
 
         if(dto == null) return null;
 
-        final PodcastDTO teaser = new PodcastDTO();
+        final ImmutableTestPodcast.Builder teaser = ImmutableTestPodcast.builder();
 
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
@@ -38,28 +40,28 @@ public interface TeaserMapper {
         teaser.setRegistrationComplete(dto.getRegistrationComplete());
         teaser.setRegistrationTimestamp(dto.getRegistrationTimestamp());
 
-        return teaser;
+        return teaser.create();
     }
 
-    default PodcastDTO asTeaser(Podcast podcast) {
+    default TestPodcast asTeaser(Podcast podcast) {
 
         if(podcast == null) return null;
 
-        final PodcastDTO teaser = new PodcastDTO();
+        final ImmutableTestPodcast.Builder teaser = ImmutableTestPodcast.builder();
 
         teaser.setEchoId(podcast.getEchoId());
         teaser.setTitle(podcast.getTitle());
         teaser.setImage(podcast.getImage());
         teaser.setLanguage(podcast.getLanguage());
 
-        return teaser;
+        return teaser.create();
     }
 
-    default EpisodeDTO asTeaser(EpisodeDTO dto) {
+    default TestEpisode asTeaser(TestEpisode dto) {
 
         if(dto == null) return null;
 
-        final EpisodeDTO teaser = new EpisodeDTO();
+        final ImmutableTestEpisode.Builder teaser = ImmutableTestEpisode.builder();
 
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
@@ -68,14 +70,14 @@ public interface TeaserMapper {
         teaser.setImage(dto.getImage());
         teaser.setItunesDuration(dto.getItunesDuration());
 
-        return teaser;
+        return teaser.create();
     }
 
-    default EpisodeDTO asTeaser(Episode episode) {
+    default TestEpisode asTeaser(Episode episode) {
 
         if(episode == null) return null;
 
-        final EpisodeDTO teaser = new EpisodeDTO();
+        final ImmutableTestEpisode.Builder teaser = ImmutableTestEpisode.builder();
 
         teaser.setEchoId(episode.getEchoId());
         teaser.setTitle(episode.getTitle());
@@ -84,7 +86,7 @@ public interface TeaserMapper {
         teaser.setImage(episode.getImage());
         teaser.setItunesDuration(episode.getItunesDuration());
 
-        return teaser;
+        return teaser.create();
     }
 
 }

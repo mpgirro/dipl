@@ -1,6 +1,5 @@
 package echo.core.domain.dto.immutable;
 
-import echo.core.domain.dto.EntityDTO;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;

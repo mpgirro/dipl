@@ -1,7 +1,5 @@
 package echo.core.index;
 
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.domain.dto.immutable.TestIndexDoc;
 import echo.core.domain.dto.immutable.TestResultWrapper;
 import echo.core.exception.SearchException;

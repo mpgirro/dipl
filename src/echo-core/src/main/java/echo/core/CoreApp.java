@@ -1,8 +1,5 @@
 package echo.core;
 
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.domain.dto.immutable.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;

@@ -1,19 +1,12 @@
 package echo.core.index;
 
 import echo.core.domain.dto.immutable.ImmutableTestResultWrapper;
-import echo.core.domain.dto.immutable.ModifiableTestResultWrapper;
 import echo.core.domain.dto.immutable.TestIndexDoc;
 import echo.core.domain.dto.immutable.TestResultWrapper;
-import echo.core.mapper.EpisodeMapper;
-import echo.core.mapper.PodcastMapper;
-import echo.core.mapper.IndexMapper;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
 import echo.core.mapper.TestIndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;

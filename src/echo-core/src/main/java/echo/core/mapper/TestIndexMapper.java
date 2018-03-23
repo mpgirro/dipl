@@ -1,6 +1,5 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.immutable.*;
 import echo.core.index.IndexField;
 import org.apache.lucene.document.Document;
@@ -44,19 +43,6 @@ public interface TestIndexMapper {
         return String.join("\n", chapters.stream()
             .map(TestChapter::getTitle)
             .collect(Collectors.toList()));
-    }
-
-    default TestIndexDoc map(EntityDTO dto) {
-
-        if (dto == null) return null;
-
-        if (dto instanceof TestPodcast) {
-            return map((TestPodcast) dto);
-        } else if (dto instanceof TestEpisode) {
-            return map((TestEpisode) dto);
-        } else {
-            throw new RuntimeException("Unsupported echo EntityDTO type : " + dto.getClass());
-        }
     }
 
     default TestIndexDoc map(Document doc) {

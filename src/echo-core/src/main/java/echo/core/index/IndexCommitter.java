@@ -1,11 +1,8 @@
 package echo.core.index;
 
-import echo.core.domain.dto.EntityDTO;
 import echo.core.domain.dto.immutable.TestEpisode;
 import echo.core.domain.dto.immutable.TestIndexDoc;
 import echo.core.domain.dto.immutable.TestPodcast;
-import echo.core.mapper.IndexMapper;
-import echo.core.domain.dto.IndexDocDTO;
 import echo.core.mapper.TestIndexMapper;
 
 /**

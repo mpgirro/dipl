@@ -1,9 +1,6 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.immutable.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
@@ -25,18 +22,18 @@ public interface NullMapper {
     NullMapper INSTANCE = Mappers.getMapper( NullMapper.class );
 
     @Mapping(target = "id", ignore = true)
-    PodcastDTO map(PodcastDTO dto);
+    ModifiableTestPodcast map(TestPodcast dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    EpisodeDTO map(EpisodeDTO dto);
+    ModifiableTestEpisode map(TestEpisode dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    FeedDTO map(FeedDTO dto);
+    ModifiableTestFeed map(TestFeed dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "episodeId", ignore = true)
-    ChapterDTO map(ChapterDTO dto);
+    ModifiableTestChapter map(TestChapter dto);
 
 }

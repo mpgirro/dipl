@@ -1,8 +1,6 @@
 package echo.core.index;
 
 import echo.core.domain.dto.immutable.TestIndexDoc;
-import echo.core.mapper.IndexMapper;
-import echo.core.domain.dto.IndexDocDTO;
 import echo.core.mapper.TestIndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

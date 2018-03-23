@@ -1,6 +1,6 @@
 package echo.core.async.job;
 
-import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.immutable.TestEpisode;
 
 /**
  * @author Maximilian Irro
@@ -8,7 +8,7 @@ import echo.core.domain.dto.EpisodeDTO;
 public class EpisodeRegisterJob {
 
     private String podcastExo;
-    private EpisodeDTO episode;
+    private TestEpisode episode;
 
     public String getPodcastExo() {
         return podcastExo;
@@ -18,11 +18,11 @@ public class EpisodeRegisterJob {
         this.podcastExo = podcastExo;
     }
 
-    public EpisodeDTO getEpisode() {
+    public TestEpisode getEpisode() {
         return episode;
     }
 
-    public void setEpisode(EpisodeDTO episode) {
+    public void setEpisode(TestEpisode episode) {
         this.episode = episode;
     }
 
