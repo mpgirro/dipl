@@ -12,7 +12,7 @@ import echo.actor.directory.service._
 import echo.actor.index.IndexProtocol.IndexStoreAddDoc
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
-import echo.core.mapper.{EpisodeMapper, IndexMapper, NullMapper, PodcastMapper}
+import echo.core.mapper._
 import echo.core.util.ExoGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -49,6 +49,9 @@ class DirectoryStoreWorker(val workerIndex: Int,
     private val feedService = new FeedDirectoryService(log, repositoryFactoryBuilder)
     private val chapterService = new ChapterDirectoryService(log, repositoryFactoryBuilder)
 
+    private val podcastMapper = PodcastMapper.INSTANCE
+    private val episodeMapper = EpisodeMapper.INSTANCE
+    private val feedMapper = FeedMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
 
@@ -88,9 +91,11 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
         case FeedStatusUpdate(podcastId, feedUrl, timestamp, status) => onFeedStatusUpdate(podcastId, feedUrl, timestamp, status)
 
-        case UpdatePodcastMetadata(echoId, url, podcast) => onUpdatePodcastMetadata(echoId, url, podcast)
+        case SaveChapter(chapter) => onSaveChapter(chapter)
 
-        case UpdateEpisodeMetadata(podcastExo, episode) => onUpdateEpisodeMetadata(podcastExo, episode)
+        case UpdatePodcast(echoId, url, podcast) => onUpdatePodcast(echoId, url, podcast)
+
+        case UpdateEpisode(podcastExo, episode) => onUpdateEpisode(podcastExo, episode)
 
         // TODO
         //case UpdateFeed(podcastExo, feed) =>  ...
@@ -188,8 +193,22 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(feedService))
     }
 
-    private def onUpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
-        log.debug("Received UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
+    private def onSaveChapter(chapter: ChapterDTO): Unit = {
+        log.debug("Received SaveChapter('{}') for episode : ", chapter.getTitle, chapter.getEpisodeExo)
+
+        def task = () => {
+            episodeService.findOneByEchoId(chapter.getEpisodeExo).map(e => {
+                chapter.setEpisodeId(e.getId)
+                chapterService.save(chapter)
+            }).getOrElse({
+                log.error("Could not save Chapter, no Episode found : {}", chapter.getEpisodeExo)
+            })
+        }
+        doInTransaction(task, List(episodeService, chapterService))
+    }
+
+    private def onUpdatePodcast(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
+        log.debug("Received UpdatePodcast({},{},{})", podcastId, feedUrl, podcast.getEchoId)
 
         /* TODO
          * hier empfange ich die feedUrl die mir der Parser zurückgib, um anschließend die episode laden zu können
@@ -212,8 +231,8 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(podcastService))
     }
 
-    private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
-        log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
+    private def onUpdateEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
+        log.debug("Received UpdateEpisode({},{})", podcastId, episode.getEchoId)
 
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
@@ -221,9 +240,9 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     EpisodeMapper.INSTANCE.update(episode, e)
                 }).getOrElse({
                     log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getEchoId)
-                    episode.setPodcastId(p.getId)
                     episode
                 })
+                update.setPodcastId(p.getId)
 
                 episodeService.save(update)
             }).getOrElse({
@@ -463,7 +482,19 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     val result = episodeService.save(episode)
 
                     // we must register the episodes chapters as well
-                    result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs)))
+                    result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs))) // TODO use the broker instead
+                    /* TODO I have to broker the chapters to all stores, but if I sent those here,
+                     * then they'll arrive before the episode arrives (the message is brokered
+                     * further down the method) --> better send them in a Updateepisodewithchapters message
+
+                    result.foreach(e => Option(episode.getChapters)
+                        .map(cs => {
+                            cs.forEach(c => {
+                                c.setEpisodeExo(episode.getEchoId)
+                                broker ! SaveChapter(nullMapper.map(c))
+                            })
+                        }))
+                        */
 
                     // TODO why is this really necessary here?
                     // we'll need this info when we send the episode to the index in just a moment
@@ -485,7 +516,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                broker ! UpdateEpisodeMetadata(podcastId, nullMapper.map(episode))
+                broker ! UpdateEpisode(podcastId, nullMapper.map(episode))
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {

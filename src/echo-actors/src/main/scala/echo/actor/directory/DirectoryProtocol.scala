@@ -24,9 +24,12 @@ object DirectoryProtocol {
     case class UpdateFeedUrl(oldUrl: String, newUrl: String) extends DirectoryCommand
     case class UpdateLinkByEchoId(echoId: String, newUrl: String) extends DirectoryCommand
 
+    case class SaveChapter(chapter: ChapterDTO) extends DirectoryCommand
+
     // Parser -> DirectoryStore
-    case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO) extends DirectoryCommand
-    case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO) extends DirectoryCommand
+    case class UpdatePodcast(podcastId: String, feedUrl: String, podcast: PodcastDTO) extends DirectoryCommand
+    case class UpdateEpisode(podcastId: String, episode: EpisodeDTO) extends DirectoryCommand
+    case class UpdateEpisodeWithChapters(podcastId: String, episode: EpisodeDTO, chapter: List[ChapterDTO]) extends DirectoryCommand
 
 
     trait DirectoryQuery

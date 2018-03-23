@@ -10,7 +10,7 @@ import javax.imageio.ImageIO
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcastMetadata}
+import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
 import echo.actor.index.IndexProtocol.{IndexStoreAddDoc, IndexStoreUpdateDocWebsiteData}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
@@ -122,7 +122,7 @@ class ParserActor extends Actor with ActorLogging {
                     }
 
                     // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcastMetadata(podcastId, feedUrl, p)
+                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                     processEpisodes(feedUrl, podcastId, feedData)
