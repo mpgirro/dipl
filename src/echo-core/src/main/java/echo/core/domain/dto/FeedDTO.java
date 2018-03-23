@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
     get        = {"is*", "get*"}, // Detect 'get' and 'is' prefixes in accessor methods
     init       = "set*",
     create     = "new",// generates public no args constructor
-    //builder = "new", // construct builder using 'new' instead of factory method
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
 )
