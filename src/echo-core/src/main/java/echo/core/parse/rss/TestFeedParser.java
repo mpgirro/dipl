@@ -1,14 +1,13 @@
 package echo.core.parse.rss;
 
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.immutable.TestPodcast;
 import echo.core.exception.FeedParsingException;
 
 /**
  * @author Maximilian Irro
  */
-@Deprecated
-public interface FeedParser {
+public interface TestFeedParser {
 
     String NAMESPACE_ITUNES = "http://www.itunes.com/dtds/podcast-1.0.dtd";
     String NAMESPACE_CONTENT = "http://purl.org/rss/1.0/modules/content/";
@@ -19,8 +18,8 @@ public interface FeedParser {
      * TODO supertype for my planed custom SAX and DOM feed parsers
      */
 
-    PodcastDTO parseFeed(String xmlData) throws FeedParsingException;
+    TestPodcast parseFeed(String xmlData) throws FeedParsingException;
 
-    EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException;
+    TestEpisode[] extractEpisodes(String xmlData) throws FeedParsingException;
 
 }
