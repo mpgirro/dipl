@@ -13,7 +13,7 @@ object DirectoryProtocol {
     trait DirectoryCommand
 
     // Web/CLI -> DirectoryStore
-    case class ProposeNewFeed(url: String) extends DirectoryCommand
+
     case class CheckPodcast(echoId: String) extends DirectoryCommand
     case class CheckFeed(echoId: String) extends DirectoryCommand
     case class CheckAllPodcasts() extends DirectoryCommand
@@ -28,9 +28,6 @@ object DirectoryProtocol {
     case class UpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO) extends DirectoryCommand
     case class UpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO) extends DirectoryCommand
 
-    // Questions: Parser -> DirectoryStore
-    case class RegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO) extends DirectoryCommand
-
 
     trait DirectoryQuery
 
@@ -43,6 +40,10 @@ object DirectoryProtocol {
     case class GetEpisodesByPodcast(podcastId: String) extends DirectoryQuery
     case class GetFeedsByPodcast(podcastId: String) extends DirectoryQuery
     case class GetChaptersByEpisode(episodeId: String) extends DirectoryQuery
+
+    // these are not queries at first glance, but basically they ask if something is known (and maybe lead to a side effect then)
+    case class ProposeNewFeed(url: String) extends DirectoryQuery                                  // Web/CLI -> DirectoryStore
+    case class RegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO) extends DirectoryQuery // Questions: Parser -> DirectoryStore
 
 
     trait DirectoryResult

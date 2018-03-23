@@ -12,7 +12,7 @@ import echo.actor.directory.service._
 import echo.actor.index.IndexProtocol.IndexStoreAddDoc
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
-import echo.core.mapper.IndexMapper
+import echo.core.mapper.{EpisodeMapper, IndexMapper, NullMapper, PodcastMapper}
 import echo.core.util.ExoGenerator
 import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
@@ -35,6 +35,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
+    private var broker: ActorRef = _
 
     // I need this to run liquibase
     //val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
@@ -47,6 +48,9 @@ class DirectoryStoreWorker(val workerIndex: Int,
     private val episodeService = new EpisodeDirectoryService(log, repositoryFactoryBuilder)
     private val feedService = new FeedDirectoryService(log, repositoryFactoryBuilder)
     private val chapterService = new ChapterDirectoryService(log, repositoryFactoryBuilder)
+
+    private val indexMapper = IndexMapper.INSTANCE
+    private val nullMapper = NullMapper.INSTANCE
 
     /* TODO could I use this to run liquibase manually?
     val liquibase = new SpringLiquibase()
@@ -68,6 +72,10 @@ class DirectoryStoreWorker(val workerIndex: Int,
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
+        case ActorRefDirectoryStoreActor(ref) =>
+            log.debug("Received ActorRefDirectoryStoreActor(_)")
+            broker = ref
+
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
 
         case CheckPodcast(echoId) => onCheckPodcast(echoId)
@@ -82,7 +90,11 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
         case UpdatePodcastMetadata(echoId, url, podcast) => onUpdatePodcastMetadata(echoId, url, podcast)
 
-        //case UpdateEpisodeMetadata(echoId, episode) => onUpdateEpisodeMetadata(echoId, episode)
+        case UpdateEpisodeMetadata(podcastExo, episode) => onUpdateEpisodeMetadata(podcastExo, episode)
+
+        // TODO
+        //case UpdateFeed(podcastExo, feed) =>  ...
+        //case UpdateChapter(episodeExo, chapter) =>  ...
 
         case UpdateFeedUrl(oldUrl, newUrl) => onUpdateFeedMetadataUrl(oldUrl, newUrl)
 
@@ -137,6 +149,9 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 podcast.setRegistrationTimestamp(LocalDateTime.now())
 
                 podcastService.save(podcast).map(p => {
+
+                    // broker ! UpdatePodcastMetadata(nullMapper.map(p)) // TODO
+
                     val feedId = exoGenerator.getNewExo
                     val feed = new FeedDTO
                     feed.setEchoId(feedId)
@@ -148,6 +163,8 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     feedService.save(feed).map(f => {
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, NewPodcastFetchJob())
+
+                        // broker ! UpdateFeed(nullMapper.map(f))
                     })
                 })
             } else {
@@ -155,8 +172,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             }
         }
         doInTransaction(task, List(podcastService, feedService))
-
-        log.debug("Finished msg proposing a new feed: " + url)
     }
 
     private def onFeedStatusUpdate(podcastId: String, url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
@@ -171,8 +186,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             })
         }
         doInTransaction(task, List(feedService))
-
-        log.debug("Finished FeedStatusUpdate({},{},{})", url, timestamp, status)
     }
 
     private def onUpdatePodcastMetadata(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
@@ -185,55 +198,41 @@ class DirectoryStoreWorker(val workerIndex: Int,
          */
         def task = () => {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
-                podcast.setId(p.getId)
-                podcast.setRegistrationComplete(true)
-                podcast
+                PodcastMapper.INSTANCE.update(podcast, p)
             }).getOrElse({
-                log.error("Received a UpdatePodcastMetadata for a podcast that is not yet in the database (SHOULD THIS BE POSSIBLE?) : {}", podcastId)
+                log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
                 podcast
             })
+            podcast.setRegistrationComplete(true)
             podcastService.save(update)
 
             // TODO we will fetch feeds for checking new episodes, but not because we updated podcast metadata
             // crawler ! FetchFeedForUpdateEpisodes(feedUrl, podcastId)
         }
         doInTransaction(task, List(podcastService))
-
-        log.debug("Finished UpdatePodcastMetadata({},{},{})", podcastId, feedUrl, podcast.getEchoId)
     }
 
-    /*
-    @Deprecated
     private def onUpdateEpisodeMetadata(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
+
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
-                val updatedEpisode: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
-                    episode.setId(e.getId)
-                    episode
+                val update: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
+                    EpisodeMapper.INSTANCE.update(episode, e)
                 }).getOrElse({
-                    // this is a not yet known episode
-                    episode.setRegistrationTimestamp(LocalDateTime.now())
+                    log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getEchoId)
+                    episode.setPodcastId(p.getId)
                     episode
                 })
-                updatedEpisode.setPodcastId(p.getId)
 
-                // check if the episode has a cover image defined, and set the one of the episode
-                Option(updatedEpisode.getItunesImage).getOrElse({
-                    indexStore ! IndexStoreUpdateDocItunesImage(updatedEpisode.getEchoId, p.getItunesImage)
-                    updatedEpisode.setItunesImage(p.getItunesImage)
-                })
-
-                episodeService.save(updatedEpisode)
+                episodeService.save(update)
             }).getOrElse({
-                log.error("No Podcast found in database with echoId={}", podcastId)
+                log.error("No Podcast found in database with EXO : {}", podcastId)
             })
         }
         doInTransaction(task, List(podcastService, episodeService))
-
-        log.debug("Finished UpdateEpisodeMetadata({},{})", podcastId, episode.getEchoId)
     }
-    */
+
 
     private def onUpdateFeedMetadataUrl(oldUrl: String, newUrl: String): Unit = {
         log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
@@ -249,8 +248,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             }
         }
         doInTransaction(task, List(feedService))
-
-        log.debug("Finished UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
     }
 
     private def onUpdateLinkByEchoId(echoId: String, newUrl: String): Unit = {
@@ -269,23 +266,25 @@ class DirectoryStoreWorker(val workerIndex: Int,
             })
         }
         doInTransaction(task, List(podcastService,episodeService))
-
-        log.debug("Finished UpdateLinkByEchoId({},'{}')", echoId, newUrl)
     }
 
     private def onGetPodcast(podcastId: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastId)
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
-                sender ! PodcastResult(p)
+                Some(p)
             }).getOrElse({
                 log.error("Database does not contain Podcast with echoId={}", podcastId)
-                sender ! NothingFound(podcastId)
+                None
             })
         }
         doInTransaction(task, List(podcastService))
-
-        log.debug("Finished GetPodcast('{}')", podcastId)
+            .asInstanceOf[Option[PodcastDTO]]
+            .map(p => {
+                sender ! PodcastResult(nullMapper.map(p))
+            }).getOrElse({
+                sender ! NothingFound(podcastId)
+            })
     }
 
     private def onGetAllPodcasts(page: Int, size: Int): Unit = {
@@ -295,9 +294,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAll(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts)
-
-        log.debug("Finished GetAllPodcasts({},{})", page, size)
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
     }
 
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
@@ -306,9 +303,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAllRegistrationCompleteAsTeaser(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts)
-
-        log.debug("Finished GetAllPodcastsRegistrationComplete({},{})", page, size)
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
     }
 
     private def onGetAllFeeds(page: Int, size: Int): Unit = {
@@ -317,24 +312,26 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAll(page, size)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! AllFeedsResult(feeds)
-
-        log.debug("Finished GetAllFeeds({},{})", page, size)
+        sender ! AllFeedsResult(feeds.map(f => nullMapper.map(f)))
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeId)
         def task = () => {
             episodeService.findOneByEchoId(episodeId).map(e => {
-                sender ! EpisodeResult(e)
+                Some(e)
             }).getOrElse({
                 log.error("Database does not contain Episode with echoId={}", episodeId)
-                sender ! NothingFound(episodeId)
+                None
             })
         }
         doInTransaction(task, List(episodeService))
-
-        log.debug("Finished GetEpisode('{}')", episodeId)
+            .asInstanceOf[Option[EpisodeDTO]]
+            .map(e => {
+                sender ! EpisodeResult(nullMapper.map(e))
+            }).getOrElse({
+                sender ! NothingFound(episodeId)
+            })
     }
 
     private def onGetEpisodesByPodcast(podcastId: String): Unit = {
@@ -344,9 +341,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             episodeService.findAllByPodcastAsTeaser(podcastId)
         }
         val episodes = doInTransaction(task, List(episodeService)).asInstanceOf[List[EpisodeDTO]]
-        sender ! EpisodesByPodcastResult(episodes)
-
-        log.debug("Finished GetEpisodesByPodcast('{}')", podcastId)
+        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.map(e)))
     }
 
     private def onGetFeedsByPodcast(podcastId: String): Unit = {
@@ -355,9 +350,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAllByPodcast(podcastId)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! FeedsByPodcastResult(feeds)
-
-        log.debug("Finished GetFeedsByPodcast('{}')", podcastId)
+        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.map(f)))
     }
 
     private def onGetChaptersByEpisode(episodeId: String): Unit = {
@@ -367,9 +360,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             chapterService.findAllByEpisode(episodeId)
         }
         val chapters = doInTransaction(task, List(chapterService)).asInstanceOf[List[ChapterDTO]]
-        sender ! ChaptersByEpisodeResult(chapters)
-
-        log.debug("Finished GetChaptersByEpisode('{}')", episodeId)
+        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.map(c)))
     }
 
     private def onCheckPodcast(podcastId: String): Unit = {
@@ -386,8 +377,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             }
         }
         doInTransaction(task, List(feedService))
-
-        log.debug("Finished CheckPodcast({})", podcastId)
     }
 
     private def onCheckFeed(feedId: String): Unit = {
@@ -406,8 +395,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             })
         }
         doInTransaction(task, List(podcastService, feedService))
-
-        log.debug("Finished CheckFeed({})", feedId)
     }
 
     private def onCheckAllPodcasts(page: Int, size: Int): Unit = {
@@ -427,8 +414,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             })
         }
         doInTransaction(task, List(podcastService, feedService))
-
-        log.debug("Finished CheckAllPodcasts({}, {})", page, size)
     }
 
     private def onCheckAllFeeds(page: Int, size: Int): Unit = {
@@ -445,8 +430,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             })
         }
         doInTransaction(task, List(podcastService, feedService))
-
-        log.debug("Finished CheckAllFeeds({},{})", page, size)
     }
 
     private def onRegisterEpisodeIfNew(podcastId: String, episode: EpisodeDTO): Unit = {
@@ -497,7 +480,12 @@ class DirectoryStoreWorker(val workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
 
-                indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(e))
+                indexStore ! IndexStoreAddDoc(indexMapper.map(e))
+
+                /* TODO send an update to all catalogs via the broker, so all other stores will have
+                 * the data too (this will of course mean that I will update my own data, which is a
+                 * bit pointless, by oh well... */
+                broker ! UpdateEpisodeMetadata(podcastId, nullMapper.map(episode))
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
@@ -509,7 +497,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             case None =>
                 log.debug("Episode is already registered : ('{}', {}, '{}')",episode.getEnclosureUrl, episode.getEnclosureLength, episode.getEnclosureType)
         }
-        log.debug("Finished RegisterEpisodeIfNew()")
     }
 
     private def debugPrintAllPodcasts(): Unit = {
@@ -519,8 +506,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAll(0, MAX_PAGE_SIZE).foreach(p => println(s"${p.getEchoId} : ${p.getTitle}"))
         }
         doInTransaction(task, List(podcastService))
-
-        log.debug("Finished DebugPrintAllPodcasts")
     }
 
     private def debugPrintAllEpisodes(): Unit = {
@@ -530,8 +515,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             episodeService.findAll().foreach(e => println(s"${e.getEchoId} : ${e.getTitle}"))
         }
         doInTransaction(task, List(episodeService))
-
-        log.debug("Finished DebugPrintAllEpisodes")
     }
 
     private def debugPrintAllFeeds(): Unit = {
@@ -541,8 +524,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAll(0, MAX_PAGE_SIZE).foreach(f => println(s"${f.getEchoId} : ${f.getUrl}"))
         }
         doInTransaction(task, List(feedService))
-
-        log.debug("Finished DebugPrintAllFeeds")
     }
 
     private def debugPrintCountAllPodcasts(): Unit = {
@@ -552,7 +533,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
         }
         val count = doInTransaction(task, List(podcastService))
         log.info("Podcasts in Database : {}", count)
-        log.debug("Finished DebugPrintCountAllPodcasts")
     }
 
     private def debugPrintCountAllEpisodes(): Unit = {
@@ -562,7 +542,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
         }
         val count = doInTransaction(task, List(episodeService))
         log.info("Episodes in Database : {}", count)
-        log.debug("Finished DebugPrintCountAllEpisodes")
     }
 
     private def debugPrintCountAllFeeds(): Unit = {
@@ -572,7 +551,6 @@ class DirectoryStoreWorker(val workerIndex: Int,
         }
         val count = doInTransaction(task, List(feedService))
         log.info("Feeds in Database : {}", count)
-        log.debug("Finished DebugPrintCountAllFeeds")
     }
 
     /**

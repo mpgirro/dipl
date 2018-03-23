@@ -12,7 +12,7 @@ class IndexBroker extends Actor with ActorLogging {
 
     private val CONFIG = ConfigFactory.load()
     private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.index.store-count")).getOrElse(1) // TODO
-    private val INDEX_PATHs = Array("/Users/max/volumes/echo/index") // TODO I'll have to thing about a better solution in a distributed context
+    private val INDEX_PATHs = Array("/Users/max/volumes/echo/index_1", "/Users/max/volumes/echo/index_2") // TODO I'll have to thing about a better solution in a distributed context
     private val CREATE_INDEX: Boolean = Option(CONFIG.getBoolean("echo.index.create-index")).getOrElse(false)
 
     /*

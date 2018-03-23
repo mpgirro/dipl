@@ -77,14 +77,14 @@ class FeedDirectoryService(private val log: LoggingAdapter,
 
     @Transactional
     def findOneByUrlAndPodcastEchoId(url: String, podcastExo: String): Option[FeedDTO] = {
-        log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo)
+        log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : {}", url, podcastExo)
         val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo)
         Option(feedMapper.map(result))
     }
 
     @Transactional
     def findAllByPodcast(podcastExo: String): List[FeedDTO] = {
-        log.debug("Request to get all Feeds by Podcast (EXO) : ", podcastExo)
+        log.debug("Request to get all Feeds by Podcast (EXO) : {}", podcastExo)
         feedRepository.findAllByPodcast(podcastExo)
             .asScala
             .map(f => feedMapper.map(f))

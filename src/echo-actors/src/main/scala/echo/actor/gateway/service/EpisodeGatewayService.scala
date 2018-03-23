@@ -21,9 +21,11 @@ import scala.util.{Failure, Success}
   * @author Maximilian Irro
   */
 
+/*
 @Path("/api/episode")  // @Path annotation required for Swagger
 @Api(value = "/api/episode",
      produces = "application/json")
+*/
 class EpisodeGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 

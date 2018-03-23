@@ -89,6 +89,7 @@ class MasterSupervisor extends Actor with ActorLogging {
 
         directory ! ActorRefCrawlerActor(crawler)
         directory ! ActorRefIndexStoreActor(index)
+        directory ! ActorRefDirectoryStoreActor(directory)
 
         log.info("up and running")
     }

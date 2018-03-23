@@ -65,7 +65,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
 
     @Transactional(readOnly = true)
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
-        log.debug("Request to get all Episodes by Podcast : ", podcastDTO)
+        log.debug("Request to get all Episodes by Podcast : {}", podcastDTO)
         val podcast = PodcastMapper.INSTANCE.map(podcastDTO)
         episodeRepository.findAllByPodcast(podcast)
             .asScala
@@ -75,7 +75,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
 
     @Transactional(readOnly = true)
     def findAllByPodcast(podcastExo: String): List[EpisodeDTO] = {
-        log.debug("Request to get all Episodes by Podcast (EXO) : ", podcastExo)
+        log.debug("Request to get all Episodes by Podcast (EXO) : {}", podcastExo)
         episodeRepository.findAllByPodcastEchoId(podcastExo)
             .asScala
             .map(e => episodeMapper.map(e))
@@ -84,7 +84,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
 
     @Transactional(readOnly = true)
     def findAllByPodcastAsTeaser(podcastExo: String): List[EpisodeDTO] = {
-        log.debug("Request to get all Episodes by Podcast (EXO) as teaser : ", podcastExo)
+        log.debug("Request to get all Episodes by Podcast (EXO) as teaser : {}", podcastExo)
         episodeRepository.findAllByPodcastEchoId(podcastExo)
             .asScala
             .map(e => teaserMapper.asTeaser(e))

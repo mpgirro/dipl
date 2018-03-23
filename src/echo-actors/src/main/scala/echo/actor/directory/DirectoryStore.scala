@@ -5,7 +5,7 @@ import java.sql.{Connection, DriverManager}
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefIndexStoreActor}
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
 import liquibase.database.jvm.JdbcConnection
 import liquibase.{Contexts, LabelExpression, Liquibase}
 import liquibase.database.{Database, DatabaseFactory}
@@ -25,6 +25,7 @@ class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
+    private var broker: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -44,15 +45,20 @@ class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-        case ActorRefCrawlerActor(ref) =>
+        case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            router.routees.foreach(r => r.send(ActorRefCrawlerActor(crawler), sender()))
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case ActorRefIndexStoreActor(ref) =>
+        case msg @ ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
-            router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ ActorRefDirectoryStoreActor(ref) =>
+            log.debug("Received ActorRefDirectoryStoreActor(_)")
+            broker = ref
+            router.routees.foreach(r => r.send(msg, sender()))
 
         case Terminated(corpse) =>
             /* TODO at some point we want to simply restart replace the worker
@@ -94,6 +100,7 @@ class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
         Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
+        Option(broker).foreach(b => directoryStore ! ActorRefDirectoryStoreActor(b))
 
         directoryStore
     }

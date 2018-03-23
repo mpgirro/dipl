@@ -3,7 +3,7 @@ package echo.actor.directory
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefIndexStoreActor}
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
 import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryQuery}
 
 /**
@@ -13,7 +13,7 @@ class DirectoryBroker extends Actor with ActorLogging {
 
     private val CONFIG = ConfigFactory.load()
     private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
-    private val DATABASE_URLs = Array("jdbc:h2:mem:echo")// TODO I'll have to thing about a better solution in a distributed context
+    private val DATABASE_URLs = Array("jdbc:h2:mem:echo1", "jdbc:h2:mem:echo2")// TODO I'll have to thing about a better solution in a distributed context
 
     private var crawler: ActorRef = _
     private var indexStore: ActorRef = _
@@ -44,17 +44,19 @@ class DirectoryBroker extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-        case ActorRefCrawlerActor(ref) =>
+        case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            //commandRouter.routees.foreach(r => r.send(ActorRefCrawlerActor(crawler), sender()))
-            commandRouter.route(ActorRefCrawlerActor(crawler), sender())
+            commandRouter.route(msg, sender())
 
-        case ActorRefIndexStoreActor(ref) =>
+        case msg @ ActorRefIndexStoreActor(ref) =>
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
-            //commandRouter.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
-            commandRouter.route(ActorRefIndexStoreActor(indexStore), sender())
+            commandRouter.route(msg, sender())
+
+        case msg @ ActorRefDirectoryStoreActor(ref) =>
+            log.debug("Received ActorRefDirectoryStoreActor(_)")
+            commandRouter.route(msg, sender())
 
         case command: DirectoryCommand =>
             log.debug("Routing command: {}", command.getClass)

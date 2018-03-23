@@ -33,13 +33,15 @@ object ActorProtocol {
     case class SearchResults(results: ResultWrapperDTO)
 
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
-    case class ActorRefDirectoryStoreActor(ref: ActorRef)
-    case class ActorRefCrawlerActor(ref: ActorRef)
-    case class ActorRefParserActor(ref: ActorRef)
-    case class ActorRefFeedStoreActor(ref: ActorRef)
-    case class ActorRefIndexStoreActor(ref: ActorRef)
-    case class ActorRefSearcherActor(ref: ActorRef)
-    case class ActorRefGatewayActor(ref: ActorRef)
+    trait ActorRefInfo
+
+    case class ActorRefDirectoryStoreActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefCrawlerActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefParserActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefFeedStoreActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefIndexStoreActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefSearcherActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefGatewayActor(ref: ActorRef) extends ActorRefInfo
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore
