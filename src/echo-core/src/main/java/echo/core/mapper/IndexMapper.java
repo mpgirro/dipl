@@ -30,11 +30,19 @@ public interface IndexMapper {
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO map(PodcastDTO podcast);
 
+    default IndexDocDTO mapImmutable(PodcastDTO podcast) {
+        return map(podcast).toImmutable();
+    }
+
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO map(EpisodeDTO episodeDTO);
+
+    default IndexDocDTO mapImmutable(EpisodeDTO episode) {
+        return map(episode).toImmutable();
+    }
 
     default String map(List<ChapterDTO> chapters){
 
