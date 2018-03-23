@@ -12,7 +12,7 @@ import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
 import echo.actor.index.IndexProtocol.{IndexStoreAddDoc, IndexStoreUpdateDocWebsiteData}
-import echo.core.domain.dto.EpisodeDTO
+import echo.core.domain.dto.{EpisodeDTO, ModifiableEpisodeDTO, ModifiablePodcastDTO}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
 import echo.core.mapper.IndexMapper
@@ -26,6 +26,8 @@ import scala.collection.JavaConverters._
 class ParserActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
+    private val indexMapper = IndexMapper.INSTANCE
 
     private val feedParser: FeedParser = new RomeFeedParser()
     private val fyydAPI: FyydAPI = new FyydAPI()
@@ -92,7 +94,8 @@ class ParserActor extends Actor with ActorLogging {
         try {
             val podcast = Option(feedParser.parseFeed(feedData))
             podcast match {
-                case Some(p) =>
+                case Some(pcst) =>
+                    val p: ModifiablePodcastDTO = new ModifiablePodcastDTO().from(pcst)
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
@@ -110,7 +113,7 @@ class ParserActor extends Actor with ActorLogging {
                         })
                         */
 
-                        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
+                        indexStore ! IndexStoreAddDoc(indexMapper.mapImmutable(p))
 
                         // request that the podcasts website will get added to the index as well, if possible
                         Option(p.getLink) match {
@@ -122,7 +125,7 @@ class ParserActor extends Actor with ActorLogging {
                     }
 
                     // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p)
+                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p.toImmutable)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                     processEpisodes(feedUrl, podcastId, feedData)
@@ -147,7 +150,10 @@ class ParserActor extends Actor with ActorLogging {
         }
     }
 
-    private def registerEpisode(podcastId: String, e: EpisodeDTO): Unit = {
+    private def registerEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
+
+        val e = new ModifiableEpisodeDTO().from(episode)
+
         // cleanup some potentially markuped texts
         Option(e.getTitle).foreach(t => e.setTitle(t.trim))
         Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
@@ -160,7 +166,7 @@ class ParserActor extends Actor with ActorLogging {
         })
         */
 
-        directoryStore ! RegisterEpisodeIfNew(podcastId, e)
+        directoryStore ! RegisterEpisodeIfNew(podcastId, e.toImmutable)
     }
 
     private def base64Image(imageUrl: String): String = {

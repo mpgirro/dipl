@@ -6,12 +6,14 @@ import akka.util.Timeout
 import echo.actor.ActorProtocol.SearchResults
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.domain.dto.ResultWrapperDTO
+import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.language.postfixOps
+
 
 /**
   * @author Maximilian Irro
@@ -30,27 +32,32 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef, i
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    override def receive = LoggingReceive {
-        case IndexResultsFound(query: String, results: ResultWrapperDTO) =>
-            log.info("Received " + results.getTotalHits + " results from index for query '" + query + "'")
+    override def receive: Receive = {
+        case IndexResultsFound(query: String, resultWrapper: ResultWrapperDTO) =>
+            log.info("Received " + resultWrapper.getTotalHits + " resultWrapper from index for query '" + query + "'")
             timeoutMessager.cancel
 
             // TODO remove <img> tags from description, I suspect it to cause troubles
             // TODO this should probably better done while indexing! (so only has to be done one time instead of every retrieval
-            results.getResults.foreach( d => {
-                Option(d.getDescription).map(value => {
-                    val soupDoc = Jsoup.parse(value)
-                    soupDoc.select("img").remove
-                    // if not removed, the cleaner will drop the <div> but leave the inner text
-                    val clean = Jsoup.clean(soupDoc.body.html, Whitelist.basic)
-                    d.setDescription(clean)
+            resultWrapper.getResults
+                .asScala
+                .map(r => new ModifiableIndexDocDTO().from(r))
+                .map(r => {
+                    Option(r.getDescription).map(value => {
+                        val soupDoc = Jsoup.parse(value)
+                        soupDoc.select("img").remove
+                        // if not removed, the cleaner will drop the <div> but leave the inner text
+                        val clean = Jsoup.clean(soupDoc.body.html, Whitelist.basic)
+                        r.setDescription(clean)
+                    })
+                    r
                 })
-            })
+                .map(r => r.toImmutable)
 
-            sendResponseAndShutdown(SearchResults(results))
+            sendResponseAndShutdown(SearchResults(resultWrapper))
         case NoIndexResultsFound(query: String) =>
             log.info("Received NO results from index for query '" + query + "'")
-            sendResponseAndShutdown(SearchResults(new ResultWrapperDTO))
+            sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty()))
         case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
         case _ =>
             log.debug("Stopping because received an unknown message : {}", self.path.name)
