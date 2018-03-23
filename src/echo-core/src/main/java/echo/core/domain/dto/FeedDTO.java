@@ -12,6 +12,7 @@ public class FeedDTO implements EntityDTO {
     private Long id;
     private String echoId;
     private Long podcastId;
+    private String podcastExo;
 
     // TODO save MIME type of feed
     // TODO title
@@ -46,6 +47,14 @@ public class FeedDTO implements EntityDTO {
 
     public void setPodcastId(Long podcastId) {
         this.podcastId = podcastId;
+    }
+
+    public String getPodcastExo() {
+        return podcastExo;
+    }
+
+    public void setPodcastExo(String podcastExo) {
+        this.podcastExo = podcastExo;
     }
 
     public String getUrl() {
@@ -101,6 +110,7 @@ public class FeedDTO implements EntityDTO {
             "\tid=" + id + ",\n" +
             "\techoId='" + echoId + "\',\n" +
             "\tpodcastId=" + podcastId + ",\n" +
+            "\tpodcastExo=" + podcastExo + ",\n" +
             "\turl='" + url + "\',\n" +
             "\tlastChecked=" + lastChecked + ",\n" +
             "\tlastStatus='" + lastStatus + "\',\n" +

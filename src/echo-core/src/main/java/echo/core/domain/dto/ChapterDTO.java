@@ -11,6 +11,7 @@ public class ChapterDTO {
     private String href;
     private String image;
     private Long episodeId;
+    private String episodeExo;
 
     public ChapterDTO() { }
 
@@ -19,6 +20,7 @@ public class ChapterDTO {
         this.title = c.getTitle();
         this.href = c.getHref();
         this.image = c.getImage();
+        this.episodeExo = c.getEpisodeExo();
     }
 
     public Long getId() {
@@ -69,6 +71,14 @@ public class ChapterDTO {
         this.episodeId = episodeId;
     }
 
+    public String getEpisodeExo() {
+        return episodeExo;
+    }
+
+    public void setEpisodeExo(String episodeExo) {
+        this.episodeExo = episodeExo;
+    }
+
     @Override
     public String toString() {
         return "ChapterDTO{" +
@@ -78,6 +88,7 @@ public class ChapterDTO {
             ", href='" + href + '\'' +
             ", image='" + image + '\'' +
             ", episodeId=" + episodeId +
+            ", episodeExo=" + episodeExo +
             '}';
     }
 }

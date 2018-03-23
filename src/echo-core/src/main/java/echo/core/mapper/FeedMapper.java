@@ -19,6 +19,7 @@ public interface FeedMapper {
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
     @Mapping(source = "podcast.id", target = "podcastId")
+    @Mapping(source = "podcast.echoId", target = "podcastExo")
     FeedDTO map(Feed feed);
 
     @Mapping(source = "podcastId", target = "podcast")

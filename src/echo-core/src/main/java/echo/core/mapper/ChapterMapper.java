@@ -19,6 +19,7 @@ public interface ChapterMapper {
     ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );
 
     @Mapping(source = "episode.id", target = "episodeId")
+    @Mapping(source = "episode.echoId", target = "episodeExo")
     ChapterDTO map(Chapter entity);
 
     @Mapping(source = "episodeId", target = "episode")
