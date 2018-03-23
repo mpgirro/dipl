@@ -121,6 +121,8 @@ dependencies {
         [group: 'org.specs2', name: "specs2-core_${scala_major_version}", version: '4.0.2'],
         [group: 'org.specs2', name: "specs2-junit_${scala_major_version}", version: '4.0.2'],
     )
+    //compile group: 'com.typesafe.akka', name: "akka-testkit_${scala_major_version}", version: akka_version //testCompile
+    //compile group: 'com.typesafe.akka', name: "akka-http-testkit_${scala_major_version}", version: akka_http_version //testCompile
 }
 
 // Specifying the main class for the 'application' plugin
