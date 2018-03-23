@@ -35,7 +35,8 @@ mainClassName = 'echo.core.CoreApp'
 compileJava {
     options.compilerArgs = [
         '-Amapstruct.suppressGeneratorTimestamp=true',
-        '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+        '-Xlint:deprecation'
     ]
 }
 
