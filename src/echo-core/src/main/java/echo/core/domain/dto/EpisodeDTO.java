@@ -1,9 +1,10 @@
-package echo.core.domain.dto.immutable;
+package echo.core.domain.dto;
 
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Maximilian Irro
@@ -18,21 +19,32 @@ import java.time.LocalDateTime;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
     defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
-public interface TestIndexDoc {
+public interface EpisodeDTO {
 
-    @Nullable String getDocType();
+    @Nullable Long getId();
+    @Nullable Long getPodcastId();
     @Nullable String getEchoId();
+    @Nullable String getPodcastEchoId();
+    @Nullable String getPodcastTitle();
     @Nullable String getTitle();
     @Nullable String getLink();
-    @Nullable String getDescription();
     @Nullable LocalDateTime getPubDate();
+    @Nullable String getGuid();
+    @Nullable Boolean getGuidIsPermaLink();
+    @Nullable String getDescription();
     @Nullable String getImage();
+    @Nullable String getItunesDuration();
+    @Nullable String getItunesSubtitle();
     @Nullable String getItunesAuthor();
     @Nullable String getItunesSummary();
-    @Nullable String getPodcastTitle(); // will be the same as the title if marshalled from a PodcastDTO
-    //@Nullable Set<String> getItunesCategories();
+    @Nullable Integer getItunesSeason();
+    @Nullable Integer getItunesEpisode();
+    @Nullable String getItunesEpisodeType();
+    @Nullable String getEnclosureUrl();
+    @Nullable Long getEnclosureLength();
+    @Nullable String getEnclosureType();
     @Nullable String getContentEncoded();
-    @Nullable String getWebsiteData();
-    @Nullable String getChapterMarks();
+    @Nullable LocalDateTime getRegistrationTimestamp();
+    @Nullable List<ChapterDTO> getChapters();
 
 }

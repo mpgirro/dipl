@@ -1,4 +1,4 @@
-package echo.core.domain.dto.immutable;
+package echo.core.domain.dto;
 
 import org.immutables.value.Value;
 
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
     defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
-public interface TestChapter {
+public interface ChapterDTO {
 
     @Nullable Long getId();
     @Nullable Long getEpisodeId();

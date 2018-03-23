@@ -1,9 +1,9 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.ImmutableTestEpisode;
-import echo.core.domain.dto.immutable.ImmutableTestPodcast;
-import echo.core.domain.dto.immutable.TestEpisode;
-import echo.core.domain.dto.immutable.TestPodcast;
+import echo.core.domain.dto.ImmutableEpisodeDTO;
+import echo.core.domain.dto.ImmutablePodcastDTO;
+import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;
 import org.mapstruct.Mapper;
@@ -21,11 +21,11 @@ public interface TeaserMapper {
 
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
 
-    default TestPodcast asTeaser(TestPodcast dto) {
+    default PodcastDTO asTeaser(PodcastDTO dto) {
 
         if(dto == null) return null;
 
-        final ImmutableTestPodcast.Builder teaser = ImmutableTestPodcast.builder();
+        final ImmutablePodcastDTO.Builder teaser = ImmutablePodcastDTO.builder();
 
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
@@ -43,11 +43,11 @@ public interface TeaserMapper {
         return teaser.create();
     }
 
-    default TestPodcast asTeaser(Podcast podcast) {
+    default PodcastDTO asTeaser(Podcast podcast) {
 
         if(podcast == null) return null;
 
-        final ImmutableTestPodcast.Builder teaser = ImmutableTestPodcast.builder();
+        final ImmutablePodcastDTO.Builder teaser = ImmutablePodcastDTO.builder();
 
         teaser.setEchoId(podcast.getEchoId());
         teaser.setTitle(podcast.getTitle());
@@ -57,11 +57,11 @@ public interface TeaserMapper {
         return teaser.create();
     }
 
-    default TestEpisode asTeaser(TestEpisode dto) {
+    default EpisodeDTO asTeaser(EpisodeDTO dto) {
 
         if(dto == null) return null;
 
-        final ImmutableTestEpisode.Builder teaser = ImmutableTestEpisode.builder();
+        final ImmutableEpisodeDTO.Builder teaser = ImmutableEpisodeDTO.builder();
 
         teaser.setEchoId(dto.getEchoId());
         teaser.setTitle(dto.getTitle());
@@ -73,11 +73,11 @@ public interface TeaserMapper {
         return teaser.create();
     }
 
-    default TestEpisode asTeaser(Episode episode) {
+    default EpisodeDTO asTeaser(Episode episode) {
 
         if(episode == null) return null;
 
-        final ImmutableTestEpisode.Builder teaser = ImmutableTestEpisode.builder();
+        final ImmutableEpisodeDTO.Builder teaser = ImmutableEpisodeDTO.builder();
 
         teaser.setEchoId(episode.getEchoId());
         teaser.setTitle(episode.getTitle());

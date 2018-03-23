@@ -1,6 +1,6 @@
 package echo.core;
 
-import echo.core.domain.dto.immutable.*;
+import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
@@ -131,9 +131,9 @@ public class CoreApp {
                 if (commands.length == 2) {
                     final long fyydId = Long.valueOf(commands[1]);
                     final String json = fyydAPI.getEpisodesByPodcastIdJSON(fyydId);
-                    final List<TestEpisode> episodes = fyydAPI.getEpisodes(json);
+                    final List<EpisodeDTO> episodes = fyydAPI.getEpisodes(json);
                     out.println("These are " + episodes.size() + " episodes for podcast=" + fyydId + " from fyyd.de");
-                    for (TestEpisode episode : episodes) {
+                    for (EpisodeDTO episode : episodes) {
                         out.println("\t" + episode.getTitle());
                     }
                 } else {
@@ -206,16 +206,16 @@ public class CoreApp {
         try {
             final String feedData = download(feed);
 
-            final ModifiableTestPodcast podcast = new ModifiableTestPodcast().from(feedParser.parseFeed(feedData));
+            final ModifiablePodcastDTO podcast = new ModifiablePodcastDTO().from(feedParser.parseFeed(feedData));
             podcast.setEchoId(idGenerator.getNewExo());
 
             this.committer.add(podcast.toImmutable());
 
-            final List<ModifiableTestEpisode> episodes = Arrays.stream(feedParser.extractEpisodes(feedData))
-                .map(e -> new ModifiableTestEpisode().from(e))
+            final List<ModifiableEpisodeDTO> episodes = Arrays.stream(feedParser.extractEpisodes(feedData))
+                .map(e -> new ModifiableEpisodeDTO().from(e))
                 .collect(Collectors.toList());
 
-            for (ModifiableTestEpisode episode : episodes) {
+            for (ModifiableEpisodeDTO episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
                 episode.setEchoId(idGenerator.getNewExo());
@@ -240,10 +240,10 @@ public class CoreApp {
         searcher.refresh(); // ensure there is data accessible to us in the index
 
         final String query = String.join(" ", querys);
-        final TestResultWrapper results = this.searcher.search(query, 1, 100);
+        final ResultWrapperDTO results = this.searcher.search(query, 1, 100);
         out.println("Found "+results.getTotalHits()+" getResults for query '" + query + "'");
         out.println("Results:");
-        for(TestIndexDoc doc : results.getResults()){
+        for(IndexDocDTO doc : results.getResults()){
             out.println();
             out.println(DocumentFormatter.cliFormat(doc));
             out.println();

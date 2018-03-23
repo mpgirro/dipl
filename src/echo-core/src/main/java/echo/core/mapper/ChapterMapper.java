@@ -1,7 +1,7 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.ModifiableTestChapter;
-import echo.core.domain.dto.immutable.TestChapter;
+import echo.core.domain.dto.ChapterDTO;
+import echo.core.domain.dto.ModifiableChapterDTO;
 import echo.core.domain.entity.Chapter;
 import echo.core.domain.entity.Episode;
 import org.mapstruct.Mapper;
@@ -13,20 +13,20 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={TestEpisodeMapper.class},
+@Mapper(uses={EpisodeMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface TestChapterMapper {
+public interface ChapterMapper {
 
-    TestChapterMapper INSTANCE = Mappers.getMapper( TestChapterMapper.class );
+    ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );
 
     @Mapping(source = "episode.id", target = "episodeId")
     @Mapping(source = "episode.echoId", target = "episodeExo")
-    ModifiableTestChapter map(Chapter entity);
+    ModifiableChapterDTO map(Chapter entity);
 
     @Mapping(source = "episodeId", target = "episode")
-    Chapter map(TestChapter dto);
+    Chapter map(ChapterDTO dto);
 
-    ModifiableTestChapter update(TestChapter src, @MappingTarget ModifiableTestChapter target);
+    ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ModifiableChapterDTO target);
 
     default Episode episodeFromId(Long id) {
 

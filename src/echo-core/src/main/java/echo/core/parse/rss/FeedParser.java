@@ -1,7 +1,7 @@
 package echo.core.parse.rss;
 
-import echo.core.domain.dto.immutable.TestEpisode;
-import echo.core.domain.dto.immutable.TestPodcast;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
 /**
@@ -18,8 +18,8 @@ public interface FeedParser {
      * TODO supertype for my planed custom SAX and DOM feed parsers
      */
 
-    TestPodcast parseFeed(String xmlData) throws FeedParsingException;
+    PodcastDTO parseFeed(String xmlData) throws FeedParsingException;
 
-    TestEpisode[] extractEpisodes(String xmlData) throws FeedParsingException;
+    EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException;
 
 }

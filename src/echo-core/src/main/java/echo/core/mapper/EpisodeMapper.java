@@ -1,8 +1,8 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.ImmutableTestEpisode;
-import echo.core.domain.dto.immutable.ModifiableTestEpisode;
-import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.ImmutableEpisodeDTO;
+import echo.core.domain.dto.ModifiableEpisodeDTO;
+import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.entity.Episode;
 import echo.core.domain.entity.Podcast;
 import echo.core.index.IndexField;
@@ -15,21 +15,21 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={TestPodcastMapper.class, TestChapterMapper.class, DateMapper.class},
+@Mapper(uses={PodcastMapper.class, ChapterMapper.class, DateMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface TestEpisodeMapper {
+public interface EpisodeMapper {
 
-    TestEpisodeMapper INSTANCE = Mappers.getMapper( TestEpisodeMapper.class );
+    EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
-    ModifiableTestEpisode map(Episode episode);
+    ModifiableEpisodeDTO map(Episode episode);
 
     @Mapping(source = "podcastId", target = "podcast")
-    Episode map(TestEpisode episode);
+    Episode map(EpisodeDTO episode);
 
-    ModifiableTestEpisode update(TestEpisode src, @MappingTarget ModifiableTestEpisode target);
+    ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
     // TODO unused because we use PodcastMapper.class ?
     default Podcast podcastFromId(Long id) {
@@ -42,11 +42,11 @@ public interface TestEpisodeMapper {
         return podcast;
     }
 
-    default TestEpisode map(org.apache.lucene.document.Document doc) {
+    default EpisodeDTO map(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 
-        final ImmutableTestEpisode.Builder builder = ImmutableTestEpisode.builder();
+        final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
 
         if (doc.get(IndexField.ECHO_ID)         != null) { builder.setEchoId(doc.get(IndexField.ECHO_ID)); }
         if (doc.get(IndexField.TITLE)           != null) { builder.setTitle(doc.get(IndexField.TITLE)); }

@@ -1,7 +1,7 @@
 package echo.core.index;
 
-import echo.core.domain.dto.immutable.TestIndexDoc;
-import echo.core.mapper.TestIndexMapper;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.mapper.IndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -52,10 +52,10 @@ public class LuceneCommitter implements IndexCommitter {
     }
 
     @Override
-    public void add(TestIndexDoc indexDoc) {
+    public void add(IndexDocDTO indexDoc) {
         log.debug("Appending document to index : {}", indexDoc);
 
-        final Document luceneDoc = TestIndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
         try {
             this.writer.addDocument(luceneDoc);
         } catch (IOException e) {
@@ -65,10 +65,10 @@ public class LuceneCommitter implements IndexCommitter {
     }
 
     @Override
-    public void update(TestIndexDoc indexDoc) {
+    public void update(IndexDocDTO indexDoc) {
         log.debug("Updating document in index : {}", indexDoc);
 
-        final Document luceneDoc = TestIndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
         try {
             writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {

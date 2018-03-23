@@ -1,10 +1,10 @@
 package echo.core.index;
 
-import echo.core.domain.dto.immutable.ImmutableTestResultWrapper;
-import echo.core.domain.dto.immutable.TestIndexDoc;
-import echo.core.domain.dto.immutable.TestResultWrapper;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.ResultWrapperDTO;
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.exception.SearchException;
-import echo.core.mapper.TestIndexMapper;
+import echo.core.mapper.IndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -25,6 +25,8 @@ import java.io.IOException;
 public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
     private static final Logger log = LoggerFactory.getLogger(LuceneSearcher.class);
+
+    private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
     private static final int MAX_RESULT_COUNT = 1000;
 
@@ -66,22 +68,22 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
      *                         documents, or if it exceeds the size of the found documents
      */
     @Override
-    public TestResultWrapper search(String q, int p, int s) throws SearchException {
+    public ResultWrapperDTO search(String q, int p, int s) throws SearchException {
 
-        if( p < 1 ){
+        if ( p < 1 ) {
             throw new SearchException("Requested page number (p) required to be >1, got: " + p);
         }
 
-        if( s < 1 ){
+        if ( s < 1 ) {
             throw new SearchException("Requested window size (s) required to be >1, got: " + s);
         }
 
         // ensure that we are within boundries of our search window
-        if( (p*s) > MAX_RESULT_COUNT){
+        if ((p*s) > MAX_RESULT_COUNT) {
             throw new SearchException("Request search range (p x s) exceeds maximum search window s of " + MAX_RESULT_COUNT);
         }
 
-        final ImmutableTestResultWrapper.Builder resultWrapper = ImmutableTestResultWrapper.builder();
+        final ImmutableResultWrapperDTO.Builder resultWrapper = ImmutableResultWrapperDTO.builder();
 
         // set some sane values, we'll overwrite these if all goes well
         resultWrapper.setCurrPage(0);
@@ -100,8 +102,8 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
 
-            if(topDocs.totalHits == 0){
-                resultWrapper.setResults(new TestIndexDoc[0]);
+            if (topDocs.totalHits == 0) {
+                resultWrapper.setResults(new IndexDocDTO[0]);
                 return resultWrapper.create();
             }
 
@@ -111,7 +113,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             final double dMaxPage = ((double)topDocs.totalHits) / ((double) s);
             final int maxPage = (int) Math.ceil(dMaxPage);
-            if(maxPage == 0 && p == 1){
+            if (maxPage == 0 && p == 1) {
                 resultWrapper.setMaxPage(1);
             } else {
                 resultWrapper.setMaxPage(maxPage);
@@ -122,18 +124,18 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             // ensure that paging does not exceed amount of found results
             final int windowStart = (p-1)*s;
             int windowEnd;
-            if((p*s) > topDocs.totalHits){
+            if ((p*s) > topDocs.totalHits) {
                 windowEnd = (int) topDocs.totalHits;
             } else {
                 windowEnd = (p*s);
             }
 
             int windowSize = windowEnd - windowStart;
-            final TestIndexDoc[] results = new TestIndexDoc[windowSize];
+            final IndexDocDTO[] results = new IndexDocDTO[windowSize];
 
             int j = 0;
-            for(int i = windowStart; i < windowEnd; i++){
-                results[j] = TestIndexMapper.INSTANCE.map(indexSearcher.doc(hits[i].doc));
+            for (int i = windowStart; i < windowEnd; i++) {
+                results[j] = indexMapper.map(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
@@ -154,7 +156,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public TestIndexDoc findByEchoId(String id){
+    public IndexDocDTO findByEchoId(String id) {
         IndexSearcher indexSearcher = null;
         try {
 
@@ -165,12 +167,12 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             log.debug("Searching for query: "+query.toString());
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
-            if(topDocs.totalHits > 1){
+            if (topDocs.totalHits > 1) {
                 log.error("Searcher found multiple documents for unique {} : {}", IndexField.ECHO_ID, id);
             }
-            if(topDocs.totalHits == 1){
+            if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return TestIndexMapper.INSTANCE.map(indexSearcher.doc(hits[0].doc));
+                return indexMapper.map(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);

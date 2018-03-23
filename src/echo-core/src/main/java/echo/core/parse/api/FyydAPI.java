@@ -1,7 +1,7 @@
 package echo.core.parse.api;
 
-import echo.core.domain.dto.immutable.ImmutableTestEpisode;
-import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.ImmutableEpisodeDTO;
 import echo.core.mapper.DateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class FyydAPI extends API {
         return get(endpoint);
     }
 
-    public List<TestEpisode> getEpisodes(String json) {
+    public List<EpisodeDTO> getEpisodes(String json) {
         final Map<String,Object> apiData = jsonToMap(json);
         if (apiData.containsKey("data")) {
             final Map<String,Object> data = (Map<String,Object>) apiData.get("data");
@@ -86,9 +86,9 @@ public class FyydAPI extends API {
                 final List<Map<String,Object>> episodesObj = (List<Map<String,Object>>) data.get("episodes");
                 if (episodesObj != null) {
                     log.info("JSON contains {} episode JSON objects", episodesObj.size());
-                    final List<TestEpisode> episodes =  episodesObj.stream()
+                    final List<EpisodeDTO> episodes =  episodesObj.stream()
                         .map(d -> {
-                            final ImmutableTestEpisode.Builder e = ImmutableTestEpisode.builder();
+                            final ImmutableEpisodeDTO.Builder e = ImmutableEpisodeDTO.builder();
                             e.setTitle((String) d.get("title"));
                             e.setLink((String) d.get("url"));
                             e.setDescription((String) d.get("description"));
@@ -111,8 +111,8 @@ public class FyydAPI extends API {
                     // fyyd has a duplicate entry problem, therefore we only take on DTO per occuring title
                     // this way we could loose some episode entries that are actually different but have bad
                     // quality titles, but this is still better then to import us lots of triple episode
-                    final Map<String, TestEpisode> map = new HashMap<>();
-                    for (TestEpisode e : episodes) {
+                    final Map<String, EpisodeDTO> map = new HashMap<>();
+                    for (EpisodeDTO e : episodes) {
                        map.put(e.getTitle(), e);
                     }
                     return new LinkedList<>(map.values());

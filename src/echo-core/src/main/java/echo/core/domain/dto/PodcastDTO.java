@@ -1,4 +1,4 @@
-package echo.core.domain.dto.immutable;
+package echo.core.domain.dto;
 
 import org.immutables.value.Value;
 
@@ -33,7 +33,7 @@ import java.util.Set;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
     defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
-public interface TestPodcast {
+public interface PodcastDTO {
 
     @Nullable Long getId();
     @Nullable String getEchoId();

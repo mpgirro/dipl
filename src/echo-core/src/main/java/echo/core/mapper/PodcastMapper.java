@@ -1,8 +1,8 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.ImmutableTestPodcast;
-import echo.core.domain.dto.immutable.ModifiableTestPodcast;
-import echo.core.domain.dto.immutable.TestPodcast;
+import echo.core.domain.dto.ImmutablePodcastDTO;
+import echo.core.domain.dto.ModifiablePodcastDTO;
+import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.Podcast;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
@@ -18,23 +18,23 @@ import org.mapstruct.factory.Mappers;
     uses={UrlMapper.class, DateMapper.class},
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
 )
-public interface TestPodcastMapper {
+public interface PodcastMapper {
 
-    TestPodcastMapper INSTANCE = Mappers.getMapper( TestPodcastMapper.class );
+    PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
-    ModifiableTestPodcast map(Podcast podcast);
+    ModifiablePodcastDTO map(Podcast podcast);
 
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
-    Podcast map(TestPodcast dto);
+    Podcast map(PodcastDTO dto);
 
-    ModifiableTestPodcast update(TestPodcast src, @MappingTarget ModifiableTestPodcast target);
+    ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget ModifiablePodcastDTO target);
 
-    default TestPodcast map(org.apache.lucene.document.Document doc) {
+    default PodcastDTO map(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 
-        final ImmutableTestPodcast.Builder builder = ImmutableTestPodcast.builder();
+        final ImmutablePodcastDTO.Builder builder = ImmutablePodcastDTO.builder();
 
         if (doc.get(IndexField.ECHO_ID)        != null) { builder.setEchoId(doc.get(IndexField.ECHO_ID)); }
         if (doc.get(IndexField.TITLE)          != null) { builder.setTitle(doc.get(IndexField.TITLE)); }

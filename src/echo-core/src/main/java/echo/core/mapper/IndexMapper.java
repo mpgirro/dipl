@@ -1,6 +1,6 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.*;
+import echo.core.domain.dto.*;
 import echo.core.index.IndexField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -17,46 +17,46 @@ import java.util.stream.Collectors;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={TestPodcastMapper.class, TestEpisodeMapper.class},
+@Mapper(uses={PodcastMapper.class, EpisodeMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface TestIndexMapper {
+public interface IndexMapper {
 
-    TestIndexMapper INSTANCE = Mappers.getMapper( TestIndexMapper.class );
+    IndexMapper INSTANCE = Mappers.getMapper( IndexMapper.class );
 
     @Mapping(target = "docType", constant = "podcast")
     @Mapping(target = "podcastTitle", ignore = true)
     @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    ModifiableTestIndexDoc map(TestPodcast podcast);
+    ModifiableIndexDocDTO map(PodcastDTO podcast);
 
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    ModifiableTestIndexDoc map(TestEpisode episodeDTO);
+    ModifiableIndexDocDTO map(EpisodeDTO episodeDTO);
 
-    default String map(List<TestChapter> chapters){
+    default String map(List<ChapterDTO> chapters){
 
         if(chapters == null) return null;
 
         return String.join("\n", chapters.stream()
-            .map(TestChapter::getTitle)
+            .map(ChapterDTO::getTitle)
             .collect(Collectors.toList()));
     }
 
-    default TestIndexDoc map(Document doc) {
+    default IndexDocDTO map(Document doc) {
 
         if (doc == null) return null;
 
         switch (doc.get(IndexField.DOC_TYPE)) {
-            case "podcast": return map(TestPodcastMapper.INSTANCE.map(doc));
-            case "episode": return map(TestEpisodeMapper.INSTANCE.map(doc));
+            case "podcast": return map(PodcastMapper.INSTANCE.map(doc));
+            case "episode": return map(EpisodeMapper.INSTANCE.map(doc));
             default: throw new RuntimeException("Unsupported lucene document type : " + doc.get(IndexField.DOC_TYPE));
         }
     }
 
-    default Document map(TestIndexDoc doc) {
+    default Document map(IndexDocDTO doc) {
 
         if (doc == null) return null;
 

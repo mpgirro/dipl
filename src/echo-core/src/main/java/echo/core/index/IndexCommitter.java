@@ -1,9 +1,9 @@
 package echo.core.index;
 
-import echo.core.domain.dto.immutable.TestEpisode;
-import echo.core.domain.dto.immutable.TestIndexDoc;
-import echo.core.domain.dto.immutable.TestPodcast;
-import echo.core.mapper.TestIndexMapper;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.PodcastDTO;
+import echo.core.mapper.IndexMapper;
 
 /**
  * This interface is used to standardize writing to search indizes.
@@ -14,24 +14,24 @@ import echo.core.mapper.TestIndexMapper;
  */
 public interface IndexCommitter {
 
-    void add(TestIndexDoc doc);
+    void add(IndexDocDTO doc);
 
-    default void add(TestPodcast podcast) {
-        add(TestIndexMapper.INSTANCE.map(podcast));
+    default void add(PodcastDTO podcast) {
+        add(IndexMapper.INSTANCE.map(podcast));
     }
 
-    default void add(TestEpisode episode) {
-        add(TestIndexMapper.INSTANCE.map(episode));
+    default void add(EpisodeDTO episode) {
+        add(IndexMapper.INSTANCE.map(episode));
     }
 
-    void update(TestIndexDoc doc);
+    void update(IndexDocDTO doc);
 
-    default void update(TestPodcast podcast) {
-        update(TestIndexMapper.INSTANCE.map(podcast));
+    default void update(PodcastDTO podcast) {
+        update(IndexMapper.INSTANCE.map(podcast));
     }
 
-    default void update(TestEpisode episode) {
-        update(TestIndexMapper.INSTANCE.map(episode));
+    default void update(EpisodeDTO episode) {
+        update(IndexMapper.INSTANCE.map(episode));
     }
 
     void commit();

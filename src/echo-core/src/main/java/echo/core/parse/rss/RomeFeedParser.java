@@ -13,7 +13,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndImage;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import echo.core.domain.dto.immutable.*;
+import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.parse.rss.rome.PodloveSimpleChapterItem;
 import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
@@ -38,13 +38,13 @@ public class RomeFeedParser implements FeedParser {
     private static final Logger log = LoggerFactory.getLogger(RomeFeedParser.class);
 
     @Override
-    public TestPodcast parseFeed(String xmlData) throws FeedParsingException {
+    public PodcastDTO parseFeed(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed feed = input.build(inputSource);
 
-            final ImmutableTestPodcast.Builder builder = ImmutableTestPodcast.builder();
+            final ImmutablePodcastDTO.Builder builder = ImmutablePodcastDTO.builder();
 
             builder.setTitle(feed.getTitle());
             String link = UrlUtil.sanitize(feed.getLink());
@@ -111,28 +111,28 @@ public class RomeFeedParser implements FeedParser {
 
             // here I process the feed specific atom Links
             final List<Link> atomLinks = getAtomLinks(feed);
-            for(Link atomLink : atomLinks){
-                if(atomLink.getRel().equals("http://podlove.org/deep-link")){
+            for (Link atomLink : atomLinks) {
+                if (atomLink.getRel().equals("http://podlove.org/deep-link")) {
                     // TODO this should be a link to the episode website (but is it always though?!)
-                } else if(atomLink.getRel().equals("payment")){
+                } else if (atomLink.getRel().equals("payment")) {
                     // TODO
-                } else if(atomLink.getRel().equals("self")){
+                } else if (atomLink.getRel().equals("self")) {
                     // TODO
-                } else if(atomLink.getRel().equals("alternate")){
+                } else if (atomLink.getRel().equals("alternate")) {
                     // TODO
-                } else if(atomLink.getRel().equals("first")){
+                } else if (atomLink.getRel().equals("first")) {
                     // TODO
-                } else if(atomLink.getRel().equals("next")){
+                } else if (atomLink.getRel().equals("next")) {
                     // TODO
-                } else if(atomLink.getRel().equals("last")){
+                } else if (atomLink.getRel().equals("last")) {
                     // TODO
-                } else if(atomLink.getRel().equals("hub")){
+                } else if (atomLink.getRel().equals("hub")) {
                     // TODO
-                } else if(atomLink.getRel().equals("search")){
+                } else if (atomLink.getRel().equals("search")) {
                     // TODO
-                } else if(atomLink.getRel().equals("via")) {
+                } else if (atomLink.getRel().equals("via")) {
                     // TODO
-                } else if(atomLink.getRel().equals("related")) {
+                } else if (atomLink.getRel().equals("related")) {
                     // TODO
                 } else if (atomLink.getRel().equals("prev-archive")) {
                 } else {
@@ -148,23 +148,23 @@ public class RomeFeedParser implements FeedParser {
     }
 
     @Override
-    public TestEpisode[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed feed = input.build(inputSource);
 
-            final List<TestEpisode> results = new LinkedList<>();
-            for(SyndEntry e : feed.getEntries()){
-                final ImmutableTestEpisode.Builder builder = ImmutableTestEpisode.builder();
+            final List<EpisodeDTO> results = new LinkedList<>();
+            for (SyndEntry e : feed.getEntries()) {
+                final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
 
                 builder.setTitle(e.getTitle());
                 builder.setLink(UrlUtil.sanitize(e.getLink()));
-                if(e.getPublishedDate() != null){
+                if (e.getPublishedDate() != null) {
                     builder.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
                 //doc.setGuid(TODO);
-                if(e.getDescription() != null){
+                if (e.getDescription() != null) {
                     builder.setDescription(e.getDescription().getValue());
                 }
 
@@ -172,7 +172,7 @@ public class RomeFeedParser implements FeedParser {
                     builder.setGuid(e.getUri());
                 }
 
-                if(e.getEnclosures() != null && e.getEnclosures().size() > 0){
+                if (e.getEnclosures() != null && e.getEnclosures().size() > 0) {
                     final SyndEnclosure enclosure = e.getEnclosures().get(0);
                     builder.setEnclosureUrl(enclosure.getUrl());
                     builder.setEnclosureType(enclosure.getType());
@@ -186,9 +186,9 @@ public class RomeFeedParser implements FeedParser {
                 final Module contentModule = e.getModule(ContentModule.URI);
                 final ContentModule content = (ContentModule) contentModule;
                 if (content != null) {
-                    if(content.getEncodeds().size() > 0){
+                    if (content.getEncodeds().size() > 0) {
                         builder.setContentEncoded(content.getEncodeds().get(0));
-                        if(content.getEncodeds().size() > 1){
+                        if (content.getEncodeds().size() > 1) {
                             log.warn("Encountered multiple <content:encoded> elements in <item> element");
                         }
                     }
@@ -198,10 +198,10 @@ public class RomeFeedParser implements FeedParser {
                 final Module itunesEntryModule = e.getModule(EntryInformation.URI);
                 final EntryInformation itunes = (EntryInformation) itunesEntryModule;
                 if (itunes != null) {
-                    if(itunes.getImage() != null){
+                    if (itunes.getImage() != null) {
                         builder.setImage(itunes.getImage().toExternalForm());
                     }
-                    if(itunes.getDuration() != null){
+                    if (itunes.getDuration() != null) {
                         builder.setItunesDuration(itunes.getDuration().toString());
                     }
                     builder.setItunesSubtitle(itunes.getSubtitle());
@@ -219,9 +219,9 @@ public class RomeFeedParser implements FeedParser {
                 final PodloveSimpleChapterModule simpleChapters = ((PodloveSimpleChapterModule) pscEntryModule);
                 if (simpleChapters != null) {
                     if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
-                        final List<TestChapter> chapters = new LinkedList<>();
+                        final List<ChapterDTO> chapters = new LinkedList<>();
                         for (PodloveSimpleChapterItem sci : simpleChapters.getChapters()) {
-                            final ImmutableTestChapter.Builder c = ImmutableTestChapter.builder();
+                            final ImmutableChapterDTO.Builder c = ImmutableChapterDTO.builder();
                             c.setStart(sci.getStart());
                             c.setTitle(sci.getTitle());
                             c.setHref(sci.getHref());
@@ -235,7 +235,7 @@ public class RomeFeedParser implements FeedParser {
 
                 results.add(builder.create());
             }
-            return results.toArray(new TestEpisode[0]);
+            return results.toArray(new EpisodeDTO[0]);
         } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed (trying to extract the episodes)", e);
         }
@@ -244,7 +244,7 @@ public class RomeFeedParser implements FeedParser {
     private List<Link> getAtomLinks(SyndFeed syndFeed){
         final Module atomFeedModule = syndFeed.getModule(AtomLinkModule.URI);
         final AtomLinkModule atomLinkModule = (AtomLinkModule) atomFeedModule;
-        if(atomLinkModule != null){
+        if (atomLinkModule != null) {
             return atomLinkModule.getLinks();
         }
         return new LinkedList<>();

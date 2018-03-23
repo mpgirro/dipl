@@ -1,7 +1,7 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.immutable.ModifiableTestFeed;
-import echo.core.domain.dto.immutable.TestFeed;
+import echo.core.domain.dto.FeedDTO;
+import echo.core.domain.dto.ModifiableFeedDTO;
 import echo.core.domain.entity.Feed;
 import echo.core.domain.entity.Podcast;
 import org.mapstruct.Mapper;
@@ -13,20 +13,20 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={TestPodcastMapper.class, DateMapper.class},
+@Mapper(uses={PodcastMapper.class, DateMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface TestFeedMapper {
+public interface FeedMapper {
 
-    TestFeedMapper INSTANCE = Mappers.getMapper( TestFeedMapper.class );
+    FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
-    ModifiableTestFeed map(Feed feed);
+    ModifiableFeedDTO map(Feed feed);
 
     @Mapping(source = "podcastId", target = "podcast")
-    Feed map(TestFeed feedDto);
+    Feed map(FeedDTO feedDto);
 
-    ModifiableTestFeed update(TestFeed src, @MappingTarget ModifiableTestFeed target);
+    ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
 
     default Podcast podcastFromId(Long id) {
 

@@ -1,8 +1,10 @@
-package echo.core.domain.dto.immutable;
+package echo.core.domain.dto;
 
+import echo.core.domain.feed.FeedStatus;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
 
 /**
  * @author Maximilian Irro
@@ -17,11 +19,15 @@ import javax.annotation.Nullable;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC, // Generated class will be always public
     defaults   = @Value.Immutable(copy = false)) // Disable copy methods by default
-public interface TestResultWrapper {
+public interface FeedDTO {
 
-    @Nullable Integer getCurrPage();
-    @Nullable Integer getMaxPage();
-    @Nullable Integer getTotalHits();
-    @Nullable TestIndexDoc[] getResults();
+    @Nullable Long getId();
+    @Nullable Long getPodcastId();
+    @Nullable String getEchoId();
+    @Nullable String getPodcastEchoId();
+    @Nullable String getUrl();
+    @Nullable LocalDateTime getLastChecked();
+    @Nullable FeedStatus getLastStatus();
+    @Nullable LocalDateTime getRegistrationTimestamp();
 
 }

@@ -1,6 +1,6 @@
 package echo.core.util;
 
-import echo.core.domain.dto.immutable.TestIndexDoc;
+import echo.core.domain.dto.IndexDocDTO;
 import org.jsoup.Jsoup;
 
 /**
@@ -10,7 +10,7 @@ public class DocumentFormatter {
 
     private static final String NEWLINE = System.getProperty("line.separator");
 
-    public static String cliFormat(TestIndexDoc doc){
+    public static String cliFormat(IndexDocDTO doc){
         final StringBuilder builder = new StringBuilder();
         switch (doc.getDocType()) {
             case "podcast":
