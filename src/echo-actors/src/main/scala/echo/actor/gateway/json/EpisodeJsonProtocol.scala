@@ -1,7 +1,7 @@
 package echo.actor.gateway.json
 
 import echo.actor.gateway.json.ChapterJsonProtocol.ChapterJsonFormat
-import echo.core.domain.dto.EpisodeDTO
+import echo.core.domain.dto.{EpisodeDTO, ImmutableEpisodeDTO}
 import echo.core.mapper.DateMapper
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -42,22 +42,23 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
                     JsString(itunesDuration), JsString(itunesSubtitle), JsString(itunesAuthor),
                     JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
 
-                    val episode = new EpisodeDTO()
-                    episode.setEchoId(echoId)
-                    episode.setPodcastEchoId(podcastEchoId)
-                    episode.setPodcastTitle(podcastTitle)
-                    episode.setTitle(title)
-                    episode.setLink(link)
-                    episode.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
-                    episode.setDescription(description)
-                    episode.setImage(image)
-                    episode.setItunesDuration(itunesDuration)
-                    episode.setItunesSubtitle(itunesSubtitle)
-                    episode.setItunesAuthor(itunesAuthor)
-                    episode.setItunesSummary(itunesSummary)
-                    Option(enclosureLength).foreach(cl => episode.setEnclosureLength(cl.toLong))
+                    val builder = ImmutableEpisodeDTO.builder()
+                        .setEchoId(echoId)
+                        .setPodcastEchoId(podcastEchoId)
+                        .setPodcastTitle(podcastTitle)
+                        .setTitle(title)
+                        .setLink(link)
+                        .setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
+                        .setDescription(description)
+                        .setImage(image)
+                        .setItunesDuration(itunesDuration)
+                        .setItunesSubtitle(itunesSubtitle)
+                        .setItunesAuthor(itunesAuthor)
+                        .setItunesSummary(itunesSummary)
 
-                    episode
+                    Option(enclosureLength).foreach(cl => builder.setEnclosureLength(cl.toLong))
+
+                    builder.create()
 
                 case _ => throw DeserializationException("EpisodeDTO expected")
             }

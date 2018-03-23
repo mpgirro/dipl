@@ -169,7 +169,7 @@ class CliActor(private val master: ActorRef,
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[SearchResults]
         response match {
             case SearchResults(results) =>
-                println("Found "+results.getResults.length+" results for query '" + query.mkString(" ") + "'")
+                println("Found "+results.getResults.size()+" results for query '" + query.mkString(" ") + "'")
                 println("Results:")
                 for (result <- results.getResults) {
                     println(s"\n${DocumentFormatter.cliFormat(result)}\n")
@@ -183,7 +183,7 @@ class CliActor(private val master: ActorRef,
         val future = directoryStore ? GetPodcast(echoId)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
-            case PodcastResult(podcast)  => println(DocumentFormatter.cliFormat(podcast))
+            case PodcastResult(podcast)  => println(podcast.toString)
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with echoId : {}", unknownId)
             case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
@@ -193,7 +193,7 @@ class CliActor(private val master: ActorRef,
         val future = directoryStore ? GetEpisode(echoId)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
-            case EpisodeResult(episode)  => println(DocumentFormatter.cliFormat(episode))
+            case EpisodeResult(episode)  => println(episode.toString)
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with echoId : {}", unknownId)
             case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }

@@ -41,6 +41,7 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
                         .setImage(image)
                         //.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
                         .create()
+
                 case _ => throw DeserializationException("IndexDocDTO expected")
             }
         }

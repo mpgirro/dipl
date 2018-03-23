@@ -21,12 +21,14 @@ object ResultWrapperJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue): ResultWrapperDTO = {
             value.asJsObject.getFields("currPage", "maxPage", "totalHits", "results") match {
                 case Seq(JsNumber(currPage), JsNumber(maxPage), JsNumber(totalHits),  JsArray(results)) =>
+
                     ImmutableResultWrapperDTO.builder()
                         .setCurrPage(currPage.toInt)
                         .setMaxPage(maxPage.toInt)
                         .setTotalHits(totalHits.toInt)
                         .setResults(seqAsJavaList(results.map(_.convertTo[IndexDocDTO]).to[Array]))
                         .create()
+
                 case _ => throw DeserializationException("ResultWrapperDTO expected")
             }
         }

@@ -10,7 +10,7 @@ import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
 import echo.actor.index.IndexProtocol.IndexStoreAddDoc
-import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
+import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
 import echo.core.util.ExoGenerator
@@ -146,25 +146,27 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
 
                 val podcastId = exoGenerator.getNewExo
-                var podcast = new PodcastDTO
-                podcast.setEchoId(podcastId)
-                podcast.setTitle(podcastId)
-                podcast.setDescription(url)
-                podcast.setRegistrationComplete(false)
-                podcast.setRegistrationTimestamp(LocalDateTime.now())
+                var podcast = ImmutablePodcastDTO.builder()
+                    .setEchoId(podcastId)
+                    .setTitle(podcastId)
+                    .setDescription(url)
+                    .setRegistrationComplete(false)
+                    .setRegistrationTimestamp(LocalDateTime.now())
+                    .create()
 
                 podcastService.save(podcast).map(p => {
 
                     // broker ! UpdatePodcastMetadata(nullMapper.map(p)) // TODO
 
                     val feedId = exoGenerator.getNewExo
-                    val feed = new FeedDTO
-                    feed.setEchoId(feedId)
-                    feed.setUrl(url)
-                    feed.setLastChecked(LocalDateTime.now())
-                    feed.setLastStatus(FeedStatus.NEVER_CHECKED)
-                    feed.setPodcastId(p.getId)
-                    feed.setRegistrationTimestamp(LocalDateTime.now())
+                    val feed = ImmutableFeedDTO.builder()
+                        .setEchoId(feedId)
+                        .setUrl(url)
+                        .setLastChecked(LocalDateTime.now())
+                        .setLastStatus(FeedStatus.NEVER_CHECKED)
+                        .setPodcastId(p.getId)
+                        .setRegistrationTimestamp(LocalDateTime.now())
+                        .create()
                     feedService.save(feed).map(f => {
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, NewPodcastFetchJob())
@@ -217,7 +219,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
          */
         def task = () => {
             val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
-                PodcastMapper.INSTANCE.update(podcast, p)
+                podcastMapper.update(podcast, p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
                 podcast
@@ -237,7 +239,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
                 val update: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
-                    EpisodeMapper.INSTANCE.update(episode, e)
+                    episodeMapper.update(episode, e)
                 }).getOrElse({
                     log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getEchoId)
                     episode

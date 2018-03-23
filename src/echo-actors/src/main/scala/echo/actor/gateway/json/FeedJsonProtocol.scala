@@ -2,7 +2,7 @@ package echo.actor.gateway
 
 import java.time.LocalDateTime
 
-import echo.core.domain.dto.FeedDTO
+import echo.core.domain.dto.{FeedDTO, ImmutableFeedDTO}
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.DateMapper
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
@@ -20,11 +20,13 @@ object FeedJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue): FeedDTO = {
             value.asJsObject.getFields("url", "lastChecked", "lastStatus") match {
                 case Seq(JsString(url), JsString(lastChecked), JsString(lastStatus)) =>
-                    val feed = new FeedDTO
-                    feed.setUrl(url)
-                    feed.setLastChecked(DateMapper.INSTANCE.asLocalDateTime(lastChecked))
-                    feed.setLastStatus(FeedStatus.getByName(lastStatus))
-                    feed
+
+                    ImmutableFeedDTO.builder()
+                        .setUrl(url)
+                        .setLastChecked(DateMapper.INSTANCE.asLocalDateTime(lastChecked))
+                        .setLastStatus(FeedStatus.getByName(lastStatus))
+                        .create()
+
                 case _ => throw DeserializationException("FeedDTO expected")
             }
         }
