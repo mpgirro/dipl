@@ -1,8 +1,8 @@
 package echo.core.index;
 
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
-import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.exception.SearchException;
 import echo.core.mapper.IndexMapper;
 import org.apache.lucene.analysis.Analyzer;
@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Maximilian Irro
@@ -103,7 +105,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             final TopDocs topDocs = indexSearcher.search(query, 1);
 
             if (topDocs.totalHits == 0) {
-                resultWrapper.setResults(new IndexDocDTO[0]);
+                resultWrapper.setResults(Collections.emptyList());
                 return resultWrapper.create();
             }
 
@@ -139,7 +141,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
                 j += 1;
             }
 
-            resultWrapper.setResults(results);
+            resultWrapper.setResults(Arrays.asList(results));
             return resultWrapper.create();
 
         } catch (IOException | ParseException e) {
