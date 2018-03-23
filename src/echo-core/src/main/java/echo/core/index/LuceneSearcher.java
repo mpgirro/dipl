@@ -1,11 +1,16 @@
 package echo.core.index;
 
+import echo.core.domain.dto.immutable.ImmutableTestResultWrapper;
+import echo.core.domain.dto.immutable.ModifiableTestResultWrapper;
+import echo.core.domain.dto.immutable.TestIndexDoc;
+import echo.core.domain.dto.immutable.TestResultWrapper;
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.IndexMapper;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
+import echo.core.mapper.TestIndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -68,7 +73,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
      *                         documents, or if it exceeds the size of the found documents
      */
     @Override
-    public ResultWrapperDTO search(String q, int p, int s) throws SearchException {
+    public TestResultWrapper search(String q, int p, int s) throws SearchException {
 
         if( p < 1 ){
             throw new SearchException("Requested page number (p) required to be >1, got: " + p);
@@ -83,7 +88,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             throw new SearchException("Request search range (p x s) exceeds maximum search window s of " + MAX_RESULT_COUNT);
         }
 
-        final ResultWrapperDTO resultWrapper = new ResultWrapperDTO();
+        final ImmutableTestResultWrapper.Builder resultWrapper = ImmutableTestResultWrapper.builder();
 
         // set some sane values, we'll overwrite these if all goes well
         resultWrapper.setCurrPage(0);
@@ -103,7 +108,8 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             final TopDocs topDocs = indexSearcher.search(query, 1);
 
             if(topDocs.totalHits == 0){
-                return resultWrapper;
+                resultWrapper.setResults(new TestIndexDoc[0]);
+                return resultWrapper.create();
             }
 
             final ScoreDoc[] hits = indexSearcher.search(query, MAX_RESULT_COUNT).scoreDocs;
@@ -112,7 +118,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             final double dMaxPage = ((double)topDocs.totalHits) / ((double) s);
             final int maxPage = (int) Math.ceil(dMaxPage);
-            if(maxPage == 0 && resultWrapper.getCurrPage() == 1){
+            if(maxPage == 0 && p == 1){
                 resultWrapper.setMaxPage(1);
             } else {
                 resultWrapper.setMaxPage(maxPage);
@@ -130,21 +136,21 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
 
             int windowSize = windowEnd - windowStart;
-            final IndexDocDTO[] results = new IndexDocDTO[windowSize];
+            final TestIndexDoc[] results = new TestIndexDoc[windowSize];
 
             int j = 0;
             for(int i = windowStart; i < windowEnd; i++){
-                results[j] = IndexMapper.INSTANCE.map(indexSearcher.doc(hits[i].doc));
+                results[j] = TestIndexMapper.INSTANCE.map(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
             resultWrapper.setResults(results);
-            return resultWrapper;
+            return resultWrapper.create();
 
         } catch (IOException | ParseException e) {
             log.error("Lucene Index has encountered an error searching for: {}", q);
             e.printStackTrace();
-            return resultWrapper; // TODO throw a custom exception, and do not return anything
+            return resultWrapper.create(); // TODO throw a custom exception, and do not return anything
         } finally {
             if (indexSearcher != null) {
                 try {
@@ -155,7 +161,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public IndexDocDTO findByEchoId(String id){
+    public TestIndexDoc findByEchoId(String id){
         IndexSearcher indexSearcher = null;
         try {
 
@@ -171,7 +177,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
             if(topDocs.totalHits == 1){
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return IndexMapper.INSTANCE.map(indexSearcher.doc(hits[0].doc));
+                return TestIndexMapper.INSTANCE.map(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
@@ -205,15 +211,4 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
         }
     }
 
-    /*
-    private IndexDocDTO toIndexDoc(Document doc){
-        if(doc.get("doc_type").equals("podcast")) {
-            return IndexMapper.INSTANCE.map(PodcastMapper.INSTANCE.map(doc));
-        } else if(doc.get("doc_type").equals("episode")) {
-            return IndexMapper.INSTANCE.map(EpisodeMapper.INSTANCE.map(doc));
-        } else {
-            throw new UnsupportedOperationException("I forgot to support a new document type : " + doc.get("doc_type"));
-        }
-    }
-    */
 }

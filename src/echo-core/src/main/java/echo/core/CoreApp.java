@@ -1,18 +1,18 @@
 package echo.core;
 
-import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.ResultWrapperDTO;
+import echo.core.domain.dto.immutable.ModifiableTestEpisode;
+import echo.core.domain.dto.immutable.ModifiableTestPodcast;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
+import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneCommitter;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.dto.ResultWrapperDTO;
+import echo.core.index.LuceneSearcher;
 import echo.core.parse.api.FyydAPI;
 import echo.core.parse.rss.FeedParser;
-import echo.core.index.IndexSearcher;
-import echo.core.index.LuceneSearcher;
 import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
 import echo.core.util.ExoGenerator;
@@ -210,17 +210,20 @@ public class CoreApp {
         try {
             final String feedData = download(feed);
 
-            final PodcastDTO podcast = this.feedParser.parseFeed(feedData);
-            podcast.setEchoId(feed);
+            final ModifiableTestPodcast podcast = new ModifiableTestPodcast().from(feedParser.parseFeed(feedData));
+            podcast.setEchoId(idGenerator.getNewExo());
 
-            this.committer.add(podcast);
+            this.committer.add(podcast.toImmutable());
 
-            final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
-            for (EpisodeDTO episode : episodes) {
+            final List<ModifiableTestEpisode> episodes = Arrays.stream(feedParser.extractEpisodes(feedData))
+                .map(e -> new ModifiableTestEpisode().from(e))
+                .collect(Collectors.toList());
+
+            for (ModifiableTestEpisode episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
                 episode.setEchoId(idGenerator.getNewExo());
-                this.committer.add(episode);
+                this.committer.add(episode.toImmutable());
             }
         } catch (IOException | FeedParsingException e) {
             e.printStackTrace();

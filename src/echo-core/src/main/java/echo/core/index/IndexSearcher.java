@@ -2,6 +2,8 @@ package echo.core.index;
 
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
+import echo.core.domain.dto.immutable.TestIndexDoc;
+import echo.core.domain.dto.immutable.TestResultWrapper;
 import echo.core.exception.SearchException;
 
 /**
@@ -9,9 +11,9 @@ import echo.core.exception.SearchException;
  */
 public interface IndexSearcher {
 
-    ResultWrapperDTO search(String query, int page, int size) throws SearchException;
+    TestResultWrapper search(String query, int page, int size) throws SearchException;
 
-    IndexDocDTO findByEchoId(String id);
+    TestIndexDoc findByEchoId(String id);
 
     void refresh();
 
