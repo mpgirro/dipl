@@ -32,8 +32,8 @@ public class SearchService {
         final int p = Optional.ofNullable(page).orElse(DEFAULT_PAGE);
         final int s = Optional.ofNullable(size).orElse(DEFAULT_SIZE);
 
-        if (p < 0) return new ResultWrapperDTO();
-        if (s < 0) return new ResultWrapperDTO();
+        if (p < 0) return ResultWrapperDTO.empty();
+        if (s < 0) return ResultWrapperDTO.empty();
 
         // TODO do not hardcode this
         final String url = INDEX_URL+"/index/search?query="+query+"&page="+p+"&size="+s;

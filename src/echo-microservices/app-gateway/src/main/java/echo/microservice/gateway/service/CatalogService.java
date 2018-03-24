@@ -2,10 +2,7 @@ package echo.microservice.gateway.service;
 
 import com.google.common.collect.Lists;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -177,12 +174,12 @@ public class CatalogService {
     public Optional<PodcastDTO> fallbackGetPodcast(@SuppressWarnings("unused") String exo) {
         log.warn("fallbackGetPodcast has been invoked");
 
-        final PodcastDTO fallback = new PodcastDTO();
-        fallback.setEchoId(exo);
-        fallback.setTitle(FALLBACK_TITLE);
-        fallback.setDescription(FALLBACK_DESCRIPTION);
-
-        return Optional.of(fallback);
+        return Optional.of(
+            ImmutablePodcastDTO.builder()
+                .setEchoId(exo)
+                .setTitle(FALLBACK_TITLE)
+                .setDescription(FALLBACK_DESCRIPTION)
+                .create());
     }
 
     /**
@@ -217,12 +214,12 @@ public class CatalogService {
     public Optional<EpisodeDTO> fallbackGetEpisode(@SuppressWarnings("unused") String exo) {
         log.warn("fallbackGetEpisode has been invoked");
 
-        final EpisodeDTO fallback = new EpisodeDTO();
-        fallback.setEchoId(exo);
-        fallback.setTitle(FALLBACK_TITLE);
-        fallback.setDescription(FALLBACK_DESCRIPTION);
-
-        return Optional.of(fallback);
+        return Optional.of(
+            ImmutableEpisodeDTO.builder()
+                .setEchoId(exo)
+                .setTitle(FALLBACK_TITLE)
+                .setDescription(FALLBACK_DESCRIPTION)
+                .create());
     }
 
     /**

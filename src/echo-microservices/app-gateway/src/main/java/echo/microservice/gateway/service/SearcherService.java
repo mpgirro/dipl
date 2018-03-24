@@ -1,6 +1,7 @@
 package echo.microservice.gateway.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -61,16 +63,16 @@ public class SearcherService {
      * @return fallback ResultWrapperDTO with no result entries
      */
     public Optional<ResultWrapperDTO> fallbackSearch(@SuppressWarnings("unused") String query,
-                                                      @SuppressWarnings("unused") Integer page,
-                                                      @SuppressWarnings("unused") Integer size) {
+                                                     @SuppressWarnings("unused") Integer page,
+                                                     @SuppressWarnings("unused") Integer size) {
         log.warn("fallbackSearch has been invoked");
 
-        final ResultWrapperDTO fallback = new ResultWrapperDTO();
-        fallback.setCurrPage(1);
-        fallback.setMaxPage(1);
-        fallback.setTotalHits(0);
-        fallback.setResults(new IndexDocDTO[0]);
-
-        return Optional.of(fallback);
+        return Optional.of(
+            ImmutableResultWrapperDTO.builder()
+                .setCurrPage(1)
+                .setMaxPage(1)
+                .setTotalHits(0)
+                .setResults(Collections.emptyList())
+                .create());
     }
 }

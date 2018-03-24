@@ -8,6 +8,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol._
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
+import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.{Source, StdIn}
@@ -171,7 +172,7 @@ class CliActor(private val master: ActorRef,
             case SearchResults(results) =>
                 println("Found "+results.getResults.size()+" results for query '" + query.mkString(" ") + "'")
                 println("Results:")
-                for (result <- results.getResults) {
+                for (result <- results.getResults.asScala) {
                     println(s"\n${DocumentFormatter.cliFormat(result)}\n")
                 }
                 println()
