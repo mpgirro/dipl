@@ -22,15 +22,23 @@ public interface PodcastMapper {
 
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
-    ModifiablePodcastDTO map(Podcast podcast);
+    ModifiablePodcastDTO toModifiable(Podcast podcast);
+
+    default ImmutablePodcastDTO toImmutable(Podcast podcast) {
+        return toModifiable(podcast).toImmutable();
+    }
 
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
-    Podcast map(PodcastDTO dto);
+    Podcast toEntity(PodcastDTO dto);
 
     ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget ModifiablePodcastDTO target);
 
-    default PodcastDTO map(org.apache.lucene.document.Document doc) {
+    default ImmutablePodcastDTO updateImmutable(PodcastDTO src, @MappingTarget PodcastDTO target) {
+        return update(src, new ModifiablePodcastDTO().from(target)).toImmutable();
+    }
+
+    default ImmutablePodcastDTO toImmutable(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 

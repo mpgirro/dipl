@@ -55,7 +55,7 @@ public class LuceneCommitter implements IndexCommitter {
     public void add(IndexDocDTO indexDoc) {
         log.debug("Appending document to index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
         try {
             this.writer.addDocument(luceneDoc);
         } catch (IOException e) {
@@ -68,7 +68,7 @@ public class LuceneCommitter implements IndexCommitter {
     public void update(IndexDocDTO indexDoc) {
         log.debug("Updating document in index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
         try {
             writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {

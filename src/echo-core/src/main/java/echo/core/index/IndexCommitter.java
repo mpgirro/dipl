@@ -17,21 +17,21 @@ public interface IndexCommitter {
     void add(IndexDocDTO doc);
 
     default void add(PodcastDTO podcast) {
-        add(IndexMapper.INSTANCE.map(podcast));
+        add(IndexMapper.INSTANCE.toModifiable(podcast));
     }
 
     default void add(EpisodeDTO episode) {
-        add(IndexMapper.INSTANCE.map(episode));
+        add(IndexMapper.INSTANCE.toModifiable(episode));
     }
 
     void update(IndexDocDTO doc);
 
     default void update(PodcastDTO podcast) {
-        update(IndexMapper.INSTANCE.map(podcast));
+        update(IndexMapper.INSTANCE.toModifiable(podcast));
     }
 
     default void update(EpisodeDTO episode) {
-        update(IndexMapper.INSTANCE.map(episode));
+        update(IndexMapper.INSTANCE.toModifiable(episode));
     }
 
     void commit();

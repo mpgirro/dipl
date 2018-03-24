@@ -25,68 +25,60 @@ public interface TeaserMapper {
 
         if(dto == null) return null;
 
-        final ImmutablePodcastDTO.Builder teaser = ImmutablePodcastDTO.builder();
-
-        teaser.setEchoId(dto.getEchoId());
-        teaser.setTitle(dto.getTitle());
-        teaser.setImage(dto.getImage());
-        teaser.setLanguage(dto.getLanguage());
-        teaser.setGenerator(dto.getGenerator());
-        teaser.setCopyright(dto.getCopyright());
-        teaser.setEpisodeCount(dto.getEpisodeCount());
-        teaser.setItunesAuthor(dto.getItunesAuthor());
-        teaser.setItunesExplicit(dto.getItunesExplicit());
-        teaser.setItunesBlock(dto.getItunesBlock());
-        teaser.setRegistrationComplete(dto.getRegistrationComplete());
-        teaser.setRegistrationTimestamp(dto.getRegistrationTimestamp());
-
-        return teaser.create();
+        return ImmutablePodcastDTO.builder()
+            .setEchoId(dto.getEchoId())
+            .setTitle(dto.getTitle())
+            .setImage(dto.getImage())
+            .setLanguage(dto.getLanguage())
+            .setGenerator(dto.getGenerator())
+            .setCopyright(dto.getCopyright())
+            .setEpisodeCount(dto.getEpisodeCount())
+            .setItunesAuthor(dto.getItunesAuthor())
+            .setItunesExplicit(dto.getItunesExplicit())
+            .setItunesBlock(dto.getItunesBlock())
+            .setRegistrationComplete(dto.getRegistrationComplete())
+            .setRegistrationTimestamp(dto.getRegistrationTimestamp())
+            .create();
     }
 
     default PodcastDTO asTeaser(Podcast podcast) {
 
         if(podcast == null) return null;
 
-        final ImmutablePodcastDTO.Builder teaser = ImmutablePodcastDTO.builder();
-
-        teaser.setEchoId(podcast.getEchoId());
-        teaser.setTitle(podcast.getTitle());
-        teaser.setImage(podcast.getImage());
-        teaser.setLanguage(podcast.getLanguage());
-
-        return teaser.create();
+        return ImmutablePodcastDTO.builder()
+            .setEchoId(podcast.getEchoId())
+            .setTitle(podcast.getTitle())
+            .setImage(podcast.getImage())
+            .setLanguage(podcast.getLanguage())
+            .create();
     }
 
     default EpisodeDTO asTeaser(EpisodeDTO dto) {
 
         if(dto == null) return null;
 
-        final ImmutableEpisodeDTO.Builder teaser = ImmutableEpisodeDTO.builder();
-
-        teaser.setEchoId(dto.getEchoId());
-        teaser.setTitle(dto.getTitle());
-        teaser.setPubDate(dto.getPubDate());
-        teaser.setDescription(dto.getDescription());
-        teaser.setImage(dto.getImage());
-        teaser.setItunesDuration(dto.getItunesDuration());
-
-        return teaser.create();
+        return ImmutableEpisodeDTO.builder()
+            .setEchoId(dto.getEchoId())
+            .setTitle(dto.getTitle())
+            .setPubDate(dto.getPubDate())
+            .setDescription(dto.getDescription())
+            .setImage(dto.getImage())
+            .setItunesDuration(dto.getItunesDuration())
+            .create();
     }
 
     default EpisodeDTO asTeaser(Episode episode) {
 
         if(episode == null) return null;
 
-        final ImmutableEpisodeDTO.Builder teaser = ImmutableEpisodeDTO.builder();
-
-        teaser.setEchoId(episode.getEchoId());
-        teaser.setTitle(episode.getTitle());
-        teaser.setPubDate(DateMapper.INSTANCE.asLocalDateTime(episode.getPubDate()));
-        teaser.setDescription(episode.getDescription());
-        teaser.setImage(episode.getImage());
-        teaser.setItunesDuration(episode.getItunesDuration());
-
-        return teaser.create();
+        return ImmutableEpisodeDTO.builder()
+            .setEchoId(episode.getEchoId())
+            .setTitle(episode.getTitle())
+            .setPubDate(DateMapper.INSTANCE.asLocalDateTime(episode.getPubDate()))
+            .setDescription(episode.getDescription())
+            .setImage(episode.getImage())
+            .setItunesDuration(episode.getItunesDuration())
+            .create();
     }
 
 }

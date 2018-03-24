@@ -104,7 +104,7 @@ public class RomeFeedParser implements FeedParser {
                 builder.setItunesType(itunes.getType());
                 builder.setItunesOwnerName(itunes.getOwnerName());
                 builder.setItunesOwnerEmail(itunes.getOwnerEmailAddress());
-                //builder.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+                //builder.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().toImmutable(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
             } else {
                 log.debug("No iTunes Namespace elements found in Podcast");
             }

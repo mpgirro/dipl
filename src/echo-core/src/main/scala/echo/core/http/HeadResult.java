@@ -6,7 +6,7 @@ import java.beans.ConstructorProperties;
 import java.util.Optional;
 
 /**
- * This is an **immutable** DTO, with Jackson serialization capability (see https://blog.pchudzik.com/201704/immutable-dto/)
+ * This is an **toImmutable** DTO, with Jackson serialization capability (see https://blog.pchudzik.com/201704/immutable-dto/)
  *
  * @author Maximilian Irro
  */

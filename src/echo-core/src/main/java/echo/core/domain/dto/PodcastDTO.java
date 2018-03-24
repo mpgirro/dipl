@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * This class represents an immutable Data Transfer Object.
+ * This class represents an toImmutable Data Transfer Object.
  * The implementation is generated using https://immutables.github.io
  * Instances should be created using the builder pattern (required methods will be
  * generated), but to be able to generate MapStruct mapper methods, also setter will

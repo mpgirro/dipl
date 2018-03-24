@@ -28,20 +28,20 @@ public interface IndexMapper {
     @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    ModifiableIndexDocDTO map(PodcastDTO podcast);
+    ModifiableIndexDocDTO toModifiable(PodcastDTO podcast);
 
-    default IndexDocDTO mapImmutable(PodcastDTO podcast) {
-        return map(podcast).toImmutable();
+    default ImmutableIndexDocDTO toImmutable(PodcastDTO podcast) {
+        return toModifiable(podcast).toImmutable();
     }
 
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    ModifiableIndexDocDTO map(EpisodeDTO episodeDTO);
+    ModifiableIndexDocDTO toModifiable(EpisodeDTO episodeDTO);
 
-    default IndexDocDTO mapImmutable(EpisodeDTO episode) {
-        return map(episode).toImmutable();
+    default ImmutableIndexDocDTO toImmutable(EpisodeDTO episode) {
+        return toModifiable(episode).toImmutable();
     }
 
     default String map(List<ChapterDTO> chapters){
@@ -53,18 +53,18 @@ public interface IndexMapper {
             .collect(Collectors.toList()));
     }
 
-    default IndexDocDTO map(Document doc) {
+    default ImmutableIndexDocDTO toIndexDoc(Document doc) {
 
         if (doc == null) return null;
 
         switch (doc.get(IndexField.DOC_TYPE)) {
-            case "podcast": return map(PodcastMapper.INSTANCE.map(doc));
-            case "episode": return map(EpisodeMapper.INSTANCE.map(doc));
+            case "podcast": return toImmutable(PodcastMapper.INSTANCE.toImmutable(doc));
+            case "episode": return toImmutable(EpisodeMapper.INSTANCE.toImmutable(doc));
             default: throw new RuntimeException("Unsupported lucene document type : " + doc.get(IndexField.DOC_TYPE));
         }
     }
 
-    default Document map(IndexDocDTO doc) {
+    default Document toLucene(IndexDocDTO doc) {
 
         if (doc == null) return null;
 

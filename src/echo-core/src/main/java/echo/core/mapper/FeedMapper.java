@@ -1,6 +1,7 @@
 package echo.core.mapper;
 
 import echo.core.domain.dto.FeedDTO;
+import echo.core.domain.dto.ImmutableFeedDTO;
 import echo.core.domain.dto.ModifiableFeedDTO;
 import echo.core.domain.entity.Feed;
 import echo.core.domain.entity.Podcast;
@@ -21,12 +22,20 @@ public interface FeedMapper {
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
-    ModifiableFeedDTO map(Feed feed);
+    ModifiableFeedDTO toModifiable(Feed feed);
+
+    default ImmutableFeedDTO toImmutable(Feed feed) {
+        return toModifiable(feed).toImmutable();
+    }
 
     @Mapping(source = "podcastId", target = "podcast")
-    Feed map(FeedDTO feedDto);
+    Feed toEntity(FeedDTO feedDto);
 
     ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
+
+    default ImmutableFeedDTO updateImmutable(FeedDTO src, @MappingTarget FeedDTO target) {
+        return update(src, new ModifiableFeedDTO().from(target)).toImmutable();
+    }
 
     default Podcast podcastFromId(Long id) {
 

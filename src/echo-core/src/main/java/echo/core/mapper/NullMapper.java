@@ -22,18 +22,34 @@ public interface NullMapper {
     NullMapper INSTANCE = Mappers.getMapper( NullMapper.class );
 
     @Mapping(target = "id", ignore = true)
-    ModifiablePodcastDTO map(PodcastDTO dto);
+    ModifiablePodcastDTO clearModifiable(PodcastDTO dto);
+
+    default ImmutablePodcastDTO clearImmutable(PodcastDTO dto) {
+        return clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    ModifiableEpisodeDTO map(EpisodeDTO dto);
+    ModifiableEpisodeDTO clearModifiable(EpisodeDTO dto);
+
+    default ImmutableEpisodeDTO clearImmutable(EpisodeDTO dto) {
+        return clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    ModifiableFeedDTO map(FeedDTO dto);
+    ModifiableFeedDTO clearModifiable(FeedDTO dto);
+
+    default ImmutableFeedDTO clearImmutable(FeedDTO dto) {
+        return clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "episodeId", ignore = true)
-    ModifiableChapterDTO map(ChapterDTO dto);
+    ModifiableChapterDTO clearModifiable(ChapterDTO dto);
+
+    default ImmutableChapterDTO clearImmutable(ChapterDTO dto) {
+        return clearModifiable(dto).toImmutable();
+    }
 
 }

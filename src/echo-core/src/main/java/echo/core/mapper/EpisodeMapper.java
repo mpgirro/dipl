@@ -24,12 +24,26 @@ public interface EpisodeMapper {
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
-    ModifiableEpisodeDTO map(Episode episode);
+    ModifiableEpisodeDTO toModifiable(Episode episode);
+
+    default ImmutableEpisodeDTO toImmutable(Episode episode) {
+        return toModifiable(episode).toImmutable();
+    }
 
     @Mapping(source = "podcastId", target = "podcast")
-    Episode map(EpisodeDTO episode);
+    Episode toEntity(EpisodeDTO episode);
 
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
+
+    default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
+        ModifiableEpisodeDTO dest;
+        if (target instanceof  ModifiableEpisodeDTO) {
+            dest = (ModifiableEpisodeDTO) target;
+        } else {
+            dest = new ModifiableEpisodeDTO().from(target);
+        }
+        return update(src, dest).toImmutable();
+    }
 
     // TODO unused because we use PodcastMapper.class ?
     default Podcast podcastFromId(Long id) {
@@ -42,7 +56,7 @@ public interface EpisodeMapper {
         return podcast;
     }
 
-    default EpisodeDTO map(org.apache.lucene.document.Document doc) {
+    default ImmutableEpisodeDTO toImmutable(org.apache.lucene.document.Document doc) {
 
         if (doc == null) return null;
 
