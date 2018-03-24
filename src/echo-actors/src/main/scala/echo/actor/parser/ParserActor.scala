@@ -113,7 +113,7 @@ class ParserActor extends Actor with ActorLogging {
                         })
                         */
 
-                        indexStore ! IndexStoreAddDoc(indexMapper.mapImmutable(p))
+                        indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(p))
 
                         // request that the podcasts website will get added to the index as well, if possible
                         Option(p.getLink) match {

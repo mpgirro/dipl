@@ -302,7 +302,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(podcastService))
             .asInstanceOf[Option[PodcastDTO]]
             .map(p => {
-                sender ! PodcastResult(nullMapper.map(p))
+                sender ! PodcastResult(nullMapper.clearImmutable(p))
             }).getOrElse({
                 sender ! NothingFound(podcastId)
             })
@@ -315,7 +315,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAll(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
     }
 
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
@@ -324,7 +324,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAllRegistrationCompleteAsTeaser(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
     }
 
     private def onGetAllFeeds(page: Int, size: Int): Unit = {
@@ -333,7 +333,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAll(page, size)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! AllFeedsResult(feeds.map(f => nullMapper.map(f)))
+        sender ! AllFeedsResult(feeds.map(f => nullMapper.clearImmutable(f)))
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
@@ -349,7 +349,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(episodeService))
             .asInstanceOf[Option[EpisodeDTO]]
             .map(e => {
-                sender ! EpisodeResult(nullMapper.map(e))
+                sender ! EpisodeResult(nullMapper.clearImmutable(e))
             }).getOrElse({
                 sender ! NothingFound(episodeId)
             })
@@ -362,7 +362,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             episodeService.findAllByPodcastAsTeaser(podcastId)
         }
         val episodes = doInTransaction(task, List(episodeService)).asInstanceOf[List[EpisodeDTO]]
-        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.map(e)))
+        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.clearImmutable(e)))
     }
 
     private def onGetFeedsByPodcast(podcastId: String): Unit = {
@@ -371,7 +371,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAllByPodcast(podcastId)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.map(f)))
+        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.clearImmutable(f)))
     }
 
     private def onGetChaptersByEpisode(episodeId: String): Unit = {
@@ -381,7 +381,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             chapterService.findAllByEpisode(episodeId)
         }
         val chapters = doInTransaction(task, List(chapterService)).asInstanceOf[List[ChapterDTO]]
-        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.map(c)))
+        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.clearImmutable(c)))
     }
 
     private def onCheckPodcast(podcastId: String): Unit = {
@@ -513,12 +513,12 @@ class DirectoryStoreWorker(val workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
 
-                indexStore ! IndexStoreAddDoc(indexMapper.map(e))
+                indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(e))
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                broker ! UpdateEpisode(podcastId, nullMapper.map(episode))
+                broker ! UpdateEpisode(podcastId, nullMapper.clearImmutable(episode))
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {

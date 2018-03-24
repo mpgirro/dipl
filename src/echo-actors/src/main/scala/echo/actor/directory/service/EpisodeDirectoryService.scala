@@ -24,6 +24,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     private var repositoryFactory: JpaRepositoryFactory = _
     private var episodeRepository: EpisodeRepository = _
 
+    private val podcastMapper = PodcastMapper.INSTANCE
     private val episodeMapper = EpisodeMapper.INSTANCE
     private val teaserMapper = TeaserMapper.INSTANCE
 
@@ -35,23 +36,23 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def save(episodeDTO: EpisodeDTO): Option[EpisodeDTO] = {
         log.debug("Request to save Episode : {}", episodeDTO)
-        val episode = EpisodeMapper.INSTANCE.map(episodeDTO)
+        val episode = episodeMapper.toEntity(episodeDTO)
         val result = episodeRepository.save(episode)
-        Option(episodeMapper.map(result))
+        Option(episodeMapper.toImmutable(result))
     }
 
     @Transactional(readOnly = true)
     def findOne(id: Long): Option[EpisodeDTO] = {
         log.debug("Request to get Episode (ID) : {}", id)
         val result = episodeRepository.findOne(id)
-        Option(episodeMapper.map(result))
+        Option(episodeMapper.toImmutable(result))
     }
 
     @Transactional(readOnly = true)
     def findOneByEchoId(exo: String): Option[EpisodeDTO] = {
         log.debug("Request to get Episode (EXO) : {}", exo)
         val result = episodeRepository.findOneByEchoId(exo)
-        Option(episodeMapper.map(result))
+        Option(episodeMapper.toImmutable(result))
     }
 
     @Transactional(readOnly = true)
@@ -59,17 +60,17 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Episodes")
         episodeRepository.findAll
             .asScala
-            .map(e => episodeMapper.map(e))
+            .map(e => episodeMapper.toImmutable(e))
             .toList
     }
 
     @Transactional(readOnly = true)
     def findAllByPodcast(podcastDTO: PodcastDTO): List[EpisodeDTO] = {
         log.debug("Request to get all Episodes by Podcast : {}", podcastDTO)
-        val podcast = PodcastMapper.INSTANCE.map(podcastDTO)
+        val podcast = podcastMapper.toEntity(podcastDTO)
         episodeRepository.findAllByPodcast(podcast)
             .asScala
-            .map(e => episodeMapper.map(e))
+            .map(e => episodeMapper.toImmutable(e))
             .toList
     }
 
@@ -78,7 +79,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Episodes by Podcast (EXO) : {}", podcastExo)
         episodeRepository.findAllByPodcastEchoId(podcastExo)
             .asScala
-            .map(e => episodeMapper.map(e))
+            .map(e => episodeMapper.toImmutable(e))
             .toList
     }
 
@@ -104,7 +105,7 @@ class EpisodeDirectoryService(private val log: LoggingAdapter,
     def findOneByEnclosure(enclosureUrl: String, enclosureLength: Long, enclosureType: String): Option[EpisodeDTO] = {
         log.debug("Request to get Episode by enclosureUrl : '{}' and enclosureLength : {} and enclosureType : {}", enclosureUrl, enclosureLength, enclosureType)
         val result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType)
-        Option(episodeMapper.map(result))
+        Option(episodeMapper.toImmutable(result))
     }
 
     @Transactional(readOnly = true)

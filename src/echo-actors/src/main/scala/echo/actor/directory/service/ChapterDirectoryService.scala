@@ -30,9 +30,9 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def save(chapterDTO: ChapterDTO): Option[ChapterDTO] = {
         log.debug("Request to save Chapter : {}", chapterDTO)
-        val chapter = chapterMapper.map(chapterDTO)
+        val chapter = chapterMapper.toEntity(chapterDTO)
         val result = chapterRepository.save(chapter)
-        Option(ChapterMapper.INSTANCE.map(result))
+        Option(chapterMapper.toModifiable(result).toImmutable)
     }
 
     @Transactional
@@ -49,7 +49,7 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo)
         chapterRepository.findAllByEpisodeEchoId(episodeExo)
             .asScala
-            .map(c => chapterMapper.map(c))
+            .map(c => chapterMapper.toModifiable(c).toImmutable)
             .toList
     }
 
