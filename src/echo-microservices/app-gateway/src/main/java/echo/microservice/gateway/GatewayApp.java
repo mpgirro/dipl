@@ -7,7 +7,6 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 /**
  * @author Maximilian Irro
  */
-@EnableCircuitBreaker
 @SpringBootApplication
 public class GatewayApp {
 

@@ -1,8 +1,11 @@
 package echo.microservice.searcher.service;
 
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
+import echo.microservice.searcher.web.client.IndexClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +28,9 @@ public class SearchService {
     @Value("${echo.searcher.default-size:20}")
     private Integer DEFAULT_SIZE;
 
+    @Autowired
+    private IndexClient indexClient;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public ResultWrapperDTO search(String query, Integer page, Integer size) {
@@ -36,9 +42,11 @@ public class SearchService {
         if (s < 0) return ResultWrapperDTO.empty();
 
         // TODO do not hardcode this
+        /*
         final String url = INDEX_URL+"/index/search?query="+query+"&page="+p+"&size="+s;
-
-        return restTemplate.getForObject(url, ResultWrapperDTO.class);
+        final ResultWrapperDTO result = restTemplate.getForObject(url, ResultWrapperDTO.class);
+        */
+        return indexClient.getSearchResults(query, page, size);
     }
 
 }
