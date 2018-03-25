@@ -4,7 +4,7 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{ChapterRepository, RepositoryFactoryBuilder}
-import echo.core.domain.dto.ChapterDTO
+import echo.core.domain.dto.{ChapterDTO, ModifiableChapterDTO}
 import echo.core.mapper.ChapterMapper
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.transaction.annotation.Transactional
@@ -38,7 +38,8 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def saveAll(episodeId: Long, chapters: java.util.List[ChapterDTO]): Unit = {
         log.debug("Request to save Chapters for Episode (ID) : {}", episodeId)
-        for(c <- chapters.asScala){
+        for(capter <- chapters.asScala){
+            val c = new ModifiableChapterDTO().from(capter)
             c.setEpisodeId(episodeId)
             save(c)
         }
