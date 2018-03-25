@@ -1,8 +1,7 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
 import echo.core.domain.entity.Feed;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
@@ -59,20 +58,22 @@ public class FeedService {
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
         log.debug("Request to save Feed : {}", feedDTO);
-        if (isNullOrEmpty(feedDTO.getEchoId())) {
-            feedDTO.setEchoId(exoGenerator.getNewExo());
+        final ModifiableFeedDTO f = feedMapper.toModifiable(feedDTO);
+        if (isNullOrEmpty(f.getEchoId())) {
+            f.setEchoId(exoGenerator.getNewExo());
         }
-        final Feed feed = feedMapper.map(feedDTO);
+        final Feed feed = feedMapper.toEntity(f);
         final Feed result = feedRepository.save(feed);
-        return Optional.of(feedMapper.map(result));
+        return Optional.of(feedMapper.toImmutable(result));
     }
 
     @Transactional
     public Optional<FeedDTO> update(FeedDTO feedDTO) {
         log.debug("Request to update Feed : {}", feedDTO);
         return findOneByEchoId(feedDTO.getEchoId())
+            .map(feedMapper::toModifiable)
             .map(feed -> {
-                final long id = feed.getId();
+                final Long id = feed.getId();
                 feedMapper.update(feedDTO, feed);
                 feed.setId(id);
                 return save(feed);
@@ -84,14 +85,14 @@ public class FeedService {
     public Optional<FeedDTO> findOne(Long id) {
         log.debug("Request to get Feed (ID) : {}", id);
         final Feed result = feedRepository.findOne(id);
-        return Optional.ofNullable(feedMapper.map(result));
+        return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Feed (EXO) : {}", exo);
         final Feed result = feedRepository.findOneByEchoId(exo);
-        return Optional.ofNullable(feedMapper.map(result));
+        return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
@@ -99,7 +100,7 @@ public class FeedService {
         log.debug("Request to get all Feeds by page : {} and size : {}", page, size);
         final PageRequest pageable = getPageable(page, size);
         return feedRepository.findAll(pageable).getContent().stream()
-            .map(feedMapper::map)
+            .map(feedMapper::toImmutable)
             .collect(Collectors.toList());
     }
 
@@ -107,7 +108,7 @@ public class FeedService {
     public List<FeedDTO> findAllByUrl(String url) {
         log.debug("Request to get all Feeds by URL : {}", url);
         return feedRepository.findAllByUrl(url).stream()
-            .map(feedMapper::map)
+            .map(feedMapper::toImmutable)
             .collect(Collectors.toList());
     }
 
@@ -115,14 +116,14 @@ public class FeedService {
     public Optional<FeedDTO> findOneByUrlAndPodcastEchoId(String url, String podcastExo) {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo);
         final Feed result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo);
-        return Optional.ofNullable(feedMapper.map(result));
+        return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public List<FeedDTO> findAllByPodcast(String podcastExo) {
         log.debug("Request to get all Feeds by Podcast (EXO) : ", podcastExo);
         return feedRepository.findAllByPodcast(podcastExo).stream()
-            .map(feedMapper::map)
+            .map(feedMapper::toImmutable)
             .collect(Collectors.toList());
     }
 
@@ -139,26 +140,27 @@ public class FeedService {
 
             // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
 
-            PodcastDTO podcast = new PodcastDTO();
-            podcast.setDescription(feedUrl);
-            podcast.setRegistrationComplete(true);
-            podcast.setRegistrationTimestamp(LocalDateTime.now());
-            podcast = podcastService.save(podcast).get();
+            final ImmutablePodcastDTO.Builder pBuilder = ImmutablePodcastDTO.builder();
+            pBuilder
+                .setDescription(feedUrl)
+                .setRegistrationComplete(true)
+                .setRegistrationTimestamp(LocalDateTime.now());
+            final PodcastDTO podcast = podcastService.save(pBuilder.create()).get();
 
-            FeedDTO feed = new FeedDTO();
-            feed.setPodcastId(podcast.getId());
-            feed.setUrl(feedUrl);
-            feed.setLastChecked(LocalDateTime.now());
-            feed.setLastStatus(FeedStatus.NEVER_CHECKED);
-            feed.setRegistrationTimestamp(LocalDateTime.now());
-            feed = this.save(feed).get();
+            final ImmutableFeedDTO.Builder fBuilder = ImmutableFeedDTO.builder();
+            fBuilder
+                .setPodcastId(podcast.getId())
+                .setUrl(feedUrl)
+                .setLastChecked(LocalDateTime.now())
+                .setLastStatus(FeedStatus.NEVER_CHECKED)
+                .setRegistrationTimestamp(LocalDateTime.now());
+            save(fBuilder.create());
 
             // TODO send url to crawler for download
             // TODO replace by sending job to queue
             final String parserUrl = CRAWLER_URL+"/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
             final HttpEntity<String> request = new HttpEntity<>(""); // TODO dummy, we do not send a body that should be created (as is custom with POST)
             final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
-
 
         } else {
             log.info("Proposed feed is already in database: {}", feedUrl);

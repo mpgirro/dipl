@@ -78,7 +78,7 @@ public class ParserService {
                 // tell catalog to update podcast metadata
                 final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
                 log.debug("Sending podcast for update to catalog with request : {}", catalogUpdateUrl);
-                restTemplate.put(catalogUpdateUrl, p);
+                restTemplate.put(catalogUpdateUrl, p.toImmutable());
 
                 processEpisodes(podcastExo, feedData);
             } else {

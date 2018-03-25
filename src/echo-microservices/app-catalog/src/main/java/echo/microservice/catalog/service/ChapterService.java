@@ -1,6 +1,8 @@
 package echo.microservice.catalog.service;
 
 import echo.core.domain.dto.ChapterDTO;
+import echo.core.domain.dto.ModifiableChapterDTO;
+import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.entity.Chapter;
 import echo.core.mapper.ChapterMapper;
 import echo.microservice.catalog.repository.ChapterRepository;
@@ -31,15 +33,16 @@ public class ChapterService {
     @Transactional
     public Optional<ChapterDTO> save(ChapterDTO chapterDTO) {
         log.debug("Request to save Chapter : {}", chapterDTO);
-        final Chapter chapter = chapterMapper.map(chapterDTO);
+        final Chapter chapter = chapterMapper.toEntity(chapterDTO);
         final Chapter result = chapterRepository.save(chapter);
-        return Optional.of(chapterMapper.map(result));
+        return Optional.of(chapterMapper.toModifiable(result).toImmutable());
     }
 
     @Transactional(readOnly = true)
     public void saveAll(Long episodeId, List<ChapterDTO> chapters) {
         log.debug("Request to save Chapters for Episode (ID) : {}", episodeId);
-        for (ChapterDTO c : chapters) {
+        for (ChapterDTO chapter : chapters) {
+            final ModifiableChapterDTO c = chapterMapper.toModifiable(chapter);
             c.setEpisodeId(episodeId);
             save(c);
         }
@@ -49,7 +52,8 @@ public class ChapterService {
     public List<ChapterDTO> findAllByEpisode(String episodeExo) {
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo);
         return chapterRepository.findAllByEpisodeEchoId(episodeExo).stream()
-            .map(chapterMapper::map)
+            .map(chapterMapper::toModifiable)
+            .map(ModifiableChapterDTO::toImmutable)
             .collect(Collectors.toList());
     }
 
