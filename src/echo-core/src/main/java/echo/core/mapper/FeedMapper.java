@@ -32,6 +32,16 @@ public interface FeedMapper {
             .orElse(null);
     }
 
+    default ModifiableFeedDTO toModifiable(FeedDTO feed) {
+
+        if (feed == null) return null;
+
+        if (feed instanceof  ModifiableFeedDTO) {
+            return (ModifiableFeedDTO) feed;
+        }
+        return new ModifiableFeedDTO().from(feed);
+    }
+
     default ImmutableFeedDTO toImmutable(FeedDTO feed) {
 
         if (feed == null) return null;

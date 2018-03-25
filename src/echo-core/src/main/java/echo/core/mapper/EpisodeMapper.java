@@ -36,6 +36,16 @@ public interface EpisodeMapper {
             .orElse(null);
     }
 
+    default ModifiableEpisodeDTO toModifiable(EpisodeDTO episode) {
+
+        if (episode == null) return null;
+
+        if (episode instanceof  ModifiableEpisodeDTO) {
+            return (ModifiableEpisodeDTO) episode;
+        }
+        return new ModifiableEpisodeDTO().from(episode);
+    }
+
     default ImmutableEpisodeDTO toImmutable(EpisodeDTO episode) {
 
         if (episode == null) return null;
@@ -115,21 +125,6 @@ public interface EpisodeMapper {
             .ifPresent(builder::setImage);
         Optional.ofNullable(doc.get(IndexField.ITUNES_DURATION))
             .ifPresent(builder::setItunesDuration);
-
-        /*
-        if (doc.get(IndexField.ECHO_ID)         != null) { builder.setEchoId(doc.get(IndexField.ECHO_ID)); }
-        if (doc.get(IndexField.TITLE)           != null) { builder.setTitle(doc.get(IndexField.TITLE)); }
-        if (doc.get(IndexField.LINK)            != null) { builder.setLink(doc.get(IndexField.LINK)); }
-        if (doc.get(IndexField.PUB_DATE)        != null) { builder.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get(IndexField.PUB_DATE))); }
-        if (doc.get(IndexField.PODCAST_TITLE)   != null) { builder.setPodcastTitle(doc.get(IndexField.PODCAST_TITLE)); }
-        if (doc.get(IndexField.ITUNES_SUMMARY)  != null) {
-            builder.setDescription(doc.get(IndexField.ITUNES_SUMMARY));
-        } else if (doc.get(IndexField.DESCRIPTION) != null) {
-            builder.setDescription(doc.get(IndexField.DESCRIPTION));
-        }
-        if (doc.get(IndexField.ITUNES_IMAGE)    != null) { builder.setImage(doc.get(IndexField.ITUNES_IMAGE)); }
-        if (doc.get(IndexField.ITUNES_DURATION) != null) { builder.setItunesDuration(doc.get(IndexField.ITUNES_DURATION)); }
-        */
 
         return builder.create();
     }

@@ -58,6 +58,16 @@ public interface IndexMapper {
             .collect(Collectors.toList()));
     }
 
+    default ModifiableIndexDocDTO toModifiable(IndexDocDTO doc) {
+
+        if (doc == null) return null;
+
+        if (doc instanceof  ModifiableIndexDocDTO) {
+            return (ModifiableIndexDocDTO) doc;
+        }
+        return new ModifiableIndexDocDTO().from(doc);
+    }
+
     default ImmutableIndexDocDTO toImmutable(IndexDocDTO doc) {
 
         if (doc == null) return null;
@@ -68,7 +78,7 @@ public interface IndexMapper {
         return ((ModifiableIndexDocDTO) doc).toImmutable();
     }
 
-    default ImmutableIndexDocDTO toIndexDoc(Document doc) {
+    default ImmutableIndexDocDTO toImmutable(Document doc) {
 
         if (doc == null) return null;
 
@@ -112,22 +122,6 @@ public interface IndexMapper {
             .ifPresent(value -> lucene.add(new TextField(IndexField.CONTENT_ENCODED, value, Field.Store.NO)));
         Optional.ofNullable(doc.getWebsiteData())
             .ifPresent(value -> lucene.add(new TextField(IndexField.WEBSITE_DATA, value, Field.Store.NO)));
-
-        /*
-        if (doc.getDocType()        != null) { lucene.add(new StringField(IndexField.DOC_TYPE, doc.getDocType(), Field.Store.YES)); }
-        if (doc.getEchoId()         != null) { lucene.add(new StringField(IndexField.ECHO_ID, doc.getEchoId(), Field.Store.YES)); }
-        if (doc.getTitle()          != null) { lucene.add(new TextField(IndexField.TITLE, doc.getTitle(), Field.Store.YES)); }
-        if (doc.getLink()           != null) { lucene.add(new TextField(IndexField.LINK, doc.getLink(), Field.Store.YES)); }
-        if (doc.getDescription()    != null) { lucene.add(new TextField(IndexField.DESCRIPTION, doc.getDescription(), Field.Store.YES)); }
-        if (doc.getPodcastTitle()   != null) { lucene.add(new TextField(IndexField.PODCAST_TITLE, doc.getPodcastTitle(), Field.Store.YES)); }
-        if (doc.getPubDate()        != null) { lucene.add(new StringField(IndexField.PUB_DATE, DateMapper.INSTANCE.asString(doc.getPubDate()), Field.Store.YES)); }
-        if (doc.getImage()          != null) { lucene.add(new TextField(IndexField.ITUNES_IMAGE, doc.getImage(), Field.Store.YES)); }
-        if (doc.getItunesAuthor()   != null) { lucene.add(new TextField(IndexField.ITUNES_AUTHOR, doc.getItunesAuthor(), Field.Store.NO)); }
-        if (doc.getItunesSummary()  != null) { lucene.add(new TextField(IndexField.ITUNES_SUMMARY, doc.getItunesSummary(), Field.Store.YES)); }
-        if (doc.getChapterMarks()   != null) { lucene.add(new TextField(IndexField.CHAPTER_MARKS, doc.getChapterMarks(), Field.Store.NO)); }
-        if (doc.getContentEncoded() != null) { lucene.add(new TextField(IndexField.CONTENT_ENCODED, doc.getContentEncoded(), Field.Store.NO)); }
-        if (doc.getWebsiteData()    != null) { lucene.add(new TextField(IndexField.WEBSITE_DATA, doc.getWebsiteData(), Field.Store.NO)); }
-        */
 
         return lucene;
     }

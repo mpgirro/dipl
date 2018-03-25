@@ -148,7 +148,7 @@ public class RomeFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
@@ -235,7 +235,7 @@ public class RomeFeedParser implements FeedParser {
 
                 results.add(builder.create());
             }
-            return results.toArray(new EpisodeDTO[0]);
+            return results;
         } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed (trying to extract the episodes)", e);
         }

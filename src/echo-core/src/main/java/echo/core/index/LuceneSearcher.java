@@ -137,7 +137,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             int j = 0;
             for (int i = windowStart; i < windowEnd; i++) {
-                results[j] = indexMapper.toIndexDoc(indexSearcher.doc(hits[i].doc));
+                results[j] = indexMapper.toImmutable(indexSearcher.doc(hits[i].doc));
                 j += 1;
             }
 
@@ -174,7 +174,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
             if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return indexMapper.toIndexDoc(indexSearcher.doc(hits[0].doc));
+                return indexMapper.toImmutable(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);

@@ -4,6 +4,8 @@ import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
+import java.util.List;
+
 /**
  * @author Maximilian Irro
  */
@@ -20,6 +22,6 @@ public interface FeedParser {
 
     PodcastDTO parseFeed(String xmlData) throws FeedParsingException;
 
-    EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException;
+    List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException;
 
 }

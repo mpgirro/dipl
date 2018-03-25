@@ -211,7 +211,7 @@ public class CoreApp {
 
             this.committer.add(podcast.toImmutable());
 
-            final List<ModifiableEpisodeDTO> episodes = Arrays.stream(feedParser.extractEpisodes(feedData))
+            final List<ModifiableEpisodeDTO> episodes = feedParser.extractEpisodes(feedData).stream()
                 .map(e -> new ModifiableEpisodeDTO().from(e))
                 .collect(Collectors.toList());
 

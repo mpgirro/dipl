@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Optional;
+
 /**
  * @author Maximilian Irro
  */
@@ -23,6 +25,16 @@ public interface ChapterMapper {
     @Mapping(source = "episode.id", target = "episodeId")
     @Mapping(source = "episode.echoId", target = "episodeExo")
     ModifiableChapterDTO toModifiable(Chapter chapter);
+
+    default ModifiableChapterDTO toModifiable(ChapterDTO chapter) {
+
+        if (chapter == null) return null;
+
+        if (chapter instanceof  ModifiableChapterDTO) {
+            return (ModifiableChapterDTO) chapter;
+        }
+        return new ModifiableChapterDTO().from(chapter);
+    }
 
     default ImmutableChapterDTO toImmutable(ChapterDTO chapter) {
 

@@ -34,6 +34,16 @@ public interface PodcastMapper {
             .orElse(null);
     }
 
+    default ModifiablePodcastDTO toModifiable(PodcastDTO podcast) {
+
+        if (podcast == null) return null;
+
+        if (podcast instanceof  ModifiablePodcastDTO) {
+            return (ModifiablePodcastDTO) podcast;
+        }
+        return new ModifiablePodcastDTO().from(podcast);
+    }
+
     default ImmutablePodcastDTO toImmutable(PodcastDTO podcast) {
 
         if (podcast == null) return null;
@@ -99,19 +109,6 @@ public interface PodcastMapper {
             .ifPresent(builder::setDescription);
         Optional.ofNullable(doc.get(IndexField.ITUNES_IMAGE))
             .ifPresent(builder::setImage);
-
-        /*
-        if (doc.get(IndexField.ECHO_ID)        != null) { builder.setEchoId(doc.get(IndexField.ECHO_ID)); }
-        if (doc.get(IndexField.TITLE)          != null) { builder.setTitle(doc.get(IndexField.TITLE)); }
-        if (doc.get(IndexField.LINK)           != null) { builder.setLink(doc.get(IndexField.LINK)); }
-        if (doc.get(IndexField.PUB_DATE)       != null) { builder.setPubDate(DateMapper.INSTANCE.asLocalDateTime(doc.get(IndexField.PUB_DATE))); }
-        if (doc.get(IndexField.ITUNES_SUMMARY) != null) {
-            builder.setDescription(doc.get(IndexField.ITUNES_SUMMARY));
-        } else if (doc.get(IndexField.DESCRIPTION) != null) {
-            builder.setDescription(doc.get(IndexField.DESCRIPTION));
-        }
-        if (doc.get(IndexField.ITUNES_IMAGE) != null) { builder.setImage(doc.get(IndexField.ITUNES_IMAGE)); }
-        */
 
         return builder.create();
     }
