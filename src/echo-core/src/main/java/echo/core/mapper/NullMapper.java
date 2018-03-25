@@ -25,7 +25,7 @@ public interface NullMapper {
     ModifiablePodcastDTO clearModifiable(PodcastDTO dto);
 
     default ImmutablePodcastDTO clearImmutable(PodcastDTO dto) {
-        return clearModifiable(dto).toImmutable();
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
     }
 
     @Mapping(target = "id", ignore = true)
@@ -33,7 +33,7 @@ public interface NullMapper {
     ModifiableEpisodeDTO clearModifiable(EpisodeDTO dto);
 
     default ImmutableEpisodeDTO clearImmutable(EpisodeDTO dto) {
-        return clearModifiable(dto).toImmutable();
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
     }
 
     @Mapping(target = "id", ignore = true)
@@ -41,7 +41,7 @@ public interface NullMapper {
     ModifiableFeedDTO clearModifiable(FeedDTO dto);
 
     default ImmutableFeedDTO clearImmutable(FeedDTO dto) {
-        return clearModifiable(dto).toImmutable();
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
     }
 
     @Mapping(target = "id", ignore = true)
@@ -49,7 +49,7 @@ public interface NullMapper {
     ModifiableChapterDTO clearModifiable(ChapterDTO dto);
 
     default ImmutableChapterDTO clearImmutable(ChapterDTO dto) {
-        return clearModifiable(dto).toImmutable();
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
     }
 
 }

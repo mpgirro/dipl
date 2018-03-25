@@ -12,6 +12,10 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 /**
  * @author Maximilian Irro
  */
@@ -27,7 +31,19 @@ public interface EpisodeMapper {
     ModifiableEpisodeDTO toModifiable(Episode episode);
 
     default ImmutableEpisodeDTO toImmutable(Episode episode) {
-        return toModifiable(episode).toImmutable();
+        return Optional.ofNullable(episode)
+            .map(e -> toModifiable(e).toImmutable())
+            .orElse(null);
+    }
+
+    default ImmutableEpisodeDTO toImmutable(EpisodeDTO episode) {
+
+        if (episode == null) return null;
+
+        if (episode instanceof  ImmutableEpisodeDTO) {
+            return (ImmutableEpisodeDTO) episode;
+        }
+        return ((ModifiableEpisodeDTO) episode).toImmutable();
     }
 
     @Mapping(source = "podcastId", target = "podcast")
@@ -35,14 +51,31 @@ public interface EpisodeMapper {
 
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
-    default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-        ModifiableEpisodeDTO dest;
+    // TODO
+    default ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
+
+        if (target == null) return null;
+
+        ModifiableEpisodeDTO modTarget;
         if (target instanceof  ModifiableEpisodeDTO) {
-            dest = (ModifiableEpisodeDTO) target;
+            modTarget = (ModifiableEpisodeDTO) target;
         } else {
-            dest = new ModifiableEpisodeDTO().from(target);
+            modTarget = new ModifiableEpisodeDTO().from(target);
         }
-        return update(src, dest).toImmutable();
+        return update(src, modTarget);
+    }
+
+    default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
+
+        if (target == null) return null;
+
+        ModifiableEpisodeDTO modTarget;
+        if (target instanceof  ModifiableEpisodeDTO) {
+            modTarget = (ModifiableEpisodeDTO) target;
+        } else {
+            modTarget = new ModifiableEpisodeDTO().from(target);
+        }
+        return update(src, modTarget).toImmutable();
     }
 
     // TODO unused because we use PodcastMapper.class ?
@@ -62,6 +95,28 @@ public interface EpisodeMapper {
 
         final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
 
+        Optional.ofNullable(doc.get(IndexField.ECHO_ID))
+            .ifPresent(builder::setEchoId);
+        Optional.ofNullable(doc.get(IndexField.TITLE))
+            .ifPresent(builder::setTitle);
+        Optional.ofNullable(doc.get(IndexField.LINK))
+            .ifPresent(builder::setLink);
+        Optional.ofNullable(doc.get(IndexField.PUB_DATE))
+            .map(DateMapper.INSTANCE::asLocalDateTime)
+            .ifPresent(builder::setPubDate);
+        Optional.ofNullable(doc.get(IndexField.PODCAST_TITLE))
+            .ifPresent(builder::setPodcastTitle);
+        Optional.ofNullable(Stream.of(doc.get(IndexField.ITUNES_SUMMARY), doc.get(IndexField.DESCRIPTION))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null))
+            .ifPresent(builder::setDescription);
+        Optional.ofNullable(doc.get(IndexField.ITUNES_IMAGE))
+            .ifPresent(builder::setImage);
+        Optional.ofNullable(doc.get(IndexField.ITUNES_DURATION))
+            .ifPresent(builder::setItunesDuration);
+
+        /*
         if (doc.get(IndexField.ECHO_ID)         != null) { builder.setEchoId(doc.get(IndexField.ECHO_ID)); }
         if (doc.get(IndexField.TITLE)           != null) { builder.setTitle(doc.get(IndexField.TITLE)); }
         if (doc.get(IndexField.LINK)            != null) { builder.setLink(doc.get(IndexField.LINK)); }
@@ -74,6 +129,7 @@ public interface EpisodeMapper {
         }
         if (doc.get(IndexField.ITUNES_IMAGE)    != null) { builder.setImage(doc.get(IndexField.ITUNES_IMAGE)); }
         if (doc.get(IndexField.ITUNES_DURATION) != null) { builder.setItunesDuration(doc.get(IndexField.ITUNES_DURATION)); }
+        */
 
         return builder.create();
     }

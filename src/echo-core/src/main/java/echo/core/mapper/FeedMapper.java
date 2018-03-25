@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Optional;
+
 /**
  * @author Maximilian Irro
  */
@@ -25,7 +27,19 @@ public interface FeedMapper {
     ModifiableFeedDTO toModifiable(Feed feed);
 
     default ImmutableFeedDTO toImmutable(Feed feed) {
-        return toModifiable(feed).toImmutable();
+        return Optional.ofNullable(feed)
+            .map(f -> toModifiable(f).toImmutable())
+            .orElse(null);
+    }
+
+    default ImmutableFeedDTO toImmutable(FeedDTO feed) {
+
+        if (feed == null) return null;
+
+        if (feed instanceof  ImmutableFeedDTO) {
+            return (ImmutableFeedDTO) feed;
+        }
+        return ((ModifiableFeedDTO) feed).toImmutable();
     }
 
     @Mapping(source = "podcastId", target = "podcast")
@@ -33,8 +47,30 @@ public interface FeedMapper {
 
     ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
 
+    default ModifiableFeedDTO update(FeedDTO src, @MappingTarget FeedDTO target) {
+
+        if (target == null) return null;
+
+        ModifiableFeedDTO modTarget;
+        if (target instanceof  ModifiableFeedDTO) {
+            modTarget = (ModifiableFeedDTO) target;
+        } else {
+            modTarget = new ModifiableFeedDTO().from(target);
+        }
+        return update(src, modTarget);
+    }
+
     default ImmutableFeedDTO updateImmutable(FeedDTO src, @MappingTarget FeedDTO target) {
-        return update(src, new ModifiableFeedDTO().from(target)).toImmutable();
+
+        if (target == null) return null;
+
+        ModifiableFeedDTO modTarget;
+        if (target instanceof  ModifiableFeedDTO) {
+            modTarget = (ModifiableFeedDTO) target;
+        } else {
+            modTarget = new ModifiableFeedDTO().from(target);
+        }
+        return update(src, modTarget).toImmutable();
     }
 
     default Podcast podcastFromId(Long id) {
