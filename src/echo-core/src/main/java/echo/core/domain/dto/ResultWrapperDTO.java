@@ -22,21 +22,21 @@ import java.util.List;
 )
 @JsonSerialize(as = ImmutableResultWrapperDTO.class)
 @JsonDeserialize(as = ImmutableResultWrapperDTO.class)
-public abstract class ResultWrapperDTO {
+public interface ResultWrapperDTO {
 
     @Nullable
-    public abstract Integer getCurrPage();
+    Integer getCurrPage();
 
     @Nullable
-    public abstract Integer getMaxPage();
+    Integer getMaxPage();
 
     @Nullable
-    public abstract Integer getTotalHits();
+    Integer getTotalHits();
 
     @Nullable
-    public abstract List<IndexDocDTO> getResults();
+    List<IndexDocDTO> getResults();
 
-    public static ResultWrapperDTO empty() {
+    static ResultWrapperDTO empty() {
         return ImmutableResultWrapperDTO.builder()
             .setCurrPage(0)
             .setMaxPage(0)
