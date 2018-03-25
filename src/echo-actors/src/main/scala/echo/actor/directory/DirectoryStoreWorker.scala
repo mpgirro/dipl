@@ -490,19 +490,20 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     val result = episodeService.save(e)
 
                     // we must register the episodes chapters as well
-                    result.foreach(r => Option(r.getChapters).map(cs => chapterService.saveAll(r.getId, cs))) // TODO use the broker instead
+                    //result.foreach(r => Option(r.getChapters).map(cs => chapterService.saveAll(r.getId, cs))) // TODO use the broker instead
                     /* TODO I have to broker the chapters to all stores, but if I sent those here,
                      * then they'll arrive before the episode arrives (the message is brokered
                      * further down the method) --> better send them in a Updateepisodewithchapters message
-
-                    result.foreach(e => Option(episode.getChapters)
-                        .map(cs => {
-                            cs.forEach(c => {
-                                c.setEpisodeExo(episode.getEchoId)
-                                broker ! SaveChapter(nullMapper.map(c))
+                    */
+                    result.foreach(e => Option(episode.getChapters.asScala)
+                        .map(_
+                            .map(c => new ModifiableChapterDTO().from(c))
+                            .foreach(c => {
+                                c.setEpisodeExo(e.getEchoId)
+                                broker ! SaveChapter(nullMapper.clearImmutable(c))
                             })
-                        }))
-                        */
+                        ))
+
 
                     // TODO why is this really necessary here?
                     // we'll need this info when we send the episode to the index in just a moment
