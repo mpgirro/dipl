@@ -1,5 +1,7 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import echo.core.domain.feed.FeedStatus;
 import org.immutables.value.Value;
 
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
 )
+@JsonSerialize(as = ImmutableFeedDTO.class)
+@JsonDeserialize(as = ImmutableFeedDTO.class)
 public interface FeedDTO {
 
     @Nullable Long getId();

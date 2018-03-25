@@ -1,5 +1,7 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
@@ -32,6 +34,8 @@ import java.util.Set;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
 )
+@JsonSerialize(as = ImmutablePodcastDTO.class)
+@JsonDeserialize(as = ImmutablePodcastDTO.class)
 public interface PodcastDTO {
 
     @Nullable Long getId();
