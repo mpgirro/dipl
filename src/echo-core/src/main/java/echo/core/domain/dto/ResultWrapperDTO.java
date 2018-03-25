@@ -1,5 +1,7 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
@@ -10,7 +12,7 @@ import java.util.List;
  * @author Maximilian Irro
  */
 @Value.Immutable
-@Value.Modifiable            // generates implementation with setters, required by mappers
+@Value.Modifiable // generates implementation with setters, required by mappers
 @Value.Style(
     get        = {"is*", "get*"}, // Detect 'get' and 'is' prefixes in accessor methods
     init       = "set*",
@@ -18,6 +20,8 @@ import java.util.List;
     build      = "create", // rename 'build' method on builder to 'create'
     visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
 )
+@JsonSerialize(as = ImmutableResultWrapperDTO.class)
+@JsonDeserialize(as = ImmutableResultWrapperDTO.class)
 public abstract class ResultWrapperDTO {
 
     @Nullable
