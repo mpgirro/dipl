@@ -52,6 +52,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
     private val podcastMapper = PodcastMapper.INSTANCE
     private val episodeMapper = EpisodeMapper.INSTANCE
     private val feedMapper = FeedMapper.INSTANCE
+    private val chapterMapper = ChapterMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
 
@@ -185,7 +186,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
         def task = () => {
             feedService.findOneByUrlAndPodcastEchoId(url, podcastId).map(f => {
-                val feed = new ModifiableFeedDTO().from(f)
+                val feed = feedMapper.toModifiable(f)
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
                 feedService.save(feed)
@@ -201,7 +202,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
         def task = () => {
             episodeService.findOneByEchoId(chapter.getEpisodeExo).map(e => {
-                val c = new ModifiableChapterDTO().from(chapter)
+                val c = chapterMapper.toModifiable(chapter)
                 c.setEpisodeId(e.getId)
                 chapterService.save(c)
             }).getOrElse({
@@ -224,7 +225,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 podcastMapper.update(podcast, p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
-                new ModifiablePodcastDTO().from(podcast)
+                podcastMapper.toModifiable(podcast)
             })
             update.setRegistrationComplete(true)
             podcastService.save(update)
@@ -243,7 +244,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     episodeMapper.update(episode, e)
                 }).getOrElse({
                     log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getEchoId)
-                    new ModifiableEpisodeDTO().from(episode)
+                    episodeMapper.toModifiable(episode)
                 })
                 update.setPodcastId(p.getId)
                 episodeService.save(update)
@@ -261,7 +262,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             val feeds = feedService.findAllByUrl(oldUrl)
             if (feeds.nonEmpty) {
                 feeds.foreach(f => {
-                    val feed = new ModifiableFeedDTO().from(f)
+                    val feed = feedMapper.toModifiable(f)
                     feed.setUrl(newUrl)
                     feedService.save(feed)
                 })
@@ -276,12 +277,12 @@ class DirectoryStoreWorker(val workerIndex: Int,
         log.debug("Received UpdateLinkByEchoId({},'{}')", echoId, newUrl)
         def task = () => {
             podcastService.findOneByEchoId(echoId).map(p => {
-                val podcast = new ModifiablePodcastDTO().from(p)
+                val podcast = podcastMapper.toModifiable(p)
                 podcast.setLink(newUrl)
                 podcastService.save(podcast)
             }).getOrElse({
                 episodeService.findOneByEchoId(echoId).map(e => {
-                    val episode = new ModifiableEpisodeDTO().from(e)
+                    val episode = episodeMapper.toModifiable(e)
                     episode.setLink(newUrl)
                     episodeService.save(episode)
                 }).getOrElse({
@@ -468,7 +469,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 case Some(e) => None
                 case None =>
 
-                    val e = new ModifiableEpisodeDTO().from(episode)
+                    val e = episodeMapper.toModifiable(episode)
 
                     // generate a new episode echoId - the generator is (almost) ensuring uniqueness
                     e.setEchoId(exoGenerator.getNewExo)
@@ -497,7 +498,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     */
                     result.foreach(e => Option(episode.getChapters.asScala)
                         .map(_
-                            .map(c => new ModifiableChapterDTO().from(c))
+                            .map(c => chapterMapper.toModifiable(c))
                             .foreach(c => {
                                 c.setEpisodeExo(e.getEchoId)
                                 broker ! SaveChapter(nullMapper.clearImmutable(c))

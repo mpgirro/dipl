@@ -1,8 +1,8 @@
 package echo.actor.parser
 
 import java.awt.image.BufferedImage
-import java.io.{ByteArrayOutputStream, IOException, InputStream}
-import java.net.{URL, URLConnection}
+import java.io.{ByteArrayOutputStream, IOException}
+import java.net.URL
 import java.time.LocalDateTime
 import java.util.Base64
 import javax.imageio.ImageIO
@@ -12,10 +12,10 @@ import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
 import echo.actor.index.IndexProtocol.{IndexStoreAddDoc, IndexStoreUpdateDocWebsiteData}
-import echo.core.domain.dto.{EpisodeDTO, ModifiableEpisodeDTO, ModifiablePodcastDTO}
+import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
-import echo.core.mapper.IndexMapper
+import echo.core.mapper.{EpisodeMapper, IndexMapper, PodcastMapper}
 import echo.core.parse.api.FyydAPI
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import org.jsoup.Jsoup
@@ -27,6 +27,8 @@ class ParserActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
+    private val podcastMapper = PodcastMapper.INSTANCE
+    private val episodeMapper = EpisodeMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
 
     private val feedParser: FeedParser = new RomeFeedParser()
@@ -95,7 +97,7 @@ class ParserActor extends Actor with ActorLogging {
             val podcast = Option(feedParser.parseFeed(feedData))
             podcast match {
                 case Some(pcst) =>
-                    val p: ModifiablePodcastDTO = new ModifiablePodcastDTO().from(pcst)
+                    val p = podcastMapper.toModifiable(pcst)
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
@@ -140,7 +142,7 @@ class ParserActor extends Actor with ActorLogging {
     }
 
     private def processEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
-        val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData))
+        val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData).asScala)
         episodes match {
             case Some(es) =>
                 for(e <- es){
@@ -152,7 +154,7 @@ class ParserActor extends Actor with ActorLogging {
 
     private def registerEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
 
-        val e = new ModifiableEpisodeDTO().from(episode)
+        val e = episodeMapper.toModifiable(episode)
 
         // cleanup some potentially markuped texts
         Option(e.getTitle).foreach(t => e.setTitle(t.trim))
