@@ -39,15 +39,12 @@ class SearcherClientFallbackFactory implements FallbackFactory<SearcherClient> {
             public ResultWrapperDTO getSearchResults(@SuppressWarnings("unused") String query,
                                                      @SuppressWarnings("unused") Integer page,
                                                      @SuppressWarnings("unused") Integer size) {
-                log.warn("fallback; reason was: {}, {}", cause.getMessage(), cause);
+                log.warn("getSearchResults fallback; reason was: {}, {}", cause.getMessage(), cause);
 
                 if (cause instanceof FeignException && ((FeignException) cause).status() == 404) {
                     // Treat the HTTP 404 status
                     // TODO
                 }
-
-                log.warn("Exception: {}", cause.getMessage());
-                cause.printStackTrace();
 
                 return ImmutableResultWrapperDTO
                     .builder()

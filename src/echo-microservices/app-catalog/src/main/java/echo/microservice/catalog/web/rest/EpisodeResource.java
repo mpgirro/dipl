@@ -5,6 +5,7 @@ import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.microservice.catalog.service.ChapterService;
 import echo.microservice.catalog.service.EpisodeService;
+import echo.microservice.catalog.web.dto.ArrayWrapperDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,10 +83,11 @@ public class EpisodeResource {
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
-    public ResponseEntity<List<ChapterDTO>> getChaptersByEpisode(@PathVariable String exo) {
+    public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
         final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo);
-        return new ResponseEntity<>(chapters, HttpStatus.OK);
+        final ArrayWrapperDTO<ChapterDTO> wrapper = new ArrayWrapperDTO<>(chapters);
+        return new ResponseEntity<>(wrapper, HttpStatus.OK);
     }
 
 }
