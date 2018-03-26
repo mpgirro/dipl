@@ -247,12 +247,32 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     episodeMapper.toModifiable(episode)
                 })
                 update.setPodcastId(p.getId)
-                episodeService.save(update)
+
+                // in case chapters were parsed, they were sent inside the episode, but we
+                // must not save them with the episode in one pass, or they'll produce a
+                // detached entity (because their episodes ID is yet unknown)
+                //val chapters = update.getChapters.asScala
+                //update.setChapters(null)
+
+                //log.info("Persisting : {}", update) // TODO delete
+                val saved = episodeService.save(update).get
+
+                // TODO we'll have to check if an episode is yet known and in the database!
+                // TODO best send a message to self to handle the chapter in a separate phase
+                Option(saved.getChapters)
+                    .foreach(_
+                        .asScala
+                        .map(c => chapterMapper.toModifiable(c))
+                        .foreach(c => {
+                            c.setEpisodeId(saved.getId)
+                            c.setEpisodeExo(saved.getEchoId)
+                            chapterService.save(c)
+                        }))
             }).getOrElse({
                 log.error("No Podcast found in database with EXO : {}", podcastId)
             })
         }
-        doInTransaction(task, List(podcastService, episodeService))
+        doInTransaction(task, List(podcastService, episodeService, chapterService))
     }
 
 
@@ -496,7 +516,10 @@ class DirectoryStoreWorker(val workerIndex: Int,
                      * then they'll arrive before the episode arrives (the message is brokered
                      * further down the method) --> better send them in a Updateepisodewithchapters message
                     */
+                    // TODO die chapters werden mit der episode mitgebrokert, brauche ich hier also nicht bereits vorab mit verschicken
+                    /*
                     result.foreach(e => Option(episode.getChapters.asScala)
+                        .filter(_ != null)
                         .map(_
                             .map(c => chapterMapper.toModifiable(c))
                             .foreach(c => {
@@ -504,13 +527,25 @@ class DirectoryStoreWorker(val workerIndex: Int,
                                 broker ! SaveChapter(nullMapper.clearImmutable(c))
                             })
                         ))
+                        */
+
+
 
 
                     // TODO why is this really necessary here?
                     // we'll need this info when we send the episode to the index in just a moment
                     //result.foreach(ep => ep.setPodcastTitle(e.getPodcastTitle))
 
+                    // we already clean up all the IDs here, just for good manners. for the chapters,
+                    // we simply reuse the chapters from since bevore saving the episode, because those yet lack an ID
                     result
+                        .map(r => nullMapper.clearImmutable(r)
+                        .withChapters(Option(r.getChapters)
+                            .map(_
+                                .asScala
+                                .map(c => nullMapper.clearImmutable(c))
+                                .asJava)
+                            .orNull))
             }
         }
 
