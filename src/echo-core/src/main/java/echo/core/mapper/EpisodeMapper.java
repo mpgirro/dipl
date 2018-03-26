@@ -28,6 +28,7 @@ public interface EpisodeMapper {
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
+    @Mapping(target = "chapters", ignore = true)
     ModifiableEpisodeDTO toModifiable(Episode episode);
 
     default ImmutableEpisodeDTO toImmutable(Episode episode) {
