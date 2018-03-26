@@ -25,10 +25,14 @@ public interface EpisodeMapper {
 
     EpisodeMapper INSTANCE = Mappers.getMapper( EpisodeMapper.class );
 
+    @Mapping(source = "podcastId", target = "podcast")
+    @Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
+    Episode toEntity(EpisodeDTO episode);
+
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
-    //@Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
+    @Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
     ModifiableEpisodeDTO toModifiable(Episode episode);
 
     default ImmutableEpisodeDTO toImmutable(Episode episode) {
@@ -45,8 +49,7 @@ public interface EpisodeMapper {
                     return (ModifiableEpisodeDTO) e;
                 } else {
                     return new ModifiableEpisodeDTO().from(e);
-                }
-            })
+                }})
             .orElse(null);
     }
 
@@ -57,13 +60,9 @@ public interface EpisodeMapper {
                     return (ImmutableEpisodeDTO) e;
                 } else {
                     return ((ModifiableEpisodeDTO) e).toImmutable();
-                }
-            })
+                }})
             .orElse(null);
     }
-
-    @Mapping(source = "podcastId", target = "podcast")
-    Episode toEntity(EpisodeDTO episode);
 
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
@@ -75,8 +74,7 @@ public interface EpisodeMapper {
                     return (ModifiableEpisodeDTO) t;
                 } else {
                     return new ModifiableEpisodeDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .orElse(null);
     }
@@ -89,9 +87,9 @@ public interface EpisodeMapper {
                     return (ModifiableEpisodeDTO) t;
                 } else {
                     return new ModifiableEpisodeDTO().from(t);
-                }
-            })
-            .map(t -> update(src, t).toImmutable())
+                }})
+            .map(t -> update(src, t))
+            .map(ModifiableEpisodeDTO::toImmutable)
             .orElse(null);
     }
 

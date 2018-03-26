@@ -22,6 +22,9 @@ public interface ChapterMapper {
 
     ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );
 
+    @Mapping(source = "episodeId", target = "episode")
+    Chapter toEntity(ChapterDTO chapter);
+
     @Mapping(source = "episode.id", target = "episodeId")
     @Mapping(source = "episode.echoId", target = "episodeExo")
     ModifiableChapterDTO toModifiable(Chapter chapter);
@@ -33,8 +36,7 @@ public interface ChapterMapper {
                     return (ModifiableChapterDTO) c;
                 } else {
                     return new ModifiableChapterDTO().from(c);
-                }
-            })
+                }})
             .orElse(null);
     }
 
@@ -45,13 +47,9 @@ public interface ChapterMapper {
                     return (ImmutableChapterDTO) c;
                 } else {
                     return ((ModifiableChapterDTO) c).toImmutable();
-                }
-            })
+                }})
             .orElse(null);
     }
-
-    @Mapping(source = "episodeId", target = "episode")
-    Chapter toEntity(ChapterDTO dto);
 
     ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ModifiableChapterDTO target);
 
@@ -62,8 +60,7 @@ public interface ChapterMapper {
                     return (ModifiableChapterDTO) t;
                 } else {
                     return new ModifiableChapterDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .orElse(null);
     }
@@ -75,8 +72,7 @@ public interface ChapterMapper {
                     return (ModifiableChapterDTO) t;
                 } else {
                     return new ModifiableChapterDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .map(ModifiableChapterDTO::toImmutable)
             .orElse(null);

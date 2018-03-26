@@ -22,6 +22,9 @@ public interface FeedMapper {
 
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
+    @Mapping(source = "podcastId", target = "podcast")
+    Feed toEntity(FeedDTO feed);
+
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     ModifiableFeedDTO toModifiable(Feed feed);
@@ -40,8 +43,7 @@ public interface FeedMapper {
                     return (ModifiableFeedDTO) f;
                 } else {
                     return new ModifiableFeedDTO().from(f);
-                }
-            })
+                }})
             .orElse(null);
     }
 
@@ -52,13 +54,9 @@ public interface FeedMapper {
                     return (ImmutableFeedDTO) f;
                 } else {
                     return ((ModifiableFeedDTO) f).toImmutable();
-                }
-            })
+                }})
             .orElse(null);
     }
-
-    @Mapping(source = "podcastId", target = "podcast")
-    Feed toEntity(FeedDTO feedDto);
 
     ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
 
@@ -69,8 +67,7 @@ public interface FeedMapper {
                     return (ModifiableFeedDTO) t;
                 } else {
                     return new ModifiableFeedDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .orElse(null);
     }
@@ -82,8 +79,7 @@ public interface FeedMapper {
                     return (ModifiableFeedDTO) t;
                 } else {
                     return new ModifiableFeedDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .map(ModifiableFeedDTO::toImmutable)
             .orElse(null);

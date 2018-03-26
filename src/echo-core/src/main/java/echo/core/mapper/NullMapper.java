@@ -24,10 +24,10 @@ public interface NullMapper {
     NullMapper INSTANCE = Mappers.getMapper( NullMapper.class );
 
     @Mapping(target = "id", ignore = true)
-    ModifiablePodcastDTO clearModifiable(PodcastDTO dto);
+    ModifiablePodcastDTO clearModifiable(PodcastDTO podcast);
 
-    default ImmutablePodcastDTO clearImmutable(PodcastDTO dto) {
-        return Optional.ofNullable(dto)
+    default ImmutablePodcastDTO clearImmutable(PodcastDTO podcast) {
+        return Optional.ofNullable(podcast)
             .map(this::clearModifiable)
             .map(ModifiablePodcastDTO::toImmutable)
             .orElse(null);
@@ -35,10 +35,10 @@ public interface NullMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    ModifiableEpisodeDTO clearModifiable(EpisodeDTO dto);
+    ModifiableEpisodeDTO clearModifiable(EpisodeDTO episode);
 
-    default ImmutableEpisodeDTO clearImmutable(EpisodeDTO dto) {
-        return Optional.ofNullable(dto)
+    default ImmutableEpisodeDTO clearImmutable(EpisodeDTO episode) {
+        return Optional.ofNullable(episode)
             .map(this::clearModifiable)
             .map(ModifiableEpisodeDTO::toImmutable)
             .orElse(null);
@@ -46,10 +46,10 @@ public interface NullMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    ModifiableFeedDTO clearModifiable(FeedDTO dto);
+    ModifiableFeedDTO clearModifiable(FeedDTO feed);
 
-    default ImmutableFeedDTO clearImmutable(FeedDTO dto) {
-        return Optional.ofNullable(dto)
+    default ImmutableFeedDTO clearImmutable(FeedDTO feed) {
+        return Optional.ofNullable(feed)
             .map(this::clearModifiable)
             .map(ModifiableFeedDTO::toImmutable)
             .orElse(null);
@@ -57,10 +57,10 @@ public interface NullMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "episodeId", ignore = true)
-    ModifiableChapterDTO clearModifiable(ChapterDTO dto);
+    ModifiableChapterDTO clearModifiable(ChapterDTO chapter);
 
-    default ImmutableChapterDTO clearImmutable(ChapterDTO dto) {
-        return Optional.ofNullable(dto)
+    default ImmutableChapterDTO clearImmutable(ChapterDTO chapter) {
+        return Optional.ofNullable(chapter)
             .map(this::clearModifiable)
             .map(ModifiableChapterDTO::toImmutable)
             .orElse(null);

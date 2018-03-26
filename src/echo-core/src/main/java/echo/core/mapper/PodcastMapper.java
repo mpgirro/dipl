@@ -26,6 +26,10 @@ public interface PodcastMapper {
 
     PodcastMapper INSTANCE = Mappers.getMapper( PodcastMapper.class );
 
+    @Mapping(target = "episodes", ignore = true)
+    @Mapping(target = "feeds", ignore = true)
+    Podcast toEntity(PodcastDTO dto);
+
     ModifiablePodcastDTO toModifiable(Podcast podcast);
 
     default ImmutablePodcastDTO toImmutable(Podcast podcast) {
@@ -42,8 +46,7 @@ public interface PodcastMapper {
                     return (ModifiablePodcastDTO) p;
                 } else {
                     return new ModifiablePodcastDTO().from(p);
-                }
-            })
+                }})
             .orElse(null);
     }
 
@@ -54,14 +57,9 @@ public interface PodcastMapper {
                     return (ImmutablePodcastDTO) p;
                 } else {
                     return ((ModifiablePodcastDTO) p).toImmutable();
-                }
-            })
+                }})
             .orElse(null);
     }
-
-    @Mapping(target = "episodes", ignore = true)
-    @Mapping(target = "feeds", ignore = true)
-    Podcast toEntity(PodcastDTO dto);
 
     ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget ModifiablePodcastDTO target);
 
@@ -72,8 +70,7 @@ public interface PodcastMapper {
                     return (ModifiablePodcastDTO) t;
                 } else {
                     return new ModifiablePodcastDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .orElse(null);
     }
@@ -85,8 +82,7 @@ public interface PodcastMapper {
                     return (ModifiablePodcastDTO) t;
                 } else {
                     return new ModifiablePodcastDTO().from(t);
-                }
-            })
+                }})
             .map(t -> update(src, t))
             .map(ModifiablePodcastDTO::toImmutable)
             .orElse(null);

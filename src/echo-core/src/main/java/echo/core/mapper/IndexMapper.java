@@ -32,18 +32,18 @@ public interface IndexMapper {
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO toModifiable(PodcastDTO podcast);
 
-    default ImmutableIndexDocDTO toImmutable(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
-            .map(p -> toModifiable(p).toImmutable())
-            .orElse(null);
-    }
-
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "transcript", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO toModifiable(EpisodeDTO episodeDTO);
+
+    default ImmutableIndexDocDTO toImmutable(PodcastDTO podcast) {
+        return Optional.ofNullable(podcast)
+            .map(p -> toModifiable(p).toImmutable())
+            .orElse(null);
+    }
 
     default ImmutableIndexDocDTO toImmutable(EpisodeDTO episode) {
         return Optional.ofNullable(episode)
@@ -67,8 +67,7 @@ public interface IndexMapper {
                     return (ModifiableIndexDocDTO) d;
                 } else {
                     return new ModifiableIndexDocDTO().from(d);
-                }
-            })
+                }})
             .orElse(null);
     }
 
@@ -79,8 +78,7 @@ public interface IndexMapper {
                     return (ImmutableIndexDocDTO) d;
                 } else {
                     return ((ModifiableIndexDocDTO) d).toImmutable();
-                }
-            })
+                }})
             .orElse(null);
     }
 
