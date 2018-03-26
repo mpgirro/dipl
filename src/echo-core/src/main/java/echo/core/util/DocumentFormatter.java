@@ -1,10 +1,7 @@
 package echo.core.util;
 
-import echo.core.domain.dto.EntityDTO;
-import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
-import org.jsoup.*;
+import org.jsoup.Jsoup;
 
 /**
  * @author Maximilian Irro
@@ -12,10 +9,6 @@ import org.jsoup.*;
 public class DocumentFormatter {
 
     private static final String NEWLINE = System.getProperty("line.separator");
-
-    public static String cliFormat(EntityDTO dto){
-        return dto.toString();
-    }
 
     public static String cliFormat(IndexDocDTO doc){
         final StringBuilder builder = new StringBuilder();
@@ -50,9 +43,8 @@ public class DocumentFormatter {
                     .append(NEWLINE);
                 break;
             default:
-                throw new RuntimeException("Forgot to support new Echo EntityDTO type: " + doc.getClass());
+                throw new RuntimeException("Forgot to support new type : " + doc.getDocType());
         }
         return builder.toString();
     }
-
 }

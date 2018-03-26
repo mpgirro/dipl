@@ -1,15 +1,16 @@
 package echo.core.parse.api;
 
-import com.google.gson.reflect.TypeToken;
 import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.ImmutableEpisodeDTO;
 import echo.core.mapper.DateMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -87,7 +88,7 @@ public class FyydAPI extends API {
                     log.info("JSON contains {} episode JSON objects", episodesObj.size());
                     final List<EpisodeDTO> episodes =  episodesObj.stream()
                         .map(d -> {
-                            final EpisodeDTO e = new EpisodeDTO();
+                            final ImmutableEpisodeDTO.Builder e = ImmutableEpisodeDTO.builder();
                             e.setTitle((String) d.get("title"));
                             e.setLink((String) d.get("url"));
                             e.setDescription((String) d.get("description"));
@@ -103,7 +104,7 @@ public class FyydAPI extends API {
                             e.setItunesEpisode(((Double) d.get("num_episode")).intValue());
                             e.setEnclosureUrl((String) d.get("enclosure"));
                             e.setEnclosureType((String) d.get("content_type"));
-                            return e;
+                            return e.create();
                         })
                         .collect(Collectors.toList());
 

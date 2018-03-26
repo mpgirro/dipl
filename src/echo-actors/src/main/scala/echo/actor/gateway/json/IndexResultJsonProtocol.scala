@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.util
 import java.util.stream.Collectors
 
-import echo.core.domain.dto.IndexDocDTO
+import echo.core.domain.dto.{ImmutableIndexDocDTO, IndexDocDTO}
 import echo.core.mapper.DateMapper
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -29,17 +29,19 @@ object IndexResultJsonProtocol extends DefaultJsonProtocol {
         def read(value: JsValue): IndexDocDTO = {
             value.asJsObject.getFields("docType", "echoId", "title", "link", "pubDate", "description", "podcastTitle", "image", "itunesCategories") match {
                 case Seq(JsString(docType), JsString(echoId), JsString(title), JsString(link), JsString(pubDate), JsString(podcastTitle), JsString(description), JsString(image)) =>
-                    val result = new IndexDocDTO()
-                    result.setDocType(docType)
-                    result.setEchoId(echoId)
-                    result.setTitle(title)
-                    result.setLink(link)
-                    result.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
-                    result.setPodcastTitle(podcastTitle)
-                    result.setDescription(description)
-                    result.setImage(image)
-                    //result.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
-                    result
+
+                    ImmutableIndexDocDTO.builder()
+                        .setDocType(docType)
+                        .setEchoId(echoId)
+                        .setTitle(title)
+                        .setLink(link)
+                        .setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
+                        .setPodcastTitle(podcastTitle)
+                        .setDescription(description)
+                        .setImage(image)
+                        //.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
+                        .create()
+
                 case _ => throw DeserializationException("IndexDocDTO expected")
             }
         }

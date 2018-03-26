@@ -1,4 +1,4 @@
-package echo.microservice.gateway.web.dto;
+package echo.microservice.catalog.web.dto;
 
 import java.util.List;
 

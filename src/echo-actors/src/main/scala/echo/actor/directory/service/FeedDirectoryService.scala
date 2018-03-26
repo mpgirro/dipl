@@ -35,23 +35,23 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def save(feedDTO: FeedDTO): Option[FeedDTO] = {
         log.debug("Request to save Feed : {}", feedDTO)
-        val feed = FeedMapper.INSTANCE.map(feedDTO)
+        val feed = feedMapper.toEntity(feedDTO)
         val result = feedRepository.save(feed)
-        Option(feedMapper.map(result))
+        Option(feedMapper.toImmutable(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[FeedDTO] = {
         log.debug("Request to get Feed (ID) : {}", id)
         val result = feedRepository.findOne(id)
-        Option(feedMapper.map(result))
+        Option(feedMapper.toImmutable(result))
     }
 
     @Transactional
     def findOneByEchoId(exo: String): Option[FeedDTO] = {
         log.debug("Request to get Feed (EXO) : {}", exo)
         val result = feedRepository.findOneByEchoId(exo)
-        Option(feedMapper.map(result))
+        Option(feedMapper.toImmutable(result))
     }
 
     @Transactional
@@ -62,7 +62,7 @@ class FeedDirectoryService(private val log: LoggingAdapter,
         val pageable = new PageRequest(page, size)
         feedRepository.findAll(pageable)
             .asScala
-            .map(f => feedMapper.map(f))
+            .map(f => feedMapper.toImmutable(f))
             .toList
     }
 
@@ -71,7 +71,7 @@ class FeedDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Feeds by URL : {}", url)
         feedRepository.findAllByUrl(url)
             .asScala
-            .map(f => feedMapper.map(f))
+            .map(f => feedMapper.toImmutable(f))
             .toList
     }
 
@@ -79,7 +79,7 @@ class FeedDirectoryService(private val log: LoggingAdapter,
     def findOneByUrlAndPodcastEchoId(url: String, podcastExo: String): Option[FeedDTO] = {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : {}", url, podcastExo)
         val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo)
-        Option(feedMapper.map(result))
+        Option(feedMapper.toImmutable(result))
     }
 
     @Transactional
@@ -87,7 +87,7 @@ class FeedDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Feeds by Podcast (EXO) : {}", podcastExo)
         feedRepository.findAllByPodcast(podcastExo)
             .asScala
-            .map(f => feedMapper.map(f))
+            .map(f => feedMapper.toImmutable(f))
             .toList
     }
 

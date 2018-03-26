@@ -1,9 +1,7 @@
 package echo.core.index;
 
-import echo.core.domain.dto.immutable.TestIndexDoc;
-import echo.core.mapper.IndexMapper;
 import echo.core.domain.dto.IndexDocDTO;
-import echo.core.mapper.TestIndexMapper;
+import echo.core.mapper.IndexMapper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -53,12 +51,11 @@ public class LuceneCommitter implements IndexCommitter {
         this.writer.commit(); // to create the index if not yet there, and prevent searcher from failing upon creation
     }
 
-    @Deprecated
     @Override
     public void add(IndexDocDTO indexDoc) {
         log.debug("Appending document to index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
         try {
             this.writer.addDocument(luceneDoc);
         } catch (IOException e) {
@@ -67,38 +64,11 @@ public class LuceneCommitter implements IndexCommitter {
         }
     }
 
-    @Override
-    public void add(TestIndexDoc indexDoc) {
-        log.debug("Appending document to index : {}", indexDoc);
-
-        final Document luceneDoc = TestIndexMapper.INSTANCE.map(indexDoc);
-        try {
-            this.writer.addDocument(luceneDoc);
-        } catch (IOException e) {
-            log.error("Error adding index entry for : {}" + indexDoc);
-            e.printStackTrace();
-        }
-    }
-
-    @Deprecated
     @Override
     public void update(IndexDocDTO indexDoc) {
         log.debug("Updating document in index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.map(indexDoc);
-        try {
-            writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
-        } catch (IOException e) {
-            log.error("Error updating index entry for : {}" + indexDoc);
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void update(TestIndexDoc indexDoc) {
-        log.debug("Updating document in index : {}", indexDoc);
-
-        final Document luceneDoc = TestIndexMapper.INSTANCE.map(indexDoc);
+        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
         try {
             writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {

@@ -10,7 +10,7 @@ import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
 import echo.actor.index.IndexProtocol.IndexStoreAddDoc
-import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
+import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
 import echo.core.util.ExoGenerator
@@ -52,6 +52,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
     private val podcastMapper = PodcastMapper.INSTANCE
     private val episodeMapper = EpisodeMapper.INSTANCE
     private val feedMapper = FeedMapper.INSTANCE
+    private val chapterMapper = ChapterMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
 
@@ -146,25 +147,27 @@ class DirectoryStoreWorker(val workerIndex: Int,
                 // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast
 
                 val podcastId = exoGenerator.getNewExo
-                var podcast = new PodcastDTO
-                podcast.setEchoId(podcastId)
-                podcast.setTitle(podcastId)
-                podcast.setDescription(url)
-                podcast.setRegistrationComplete(false)
-                podcast.setRegistrationTimestamp(LocalDateTime.now())
+                var podcast = ImmutablePodcastDTO.builder()
+                    .setEchoId(podcastId)
+                    .setTitle(podcastId)
+                    .setDescription(url)
+                    .setRegistrationComplete(false)
+                    .setRegistrationTimestamp(LocalDateTime.now())
+                    .create()
 
                 podcastService.save(podcast).map(p => {
 
                     // broker ! UpdatePodcastMetadata(nullMapper.map(p)) // TODO
 
                     val feedId = exoGenerator.getNewExo
-                    val feed = new FeedDTO
-                    feed.setEchoId(feedId)
-                    feed.setUrl(url)
-                    feed.setLastChecked(LocalDateTime.now())
-                    feed.setLastStatus(FeedStatus.NEVER_CHECKED)
-                    feed.setPodcastId(p.getId)
-                    feed.setRegistrationTimestamp(LocalDateTime.now())
+                    val feed = ImmutableFeedDTO.builder()
+                        .setEchoId(feedId)
+                        .setUrl(url)
+                        .setLastChecked(LocalDateTime.now())
+                        .setLastStatus(FeedStatus.NEVER_CHECKED)
+                        .setPodcastId(p.getId)
+                        .setRegistrationTimestamp(LocalDateTime.now())
+                        .create()
                     feedService.save(feed).map(f => {
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, NewPodcastFetchJob())
@@ -182,7 +185,8 @@ class DirectoryStoreWorker(val workerIndex: Int,
     private def onFeedStatusUpdate(podcastId: String, url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
         def task = () => {
-            feedService.findOneByUrlAndPodcastEchoId(url, podcastId).map(feed => {
+            feedService.findOneByUrlAndPodcastEchoId(url, podcastId).map(f => {
+                val feed = feedMapper.toModifiable(f)
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
                 feedService.save(feed)
@@ -198,8 +202,9 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
         def task = () => {
             episodeService.findOneByEchoId(chapter.getEpisodeExo).map(e => {
-                chapter.setEpisodeId(e.getId)
-                chapterService.save(chapter)
+                val c = chapterMapper.toModifiable(chapter)
+                c.setEpisodeId(e.getId)
+                chapterService.save(c)
             }).getOrElse({
                 log.error("Could not save Chapter, no Episode found : {}", chapter.getEpisodeExo)
             })
@@ -216,13 +221,13 @@ class DirectoryStoreWorker(val workerIndex: Int,
          * jenen feed den ich immer benutze um updates zu laden
          */
         def task = () => {
-            val update: PodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
-                PodcastMapper.INSTANCE.update(podcast, p)
+            val update: ModifiablePodcastDTO = podcastService.findOneByEchoId(podcastId).map(p => {
+                podcastMapper.update(podcast, p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
-                podcast
+                podcastMapper.toModifiable(podcast)
             })
-            podcast.setRegistrationComplete(true)
+            update.setRegistrationComplete(true)
             podcastService.save(update)
 
             // TODO we will fetch feeds for checking new episodes, but not because we updated podcast metadata
@@ -233,23 +238,41 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
     private def onUpdateEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisode({},{})", podcastId, episode.getEchoId)
-
         def task = () => {
             podcastService.findOneByEchoId(podcastId).map(p => {
-                val update: EpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
-                    EpisodeMapper.INSTANCE.update(episode, e)
+                val update: ModifiableEpisodeDTO = episodeService.findOneByEchoId(episode.getEchoId).map(e => {
+                    episodeMapper.update(episode, e)
                 }).getOrElse({
                     log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getEchoId)
-                    episode
+                    episodeMapper.toModifiable(episode)
                 })
                 update.setPodcastId(p.getId)
 
-                episodeService.save(update)
+                // in case chapters were parsed, they were sent inside the episode, but we
+                // must not save them with the episode in one pass, or they'll produce a
+                // detached entity (because their episodes ID is yet unknown)
+                //val chapters = update.getChapters.asScala
+                //update.setChapters(null)
+
+                //log.info("Persisting : {}", update) // TODO delete
+                val saved = episodeService.save(update).get
+
+                // TODO we'll have to check if an episode is yet known and in the database!
+                // TODO best send a message to self to handle the chapter in a separate phase
+                Option(saved.getChapters)
+                    .foreach(_
+                        .asScala
+                        .map(c => chapterMapper.toModifiable(c))
+                        .foreach(c => {
+                            c.setEpisodeId(saved.getId)
+                            c.setEpisodeExo(saved.getEchoId)
+                            chapterService.save(c)
+                        }))
             }).getOrElse({
                 log.error("No Podcast found in database with EXO : {}", podcastId)
             })
         }
-        doInTransaction(task, List(podcastService, episodeService))
+        doInTransaction(task, List(podcastService, episodeService, chapterService))
     }
 
 
@@ -257,10 +280,11 @@ class DirectoryStoreWorker(val workerIndex: Int,
         log.debug("Received UpdateFeedUrl('{}','{}')", oldUrl, newUrl)
         def task = () => {
             val feeds = feedService.findAllByUrl(oldUrl)
-            if(feeds.nonEmpty){
+            if (feeds.nonEmpty) {
                 feeds.foreach(f => {
-                    f.setUrl(newUrl)
-                    feedService.save(f)
+                    val feed = feedMapper.toModifiable(f)
+                    feed.setUrl(newUrl)
+                    feedService.save(feed)
                 })
             } else {
                 log.error("No Feed found in database with url='{}'", oldUrl)
@@ -273,12 +297,14 @@ class DirectoryStoreWorker(val workerIndex: Int,
         log.debug("Received UpdateLinkByEchoId({},'{}')", echoId, newUrl)
         def task = () => {
             podcastService.findOneByEchoId(echoId).map(p => {
-                p.setLink(newUrl)
-                podcastService.save(p)
+                val podcast = podcastMapper.toModifiable(p)
+                podcast.setLink(newUrl)
+                podcastService.save(podcast)
             }).getOrElse({
                 episodeService.findOneByEchoId(echoId).map(e => {
-                    e.setLink(newUrl)
-                    episodeService.save(e)
+                    val episode = episodeMapper.toModifiable(e)
+                    episode.setLink(newUrl)
+                    episodeService.save(episode)
                 }).getOrElse({
                     log.error("Cannot update Link URL - no Podcast or Episode found by echo={}", echoId)
                 })
@@ -300,7 +326,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(podcastService))
             .asInstanceOf[Option[PodcastDTO]]
             .map(p => {
-                sender ! PodcastResult(nullMapper.map(p))
+                sender ! PodcastResult(nullMapper.clearImmutable(p))
             }).getOrElse({
                 sender ! NothingFound(podcastId)
             })
@@ -313,7 +339,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAll(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
     }
 
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
@@ -322,7 +348,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             podcastService.findAllRegistrationCompleteAsTeaser(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.map(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
     }
 
     private def onGetAllFeeds(page: Int, size: Int): Unit = {
@@ -331,7 +357,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAll(page, size)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! AllFeedsResult(feeds.map(f => nullMapper.map(f)))
+        sender ! AllFeedsResult(feeds.map(f => nullMapper.clearImmutable(f)))
     }
 
     private def onGetEpisode(episodeId: String): Unit= {
@@ -347,7 +373,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
         doInTransaction(task, List(episodeService))
             .asInstanceOf[Option[EpisodeDTO]]
             .map(e => {
-                sender ! EpisodeResult(nullMapper.map(e))
+                sender ! EpisodeResult(nullMapper.clearImmutable(e))
             }).getOrElse({
                 sender ! NothingFound(episodeId)
             })
@@ -360,7 +386,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             episodeService.findAllByPodcastAsTeaser(podcastId)
         }
         val episodes = doInTransaction(task, List(episodeService)).asInstanceOf[List[EpisodeDTO]]
-        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.map(e)))
+        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.clearImmutable(e)))
     }
 
     private def onGetFeedsByPodcast(podcastId: String): Unit = {
@@ -369,7 +395,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             feedService.findAllByPodcast(podcastId)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.map(f)))
+        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.clearImmutable(f)))
     }
 
     private def onGetChaptersByEpisode(episodeId: String): Unit = {
@@ -379,7 +405,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
             chapterService.findAllByEpisode(episodeId)
         }
         val chapters = doInTransaction(task, List(chapterService)).asInstanceOf[List[ChapterDTO]]
-        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.map(c)))
+        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.clearImmutable(c)))
     }
 
     private def onCheckPodcast(podcastId: String): Unit = {
@@ -462,45 +488,64 @@ class DirectoryStoreWorker(val workerIndex: Int,
             }) match {
                 case Some(e) => None
                 case None =>
+
+                    val e = episodeMapper.toModifiable(episode)
+
                     // generate a new episode echoId - the generator is (almost) ensuring uniqueness
-                    episode.setEchoId(exoGenerator.getNewExo)
+                    e.setEchoId(exoGenerator.getNewExo)
 
                     podcastService.findOneByEchoId(podcastId).map(p => {
-                        episode.setPodcastId(p.getId)
-                        episode.setPodcastTitle(p.getTitle) // we'll not re-use this DTO, but extract the info again a bit further down
+                        e.setPodcastId(p.getId)
+                        e.setPodcastTitle(p.getTitle) // we'll not re-use this DTO, but extract the info again a bit further down
 
                         // check if the episode has a cover image defined, and set the one of the episode
-                        Option(episode.getImage).getOrElse({
+                        Option(e.getImage).getOrElse({
                             // indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
-                            episode.setImage(p.getImage)
+                            e.setImage(p.getImage)
                         })
                     }).getOrElse({
                         log.error("No Podcast found with echoId : {}", podcastId)
                     })
 
-                    episode.setRegistrationTimestamp(LocalDateTime.now())
-                    val result = episodeService.save(episode)
+                    e.setRegistrationTimestamp(LocalDateTime.now())
+                    val result = episodeService.save(e)
 
                     // we must register the episodes chapters as well
-                    result.foreach(e => Option(episode.getChapters).map(cs => chapterService.saveAll(e.getId, cs))) // TODO use the broker instead
+                    //result.foreach(r => Option(r.getChapters).map(cs => chapterService.saveAll(r.getId, cs))) // TODO use the broker instead
                     /* TODO I have to broker the chapters to all stores, but if I sent those here,
                      * then they'll arrive before the episode arrives (the message is brokered
                      * further down the method) --> better send them in a Updateepisodewithchapters message
-
-                    result.foreach(e => Option(episode.getChapters)
-                        .map(cs => {
-                            cs.forEach(c => {
-                                c.setEpisodeExo(episode.getEchoId)
-                                broker ! SaveChapter(nullMapper.map(c))
+                    */
+                    // TODO die chapters werden mit der episode mitgebrokert, brauche ich hier also nicht bereits vorab mit verschicken
+                    /*
+                    result.foreach(e => Option(episode.getChapters.asScala)
+                        .filter(_ != null)
+                        .map(_
+                            .map(c => chapterMapper.toModifiable(c))
+                            .foreach(c => {
+                                c.setEpisodeExo(e.getEchoId)
+                                broker ! SaveChapter(nullMapper.clearImmutable(c))
                             })
-                        }))
+                        ))
                         */
+
+
+
 
                     // TODO why is this really necessary here?
                     // we'll need this info when we send the episode to the index in just a moment
-                    result.foreach(e => e.setPodcastTitle(episode.getPodcastTitle))
+                    //result.foreach(ep => ep.setPodcastTitle(e.getPodcastTitle))
 
+                    // we already clean up all the IDs here, just for good manners. for the chapters,
+                    // we simply reuse the chapters from since bevore saving the episode, because those yet lack an ID
                     result
+                        .map(r => nullMapper.clearImmutable(r)
+                        .withChapters(Option(r.getChapters)
+                            .map(_
+                                .asScala
+                                .map(c => nullMapper.clearImmutable(c))
+                                .asJava)
+                            .orNull))
             }
         }
 
@@ -511,12 +556,12 @@ class DirectoryStoreWorker(val workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastId, e.getEchoId)
 
-                indexStore ! IndexStoreAddDoc(indexMapper.map(e))
+                indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(e))
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                broker ! UpdateEpisode(podcastId, nullMapper.map(episode))
+                broker ! UpdateEpisode(podcastId, nullMapper.clearImmutable(e))
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {

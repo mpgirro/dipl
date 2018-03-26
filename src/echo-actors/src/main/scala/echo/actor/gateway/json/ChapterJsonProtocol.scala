@@ -1,6 +1,6 @@
 package echo.actor.gateway.json
 
-import echo.core.domain.dto.ChapterDTO
+import echo.core.domain.dto.{ChapterDTO, ImmutableChapterDTO}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**
@@ -18,12 +18,12 @@ object ChapterJsonProtocol extends DefaultJsonProtocol {
             value.asJsObject.getFields("start", "title", "href", "image") match {
                 case Seq(JsString(start), JsString(title), JsString(href), JsString(image)) =>
 
-                    val chapter = new ChapterDTO()
-                    chapter.setStart(start)
-                    chapter.setTitle(title)
-                    chapter.setHref(href)
-                    chapter.setImage(image)
-                    chapter
+                    ImmutableChapterDTO.builder()
+                        .setStart(start)
+                        .setTitle(title)
+                        .setHref(href)
+                        .setImage(image)
+                        .create()
 
                 case _ => throw DeserializationException("ChapterDTO expected")
             }

@@ -6,7 +6,7 @@ package echo.core.util;
 public class UrlUtil {
 
     public static String sanitize(String url){
-        if(url == null){
+        if (url == null) {
             return null;
         }
 

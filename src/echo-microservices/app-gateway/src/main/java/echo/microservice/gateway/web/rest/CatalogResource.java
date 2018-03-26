@@ -69,6 +69,7 @@ public class CatalogResource {
         log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
         final ArrayWrapperDTO<PodcastDTO> result = new ArrayWrapperDTO<>(podcasts);
+        log.debug("Returning all podcasts : {}", result);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

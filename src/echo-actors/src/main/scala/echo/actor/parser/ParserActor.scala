@@ -1,8 +1,8 @@
 package echo.actor.parser
 
 import java.awt.image.BufferedImage
-import java.io.{ByteArrayOutputStream, IOException, InputStream}
-import java.net.{URL, URLConnection}
+import java.io.{ByteArrayOutputStream, IOException}
+import java.net.URL
 import java.time.LocalDateTime
 import java.util.Base64
 import javax.imageio.ImageIO
@@ -15,7 +15,7 @@ import echo.actor.index.IndexProtocol.{IndexStoreAddDoc, IndexStoreUpdateDocWebs
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
-import echo.core.mapper.IndexMapper
+import echo.core.mapper.{EpisodeMapper, IndexMapper, PodcastMapper}
 import echo.core.parse.api.FyydAPI
 import echo.core.parse.rss.{FeedParser, RomeFeedParser}
 import org.jsoup.Jsoup
@@ -26,6 +26,10 @@ import scala.collection.JavaConverters._
 class ParserActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
+
+    private val podcastMapper = PodcastMapper.INSTANCE
+    private val episodeMapper = EpisodeMapper.INSTANCE
+    private val indexMapper = IndexMapper.INSTANCE
 
     private val feedParser: FeedParser = new RomeFeedParser()
     private val fyydAPI: FyydAPI = new FyydAPI()
@@ -92,7 +96,8 @@ class ParserActor extends Actor with ActorLogging {
         try {
             val podcast = Option(feedParser.parseFeed(feedData))
             podcast match {
-                case Some(p) =>
+                case Some(pcst) =>
+                    val p = podcastMapper.toModifiable(pcst)
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
@@ -110,7 +115,7 @@ class ParserActor extends Actor with ActorLogging {
                         })
                         */
 
-                        indexStore ! IndexStoreAddDoc(IndexMapper.INSTANCE.map(p))
+                        indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(p))
 
                         // request that the podcasts website will get added to the index as well, if possible
                         Option(p.getLink) match {
@@ -122,7 +127,7 @@ class ParserActor extends Actor with ActorLogging {
                     }
 
                     // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p)
+                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p.toImmutable)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                     processEpisodes(feedUrl, podcastId, feedData)
@@ -137,7 +142,7 @@ class ParserActor extends Actor with ActorLogging {
     }
 
     private def processEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
-        val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData))
+        val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData).asScala)
         episodes match {
             case Some(es) =>
                 for(e <- es){
@@ -147,7 +152,10 @@ class ParserActor extends Actor with ActorLogging {
         }
     }
 
-    private def registerEpisode(podcastId: String, e: EpisodeDTO): Unit = {
+    private def registerEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
+
+        val e = episodeMapper.toModifiable(episode)
+
         // cleanup some potentially markuped texts
         Option(e.getTitle).foreach(t => e.setTitle(t.trim))
         Option(e.getDescription).foreach(d => e.setDescription(Jsoup.clean(d, Whitelist.basic())))
@@ -160,7 +168,7 @@ class ParserActor extends Actor with ActorLogging {
         })
         */
 
-        directoryStore ! RegisterEpisodeIfNew(podcastId, e)
+        directoryStore ! RegisterEpisodeIfNew(podcastId, e.toImmutable)
     }
 
     private def base64Image(imageUrl: String): String = {

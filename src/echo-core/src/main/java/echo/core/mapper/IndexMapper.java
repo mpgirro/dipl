@@ -1,11 +1,6 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.EntityDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.immutable.*;
+import echo.core.domain.dto.*;
 import echo.core.index.IndexField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -17,6 +12,7 @@ import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,79 +24,105 @@ public interface IndexMapper {
 
     IndexMapper INSTANCE = Mappers.getMapper( IndexMapper.class );
 
-    @Deprecated // TODO delete method once migrated to immutability
     @Mapping(target = "docType", constant = "podcast")
     @Mapping(target = "podcastTitle", ignore = true)
     @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    IndexDocDTO map(PodcastDTO podcast);
+    ModifiableIndexDocDTO toModifiable(PodcastDTO podcast);
 
-    @Deprecated // TODO delete method once migrated to immutability
+    default ImmutableIndexDocDTO toImmutable(PodcastDTO podcast) {
+        return Optional.ofNullable(podcast)
+            .map(p -> toModifiable(p).toImmutable())
+            .orElse(null);
+    }
+
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
-    IndexDocDTO map(EpisodeDTO episodeDTO);
+    ModifiableIndexDocDTO toModifiable(EpisodeDTO episodeDTO);
 
-    @Deprecated // TODO delete method once migrated to immutability
+    default ImmutableIndexDocDTO toImmutable(EpisodeDTO episode) {
+        return Optional.ofNullable(episode)
+            .map(e -> toModifiable(e).toImmutable())
+            .orElse(null);
+    }
+
     default String map(List<ChapterDTO> chapters){
 
-        if(chapters == null) return null;
+        if (chapters == null) return null;
 
         return String.join("\n", chapters.stream()
             .map(ChapterDTO::getTitle)
             .collect(Collectors.toList()));
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default IndexDocDTO map(EntityDTO dto) {
+    default ModifiableIndexDocDTO toModifiable(IndexDocDTO doc) {
 
-        if (dto == null) return null;
+        if (doc == null) return null;
 
-        if (dto instanceof PodcastDTO) {
-            return map((PodcastDTO) dto);
-        } else if (dto instanceof EpisodeDTO) {
-            return map((EpisodeDTO) dto);
-        } else {
-            throw new RuntimeException("Unsupported echo EntityDTO type : " + dto.getClass());
+        if (doc instanceof  ModifiableIndexDocDTO) {
+            return (ModifiableIndexDocDTO) doc;
         }
+        return new ModifiableIndexDocDTO().from(doc);
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default IndexDocDTO map(Document doc) {
+    default ImmutableIndexDocDTO toImmutable(IndexDocDTO doc) {
+
+        if (doc == null) return null;
+
+        if (doc instanceof  ImmutableIndexDocDTO) {
+            return (ImmutableIndexDocDTO) doc;
+        }
+        return ((ModifiableIndexDocDTO) doc).toImmutable();
+    }
+
+    default ImmutableIndexDocDTO toImmutable(Document doc) {
 
         if (doc == null) return null;
 
         switch (doc.get(IndexField.DOC_TYPE)) {
-            case "podcast": return map(PodcastMapper.INSTANCE.map(doc));
-            case "episode": return map(EpisodeMapper.INSTANCE.map(doc));
+            case "podcast": return toImmutable(PodcastMapper.INSTANCE.toImmutable(doc));
+            case "episode": return toImmutable(EpisodeMapper.INSTANCE.toImmutable(doc));
             default: throw new RuntimeException("Unsupported lucene document type : " + doc.get(IndexField.DOC_TYPE));
         }
     }
 
-    @Deprecated // TODO delete method once migrated to immutability
-    default Document map(IndexDocDTO doc) {
+    default Document toLucene(IndexDocDTO doc) {
 
         if (doc == null) return null;
 
         final Document lucene = new Document();
 
-        if (doc.getDocType()        != null) { lucene.add(new StringField(IndexField.DOC_TYPE, doc.getDocType(), Field.Store.YES)); }
-        if (doc.getEchoId()         != null) { lucene.add(new StringField(IndexField.ECHO_ID, doc.getEchoId(), Field.Store.YES)); }
-        if (doc.getTitle()          != null) { lucene.add(new TextField(IndexField.TITLE, doc.getTitle(), Field.Store.YES)); }
-        if (doc.getLink()           != null) { lucene.add(new TextField(IndexField.LINK, doc.getLink(), Field.Store.YES)); }
-        if (doc.getDescription()    != null) { lucene.add(new TextField(IndexField.DESCRIPTION, doc.getDescription(), Field.Store.YES)); }
-        if (doc.getPodcastTitle()   != null) { lucene.add(new TextField(IndexField.PODCAST_TITLE, doc.getPodcastTitle(), Field.Store.YES)); }
-        if (doc.getPubDate()        != null) { lucene.add(new StringField(IndexField.PUB_DATE, DateMapper.INSTANCE.asString(doc.getPubDate()), Field.Store.YES)); }
-        if (doc.getImage()          != null) { lucene.add(new TextField(IndexField.ITUNES_IMAGE, doc.getImage(), Field.Store.YES)); }
-        if (doc.getItunesAuthor()   != null) { lucene.add(new TextField(IndexField.ITUNES_AUTHOR, doc.getItunesAuthor(), Field.Store.NO)); }
-        if (doc.getItunesSummary()  != null) { lucene.add(new TextField(IndexField.ITUNES_SUMMARY, doc.getItunesSummary(), Field.Store.YES)); }
-        if (doc.getChapterMarks()   != null) { lucene.add(new TextField(IndexField.CHAPTER_MARKS, doc.getChapterMarks(), Field.Store.NO)); }
-        if (doc.getContentEncoded() != null) { lucene.add(new TextField(IndexField.CONTENT_ENCODED, doc.getContentEncoded(), Field.Store.NO)); }
-        if (doc.getWebsiteData()    != null) { lucene.add(new TextField(IndexField.WEBSITE_DATA, doc.getWebsiteData(), Field.Store.NO)); }
+        Optional.ofNullable(doc.getDocType())
+            .ifPresent(value -> lucene.add(new StringField(IndexField.DOC_TYPE, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getEchoId())
+            .ifPresent(value -> lucene.add(new StringField(IndexField.ECHO_ID, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getTitle())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.TITLE, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getLink())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.LINK, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getDescription())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.DESCRIPTION, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getPodcastTitle())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.PODCAST_TITLE, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getPubDate())
+            .map(DateMapper.INSTANCE::asString)
+            .ifPresent(value -> lucene.add(new StringField(IndexField.PUB_DATE, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getImage())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.ITUNES_IMAGE, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getItunesAuthor())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.ITUNES_AUTHOR, value, Field.Store.NO)));
+        Optional.ofNullable(doc.getItunesSummary())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.ITUNES_SUMMARY, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getChapterMarks())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.CHAPTER_MARKS, value, Field.Store.NO)));
+        Optional.ofNullable(doc.getContentEncoded())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.CONTENT_ENCODED, value, Field.Store.NO)));
+        Optional.ofNullable(doc.getWebsiteData())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.WEBSITE_DATA, value, Field.Store.NO)));
 
         return lucene;
     }
-
 }

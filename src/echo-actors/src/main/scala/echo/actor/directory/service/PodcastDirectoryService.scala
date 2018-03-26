@@ -39,30 +39,30 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def save(podcastDTO: PodcastDTO): Option[PodcastDTO] = {
         log.debug("Request to save Podcast : {}", podcastDTO)
-        val podcast = PodcastMapper.INSTANCE.map(podcastDTO)
+        val podcast = podcastMapper.toEntity(podcastDTO)
         val result = podcastRepository.save(podcast)
-        Option(podcastMapper.map(result))
+        Option(podcastMapper.toImmutable(result))
     }
 
     @Transactional
     def findOne(id: Long): Option[PodcastDTO] = {
         log.debug("Request to get Podcast (ID) : {}", id)
         val result = podcastRepository.findOne(id)
-        Option(podcastMapper.map(result))
+        Option(podcastMapper.toImmutable(result))
     }
 
     @Transactional
     def findOneByEchoId(exo: String): Option[PodcastDTO] = {
         log.debug("Request to get Podcast (EXO) : {}", exo)
         val result = podcastRepository.findOneByEchoId(exo)
-        Option(podcastMapper.map(result))
+        Option(podcastMapper.toImmutable(result))
     }
 
     @Transactional
     def findOneByFeed(feedExo: String): Option[PodcastDTO] = {
         log.debug("Request to get Podcast by feed (EXO) : {}", feedExo)
         val result = podcastRepository.findOneByFeed(feedExo)
-        Option(podcastMapper.map(result))
+        Option(podcastMapper.toImmutable(result))
     }
 
     @Transactional
@@ -72,7 +72,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
         val pageable = new PageRequest(page, size, sort)
         podcastRepository.findAll(pageable)
             .asScala
-            .map(p => podcastMapper.map(p))
+            .map(p => podcastMapper.toImmutable(p))
             .toList
     }
 
@@ -92,7 +92,7 @@ class PodcastDirectoryService(private val log: LoggingAdapter,
         val pageable = new PageRequest(page, size, sort)
         podcastRepository.findByRegistrationCompleteTrue(pageable)
             .asScala
-            .map(p => podcastMapper.map(p))
+            .map(p => podcastMapper.toImmutable(p))
             .toList
     }
 

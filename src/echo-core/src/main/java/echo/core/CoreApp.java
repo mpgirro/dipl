@@ -1,18 +1,14 @@
 package echo.core;
 
-import echo.core.domain.dto.immutable.TestEpisode;
+import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
 import echo.core.index.IndexCommitter;
+import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneCommitter;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.dto.ResultWrapperDTO;
+import echo.core.index.LuceneSearcher;
 import echo.core.parse.api.FyydAPI;
 import echo.core.parse.rss.FeedParser;
-import echo.core.index.IndexSearcher;
-import echo.core.index.LuceneSearcher;
 import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
 import echo.core.util.ExoGenerator;
@@ -119,7 +115,7 @@ public class CoreApp {
 
             } else if(isCmd(cmd,"test-index-search")){
                 index(new String[]{"https://feeds.metaebene.me/freakshow/m4a"});
-                searcher.refresh(); // I need to manually refresh here, otherwise there will be no results because auto-refresh has not triggered yet
+                searcher.refresh(); // I need to manually refresh here, otherwise there will be no getResults because auto-refresh has not triggered yet
                 search(new String[]{"Sendung"});
             } else if (isCmd(cmd,"print-fyyd-feeds")) {
                 if (commands.length == 2) {
@@ -210,17 +206,20 @@ public class CoreApp {
         try {
             final String feedData = download(feed);
 
-            final PodcastDTO podcast = this.feedParser.parseFeed(feedData);
-            podcast.setEchoId(feed);
+            final ModifiablePodcastDTO podcast = new ModifiablePodcastDTO().from(feedParser.parseFeed(feedData));
+            podcast.setEchoId(idGenerator.getNewExo());
 
-            this.committer.add(podcast);
+            this.committer.add(podcast.toImmutable());
 
-            final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
-            for (EpisodeDTO episode : episodes) {
+            final List<ModifiableEpisodeDTO> episodes = feedParser.extractEpisodes(feedData).stream()
+                .map(e -> new ModifiableEpisodeDTO().from(e))
+                .collect(Collectors.toList());
+
+            for (ModifiableEpisodeDTO episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
                 episode.setEchoId(idGenerator.getNewExo());
-                this.committer.add(episode);
+                this.committer.add(episode.toImmutable());
             }
         } catch (IOException | FeedParsingException e) {
             e.printStackTrace();
@@ -242,7 +241,7 @@ public class CoreApp {
 
         final String query = String.join(" ", querys);
         final ResultWrapperDTO results = this.searcher.search(query, 1, 100);
-        out.println("Found "+results.getTotalHits()+" results for query '" + query + "'");
+        out.println("Found "+results.getTotalHits()+" getResults for query '" + query + "'");
         out.println("Results:");
         for(IndexDocDTO doc : results.getResults()){
             out.println();

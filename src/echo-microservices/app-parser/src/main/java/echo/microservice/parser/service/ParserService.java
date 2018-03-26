@@ -2,11 +2,11 @@ package echo.microservice.parser.service;
 
 import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.async.job.ParserJob;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
+import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.IndexMapper;
+import echo.core.mapper.PodcastMapper;
 import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.RomeFeedParser;
 import org.jsoup.Jsoup;
@@ -18,7 +18,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -36,6 +38,8 @@ public class ParserService {
     private final FeedParser feedParser = new RomeFeedParser();
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
+    private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
+    private final EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -48,17 +52,19 @@ public class ParserService {
             final Optional<PodcastDTO> podcast = Optional.ofNullable(feedParser.parseFeed(feedData));
             if (podcast.isPresent()) {
 
-                final PodcastDTO p = podcast.get();
+                final ModifiablePodcastDTO p = podcastMapper.toModifiable(podcast.get());
                 p.setEchoId(podcastExo);
 
-                Optional.ofNullable(p.getTitle()).ifPresent(t -> p.setTitle(t.trim()));
-                Optional.ofNullable(p.getDescription()).ifPresent(d -> p.setDescription(Jsoup.clean(d, Whitelist.basic())));
+                Optional.ofNullable(p.getTitle())
+                    .ifPresent(t -> p.setTitle(t.trim()));
+                Optional.ofNullable(p.getDescription())
+                    .ifPresent(d -> p.setDescription(Jsoup.clean(d, Whitelist.basic())));
 
                 if (isNewPodcast) {
                     // TODO replace by sending job to queue
                     final String indexAddDocUrl = INDEX_URL+"/index/doc";
                     log.debug("Sending doc to index with request : {}", indexAddDocUrl);
-                    final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.map(p));
+                    final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.toImmutable(p));
                     restTemplate.postForEntity(indexAddDocUrl, request, IndexDocDTO.class);
 
                     if (!isNullOrEmpty(p.getLink())) {
@@ -72,7 +78,7 @@ public class ParserService {
                 // tell catalog to update podcast metadata
                 final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
                 log.debug("Sending podcast for update to catalog with request : {}", catalogUpdateUrl);
-                restTemplate.put(catalogUpdateUrl, p);
+                restTemplate.put(catalogUpdateUrl, p.toImmutable());
 
                 processEpisodes(podcastExo, feedData);
             } else {
@@ -100,8 +106,10 @@ public class ParserService {
     }
 
     private void processEpisodes(String podcastExo, String feedData) throws FeedParsingException {
-        final EpisodeDTO[] episodes = feedParser.extractEpisodes(feedData);
-        for (EpisodeDTO e : episodes) {
+        final List<ModifiableEpisodeDTO> episodes = feedParser.extractEpisodes(feedData).stream()
+            .map(episodeMapper::toModifiable)
+            .collect(Collectors.toList());
+        for (ModifiableEpisodeDTO e : episodes) {
 
             Optional.ofNullable(e.getTitle()).ifPresent(t -> e.setTitle(t.trim()));
             Optional.ofNullable(e.getDescription()).ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
@@ -113,7 +121,7 @@ public class ParserService {
             log.debug("Sending episode for registration to catalog with request : {}", catalogRegistrationUrl);
             final EpisodeRegisterJob job = new EpisodeRegisterJob();
             job.setPodcastExo(podcastExo);
-            job.setEpisode(e);
+            job.setEpisode(e.toImmutable());
             final HttpEntity<EpisodeRegisterJob> request = new HttpEntity<>(job);
             restTemplate.postForEntity(catalogRegistrationUrl, request, EpisodeRegisterJob.class);
         }

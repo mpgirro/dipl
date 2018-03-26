@@ -3,7 +3,7 @@ package echo.actor.gateway.json
 import java.time.LocalDateTime
 import java.util
 
-import echo.core.domain.dto.PodcastDTO
+import echo.core.domain.dto.{ImmutablePodcastDTO, PodcastDTO}
 import echo.core.mapper.DateMapper
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsBoolean, JsNull, JsObject, JsString, JsValue, RootJsonFormat}
 
@@ -45,18 +45,18 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
                     JsString(pubDate), JsString(description), JsString(image),
                     JsArray(itunesCategories), JsString(itunesSummary), JsString(itunesAuthor), JsString(itunesKeywords)) =>
 
-                    val podcast = new PodcastDTO()
-                    podcast.setEchoId(echoId)
-                    podcast.setTitle(title)
-                    podcast.setLink(link)
-                    podcast.setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
-                    podcast.setDescription(description)
-                    podcast.setImage(image)
-                    podcast.setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
-                    podcast.setItunesSummary(itunesSummary)
-                    podcast.setItunesAuthor(itunesAuthor)
-                    podcast.setItunesKeywords(itunesKeywords)
-                    podcast
+                    ImmutablePodcastDTO.builder()
+                        .setEchoId(echoId)
+                        .setTitle(title)
+                        .setLink(link)
+                        .setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))
+                        .setDescription(description)
+                        .setImage(image)
+                        .setItunesCategories(new util.HashSet[String](itunesCategories.map(_.convertTo[String]).asJava))
+                        .setItunesSummary(itunesSummary)
+                        .setItunesAuthor(itunesAuthor)
+                        .setItunesKeywords(itunesKeywords)
+                        .create()
 
                 case _ => throw DeserializationException("PodcastDTO expected")
             }

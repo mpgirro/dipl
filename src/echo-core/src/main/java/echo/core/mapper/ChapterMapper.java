@@ -1,13 +1,17 @@
 package echo.core.mapper;
 
+import echo.core.domain.dto.ChapterDTO;
+import echo.core.domain.dto.ImmutableChapterDTO;
+import echo.core.domain.dto.ModifiableChapterDTO;
 import echo.core.domain.entity.Chapter;
 import echo.core.domain.entity.Episode;
-import echo.core.domain.dto.ChapterDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -20,12 +24,58 @@ public interface ChapterMapper {
 
     @Mapping(source = "episode.id", target = "episodeId")
     @Mapping(source = "episode.echoId", target = "episodeExo")
-    ChapterDTO map(Chapter entity);
+    ModifiableChapterDTO toModifiable(Chapter chapter);
+
+    default ModifiableChapterDTO toModifiable(ChapterDTO chapter) {
+
+        if (chapter == null) return null;
+
+        if (chapter instanceof  ModifiableChapterDTO) {
+            return (ModifiableChapterDTO) chapter;
+        }
+        return new ModifiableChapterDTO().from(chapter);
+    }
+
+    default ImmutableChapterDTO toImmutable(ChapterDTO chapter) {
+
+        if (chapter == null) return null;
+
+        if (chapter instanceof  ImmutableChapterDTO) {
+            return (ImmutableChapterDTO) chapter;
+        }
+        return ((ModifiableChapterDTO) chapter).toImmutable();
+    }
 
     @Mapping(source = "episodeId", target = "episode")
-    Chapter map(ChapterDTO dto);
+    Chapter toEntity(ChapterDTO dto);
 
-    ChapterDTO update(ChapterDTO src, @MappingTarget ChapterDTO target);
+    ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ModifiableChapterDTO target);
+
+    default ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ChapterDTO target) {
+
+        if (target == null) return null;
+
+        ModifiableChapterDTO modTarget;
+        if (target instanceof  ModifiableChapterDTO) {
+            modTarget = (ModifiableChapterDTO) target;
+        } else {
+            modTarget = new ModifiableChapterDTO().from(target);
+        }
+        return update(src, modTarget);
+    }
+
+    default ImmutableChapterDTO updateImmutable(ChapterDTO src, @MappingTarget ChapterDTO target) {
+
+        if (target == null) return null;
+
+        ModifiableChapterDTO modTarget;
+        if (target instanceof  ModifiableChapterDTO) {
+            modTarget = (ModifiableChapterDTO) target;
+        } else {
+            modTarget = new ModifiableChapterDTO().from(target);
+        }
+        return update(src, modTarget).toImmutable();
+    }
 
     default Episode episodeFromId(Long id) {
 
@@ -36,4 +86,5 @@ public interface ChapterMapper {
 
         return episode;
     }
+
 }

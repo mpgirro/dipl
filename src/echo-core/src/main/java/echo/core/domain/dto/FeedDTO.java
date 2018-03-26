@@ -1,120 +1,36 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import echo.core.domain.feed.FeedStatus;
+import org.immutables.value.Value;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 
 /**
  * @author Maximilian Irro
  */
-public class FeedDTO implements EntityDTO {
+@Value.Immutable
+@Value.Modifiable            // generates implementation with setters, required by mappers
+@Value.Style(
+    get        = {"is*", "get*"}, // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",// generates public no args constructor
+    build      = "create", // rename 'build' method on builder to 'create'
+    visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
+)
+@JsonSerialize(as = ImmutableFeedDTO.class)
+@JsonDeserialize(as = ImmutableFeedDTO.class)
+public interface FeedDTO {
 
-    private Long id;
-    private String echoId;
-    private Long podcastId;
-    private String podcastExo;
+    @Nullable Long getId();
+    @Nullable Long getPodcastId();
+    @Nullable String getEchoId();
+    @Nullable String getPodcastEchoId();
+    @Nullable String getUrl();
+    @Nullable LocalDateTime getLastChecked();
+    @Nullable FeedStatus getLastStatus();
+    @Nullable LocalDateTime getRegistrationTimestamp();
 
-    // TODO save MIME type of feed
-    // TODO title
-
-    private String url;
-    private LocalDateTime lastChecked;
-    private FeedStatus lastStatus;
-
-    private LocalDateTime registrationTimestamp;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getEchoId() {
-        return this.echoId;
-    }
-
-    @Override
-    public void setEchoId(String echoId) {
-        this.echoId = echoId;
-    }
-
-    public Long getPodcastId() {
-        return podcastId;
-    }
-
-    public void setPodcastId(Long podcastId) {
-        this.podcastId = podcastId;
-    }
-
-    public String getPodcastExo() {
-        return podcastExo;
-    }
-
-    public void setPodcastExo(String podcastExo) {
-        this.podcastExo = podcastExo;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public LocalDateTime getLastChecked() {
-        return lastChecked;
-    }
-
-    public void setLastChecked(LocalDateTime lastChecked) {
-        this.lastChecked = lastChecked;
-    }
-
-    public FeedStatus getLastStatus() {
-        return lastStatus;
-    }
-
-    public void setLastStatus(FeedStatus lastStatus) {
-        this.lastStatus = lastStatus;
-    }
-
-    public LocalDateTime getRegistrationTimestamp() {
-        return registrationTimestamp;
-    }
-
-    public void setRegistrationTimestamp(LocalDateTime registrationTimestamp) {
-        this.registrationTimestamp = registrationTimestamp;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeedDTO that = (FeedDTO) o;
-
-        return echoId.equals(that.echoId);
-    }
-
-    @Override
-    public int hashCode() {
-        return echoId.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "FeedDTO{\n" +
-            "\tid=" + id + ",\n" +
-            "\techoId='" + echoId + "\',\n" +
-            "\tpodcastId=" + podcastId + ",\n" +
-            "\tpodcastExo=" + podcastExo + ",\n" +
-            "\turl='" + url + "\',\n" +
-            "\tlastChecked=" + lastChecked + ",\n" +
-            "\tlastStatus='" + lastStatus + "\',\n" +
-            "\tregistrationTimestamp=" + registrationTimestamp + ",\n" +
-            '}';
-    }
 }

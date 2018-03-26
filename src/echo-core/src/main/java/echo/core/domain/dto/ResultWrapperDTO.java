@@ -1,58 +1,48 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.value.Value;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Maximilian Irro
  */
-public class ResultWrapperDTO {
+@Value.Immutable
+@Value.Modifiable // generates implementation with setters, required by mappers
+@Value.Style(
+    get        = {"is*", "get*"}, // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",// generates public no args constructor
+    build      = "create", // rename 'build' method on builder to 'create'
+    visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
+)
+@JsonSerialize(as = ImmutableResultWrapperDTO.class)
+@JsonDeserialize(as = ImmutableResultWrapperDTO.class)
+public interface ResultWrapperDTO {
 
-    private int currPage;
-    private int maxPage;
-    private int totalHits;
-    private IndexDocDTO[] results;
+    @Nullable
+    Integer getCurrPage();
 
-    public ResultWrapperDTO(){
+    @Nullable
+    Integer getMaxPage();
 
+    @Nullable
+    Integer getTotalHits();
+
+    @Nullable
+    List<IndexDocDTO> getResults();
+
+    static ResultWrapperDTO empty() {
+        return ImmutableResultWrapperDTO.builder()
+            .setCurrPage(0)
+            .setMaxPage(0)
+            .setTotalHits(0)
+            .setResults(Collections.emptyList())
+            .create();
     }
 
-    public int getCurrPage() {
-        return currPage;
-    }
-
-    public void setCurrPage(int currPage) {
-        this.currPage = currPage;
-    }
-
-    public int getMaxPage() {
-        return maxPage;
-    }
-
-    public void setMaxPage(int maxPage) {
-        this.maxPage = maxPage;
-    }
-
-    public int getTotalHits() {
-        return totalHits;
-    }
-
-    public void setTotalHits(int totalHits) {
-        this.totalHits = totalHits;
-    }
-
-    public IndexDocDTO[] getResults() {
-        return results;
-    }
-
-    public void setResults(IndexDocDTO[] results) {
-        this.results = results;
-    }
-
-    @Override
-    public String toString() {
-        return "ResultWrapperDTO{" +
-            "currPage=" + currPage +
-            ", maxPage=" + maxPage +
-            ", totalHits=" + totalHits +
-            ", results=" + results +
-            '}';
-    }
 }

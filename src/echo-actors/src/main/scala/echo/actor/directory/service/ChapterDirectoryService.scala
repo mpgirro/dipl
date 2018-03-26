@@ -4,7 +4,7 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.directory.repository.{ChapterRepository, RepositoryFactoryBuilder}
-import echo.core.domain.dto.ChapterDTO
+import echo.core.domain.dto.{ChapterDTO, ModifiableChapterDTO}
 import echo.core.mapper.ChapterMapper
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.transaction.annotation.Transactional
@@ -30,15 +30,16 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
     @Transactional
     def save(chapterDTO: ChapterDTO): Option[ChapterDTO] = {
         log.debug("Request to save Chapter : {}", chapterDTO)
-        val chapter = chapterMapper.map(chapterDTO)
+        val chapter = chapterMapper.toEntity(chapterDTO)
         val result = chapterRepository.save(chapter)
-        Option(ChapterMapper.INSTANCE.map(result))
+        Option(chapterMapper.toModifiable(result).toImmutable)
     }
 
     @Transactional
     def saveAll(episodeId: Long, chapters: java.util.List[ChapterDTO]): Unit = {
         log.debug("Request to save Chapters for Episode (ID) : {}", episodeId)
-        for(c <- chapters.asScala){
+        for(capter <- chapters.asScala){
+            val c = new ModifiableChapterDTO().from(capter)
             c.setEpisodeId(episodeId)
             save(c)
         }
@@ -49,7 +50,7 @@ class ChapterDirectoryService(private val log: LoggingAdapter,
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo)
         chapterRepository.findAllByEpisodeEchoId(episodeExo)
             .asScala
-            .map(c => chapterMapper.map(c))
+            .map(c => chapterMapper.toModifiable(c).toImmutable)
             .toList
     }
 

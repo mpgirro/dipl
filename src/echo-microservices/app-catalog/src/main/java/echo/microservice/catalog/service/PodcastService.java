@@ -1,6 +1,7 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
+import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.Podcast;
 import echo.core.mapper.PodcastMapper;
@@ -49,20 +50,22 @@ public class PodcastService {
     @Transactional
     public Optional<PodcastDTO> save(PodcastDTO podcastDTO) {
         log.debug("Request to save Podcast : {}", podcastDTO);
-        if (isNullOrEmpty(podcastDTO.getEchoId())) {
-            podcastDTO.setEchoId(exoGenerator.getNewExo());
+        final ModifiablePodcastDTO p = podcastMapper.toModifiable(podcastDTO);
+        if (isNullOrEmpty(p.getEchoId())) {
+            p.setEchoId(exoGenerator.getNewExo());
         }
-        final Podcast podcast = podcastMapper.map(podcastDTO);
+        final Podcast podcast = podcastMapper.toEntity(p);
         final Podcast result = podcastRepository.save(podcast);
-        return Optional.of(podcastMapper.map(result));
+        return Optional.of(podcastMapper.toImmutable(result));
     }
 
     @Transactional
     public Optional<PodcastDTO> update(PodcastDTO podcastDTO) {
         log.debug("Request to update Podcast : {}", podcastDTO);
         return findOneByEchoId(podcastDTO.getEchoId())
+            .map(podcastMapper::toModifiable)
             .map(podcast -> {
-                final long id = podcast.getId();
+                final Long id = podcast.getId();
                 podcastMapper.update(podcastDTO, podcast);
                 podcast.setId(id);
                 return save(podcast);
@@ -74,21 +77,21 @@ public class PodcastService {
     public Optional<PodcastDTO> findOne(Long id) {
         log.debug("Request to get Podcast (ID) : {}", id);
         final Podcast result = podcastRepository.findOne(id);
-        return Optional.ofNullable(podcastMapper.map(result));
+        return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);
         final Podcast result = podcastRepository.findOneByEchoId(exo);
-        return Optional.ofNullable(podcastMapper.map(result));
+        return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByFeed(String feedExo) {
         log.debug("Request to get Podcast by feed (EXO) : {}", feedExo);
         final Podcast result = podcastRepository.findOneByFeed(feedExo);
-        return Optional.ofNullable(podcastMapper.map(result));
+        return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
@@ -96,7 +99,7 @@ public class PodcastService {
         log.debug("Request to get all Podcasts by page/size : ({},{})", page, size);
         final PageRequest pageable = getPageableSortedByTitle(page, size);
         return podcastRepository.findAll(pageable).getContent().stream()
-            .map(podcastMapper::map)
+            .map(podcastMapper::toImmutable)
             .collect(Collectors.toList());
     }
 
@@ -114,7 +117,7 @@ public class PodcastService {
         log.debug("Request to get all Podcasts where registration is complete by page : {} and size : {}", page, size);
         final PageRequest pageable = getPageableSortedByTitle(page, size);
         return podcastRepository.findByRegistrationCompleteTrue(pageable).stream()
-            .map(podcastMapper::map)
+            .map(podcastMapper::toImmutable)
             .collect(Collectors.toList());
     }
 

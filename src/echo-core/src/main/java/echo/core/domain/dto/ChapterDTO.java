@@ -1,94 +1,33 @@
 package echo.core.domain.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.value.Value;
+
+import javax.annotation.Nullable;
+
 /**
  * @author Maximilian Irro
  */
-public class ChapterDTO {
+@Value.Immutable
+@Value.Modifiable            // generates implementation with setters, required by mappers
+@Value.Style(
+    get        = {"is*", "get*"}, // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",// generates public no args constructor
+    build      = "create", // rename 'build' method on builder to 'create'
+    visibility = Value.Style.ImplementationVisibility.PUBLIC // Generated class will be always public
+)
+@JsonSerialize(as = ImmutableChapterDTO.class)
+@JsonDeserialize(as = ImmutableChapterDTO.class)
+public interface ChapterDTO {
 
-    private Long id;
-    private String start;
-    private String title;
-    private String href;
-    private String image;
-    private Long episodeId;
-    private String episodeExo;
+    @Nullable Long getId();
+    @Nullable Long getEpisodeId();
+    @Nullable String getStart();
+    @Nullable String getTitle();
+    @Nullable String getHref();
+    @Nullable String getImage();
+    @Nullable String getEpisodeExo();
 
-    public ChapterDTO() { }
-
-    public ChapterDTO(ChapterDTO c) {
-        this.start = c.getStart();
-        this.title = c.getTitle();
-        this.href = c.getHref();
-        this.image = c.getImage();
-        this.episodeExo = c.getEpisodeExo();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStart() {
-        return start;
-    }
-
-    public void setStart(String start) {
-        this.start = start;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    public void setHref(String href) {
-        this.href = href;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Long getEpisodeId() {
-        return episodeId;
-    }
-
-    public void setEpisodeId(Long episodeId) {
-        this.episodeId = episodeId;
-    }
-
-    public String getEpisodeExo() {
-        return episodeExo;
-    }
-
-    public void setEpisodeExo(String episodeExo) {
-        this.episodeExo = episodeExo;
-    }
-
-    @Override
-    public String toString() {
-        return "ChapterDTO{" +
-            "id=" + id +
-            ", start='" + start + '\'' +
-            ", title='" + title + '\'' +
-            ", href='" + href + '\'' +
-            ", image='" + image + '\'' +
-            ", episodeId=" + episodeId +
-            ", episodeExo=" + episodeExo +
-            '}';
-    }
 }

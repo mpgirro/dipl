@@ -4,10 +4,11 @@ import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 
+import java.util.List;
+
 /**
  * @author Maximilian Irro
  */
-@Deprecated
 public interface FeedParser {
 
     String NAMESPACE_ITUNES = "http://www.itunes.com/dtds/podcast-1.0.dtd";
@@ -21,6 +22,6 @@ public interface FeedParser {
 
     PodcastDTO parseFeed(String xmlData) throws FeedParsingException;
 
-    EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException;
+    List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException;
 
 }

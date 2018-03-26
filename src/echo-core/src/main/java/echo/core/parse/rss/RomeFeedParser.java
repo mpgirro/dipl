@@ -2,24 +2,21 @@ package echo.core.parse.rss;
 
 import com.rometools.modules.atom.modules.AtomLinkModule;
 import com.rometools.modules.content.ContentModule;
+import com.rometools.modules.itunes.EntryInformation;
 import com.rometools.modules.itunes.FeedInformation;
 import com.rometools.modules.itunes.types.Category;
+import com.rometools.rome.feed.atom.Link;
 import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndImage;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.dto.ChapterDTO;
+import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
-
-import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.modules.itunes.EntryInformation;
-import com.rometools.rome.feed.atom.Link;
-import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
 import echo.core.parse.rss.rome.PodloveSimpleChapterItem;
+import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
 import echo.core.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,6 @@ import java.util.stream.Collectors;
 /**
  * @author Maximilian Irro
  */
-@Deprecated
 public class RomeFeedParser implements FeedParser {
 
     private static final Logger log = LoggerFactory.getLogger(RomeFeedParser.class);
@@ -48,92 +44,95 @@ public class RomeFeedParser implements FeedParser {
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed feed = input.build(inputSource);
 
-            final PodcastDTO podcast = new PodcastDTO();
+            final ImmutablePodcastDTO.Builder builder = ImmutablePodcastDTO.builder();
 
-            podcast.setTitle(feed.getTitle());
-            podcast.setLink(UrlUtil.sanitize(feed.getLink()));
-            podcast.setDescription(feed.getDescription());
+            builder.setTitle(feed.getTitle());
+            String link = UrlUtil.sanitize(feed.getLink());
+            builder.setLink(link);
+            builder.setDescription(feed.getDescription());
 
+            SyndImage img = null;
             if (feed.getImage() != null) {
-                final SyndImage img = feed.getImage();
+                img = feed.getImage();
                 if(img.getUrl() != null){
-                    podcast.setImage(img.getUrl());
+                    builder.setImage(img.getUrl());
                 }
 
                 // now, it title/link/description were NULL, we use the values set in
                 // the image tag as fallbacks because they usually have the same values
-                if (podcast.getTitle() == null && img.getTitle() != null) {
-                    podcast.setTitle(img.getTitle());
+                if (feed.getTitle() == null && img.getTitle() != null) {
+                    builder.setTitle(img.getTitle());
                 }
-                if (podcast.getLink() == null && img.getLink() != null) {
-                    podcast.setLink(UrlUtil.sanitize(img.getLink()));
+                if (link == null && img.getLink() != null) {
+                    link = UrlUtil.sanitize(img.getLink());
+                    builder.setLink(link);
                 }
-                if (podcast.getDescription() == null && img.getDescription() != null) {
-                    podcast.setDescription(img.getDescription());
+                if (feed.getDescription() == null && img.getDescription() != null) {
+                    builder.setDescription(img.getDescription());
                 }
             }
 
             if (feed.getPublishedDate() != null) {
-                podcast.setPubDate(LocalDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
+                builder.setPubDate(LocalDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
             }
-            podcast.setLanguage(feed.getLanguage());
-            podcast.setGenerator(feed.getGenerator());
-            podcast.setCopyright(feed.getCopyright());
-            podcast.setDocs(feed.getDocs());
-            podcast.setManagingEditor(feed.getManagingEditor());
+            builder.setLanguage(feed.getLanguage());
+            builder.setGenerator(feed.getGenerator());
+            builder.setCopyright(feed.getCopyright());
+            builder.setDocs(feed.getDocs());
+            builder.setManagingEditor(feed.getManagingEditor());
 
             // access the <itunes:...> entries
             final Module itunesFeedModule = feed.getModule(FeedInformation.URI);
             final FeedInformation itunes = (FeedInformation) itunesFeedModule;
             if (itunes != null) {
-                podcast.setItunesSummary(itunes.getSummary());
-                podcast.setItunesAuthor(itunes.getAuthor());
-                podcast.setItunesKeywords(String.join(", ", itunes.getKeywords()));
+                builder.setItunesSummary(itunes.getSummary());
+                builder.setItunesAuthor(itunes.getAuthor());
+                builder.setItunesKeywords(String.join(", ", itunes.getKeywords()));
 
                 // we set the itunes image as a fallback only
                 if (itunes.getImage() != null) {
-                    if (podcast.getImage() == null) {
-                        podcast.setImage(itunes.getImage().toExternalForm());
+                    if (img == null || img.getUrl() == null) {
+                        builder.setImage(itunes.getImage().toExternalForm());
                     }
                 }
-                podcast.setItunesCategories(new LinkedHashSet<>(
+                builder.setItunesCategories(new LinkedHashSet<>(
                     itunes.getCategories().stream()
                         .map(Category::getName)
                         .collect(Collectors.toCollection(LinkedList::new))));
-                podcast.setItunesExplicit(itunes.getExplicit());
-                podcast.setItunesBlock(itunes.getBlock());
-                podcast.setItunesType(itunes.getType());
-                podcast.setItunesOwnerName(itunes.getOwnerName());
-                podcast.setItunesOwnerEmail(itunes.getOwnerEmailAddress());
-                //podcast.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().map(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
+                builder.setItunesExplicit(itunes.getExplicit());
+                builder.setItunesBlock(itunes.getBlock());
+                builder.setItunesType(itunes.getType());
+                builder.setItunesOwnerName(itunes.getOwnerName());
+                builder.setItunesOwnerEmail(itunes.getOwnerEmailAddress());
+                //builder.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().toImmutable(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
             } else {
                 log.debug("No iTunes Namespace elements found in Podcast");
             }
 
             // here I process the feed specific atom Links
             final List<Link> atomLinks = getAtomLinks(feed);
-            for(Link atomLink : atomLinks){
-                if(atomLink.getRel().equals("http://podlove.org/deep-link")){
+            for (Link atomLink : atomLinks) {
+                if (atomLink.getRel().equals("http://podlove.org/deep-link")) {
                     // TODO this should be a link to the episode website (but is it always though?!)
-                } else if(atomLink.getRel().equals("payment")){
+                } else if (atomLink.getRel().equals("payment")) {
                     // TODO
-                } else if(atomLink.getRel().equals("self")){
+                } else if (atomLink.getRel().equals("self")) {
                     // TODO
-                } else if(atomLink.getRel().equals("alternate")){
+                } else if (atomLink.getRel().equals("alternate")) {
                     // TODO
-                } else if(atomLink.getRel().equals("first")){
+                } else if (atomLink.getRel().equals("first")) {
                     // TODO
-                } else if(atomLink.getRel().equals("next")){
+                } else if (atomLink.getRel().equals("next")) {
                     // TODO
-                } else if(atomLink.getRel().equals("last")){
+                } else if (atomLink.getRel().equals("last")) {
                     // TODO
-                } else if(atomLink.getRel().equals("hub")){
+                } else if (atomLink.getRel().equals("hub")) {
                     // TODO
-                } else if(atomLink.getRel().equals("search")){
+                } else if (atomLink.getRel().equals("search")) {
                     // TODO
-                } else if(atomLink.getRel().equals("via")) {
+                } else if (atomLink.getRel().equals("via")) {
                     // TODO
-                } else if(atomLink.getRel().equals("related")) {
+                } else if (atomLink.getRel().equals("related")) {
                     // TODO
                 } else if (atomLink.getRel().equals("prev-archive")) {
                 } else {
@@ -141,7 +140,7 @@ public class RomeFeedParser implements FeedParser {
                 }
             }
 
-            return podcast;
+            return builder.create();
 
         } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed", e);
@@ -149,35 +148,35 @@ public class RomeFeedParser implements FeedParser {
     }
 
     @Override
-    public EpisodeDTO[] extractEpisodes(String xmlData) throws FeedParsingException {
+    public List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException {
         try {
             final InputSource inputSource = new InputSource( new StringReader( xmlData ) );
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed feed = input.build(inputSource);
 
             final List<EpisodeDTO> results = new LinkedList<>();
-            for(SyndEntry e : feed.getEntries()){
-                final EpisodeDTO episode = new EpisodeDTO();
+            for (SyndEntry e : feed.getEntries()) {
+                final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
 
-                episode.setTitle(e.getTitle());
-                episode.setLink(UrlUtil.sanitize(e.getLink()));
-                if(e.getPublishedDate() != null){
-                    episode.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
+                builder.setTitle(e.getTitle());
+                builder.setLink(UrlUtil.sanitize(e.getLink()));
+                if (e.getPublishedDate() != null) {
+                    builder.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
                 //doc.setGuid(TODO);
-                if(e.getDescription() != null){
-                    episode.setDescription(e.getDescription().getValue());
+                if (e.getDescription() != null) {
+                    builder.setDescription(e.getDescription().getValue());
                 }
 
                 if (e.getUri() != null) {
-                    episode.setGuid(e.getUri());
+                    builder.setGuid(e.getUri());
                 }
 
-                if(e.getEnclosures() != null && e.getEnclosures().size() > 0){
+                if (e.getEnclosures() != null && e.getEnclosures().size() > 0) {
                     final SyndEnclosure enclosure = e.getEnclosures().get(0);
-                    episode.setEnclosureUrl(enclosure.getUrl());
-                    episode.setEnclosureType(enclosure.getType());
-                    episode.setEnclosureLength(enclosure.getLength());
+                    builder.setEnclosureUrl(enclosure.getUrl());
+                    builder.setEnclosureType(enclosure.getType());
+                    builder.setEnclosureLength(enclosure.getLength());
                     if(e.getEnclosures().size() > 1){
                         log.warn("Encountered multiple <enclosure> elements in <item> element");
                     }
@@ -187,9 +186,9 @@ public class RomeFeedParser implements FeedParser {
                 final Module contentModule = e.getModule(ContentModule.URI);
                 final ContentModule content = (ContentModule) contentModule;
                 if (content != null) {
-                    if(content.getEncodeds().size() > 0){
-                        episode.setContentEncoded(content.getEncodeds().get(0));
-                        if(content.getEncodeds().size() > 1){
+                    if (content.getEncodeds().size() > 0) {
+                        builder.setContentEncoded(content.getEncodeds().get(0));
+                        if (content.getEncodeds().size() > 1) {
                             log.warn("Encountered multiple <content:encoded> elements in <item> element");
                         }
                     }
@@ -199,18 +198,18 @@ public class RomeFeedParser implements FeedParser {
                 final Module itunesEntryModule = e.getModule(EntryInformation.URI);
                 final EntryInformation itunes = (EntryInformation) itunesEntryModule;
                 if (itunes != null) {
-                    if(itunes.getImage() != null){
-                        episode.setImage(itunes.getImage().toExternalForm());
+                    if (itunes.getImage() != null) {
+                        builder.setImage(itunes.getImage().toExternalForm());
                     }
-                    if(itunes.getDuration() != null){
-                        episode.setItunesDuration(itunes.getDuration().toString());
+                    if (itunes.getDuration() != null) {
+                        builder.setItunesDuration(itunes.getDuration().toString());
                     }
-                    episode.setItunesSubtitle(itunes.getSubtitle());
-                    episode.setItunesAuthor(itunes.getAuthor());
-                    episode.setItunesSummary(itunes.getSummary());
-                    episode.setItunesSeason(itunes.getSeason());
-                    episode.setItunesEpisode(itunes.getEpisode());
-                    episode.setItunesEpisodeType(itunes.getEpisodeType());
+                    builder.setItunesSubtitle(itunes.getSubtitle());
+                    builder.setItunesAuthor(itunes.getAuthor());
+                    builder.setItunesSummary(itunes.getSummary());
+                    builder.setItunesSeason(itunes.getSeason());
+                    builder.setItunesEpisode(itunes.getEpisode());
+                    builder.setItunesEpisodeType(itunes.getEpisodeType());
                 } else {
                     log.debug("No iTunes Namespace elements found in Episode");
                 }
@@ -222,21 +221,21 @@ public class RomeFeedParser implements FeedParser {
                     if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
                         final List<ChapterDTO> chapters = new LinkedList<>();
                         for (PodloveSimpleChapterItem sci : simpleChapters.getChapters()) {
-                            final ChapterDTO c = new ChapterDTO();
+                            final ImmutableChapterDTO.Builder c = ImmutableChapterDTO.builder();
                             c.setStart(sci.getStart());
                             c.setTitle(sci.getTitle());
                             c.setHref(sci.getHref());
-                            chapters.add(c);
+                            chapters.add(c.create());
                         }
-                        episode.setChapters(chapters);
+                        builder.setChapters(chapters);
                     }
                 } else {
                     log.debug("No Podlove Simple Chapter marks found in Episode");
                 }
 
-                results.add(episode);
+                results.add(builder.create());
             }
-            return results.toArray(new EpisodeDTO[0]);
+            return results;
         } catch (FeedException | IllegalArgumentException e) {
             throw new FeedParsingException("RomeFeedParser could not parse the feed (trying to extract the episodes)", e);
         }
@@ -245,10 +244,11 @@ public class RomeFeedParser implements FeedParser {
     private List<Link> getAtomLinks(SyndFeed syndFeed){
         final Module atomFeedModule = syndFeed.getModule(AtomLinkModule.URI);
         final AtomLinkModule atomLinkModule = (AtomLinkModule) atomFeedModule;
-        if(atomLinkModule != null){
+        if (atomLinkModule != null) {
             return atomLinkModule.getLinks();
         }
         return new LinkedList<>();
     }
 
 }
+

@@ -1,9 +1,6 @@
 package echo.core.mapper;
 
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
@@ -25,18 +22,34 @@ public interface NullMapper {
     NullMapper INSTANCE = Mappers.getMapper( NullMapper.class );
 
     @Mapping(target = "id", ignore = true)
-    PodcastDTO map(PodcastDTO dto);
+    ModifiablePodcastDTO clearModifiable(PodcastDTO dto);
+
+    default ImmutablePodcastDTO clearImmutable(PodcastDTO dto) {
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    EpisodeDTO map(EpisodeDTO dto);
+    ModifiableEpisodeDTO clearModifiable(EpisodeDTO dto);
+
+    default ImmutableEpisodeDTO clearImmutable(EpisodeDTO dto) {
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "podcastId", ignore = true)
-    FeedDTO map(FeedDTO dto);
+    ModifiableFeedDTO clearModifiable(FeedDTO dto);
+
+    default ImmutableFeedDTO clearImmutable(FeedDTO dto) {
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "episodeId", ignore = true)
-    ChapterDTO map(ChapterDTO dto);
+    ModifiableChapterDTO clearModifiable(ChapterDTO dto);
+
+    default ImmutableChapterDTO clearImmutable(ChapterDTO dto) {
+        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+    }
 
 }

@@ -3,6 +3,7 @@ package echo.actor.index
 import akka.actor.{Actor, ActorLogging}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol._
+import echo.core.domain.dto.ImmutableIndexDocDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
 
@@ -124,51 +125,42 @@ class IndexStore (val indexPath: String, val createIndex: Boolean) extends Actor
     }
 
     private def processWebsiteQueue(queue: mutable.Queue[(String,String)]): Unit = {
+        if (queue.nonEmpty) {
+            val (echoId,html) = queue.dequeue()
+            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            entry match {
+                case Some(doc) => indexCommitter.update(doc.withWebsiteData(html))
+                case None      => log.error("Could not retrieve from index for update website: echoId={}", echoId)
+            }
 
-        if(queue.isEmpty) return
-
-        val (echoId,html) = queue.dequeue()
-        val entry = Option(indexSearcher.findByEchoId(echoId))
-        entry match {
-            case Some(doc) =>
-                doc.setWebsiteData(html)
-                indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index for update website: echoId={}", echoId)
+            processWebsiteQueue(queue)
         }
-
-        processWebsiteQueue(queue)
     }
 
     private def processImageQueue(queue: mutable.Queue[(String,String)]): Unit = {
+        if (queue.nonEmpty) {
+            val (echoId,image) = queue.dequeue()
+            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            entry match {
+                case Some(doc) => indexCommitter.update(doc.withImage(image))
+                case None      => log.error("Could not retrieve from index for update image: echoId={}", echoId)
+            }
 
-        if(queue.isEmpty) return
-
-        val (echoId,image) = queue.dequeue()
-        val entry = Option(indexSearcher.findByEchoId(echoId))
-        entry match {
-            case Some(doc) =>
-                doc.setImage(image)
-                indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index for update image: echoId={}", echoId)
+            processImageQueue(queue)
         }
-
-        processImageQueue(queue)
     }
 
     private def processLinkQueue(queue: mutable.Queue[(String,String)]): Unit = {
+        if (queue.nonEmpty) {
+            val (echoId,link) = queue.dequeue()
+            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            entry match {
+                case Some(doc) => indexCommitter.update(doc.withLink(link))
+                case None      => log.error("Could not retrieve from index for update link: echoId={}", echoId)
+            }
 
-        if(queue.isEmpty) return
-
-        val (echoId,link) = queue.dequeue()
-        val entry = Option(indexSearcher.findByEchoId(echoId))
-        entry match {
-            case Some(doc) =>
-                doc.setLink(link)
-                indexCommitter.update(doc)
-            case None => log.error("Could not retrieve from index for update link: echoId={}", echoId)
+            processLinkQueue(queue)
         }
-
-        processLinkQueue(queue)
     }
 
 }
