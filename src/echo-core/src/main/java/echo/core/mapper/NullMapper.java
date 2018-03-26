@@ -6,6 +6,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Optional;
+
 /**
  * This mapper cleans all database IDs by setting them to null. Database IDs are only
  * valid in a local scope, and without ensuring they are whiped before sending a DTO
@@ -25,7 +27,10 @@ public interface NullMapper {
     ModifiablePodcastDTO clearModifiable(PodcastDTO dto);
 
     default ImmutablePodcastDTO clearImmutable(PodcastDTO dto) {
-        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+        return Optional.ofNullable(dto)
+            .map(this::clearModifiable)
+            .map(ModifiablePodcastDTO::toImmutable)
+            .orElse(null);
     }
 
     @Mapping(target = "id", ignore = true)
@@ -33,7 +38,10 @@ public interface NullMapper {
     ModifiableEpisodeDTO clearModifiable(EpisodeDTO dto);
 
     default ImmutableEpisodeDTO clearImmutable(EpisodeDTO dto) {
-        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+        return Optional.ofNullable(dto)
+            .map(this::clearModifiable)
+            .map(ModifiableEpisodeDTO::toImmutable)
+            .orElse(null);
     }
 
     @Mapping(target = "id", ignore = true)
@@ -41,7 +49,10 @@ public interface NullMapper {
     ModifiableFeedDTO clearModifiable(FeedDTO dto);
 
     default ImmutableFeedDTO clearImmutable(FeedDTO dto) {
-        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+        return Optional.ofNullable(dto)
+            .map(this::clearModifiable)
+            .map(ModifiableFeedDTO::toImmutable)
+            .orElse(null);
     }
 
     @Mapping(target = "id", ignore = true)
@@ -49,7 +60,10 @@ public interface NullMapper {
     ModifiableChapterDTO clearModifiable(ChapterDTO dto);
 
     default ImmutableChapterDTO clearImmutable(ChapterDTO dto) {
-        return (dto == null) ? null : clearModifiable(dto).toImmutable();
+        return Optional.ofNullable(dto)
+            .map(this::clearModifiable)
+            .map(ModifiableChapterDTO::toImmutable)
+            .orElse(null);
     }
 
 }

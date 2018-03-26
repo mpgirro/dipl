@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * @author Maximilian Irro
  */
 @Mapper(
-    uses={UrlMapper.class, DateMapper.class},
+    uses = {UrlMapper.class, DateMapper.class},
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
 )
 public interface PodcastMapper {
@@ -30,28 +30,33 @@ public interface PodcastMapper {
 
     default ImmutablePodcastDTO toImmutable(Podcast podcast) {
         return Optional.ofNullable(podcast)
-            .map(p -> toModifiable(p).toImmutable())
+            .map(this::toModifiable)
+            .map(ModifiablePodcastDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiablePodcastDTO toModifiable(PodcastDTO podcast) {
-
-        if (podcast == null) return null;
-
-        if (podcast instanceof  ModifiablePodcastDTO) {
-            return (ModifiablePodcastDTO) podcast;
-        }
-        return new ModifiablePodcastDTO().from(podcast);
+        return Optional.ofNullable(podcast)
+            .map(p -> {
+                if (p instanceof ModifiablePodcastDTO) {
+                    return (ModifiablePodcastDTO) p;
+                } else {
+                    return new ModifiablePodcastDTO().from(p);
+                }
+            })
+            .orElse(null);
     }
 
     default ImmutablePodcastDTO toImmutable(PodcastDTO podcast) {
-
-        if (podcast == null) return null;
-
-        if (podcast instanceof  ImmutablePodcastDTO) {
-            return (ImmutablePodcastDTO) podcast;
-        }
-        return ((ModifiablePodcastDTO) podcast).toImmutable();
+        return Optional.ofNullable(podcast)
+            .map(p -> {
+                if (p instanceof ImmutablePodcastDTO) {
+                    return (ImmutablePodcastDTO) p;
+                } else {
+                    return ((ModifiablePodcastDTO) p).toImmutable();
+                }
+            })
+            .orElse(null);
     }
 
     @Mapping(target = "episodes", ignore = true)
@@ -60,57 +65,49 @@ public interface PodcastMapper {
 
     ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget ModifiablePodcastDTO target);
 
-    // TODO
     default ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget PodcastDTO target) {
-
-        if (target == null) return null;
-
-        ModifiablePodcastDTO modTarget;
-        if (target instanceof  ModifiablePodcastDTO) {
-            modTarget = (ModifiablePodcastDTO) target;
-        } else {
-            modTarget = new ModifiablePodcastDTO().from(target);
-        }
-        return update(src, modTarget);
+        return Optional.ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiablePodcastDTO) {
+                    return (ModifiablePodcastDTO) t;
+                } else {
+                    return new ModifiablePodcastDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t))
+            .orElse(null);
     }
 
     default ImmutablePodcastDTO updateImmutable(PodcastDTO src, @MappingTarget PodcastDTO target) {
-
-        if (target == null) return null;
-
-        ModifiablePodcastDTO modTarget;
-        if (target instanceof  ModifiablePodcastDTO) {
-            modTarget = (ModifiablePodcastDTO) target;
-        } else {
-            modTarget = new ModifiablePodcastDTO().from(target);
-        }
-        return update(src, modTarget).toImmutable();
+        return Optional.ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiablePodcastDTO) {
+                    return (ModifiablePodcastDTO) t;
+                } else {
+                    return new ModifiablePodcastDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t))
+            .map(ModifiablePodcastDTO::toImmutable)
+            .orElse(null);
     }
 
     default ImmutablePodcastDTO toImmutable(org.apache.lucene.document.Document doc) {
-
-        if (doc == null) return null;
-
-        final ImmutablePodcastDTO.Builder builder = ImmutablePodcastDTO.builder();
-
-        Optional.ofNullable(doc.get(IndexField.ECHO_ID))
-            .ifPresent(builder::setEchoId);
-        Optional.ofNullable(doc.get(IndexField.TITLE))
-            .ifPresent(builder::setTitle);
-        Optional.ofNullable(doc.get(IndexField.LINK))
-            .ifPresent(builder::setLink);
-        Optional.ofNullable(doc.get(IndexField.PUB_DATE))
-            .map(DateMapper.INSTANCE::asLocalDateTime)
-            .ifPresent(builder::setPubDate);
-        Optional.ofNullable(Stream.of(doc.get(IndexField.ITUNES_SUMMARY), doc.get(IndexField.DESCRIPTION))
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null))
-            .ifPresent(builder::setDescription);
-        Optional.ofNullable(doc.get(IndexField.ITUNES_IMAGE))
-            .ifPresent(builder::setImage);
-
-        return builder.create();
+        return Optional.ofNullable(doc)
+            .map(d -> ImmutablePodcastDTO.builder()
+                .setEchoId(d.get(IndexField.ECHO_ID))
+                .setTitle(d.get(IndexField.TITLE))
+                .setLink(d.get(IndexField.LINK))
+                .setPubDate(Optional.ofNullable(d.get(IndexField.PUB_DATE))
+                    .map(DateMapper.INSTANCE::asLocalDateTime)
+                    .orElse(null))
+                .setDescription(Stream.of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null))
+                .setImage(d.get(IndexField.ITUNES_IMAGE))
+                .create())
+            .orElse(null);
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, DateMapper.class},
+@Mapper(uses = {PodcastMapper.class, DateMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface FeedMapper {
 
@@ -28,28 +28,33 @@ public interface FeedMapper {
 
     default ImmutableFeedDTO toImmutable(Feed feed) {
         return Optional.ofNullable(feed)
-            .map(f -> toModifiable(f).toImmutable())
+            .map(this::toModifiable)
+            .map(ModifiableFeedDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiableFeedDTO toModifiable(FeedDTO feed) {
-
-        if (feed == null) return null;
-
-        if (feed instanceof  ModifiableFeedDTO) {
-            return (ModifiableFeedDTO) feed;
-        }
-        return new ModifiableFeedDTO().from(feed);
+        return Optional.ofNullable(feed)
+            .map(f -> {
+                if (f instanceof ModifiableFeedDTO) {
+                    return (ModifiableFeedDTO) f;
+                } else {
+                    return new ModifiableFeedDTO().from(f);
+                }
+            })
+            .orElse(null);
     }
 
     default ImmutableFeedDTO toImmutable(FeedDTO feed) {
-
-        if (feed == null) return null;
-
-        if (feed instanceof  ImmutableFeedDTO) {
-            return (ImmutableFeedDTO) feed;
-        }
-        return ((ModifiableFeedDTO) feed).toImmutable();
+        return Optional.ofNullable(feed)
+            .map(f -> {
+                if (f instanceof ImmutableFeedDTO) {
+                    return (ImmutableFeedDTO) f;
+                } else {
+                    return ((ModifiableFeedDTO) f).toImmutable();
+                }
+            })
+            .orElse(null);
     }
 
     @Mapping(source = "podcastId", target = "podcast")
@@ -58,39 +63,40 @@ public interface FeedMapper {
     ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
 
     default ModifiableFeedDTO update(FeedDTO src, @MappingTarget FeedDTO target) {
-
-        if (target == null) return null;
-
-        ModifiableFeedDTO modTarget;
-        if (target instanceof  ModifiableFeedDTO) {
-            modTarget = (ModifiableFeedDTO) target;
-        } else {
-            modTarget = new ModifiableFeedDTO().from(target);
-        }
-        return update(src, modTarget);
+        return Optional.ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiableFeedDTO) {
+                    return (ModifiableFeedDTO) t;
+                } else {
+                    return new ModifiableFeedDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t))
+            .orElse(null);
     }
 
     default ImmutableFeedDTO updateImmutable(FeedDTO src, @MappingTarget FeedDTO target) {
-
-        if (target == null) return null;
-
-        ModifiableFeedDTO modTarget;
-        if (target instanceof  ModifiableFeedDTO) {
-            modTarget = (ModifiableFeedDTO) target;
-        } else {
-            modTarget = new ModifiableFeedDTO().from(target);
-        }
-        return update(src, modTarget).toImmutable();
+        return Optional.ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiableFeedDTO) {
+                    return (ModifiableFeedDTO) t;
+                } else {
+                    return new ModifiableFeedDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t))
+            .map(ModifiableFeedDTO::toImmutable)
+            .orElse(null);
     }
 
-    default Podcast podcastFromId(Long id) {
-
-        if (id == null) return null;
-
-        final Podcast podcast = new Podcast();
-        podcast.setId(id);
-
-        return podcast;
+    default Podcast podcastFromId(Long podcastId) {
+        return Optional.ofNullable(podcastId)
+            .map(id -> {
+                final Podcast p = new Podcast();
+                p.setId(id);
+                return p;
+            })
+            .orElse(null);
     }
 
 }

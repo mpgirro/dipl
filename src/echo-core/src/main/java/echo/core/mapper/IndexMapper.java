@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, EpisodeMapper.class},
+@Mapper(uses = {PodcastMapper.class, EpisodeMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface IndexMapper {
 
@@ -26,8 +26,9 @@ public interface IndexMapper {
 
     @Mapping(target = "docType", constant = "podcast")
     @Mapping(target = "podcastTitle", ignore = true)
-    @Mapping(target = "contentEncoded", ignore = true)
     @Mapping(target = "chapterMarks", ignore = true)
+    @Mapping(target = "contentEncoded", ignore = true)
+    @Mapping(target = "transcript", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO toModifiable(PodcastDTO podcast);
 
@@ -40,42 +41,47 @@ public interface IndexMapper {
     @Mapping(target = "docType", constant = "episode")
     @Mapping(source = "chapters", target = "chapterMarks")
     @Mapping(target = "itunesSummary", ignore = true)
+    @Mapping(target = "transcript", ignore = true)
     @Mapping(target = "websiteData", ignore = true)
     ModifiableIndexDocDTO toModifiable(EpisodeDTO episodeDTO);
 
     default ImmutableIndexDocDTO toImmutable(EpisodeDTO episode) {
         return Optional.ofNullable(episode)
-            .map(e -> toModifiable(e).toImmutable())
+            .map(this::toModifiable)
+            .map(ModifiableIndexDocDTO::toImmutable)
             .orElse(null);
     }
 
     default String map(List<ChapterDTO> chapters){
-
-        if (chapters == null) return null;
-
-        return String.join("\n", chapters.stream()
-            .map(ChapterDTO::getTitle)
-            .collect(Collectors.toList()));
+        return Optional.ofNullable(chapters)
+            .map(cs -> String.join("\n", cs.stream()
+                .map(ChapterDTO::getTitle)
+                .collect(Collectors.toList())))
+            .orElse(null);
     }
 
     default ModifiableIndexDocDTO toModifiable(IndexDocDTO doc) {
-
-        if (doc == null) return null;
-
-        if (doc instanceof  ModifiableIndexDocDTO) {
-            return (ModifiableIndexDocDTO) doc;
-        }
-        return new ModifiableIndexDocDTO().from(doc);
+        return Optional.ofNullable(doc)
+            .map(d -> {
+                if (doc instanceof ModifiableIndexDocDTO) {
+                    return (ModifiableIndexDocDTO) d;
+                } else {
+                    return new ModifiableIndexDocDTO().from(d);
+                }
+            })
+            .orElse(null);
     }
 
     default ImmutableIndexDocDTO toImmutable(IndexDocDTO doc) {
-
-        if (doc == null) return null;
-
-        if (doc instanceof  ImmutableIndexDocDTO) {
-            return (ImmutableIndexDocDTO) doc;
-        }
-        return ((ModifiableIndexDocDTO) doc).toImmutable();
+        return Optional.ofNullable(doc)
+            .map(d -> {
+                if (d instanceof ImmutableIndexDocDTO) {
+                    return (ImmutableIndexDocDTO) d;
+                } else {
+                    return ((ModifiableIndexDocDTO) d).toImmutable();
+                }
+            })
+            .orElse(null);
     }
 
     default ImmutableIndexDocDTO toImmutable(Document doc) {
@@ -120,6 +126,8 @@ public interface IndexMapper {
             .ifPresent(value -> lucene.add(new TextField(IndexField.CHAPTER_MARKS, value, Field.Store.NO)));
         Optional.ofNullable(doc.getContentEncoded())
             .ifPresent(value -> lucene.add(new TextField(IndexField.CONTENT_ENCODED, value, Field.Store.NO)));
+        Optional.ofNullable(doc.getTranscript())
+            .ifPresent(value -> lucene.add(new TextField(IndexField.TRANSCRIPT, value, Field.Store.NO)));
         Optional.ofNullable(doc.getWebsiteData())
             .ifPresent(value -> lucene.add(new TextField(IndexField.WEBSITE_DATA, value, Field.Store.NO)));
 

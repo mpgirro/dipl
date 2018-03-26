@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -61,11 +62,23 @@ public class DateMapper {
     }
 
     public Date asDate(LocalDate source) {
+        return Optional.ofNullable(source)
+            .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            .orElse(null);
+
+        /* TODO
         return source == null ? null : Date.from(source.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        */
     }
 
     public Date asDate(ZonedDateTime source) {
+        return Optional.ofNullable(source)
+            .map(d ->Date.from(d.toInstant()))
+            .orElse(null);
+
+        /* TODO
         return source == null ? null : Date.from(source.toInstant());
+        */
     }
 
     public Date asDate(LocalDateTime source) {

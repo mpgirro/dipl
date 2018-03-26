@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * @author Maximilian Irro
  */
-@Mapper(uses={PodcastMapper.class, ChapterMapper.class, DateMapper.class},
+@Mapper(uses = {PodcastMapper.class, ChapterMapper.class, DateMapper.class},
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface EpisodeMapper {
 
@@ -28,33 +28,38 @@ public interface EpisodeMapper {
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
-    @Mapping(target = "chapters", ignore = true)
+    //@Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
     ModifiableEpisodeDTO toModifiable(Episode episode);
 
     default ImmutableEpisodeDTO toImmutable(Episode episode) {
         return Optional.ofNullable(episode)
-            .map(e -> toModifiable(e).toImmutable())
+            .map(this::toModifiable)
+            .map(ModifiableEpisodeDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiableEpisodeDTO toModifiable(EpisodeDTO episode) {
-
-        if (episode == null) return null;
-
-        if (episode instanceof  ModifiableEpisodeDTO) {
-            return (ModifiableEpisodeDTO) episode;
-        }
-        return new ModifiableEpisodeDTO().from(episode);
+        return Optional.ofNullable(episode)
+            .map(e -> {
+                if (e instanceof ModifiableEpisodeDTO) {
+                    return (ModifiableEpisodeDTO) e;
+                } else {
+                    return new ModifiableEpisodeDTO().from(e);
+                }
+            })
+            .orElse(null);
     }
 
     default ImmutableEpisodeDTO toImmutable(EpisodeDTO episode) {
-
-        if (episode == null) return null;
-
-        if (episode instanceof  ImmutableEpisodeDTO) {
-            return (ImmutableEpisodeDTO) episode;
-        }
-        return ((ModifiableEpisodeDTO) episode).toImmutable();
+        return Optional.ofNullable(episode)
+            .map(e -> {
+                if (e instanceof ImmutableEpisodeDTO) {
+                    return (ImmutableEpisodeDTO) e;
+                } else {
+                    return ((ModifiableEpisodeDTO) e).toImmutable();
+                }
+            })
+            .orElse(null);
     }
 
     @Mapping(source = "podcastId", target = "podcast")
@@ -62,72 +67,62 @@ public interface EpisodeMapper {
 
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
-    // TODO
     default ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-
-        if (target == null) return null;
-
-        ModifiableEpisodeDTO modTarget;
-        if (target instanceof  ModifiableEpisodeDTO) {
-            modTarget = (ModifiableEpisodeDTO) target;
-        } else {
-            modTarget = new ModifiableEpisodeDTO().from(target);
-        }
-        return update(src, modTarget);
+        return Optional
+            .ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiableEpisodeDTO) {
+                    return (ModifiableEpisodeDTO) t;
+                } else {
+                    return new ModifiableEpisodeDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t))
+            .orElse(null);
     }
 
     default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-
-        if (target == null) return null;
-
-        ModifiableEpisodeDTO modTarget;
-        if (target instanceof  ModifiableEpisodeDTO) {
-            modTarget = (ModifiableEpisodeDTO) target;
-        } else {
-            modTarget = new ModifiableEpisodeDTO().from(target);
-        }
-        return update(src, modTarget).toImmutable();
-    }
-
-    // TODO unused because we use PodcastMapper.class ?
-    default Podcast podcastFromId(Long id) {
-
-        if (id == null) return null;
-
-        final Podcast podcast = new Podcast();
-        podcast.setId(id);
-
-        return podcast;
+        return Optional
+            .ofNullable(target)
+            .map(t -> {
+                if (t instanceof ModifiableEpisodeDTO) {
+                    return (ModifiableEpisodeDTO) t;
+                } else {
+                    return new ModifiableEpisodeDTO().from(t);
+                }
+            })
+            .map(t -> update(src, t).toImmutable())
+            .orElse(null);
     }
 
     default ImmutableEpisodeDTO toImmutable(org.apache.lucene.document.Document doc) {
+        return Optional.ofNullable(doc)
+            .map(d -> ImmutableEpisodeDTO.builder()
+                .setEchoId(d.get(IndexField.ECHO_ID))
+                .setTitle(d.get(IndexField.TITLE))
+                .setLink(d.get(IndexField.LINK))
+                .setPubDate(Optional.ofNullable(d.get(IndexField.PUB_DATE))
+                    .map(DateMapper.INSTANCE::asLocalDateTime)
+                    .orElse(null))
+                .setDescription(Stream.of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null))
+                .setImage(d.get(IndexField.ITUNES_IMAGE))
+                .setItunesDuration(d.get(IndexField.ITUNES_DURATION))
+                .setPodcastTitle(d.get(IndexField.PODCAST_TITLE))
+                .create())
+            .orElse(null);
+    }
 
-        if (doc == null) return null;
-
-        final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
-
-        Optional.ofNullable(doc.get(IndexField.ECHO_ID))
-            .ifPresent(builder::setEchoId);
-        Optional.ofNullable(doc.get(IndexField.TITLE))
-            .ifPresent(builder::setTitle);
-        Optional.ofNullable(doc.get(IndexField.LINK))
-            .ifPresent(builder::setLink);
-        Optional.ofNullable(doc.get(IndexField.PUB_DATE))
-            .map(DateMapper.INSTANCE::asLocalDateTime)
-            .ifPresent(builder::setPubDate);
-        Optional.ofNullable(doc.get(IndexField.PODCAST_TITLE))
-            .ifPresent(builder::setPodcastTitle);
-        Optional.ofNullable(Stream.of(doc.get(IndexField.ITUNES_SUMMARY), doc.get(IndexField.DESCRIPTION))
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null))
-            .ifPresent(builder::setDescription);
-        Optional.ofNullable(doc.get(IndexField.ITUNES_IMAGE))
-            .ifPresent(builder::setImage);
-        Optional.ofNullable(doc.get(IndexField.ITUNES_DURATION))
-            .ifPresent(builder::setItunesDuration);
-
-        return builder.create();
+    default Podcast podcastFromId(Long podcastId) {
+        return Optional.ofNullable(podcastId)
+            .map(id -> {
+                final Podcast p = new Podcast();
+                p.setId(id);
+                return p;
+            })
+            .orElse(null);
     }
 
 }
