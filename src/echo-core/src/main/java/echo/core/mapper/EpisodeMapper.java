@@ -67,8 +67,7 @@ public interface EpisodeMapper {
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
     default ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-        return Optional
-            .ofNullable(target)
+        return Optional.ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableEpisodeDTO) {
                     return (ModifiableEpisodeDTO) t;
@@ -80,8 +79,7 @@ public interface EpisodeMapper {
     }
 
     default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-        return Optional
-            .ofNullable(target)
+        return Optional.ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableEpisodeDTO) {
                     return (ModifiableEpisodeDTO) t;
