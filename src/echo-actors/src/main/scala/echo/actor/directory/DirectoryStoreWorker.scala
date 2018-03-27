@@ -259,7 +259,7 @@ class DirectoryStoreWorker(val workerIndex: Int,
 
                 // TODO we'll have to check if an episode is yet known and in the database!
                 // TODO best send a message to self to handle the chapter in a separate phase
-                Option(saved.getChapters)
+                Option(update.getChapters)
                     .foreach(_
                         .asScala
                         .map(c => chapterMapper.toModifiable(c))
@@ -540,12 +540,12 @@ class DirectoryStoreWorker(val workerIndex: Int,
                     // we simply reuse the chapters from since bevore saving the episode, because those yet lack an ID
                     result
                         .map(r => nullMapper.clearImmutable(r)
-                        .withChapters(Option(r.getChapters)
-                            .map(_
-                                .asScala
-                                .map(c => nullMapper.clearImmutable(c))
-                                .asJava)
-                            .orNull))
+                            .withChapters(Option(e.getChapters)
+                                .map(_
+                                    .asScala
+                                    .map(c => nullMapper.clearImmutable(c))
+                                    .asJava)
+                                .orNull))
             }
         }
 
