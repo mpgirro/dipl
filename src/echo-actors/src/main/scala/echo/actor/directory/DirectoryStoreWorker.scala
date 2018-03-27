@@ -18,6 +18,7 @@ import org.springframework.orm.jpa.EntityManagerHolder
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import scala.collection.JavaConverters._
+import scala.concurrent.blocking
 
 /**
   * @author Maximilian Irro
@@ -635,16 +636,18 @@ class DirectoryStoreWorker(val workerIndex: Int,
       * @param services all services used within the callable function, which therefore require a refresh before doing the work
       */
     private def doInTransaction(task: () => Any, services: List[DirectoryService] ): Any = {
-        val em: EntityManager = emf.createEntityManager()
-        TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
-        try {
-            services.foreach(_.refresh(em))
-            task()
-        } finally {
-            if(em.isOpen){
-                em.close()
+        blocking {
+            val em: EntityManager = emf.createEntityManager()
+            TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
+            try {
+                services.foreach(_.refresh(em))
+                task()
+            } finally {
+                if(em.isOpen){
+                    em.close()
+                }
+                TransactionSynchronizationManager.unbindResource(emf)
             }
-            TransactionSynchronizationManager.unbindResource(emf)
         }
     }
 

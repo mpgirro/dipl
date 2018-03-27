@@ -10,6 +10,7 @@ import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Await
+import scala.concurrent.blocking
 import scala.concurrent.duration._
 import scala.io.{Source, StdIn}
 import scala.language.postfixOps
@@ -64,83 +65,87 @@ class CliActor(private val master: ActorRef,
         log.info("CLI read to take commands")
 
         while(!shutdown){
-            val input = StdIn.readLine()
-            log.debug("CLI read : {}", input)
-            def exec(commands: Array[String]): Unit = {
-                commands.toList match {
-                    case "help" :: _ => help()
-                    case q@("q" | "quit" | "exit") :: _ => shutdown = true
+            blocking {
+                val input = StdIn.readLine()
+                log.debug("CLI read : {}", input)
 
-                    case "propose" :: Nil   => usage("propose")
-                    case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
-
-                    case "check" :: "podcast" :: Nil           => usage("check podcast")
-                    case "check" :: "podcast" :: "all" :: Nil  => directoryStore ! CheckAllPodcasts
-                    case "check" :: "podcast" :: "all" :: _    => usage("check podcast")
-                    case "check" :: "podcast" :: echoId :: Nil => directoryStore ! CheckPodcast(echoId)
-                    case "check" :: "podcast" :: _ :: _        => usage("check podcast")
-
-                    case "check" :: "feed" :: Nil              => usage("check feed")
-                    case "check" :: "feed" :: "all" :: Nil     => directoryStore ! CheckAllFeeds
-                    case "check" :: "feed" :: "all" :: _       => usage("check feed")
-                    case "check" :: "feed" :: echoId :: Nil    => directoryStore ! CheckFeed(echoId)
-                    case "check" :: "feed" :: _ :: _           => usage("check feed")
-
-                    case "count" :: "podcasts" :: Nil => directoryStore ! DebugPrintCountAllPodcasts
-                    case "count" :: "podcasts" :: _   => usage("count")
-                    case "count" :: "episodes" :: Nil => directoryStore ! DebugPrintCountAllEpisodes
-                    case "count" :: "episodes" :: _   => usage("count")
-                    case "count" :: "feeds" :: Nil    => directoryStore ! DebugPrintCountAllFeeds
-                    case "count" :: "feeds" :: _      => usage("count")
-                    case "count" :: _                 => usage("count")
-
-                    case "search" :: Nil    => usage("search")
-                    case "search" :: query  => search(query)
-
-                    case "print" :: "database" :: Nil               => usage("print database")
-                    case "print" :: "database" :: "podcasts" :: Nil => directoryStore ! DebugPrintAllPodcasts
-                    case "print" :: "database" :: "podcasts" :: _   => usage("print database")
-                    case "print" :: "database" :: "episodes" :: Nil => directoryStore ! DebugPrintAllEpisodes
-                    case "print" :: "database" :: "episodes" :: _   => usage("print database")
-                    case "print" :: "database" :: "feeds" :: Nil    => directoryStore ! DebugPrintAllFeeds
-                    case "print" :: "database" :: "feeds" :: _      => usage("print database")
-                    case "print" :: "database" :: _                 => usage("print database")
-                    case "print" :: _                               => help()
-
-                    case "load" :: Nil                          => help()
-                    case "load" :: "feeds" :: Nil               => usage("load feeds")
-                    case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
-                    case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
-                    case "load" :: "feeds" :: _                 => usage("load feeds")
-
-                    case "load" :: "fyyd" :: "episodes" :: podcastId :: fyydId :: Nil => crawler ! LoadFyydEpisodes(podcastId, fyydId.toLong)
-                    case "load" :: "fyyd" :: _                                        => usage("load fyyd")
-
-                    case "save" :: Nil                          => help()
-                    case "save" :: "feeds" :: Nil               => usage("save feeds")
-                    case "save" :: "feeds" :: dest :: Nil       => saveFeeds(dest)
-                    case "save" :: "feeds" :: _                 => usage("save feeds")
-
-                    case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
-                    case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
-                    case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
-
-                    case "get" :: "podcast" :: Nil           => usage("get podcast")
-                    case "get" :: "podcast" :: echoId :: Nil => getAndPrintPodcast(echoId)
-                    case "get" :: "podcast" :: echoId :: _   => usage("get podcast")
-
-                    case "get" :: "episode" :: Nil           => usage("get episode")
-                    case "get" :: "episode" :: echoId :: Nil => getAndPrintEpisode(echoId)
-                    case "get" :: "episode" :: echoId :: _   => usage("get episode")
-
-                    case _  => help()
-                }
+                Option(input).foreach(i => exec(i.split(" ")))
             }
-            Option(input).foreach(i => exec(i.split(" ")))
         }
 
         log.info("Terminating due to user request")
         master ! ShutdownSystem()
+    }
+
+    private def exec(commands: Array[String]): Unit = {
+        commands.toList match {
+            case "help" :: _ => help()
+            case q@("q" | "quit" | "exit") :: _ => shutdown = true
+
+            case "propose" :: Nil   => usage("propose")
+            case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
+
+            case "check" :: "podcast" :: Nil           => usage("check podcast")
+            case "check" :: "podcast" :: "all" :: Nil  => directoryStore ! CheckAllPodcasts
+            case "check" :: "podcast" :: "all" :: _    => usage("check podcast")
+            case "check" :: "podcast" :: echoId :: Nil => directoryStore ! CheckPodcast(echoId)
+            case "check" :: "podcast" :: _ :: _        => usage("check podcast")
+
+            case "check" :: "feed" :: Nil              => usage("check feed")
+            case "check" :: "feed" :: "all" :: Nil     => directoryStore ! CheckAllFeeds
+            case "check" :: "feed" :: "all" :: _       => usage("check feed")
+            case "check" :: "feed" :: echoId :: Nil    => directoryStore ! CheckFeed(echoId)
+            case "check" :: "feed" :: _ :: _           => usage("check feed")
+
+            case "count" :: "podcasts" :: Nil => directoryStore ! DebugPrintCountAllPodcasts
+            case "count" :: "podcasts" :: _   => usage("count")
+            case "count" :: "episodes" :: Nil => directoryStore ! DebugPrintCountAllEpisodes
+            case "count" :: "episodes" :: _   => usage("count")
+            case "count" :: "feeds" :: Nil    => directoryStore ! DebugPrintCountAllFeeds
+            case "count" :: "feeds" :: _      => usage("count")
+            case "count" :: _                 => usage("count")
+
+            case "search" :: Nil    => usage("search")
+            case "search" :: query  => search(query)
+
+            case "print" :: "database" :: Nil               => usage("print database")
+            case "print" :: "database" :: "podcasts" :: Nil => directoryStore ! DebugPrintAllPodcasts
+            case "print" :: "database" :: "podcasts" :: _   => usage("print database")
+            case "print" :: "database" :: "episodes" :: Nil => directoryStore ! DebugPrintAllEpisodes
+            case "print" :: "database" :: "episodes" :: _   => usage("print database")
+            case "print" :: "database" :: "feeds" :: Nil    => directoryStore ! DebugPrintAllFeeds
+            case "print" :: "database" :: "feeds" :: _      => usage("print database")
+            case "print" :: "database" :: _                 => usage("print database")
+            case "print" :: _                               => help()
+
+            case "load" :: Nil                          => help()
+            case "load" :: "feeds" :: Nil               => usage("load feeds")
+            case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
+            case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
+            case "load" :: "feeds" :: _                 => usage("load feeds")
+
+            case "load" :: "fyyd" :: "episodes" :: podcastId :: fyydId :: Nil => crawler ! LoadFyydEpisodes(podcastId, fyydId.toLong)
+            case "load" :: "fyyd" :: _                                        => usage("load fyyd")
+
+            case "save" :: Nil                          => help()
+            case "save" :: "feeds" :: Nil               => usage("save feeds")
+            case "save" :: "feeds" :: dest :: Nil       => saveFeeds(dest)
+            case "save" :: "feeds" :: _                 => usage("save feeds")
+
+            case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
+            case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
+            case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
+
+            case "get" :: "podcast" :: Nil           => usage("get podcast")
+            case "get" :: "podcast" :: echoId :: Nil => getAndPrintPodcast(echoId)
+            case "get" :: "podcast" :: echoId :: _   => usage("get podcast")
+
+            case "get" :: "episode" :: Nil           => usage("get episode")
+            case "get" :: "episode" :: echoId :: Nil => getAndPrintEpisode(echoId)
+            case "get" :: "episode" :: echoId :: _   => usage("get episode")
+
+            case _  => help()
+        }
     }
 
     private def usage(cmd: String): Unit = {

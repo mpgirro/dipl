@@ -14,6 +14,7 @@ import echo.core.http.HttpClient
 import echo.core.parse.api.FyydAPI
 
 import scala.compat.java8.OptionConverters._
+import scala.concurrent.blocking
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
@@ -154,50 +155,52 @@ class CrawlerActor extends Actor with ActorLogging {
 
         try {
 
-            val headResult = httpClient.headCheck(url)
+            blocking {
+                val headResult = httpClient.headCheck(url)
 
-            val encoding = headResult.getContentEncoding.asScala
+                val encoding = headResult.getContentEncoding.asScala
 
-            val location = headResult.getLocation.asScala
+                val location = headResult.getLocation.asScala
 
-            // TODO check if eTag differs from last known value
+                // TODO check if eTag differs from last known value
 
-            // TODO check if lastMod differs from last known value
+                // TODO check if lastMod differs from last known value
 
-            location match {
-                case Some(href) =>
-                    log.debug("Sending message to download content : {}", href)
-                    job match {
-                        case WebsiteFetchJob() =>
-                            // if the link in the feed is redirected (which is often the case due
-                            // to some feed analytic tools, we set our records to the new location
-                            if (!url.equals(href)) {
-                                directoryStore ! UpdateLinkByEchoId(exo, href)
-                                indexStore ! IndexStoreUpdateDocLink(exo, href)
-                            }
+                location match {
+                    case Some(href) =>
+                        log.debug("Sending message to download content : {}", href)
+                        job match {
+                            case WebsiteFetchJob() =>
+                                // if the link in the feed is redirected (which is often the case due
+                                // to some feed analytic tools, we set our records to the new location
+                                if (!url.equals(href)) {
+                                    directoryStore ! UpdateLinkByEchoId(exo, href)
+                                    indexStore ! IndexStoreUpdateDocLink(exo, href)
+                                }
 
-                            // we always download websites, because we only do it once anyway
-                            self ! DownloadContent(exo, href, job, encoding) // TODO
-                        //fetchContent(exo, href, job, encoding)
+                                // we always download websites, because we only do it once anyway
+                                self ! DownloadContent(exo, href, job, encoding) // TODO
+                            //fetchContent(exo, href, job, encoding)
 
-                        case _ =>
-                            // if the feed moved to a new URL, we will inform the directory, so
-                            // it will use the new location starting with the next update cycle
-                            if (!url.equals(href)) {
-                                directoryStore ! UpdateFeedUrl(url, href)
-                            }
+                            case _ =>
+                                // if the feed moved to a new URL, we will inform the directory, so
+                                // it will use the new location starting with the next update cycle
+                                if (!url.equals(href)) {
+                                    directoryStore ! UpdateFeedUrl(url, href)
+                                }
 
-                            /*
-                             * TODO
-                             * here I have to do some voodoo with etag/lastMod to
-                             * determine weither the feed changed and I really need to redownload
-                             */
-                            self ! DownloadContent(exo, href, job, encoding) // TODO
-                        //fetchContent(exo, href, job, encoding)
-                    }
-                case None =>
-                    log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
-                    sendErrorNotificationIfFeasable(exo, url, job)
+                                /*
+                                 * TODO
+                                 * here I have to do some voodoo with etag/lastMod to
+                                 * determine weither the feed changed and I really need to redownload
+                                 */
+                                self ! DownloadContent(exo, href, job, encoding) // TODO
+                            //fetchContent(exo, href, job, encoding)
+                        }
+                    case None =>
+                        log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
+                        sendErrorNotificationIfFeasable(exo, url, job)
+                }
             }
 
         } catch {
@@ -237,18 +240,20 @@ class CrawlerActor extends Actor with ActorLogging {
 
         try {
 
-            val data = httpClient.fetchContent(url, encoding.asJava)
-            job match {
-                case NewPodcastFetchJob() =>
-                    parser ! ParseNewPodcastData(url, exo, data)
-                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+            blocking {
+                val data = httpClient.fetchContent(url, encoding.asJava)
+                job match {
+                    case NewPodcastFetchJob() =>
+                        parser ! ParseNewPodcastData(url, exo, data)
+                        directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
 
-                case UpdateEpisodesFetchJob(etag, lastMod) =>
-                    parser ! ParseUpdateEpisodeData(url, exo, data)
-                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    case UpdateEpisodesFetchJob(etag, lastMod) =>
+                        parser ! ParseUpdateEpisodeData(url, exo, data)
+                        directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
 
-                case WebsiteFetchJob() =>
-                    parser ! ParseWebsiteData(exo, data)
+                    case WebsiteFetchJob() =>
+                        parser ! ParseWebsiteData(exo, data)
+                }
             }
 
         } catch {
