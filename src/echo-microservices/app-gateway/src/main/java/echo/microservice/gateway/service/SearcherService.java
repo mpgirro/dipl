@@ -23,10 +23,6 @@ public class SearcherService {
 
     private final Logger log = LoggerFactory.getLogger(SearcherService.class);
 
-    private final String SEARCHER_URL = "http://localhost:3035/searcher"; // TODO do not hardcode, use some sort of discovery mechanism
-
-    private final RestTemplate restTemplate = new RestTemplate();
-
     @Autowired
     private SearcherClient searcherClient;
 

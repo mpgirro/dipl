@@ -15,7 +15,7 @@ import java.util.List;
  */
 @FeignClient(
     name = "searcher",
-    url = "http://localhost:3031/catalog", // TODO obsolete once using registry service
+    url  = "${echo.gateway.catalog-url}", // TODO obsolete once using registry service
     fallbackFactory = CatalogClientFallackFactory.class
 )
 public interface CatalogClient {

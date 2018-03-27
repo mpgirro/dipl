@@ -34,10 +34,6 @@ public class CatalogService {
     @Autowired
     private CatalogClient catalogClient;
 
-    private final String CATALOG_URL = "http://localhost:3031/catalog"; // TODO do not hardcode, use some sort of discovery mechanism
-
-    private final RestTemplate restTemplate = new RestTemplate();
-
     //@HystrixCommand(fallbackMethod = "fallbackGetPodcast")
     public Optional<PodcastDTO> getPodcast(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(
     name = "index",
-    url = "http://localhost:3032/index", // TODO obsolete once using registry service
+    url = "${echo.gateway.index-url}", // TODO obsolete once using registry service
     fallbackFactory = IndexClientFallbackFactory.class
 )
 public interface IndexClient {
