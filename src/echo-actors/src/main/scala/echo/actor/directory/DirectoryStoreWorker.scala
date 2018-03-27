@@ -45,11 +45,7 @@ class DirectoryStoreWorker (workerIndex: Int,
     private var indexStore: ActorRef = _
     private var broker: ActorRef = _
 
-    // I need this to run liquibase
-    //val appCtx = new ClassPathXmlApplicationContext("application-context.xml")
-
     private val repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
-    //private val em: EntityManager = repositoryFactoryBuilder.getEntityManager
     private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 
     private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
@@ -63,12 +59,6 @@ class DirectoryStoreWorker (workerIndex: Int,
     private val chapterMapper = ChapterMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
-
-    /* TODO could I use this to run liquibase manually?
-    val liquibase = new SpringLiquibase()
-    liquibase.setDataSource(repositoryFactoryBuilder.getDataSource)
-    liquibase.setChangeLog("classpath:db/liquibase/master.xml")
-    */
 
     override def postStop: Unit = {
         log.info("shutting down")
