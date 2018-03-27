@@ -1,7 +1,7 @@
 package echo.microservice.catalog.repository;
 
-import echo.core.domain.entity.Chapter;
-import echo.core.domain.entity.Episode;
+import echo.core.domain.entity.ChapterEntity;
+import echo.core.domain.entity.EpisodeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * @author Maximilian Irro
  */
-public interface ChapterRepository extends JpaRepository<Chapter,Long> {
+public interface ChapterRepository extends JpaRepository<ChapterEntity,Long> {
 
-    List<Chapter> findAllByEpisode(Episode episode);
+    List<ChapterEntity> findAllByEpisode(EpisodeEntity episode);
 
-    @Query("SELECT DISTINCT chapter FROM Chapter chapter WHERE chapter.episode.echoId = :echoId")
-    List<Chapter> findAllByEpisodeEchoId(@Param("echoId") String echoId);
+    @Query("SELECT DISTINCT chapter FROM ChapterEntity chapter WHERE chapter.episode.echoId = :echoId")
+    List<ChapterEntity> findAllByEpisodeEchoId(@Param("echoId") String echoId);
 
 }

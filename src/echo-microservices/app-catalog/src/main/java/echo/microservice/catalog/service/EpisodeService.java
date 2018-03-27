@@ -1,9 +1,12 @@
 package echo.microservice.catalog.service;
 
 import echo.core.async.job.EpisodeRegisterJob;
-import echo.core.domain.dto.*;
-import echo.core.domain.entity.Episode;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.IndexDocDTO;
+import echo.core.domain.dto.ModifiableEpisodeDTO;
+import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.entity.EpisodeEntity;
+import echo.core.domain.entity.PodcastEntity;
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
@@ -62,8 +65,8 @@ public class EpisodeService {
         if (isNullOrEmpty(e.getEchoId())) {
             e.setEchoId(exoGenerator.getNewExo());
         }
-        final Episode episode = episodeMapper.toEntity(e);
-        final Episode result = episodeRepository.save(episode);
+        final EpisodeEntity episode = episodeMapper.toEntity(e);
+        final EpisodeEntity result = episodeRepository.save(episode);
         return Optional.of(episodeMapper.toImmutable(result));
     }
 
@@ -145,14 +148,14 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public Optional<EpisodeDTO> findOne(Long id) {
         log.debug("Request to get Episode (ID) : {}", id);
-        final Episode result = episodeRepository.findOne(id);
+        final EpisodeEntity result = episodeRepository.findOne(id);
         return Optional.ofNullable(episodeMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<EpisodeDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Episode (EXO) : {}", exo);
-        final Episode result = episodeRepository.findOneByEchoId(exo);
+        final EpisodeEntity result = episodeRepository.findOneByEchoId(exo);
         return Optional.ofNullable(episodeMapper.toImmutable(result));
     }
 
@@ -167,7 +170,7 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public List<EpisodeDTO> findAllByPodcast(PodcastDTO podcastDTO) {
         log.debug("Request to get all Episodes by Podcast : ", podcastDTO);
-        final Podcast podcast = podcastMapper.toEntity(podcastDTO);
+        final PodcastEntity podcast = podcastMapper.toEntity(podcastDTO);
         return episodeRepository.findAllByPodcast(podcast).stream()
             .map(episodeMapper::toImmutable)
             .collect(Collectors.toList());
@@ -200,7 +203,7 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public Optional<EpisodeDTO> findOneByEnclosure(String enclosureUrl, Long enclosureLength, String enclosureType) {
         log.debug("Request to get Episode by enclosureUrl : '{}' and enclosureLength : {} and enclosureType : {}", enclosureUrl, enclosureLength, enclosureType);
-        final Episode result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType);
+        final EpisodeEntity result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType);
         return Optional.ofNullable(episodeMapper.toImmutable(result));
     }
 

@@ -3,7 +3,7 @@ package echo.microservice.catalog.service;
 import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.entity.PodcastEntity;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
 import echo.core.util.ExoGenerator;
@@ -54,8 +54,8 @@ public class PodcastService {
         if (isNullOrEmpty(p.getEchoId())) {
             p.setEchoId(exoGenerator.getNewExo());
         }
-        final Podcast podcast = podcastMapper.toEntity(p);
-        final Podcast result = podcastRepository.save(podcast);
+        final PodcastEntity podcast = podcastMapper.toEntity(p);
+        final PodcastEntity result = podcastRepository.save(podcast);
         return Optional.of(podcastMapper.toImmutable(result));
     }
 
@@ -76,21 +76,21 @@ public class PodcastService {
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOne(Long id) {
         log.debug("Request to get Podcast (ID) : {}", id);
-        final Podcast result = podcastRepository.findOne(id);
+        final PodcastEntity result = podcastRepository.findOne(id);
         return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);
-        final Podcast result = podcastRepository.findOneByEchoId(exo);
+        final PodcastEntity result = podcastRepository.findOneByEchoId(exo);
         return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByFeed(String feedExo) {
         log.debug("Request to get Podcast by feed (EXO) : {}", feedExo);
-        final Podcast result = podcastRepository.findOneByFeed(feedExo);
+        final PodcastEntity result = podcastRepository.findOneByFeed(feedExo);
         return Optional.ofNullable(podcastMapper.toImmutable(result));
     }
 

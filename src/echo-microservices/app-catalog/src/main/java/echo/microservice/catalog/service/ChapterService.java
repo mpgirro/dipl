@@ -2,8 +2,7 @@ package echo.microservice.catalog.service;
 
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.ModifiableChapterDTO;
-import echo.core.domain.dto.ModifiableEpisodeDTO;
-import echo.core.domain.entity.Chapter;
+import echo.core.domain.entity.ChapterEntity;
 import echo.core.mapper.ChapterMapper;
 import echo.microservice.catalog.repository.ChapterRepository;
 import org.slf4j.Logger;
@@ -33,8 +32,8 @@ public class ChapterService {
     @Transactional
     public Optional<ChapterDTO> save(ChapterDTO chapterDTO) {
         log.debug("Request to save Chapter : {}", chapterDTO);
-        final Chapter chapter = chapterMapper.toEntity(chapterDTO);
-        final Chapter result = chapterRepository.save(chapter);
+        final ChapterEntity chapter = chapterMapper.toEntity(chapterDTO);
+        final ChapterEntity result = chapterRepository.save(chapter);
         return Optional.of(chapterMapper.toModifiable(result).toImmutable());
     }
 

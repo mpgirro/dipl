@@ -2,7 +2,7 @@ package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.*;
-import echo.core.domain.entity.Feed;
+import echo.core.domain.entity.FeedEntity;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
 import echo.core.util.ExoGenerator;
@@ -62,8 +62,8 @@ public class FeedService {
         if (isNullOrEmpty(f.getEchoId())) {
             f.setEchoId(exoGenerator.getNewExo());
         }
-        final Feed feed = feedMapper.toEntity(f);
-        final Feed result = feedRepository.save(feed);
+        final FeedEntity feed = feedMapper.toEntity(f);
+        final FeedEntity result = feedRepository.save(feed);
         return Optional.of(feedMapper.toImmutable(result));
     }
 
@@ -84,14 +84,14 @@ public class FeedService {
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOne(Long id) {
         log.debug("Request to get Feed (ID) : {}", id);
-        final Feed result = feedRepository.findOne(id);
+        final FeedEntity result = feedRepository.findOne(id);
         return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Feed (EXO) : {}", exo);
-        final Feed result = feedRepository.findOneByEchoId(exo);
+        final FeedEntity result = feedRepository.findOneByEchoId(exo);
         return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
@@ -115,7 +115,7 @@ public class FeedService {
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOneByUrlAndPodcastEchoId(String url, String podcastExo) {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo);
-        final Feed result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo);
+        final FeedEntity result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo);
         return Optional.ofNullable(feedMapper.toImmutable(result));
     }
 
