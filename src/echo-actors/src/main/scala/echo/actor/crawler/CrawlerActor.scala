@@ -2,7 +2,7 @@ package echo.actor.crawler
 
 import java.time.LocalDateTime
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
@@ -21,6 +21,12 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
+
+object CrawlerActor {
+    def name(workerIndex: Int): String = "worker-" + workerIndex
+    def props(): Props = Props(new CrawlerActor()).withDispatcher("echo.crawler.dispatcher")
+}
+
 class CrawlerActor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)

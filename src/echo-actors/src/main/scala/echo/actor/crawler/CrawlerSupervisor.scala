@@ -16,6 +16,12 @@ import scala.concurrent.duration._
 /**
   * @author Maximilian Irro
   */
+
+object CrawlerSupervisor {
+    def name(nodeIndex: Int): String = "crawler-" + nodeIndex
+    def props(): Props = Props(new CrawlerSupervisor())
+}
+
 class CrawlerSupervisor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
@@ -100,9 +106,7 @@ class CrawlerSupervisor extends Actor with ActorLogging {
     }
 
     private def createCrawler(): ActorRef = {
-        val crawler = context.actorOf(Props[CrawlerActor]
-            .withDispatcher("echo.crawler.dispatcher"),
-            name = "worker-" + workerIndex)
+        val crawler = context.actorOf(CrawlerActor.props(), CrawlerActor.name(workerIndex))
 
         workerIndex += 1
 

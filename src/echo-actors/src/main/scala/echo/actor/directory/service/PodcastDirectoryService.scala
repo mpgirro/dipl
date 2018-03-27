@@ -22,8 +22,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class PodcastDirectoryService(private val log: LoggingAdapter,
-                              private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class PodcastDirectoryService (log: LoggingAdapter,
+                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var podcastRepository: PodcastRepository = _

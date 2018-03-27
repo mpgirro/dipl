@@ -9,7 +9,15 @@ import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryQuery}
 /**
   * @author Maximilian Irro
   */
+
+object DirectoryBroker {
+    final val name = "directory"
+    def props(): Props = Props(new DirectoryBroker())
+}
+
 class DirectoryBroker extends Actor with ActorLogging {
+
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
@@ -76,9 +84,8 @@ class DirectoryBroker extends Actor with ActorLogging {
     }
 
     private def createDirectoryStore(storeIndex: Int, databaseUrl: String): ActorRef = {
-        val directoryStore = context.actorOf(Props(new DirectoryStore(databaseUrl))
-            .withDispatcher("echo.directory.dispatcher"),
-            name = "store-" + storeIndex)
+        val directoryStore = context.actorOf(DirectoryStore.props(databaseUrl),
+            name = DirectoryStore.name(storeIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )

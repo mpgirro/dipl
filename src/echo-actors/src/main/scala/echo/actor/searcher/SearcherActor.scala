@@ -1,6 +1,6 @@
 package echo.actor.searcher
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.SearchIndex
@@ -8,6 +8,11 @@ import echo.core.domain.dto.{ImmutableResultWrapperDTO, ResultWrapperDTO}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
+
+object SearcherActor {
+    def name(index: Int): String = "searcher-" + index
+    def props(): Props = Props(new SearcherActor()).withDispatcher("echo.searcher.dispatcher")
+}
 
 class SearcherActor extends Actor with ActorLogging {
 

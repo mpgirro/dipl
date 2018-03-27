@@ -8,7 +8,14 @@ import echo.actor.index.IndexProtocol.{IndexCommand, IndexQuery}
 /**
   * @author Maximilian Irro
   */
+object IndexBroker {
+    final val name = "index"
+    def props(): Props = Props(new IndexBroker())
+}
+
 class IndexBroker extends Actor with ActorLogging {
+
+    log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
     private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.index.store-count")).getOrElse(1) // TODO

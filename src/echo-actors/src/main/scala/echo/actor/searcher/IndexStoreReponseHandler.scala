@@ -25,10 +25,13 @@ object IndexStoreReponseHandler {
 
     def props(indexStore: ActorRef, originalSender: Option[ActorRef], internalTimeout: FiniteDuration): Props = {
         Props(new IndexStoreReponseHandler(indexStore, originalSender.get, internalTimeout))
+            .withDispatcher("echo.searcher.dispatcher")
     }
 }
 
-class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef, internalTimeout: FiniteDuration) extends Actor with ActorLogging {
+class IndexStoreReponseHandler(indexStore: ActorRef,
+                               originalSender: ActorRef,
+                               internalTimeout: FiniteDuration) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

@@ -1,7 +1,7 @@
 package echo.actor.gateway
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives.{complete, get, _}
@@ -24,6 +24,12 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
+
+object GatewayActor {
+    def name(nodeIndex: Int): String = "gateway-" + nodeIndex
+    def props(): Props = Props(new GatewayActor()).withDispatcher("echo.gateway.dispatcher")
+}
+
 class GatewayActor extends Actor with ActorLogging with JsonSupport {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)

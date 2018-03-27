@@ -19,8 +19,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class FeedDirectoryService(private val log: LoggingAdapter,
-                           private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class FeedDirectoryService (log: LoggingAdapter,
+                            rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var feedRepository: FeedRepository = _

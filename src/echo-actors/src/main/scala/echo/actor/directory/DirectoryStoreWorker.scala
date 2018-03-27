@@ -3,7 +3,7 @@ package echo.actor.directory
 import java.time.LocalDateTime
 import javax.persistence.{EntityManager, EntityManagerFactory}
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol._
@@ -24,8 +24,15 @@ import scala.concurrent.blocking
   * @author Maximilian Irro
   */
 
-class DirectoryStoreWorker(val workerIndex: Int,
-                           val databaseUrl: String) extends Actor with ActorLogging {
+object DirectoryStoreWorker {
+    def name(workerIndex: Int): String = "worker-" + workerIndex
+    def props(workerIndex: Int, databaseUrl: String): Props = {
+        Props(new DirectoryStoreWorker(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
+    }
+}
+
+class DirectoryStoreWorker (workerIndex: Int,
+                            databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

@@ -17,8 +17,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class EpisodeDirectoryService(private val log: LoggingAdapter,
-                              private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class EpisodeDirectoryService (log: LoggingAdapter,
+                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var episodeRepository: EpisodeRepository = _

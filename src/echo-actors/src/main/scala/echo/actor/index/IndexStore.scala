@@ -1,6 +1,6 @@
 package echo.actor.index
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, Props}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol._
 import echo.core.domain.dto.ImmutableIndexDocDTO
@@ -12,7 +12,18 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class IndexStore (val indexPath: String, val createIndex: Boolean) extends Actor with ActorLogging {
+/**
+  * @author Maximilian Irro
+  */
+object IndexStore {
+    def name(storeIndex: Int): String = "store-" + storeIndex
+    def props(indexPath: String, createIndex: Boolean): Props = {
+        Props(new IndexStore(indexPath, createIndex)).withDispatcher("echo.index.dispatcher")
+    }
+}
+
+class IndexStore (indexPath: String,
+                  createIndex: Boolean) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

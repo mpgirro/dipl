@@ -14,8 +14,8 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class ChapterDirectoryService(private val log: LoggingAdapter,
-                              private val rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class ChapterDirectoryService (log: LoggingAdapter,
+                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var chapterRepository: ChapterRepository = _

@@ -14,7 +14,15 @@ import liquibase.resource.ClassLoaderResourceAccessor
 /**
   * @author Maximilian Irro
   */
-class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
+
+object DirectoryStore {
+    def name(storeIndex: Int): String = "store-" + storeIndex
+    def props(databaseUrl: String): Props = {
+        Props(new DirectoryStore(databaseUrl)).withDispatcher("echo.directory.dispatcher")
+    }
+}
+
+class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -92,9 +100,7 @@ class DirectoryStore (val databaseUrl: String) extends Actor with ActorLogging {
 
     private def createDirectoryStoreWorkerActor(databaseUrl: String): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(Props(new DirectoryStoreWorker(workerIndex, databaseUrl))
-            .withDispatcher("echo.directory.dispatcher"),
-            name = "worker-" + workerIndex)
+        val directoryStore = context.actorOf(DirectoryStoreWorker.props(workerIndex, databaseUrl), DirectoryStoreWorker.name(workerIndex))
         currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died

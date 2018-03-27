@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.util.Base64
 import javax.imageio.ImageIO
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.mortennobel.imagescaling.ResampleOp
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
@@ -22,6 +22,14 @@ import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 
 import scala.collection.JavaConverters._
+
+/**
+  * @author Maximilian Irro
+  */
+object ParserActor {
+    def name(workerIndex: Int): String = "worker-" + workerIndex
+    def props(): Props = Props(new ParserActor()).withDispatcher("echo.parser.dispatcher")
+}
 
 class ParserActor extends Actor with ActorLogging {
 

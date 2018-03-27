@@ -40,38 +40,22 @@ class MasterSupervisor extends Actor with ActorLogging {
 
     override def preStart(): Unit = {
 
-        index = context.watch(context.actorOf(Props[IndexBroker]
-            .withDispatcher("echo.index.dispatcher"),
-            name = "index"))
+        index = context.watch(context.actorOf(IndexBroker.props(), IndexBroker.name))
 
-        /*
-        parser = context.watch(context.actorOf(Props[ParserActor]
-            .withDispatcher("echo.parser.dispatcher"),
-            name = "parser"))
-            */
-        parser = context.actorOf(Props[ParserSupervisor], name = "parser")
+        parser = context.actorOf(ParserSupervisor.props(), ParserSupervisor.name(1))
         context watch parser
 
-        searcher = context.watch(context.actorOf(Props[SearcherActor]
-            .withDispatcher("echo.searcher.dispatcher"),
-            name = "searcher"))
+        searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name(1)))
 
-        crawler = context.actorOf(Props[CrawlerSupervisor], name = "crawler")
+        crawler = context.actorOf(CrawlerSupervisor.props(), CrawlerSupervisor.name(1))
         context watch crawler
 
-        directory = context.actorOf(Props[DirectoryBroker], name = "directory")
+        directory = context.actorOf(DirectoryBroker.props(), DirectoryBroker.name)
         context watch directory
 
-        gateway = context.watch(context.actorOf(Props[GatewayActor]
-            .withDispatcher("echo.gateway.dispatcher"),
-            name = "gateway"))
+        gateway = context.watch(context.actorOf(GatewayActor.props(), GatewayActor.name(1)))
 
         createCLI()
-        /*
-        cli = context.watch(context.actorOf(Props(new CliActor(self, index, parser, searcher, crawler, directory, gateway))
-            .withDispatcher("echo.cli.dispatcher"),
-            name = "cli"))
-            */
 
         // pass around references not provided by constructors due to circular dependencies
         crawler ! ActorRefParserActor(parser)
@@ -103,13 +87,6 @@ class MasterSupervisor extends Actor with ActorLogging {
         case ShutdownSystem()   => onSystemShutdown()
     }
 
-    private def createCLI(): Unit = {
-        cli = context.actorOf(Props(new CliActor(self, index, parser, searcher, crawler, directory, gateway))
-            .withDispatcher("echo.cli.dispatcher"),
-            name = "cli")
-        context watch cli
-    }
-
     private def onTerminated(corpse: ActorRef): Unit = {
         if (corpse == cli) {
             createCLI() // we simply re-create the CLI
@@ -134,6 +111,12 @@ class MasterSupervisor extends Actor with ActorLogging {
         context.system.terminate().onComplete(_ => log.info("system.terminate() finished"))
         context.stop(self)  // master
 
+    }
+
+    private def createCLI(): Unit = {
+        cli = context.actorOf(CliActor.props(self, index, parser, searcher, crawler, directory, gateway),
+            name = CliActor.name)
+        context watch cli
     }
 
 }

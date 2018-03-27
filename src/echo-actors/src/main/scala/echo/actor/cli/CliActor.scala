@@ -1,6 +1,6 @@
 package echo.actor.cli
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
@@ -18,13 +18,30 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
-class CliActor(private val master: ActorRef,
-               private val indexStore: ActorRef,
-               private val parser: ActorRef,
-               private val searcher: ActorRef,
-               private val crawler: ActorRef,
-               private val directoryStore: ActorRef,
-               private val gateway: ActorRef) extends Actor with ActorLogging {
+
+object CliActor {
+    final val name = "cli"
+    def props(master: ActorRef,
+              indexStore: ActorRef,
+              parser: ActorRef,
+              searcher: ActorRef,
+              crawler: ActorRef,
+              directoryStore: ActorRef,
+              gateway: ActorRef): Props = {
+
+        Props(new CliActor(master, indexStore, parser, searcher, crawler, directoryStore, gateway))
+            .withDispatcher("echo.cli.dispatcher")
+
+    }
+}
+
+class CliActor (master: ActorRef,
+                indexStore: ActorRef,
+                parser: ActorRef,
+                searcher: ActorRef,
+                crawler: ActorRef,
+                directoryStore: ActorRef,
+                gateway: ActorRef) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

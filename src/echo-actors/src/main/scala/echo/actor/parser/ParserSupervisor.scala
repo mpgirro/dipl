@@ -8,6 +8,12 @@ import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreAct
 /**
   * @author Maximilian Irro
   */
+
+object ParserSupervisor {
+    def name(nodeIndex: Int): String = "parser-" + nodeIndex
+    def props(): Props = Props(new ParserSupervisor())
+}
+
 class ParserSupervisor extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
@@ -61,9 +67,7 @@ class ParserSupervisor extends Actor with ActorLogging {
     }
 
     private def createParserActor(): ActorRef = {
-        val parser = context.actorOf(Props[ParserActor]
-            .withDispatcher("echo.parser.dispatcher"),
-            name = "worker-" + workerIndex)
+        val parser = context.actorOf(ParserActor.props(), ParserActor.name(workerIndex))
 
         workerIndex += 1
 
