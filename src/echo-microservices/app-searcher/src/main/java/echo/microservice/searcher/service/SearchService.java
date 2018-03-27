@@ -20,8 +20,6 @@ public class SearchService {
 
     private final Logger log = LoggerFactory.getLogger(SearchService.class);
 
-    private final String INDEX_URL = "http://localhost:3032"; // TODO
-
     @Value("${echo.searcher.default-page:1}")
     private Integer DEFAULT_PAGE;
 
@@ -31,22 +29,16 @@ public class SearchService {
     @Autowired
     private IndexClient indexClient;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    public ResultWrapperDTO search(String query, Optional<Integer> page, Optional<Integer> size) {
+        log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);
 
-    public ResultWrapperDTO search(String query, Integer page, Integer size) {
-
-        final int p = Optional.ofNullable(page).orElse(DEFAULT_PAGE);
-        final int s = Optional.ofNullable(size).orElse(DEFAULT_SIZE);
+        final int p = page.orElse(DEFAULT_PAGE);
+        final int s = size.orElse(DEFAULT_SIZE);
 
         if (p < 0) return ResultWrapperDTO.empty();
         if (s < 0) return ResultWrapperDTO.empty();
 
-        // TODO do not hardcode this
-        /*
-        final String url = INDEX_URL+"/index/search?query="+query+"&page="+p+"&size="+s;
-        final ResultWrapperDTO result = restTemplate.getForObject(url, ResultWrapperDTO.class);
-        */
-        return indexClient.getSearchResults(query, page, size);
+        return indexClient.getSearchResults(query, p, s);
     }
 
 }

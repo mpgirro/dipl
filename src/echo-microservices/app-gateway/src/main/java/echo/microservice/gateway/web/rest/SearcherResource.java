@@ -29,11 +29,11 @@ public class SearcherResource {
 
     @RequestMapping(value = "/search",
         method = RequestMethod.GET,
-        params = { "q", "p", "s" },
+//        params = { "q", "p", "s" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("q") String query,
-                                                        @RequestParam("p") Integer page,
-                                                        @RequestParam("s") Integer size) {
+                                                        @RequestParam("p") Optional<Integer> page,
+                                                        @RequestParam("s") Optional<Integer> size) {
         log.debug("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.search(query, page, size);
         return resultWrapper

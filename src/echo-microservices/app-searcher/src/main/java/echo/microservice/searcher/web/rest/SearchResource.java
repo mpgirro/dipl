@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 /**
  * @author Maximilian Irro
  */
@@ -27,11 +29,10 @@ public class SearchResource {
 
     @RequestMapping(value = "/search",
         method = RequestMethod.GET,
-        params = { "query", "page", "size" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
-                                                        @RequestParam("page") Integer page,
-                                                        @RequestParam("size") Integer size) {
+                                                        @RequestParam("page") Optional<Integer> page,
+                                                        @RequestParam("size") Optional<Integer> size) {
         log.debug("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
         final ResultWrapperDTO result = searchService.search(query, page, size);
         return new ResponseEntity<>(result, HttpStatus.OK);

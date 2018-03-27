@@ -6,6 +6,7 @@ import echo.microservice.gateway.service.CatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,12 @@ import java.util.Optional;
 public class CatalogResource {
 
     private final Logger log = LoggerFactory.getLogger(CatalogResource.class);
+
+    @Value("${echo.gateway.default-page:1}")
+    private Integer DEFAULT_PAGE;
+
+    @Value("${echo.gateway.default-size:20}")
+    private Integer DEFAULT_SIZE;
 
     @Autowired
     private CatalogService catalogService;
@@ -62,10 +69,9 @@ public class CatalogResource {
 
     @RequestMapping(value = "/podcast",
         method = RequestMethod.GET,
-        params = { "p", "s" },
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ArrayWrapperDTO> getAllPodcasts(@RequestParam("p") Integer page,
-                                                           @RequestParam("s") Integer size) {
+    public ResponseEntity<ArrayWrapperDTO> getAllPodcasts(@RequestParam("p") Optional<Integer> page,
+                                                          @RequestParam("s") Optional<Integer> size) {
         log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
         final ArrayWrapperDTO<PodcastDTO> result = new ArrayWrapperDTO<>(podcasts);
