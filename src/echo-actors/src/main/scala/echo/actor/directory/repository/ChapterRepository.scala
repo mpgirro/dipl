@@ -1,17 +1,17 @@
 package echo.actor.directory.repository
 
-import echo.core.domain.entity.{Chapter, Episode}
+import echo.core.domain.entity.{ChapterEntity, EpisodeEntity}
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param
 
 /**
   * @author Maximilian Irro
   */
-trait ChapterRepository extends JpaRepository[Chapter, java.lang.Long] {
+trait ChapterRepository extends JpaRepository[ChapterEntity, java.lang.Long] {
 
-    def findAllByEpisode(episode: Episode): java.util.List[Chapter]
+    def findAllByEpisode(episode: EpisodeEntity): java.util.List[ChapterEntity]
 
-    @Query("SELECT DISTINCT chapter FROM Chapter chapter WHERE chapter.episode.echoId = :episodeExo")
-    def findAllByEpisodeEchoId(@Param("episodeExo") episodeExo: String): java.util.List[Chapter]
+    @Query("SELECT DISTINCT chapter FROM ChapterEntity chapter WHERE chapter.episode.echoId = :episodeExo")
+    def findAllByEpisodeEchoId(@Param("episodeExo") episodeExo: String): java.util.List[ChapterEntity]
 
 }
