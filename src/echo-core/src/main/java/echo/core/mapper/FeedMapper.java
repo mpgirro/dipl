@@ -3,8 +3,8 @@ package echo.core.mapper;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.dto.ImmutableFeedDTO;
 import echo.core.domain.dto.ModifiableFeedDTO;
-import echo.core.domain.entity.Feed;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.entity.FeedEntity;
+import echo.core.domain.entity.PodcastEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,13 +23,13 @@ public interface FeedMapper {
     FeedMapper INSTANCE = Mappers.getMapper( FeedMapper.class );
 
     @Mapping(source = "podcastId", target = "podcast")
-    Feed toEntity(FeedDTO feed);
+    FeedEntity toEntity(FeedDTO feed);
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
-    ModifiableFeedDTO toModifiable(Feed feed);
+    ModifiableFeedDTO toModifiable(FeedEntity feed);
 
-    default ImmutableFeedDTO toImmutable(Feed feed) {
+    default ImmutableFeedDTO toImmutable(FeedEntity feed) {
         return Optional.ofNullable(feed)
             .map(this::toModifiable)
             .map(ModifiableFeedDTO::toImmutable)
@@ -85,10 +85,10 @@ public interface FeedMapper {
             .orElse(null);
     }
 
-    default Podcast podcastFromId(Long podcastId) {
+    default PodcastEntity podcastFromId(Long podcastId) {
         return Optional.ofNullable(podcastId)
             .map(id -> {
-                final Podcast p = new Podcast();
+                final PodcastEntity p = new PodcastEntity();
                 p.setId(id);
                 return p;
             })

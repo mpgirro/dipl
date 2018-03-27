@@ -3,8 +3,8 @@ package echo.core.mapper;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.ImmutableChapterDTO;
 import echo.core.domain.dto.ModifiableChapterDTO;
-import echo.core.domain.entity.Chapter;
-import echo.core.domain.entity.Episode;
+import echo.core.domain.entity.ChapterEntity;
+import echo.core.domain.entity.EpisodeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,11 +23,11 @@ public interface ChapterMapper {
     ChapterMapper INSTANCE = Mappers.getMapper( ChapterMapper.class );
 
     @Mapping(source = "episodeId", target = "episode")
-    Chapter toEntity(ChapterDTO chapter);
+    ChapterEntity toEntity(ChapterDTO chapter);
 
     @Mapping(source = "episode.id", target = "episodeId")
     @Mapping(source = "episode.echoId", target = "episodeExo")
-    ModifiableChapterDTO toModifiable(Chapter chapter);
+    ModifiableChapterDTO toModifiable(ChapterEntity chapter);
 
     default ModifiableChapterDTO toModifiable(ChapterDTO chapter) {
         return Optional.ofNullable(chapter)
@@ -78,10 +78,10 @@ public interface ChapterMapper {
             .orElse(null);
     }
 
-    default Episode episodeFromId(Long episodeId) {
+    default EpisodeEntity episodeFromId(Long episodeId) {
         return Optional.ofNullable(episodeId)
             .map(id -> {
-                final Episode e = new Episode();
+                final EpisodeEntity e = new EpisodeEntity();
                 e.setId(id);
                 return e;
             })

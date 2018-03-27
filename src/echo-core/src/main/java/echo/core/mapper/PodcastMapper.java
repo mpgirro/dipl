@@ -3,7 +3,7 @@ package echo.core.mapper;
 import echo.core.domain.dto.ImmutablePodcastDTO;
 import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.entity.PodcastEntity;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,11 +28,11 @@ public interface PodcastMapper {
 
     @Mapping(target = "episodes", ignore = true)
     @Mapping(target = "feeds", ignore = true)
-    Podcast toEntity(PodcastDTO dto);
+    PodcastEntity toEntity(PodcastDTO dto);
 
-    ModifiablePodcastDTO toModifiable(Podcast podcast);
+    ModifiablePodcastDTO toModifiable(PodcastEntity podcast);
 
-    default ImmutablePodcastDTO toImmutable(Podcast podcast) {
+    default ImmutablePodcastDTO toImmutable(PodcastEntity podcast) {
         return Optional.ofNullable(podcast)
             .map(this::toModifiable)
             .map(ModifiablePodcastDTO::toImmutable)

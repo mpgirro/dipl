@@ -11,7 +11,7 @@ import java.util.Objects;
 @Table(name = "chapter")
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Chapter implements Serializable {
+public class ChapterEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,7 +31,7 @@ public class Chapter implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "episode_id")
-    private Episode episode;
+    private EpisodeEntity episode;
 
     public Long getId() {
         return id;
@@ -73,11 +73,11 @@ public class Chapter implements Serializable {
         this.image = image;
     }
 
-    public Episode getEpisode() {
+    public EpisodeEntity getEpisode() {
         return episode;
     }
 
-    public void setEpisode(Episode episode) {
+    public void setEpisode(EpisodeEntity episode) {
         this.episode = episode;
     }
 
@@ -89,7 +89,7 @@ public class Chapter implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Chapter chapter = (Chapter) o;
+        ChapterEntity chapter = (ChapterEntity) o;
         if(chapter.id == null || id == null) {
             return false;
         }
@@ -103,7 +103,7 @@ public class Chapter implements Serializable {
 
     @Override
     public String toString() {
-        return "Chapter{" +
+        return "ChapterEntity{" +
             "id=" + id +
             ", start='" + start + '\'' +
             ", title='" + title + '\'' +

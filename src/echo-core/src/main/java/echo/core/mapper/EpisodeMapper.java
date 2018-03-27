@@ -3,8 +3,8 @@ package echo.core.mapper;
 import echo.core.domain.dto.ImmutableEpisodeDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.entity.Episode;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.entity.EpisodeEntity;
+import echo.core.domain.entity.PodcastEntity;
 import echo.core.index.IndexField;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,15 +27,15 @@ public interface EpisodeMapper {
 
     @Mapping(source = "podcastId", target = "podcast")
     @Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
-    Episode toEntity(EpisodeDTO episode);
+    EpisodeEntity toEntity(EpisodeDTO episode);
 
     @Mapping(source = "podcast.id", target = "podcastId")
     @Mapping(source = "podcast.echoId", target = "podcastEchoId")
     @Mapping(source = "podcast.title", target = "podcastTitle")
     @Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
-    ModifiableEpisodeDTO toModifiable(Episode episode);
+    ModifiableEpisodeDTO toModifiable(EpisodeEntity episode);
 
-    default ImmutableEpisodeDTO toImmutable(Episode episode) {
+    default ImmutableEpisodeDTO toImmutable(EpisodeEntity episode) {
         return Optional.ofNullable(episode)
             .map(this::toModifiable)
             .map(ModifiableEpisodeDTO::toImmutable)
@@ -111,10 +111,10 @@ public interface EpisodeMapper {
             .orElse(null);
     }
 
-    default Podcast podcastFromId(Long podcastId) {
+    default PodcastEntity podcastFromId(Long podcastId) {
         return Optional.ofNullable(podcastId)
             .map(id -> {
-                final Podcast p = new Podcast();
+                final PodcastEntity p = new PodcastEntity();
                 p.setId(id);
                 return p;
             })

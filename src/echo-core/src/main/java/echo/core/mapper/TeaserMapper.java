@@ -4,8 +4,8 @@ import echo.core.domain.dto.ImmutableEpisodeDTO;
 import echo.core.domain.dto.ImmutablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.entity.Episode;
-import echo.core.domain.entity.Podcast;
+import echo.core.domain.entity.EpisodeEntity;
+import echo.core.domain.entity.PodcastEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
@@ -42,7 +42,7 @@ public interface TeaserMapper {
             .orElse(null);
     }
 
-    default PodcastDTO asTeaser(Podcast podcast) {
+    default PodcastDTO asTeaser(PodcastEntity podcast) {
         return Optional.ofNullable(podcast)
             .map(p -> ImmutablePodcastDTO.builder()
                 .setEchoId(p.getEchoId())
@@ -74,7 +74,7 @@ public interface TeaserMapper {
             .orElse(null);
     }
 
-    default EpisodeDTO asTeaser(Episode episode) {
+    default EpisodeDTO asTeaser(EpisodeEntity episode) {
         return Optional.ofNullable(episode)
             .map(e -> ImmutableEpisodeDTO.builder()
                 .setEchoId(e.getEchoId())

@@ -15,7 +15,7 @@ import java.util.Set;
     indexes = {@Index(name = "idx_episode_echo_id",  columnList="echo_id", unique = true)})
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Episode implements Serializable {
+public class EpisodeEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -85,11 +85,11 @@ public class Episode implements Serializable {
         cascade = CascadeType.ALL,
         orphanRemoval = true,
         mappedBy="episode")
-    private Set<Chapter> chapters = new LinkedHashSet();
+    private Set<ChapterEntity> chapters = new LinkedHashSet();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
-    private Podcast podcast;
+    private PodcastEntity podcast;
 
     public Long getId() {
         return id;
@@ -259,28 +259,28 @@ public class Episode implements Serializable {
         this.registrationTimestamp = registrationTimestamp;
     }
 
-    public Set<Chapter> getChapters() {
+    public Set<ChapterEntity> getChapters() {
         return chapters;
     }
 
-    public void setChapters(Set<Chapter> chapters) {
+    public void setChapters(Set<ChapterEntity> chapters) {
         this.chapters = chapters;
     }
 
-    public Podcast getPodcast() {
+    public PodcastEntity getPodcast() {
         return podcast;
     }
 
-    public void setPodcast(Podcast podcast) {
+    public void setPodcast(PodcastEntity podcast) {
         this.podcast = podcast;
     }
 
-    public void addChapter(Chapter chapter) {
+    public void addChapter(ChapterEntity chapter) {
         this.chapters.add(chapter);
         chapter.setEpisode(this);
     }
 
-    public void removeChapter(Chapter chapter) {
+    public void removeChapter(ChapterEntity chapter) {
         this.chapters.remove(chapter);
         chapter.setEpisode(null);
     }
@@ -293,7 +293,7 @@ public class Episode implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Episode episode = (Episode) o;
+        EpisodeEntity episode = (EpisodeEntity) o;
         if(episode.id == null || id == null) {
             return false;
         }
@@ -307,7 +307,7 @@ public class Episode implements Serializable {
 
     @Override
     public String toString() {
-        return "Episode{" +
+        return "EpisodeEntity{" +
             "id=" + id +
             ", echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +

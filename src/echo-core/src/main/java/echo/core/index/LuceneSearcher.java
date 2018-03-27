@@ -131,7 +131,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             } else {
                 windowEnd = (p*s);
             }
-            
+
             int windowSize = Math.max(0, windowEnd - windowStart);
             final IndexDocDTO[] results = new IndexDocDTO[windowSize];
 

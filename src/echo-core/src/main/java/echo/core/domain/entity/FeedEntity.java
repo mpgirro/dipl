@@ -18,7 +18,7 @@ import java.util.Objects;
     indexes = {@Index(name = "idx_feed_echo_id",  columnList="echo_id", unique = true)})
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Feed implements Serializable {
+public class FeedEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,7 @@ public class Feed implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="podcast_id")
-    private Podcast podcast;
+    private PodcastEntity podcast;
 
     public Long getId() {
         return id;
@@ -92,11 +92,11 @@ public class Feed implements Serializable {
         this.registrationTimestamp = registrationTimestamp;
     }
 
-    public Podcast getPodcast() {
+    public PodcastEntity getPodcast() {
         return podcast;
     }
 
-    public void setPodcast(Podcast podcast) {
+    public void setPodcast(PodcastEntity podcast) {
         this.podcast = podcast;
     }
 
@@ -108,7 +108,7 @@ public class Feed implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Feed feed = (Feed) o;
+        FeedEntity feed = (FeedEntity) o;
         if(feed.id == null || id == null) {
             return false;
         }
@@ -122,7 +122,7 @@ public class Feed implements Serializable {
 
     @Override
     public String toString() {
-        return "Feed{" +
+        return "FeedEntity{" +
             "id=" + id +
             ", echoId='" + echoId + '\'' +
             ", url='" + url + '\'' +

@@ -18,7 +18,7 @@ import java.util.*;
     indexes = {@Index(name = "idx_podcast_echo_id",  columnList="echo_id", unique = true)})
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Podcast implements Serializable {
+public class PodcastEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -113,7 +113,7 @@ public class Podcast implements Serializable {
                mappedBy="podcast")
 //   @Cascade(CascadeType.DELETE)
 //    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Episode> episodes = new LinkedHashSet();
+    private Set<EpisodeEntity> episodes = new LinkedHashSet();
 
     @OneToMany(fetch=FetchType.LAZY,
                //cascade = CascadeType.ALL, // TODO suspected of causing the null elements in getAllPodcasts
@@ -121,7 +121,7 @@ public class Podcast implements Serializable {
                mappedBy="podcast")
 //    @Cascade(CascadeType.DELETE)
 //    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Feed> feeds = new LinkedHashSet();
+    private Set<FeedEntity> feeds = new LinkedHashSet();
 
     public Long getId() {
         return id;
@@ -339,40 +339,40 @@ public class Podcast implements Serializable {
         this.registrationComplete = registrationComplete;
     }
 
-    public Set<Episode> getEpisodes() {
+    public Set<EpisodeEntity> getEpisodes() {
         return episodes;
     }
 
-    public void setEpisodes(Set<Episode> episodes) {
+    public void setEpisodes(Set<EpisodeEntity> episodes) {
         this.episodes = episodes;
     }
 
-    public Set<Feed> getFeeds() {
+    public Set<FeedEntity> getFeeds() {
         return feeds;
     }
 
-    public void setFeeds(Set<Feed> feeds) {
+    public void setFeeds(Set<FeedEntity> feeds) {
         this.feeds = feeds;
     }
 
-    public void addEpisode(Episode episode) {
+    public void addEpisode(EpisodeEntity episode) {
         this.episodes.add(episode);
         this.episodeCount = this.episodes.size();
         episode.setPodcast(this);
     }
 
-    public void removeEpisode(Episode episode) {
+    public void removeEpisode(EpisodeEntity episode) {
         this.episodes.remove(episode);
         this.episodeCount = this.episodes.size();
         episode.setPodcast(null);
     }
 
-    public void addFeed(Feed feed) {
+    public void addFeed(FeedEntity feed) {
         this.feeds.add(feed);
         feed.setPodcast(this);
     }
 
-    public void removeFeed(Feed feed) {
+    public void removeFeed(FeedEntity feed) {
         this.feeds.remove(feed);
         feed.setPodcast(null);
     }
@@ -385,7 +385,7 @@ public class Podcast implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Podcast podcast = (Podcast) o;
+        PodcastEntity podcast = (PodcastEntity) o;
         if(podcast.id == null || id == null) {
             return false;
         }
@@ -399,7 +399,7 @@ public class Podcast implements Serializable {
 
     @Override
     public String toString() {
-        return "Podcast{" +
+        return "PodcastEntity{" +
             "id=" + id +
             ", echoId='" + echoId + '\'' +
             ", title='" + title + '\'' +
