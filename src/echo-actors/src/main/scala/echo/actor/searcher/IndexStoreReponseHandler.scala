@@ -57,6 +57,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef, originalSender: ActorRef, i
             sendResponseAndShutdown(SearchResults(resultWrapper))
         case NoIndexResultsFound(query: String) =>
             log.info("Received NO results from index for query '" + query + "'")
+            timeoutMessager.cancel
             sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty()))
         case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
         case _ =>
