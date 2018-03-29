@@ -4,6 +4,7 @@ import echo.core.async.job.ParserJob;
 import echo.core.exception.EchoException;
 import echo.core.http.HeadResult;
 import echo.core.http.HttpClient;
+import echo.microservice.crawler.async.ParserQueueSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class CrawlerService {
     @Value("${echo.crawler.download-maxbytes:5242880}")
     private Long DOWNLOAD_MAXBYTES;
 
+    @Autowired
+    private ParserQueueSender parserQueueSender;
+
     @PostConstruct
     private void init() {
         httpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES);
@@ -73,6 +77,9 @@ public class CrawlerService {
                 job.setExo(podcastExo);
                 job.setUrl(feedUrl);
                 job.setData(feedData);
+
+                // TODO
+                parserQueueSender.produceMsg("<Parse-New-Feed : " + feedUrl + ">");
 
                 final String parserUrl = PARSER_URL+"/parser/new-podcast";
                 log.debug("Sending feed-data to parser with request : {}", parserUrl);

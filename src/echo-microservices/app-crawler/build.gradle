@@ -22,7 +22,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
-defaultTasks 'clean build runBoot'
+defaultTasks 'clean build bootRun'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -32,8 +32,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 assert System.properties['java.specification.version'] == '1.8'
 
 group 'at.irro.dipl'
@@ -180,7 +180,8 @@ dependencies {
     compile "org.springframework.security:spring-security-config"
     compile "org.springframework.security:spring-security-data"
     compile "org.springframework.security:spring-security-web"
-    compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0' // TODO unused
+    compile "org.springframework.amqp:spring-rabbit"
 
     testCompile "com.jayway.jsonpath:json-path"
     testCompile ("org.springframework.boot:spring-boot-starter-test") {

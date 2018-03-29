@@ -9,10 +9,12 @@ import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.RomeFeedParser;
+import echo.microservice.parser.async.CatalogQueueSender;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 public class ParserService {
 
     private final Logger log = LoggerFactory.getLogger(ParserService.class);
+
+    //@Autowired
+    //private CatalogQueueSender catalogQueueSender;
 
     private final String CATALOG_URL = "http://localhost:3031"; // TODO
     private final String INDEX_URL = "http://localhost:3032"; // TODO
@@ -74,6 +79,9 @@ public class ParserService {
                     }
                 }
 
+                // TODO
+                //catalogQueueSender.produceMsg("<Update-Podcast : " + p.getEchoId() + ">");
+
                 // TODO replace by async job?
                 // tell catalog to update podcast metadata
                 final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
@@ -114,6 +122,9 @@ public class ParserService {
             Optional.ofNullable(e.getTitle()).ifPresent(t -> e.setTitle(t.trim()));
             Optional.ofNullable(e.getDescription()).ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
             Optional.ofNullable(e.getContentEncoded()).ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
+
+            // TODO
+            //catalogQueueSender.produceMsg("<Register-Episode-If-Unknown : " + e.getTitle() + ">");
 
             // TODO replace by async job?
             // tell catalog to register episode if unknown
