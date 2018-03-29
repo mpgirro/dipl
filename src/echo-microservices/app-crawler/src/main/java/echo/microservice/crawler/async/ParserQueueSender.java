@@ -1,5 +1,6 @@
 package echo.microservice.crawler.async;
 
+import echo.core.async.job.ParserJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -29,9 +30,9 @@ public class ParserQueueSender {
     @Value("${echo.amqp.parser-routingkey}")
     private String routingKey;
 
-    public void produceMsg(String msg){
-        amqpTemplate.convertAndSend(exchange, routingKey, msg);
-        log.info("Send msg = " + msg);
+    public void produceMsg(ParserJob job){
+        amqpTemplate.convertAndSend(exchange, routingKey, job);
+        log.info("Send msg : {}", job);
     }
 
 }

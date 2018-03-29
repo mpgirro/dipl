@@ -1,5 +1,6 @@
 package echo.microservice.parser.async;
 
+import echo.core.async.job.ParserJob;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,9 @@ public class ParserQueueReceiver {
         exchange = @Exchange(value = "echo.direct", durable = "true"),
         key      = "echo.parser.routingkey")
     )
-    public void recievedMessage(String msg) {
-        log.info("Recieved Message: " + msg);
-        // parserService.parseFeed(TODO);
+    public void recievedMessage(ParserJob job) {
+        log.info("Recieved Message : {}", job);
+        parserService.parseFeed(job, true);
     }
 
 }

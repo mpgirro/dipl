@@ -79,12 +79,15 @@ public class CrawlerService {
                 job.setData(feedData);
 
                 // TODO
-                parserQueueSender.produceMsg("<Parse-New-Feed : " + feedUrl + ">");
+                //parserQueueSender.produceMsg("<Parse-New-Feed : " + feedUrl + ">");
+                parserQueueSender.produceMsg(job);
 
+                /*
                 final String parserUrl = PARSER_URL+"/parser/new-podcast";
                 log.debug("Sending feed-data to parser with request : {}", parserUrl);
                 final HttpEntity<ParserJob> request = new HttpEntity<>(job);
                 final ResponseEntity<Void> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, Void.class);
+                */
 
             } else {
                 log.error("We did not get any location-url after evaluating response --> cannot proceed download without one");
