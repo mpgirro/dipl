@@ -1,14 +1,24 @@
 package echo.core.async.job;
 
+import com.google.common.base.MoreObjects;
 import echo.core.domain.dto.EpisodeDTO;
 
 /**
  * @author Maximilian Irro
  */
-public class EpisodeRegisterJob {
+public class EpisodeRegisterJob implements CatalogJob {
 
     private String podcastExo;
     private EpisodeDTO episode;
+
+    public EpisodeRegisterJob() {
+
+    }
+
+    public EpisodeRegisterJob(String podcastExo, EpisodeDTO episode) {
+        this.podcastExo = podcastExo;
+        this.episode = episode;
+    }
 
     public String getPodcastExo() {
         return podcastExo;
@@ -28,9 +38,10 @@ public class EpisodeRegisterJob {
 
     @Override
     public String toString() {
-        return "EpisodeRegisterJob{" +
-            "podcastExo='" + podcastExo + '\'' +
-            ", episode=" + episode +
-            '}';
+        return MoreObjects.toStringHelper("EpisodeRegisterJob")
+            .omitNullValues()
+            .add("podcastExo", podcastExo)
+            .add("episode", episode)
+            .toString();
     }
 }

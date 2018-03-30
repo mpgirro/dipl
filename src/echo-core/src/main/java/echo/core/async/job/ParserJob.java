@@ -1,5 +1,7 @@
 package echo.core.async.job;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.Optional;
 
 /**
@@ -37,10 +39,11 @@ public class ParserJob {
 
     @Override
     public String toString() {
-        return "ParserJob{" +
-            "exo='" + exo + '\'' +
-            ", url='" + url + '\'' +
-            ", data='" + Optional.ofNullable(data).map(d -> "_").orElse("null") + '\'' +
-            '}';
+        return MoreObjects.toStringHelper("ParserJob")
+            .omitNullValues()
+            .add("exo", exo)
+            .add("url", url)
+            .add("data", Optional.ofNullable(data).map(d -> "_").orElse(null))
+            .toString();
     }
 }

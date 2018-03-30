@@ -1,5 +1,7 @@
 package echo.core.async.job;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * @author Maximilian Irro
  */
@@ -37,10 +39,11 @@ public class FetchWebsiteCrawlerJob implements CrawlerJob {
 
     @Override
     public String toString() {
-        return "FetchWebsiteCrawlerJob{" +
-            "exo='" + exo + '\'' +
-            ", url='" + url + '\'' +
-            '}';
+        return MoreObjects.toStringHelper("FetchWebsiteCrawlerJob")
+            .omitNullValues()
+            .add("exo", exo)
+            .add("url", url)
+            .toString();
     }
 
 }
