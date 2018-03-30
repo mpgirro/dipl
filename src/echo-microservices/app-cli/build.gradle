@@ -40,10 +40,12 @@ ext {
     scala_logging_version = '3.8.0'
     logback_version = '1.2.3'
     echo_core_version = '1.0-SNAPSHOT'
+    guava_version = '24.1-jre'
 }
 
 dependencies {
     compile "at.irro.dipl:echo-core:${echo_core_version}"
+    compile "com.google.guava:guava:${guava_version}"
     compile group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"
     compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
     compile "ch.qos.logback:logback-classic:${logback_version}"

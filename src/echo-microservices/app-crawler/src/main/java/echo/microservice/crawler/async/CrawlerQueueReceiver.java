@@ -23,6 +23,7 @@ public class CrawlerQueueReceiver {
     @Autowired
     private CrawlerService crawlerService;
 
+    /*
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "echo.rabbit.crawler-queue", durable = "true"),
         exchange = @Exchange(value = "echo.direct", durable = "true"),
@@ -32,6 +33,7 @@ public class CrawlerQueueReceiver {
         log.info("Recieved Message : {}", job);
         crawlerService.downloadFeed(job.getExo(), job.getUrl());
     }
+    */
 
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "echo.rabbit.crawler-queue", durable = "true"),
@@ -40,7 +42,11 @@ public class CrawlerQueueReceiver {
     )
     public void recievedMessage(CrawlerJob job) {
         log.info("Recieved Message : {}", job);
-        throw new RuntimeException("Received unhandled CrawlerJob of type : " + job.getClass());
+        if (job instanceof NewFeedCrawlerJob) {
+            crawlerService.downloadFeed(job.getExo(), job.getUrl());
+        } else {
+            throw new RuntimeException("Received unhandled CrawlerJob of type : " + job.getClass());
+        }
     }
 
 }

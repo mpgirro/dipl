@@ -1,20 +1,21 @@
 package echo.microservice.index.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
-import echo.core.util.JSR310DateTimeSerializer;
-import echo.core.util.JSR310ZonedDateTimeDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.zalando.problem.ProblemModule;
 import org.zalando.problem.validation.ConstraintViolationProblemModule;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 /**
  * @author Maximilian Irro
@@ -23,17 +24,13 @@ import java.time.ZonedDateTime;
 public class JacksonConfig {
 
     @Bean
-    Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-        JavaTimeModule module = new JavaTimeModule();
-        module.addSerializer(OffsetDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(ZonedDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(ZonedDateTime.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addSerializer(Instant.class, JSR310DateTimeSerializer.INSTANCE);
-        module.addDeserializer(ZonedDateTime.class, JSR310ZonedDateTimeDeserializer.INSTANCE);
-        return new Jackson2ObjectMapperBuilder()
-            .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .findModulesViaServiceLoader(true)
-            .modulesToInstall(module);
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .registerModule(new JavaTimeModule())
+            .setDateFormat(new ISO8601DateFormat());
     }
 
     /*

@@ -123,10 +123,12 @@ ext {
     h2_version = '1.4.196'
     liquibase_version = '3.5.3'
     liquibase_slf4j_version = '2.0.0'
+    guava_version = '24.1-jre'
 }
 
 dependencies {
     compile "at.irro.dipl:echo-core:${echo_core_version}"
+    //compile "com.google.guava:guava:${guava_version}"
 
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
 
@@ -140,6 +142,8 @@ dependencies {
     compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '4.11'
     compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
     compile "com.fasterxml.jackson.core:jackson-annotations"

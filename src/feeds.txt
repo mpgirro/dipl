@@ -503,3 +503,4 @@ http://feeds.feedburner.com/HDW_NNN
 http://feeds.soundcloud.com/users/soundcloud:users:164028316/sounds.rss
 https://rss.prod.firstlook.media/deconstructed/podcast.rss
 http://feeds.feedburner.com/erklaermir
+https://kopfumkrone.at/feed/podcast

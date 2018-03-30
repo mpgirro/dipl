@@ -2,6 +2,7 @@ package echo.microservice.parser.service;
 
 import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.async.job.ParserJob;
+import echo.core.async.job.UpdatePodcastCatalogJob;
 import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.mapper.EpisodeMapper;
@@ -9,10 +10,12 @@ import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.RomeFeedParser;
+import echo.microservice.parser.async.CatalogQueueSender;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -32,8 +35,8 @@ public class ParserService {
 
     private final Logger log = LoggerFactory.getLogger(ParserService.class);
 
-    //@Autowired
-    //private CatalogQueueSender catalogQueueSender;
+    @Autowired
+    private CatalogQueueSender catalogQueueSender;
 
     private final String CATALOG_URL = "http://localhost:3031"; // TODO
     private final String INDEX_URL = "http://localhost:3032"; // TODO
@@ -47,10 +50,10 @@ public class ParserService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
-    public void parseFeed(ParserJob job, Boolean isNewPodcast) {
-        final String podcastExo = job.getExo();
-        final String feedUrl = job.getUrl();
-        final String feedData = job.getData();
+    public void parseFeed(ParserJob parserJob, Boolean isNewPodcast) {
+        final String podcastExo = parserJob.getExo();
+        final String feedUrl = parserJob.getUrl();
+        final String feedData = parserJob.getData();
         try {
             final Optional<PodcastDTO> podcast = Optional.ofNullable(feedParser.parseFeed(feedData));
             if (podcast.isPresent()) {
@@ -79,12 +82,16 @@ public class ParserService {
 
                 // TODO
                 //catalogQueueSender.produceMsg("<Update-Podcast : " + p.getEchoId() + ">");
+                final UpdatePodcastCatalogJob catalogJo = new UpdatePodcastCatalogJob(p.toImmutable());
+                catalogQueueSender.produceMsg(catalogJo);
 
+                /*
                 // TODO replace by async job?
                 // tell catalog to update podcast metadata
                 final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
                 log.debug("Sending podcast for update to catalog with request : {}", catalogUpdateUrl);
                 restTemplate.put(catalogUpdateUrl, p.toImmutable());
+                */
 
                 processEpisodes(podcastExo, feedData);
             } else {
@@ -123,7 +130,10 @@ public class ParserService {
 
             // TODO
             //catalogQueueSender.produceMsg("<Register-Episode-If-Unknown : " + e.getTitle() + ">");
+            final EpisodeRegisterJob job = new EpisodeRegisterJob(podcastExo, e.toImmutable());
+            catalogQueueSender.produceMsg(job);
 
+            /*
             // TODO replace by async job?
             // tell catalog to register episode if unknown
             final String catalogRegistrationUrl = CATALOG_URL+"/catalog/episode/register";
@@ -133,6 +143,7 @@ public class ParserService {
             job.setEpisode(e.toImmutable());
             final HttpEntity<EpisodeRegisterJob> request = new HttpEntity<>(job);
             restTemplate.postForEntity(catalogRegistrationUrl, request, EpisodeRegisterJob.class);
+            */
         }
     }
 
