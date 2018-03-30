@@ -22,7 +22,7 @@
         </appender>
     -->
 
-    <logger name="echo.microservice" level="DEBUG" />
+    <logger name="echo.microservice" level="INFO" />
     <logger name="echo.core" level="WARN" />
 
     <logger name="javax.activation" level="WARN"/>

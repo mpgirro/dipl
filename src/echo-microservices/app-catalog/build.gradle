@@ -183,6 +183,8 @@ dependencies {
     compile "org.springframework.security:spring-security-data"
     compile "org.springframework.security:spring-security-web"
     compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    compile "org.springframework.amqp:spring-rabbit"
+
     /*
     compile ("io.springfox:springfox-swagger2") {
         exclude module: 'mapstruct'

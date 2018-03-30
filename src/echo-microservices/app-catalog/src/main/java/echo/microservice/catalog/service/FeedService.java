@@ -1,11 +1,13 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
+import echo.core.async.job.NewFeedCrawlerJob;
 import echo.core.domain.dto.*;
 import echo.core.domain.entity.FeedEntity;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
 import echo.core.util.ExoGenerator;
+import echo.microservice.catalog.async.CrawlerQueueSender;
 import echo.microservice.catalog.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,9 @@ public class FeedService {
 
     @Autowired
     private PodcastService podcastService;
+
+    @Autowired
+    private CrawlerQueueSender crawlerQueueSender;
 
     private final FeedMapper feedMapper = FeedMapper.INSTANCE;
 
@@ -156,12 +161,18 @@ public class FeedService {
                 .setRegistrationTimestamp(LocalDateTime.now());
             save(fBuilder.create());
 
+            // TODO
+            //crawlerQueueSender.produceMsg("<Fetch-Feed : " + feedUrl + ">");
+            final NewFeedCrawlerJob job = new NewFeedCrawlerJob(podcast.getEchoId(), feedUrl);
+            crawlerQueueSender.produceMsg(job);
+
+            /*
             // TODO send url to crawler for download
             // TODO replace by sending job to queue
             final String parserUrl = CRAWLER_URL+"/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
             final HttpEntity<String> request = new HttpEntity<>(""); // TODO dummy, we do not send a body that should be created (as is custom with POST)
             final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
-
+            */
         } else {
             log.info("Proposed feed is already in database: {}", feedUrl);
         }
