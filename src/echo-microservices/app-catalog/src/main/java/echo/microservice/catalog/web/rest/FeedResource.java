@@ -38,7 +38,8 @@ public class FeedResource {
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    @RequestMapping(value = "/feed/propose",
+    @RequestMapping(
+        value  = "/feed/propose",
         method = RequestMethod.POST,
         params = { "url" })
     @Transactional
@@ -60,9 +61,10 @@ public class FeedResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/feed/{exo}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(
+        value    = "/feed/{exo}",
+        method   = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);

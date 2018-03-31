@@ -1,10 +1,6 @@
 package echo.microservice.gateway.web.client;
 
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.microservice.gateway.web.dto.ArrayWrapperDTO;
+import echo.core.domain.dto.*;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,11 +1,12 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.async.job.EpisodeRegisterJob;
+import echo.core.domain.dto.ArrayWrapperDTO;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.ImmutableArrayWrapperDTO;
 import echo.microservice.catalog.service.ChapterService;
 import echo.microservice.catalog.service.EpisodeService;
-import echo.microservice.catalog.web.dto.ArrayWrapperDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +66,10 @@ public class EpisodeResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/episode/{exo}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(
+        value    = "/episode/{exo}",
+        method   = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.debug("REST request to get Episode (EXO) : {}", exo);
@@ -79,15 +81,17 @@ public class EpisodeResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/episode/{exo}/chapters",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/episode/{exo}/chapters",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
         final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo);
-        final ArrayWrapperDTO<ChapterDTO> wrapper = new ArrayWrapperDTO<>(chapters);
-        return new ResponseEntity<>(wrapper, HttpStatus.OK);
+        return new ResponseEntity<>(
+            ImmutableArrayWrapperDTO.of(chapters),
+            HttpStatus.OK);
     }
 
 }

@@ -27,15 +27,18 @@ public class SearchResource {
     @Autowired
     private SearchService searchService;
 
-    @RequestMapping(value = "/search",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/search",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Optional<Integer> page,
                                                         @RequestParam("size") Optional<Integer> size) {
         log.debug("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
         final ResultWrapperDTO result = searchService.search(query, page, size);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(
+            result,
+            HttpStatus.OK);
     }
 
 }

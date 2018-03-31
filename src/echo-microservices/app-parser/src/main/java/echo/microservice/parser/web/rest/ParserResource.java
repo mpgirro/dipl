@@ -20,7 +20,8 @@ public class ParserResource {
     @Autowired
     private ParserService parserService;
 
-    @RequestMapping(value = "/new-podcast",
+    @RequestMapping(
+        value  = "/new-podcast",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void parseNewPodcastData(@RequestBody ParserJob job) {
@@ -28,7 +29,8 @@ public class ParserResource {
         parserService.parseFeed(job, true);
     }
 
-    @RequestMapping(value = "/update-episodes",
+    @RequestMapping(
+        value  = "/update-episodes",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void parseUpdateEpisodeData(@RequestBody ParserJob job) {
@@ -36,7 +38,8 @@ public class ParserResource {
         parserService.parseFeed(job, false);
     }
 
-    @RequestMapping(value = "/parse-website",
+    @RequestMapping(
+        value  = "/parse-website",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void parseWebsiteData(@RequestBody ParserJob job) {

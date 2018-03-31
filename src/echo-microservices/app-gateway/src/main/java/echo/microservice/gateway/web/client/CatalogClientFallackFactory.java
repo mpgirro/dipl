@@ -1,18 +1,12 @@
 package echo.microservice.gateway.web.client;
 
-import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
-import echo.microservice.gateway.web.dto.ArrayWrapperDTO;
+import echo.core.domain.dto.*;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -58,7 +52,7 @@ public class CatalogClientFallackFactory implements FallbackFactory<CatalogClien
             public ArrayWrapperDTO<PodcastDTO> getAllPodcasts(@SuppressWarnings("unused") Integer page,
                                                               @SuppressWarnings("unused") Integer size) {
                 log.warn("getAllPodcasts fallback; reason was: {}, {}", cause.getMessage(), cause);
-                return new ArrayWrapperDTO<>(Collections.emptyList()); // this list is immutable
+                return ImmutableArrayWrapperDTO.of(Collections.emptyList()); // emptyList() produces an immutable list
             }
 
             /**
@@ -92,7 +86,7 @@ public class CatalogClientFallackFactory implements FallbackFactory<CatalogClien
             @Override
             public ArrayWrapperDTO<EpisodeDTO> getEpisodesByPodcast(@SuppressWarnings("unused") String exo) {
                 log.warn("getEpisodesByPodcast fallback; reason was: {}, {}", cause.getMessage(), cause);
-                return new ArrayWrapperDTO<>(Collections.emptyList()); // this list is immutable
+                return ImmutableArrayWrapperDTO.of(Collections.emptyList()); // emptyList() produces an immutable list
             }
 
             /**
@@ -109,7 +103,7 @@ public class CatalogClientFallackFactory implements FallbackFactory<CatalogClien
             @Override
             public ArrayWrapperDTO<FeedDTO> getFeedsByPodcast(@SuppressWarnings("unused") String exo) {
                 log.warn("getFeedsByPodcast fallback; reason was: {}, {}", cause.getMessage(), cause);
-                return new ArrayWrapperDTO<>(Collections.emptyList()); // this list is immutable
+                return ImmutableArrayWrapperDTO.of(Collections.emptyList()); // emptyList() produces an immutable list
             }
 
             /**
@@ -126,7 +120,7 @@ public class CatalogClientFallackFactory implements FallbackFactory<CatalogClien
             @Override
             public ArrayWrapperDTO<ChapterDTO> getChaptersByEpisode(@SuppressWarnings("unused") String exo) {
                 log.warn("getChaptersByEpisode fallback; reason was: {}, {}", cause.getMessage(), cause);
-                return new ArrayWrapperDTO<>(Collections.emptyList()); // this list is immutable
+                return ImmutableArrayWrapperDTO.of(Collections.emptyList()); // emptyList() produces an immutable list
             }
         };
     }

@@ -28,19 +28,23 @@ public class IndexResource {
     @Autowired
     private IndexService indexService;
 
-    @RequestMapping(value = "/search",
-        method = RequestMethod.GET,
-        params = { "query", "page", "size" },
+    @RequestMapping(
+        value    = "/search",
+        method   = RequestMethod.GET,
+        params   = { "query", "page", "size" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Integer page,
                                                         @RequestParam("size") Integer size) throws SearchException {
         log.debug("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
         final ResultWrapperDTO result = indexService.search(query, page, size);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(
+            result,
+            HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/doc",
+    @RequestMapping(
+        value  = "/doc",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
@@ -48,8 +52,9 @@ public class IndexResource {
         indexService.add(doc);
     }
 
-    @RequestMapping(value = "/doc/{exo}",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/doc/{exo}",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IndexDocDTO> getDoc(@PathVariable String exo) {
         log.debug("REST request to get index document: {}", exo);

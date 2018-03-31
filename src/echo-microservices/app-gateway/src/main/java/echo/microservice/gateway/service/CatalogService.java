@@ -1,19 +1,13 @@
 package echo.microservice.gateway.service;
 
-import com.google.common.collect.Lists;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import echo.core.domain.dto.*;
 import echo.microservice.gateway.web.client.CatalogClient;
-import echo.microservice.gateway.web.dto.ArrayWrapperDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +36,6 @@ public class CatalogService {
 
     public Optional<PodcastDTO> getPodcast(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);
-
         final PodcastDTO response = catalogClient.getPodcast(exo);
         return Optional.ofNullable(response);
     }
@@ -62,26 +55,22 @@ public class CatalogService {
 
     public Optional<EpisodeDTO> getEpisode(String exo) {
         log.debug("Request to get Episode (EXO) : {}", exo);
-
         final EpisodeDTO response = catalogClient.getEpisode(exo);
         return Optional.ofNullable(response);
     }
 
     public List<EpisodeDTO> getEpisodesByPodcast(String exo) {
         log.debug("Request to get Episodes by Podcast (EXO) : {}", exo);
-
         return catalogClient.getEpisodesByPodcast(exo).getResults();
     }
 
     public List<FeedDTO> getFeedsByPodcast(String exo) {
         log.debug("Request to get Feeds by Podcast (EXO) : {}", exo);
-
         return catalogClient.getFeedsByPodcast(exo).getResults();
     }
 
     public List<ChapterDTO> getChaptersByEpisode(String exo) {
         log.debug("Request to get Chapters by Episode (EXO) : {}", exo);
-
         return catalogClient.getChaptersByEpisode(exo).getResults();
     }
 

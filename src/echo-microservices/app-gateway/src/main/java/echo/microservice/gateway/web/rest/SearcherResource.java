@@ -27,9 +27,9 @@ public class SearcherResource {
     @Autowired
     private SearcherService searcherService;
 
-    @RequestMapping(value = "/search",
-        method = RequestMethod.GET,
-//        params = { "q", "p", "s" },
+    @RequestMapping(
+        value    = "/search",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("q") String query,
                                                         @RequestParam("p") Optional<Integer> page,

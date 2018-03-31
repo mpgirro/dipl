@@ -1,15 +1,12 @@
 package echo.microservice.catalog.web.rest;
 
-import com.google.common.base.MoreObjects;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.FeedDTO;
-import echo.core.domain.dto.PodcastDTO;
+import echo.core.domain.dto.*;
 import echo.microservice.catalog.service.EpisodeService;
 import echo.microservice.catalog.service.FeedService;
 import echo.microservice.catalog.service.PodcastService;
-import echo.microservice.catalog.web.dto.ArrayWrapperDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,10 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
@@ -43,9 +36,9 @@ public class PodcastResource {
     @Autowired
     private FeedService feedService;
 
-    //@PostMapping("/podcast")
-    @RequestMapping(value = "/podcast",
-        method = RequestMethod.POST,
+    @RequestMapping(
+        value    = "/podcast",
+        method   = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
@@ -59,7 +52,11 @@ public class PodcastResource {
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    @PutMapping("/podcast")
+    @RequestMapping(
+        value    = "/podcast",
+        method   = RequestMethod.PUT,
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<PodcastDTO> updatePodcast(@RequestBody PodcastDTO podcastDTO) {
         log.debug("REST request to update Podcast : {}", podcastDTO);
@@ -71,8 +68,9 @@ public class PodcastResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/podcast/{exo}",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/podcast/{exo}",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<PodcastDTO> getPodcast(@PathVariable String exo) {
@@ -85,57 +83,66 @@ public class PodcastResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/podcast/{exo}/episodes",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/podcast/{exo}/episodes",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getEpisodesByPodcast(@PathVariable String exo) {
         log.info("REST request to get Episodes by Podcast (EXO) : {}", exo);
         final List<EpisodeDTO> episodes = episodeService.findAllByPodcast(exo);
-        final ArrayWrapperDTO<EpisodeDTO> wrapper = new ArrayWrapperDTO<>(episodes);
-        return new ResponseEntity<>(wrapper, HttpStatus.OK);
+        return new ResponseEntity<>(
+            ImmutableArrayWrapperDTO.of(episodes),
+            HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/podcast/{exo}/feeds",
-        method = RequestMethod.GET,
+    @RequestMapping(
+        value    = "/podcast/{exo}/feeds",
+        method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getFeedsByPodcast(@PathVariable String exo) {
         log.info("REST request to get Feeds by Podcast (EXO) : {}", exo);
         final List<FeedDTO> feeds = feedService.findAllByPodcast(exo);
-        final ArrayWrapperDTO<FeedDTO> wrapper = new ArrayWrapperDTO<>(feeds);
-        return new ResponseEntity<>(wrapper, HttpStatus.OK);
+        return new ResponseEntity<>(
+            ImmutableArrayWrapperDTO.of(feeds),
+            HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/podcast",
-        method = RequestMethod.GET,
-        params = { "page", "size" },
+    @RequestMapping(
+        value    = "/podcast",
+        method   = RequestMethod.GET,
+        params   = { "page", "size" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getAll(@RequestParam("page") Integer page,
                                                   @RequestParam("size") Integer size) {
         log.info("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = podcastService.findAll(page, size);
-        final ArrayWrapperDTO<PodcastDTO> wrapper = new ArrayWrapperDTO<>(podcasts);
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts"); // TODO
-        log.debug("Returning all podcasts : {}", wrapper);
         final HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<>(wrapper, headers, HttpStatus.OK);
+        return new ResponseEntity<>(
+            ImmutableArrayWrapperDTO.of(podcasts),
+            headers,
+            HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/podcast/teaser",
-        method = RequestMethod.GET,
-        params = { "page", "size" },
+    @RequestMapping(
+        value    = "/podcast/teaser",
+        method   = RequestMethod.GET,
+        params   = { "page", "size" },
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getAllAsTeasers(@RequestParam("page") Integer page,
-                                                            @RequestParam("size") Integer size) {
+                                                           @RequestParam("size") Integer size) {
         log.info("REST request to get all Podcasts as teaser by page/size : ({},{})", page, size);
         final List<PodcastDTO> teasers = podcastService.findAllAsTeaser(page, size);
-        final ArrayWrapperDTO<PodcastDTO> wrapper = new ArrayWrapperDTO<>(teasers);
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts/teasers"); // TODO
         final HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<>(wrapper, headers, HttpStatus.OK);
+        return new ResponseEntity<>(
+            ImmutableArrayWrapperDTO.of(teasers),
+            headers,
+            HttpStatus.OK);
     }
 
 }
