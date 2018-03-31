@@ -21,14 +21,24 @@ public class CrawlerResource {
     @Autowired
     private CrawlerService crawlerService;
 
-    @RequestMapping(value = "/download-feed",
+    @RequestMapping(value = "/download-new-feed",
         method = RequestMethod.POST,
         params = { "exo", "url" })
     @ResponseStatus(HttpStatus.OK)
-    public void downloadFeed(@RequestParam("exo") String exo,
-                             @RequestParam("url") String url) throws URISyntaxException {
+    public void downloadNewFeed(@RequestParam("exo") String exo,
+                                @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
-        crawlerService.downloadFeed(exo, url);
+        crawlerService.downloadFeed(exo, url, true);
+    }
+
+    @RequestMapping(value = "/download-update-feed",
+        method = RequestMethod.POST,
+        params = { "exo", "url" })
+    @ResponseStatus(HttpStatus.OK)
+    public void downloadUpdateFeed(@RequestParam("exo") String exo,
+                                   @RequestParam("url") String url) throws URISyntaxException {
+        log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
+        crawlerService.downloadFeed(exo, url, false);
     }
 
     @RequestMapping(value = "/download-website",

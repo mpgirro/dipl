@@ -4,7 +4,7 @@ import echo.core.async.catalog.ImmutableRegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
-import echo.core.async.job.ParserJob;
+import echo.core.async.parser.ParserJob;
 import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
@@ -45,10 +45,7 @@ public class ParserService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
-    public void parseFeed(ParserJob parserJob, Boolean isNewPodcast) {
-        final String podcastExo = parserJob.getExo();
-        final String feedUrl = parserJob.getUrl();
-        final String feedData = parserJob.getData();
+    public void parseFeed(String podcastExo, String feedUrl, String feedData, boolean isNewPodcast) {
         try {
             final Optional<PodcastDTO> podcast = Optional.ofNullable(feedParser.parseFeed(feedData));
             if (podcast.isPresent()) {
@@ -89,9 +86,7 @@ public class ParserService {
     }
 
     @Async
-    public void parseWebsite(ParserJob job) {
-        final String exo = job.getExo();
-        final String html = job.getData();
+    public void parseWebsite(String exo, String html) {
 
         final String readableText = Jsoup.parse(html).text();
         // TODO send to index to update doc

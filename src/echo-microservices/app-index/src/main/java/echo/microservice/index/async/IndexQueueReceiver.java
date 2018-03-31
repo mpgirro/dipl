@@ -1,7 +1,7 @@
 package echo.microservice.index.async;
 
-import echo.core.async.job.AddOrUpdateDocIndexJob;
-import echo.core.async.job.IndexJob;
+import echo.core.async.index.AddOrUpdateDocIndexJob;
+import echo.core.async.index.IndexJob;
 import echo.microservice.index.service.IndexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,29 +23,18 @@ public class IndexQueueReceiver {
     @Autowired
     private IndexService indexService;
 
-    /*
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "echo.rabbit.index-queue", durable = "true"),
         exchange = @Exchange(value = "echo.direct", durable = "true"),
         key      = "echo.index.routingkey")
     )
-    public void recievedMessage(AddOrUpdateDocIndexJob job) {
-        log.info("Recieved Message : {}", job);
-        indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
-    }
-    */
-
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.index-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.index.routingkey")
-    )
-    public void recievedMessage(IndexJob job) {
-        log.info("Recieved Message : {}", job);
-        if (job instanceof AddOrUpdateDocIndexJob) {
-            indexService.add(((AddOrUpdateDocIndexJob) job).getIndexDoc()); // TODO replace add with addOrUpdate
+    public void recievedMessage(IndexJob indexJob) {
+        log.debug("Recieved Message : {}", indexJob);
+        if (indexJob instanceof AddOrUpdateDocIndexJob) {
+            final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
+            indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
         } else {
-            throw new RuntimeException("Received unhandled IndexJob of type : " + job.getClass());
+            throw new RuntimeException("Received unhandled IndexJob of type : " + indexJob.getClass());
         }
     }
 

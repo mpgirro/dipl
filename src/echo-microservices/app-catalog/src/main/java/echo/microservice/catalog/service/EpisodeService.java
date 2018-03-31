@@ -1,7 +1,8 @@
 package echo.microservice.catalog.service;
 
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
-import echo.core.async.job.AddOrUpdateDocIndexJob;
+import echo.core.async.index.AddOrUpdateDocIndexJob;
+import echo.core.async.index.ImmutableAddOrUpdateDocIndexJob;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
@@ -116,7 +117,7 @@ public class EpisodeService {
 
                     log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getEchoId());
 
-                    final AddOrUpdateDocIndexJob indexJob = new AddOrUpdateDocIndexJob(indexMapper.toImmutable(r));
+                    final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(r));
                     indexQueueSender.produceMsg(indexJob);
 
                     // TODO download episode website

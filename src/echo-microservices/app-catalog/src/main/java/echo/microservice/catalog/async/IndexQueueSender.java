@@ -1,6 +1,6 @@
 package echo.microservice.catalog.async;
 
-import echo.core.async.job.IndexJob;
+import echo.core.async.index.IndexJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -27,7 +27,7 @@ public class IndexQueueSender {
 
     public void produceMsg(IndexJob job){
         amqpTemplate.convertAndSend(exchange, routingKey, job);
-        log.info("Send msg : {}", job);
+        log.debug("Send msg : {}", job);
     }
 
 }

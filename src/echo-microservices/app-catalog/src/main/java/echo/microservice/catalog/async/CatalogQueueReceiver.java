@@ -3,7 +3,8 @@ package echo.microservice.catalog.async;
 import echo.core.async.catalog.CatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
-import echo.core.async.job.AddOrUpdateDocIndexJob;
+import echo.core.async.index.AddOrUpdateDocIndexJob;
+import echo.core.async.index.ImmutableAddOrUpdateDocIndexJob;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -44,11 +45,11 @@ public class CatalogQueueReceiver {
         key      = "echo.catalog.routingkey")
     )
     public void recievedMessage(CatalogJob job) {
-        log.info("Recieved Message : {}", job);
+        log.debug("Recieved Message : {}", job);
         if (job instanceof UpdatePodcastCatalogJob) {
             final Optional<PodcastDTO> registered = podcastService.update(((UpdatePodcastCatalogJob) job).getPodcast());
             if (registered.isPresent()) {
-                final AddOrUpdateDocIndexJob indexJob = new AddOrUpdateDocIndexJob(indexMapper.toImmutable(registered.get()));
+                final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(registered.get()));
                 indexQueueSender.produceMsg(indexJob);
             }
         } else if (job instanceof RegisterEpisodeIfNewJobCatalogJob) {

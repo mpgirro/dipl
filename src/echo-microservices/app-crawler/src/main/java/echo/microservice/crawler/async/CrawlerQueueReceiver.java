@@ -2,6 +2,7 @@ package echo.microservice.crawler.async;
 
 import echo.core.async.crawler.CrawlerJob;
 import echo.core.async.crawler.NewFeedCrawlerJob;
+import echo.core.async.crawler.UpdateFeedCrawlerJob;
 import echo.microservice.crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,13 @@ public class CrawlerQueueReceiver {
         key      = "echo.crawler.routingkey")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
-        log.info("Recieved Message : {}", crawlerJob);
+        log.debug("Recieved Message : {}", crawlerJob);
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;
-            crawlerService.downloadFeed(job.exo(), job.url());
+            crawlerService.downloadFeed(job.exo(), job.url(), true);
+        } else if (crawlerJob instanceof UpdateFeedCrawlerJob) {
+            final UpdateFeedCrawlerJob job = (UpdateFeedCrawlerJob) crawlerJob;
+            crawlerService.downloadFeed(job.exo(), job.url(), false);
         } else {
             throw new RuntimeException("Received unhandled CrawlerJob of type : " + crawlerJob.getClass());
         }

@@ -1,6 +1,8 @@
 package echo.microservice.crawler.service;
 
-import echo.core.async.job.ParserJob;
+import echo.core.async.parser.ImmutableNewFeedParserJob;
+import echo.core.async.parser.ImmutableUpdateFeedParserJob;
+import echo.core.async.parser.ParserJob;
 import echo.core.exception.EchoException;
 import echo.core.http.HeadResult;
 import echo.core.http.HttpClient;
@@ -9,13 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -32,10 +29,6 @@ import java.util.Optional;
 public class CrawlerService {
 
     private final Logger log = LoggerFactory.getLogger(CrawlerService.class);
-
-    private final String PARSER_URL = "http://localhost:3034"; // TODO
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     private HttpClient httpClient;
 
@@ -60,7 +53,7 @@ public class CrawlerService {
     }
 
     @Async
-    public void downloadFeed(String podcastExo, String feedUrl) {
+    public void downloadFeed(String podcastExo, String feedUrl, boolean isNewPodcast) {
         try {
             final HeadResult headResult = httpClient.headCheck(feedUrl);
             if (headResult.getLocation().isPresent() ) {
@@ -72,22 +65,13 @@ public class CrawlerService {
 
                 final String feedData = httpClient.fetchContent(feedUrl, headResult.getContentEncoding());
 
-                // TODO replace by sending job to queue
-                final ParserJob job = new ParserJob();
-                job.setExo(podcastExo);
-                job.setUrl(feedUrl);
-                job.setData(feedData);
-
-                // TODO
-                //parserQueueSender.produceMsg("<Parse-New-Feed : " + feedUrl + ">");
+                ParserJob job;
+                if (isNewPodcast) {
+                    job = ImmutableNewFeedParserJob.of(podcastExo, feedUrl, feedData);
+                } else {
+                    job = ImmutableUpdateFeedParserJob.of(podcastExo, feedUrl, feedData);
+                }
                 parserQueueSender.produceMsg(job);
-
-                /*
-                final String parserUrl = PARSER_URL+"/parser/new-podcast";
-                log.debug("Sending feed-data to parser with request : {}", parserUrl);
-                final HttpEntity<ParserJob> request = new HttpEntity<>(job);
-                final ResponseEntity<Void> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, Void.class);
-                */
 
             } else {
                 log.error("We did not get any location-url after evaluating response --> cannot proceed download without one");

@@ -1,6 +1,8 @@
 package echo.microservice.parser.web.rest;
 
-import echo.core.async.job.ParserJob;
+import echo.core.async.parser.NewFeedParserJob;
+import echo.core.async.parser.UpdateFeedParserJob;
+import echo.core.async.parser.WebsiteParserJob;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,27 +26,27 @@ public class ParserResource {
         value  = "/new-podcast",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void parseNewPodcastData(@RequestBody ParserJob job) {
+    public void parseNewPodcastData(@RequestBody NewFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data for new podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        parserService.parseFeed(job, true);
+        parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true);
     }
 
     @RequestMapping(
         value  = "/update-episodes",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void parseUpdateEpisodeData(@RequestBody ParserJob job) {
+    public void parseUpdateEpisodeData(@RequestBody UpdateFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data to update episodes for podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        parserService.parseFeed(job, false);
+        parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false);
     }
 
     @RequestMapping(
         value  = "/parse-website",
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void parseWebsiteData(@RequestBody ParserJob job) {
+    public void parseWebsiteData(@RequestBody WebsiteParserJob job) {
         log.debug("REST request to parseFeed website-data for EXO : {}", job.getExo());
-        parserService.parseWebsite(job);
+        parserService.parseWebsite(job.getExo(), job.getHtml());
     }
 
 }
