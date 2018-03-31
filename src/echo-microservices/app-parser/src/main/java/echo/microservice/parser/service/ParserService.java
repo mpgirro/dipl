@@ -67,11 +67,6 @@ public class ParserService {
                     .ifPresent(d -> p.setDescription(Jsoup.clean(d, Whitelist.basic())));
 
                 if (isNewPodcast) {
-                    // TODO replace by sending job to queue
-                    final String indexAddDocUrl = INDEX_URL+"/index/doc";
-                    log.debug("Sending doc to index with request : {}", indexAddDocUrl);
-                    final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.toImmutable(p));
-                    restTemplate.postForEntity(indexAddDocUrl, request, IndexDocDTO.class);
 
                     if (!isNullOrEmpty(p.getLink())) {
                         // TODO tell crawler to download website content for podcast website
