@@ -32,8 +32,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 assert System.properties['java.specification.version'] == '1.8'
 
 group 'at.irro.dipl'
@@ -234,7 +234,8 @@ task cleanResources(type: Delete) {
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.5'
+    gradleVersion = '4.6'
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 task stage(dependsOn: 'bootRepackage') {

@@ -205,7 +205,8 @@ task cleanResources(type: Delete) {
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.5'
+    gradleVersion = '4.6'
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 task stage(dependsOn: 'bootRepackage') {
