@@ -1,4 +1,4 @@
-package echo.core.async.job;
+package echo.core.async.catalog;
 
 import echo.core.domain.dto.EpisodeDTO;
 
