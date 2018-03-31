@@ -1,12 +1,14 @@
 package echo.microservice.parser.service;
 
-import echo.core.async.job.EpisodeRegisterJob;
+import echo.core.async.catalog.ImmutableRegisterEpisodeIfNewJobCatalogJob;
+import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
+import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
+import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.job.ParserJob;
-import echo.core.async.job.UpdatePodcastCatalogJob;
-import echo.core.domain.dto.*;
+import echo.core.domain.dto.ModifiablePodcastDTO;
+import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 import echo.core.mapper.EpisodeMapper;
-import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.parse.rss.FeedParser;
 import echo.core.parse.rss.RomeFeedParser;
@@ -16,14 +18,11 @@ import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -38,12 +37,8 @@ public class ParserService {
     @Autowired
     private CatalogQueueSender catalogQueueSender;
 
-    private final String CATALOG_URL = "http://localhost:3031"; // TODO
-    private final String INDEX_URL = "http://localhost:3032"; // TODO
-
     private final FeedParser feedParser = new RomeFeedParser();
 
-    private final IndexMapper indexMapper = IndexMapper.INSTANCE;
     private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
     private final EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
 
@@ -75,18 +70,8 @@ public class ParserService {
                     }
                 }
 
-                // TODO
-                //catalogQueueSender.produceMsg("<Update-Podcast : " + p.getEchoId() + ">");
-                final UpdatePodcastCatalogJob catalogJo = new UpdatePodcastCatalogJob(p.toImmutable());
-                catalogQueueSender.produceMsg(catalogJo);
-
-                /*
-                // TODO replace by async job?
-                // tell catalog to update podcast metadata
-                final String catalogUpdateUrl = CATALOG_URL+"/catalog/podcast";
-                log.debug("Sending podcast for update to catalog with request : {}", catalogUpdateUrl);
-                restTemplate.put(catalogUpdateUrl, p.toImmutable());
-                */
+                final UpdatePodcastCatalogJob job = ImmutableUpdatePodcastCatalogJob.of(p.toImmutable());
+                catalogQueueSender.produceMsg(job);
 
                 processEpisodes(podcastExo, feedData);
             } else {
@@ -114,32 +99,22 @@ public class ParserService {
     }
 
     private void processEpisodes(String podcastExo, String feedData) throws FeedParsingException {
-        final List<ModifiableEpisodeDTO> episodes = feedParser.extractEpisodes(feedData).stream()
+        feedParser.extractEpisodes(feedData).stream()
             .map(episodeMapper::toModifiable)
-            .collect(Collectors.toList());
-        for (ModifiableEpisodeDTO e : episodes) {
+            .forEach(e -> {
+                Optional
+                    .ofNullable(e.getTitle())
+                    .ifPresent(t -> e.setTitle(t.trim()));
+                Optional
+                    .ofNullable(e.getDescription())
+                    .ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
+                Optional
+                    .ofNullable(e.getContentEncoded())
+                    .ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
 
-            Optional.ofNullable(e.getTitle()).ifPresent(t -> e.setTitle(t.trim()));
-            Optional.ofNullable(e.getDescription()).ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
-            Optional.ofNullable(e.getContentEncoded()).ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
-
-            // TODO
-            //catalogQueueSender.produceMsg("<Register-Episode-If-Unknown : " + e.getTitle() + ">");
-            final EpisodeRegisterJob job = new EpisodeRegisterJob(podcastExo, e.toImmutable());
-            catalogQueueSender.produceMsg(job);
-
-            /*
-            // TODO replace by async job?
-            // tell catalog to register episode if unknown
-            final String catalogRegistrationUrl = CATALOG_URL+"/catalog/episode/register";
-            log.debug("Sending episode for registration to catalog with request : {}", catalogRegistrationUrl);
-            final EpisodeRegisterJob job = new EpisodeRegisterJob();
-            job.setPodcastExo(podcastExo);
-            job.setEpisode(e.toImmutable());
-            final HttpEntity<EpisodeRegisterJob> request = new HttpEntity<>(job);
-            restTemplate.postForEntity(catalogRegistrationUrl, request, EpisodeRegisterJob.class);
-            */
-        }
+                final RegisterEpisodeIfNewJobCatalogJob job = ImmutableRegisterEpisodeIfNewJobCatalogJob.of(podcastExo, e.toImmutable());
+                catalogQueueSender.produceMsg(job);
+            });
     }
 
 }

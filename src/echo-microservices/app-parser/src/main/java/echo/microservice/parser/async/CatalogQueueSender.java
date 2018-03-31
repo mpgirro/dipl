@@ -1,7 +1,6 @@
 package echo.microservice.parser.async;
 
-import echo.core.async.job.CatalogJob;
-import echo.core.async.job.ParserJob;
+import echo.core.async.catalog.CatalogJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;

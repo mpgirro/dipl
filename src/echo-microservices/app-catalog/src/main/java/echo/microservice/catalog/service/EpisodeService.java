@@ -1,7 +1,7 @@
 package echo.microservice.catalog.service;
 
+import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.job.AddOrUpdateDocIndexJob;
-import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
@@ -67,7 +67,7 @@ public class EpisodeService {
 
     @Async
     @Transactional
-    public void register(EpisodeRegisterJob job) {
+    public void register(RegisterEpisodeIfNewJobCatalogJob job) {
         log.debug("Request to register Podcast(EXO)/Episode : ({},{})", job.getPodcastExo(), job.getEpisode());
 
         final String podcastExo = job.getPodcastExo();

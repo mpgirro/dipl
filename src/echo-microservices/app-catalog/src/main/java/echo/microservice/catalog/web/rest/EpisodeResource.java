@@ -1,6 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.async.job.EpisodeRegisterJob;
+import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.domain.dto.ArrayWrapperDTO;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
@@ -49,7 +49,7 @@ public class EpisodeResource {
 
     @PostMapping("/episode/register")
     @ResponseStatus(HttpStatus.OK)
-    public void registerEpisode(@RequestBody EpisodeRegisterJob job) throws URISyntaxException {
+    public void registerEpisode(@RequestBody RegisterEpisodeIfNewJobCatalogJob job) throws URISyntaxException {
         log.debug("REST request to register episode by podcast(EXO) : {}", job.getPodcastExo());
         episodeService.register(job);
     }

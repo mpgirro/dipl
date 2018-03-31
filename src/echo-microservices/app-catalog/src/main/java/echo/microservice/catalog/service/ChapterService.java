@@ -47,7 +47,7 @@ public class ChapterService {
         chapters.stream()
             .map(chapterMapper::toModifiable)
             .map(c -> c.setEpisodeId(episodeId))
-            .map(this::save);
+            .forEach(this::save);
     }
 
     @Transactional(readOnly = true)

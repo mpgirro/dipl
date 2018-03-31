@@ -1,9 +1,9 @@
 package echo.microservice.catalog.async;
 
+import echo.core.async.catalog.CatalogJob;
+import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
+import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.job.AddOrUpdateDocIndexJob;
-import echo.core.async.job.CatalogJob;
-import echo.core.async.job.EpisodeRegisterJob;
-import echo.core.async.job.UpdatePodcastCatalogJob;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -38,32 +38,6 @@ public class CatalogQueueReceiver {
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
-    /*
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.catalog-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.catalog.routingkey")
-    )
-    public void recievedMessage(UpdatePodcastCatalogJob catalogJob) {
-        log.info("Recieved Message : {}", catalogJob);
-        final Optional<PodcastDTO> registered = podcastService.save(catalogJob.getPodcast());
-        if (registered.isPresent()) {
-            final AddOrUpdateDocIndexJob indexJob = new AddOrUpdateDocIndexJob(indexMapper.toImmutable(registered.get()));
-            indexQueueSender.produceMsg(indexJob);
-        }
-    }
-
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.catalog-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.catalog.routingkey")
-    )
-    public void recievedMessage(EpisodeRegisterJob job) {
-        log.info("Recieved Message : {}", job);
-        episodeService.register(job);
-    }
-    */
-
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "echo.rabbit.catalog-queue", durable = "true"),
         exchange = @Exchange(value = "echo.direct", durable = "true"),
@@ -77,8 +51,8 @@ public class CatalogQueueReceiver {
                 final AddOrUpdateDocIndexJob indexJob = new AddOrUpdateDocIndexJob(indexMapper.toImmutable(registered.get()));
                 indexQueueSender.produceMsg(indexJob);
             }
-        } else if (job instanceof EpisodeRegisterJob) {
-            episodeService.register((EpisodeRegisterJob) job);
+        } else if (job instanceof RegisterEpisodeIfNewJobCatalogJob) {
+            episodeService.register((RegisterEpisodeIfNewJobCatalogJob) job);
         } else {
             throw new RuntimeException("Received unhandled CatalogJob of type : " + job.getClass());
         }
