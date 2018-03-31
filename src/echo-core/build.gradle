@@ -49,6 +49,7 @@ ext {
     lucene_version = '7.2.0'
     jackson_version = '2.9.4'
     immutables_version = '2.5.6'
+    guava_version = '24.1-jre'
 }
 
 repositories {
@@ -83,7 +84,7 @@ dependencies {
 
     compile 'org.hashids:hashids:1.0.3'
 
-    compile 'com.google.guava:guava:24.0-jre'
+    compile "com.google.guava:guava:${guava_version}"
 
     compile group: 'com.softwaremill.sttp', name: "core_${scala_major_version}", version: '1.1.10'
 

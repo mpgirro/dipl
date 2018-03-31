@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 /**
  * @author Maximilian Irro
  */
@@ -45,29 +47,30 @@ public class RomeFeedParser implements FeedParser {
             final SyndFeed feed = input.build(inputSource);
 
             final ImmutablePodcastDTO.Builder builder = ImmutablePodcastDTO.builder();
-
-            builder.setTitle(feed.getTitle());
             String link = UrlUtil.sanitize(feed.getLink());
-            builder.setLink(link);
-            builder.setDescription(feed.getDescription());
+
+            builder
+                .setTitle(feed.getTitle())
+                .setLink(link)
+                .setDescription(feed.getDescription());
 
             SyndImage img = null;
             if (feed.getImage() != null) {
                 img = feed.getImage();
-                if(img.getUrl() != null){
+                if(!isNullOrEmpty(img.getUrl())){
                     builder.setImage(img.getUrl());
                 }
 
                 // now, it title/link/description were NULL, we use the values set in
                 // the image tag as fallbacks because they usually have the same values
-                if (feed.getTitle() == null && img.getTitle() != null) {
+                if (isNullOrEmpty(feed.getTitle()) && !isNullOrEmpty(img.getTitle())) {
                     builder.setTitle(img.getTitle());
                 }
-                if (link == null && img.getLink() != null) {
+                if (link == null && !isNullOrEmpty(img.getLink())) {
                     link = UrlUtil.sanitize(img.getLink());
                     builder.setLink(link);
                 }
-                if (feed.getDescription() == null && img.getDescription() != null) {
+                if (isNullOrEmpty(feed.getDescription()) && !isNullOrEmpty(img.getDescription())) {
                     builder.setDescription(img.getDescription());
                 }
             }
@@ -75,35 +78,38 @@ public class RomeFeedParser implements FeedParser {
             if (feed.getPublishedDate() != null) {
                 builder.setPubDate(LocalDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()));
             }
-            builder.setLanguage(feed.getLanguage());
-            builder.setGenerator(feed.getGenerator());
-            builder.setCopyright(feed.getCopyright());
-            builder.setDocs(feed.getDocs());
-            builder.setManagingEditor(feed.getManagingEditor());
+            builder
+                .setLanguage(feed.getLanguage())
+                .setGenerator(feed.getGenerator())
+                .setCopyright(feed.getCopyright())
+                .setDocs(feed.getDocs())
+                .setManagingEditor(feed.getManagingEditor());
 
             // access the <itunes:...> entries
             final Module itunesFeedModule = feed.getModule(FeedInformation.URI);
             final FeedInformation itunes = (FeedInformation) itunesFeedModule;
             if (itunes != null) {
-                builder.setItunesSummary(itunes.getSummary());
-                builder.setItunesAuthor(itunes.getAuthor());
-                builder.setItunesKeywords(String.join(", ", itunes.getKeywords()));
+                builder
+                    .setItunesSummary(itunes.getSummary())
+                    .setItunesAuthor(itunes.getAuthor())
+                    .setItunesKeywords(String.join(", ", itunes.getKeywords()));
 
                 // we set the itunes image as a fallback only
                 if (itunes.getImage() != null) {
-                    if (img == null || img.getUrl() == null) {
+                    if (img == null || isNullOrEmpty(img.getUrl())) {
                         builder.setImage(itunes.getImage().toExternalForm());
                     }
                 }
-                builder.setItunesCategories(new LinkedHashSet<>(
-                    itunes.getCategories().stream()
-                        .map(Category::getName)
-                        .collect(Collectors.toCollection(LinkedList::new))));
-                builder.setItunesExplicit(itunes.getExplicit());
-                builder.setItunesBlock(itunes.getBlock());
-                builder.setItunesType(itunes.getType());
-                builder.setItunesOwnerName(itunes.getOwnerName());
-                builder.setItunesOwnerEmail(itunes.getOwnerEmailAddress());
+                builder
+                    .setItunesCategories(new LinkedHashSet<>(
+                        itunes.getCategories().stream()
+                            .map(Category::getName)
+                            .collect(Collectors.toCollection(LinkedList::new))))
+                    .setItunesExplicit(itunes.getExplicit())
+                    .setItunesBlock(itunes.getBlock())
+                    .setItunesType(itunes.getType())
+                    .setItunesOwnerName(itunes.getOwnerName())
+                    .setItunesOwnerEmail(itunes.getOwnerEmailAddress());
                 //builder.setItunesCategory(String.join(" | ", itunesFeedInfo.getCategories().stream().toImmutable(c->c.getName()).collect(Collectors.toCollection(LinkedList::new))));
             } else {
                 log.debug("No iTunes Namespace elements found in Podcast");
@@ -158,8 +164,10 @@ public class RomeFeedParser implements FeedParser {
             for (SyndEntry e : feed.getEntries()) {
                 final ImmutableEpisodeDTO.Builder builder = ImmutableEpisodeDTO.builder();
 
-                builder.setTitle(e.getTitle());
-                builder.setLink(UrlUtil.sanitize(e.getLink()));
+                builder
+                    .setTitle(e.getTitle())
+                    .setLink(UrlUtil.sanitize(e.getLink()));
+
                 if (e.getPublishedDate() != null) {
                     builder.setPubDate(LocalDateTime.ofInstant(e.getPublishedDate().toInstant(), ZoneId.systemDefault()));
                 }
@@ -174,9 +182,10 @@ public class RomeFeedParser implements FeedParser {
 
                 if (e.getEnclosures() != null && e.getEnclosures().size() > 0) {
                     final SyndEnclosure enclosure = e.getEnclosures().get(0);
-                    builder.setEnclosureUrl(enclosure.getUrl());
-                    builder.setEnclosureType(enclosure.getType());
-                    builder.setEnclosureLength(enclosure.getLength());
+                    builder
+                        .setEnclosureUrl(enclosure.getUrl())
+                        .setEnclosureType(enclosure.getType())
+                        .setEnclosureLength(enclosure.getLength());
                     if(e.getEnclosures().size() > 1){
                         log.warn("Encountered multiple <enclosure> elements in <item> element");
                     }
@@ -204,12 +213,13 @@ public class RomeFeedParser implements FeedParser {
                     if (itunes.getDuration() != null) {
                         builder.setItunesDuration(itunes.getDuration().toString());
                     }
-                    builder.setItunesSubtitle(itunes.getSubtitle());
-                    builder.setItunesAuthor(itunes.getAuthor());
-                    builder.setItunesSummary(itunes.getSummary());
-                    builder.setItunesSeason(itunes.getSeason());
-                    builder.setItunesEpisode(itunes.getEpisode());
-                    builder.setItunesEpisodeType(itunes.getEpisodeType());
+                    builder
+                        .setItunesSubtitle(itunes.getSubtitle())
+                        .setItunesAuthor(itunes.getAuthor())
+                        .setItunesSummary(itunes.getSummary())
+                        .setItunesSeason(itunes.getSeason())
+                        .setItunesEpisode(itunes.getEpisode())
+                        .setItunesEpisodeType(itunes.getEpisodeType());
                 } else {
                     log.debug("No iTunes Namespace elements found in Episode");
                 }
