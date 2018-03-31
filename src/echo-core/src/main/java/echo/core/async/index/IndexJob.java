@@ -1,4 +1,4 @@
-package echo.core.async.job;
+package echo.core.async.index;
 
 /**
  * @author Maximilian Irro

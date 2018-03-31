@@ -1,4 +1,4 @@
-package echo.core.async.crawler;
+package echo.core.async.parser;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -16,14 +16,17 @@ import org.immutables.value.Value;
     defaults   = @Value.Immutable(builder = false),  // We may also disable builder
     build      = "create"           // rename 'build' method on builder to 'create'
 )
-@JsonSerialize(as = ImmutableUpdateFeedCrawlerJob.class)
-@JsonDeserialize(as = ImmutableUpdateFeedCrawlerJob.class)
-public interface UpdateFeedCrawlerJob extends CrawlerJob {
+@JsonSerialize(as = ImmutableNewFeedParserJob.class)
+@JsonDeserialize(as = ImmutableNewFeedParserJob.class)
+public interface NewFeedParserJob extends ParserJob {
 
     @Value.Parameter
-    String exo();
+    String getExo();
 
     @Value.Parameter
-    String url();
+    String getUrl();
+
+    @Value.Parameter
+    String getData();
 
 }

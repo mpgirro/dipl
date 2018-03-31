@@ -2,8 +2,6 @@ package echo.core.async.crawler;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.MoreObjects;
-import echo.core.async.crawler.CrawlerJob;
 import org.immutables.value.Value;
 
 /**

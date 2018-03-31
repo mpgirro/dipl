@@ -1,7 +1,8 @@
-package echo.core.async.crawler;
+package echo.core.async.index;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.domain.dto.IndexDocDTO;
 import org.immutables.value.Value;
 
 /**
@@ -16,14 +17,11 @@ import org.immutables.value.Value;
     defaults   = @Value.Immutable(builder = false),  // We may also disable builder
     build      = "create"           // rename 'build' method on builder to 'create'
 )
-@JsonSerialize(as = ImmutableUpdateFeedCrawlerJob.class)
-@JsonDeserialize(as = ImmutableUpdateFeedCrawlerJob.class)
-public interface UpdateFeedCrawlerJob extends CrawlerJob {
+@JsonSerialize(as = ImmutableAddOrUpdateDocIndexJob.class)
+@JsonDeserialize(as = ImmutableAddOrUpdateDocIndexJob.class)
+public interface AddOrUpdateDocIndexJob extends IndexJob {
 
     @Value.Parameter
-    String exo();
-
-    @Value.Parameter
-    String url();
+    IndexDocDTO getIndexDoc();
 
 }
