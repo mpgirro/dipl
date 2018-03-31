@@ -229,15 +229,14 @@ public class RomeFeedParser implements FeedParser {
                 final PodloveSimpleChapterModule simpleChapters = ((PodloveSimpleChapterModule) pscEntryModule);
                 if (simpleChapters != null) {
                     if (simpleChapters.getChapters() != null && simpleChapters.getChapters().size() > 0) {
-                        final List<ChapterDTO> chapters = new LinkedList<>();
-                        for (PodloveSimpleChapterItem sci : simpleChapters.getChapters()) {
-                            final ImmutableChapterDTO.Builder c = ImmutableChapterDTO.builder();
-                            c.setStart(sci.getStart());
-                            c.setTitle(sci.getTitle());
-                            c.setHref(sci.getHref());
-                            chapters.add(c.create());
-                        }
-                        builder.setChapters(chapters);
+                        builder.setChapters(
+                            simpleChapters.getChapters().stream()
+                                .map(sc -> ImmutableChapterDTO.builder()
+                                    .setStart(sc.getStart())
+                                    .setTitle(sc.getTitle())
+                                    .setHref(sc.getHref())
+                                    .create())
+                                .collect(Collectors.toList()));
                     }
                 } else {
                     log.debug("No Podlove Simple Chapter marks found in Episode");
