@@ -1,8 +1,12 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
-import echo.core.async.job.NewFeedCrawlerJob;
-import echo.core.domain.dto.*;
+import echo.core.async.crawler.ImmutableNewFeedCrawlerJob;
+import echo.core.async.crawler.NewFeedCrawlerJob;
+import echo.core.domain.dto.FeedDTO;
+import echo.core.domain.dto.ImmutableFeedDTO;
+import echo.core.domain.dto.ImmutablePodcastDTO;
+import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.entity.FeedEntity;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
@@ -14,19 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * @author Maximilian Irro
@@ -36,8 +34,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 public class FeedService {
 
     private final Logger log = LoggerFactory.getLogger(FeedService.class);
-
-    private final String CRAWLER_URL = "http://localhost:3033"; // TODO
 
     @Value("${echo.catalog.default-page:1}")
     private Integer DEFAULT_PAGE;
@@ -58,18 +54,14 @@ public class FeedService {
 
     private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
         log.debug("Request to save Feed : {}", feedDTO);
-        final ModifiableFeedDTO f = feedMapper.toModifiable(feedDTO);
-        if (isNullOrEmpty(f.getEchoId())) {
-            f.setEchoId(exoGenerator.getNewExo());
-        }
-        final FeedEntity feed = feedMapper.toEntity(f);
-        final FeedEntity result = feedRepository.save(feed);
-        return Optional.of(feedMapper.toImmutable(result));
+        return Optional.of(feedDTO)
+            .map(feedMapper::toModifiable)
+            .map(feedMapper::toEntity)
+            .map(feedRepository::save)
+            .map(feedMapper::toImmutable);
     }
 
     @Transactional
@@ -77,11 +69,11 @@ public class FeedService {
         log.debug("Request to update Feed : {}", feedDTO);
         return findOneByEchoId(feedDTO.getEchoId())
             .map(feedMapper::toModifiable)
-            .map(feed -> {
-                final Long id = feed.getId();
-                feedMapper.update(feedDTO, feed);
-                feed.setId(id);
-                return save(feed);
+            .map(f -> {
+                final Long id = f.getId();
+                feedMapper.update(feedDTO, f);
+                f.setId(id);
+                return save(f);
             })
             .orElse(Optional.empty());
     }
@@ -89,15 +81,17 @@ public class FeedService {
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOne(Long id) {
         log.debug("Request to get Feed (ID) : {}", id);
-        final FeedEntity result = feedRepository.findOne(id);
-        return Optional.ofNullable(feedMapper.toImmutable(result));
+        return Optional
+            .ofNullable(feedRepository.findOne(id))
+            .map(feedMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Feed (EXO) : {}", exo);
-        final FeedEntity result = feedRepository.findOneByEchoId(exo);
-        return Optional.ofNullable(feedMapper.toImmutable(result));
+        return Optional
+            .ofNullable(feedRepository.findOneByEchoId(exo))
+            .map(feedMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)
@@ -120,8 +114,9 @@ public class FeedService {
     @Transactional(readOnly = true)
     public Optional<FeedDTO> findOneByUrlAndPodcastEchoId(String url, String podcastExo) {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo);
-        final FeedEntity result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo);
-        return Optional.ofNullable(feedMapper.toImmutable(result));
+        return Optional
+            .ofNullable(feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo))
+            .map(feedMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)
@@ -147,32 +142,30 @@ public class FeedService {
 
             final ImmutablePodcastDTO.Builder pBuilder = ImmutablePodcastDTO.builder();
             pBuilder
+                .setEchoId(exoGenerator.getNewExo())
                 .setDescription(feedUrl)
                 .setRegistrationComplete(true)
                 .setRegistrationTimestamp(LocalDateTime.now());
-            final PodcastDTO podcast = podcastService.save(pBuilder.create()).get();
+            final Optional<PodcastDTO> podcast = podcastService.save(pBuilder.create());
 
-            final ImmutableFeedDTO.Builder fBuilder = ImmutableFeedDTO.builder();
-            fBuilder
-                .setPodcastId(podcast.getId())
-                .setUrl(feedUrl)
-                .setLastChecked(LocalDateTime.now())
-                .setLastStatus(FeedStatus.NEVER_CHECKED)
-                .setRegistrationTimestamp(LocalDateTime.now());
-            save(fBuilder.create());
+            if (podcast.isPresent()) {
+                final PodcastDTO p = podcast.get();
 
-            // TODO
-            //crawlerQueueSender.produceMsg("<Fetch-Feed : " + feedUrl + ">");
-            final NewFeedCrawlerJob job = new NewFeedCrawlerJob(podcast.getEchoId(), feedUrl);
-            crawlerQueueSender.produceMsg(job);
+                final ImmutableFeedDTO.Builder fBuilder = ImmutableFeedDTO.builder();
+                fBuilder
+                    .setEchoId(exoGenerator.getNewExo())
+                    .setPodcastId(p.getId())
+                    .setUrl(feedUrl)
+                    .setLastChecked(LocalDateTime.now())
+                    .setLastStatus(FeedStatus.NEVER_CHECKED)
+                    .setRegistrationTimestamp(LocalDateTime.now());
+                save(fBuilder.create());
 
-            /*
-            // TODO send url to crawler for download
-            // TODO replace by sending job to queue
-            final String parserUrl = CRAWLER_URL+"/crawler/download-feed?exo="+podcast.getEchoId()+"&url="+feedUrl;
-            final HttpEntity<String> request = new HttpEntity<>(""); // TODO dummy, we do not send a body that should be created (as is custom with POST)
-            final ResponseEntity<String> response = restTemplate.exchange(parserUrl, HttpMethod.POST, request, String.class);
-            */
+                final NewFeedCrawlerJob job = ImmutableNewFeedCrawlerJob.of(p.getEchoId(), feedUrl);
+                crawlerQueueSender.produceMsg(job);
+            } else {
+                log.error("Error on saving podcast (from builder) : {}", pBuilder);
+            }
         } else {
             log.info("Proposed feed is already in database: {}", feedUrl);
         }

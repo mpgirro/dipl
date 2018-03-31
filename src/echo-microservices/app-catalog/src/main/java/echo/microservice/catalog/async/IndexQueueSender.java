@@ -1,6 +1,5 @@
 package echo.microservice.catalog.async;
 
-import echo.core.async.job.CrawlerJob;
 import echo.core.async.job.IndexJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

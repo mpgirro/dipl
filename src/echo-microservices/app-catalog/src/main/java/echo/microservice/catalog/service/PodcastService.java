@@ -1,12 +1,9 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
-import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.entity.PodcastEntity;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
-import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.repository.PodcastRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * @author Maximilian Irro
@@ -45,18 +40,14 @@ public class PodcastService {
     private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
     private final TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
 
-    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
-
     @Transactional
     public Optional<PodcastDTO> save(PodcastDTO podcastDTO) {
         log.debug("Request to save Podcast : {}", podcastDTO);
-        final ModifiablePodcastDTO p = podcastMapper.toModifiable(podcastDTO);
-        if (isNullOrEmpty(p.getEchoId())) {
-            p.setEchoId(exoGenerator.getNewExo());
-        }
-        final PodcastEntity podcast = podcastMapper.toEntity(p);
-        final PodcastEntity result = podcastRepository.save(podcast);
-        return Optional.of(podcastMapper.toImmutable(result));
+        return Optional.of(podcastDTO)
+            .map(podcastMapper::toModifiable)
+            .map(podcastMapper::toEntity)
+            .map(podcastRepository::save)
+            .map(podcastMapper::toImmutable);
     }
 
     @Transactional
@@ -64,11 +55,11 @@ public class PodcastService {
         log.debug("Request to update Podcast : {}", podcastDTO);
         return findOneByEchoId(podcastDTO.getEchoId())
             .map(podcastMapper::toModifiable)
-            .map(podcast -> {
-                final Long id = podcast.getId();
-                podcastMapper.update(podcastDTO, podcast);
-                podcast.setId(id);
-                return save(podcast);
+            .map(p -> {
+                final Long id = p.getId();
+                podcastMapper.update(podcastDTO, p);
+                p.setId(id);
+                return save(p);
             })
             .orElse(Optional.empty());
     }
@@ -76,22 +67,25 @@ public class PodcastService {
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOne(Long id) {
         log.debug("Request to get Podcast (ID) : {}", id);
-        final PodcastEntity result = podcastRepository.findOne(id);
-        return Optional.ofNullable(podcastMapper.toImmutable(result));
+        return Optional
+            .ofNullable(podcastRepository.findOne(id))
+            .map(podcastMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByEchoId(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);
-        final PodcastEntity result = podcastRepository.findOneByEchoId(exo);
-        return Optional.ofNullable(podcastMapper.toImmutable(result));
+        return Optional
+            .ofNullable(podcastRepository.findOneByEchoId(exo))
+            .map(podcastMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)
     public Optional<PodcastDTO> findOneByFeed(String feedExo) {
         log.debug("Request to get Podcast by feed (EXO) : {}", feedExo);
-        final PodcastEntity result = podcastRepository.findOneByFeed(feedExo);
-        return Optional.ofNullable(podcastMapper.toImmutable(result));
+        return Optional
+            .ofNullable(podcastRepository.findOneByFeed(feedExo))
+            .map(podcastMapper::toImmutable);
     }
 
     @Transactional(readOnly = true)

@@ -1,7 +1,9 @@
 package echo.microservice.catalog.async;
 
-import echo.core.async.job.*;
-import echo.core.domain.dto.IndexDocDTO;
+import echo.core.async.job.AddOrUpdateDocIndexJob;
+import echo.core.async.job.CatalogJob;
+import echo.core.async.job.EpisodeRegisterJob;
+import echo.core.async.job.UpdatePodcastCatalogJob;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;

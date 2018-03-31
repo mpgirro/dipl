@@ -3,10 +3,8 @@ package echo.microservice.catalog.service;
 import echo.core.async.job.AddOrUpdateDocIndexJob;
 import echo.core.async.job.EpisodeRegisterJob;
 import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.entity.EpisodeEntity;
 import echo.core.domain.entity.PodcastEntity;
 import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.IndexMapper;
@@ -18,11 +16,9 @@ import echo.microservice.catalog.repository.EpisodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,8 +36,6 @@ public class EpisodeService {
 
     private final Logger log = LoggerFactory.getLogger(EpisodeService.class);
 
-    private final String INDEX_URL = "http://localhost:3032"; // TODO
-
     @Autowired
     private EpisodeRepository episodeRepository;
 
@@ -51,10 +45,8 @@ public class EpisodeService {
     @Autowired
     private ChapterService chapterService;
 
-
     @Autowired
     private IndexQueueSender indexQueueSender;
-
 
     private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
     private final EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
@@ -63,34 +55,14 @@ public class EpisodeService {
 
     private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
     @Transactional
     public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
         log.debug("Request to save Episode : {}", episodeDTO);
-        /*
-        final ModifiableEpisodeDTO e = episodeMapper.toModifiable(episodeDTO);
-        if (isNullOrEmpty(e.getEchoId())) {
-            e.setEchoId(exoGenerator.getNewExo());
-        }
-        */
-        return Optional
-            .of(episodeDTO)
+        return Optional.of(episodeDTO)
             .map(episodeMapper::toModifiable)
-            .map(e -> {
-                if (isNullOrEmpty(e.getEchoId())) {
-                    e.setEchoId(exoGenerator.getNewExo());
-                }
-                return e;
-            })
             .map(episodeMapper::toEntity)
             .map(episodeRepository::save)
             .map(episodeMapper::toImmutable);
-        /*
-        final EpisodeEntity episode = episodeMapper.toEntity(e);
-        final EpisodeEntity result = episodeRepository.save(episode);
-        return Optional.of(episodeMapper.toImmutable(result));
-        */
     }
 
     @Async
@@ -118,6 +90,10 @@ public class EpisodeService {
                 e.setPodcastId(p.getId());
                 e.setPodcastTitle(p.getTitle());
 
+                if (isNullOrEmpty(e.getEchoId())) {
+                    e.setEchoId(exoGenerator.getNewExo());
+                }
+
                 if (isNullOrEmpty(e.getImage())) {
                     e.setImage(p.getImage());
                 }
@@ -140,18 +116,8 @@ public class EpisodeService {
 
                     log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getEchoId());
 
-                    // TODO
-                    //indexQueueSender.produceMsg("<Index-Episode : " + e.getEchoId() + ">");
                     final AddOrUpdateDocIndexJob indexJob = new AddOrUpdateDocIndexJob(indexMapper.toImmutable(r));
                     indexQueueSender.produceMsg(indexJob);
-
-                    /*
-                    // TODO replace by sending job to queue
-                    final String indexAddDocUrl = INDEX_URL+"/index/doc";
-                    log.debug("Sending doc to index with request : {}", indexAddDocUrl);
-                    final HttpEntity<IndexDocDTO> request = new HttpEntity<>(indexMapper.toImmutable(r));
-                    restTemplate.postForEntity(indexAddDocUrl, request, IndexDocDTO.class);
-                    */
 
                     // TODO download episode website
                 });
@@ -166,11 +132,11 @@ public class EpisodeService {
         log.debug("Request to update Episode : {}", episodeDTO);
         return findOneByEchoId(episodeDTO.getEchoId())
             .map(episodeMapper::toModifiable)
-            .map(episode -> {
-                final Long id = episode.getId();
-                episodeMapper.update(episodeDTO, episode);
-                episode.setId(id);
-                return save(episode);
+            .map(e -> {
+                final Long id = e.getId();
+                episodeMapper.update(episodeDTO, e);
+                e.setId(id);
+                return save(e);
             })
             .orElse(Optional.empty());
     }
@@ -181,10 +147,6 @@ public class EpisodeService {
         return Optional
             .ofNullable(episodeRepository.findOne(id))
             .map(episodeMapper::toImmutable);
-        /*
-        final EpisodeEntity result = episodeRepository.findOne(id);
-        return Optional.ofNullable(episodeMapper.toImmutable(result));
-        */
     }
 
     @Transactional(readOnly = true)
@@ -193,10 +155,6 @@ public class EpisodeService {
         return Optional
             .ofNullable(episodeRepository.findOneByEchoId(exo))
             .map(episodeMapper::toImmutable);
-        /*
-        final EpisodeEntity result = episodeRepository.findOneByEchoId(exo);
-        return Optional.ofNullable(episodeMapper.toImmutable(result));
-        */
     }
 
     @Transactional(readOnly = true)
@@ -243,12 +201,9 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public Optional<EpisodeDTO> findOneByEnclosure(String enclosureUrl, Long enclosureLength, String enclosureType) {
         log.debug("Request to get Episode by enclosureUrl : '{}' and enclosureLength : {} and enclosureType : {}", enclosureUrl, enclosureLength, enclosureType);
-        return Optional.ofNullable(episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType))
+        return Optional
+            .ofNullable(episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType))
             .map(episodeMapper::toImmutable);
-        /*
-        final EpisodeEntity result = episodeRepository.findOneByEnlosure(enclosureUrl, enclosureLength, enclosureType);
-        return Optional.ofNullable(episodeMapper.toImmutable(result));
-        */
     }
 
     @Transactional(readOnly = true)

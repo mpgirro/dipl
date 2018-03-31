@@ -1,6 +1,7 @@
 package echo.microservice.catalog.service;
 
 import echo.core.domain.dto.ChapterDTO;
+import echo.core.domain.dto.ImmutableChapterDTO;
 import echo.core.domain.dto.ModifiableChapterDTO;
 import echo.core.domain.entity.ChapterEntity;
 import echo.core.mapper.ChapterMapper;
@@ -32,19 +33,21 @@ public class ChapterService {
     @Transactional
     public Optional<ChapterDTO> save(ChapterDTO chapterDTO) {
         log.debug("Request to save Chapter : {}", chapterDTO);
-        final ChapterEntity chapter = chapterMapper.toEntity(chapterDTO);
-        final ChapterEntity result = chapterRepository.save(chapter);
-        return Optional.of(chapterMapper.toModifiable(result).toImmutable());
+        return Optional.of(chapterDTO)
+            .map(chapterMapper::toModifiable)
+            .map(chapterMapper::toEntity)
+            .map(chapterRepository::save)
+            .map(chapterMapper::toModifiable)
+            .map(ModifiableChapterDTO::toImmutable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void saveAll(Long episodeId, List<ChapterDTO> chapters) {
         log.debug("Request to save Chapters for Episode (ID) : {}", episodeId);
-        for (ChapterDTO chapter : chapters) {
-            final ModifiableChapterDTO c = chapterMapper.toModifiable(chapter);
-            c.setEpisodeId(episodeId);
-            save(c);
-        }
+        chapters.stream()
+            .map(chapterMapper::toModifiable)
+            .map(c -> c.setEpisodeId(episodeId))
+            .map(this::save);
     }
 
     @Transactional(readOnly = true)
