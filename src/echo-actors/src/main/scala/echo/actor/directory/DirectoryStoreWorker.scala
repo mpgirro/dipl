@@ -92,6 +92,8 @@ class DirectoryStoreWorker (workerIndex: Int,
 
         case SaveChapter(chapter) => onSaveChapter(chapter)
 
+        case AddOrUpdatePodcastAndFeed(podcast, feed) => onAddOrUpdatePodcastAndFeed(podcast, feed)
+
         case UpdatePodcast(echoId, url, podcast) => onUpdatePodcast(echoId, url, podcast)
 
         case UpdateEpisode(podcastExo, episode) => onUpdateEpisode(podcastExo, episode)
@@ -155,8 +157,6 @@ class DirectoryStoreWorker (workerIndex: Int,
 
                 podcastService.save(podcast).map(p => {
 
-                    // broker ! UpdatePodcastMetadata(nullMapper.map(p)) // TODO
-
                     val feedId = exoGenerator.getNewExo
                     val feed = ImmutableFeedDTO.builder()
                         .setEchoId(feedId)
@@ -167,10 +167,13 @@ class DirectoryStoreWorker (workerIndex: Int,
                         .setRegistrationTimestamp(LocalDateTime.now())
                         .create()
                     feedService.save(feed).map(f => {
+
+                        broker ! AddOrUpdatePodcastAndFeed(
+                            nullMapper.clearImmutable(p),
+                            nullMapper.clearImmutable(f))
+
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, NewPodcastFetchJob())
-
-                        // broker ! UpdateFeed(nullMapper.map(f))
                     })
                 })
             } else {
@@ -210,6 +213,33 @@ class DirectoryStoreWorker (workerIndex: Int,
         doInTransaction(task, List(episodeService, chapterService))
     }
 
+    private def onAddOrUpdatePodcastAndFeed(podcast: PodcastDTO, feed: FeedDTO): Unit = {
+        log.debug("Received AddOrUpdatePodcastAndFeed({},{})", podcast.getEchoId, feed.getEchoId)
+        def task = () => {
+            val podcastUpdate: ModifiablePodcastDTO = podcastService.findOneByEchoId(podcast.getEchoId).map(p => {
+                podcastMapper.update(podcast, p)
+            }).getOrElse({
+                log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
+                podcastMapper.toModifiable(podcast)
+            })
+            podcastService.save(podcastUpdate).map(p => {
+                val feedUpdate: ModifiableFeedDTO = feedService.findOneByEchoId(feed.getEchoId).map(f => {
+                    feedMapper.update(feed, f)
+                }).getOrElse({
+                    log.debug("Feed to update is not yet in database, therefore it will be added : {}", feed.getEchoId)
+                    feedMapper.toModifiable(feed)
+                })
+
+                feedUpdate.setPodcastId(p.getId)
+                feedService.save(feedUpdate)
+            }).getOrElse({
+                log.error("Podcast could not be safed : {}", podcastUpdate)
+            })
+        }
+        doInTransaction(task, List(podcastService, feedService))
+    }
+
+    @Deprecated
     private def onUpdatePodcast(podcastId: String, feedUrl: String, podcast: PodcastDTO): Unit = {
         log.debug("Received UpdatePodcast({},{},{})", podcastId, feedUrl, podcast.getEchoId)
 
