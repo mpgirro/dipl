@@ -145,14 +145,15 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             return resultWrapper.create();
 
         } catch (IOException | ParseException e) {
-            log.error("Lucene Index has encountered an error searching for: {}", q);
-            e.printStackTrace();
+            log.error("Lucene Index has encountered an error searching for: '{}' ; reason was : {}, {}", q, e.getMessage(), e);
             return resultWrapper.create(); // TODO throw a custom exception, and do not return anything
         } finally {
             if (indexSearcher != null) {
                 try {
                     this.searcherManager.release(indexSearcher);
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) {
+                    log.error("Exception on releasing SearcherManager; reason was : {}, {}", e.getMessage(), e);
+                }
             }
         }
     }
@@ -177,13 +178,14 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
                 return indexMapper.toImmutable(indexSearcher.doc(hits[0].doc));
             }
         } catch (IOException e) {
-            log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {}", id);
-            e.printStackTrace();
+            log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {} ; reason was : {}, {}", id, e.getMessage(), e);
         } finally {
             if (indexSearcher != null) {
                 try {
                     this.searcherManager.release(indexSearcher);
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) {
+                    log.error("Exception on releasing SearcherManager; reason was : {}, {}", e.getMessage(), e);
+                }
             }
         }
 
@@ -195,7 +197,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
         try {
             this.searcherManager.maybeRefreshBlocking();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception on refreshing SearcherManager; reason was : {}, {}", e.getMessage(), e);
         }
     }
 
@@ -204,7 +206,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
         try {
             this.searcherManager.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception on destroying SearcherManager; reason was : {}, {}", e.getMessage(), e);
         }
     }
 

@@ -25,6 +25,8 @@ public class LuceneCommitter implements IndexCommitter {
 
     private final IndexWriter writer;
 
+    private final IndexMapper indexMapper = IndexMapper.INSTANCE;
+
     public LuceneCommitter(final String indexPath, final boolean create) throws IOException {
 
         final Directory dir = FSDirectory.open(Paths.get(indexPath));
@@ -55,12 +57,11 @@ public class LuceneCommitter implements IndexCommitter {
     public void add(IndexDocDTO indexDoc) {
         log.debug("Appending document to index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
+        final Document luceneDoc = indexMapper.toLucene(indexDoc);
         try {
             this.writer.addDocument(luceneDoc);
         } catch (IOException e) {
-            log.error("Error adding index entry for : {}" + indexDoc);
-            e.printStackTrace();
+            log.error("Error adding index entry for : {} ; reason was : {}, {}", indexDoc, e.getMessage(), e);
         }
     }
 
@@ -68,12 +69,11 @@ public class LuceneCommitter implements IndexCommitter {
     public void update(IndexDocDTO indexDoc) {
         log.debug("Updating document in index : {}", indexDoc);
 
-        final Document luceneDoc = IndexMapper.INSTANCE.toLucene(indexDoc);
+        final Document luceneDoc = indexMapper.toLucene(indexDoc);
         try {
             writer.updateDocument(new Term(IndexField.ECHO_ID, indexDoc.getEchoId()), luceneDoc);
         } catch (IOException e) {
-            log.error("Error updating index entry for : {}" + indexDoc);
-            e.printStackTrace();
+            log.error("Error updating index entry for : {} ; reason was : {}, {}", indexDoc, e.getMessage(), e);
         }
     }
 
@@ -83,8 +83,7 @@ public class LuceneCommitter implements IndexCommitter {
         try {
             this.writer.commit();
         } catch (IOException e) {
-            log.error("error committing index");
-            e.printStackTrace();
+            log.error("Error committing index; reason was : {}, {}", e.getMessage(), e);
         }
     }
 
@@ -93,7 +92,7 @@ public class LuceneCommitter implements IndexCommitter {
         try {
             this.writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception on destroying IndexWriter; reason was : {}, {}", e.getMessage(), e);
         }
     }
 
