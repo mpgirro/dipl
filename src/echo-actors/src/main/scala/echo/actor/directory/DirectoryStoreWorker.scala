@@ -538,35 +538,11 @@ class DirectoryStoreWorker (workerIndex: Int,
                     e.setRegistrationTimestamp(LocalDateTime.now())
                     val result = episodeService.save(e)
 
-                    // we must register the episodes chapters as well
-                    //result.foreach(r => Option(r.getChapters).map(cs => chapterService.saveAll(r.getId, cs))) // TODO use the broker instead
-                    /* TODO I have to broker the chapters to all stores, but if I sent those here,
-                     * then they'll arrive before the episode arrives (the message is brokered
-                     * further down the method) --> better send them in a Updateepisodewithchapters message
-                    */
-                    // TODO die chapters werden mit der episode mitgebrokert, brauche ich hier also nicht bereits vorab mit verschicken
-                    /*
-                    result.foreach(e => Option(episode.getChapters.asScala)
-                        .filter(_ != null)
-                        .map(_
-                            .map(c => chapterMapper.toModifiable(c))
-                            .foreach(c => {
-                                c.setEpisodeExo(e.getEchoId)
-                                broker ! SaveChapter(nullMapper.clearImmutable(c))
-                            })
-                        ))
-                        */
-
-
-
-
-                    // TODO why is this really necessary here?
-                    // we'll need this info when we send the episode to the index in just a moment
-                    //result.foreach(ep => ep.setPodcastTitle(e.getPodcastTitle))
-
                     // we already clean up all the IDs here, just for good manners. for the chapters,
                     // we simply reuse the chapters from since bevore saving the episode, because those yet lack an ID
                     result
+                        .map(r => episodeMapper.toImmutable(r)
+                            .withPodcastTitle(e.getPodcastTitle))
                         .map(r => nullMapper.clearImmutable(r)
                             .withChapters(Option(e.getChapters)
                                 .map(_
