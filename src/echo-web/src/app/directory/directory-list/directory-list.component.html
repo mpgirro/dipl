@@ -10,7 +10,7 @@
         <th>block</th>
         <th>iType</th>
         <th>Count</th>
-        <th>regT</th>
+        <th style="width: 150px;">regT</th>
         <th>regC</th>
       </tr>
     </thead>
@@ -19,11 +19,17 @@
       <tr *ngFor="let podcast of podcasts">
         <td><a routerLink="/p/{{podcast.echoId}}">{{podcast.title}}</a></td>
         <td>{{podcast.language}}</td>
-        <td>{{podcast.itunesExplicit}}</td>
-        <td>{{podcast.itunesBlock}}</td>
+        <td>
+          <span *ngIf="podcast.itunesExplicit" class="badge badge-success">T</span>
+          <span *ngIf="!podcast.itunesExplicit" class="badge badge-danger">F</span>
+        </td>
+        <td>
+          <span *ngIf="podcast.itunesBlock" class="badge badge-success">T</span>
+          <span *ngIf="!podcast.itunesBlock" class="badge badge-danger">F</span>
+        </td>
         <td>{{podcast.itunesType}}</td>
         <td>{{podcast.episodeCount}}</td>
-        <td>{{podcast.registrationTimestamp}}</td>
+        <td>{{podcast.registrationTimestamp | date: 'yyyy-MM-dd HH:mm'}}</td>
         <td>{{podcast.registrationComplete}}</td>
       </tr>
     </tbody>
