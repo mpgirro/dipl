@@ -19,7 +19,7 @@ public interface CatalogClient {
     @GetMapping(value = "/podcast/{exo}")
     PodcastDTO getPodcast(@PathVariable("exo") String exo);
 
-    @GetMapping(value = "/podcast")
+    @GetMapping(value = "/podcast/teaser")
     ArrayWrapperDTO<PodcastDTO> getAllPodcasts(@RequestParam("page") Integer page, @RequestParam("size") Integer size);
 
     @GetMapping(value = "/episode/{exo}")
