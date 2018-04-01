@@ -1,6 +1,5 @@
 package echo.microservice.catalog.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 
 /**
  * @author Maximilian Irro
@@ -23,14 +23,19 @@ import org.springframework.context.annotation.Import;
 public class RabbitConfig {
 
     @Autowired
+    private Environment env;
+
+    @Autowired
     private JacksonConfig jacksonConfig;
 
-    // TODO use values from application.properties
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
-        connectionFactory.setUsername("guest");
-        connectionFactory.setPassword("guest");
+        final String rabbitHost = env.getProperty("spring.rabbitmq.host", "localhost");
+        final Integer rabbitPort = env.getProperty("spring.rabbitmq.port", Integer.class, 5672);
+
+        final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitHost, rabbitPort);
+        connectionFactory.setUsername(env.getProperty("spring.rabbitmq.username"));
+        connectionFactory.setPassword(env.getProperty("spring.rabbitmq.password"));
         return connectionFactory;
     }
 
