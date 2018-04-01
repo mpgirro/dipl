@@ -11,6 +11,7 @@ import echo.core.domain.entity.FeedEntity;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
 import echo.core.util.ExoGenerator;
+import echo.microservice.catalog.ExoUtil;
 import echo.microservice.catalog.async.CrawlerQueueSender;
 import echo.microservice.catalog.repository.FeedRepository;
 import org.slf4j.Logger;
@@ -51,8 +52,6 @@ public class FeedService {
     private CrawlerQueueSender crawlerQueueSender;
 
     private final FeedMapper feedMapper = FeedMapper.INSTANCE;
-
-    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
 
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
@@ -142,7 +141,7 @@ public class FeedService {
 
             final ImmutablePodcastDTO.Builder pBuilder = ImmutablePodcastDTO.builder();
             pBuilder
-                .setEchoId(exoGenerator.getNewExo())
+                .setEchoId(ExoUtil.getInstance().getExoGenerator().getNewExo())
                 .setDescription(feedUrl)
                 .setRegistrationComplete(true)
                 .setRegistrationTimestamp(LocalDateTime.now());
@@ -153,7 +152,7 @@ public class FeedService {
 
                 final ImmutableFeedDTO.Builder fBuilder = ImmutableFeedDTO.builder();
                 fBuilder
-                    .setEchoId(exoGenerator.getNewExo())
+                    .setEchoId(ExoUtil.getInstance().getExoGenerator().getNewExo())
                     .setPodcastId(p.getId())
                     .setUrl(feedUrl)
                     .setLastChecked(LocalDateTime.now())

@@ -12,6 +12,7 @@ import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
 import echo.core.util.ExoGenerator;
+import echo.microservice.catalog.ExoUtil;
 import echo.microservice.catalog.async.IndexQueueSender;
 import echo.microservice.catalog.repository.EpisodeRepository;
 import org.slf4j.Logger;
@@ -54,8 +55,6 @@ public class EpisodeService {
     private final TeaserMapper teaserMapper = TeaserMapper.INSTANCE;
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
-    private final ExoGenerator exoGenerator = new ExoGenerator(1); // TODO set the microservice worker count
-
     @Transactional
     public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
         log.debug("Request to save Episode : {}", episodeDTO);
@@ -92,7 +91,8 @@ public class EpisodeService {
                 e.setPodcastTitle(p.getTitle());
 
                 if (isNullOrEmpty(e.getEchoId())) {
-                    e.setEchoId(exoGenerator.getNewExo());
+                    final String exo = ExoUtil.getInstance().getExoGenerator().getNewExo();
+                    e.setEchoId(exo);
                 }
 
                 if (isNullOrEmpty(e.getImage())) {
