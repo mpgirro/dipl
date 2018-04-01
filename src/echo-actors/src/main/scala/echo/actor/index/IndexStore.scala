@@ -10,6 +10,7 @@ import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSe
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.compat.java8.OptionConverters._
 import scala.language.postfixOps
 
 /**
@@ -138,7 +139,7 @@ class IndexStore (indexPath: String,
     private def processWebsiteQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,html) = queue.dequeue()
-            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withWebsiteData(html))
                 case None      => log.error("Could not retrieve from index for update website: echoId={}", echoId)
@@ -151,7 +152,7 @@ class IndexStore (indexPath: String,
     private def processImageQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,image) = queue.dequeue()
-            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withImage(image))
                 case None      => log.error("Could not retrieve from index for update image: echoId={}", echoId)
@@ -164,7 +165,7 @@ class IndexStore (indexPath: String,
     private def processLinkQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,link) = queue.dequeue()
-            val entry = Option(indexSearcher.findByEchoId(echoId)).map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withLink(link))
                 case None      => log.error("Could not retrieve from index for update link: echoId={}", echoId)
