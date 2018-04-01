@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -159,7 +160,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public IndexDocDTO findByEchoId(String id) {
+    public Optional<IndexDocDTO> findByEchoId(String id) {
         IndexSearcher indexSearcher = null;
         try {
 
@@ -175,7 +176,9 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
             if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
-                return indexMapper.toImmutable(indexSearcher.doc(hits[0].doc));
+                return Optional
+                    .of(indexSearcher.doc(hits[0].doc))
+                    .map(indexMapper::toImmutable);
             }
         } catch (IOException e) {
             log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {} ; reason was : {}, {}", id, e.getMessage(), e);
@@ -189,7 +192,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             }
         }
 
-        return null; // TODO throw a custom exception, and do not return anything
+        return Optional.empty();
     }
 
     @Override
