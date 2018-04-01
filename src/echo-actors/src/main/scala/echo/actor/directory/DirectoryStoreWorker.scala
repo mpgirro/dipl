@@ -92,7 +92,7 @@ class DirectoryStoreWorker (workerIndex: Int,
 
         case SaveChapter(chapter) => onSaveChapter(chapter)
 
-        case AddOrUpdatePodcastAndFeed(podcast, feed) => onAddOrUpdatePodcastAndFeed(podcast, feed)
+        case AddPodcastAndFeedIfUnknown(podcast, feed) => onAddPodcastAndFeedIfUnknown(podcast, feed)
 
         case UpdatePodcast(echoId, url, podcast) => onUpdatePodcast(echoId, url, podcast)
 
@@ -168,7 +168,7 @@ class DirectoryStoreWorker (workerIndex: Int,
                         .create()
                     feedService.save(feed).map(f => {
 
-                        broker ! AddOrUpdatePodcastAndFeed(
+                        broker ! AddPodcastAndFeedIfUnknown(
                             nullMapper.clearImmutable(p),
                             nullMapper.clearImmutable(f))
 
@@ -213,18 +213,18 @@ class DirectoryStoreWorker (workerIndex: Int,
         doInTransaction(task, List(episodeService, chapterService))
     }
 
-    private def onAddOrUpdatePodcastAndFeed(podcast: PodcastDTO, feed: FeedDTO): Unit = {
-        log.debug("Received AddOrUpdatePodcastAndFeed({},{})", podcast.getEchoId, feed.getEchoId)
+    private def onAddPodcastAndFeedIfUnknown(podcast: PodcastDTO, feed: FeedDTO): Unit = {
+        log.debug("Received AddPodcastAndFeedIfUnknown({},{})", podcast.getEchoId, feed.getEchoId)
         def task = () => {
             val podcastUpdate: ModifiablePodcastDTO = podcastService.findOneByEchoId(podcast.getEchoId).map(p => {
-                podcastMapper.update(podcast, p)
+                podcastMapper.toModifiable(p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getEchoId)
                 podcastMapper.toModifiable(podcast)
             })
             podcastService.save(podcastUpdate).map(p => {
                 val feedUpdate: ModifiableFeedDTO = feedService.findOneByEchoId(feed.getEchoId).map(f => {
-                    feedMapper.update(feed, f)
+                    feedMapper.toModifiable(f)
                 }).getOrElse({
                     log.debug("Feed to update is not yet in database, therefore it will be added : {}", feed.getEchoId)
                     feedMapper.toModifiable(feed)

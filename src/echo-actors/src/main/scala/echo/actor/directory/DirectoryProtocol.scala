@@ -23,7 +23,7 @@ object DirectoryProtocol {
     case class UpdatePodcast(podcastId: String, feedUrl: String, podcast: PodcastDTO) extends DirectoryCommand
     case class UpdateEpisode(podcastId: String, episode: EpisodeDTO) extends DirectoryCommand
     case class UpdateEpisodeWithChapters(podcastId: String, episode: EpisodeDTO, chapter: List[ChapterDTO]) extends DirectoryCommand
-    case class AddOrUpdatePodcastAndFeed(podcast: PodcastDTO, feed: FeedDTO) extends DirectoryCommand
+    case class AddPodcastAndFeedIfUnknown(podcast: PodcastDTO, feed: FeedDTO) extends DirectoryCommand
 
 
     trait DirectoryQuery
