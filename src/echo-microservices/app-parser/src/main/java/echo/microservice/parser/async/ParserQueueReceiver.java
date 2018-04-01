@@ -25,9 +25,9 @@ public class ParserQueueReceiver {
     private ParserService parserService;
 
     @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.parser-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.parser.routingkey")
+        value    = @Queue(value = "${echo.rabbit.parser-queue}", durable = "true"),
+        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+        key      = "${echo.amqp.parser-routingkey}")
     )
     public void recievedMessage(ParserJob parserJob) {
         log.debug("Recieved Message : {}", parserJob);

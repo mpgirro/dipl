@@ -24,9 +24,9 @@ public class IndexQueueReceiver {
     private IndexService indexService;
 
     @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.index-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.index.routingkey")
+        value    = @Queue(value = "${echo.rabbit.index-queue}", durable = "true"),
+        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+        key      = "${echo.amqp.index-routingkey}")
     )
     public void recievedMessage(IndexJob indexJob) {
         log.debug("Recieved Message : {}", indexJob);

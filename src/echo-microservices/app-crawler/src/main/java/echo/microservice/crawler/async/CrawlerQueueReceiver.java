@@ -25,9 +25,9 @@ public class CrawlerQueueReceiver {
     private CrawlerService crawlerService;
 
     @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "echo.rabbit.crawler-queue", durable = "true"),
-        exchange = @Exchange(value = "echo.direct", durable = "true"),
-        key      = "echo.crawler.routingkey")
+        value    = @Queue(value = "${echo.rabbit.crawler-queue}", durable = "true"),
+        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+        key      = "${echo.amqp.crawler-routingkey}")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
         log.debug("Recieved Message : {}", crawlerJob);
