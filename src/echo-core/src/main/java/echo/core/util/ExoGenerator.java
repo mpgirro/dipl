@@ -21,7 +21,7 @@ public class ExoGenerator {
         this.seq = 0;
     }
 
-    public String getNewExo() {
+    public synchronized String getNewExo() {
         final long now = System.currentTimeMillis();
         final String id = hashids.encode(now, shardId, seq);
         seq = (seq+1) % 1024;
