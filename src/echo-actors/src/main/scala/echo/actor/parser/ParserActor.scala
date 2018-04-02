@@ -39,7 +39,6 @@ class ParserActor extends Actor with ActorLogging {
     private val episodeMapper = EpisodeMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
 
-    private val feedParser: FeedParser = new RomeFeedParser()
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     private var indexStore: ActorRef = _
@@ -102,10 +101,10 @@ class ParserActor extends Actor with ActorLogging {
 
     private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
         try {
-            val podcast = Option(feedParser.parseFeed(feedData))
-            podcast match {
-                case Some(pcst) =>
-                    val p = podcastMapper.toModifiable(pcst)
+            val parser = RomeFeedParser.of(feedData)
+            Option(parser.getPodcast) match {
+                case Some(podcast) =>
+                    val p = podcastMapper.toModifiable(podcast)
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
@@ -138,7 +137,13 @@ class ParserActor extends Actor with ActorLogging {
                     directoryStore ! UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
-                    processEpisodes(feedUrl, podcastExo, feedData)
+                    Option(parser.getEpisodes) match {
+                        case Some(es) =>
+                            for(e <- es.asScala){
+                                registerEpisode(podcastExo, e)
+                            }
+                        case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
+                    }
                 case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
             }
         } catch {
@@ -146,17 +151,6 @@ class ParserActor extends Actor with ActorLogging {
                 log.error("FeedParsingException occured while processing feed: {}", feedUrl)
                 directoryStore ! FeedStatusUpdate(podcastExo, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
             case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
-        }
-    }
-
-    private def processEpisodes(feedUrl: String, podcastExo: String, feedData: String): Unit = {
-        val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData).asScala)
-        episodes match {
-            case Some(es) =>
-                for(e <- es){
-                    registerEpisode(podcastExo, e)
-                }
-            case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
         }
     }
 
