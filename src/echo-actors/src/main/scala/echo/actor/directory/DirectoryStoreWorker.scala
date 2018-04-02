@@ -202,7 +202,7 @@ class DirectoryStoreWorker (workerIndex: Int,
         log.debug("Received SaveChapter('{}') for episode : ", chapter.getTitle, chapter.getEpisodeExo)
 
         def task = () => {
-            episodeService.findOneByEchoId(chapter.getEpisodeExo).map(e => {
+            episodeService.findOneByExo(chapter.getEpisodeExo).map(e => {
                 val c = chapterMapper.toModifiable(chapter)
                 c.setEpisodeId(e.getId)
                 chapterService.save(c)
@@ -216,14 +216,14 @@ class DirectoryStoreWorker (workerIndex: Int,
     private def onAddPodcastAndFeedIfUnknown(podcast: PodcastDTO, feed: FeedDTO): Unit = {
         log.debug("Received AddPodcastAndFeedIfUnknown({},{})", podcast.getExo, feed.getExo)
         def task = () => {
-            val podcastUpdate: ModifiablePodcastDTO = podcastService.findOneByEchoId(podcast.getExo).map(p => {
+            val podcastUpdate: ModifiablePodcastDTO = podcastService.findOneByExo(podcast.getExo).map(p => {
                 podcastMapper.toModifiable(p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getExo)
                 podcastMapper.toModifiable(podcast)
             })
             podcastService.save(podcastUpdate).map(p => {
-                val feedUpdate: ModifiableFeedDTO = feedService.findOneByEchoId(feed.getExo).map(f => {
+                val feedUpdate: ModifiableFeedDTO = feedService.findOneByExo(feed.getExo).map(f => {
                     feedMapper.toModifiable(f)
                 }).getOrElse({
                     log.debug("Feed to update is not yet in database, therefore it will be added : {}", feed.getExo)
@@ -249,7 +249,7 @@ class DirectoryStoreWorker (workerIndex: Int,
          * jenen feed den ich immer benutze um updates zu laden
          */
         def task = () => {
-            val update: ModifiablePodcastDTO = podcastService.findOneByEchoId(podcastExo).map(p => {
+            val update: ModifiablePodcastDTO = podcastService.findOneByExo(podcastExo).map(p => {
                 podcastMapper.update(podcast, p)
             }).getOrElse({
                 log.debug("Podcast to update is not yet in database, therefore it will be added : {}", podcast.getExo)
@@ -267,8 +267,8 @@ class DirectoryStoreWorker (workerIndex: Int,
     private def onUpdateEpisode(podcastExo: String, episode: EpisodeDTO): Unit = {
         log.debug("Received UpdateEpisode({},{})", podcastExo, episode.getExo)
         def task = () => {
-            podcastService.findOneByEchoId(podcastExo).map(p => {
-                val update: ModifiableEpisodeDTO = episodeService.findOneByEchoId(episode.getExo).map(e => {
+            podcastService.findOneByExo(podcastExo).map(p => {
+                val update: ModifiableEpisodeDTO = episodeService.findOneByExo(episode.getExo).map(e => {
                     episodeMapper.update(episode, e)
                 }).getOrElse({
                     log.debug("Episode to update is not yet in database, therefore it will be added : {}", episode.getExo)
@@ -324,12 +324,12 @@ class DirectoryStoreWorker (workerIndex: Int,
     private def onUpdateLinkByExo(exo: String, newUrl: String): Unit = {
         log.debug("Received UpdateLinkByEchoId({},'{}')", exo, newUrl)
         def task = () => {
-            podcastService.findOneByEchoId(exo).map(p => {
+            podcastService.findOneByExo(exo).map(p => {
                 val podcast = podcastMapper.toModifiable(p)
                 podcast.setLink(newUrl)
                 podcastService.save(podcast)
             }).getOrElse({
-                episodeService.findOneByEchoId(exo).map(e => {
+                episodeService.findOneByExo(exo).map(e => {
                     val episode = episodeMapper.toModifiable(e)
                     episode.setLink(newUrl)
                     episodeService.save(episode)
@@ -344,7 +344,7 @@ class DirectoryStoreWorker (workerIndex: Int,
     private def onGetPodcast(podcastExo: String): Unit = {
         log.debug("Received GetPodcast('{}')", podcastExo)
         def task = () => {
-            podcastService.findOneByEchoId(podcastExo).map(p => {
+            podcastService.findOneByExo(podcastExo).map(p => {
                 Some(p)
             }).getOrElse({
                 log.error("Database does not contain Podcast (EXO) : {}", podcastExo)
@@ -391,7 +391,7 @@ class DirectoryStoreWorker (workerIndex: Int,
     private def onGetEpisode(episodeExo: String): Unit= {
         log.debug("Received GetEpisode('{}')", episodeExo)
         def task = () => {
-            episodeService.findOneByEchoId(episodeExo).map(e => {
+            episodeService.findOneByExo(episodeExo).map(e => {
                 Some(e)
             }).getOrElse({
                 log.error("Database does not contain Episode (EXO) : {}", episodeExo)
@@ -456,7 +456,7 @@ class DirectoryStoreWorker (workerIndex: Int,
         log.debug("Received CheckFeed({})", feedId)
         def task = () => {
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
-            feedService.findOneByEchoId(feedId).map(f => {
+            feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
                     //crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, f.getUrl)
                     crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
@@ -522,7 +522,7 @@ class DirectoryStoreWorker (workerIndex: Int,
                     // generate a new episode echoId - the generator is (almost) ensuring uniqueness
                     e.setExo(exoGenerator.getNewExo)
 
-                    podcastService.findOneByEchoId(podcastExo).map(p => {
+                    podcastService.findOneByExo(podcastExo).map(p => {
                         e.setPodcastId(p.getId)
                         e.setPodcastTitle(p.getTitle) // we'll not re-use this DTO, but extract the info again a bit further down
 

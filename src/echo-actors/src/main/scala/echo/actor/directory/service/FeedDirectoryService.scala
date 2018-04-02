@@ -35,23 +35,26 @@ class FeedDirectoryService (log: LoggingAdapter,
     @Transactional
     def save(feedDTO: FeedDTO): Option[FeedDTO] = {
         log.debug("Request to save Feed : {}", feedDTO)
-        val feed = feedMapper.toEntity(feedDTO)
-        val result = feedRepository.save(feed)
-        Option(feedMapper.toImmutable(result))
+        Option(feedDTO)
+          .map(f => feedMapper.toEntity(f))
+          .map(f => feedRepository.save(f))
+          .map(f => feedMapper.toImmutable(f))
     }
 
     @Transactional
-    def findOne(id: Long): Option[FeedDTO] = {
-        log.debug("Request to get Feed (ID) : {}", id)
-        val result = feedRepository.findOne(id)
-        Option(feedMapper.toImmutable(result))
+    def findOne(dbId: Long): Option[FeedDTO] = {
+        log.debug("Request to get Feed (ID) : {}", dbId)
+        Option(dbId)
+          .map(id => feedRepository.findOne(id))
+          .map(f => feedMapper.toImmutable(f))
     }
 
     @Transactional
-    def findOneByEchoId(exo: String): Option[FeedDTO] = {
-        log.debug("Request to get Feed (EXO) : {}", exo)
-        val result = feedRepository.findOneByExo(exo)
-        Option(feedMapper.toImmutable(result))
+    def findOneByExo(feedExo: String): Option[FeedDTO] = {
+        log.debug("Request to get Feed (EXO) : {}", feedExo)
+        Option(feedExo)
+          .map(exo => feedRepository.findOneByExo(exo))
+          .map(f => feedMapper.toImmutable(f))
     }
 
     @Transactional

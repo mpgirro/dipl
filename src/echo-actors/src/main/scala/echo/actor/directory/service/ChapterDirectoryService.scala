@@ -30,9 +30,11 @@ class ChapterDirectoryService (log: LoggingAdapter,
     @Transactional
     def save(chapterDTO: ChapterDTO): Option[ChapterDTO] = {
         log.debug("Request to save Chapter : {}", chapterDTO)
-        val chapter = chapterMapper.toEntity(chapterDTO)
-        val result = chapterRepository.save(chapter)
-        Option(chapterMapper.toModifiable(result).toImmutable)
+        Option(chapterDTO)
+          .map(c => chapterMapper.toEntity(c))
+          .map(c => chapterRepository.save(c))
+          .map(c => chapterMapper.toModifiable(c))
+          .map(_.toImmutable)
     }
 
     @Transactional

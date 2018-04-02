@@ -39,30 +39,34 @@ class PodcastDirectoryService (log: LoggingAdapter,
     @Transactional
     def save(podcastDTO: PodcastDTO): Option[PodcastDTO] = {
         log.debug("Request to save Podcast : {}", podcastDTO)
-        val podcast = podcastMapper.toEntity(podcastDTO)
-        val result = podcastRepository.save(podcast)
-        Option(podcastMapper.toImmutable(result))
+        Option(podcastDTO)
+          .map(p => podcastMapper.toEntity(p))
+          .map(p => podcastRepository.save(p))
+          .map(p => podcastMapper.toImmutable(p))
     }
 
     @Transactional
-    def findOne(id: Long): Option[PodcastDTO] = {
-        log.debug("Request to get Podcast (ID) : {}", id)
-        val result = podcastRepository.findOne(id)
-        Option(podcastMapper.toImmutable(result))
+    def findOne(dbId: Long): Option[PodcastDTO] = {
+        log.debug("Request to get Podcast (ID) : {}", dbId)
+        Option(dbId)
+          .map(id => podcastRepository.findOne(id))
+          .map(p => podcastMapper.toImmutable(p))
     }
 
     @Transactional
-    def findOneByEchoId(exo: String): Option[PodcastDTO] = {
-        log.debug("Request to get Podcast (EXO) : {}", exo)
-        val result = podcastRepository.findOneByExo(exo)
-        Option(podcastMapper.toImmutable(result))
+    def findOneByExo(podcastExo: String): Option[PodcastDTO] = {
+        log.debug("Request to get Podcast (EXO) : {}", podcastExo)
+        Option(podcastExo)
+          .map(exo => podcastRepository.findOneByExo(exo))
+          .map(p => podcastMapper.toImmutable(p))
     }
 
     @Transactional
     def findOneByFeed(feedExo: String): Option[PodcastDTO] = {
         log.debug("Request to get Podcast by feed (EXO) : {}", feedExo)
-        val result = podcastRepository.findOneByFeed(feedExo)
-        Option(podcastMapper.toImmutable(result))
+        Option(feedExo)
+          .map(exo => podcastRepository.findOneByFeed(exo))
+          .map(p => podcastMapper.toImmutable(p))
     }
 
     @Transactional

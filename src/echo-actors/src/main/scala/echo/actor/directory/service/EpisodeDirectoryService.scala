@@ -35,23 +35,26 @@ class EpisodeDirectoryService (log: LoggingAdapter,
     @Transactional
     def save(episodeDTO: EpisodeDTO): Option[EpisodeDTO] = {
         log.debug("Request to save Episode : {}", episodeDTO)
-        val episode = episodeMapper.toEntity(episodeDTO)
-        val result = episodeRepository.save(episode)
-        Option(episodeMapper.toImmutable(result))
+        Option(episodeDTO)
+          .map(e => episodeMapper.toEntity(e))
+          .map(e => episodeRepository.save(e))
+          .map(e => episodeMapper.toImmutable(e))
     }
 
     @Transactional(readOnly = true)
-    def findOne(id: Long): Option[EpisodeDTO] = {
-        log.debug("Request to get Episode (ID) : {}", id)
-        val result = episodeRepository.findOne(id)
-        Option(episodeMapper.toImmutable(result))
+    def findOne(dbId: Long): Option[EpisodeDTO] = {
+        log.debug("Request to get Episode (ID) : {}", dbId)
+        Option(dbId)
+            .map(id => episodeRepository.findOne(id))
+            .map(e => episodeMapper.toImmutable(e))
     }
 
     @Transactional(readOnly = true)
-    def findOneByEchoId(exo: String): Option[EpisodeDTO] = {
-        log.debug("Request to get Episode (EXO) : {}", exo)
-        val result = episodeRepository.findOneByExo(exo)
-        Option(episodeMapper.toImmutable(result))
+    def findOneByExo(episodeExo: String): Option[EpisodeDTO] = {
+        log.debug("Request to get Episode (EXO) : {}", episodeExo)
+        Option(episodeExo)
+          .map(exo => episodeRepository.findOneByExo(exo))
+          .map(e => episodeMapper.toImmutable(e))
     }
 
     @Transactional(readOnly = true)
