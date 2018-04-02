@@ -33,7 +33,6 @@ public class CoreApp {
     private static final String INDEX_PATH = "./index";
     private static final boolean CREATE_INDEX = true; // will re-create index on every start (for testing)
 
-    private FeedParser feedParser;
     private IndexCommitter committer;
     private IndexSearcher searcher;
 
@@ -50,8 +49,6 @@ public class CoreApp {
     }
 
     private CoreApp() throws IOException {
-        //this.feedParser = new PodEngineFeedParser();
-        this.feedParser = new RomeFeedParser();
         this.committer = new LuceneCommitter(INDEX_PATH, CREATE_INDEX); // TODO
         this.searcher = new LuceneSearcher(((LuceneCommitter)this.committer).getIndexWriter());
 
@@ -205,13 +202,14 @@ public class CoreApp {
 
         try {
             final String feedData = download(feed);
+            final FeedParser feedParser = RomeFeedParser.of(feedData);
 
-            final ModifiablePodcastDTO podcast = new ModifiablePodcastDTO().from(feedParser.parseFeed(feedData));
+            final ModifiablePodcastDTO podcast = new ModifiablePodcastDTO().from(feedParser.getPodcast());
             podcast.setExo(idGenerator.getNewExo());
 
             this.committer.add(podcast.toImmutable());
 
-            final List<ModifiableEpisodeDTO> episodes = feedParser.extractEpisodes(feedData).stream()
+            final List<ModifiableEpisodeDTO> episodes = feedParser.getEpisodes().stream()
                 .map(e -> new ModifiableEpisodeDTO().from(e))
                 .collect(Collectors.toList());
 

@@ -16,12 +16,8 @@ public interface FeedParser {
     String NAMESPACE_ATOM = "http://www.w3.org/2005/Atom";
     String NAMESPACE_PSC = "http://podlove.org/simple-chapters";
 
-    /*
-     * TODO supertype for my planed custom SAX and DOM feed parsers
-     */
+    PodcastDTO getPodcast();
 
-    PodcastDTO parseFeed(String xmlData) throws FeedParsingException;
-
-    List<EpisodeDTO> extractEpisodes(String xmlData) throws FeedParsingException;
+    List<EpisodeDTO> getEpisodes();
 
 }
