@@ -161,11 +161,11 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public Optional<IndexDocDTO> findByExo(String id) {
+    public Optional<IndexDocDTO> findByExo(String exo) {
         IndexSearcher indexSearcher = null;
         try {
 
-            final Query query = new TermQuery(new Term(IndexField.EXO, id));
+            final Query query = new TermQuery(new Term(IndexField.EXO, exo));
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
@@ -173,7 +173,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if (topDocs.totalHits > 1) {
-                log.error("Searcher found multiple documents for unique {} : {}", IndexField.EXO, id);
+                log.error("Searcher found multiple documents for unique {} : {}", IndexField.EXO, exo);
             }
             if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
@@ -182,7 +182,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
                     .map(indexMapper::toImmutable);
             }
         } catch (IOException e) {
-            log.error("Lucene Index has encountered an error retrieving a Lucene document by id: {} ; reason was : {}, {}", id, e.getMessage(), e);
+            log.error("Lucene Index has encountered an error retrieving a Lucene document by EXO : {} ; reason was : {}, {}", exo, e.getMessage(), e);
         } finally {
             if (indexSearcher != null) {
                 try {
