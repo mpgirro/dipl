@@ -5,6 +5,8 @@ import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.parser.ParserJob;
+import echo.core.domain.dto.EpisodeDTO;
+import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
@@ -22,6 +24,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -37,17 +40,14 @@ public class ParserService {
     @Autowired
     private CatalogQueueSender catalogQueueSender;
 
-    private final FeedParser feedParser = new RomeFeedParser();
-
     private final PodcastMapper podcastMapper = PodcastMapper.INSTANCE;
     private final EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
     public void parseFeed(String podcastExo, String feedUrl, String feedData, boolean isNewPodcast) {
         try {
-            final Optional<PodcastDTO> podcast = Optional.ofNullable(feedParser.parseFeed(feedData));
+            final FeedParser parser = RomeFeedParser.of(feedData);
+            final Optional<PodcastDTO> podcast = Optional.ofNullable(parser.getPodcast());
             if (podcast.isPresent()) {
 
                 final ModifiablePodcastDTO p = podcastMapper.toModifiable(podcast.get());
@@ -67,10 +67,27 @@ public class ParserService {
                     }
                 }
 
-                final UpdatePodcastCatalogJob job = ImmutableUpdatePodcastCatalogJob.of(p.toImmutable());
-                catalogQueueSender.produceMsg(job);
+                final UpdatePodcastCatalogJob updatePodcastJob = ImmutableUpdatePodcastCatalogJob.of(p.toImmutable());
+                catalogQueueSender.produceMsg(updatePodcastJob);
 
-                processEpisodes(podcastExo, feedData);
+                Optional
+                    .ofNullable(parser.getEpisodes())
+                    .ifPresent(es -> es.stream()
+                        .map(episodeMapper::toModifiable)
+                        .forEach(e -> {
+                            Optional
+                                .ofNullable(e.getTitle())
+                                .ifPresent(t -> e.setTitle(t.trim()));
+                            Optional
+                                .ofNullable(e.getDescription())
+                                .ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
+                            Optional
+                                .ofNullable(e.getContentEncoded())
+                                .ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
+
+                            final RegisterEpisodeIfNewJobCatalogJob registerEpisodeJob = ImmutableRegisterEpisodeIfNewJobCatalogJob.of(podcastExo, e.toImmutable());
+                            catalogQueueSender.produceMsg(registerEpisodeJob);
+                        }));
             } else {
                 log.warn("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl);
             }
@@ -91,25 +108,6 @@ public class ParserService {
         final String readableText = Jsoup.parse(html).text();
         // TODO send to index to update doc
         throw new UnsupportedOperationException("ParsingService.parseWebsite");
-    }
-
-    private void processEpisodes(String podcastExo, String feedData) throws FeedParsingException {
-        feedParser.extractEpisodes(feedData).stream()
-            .map(episodeMapper::toModifiable)
-            .forEach(e -> {
-                Optional
-                    .ofNullable(e.getTitle())
-                    .ifPresent(t -> e.setTitle(t.trim()));
-                Optional
-                    .ofNullable(e.getDescription())
-                    .ifPresent(d -> e.setDescription(Jsoup.clean(d, Whitelist.basic())));
-                Optional
-                    .ofNullable(e.getContentEncoded())
-                    .ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
-
-                final RegisterEpisodeIfNewJobCatalogJob job = ImmutableRegisterEpisodeIfNewJobCatalogJob.of(podcastExo, e.toImmutable());
-                catalogQueueSender.produceMsg(job);
-            });
     }
 
 }
