@@ -42,9 +42,9 @@ public class PodcastResource {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<PodcastDTO> createPodcast(@RequestBody PodcastDTO podcastDTO) throws URISyntaxException {
-        log.debug("REST request to save Podcast : {}", podcastDTO);
-        final Optional<PodcastDTO> created = podcastService.save(podcastDTO);
+    public ResponseEntity<PodcastDTO> createPodcast(@RequestBody PodcastDTO podcast) throws URISyntaxException {
+        log.debug("REST request to save Podcast : {}", podcast);
+        final Optional<PodcastDTO> created = podcastService.save(podcast);
         return created
             .map(result -> new ResponseEntity<>(
                 result,
@@ -58,9 +58,9 @@ public class PodcastResource {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<PodcastDTO> updatePodcast(@RequestBody PodcastDTO podcastDTO) {
-        log.debug("REST request to update Podcast : {}", podcastDTO);
-        final Optional<PodcastDTO> updated = podcastService.update(podcastDTO);
+    public ResponseEntity<PodcastDTO> updatePodcast(@RequestBody PodcastDTO podcast) {
+        log.debug("REST request to update Podcast : {}", podcast);
+        final Optional<PodcastDTO> updated = podcastService.update(podcast);
         return updated
             .map(result -> new ResponseEntity<>(
                 result,
@@ -75,7 +75,7 @@ public class PodcastResource {
     @Transactional(readOnly = true)
     public ResponseEntity<PodcastDTO> getPodcast(@PathVariable String exo) {
         log.info("REST request to get Podcast (EXO) : {}", exo);
-        final Optional<PodcastDTO> podcast = podcastService.findOneByEchoId(exo);
+        final Optional<PodcastDTO> podcast = podcastService.findOneByExo(exo);
         return podcast
             .map(result -> new ResponseEntity<>(
                 result,

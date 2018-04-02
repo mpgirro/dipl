@@ -13,12 +13,12 @@ import java.util.List;
  */
 public interface PodcastRepository extends JpaRepository<PodcastEntity,Long> {
 
-    PodcastEntity findOneByEchoId(String echoId);
+    PodcastEntity findOneByExo(String echoId);
 
     @Query("SELECT DISTINCT podcast FROM PodcastEntity podcast " +
             "LEFT JOIN podcast.feeds feed " +
-            "WHERE feed.echoId = :feedId")
-    PodcastEntity findOneByFeed(@Param("feedId") String feedId);
+            "WHERE feed.exo = :feedExo")
+    PodcastEntity findOneByFeed(@Param("feedExo") String feedExo);
 
     List<PodcastEntity> findByRegistrationCompleteTrue(Pageable pageable);
 

@@ -11,7 +11,6 @@ import echo.core.mapper.EpisodeMapper;
 import echo.core.mapper.IndexMapper;
 import echo.core.mapper.PodcastMapper;
 import echo.core.mapper.TeaserMapper;
-import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.ExoUtil;
 import echo.microservice.catalog.async.IndexQueueSender;
 import echo.microservice.catalog.repository.EpisodeRepository;
@@ -56,9 +55,9 @@ public class EpisodeService {
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
     @Transactional
-    public Optional<EpisodeDTO> save(EpisodeDTO episodeDTO) {
-        log.debug("Request to save Episode : {}", episodeDTO);
-        return Optional.of(episodeDTO)
+    public Optional<EpisodeDTO> save(EpisodeDTO episode) {
+        log.debug("Request to save Episode : {}", episode);
+        return Optional.of(episode)
             .map(episodeMapper::toModifiable)
             .map(episodeMapper::toEntity)
             .map(episodeRepository::save)
@@ -84,22 +83,22 @@ public class EpisodeService {
 
         if (!found) {
 
-            final Optional<PodcastDTO> podcast = podcastService.findOneByEchoId(podcastExo);
+            final Optional<PodcastDTO> podcast = podcastService.findOneByExo(podcastExo);
             if (podcast.isPresent()) {
                 final PodcastDTO p = podcast.get();
                 e.setPodcastId(p.getId());
                 e.setPodcastTitle(p.getTitle());
 
-                if (isNullOrEmpty(e.getEchoId())) {
+                if (isNullOrEmpty(e.getExo())) {
                     final String exo = ExoUtil.getInstance().getExoGenerator().getNewExo();
-                    e.setEchoId(exo);
+                    e.setExo(exo);
                 }
 
                 if (isNullOrEmpty(e.getImage())) {
                     e.setImage(p.getImage());
                 }
             } else {
-                log.error("No Podcast found with echoId : {}", podcastExo);
+                log.error("No Podcast found (EXO) : {}", podcastExo);
             }
 
             e.setRegistrationTimestamp(LocalDateTime.now());
@@ -115,7 +114,7 @@ public class EpisodeService {
                     // we'll need this info when we send the episode to the index in just a moment
                     r.setPodcastTitle(e.getPodcastTitle());
 
-                    log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getEchoId());
+                    log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getExo());
 
                     final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(r));
                     indexQueueSender.produceMsg(indexJob);
@@ -129,13 +128,13 @@ public class EpisodeService {
     }
 
     @Transactional
-    public Optional<EpisodeDTO> update(EpisodeDTO episodeDTO) {
-        log.debug("Request to update Episode : {}", episodeDTO);
-        return findOneByEchoId(episodeDTO.getEchoId())
+    public Optional<EpisodeDTO> update(EpisodeDTO episode) {
+        log.debug("Request to update Episode : {}", episode);
+        return findOneByExo(episode.getExo())
             .map(episodeMapper::toModifiable)
             .map(e -> {
                 final Long id = e.getId();
-                episodeMapper.update(episodeDTO, e);
+                episodeMapper.update(episode, e);
                 e.setId(id);
                 return save(e);
             })
@@ -151,10 +150,10 @@ public class EpisodeService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<EpisodeDTO> findOneByEchoId(String exo) {
+    public Optional<EpisodeDTO> findOneByExo(String exo) {
         log.debug("Request to get Episode (EXO) : {}", exo);
         return Optional
-            .ofNullable(episodeRepository.findOneByEchoId(exo))
+            .ofNullable(episodeRepository.findOneByExo(exo))
             .map(episodeMapper::toImmutable);
     }
 
@@ -167,10 +166,10 @@ public class EpisodeService {
     }
 
     @Transactional(readOnly = true)
-    public List<EpisodeDTO> findAllByPodcast(PodcastDTO podcastDTO) {
-        log.debug("Request to get all Episodes by Podcast : ", podcastDTO);
-        final PodcastEntity podcast = podcastMapper.toEntity(podcastDTO);
-        return episodeRepository.findAllByPodcast(podcast).stream()
+    public List<EpisodeDTO> findAllByPodcast(PodcastDTO podcast) {
+        log.debug("Request to get all Episodes by Podcast : ", podcast);
+        final PodcastEntity p = podcastMapper.toEntity(podcast);
+        return episodeRepository.findAllByPodcast(p).stream()
             .map(episodeMapper::toImmutable)
             .collect(Collectors.toList());
     }
@@ -178,7 +177,7 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public List<EpisodeDTO> findAllByPodcast(String podcastExo) {
         log.debug("Request to get all Episodes by Podcast (EXO) : ", podcastExo);
-        return episodeRepository.findAllByPodcastEchoId(podcastExo).stream()
+        return episodeRepository.findAllByPodcastExo(podcastExo).stream()
             .map(episodeMapper::toImmutable)
             .collect(Collectors.toList());
     }
@@ -186,7 +185,7 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public List<EpisodeDTO> findAllByPodcastAsTeaser(String podcastExo) {
         log.debug("Request to get all Episodes by Podcast (EXO) as teaser : ", podcastExo);
-        return episodeRepository.findAllByPodcastEchoId(podcastExo).stream()
+        return episodeRepository.findAllByPodcastExo(podcastExo).stream()
             .map(teaserMapper::asTeaser)
             .collect(Collectors.toList());
     }

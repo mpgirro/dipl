@@ -13,15 +13,15 @@ import java.util.List;
  */
 public interface EpisodeRepository extends JpaRepository<EpisodeEntity,Long> {
 
-    EpisodeEntity findOneByEchoId(String echoId);
+    EpisodeEntity findOneByExo(String exo);
 
     List<EpisodeEntity> findAllByPodcast(PodcastEntity podcast);
 
-    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.echoId = :echoId")
-    List<EpisodeEntity> findAllByPodcastEchoId(@Param("echoId") String echoId);
+    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.exo = :exo")
+    List<EpisodeEntity> findAllByPodcastExo(@Param("exo") String exo);
 
-    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.echoId = :podcastId AND episode.guid = :guid")
-    List<EpisodeEntity> findAllByPodcastAndGuid(@Param("podcastId") String podcastId,
+    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.exo = :podcastExo AND episode.guid = :guid")
+    List<EpisodeEntity> findAllByPodcastAndGuid(@Param("podcastExo") String podcastExo,
                                                 @Param("guid") String guid);
 
     @Query("SELECT DISTINCT episode FROM EpisodeEntity episode " + "" +
@@ -35,7 +35,7 @@ public interface EpisodeRepository extends JpaRepository<EpisodeEntity,Long> {
     @Query("SELECT count(episode) FROM EpisodeEntity episode")
     Long countAll();
 
-    @Query("SELECT count(episode) FROM EpisodeEntity episode WHERE episode.podcast.echoId = :podcastId")
-    Long countByPodcast(@Param("podcastId") String podcastId);
+    @Query("SELECT count(episode) FROM EpisodeEntity episode WHERE episode.podcast.exo = :podcastExo")
+    Long countByPodcast(@Param("podcastExo") String podcastExo);
 
 }

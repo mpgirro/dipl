@@ -12,21 +12,21 @@ import java.util.List;
  */
 public interface FeedRepository extends JpaRepository<FeedEntity,Long> {
 
-    FeedEntity findOneByEchoId(String echoId);
+    FeedEntity findOneByExo(String echoId);
 
     List<FeedEntity> findAllByUrl(String url);
 
-    @Query("SELECT DISTINCT feed FROM FeedEntity feed WHERE feed.podcast.echoId = :podcastId")
-    List<FeedEntity> findAllByPodcast(@Param("podcastId") String podcastId);
+    @Query("SELECT DISTINCT feed FROM FeedEntity feed WHERE feed.podcast.exo = :podcastExo")
+    List<FeedEntity> findAllByPodcast(@Param("podcastExo") String podcastExo);
 
-    @Query("SELECT DISTINCT feed FROM FeedEntity feed WHERE feed.url = :url AND feed.podcast.echoId = :podcastId")
-    FeedEntity findOneByUrlAndPodcastEchoId(@Param("url") String url,
-                                      @Param("podcastId") String podcastId);
+    @Query("SELECT DISTINCT feed FROM FeedEntity feed WHERE feed.url = :url AND feed.podcast.exo = :podcastExo")
+    FeedEntity findOneByUrlAndPodcastExo(@Param("url") String url,
+                                         @Param("podcastExo") String podcastExo);
 
     @Query("SELECT count(feed) FROM FeedEntity feed")
     Long countAll();
 
-    @Query("SELECT count(feed) FROM FeedEntity feed WHERE feed.podcast.echoId = :podcastId")
-    Long countByPodcast(@Param("podcastId") String podcastId);
+    @Query("SELECT count(feed) FROM FeedEntity feed WHERE feed.podcast.exo = :podcastExo")
+    Long countByPodcast(@Param("podcastExo") String podcastExo);
 
 }

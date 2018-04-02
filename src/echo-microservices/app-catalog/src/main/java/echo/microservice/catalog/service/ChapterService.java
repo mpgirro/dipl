@@ -31,9 +31,9 @@ public class ChapterService {
     private final ChapterMapper chapterMapper = ChapterMapper.INSTANCE;
 
     @Transactional
-    public Optional<ChapterDTO> save(ChapterDTO chapterDTO) {
-        log.debug("Request to save Chapter : {}", chapterDTO);
-        return Optional.of(chapterDTO)
+    public Optional<ChapterDTO> save(ChapterDTO chapter) {
+        log.debug("Request to save Chapter : {}", chapter);
+        return Optional.of(chapter)
             .map(chapterMapper::toModifiable)
             .map(chapterMapper::toEntity)
             .map(chapterRepository::save)
@@ -53,7 +53,7 @@ public class ChapterService {
     @Transactional(readOnly = true)
     public List<ChapterDTO> findAllByEpisode(String episodeExo) {
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo);
-        return chapterRepository.findAllByEpisodeEchoId(episodeExo).stream()
+        return chapterRepository.findAllByEpisodeExo(episodeExo).stream()
             .map(chapterMapper::toModifiable)
             .map(ModifiableChapterDTO::toImmutable)
             .collect(Collectors.toList());

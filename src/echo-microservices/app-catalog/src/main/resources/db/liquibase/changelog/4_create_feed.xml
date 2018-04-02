@@ -24,7 +24,7 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="echo_id" type="varchar(255)">
+            <column name="exo" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
             <column name="url" type="text"/>
@@ -34,10 +34,10 @@
             <column name="registration_timestamp" type="timestamp"/>
         </createTable>
 
-        <createIndex indexName="idx_feed_echo_id"
+        <createIndex indexName="idx_feed_exo"
                      tableName="feed"
                      unique="true">
-            <column name="echo_id" type="varchar(255)"/>
+            <column name="exo" type="varchar(255)"/>
         </createIndex>
 
         <!--

@@ -28,9 +28,9 @@ public class FeedResource {
 
     @PostMapping("/feed")
     @Transactional
-    public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feedDTO) throws URISyntaxException {
-        log.debug("REST request to save Feed : {}", feedDTO);
-        final Optional<FeedDTO> created = feedService.save(feedDTO);
+    public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feed) throws URISyntaxException {
+        log.debug("REST request to save Feed : {}", feed);
+        final Optional<FeedDTO> created = feedService.save(feed);
         return created
             .map(result -> new ResponseEntity<>(
                 result,
@@ -51,9 +51,9 @@ public class FeedResource {
 
     @PutMapping("/feed")
     @Transactional
-    public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feedDTO) {
-        log.debug("REST request to update Feed : {}", feedDTO);
-        final Optional<FeedDTO> updated = feedService.update(feedDTO);
+    public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feed) {
+        log.debug("REST request to update Feed : {}", feed);
+        final Optional<FeedDTO> updated = feedService.update(feed);
         return updated
             .map(result -> new ResponseEntity<>(
                 result,
@@ -68,7 +68,7 @@ public class FeedResource {
     @Transactional(readOnly = true)
     public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);
-        final Optional<FeedDTO> feed = feedService.findOneByEchoId(exo);
+        final Optional<FeedDTO> feed = feedService.findOneByExo(exo);
         return feed
             .map(result -> new ResponseEntity<>(
                 result,

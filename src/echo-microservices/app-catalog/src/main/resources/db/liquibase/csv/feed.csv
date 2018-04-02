@@ -1,3 +1,1 @@
-id;echo_id;url;last_checked;last_status;podcast_id;registration_timestamp
-1;abc;http;2018-01-01 00:00:00.001;never_checked;1;2018-01-01 00:00:00.001
-
+id;exo;url;last_checked;last_status;podcast_id;registration_timestamp

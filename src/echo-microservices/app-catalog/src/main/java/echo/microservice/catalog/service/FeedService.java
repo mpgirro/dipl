@@ -7,10 +7,8 @@ import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.dto.ImmutableFeedDTO;
 import echo.core.domain.dto.ImmutablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.domain.entity.FeedEntity;
 import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
-import echo.core.util.ExoGenerator;
 import echo.microservice.catalog.ExoUtil;
 import echo.microservice.catalog.async.CrawlerQueueSender;
 import echo.microservice.catalog.repository.FeedRepository;
@@ -64,13 +62,13 @@ public class FeedService {
     }
 
     @Transactional
-    public Optional<FeedDTO> update(FeedDTO feedDTO) {
-        log.debug("Request to update Feed : {}", feedDTO);
-        return findOneByEchoId(feedDTO.getEchoId())
+    public Optional<FeedDTO> update(FeedDTO feed) {
+        log.debug("Request to update Feed : {}", feed);
+        return findOneByExo(feed.getExo())
             .map(feedMapper::toModifiable)
             .map(f -> {
                 final Long id = f.getId();
-                feedMapper.update(feedDTO, f);
+                feedMapper.update(feed, f);
                 f.setId(id);
                 return save(f);
             })
@@ -86,10 +84,10 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<FeedDTO> findOneByEchoId(String exo) {
+    public Optional<FeedDTO> findOneByExo(String exo) {
         log.debug("Request to get Feed (EXO) : {}", exo);
         return Optional
-            .ofNullable(feedRepository.findOneByEchoId(exo))
+            .ofNullable(feedRepository.findOneByExo(exo))
             .map(feedMapper::toImmutable);
     }
 
@@ -114,7 +112,7 @@ public class FeedService {
     public Optional<FeedDTO> findOneByUrlAndPodcastEchoId(String url, String podcastExo) {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo);
         return Optional
-            .ofNullable(feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo))
+            .ofNullable(feedRepository.findOneByUrlAndPodcastExo(url, podcastExo))
             .map(feedMapper::toImmutable);
     }
 
@@ -141,7 +139,7 @@ public class FeedService {
 
             final ImmutablePodcastDTO.Builder pBuilder = ImmutablePodcastDTO.builder();
             pBuilder
-                .setEchoId(ExoUtil.getInstance().getExoGenerator().getNewExo())
+                .setExo(ExoUtil.getInstance().getExoGenerator().getNewExo())
                 .setDescription(feedUrl)
                 .setRegistrationComplete(true)
                 .setRegistrationTimestamp(LocalDateTime.now());
@@ -152,7 +150,7 @@ public class FeedService {
 
                 final ImmutableFeedDTO.Builder fBuilder = ImmutableFeedDTO.builder();
                 fBuilder
-                    .setEchoId(ExoUtil.getInstance().getExoGenerator().getNewExo())
+                    .setExo(ExoUtil.getInstance().getExoGenerator().getNewExo())
                     .setPodcastId(p.getId())
                     .setUrl(feedUrl)
                     .setLastChecked(LocalDateTime.now())
@@ -160,7 +158,7 @@ public class FeedService {
                     .setRegistrationTimestamp(LocalDateTime.now());
                 save(fBuilder.create());
 
-                final NewFeedCrawlerJob job = ImmutableNewFeedCrawlerJob.of(p.getEchoId(), feedUrl);
+                final NewFeedCrawlerJob job = ImmutableNewFeedCrawlerJob.of(p.getExo(), feedUrl);
                 crawlerQueueSender.produceMsg(job);
             } else {
                 log.error("Error on saving podcast (from builder) : {}", pBuilder);

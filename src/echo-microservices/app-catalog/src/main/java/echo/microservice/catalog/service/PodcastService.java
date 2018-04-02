@@ -53,7 +53,7 @@ public class PodcastService {
     @Transactional
     public Optional<PodcastDTO> update(PodcastDTO podcastDTO) {
         log.debug("Request to update Podcast : {}", podcastDTO);
-        return findOneByEchoId(podcastDTO.getEchoId())
+        return findOneByExo(podcastDTO.getExo())
             .map(podcastMapper::toModifiable)
             .map(p -> {
                 final Long id = p.getId();
@@ -73,10 +73,10 @@ public class PodcastService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<PodcastDTO> findOneByEchoId(String exo) {
+    public Optional<PodcastDTO> findOneByExo(String exo) {
         log.debug("Request to get Podcast (EXO) : {}", exo);
         return Optional
-            .ofNullable(podcastRepository.findOneByEchoId(exo))
+            .ofNullable(podcastRepository.findOneByExo(exo))
             .map(podcastMapper::toImmutable);
     }
 

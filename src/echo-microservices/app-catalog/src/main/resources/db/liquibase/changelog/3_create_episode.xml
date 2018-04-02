@@ -24,7 +24,7 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="echo_id" type="varchar(255)">
+            <column name="exo" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
             <column name="title" type="text"/>
@@ -49,10 +49,10 @@
             <column name="registration_timestamp" type="timestamp"/>
         </createTable>
 
-        <createIndex indexName="idx_episode_echo_id"
+        <createIndex indexName="idx_episode_exo"
                      tableName="episode"
                      unique="true">
-            <column name="echo_id" type="varchar(255)"/>
+            <column name="exo" type="varchar(255)"/>
         </createIndex>
 
         <addForeignKeyConstraint baseColumnNames="podcast_id"

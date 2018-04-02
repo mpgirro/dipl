@@ -15,7 +15,7 @@ public interface ChapterRepository extends JpaRepository<ChapterEntity,Long> {
 
     List<ChapterEntity> findAllByEpisode(EpisodeEntity episode);
 
-    @Query("SELECT DISTINCT chapter FROM ChapterEntity chapter WHERE chapter.episode.echoId = :echoId")
-    List<ChapterEntity> findAllByEpisodeEchoId(@Param("echoId") String echoId);
+    @Query("SELECT DISTINCT chapter FROM ChapterEntity chapter WHERE chapter.episode.exo = :exo")
+    List<ChapterEntity> findAllByEpisodeExo(@Param("exo") String exo);
 
 }

@@ -37,9 +37,9 @@ public class EpisodeResource {
 
     @PostMapping("/episode")
     @Transactional
-    public ResponseEntity<EpisodeDTO> createEpisode(@RequestBody EpisodeDTO episodeDTO) throws URISyntaxException {
-        log.debug("REST request to save Episode : {}", episodeDTO);
-        final Optional<EpisodeDTO> created = episodeService.save(episodeDTO);
+    public ResponseEntity<EpisodeDTO> createEpisode(@RequestBody EpisodeDTO episode) throws URISyntaxException {
+        log.debug("REST request to save Episode : {}", episode);
+        final Optional<EpisodeDTO> created = episodeService.save(episode);
         return created
             .map(result -> new ResponseEntity<>(
                 result,
@@ -50,15 +50,15 @@ public class EpisodeResource {
     @PostMapping("/episode/register")
     @ResponseStatus(HttpStatus.OK)
     public void registerEpisode(@RequestBody RegisterEpisodeIfNewJobCatalogJob job) throws URISyntaxException {
-        log.debug("REST request to register episode by podcast(EXO) : {}", job.getPodcastExo());
+        log.debug("REST request to register episode by podcast (EXO) : {}", job.getPodcastExo());
         episodeService.register(job);
     }
 
     @PutMapping("/episode")
     @Transactional
-    public ResponseEntity<EpisodeDTO> updateEpisode(@RequestBody EpisodeDTO episodeDTO) {
-        log.debug("REST request to update Episode : {}", episodeDTO);
-        final Optional<EpisodeDTO> updated = episodeService.update(episodeDTO);
+    public ResponseEntity<EpisodeDTO> updateEpisode(@RequestBody EpisodeDTO episode) {
+        log.debug("REST request to update Episode : {}", episode);
+        final Optional<EpisodeDTO> updated = episodeService.update(episode);
         return updated
             .map(result -> new ResponseEntity<>(
                 result,
@@ -73,7 +73,7 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.debug("REST request to get Episode (EXO) : {}", exo);
-        final Optional<EpisodeDTO> episode = episodeService.findOneByEchoId(exo);
+        final Optional<EpisodeDTO> episode = episodeService.findOneByExo(exo);
         return episode
             .map(result -> new ResponseEntity<>(
                 result,

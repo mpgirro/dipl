@@ -51,7 +51,7 @@ public class ParserService {
             if (podcast.isPresent()) {
 
                 final ModifiablePodcastDTO p = podcastMapper.toModifiable(podcast.get());
-                p.setEchoId(podcastExo);
+                p.setExo(podcastExo);
 
                 Optional.ofNullable(p.getTitle())
                     .ifPresent(t -> p.setTitle(t.trim()));
@@ -63,7 +63,7 @@ public class ParserService {
                     if (!isNullOrEmpty(p.getLink())) {
                         // TODO tell crawler to download website content for podcast website
                     } else {
-                        log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId());
+                        log.debug("No link set for podcast {} --> no website data will be added to the index", p.getExo());
                     }
                 }
 
