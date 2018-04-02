@@ -15,29 +15,29 @@ export class PodcastService {
 
   constructor(private http: HttpClient) { }
 
-  get(echoId: string): Observable<Podcast> {
-    const request = this.baseUrl + '/' + echoId;
+  get(exo: string): Observable<Podcast> {
+    const request = this.baseUrl + '/' + exo;
     console.log('GET ' + request);
     return this.http.get<Podcast>(request).pipe(
-      tap(_ => console.log(`found podcast : "${echoId}"`)),
+      tap(_ => console.log(`found podcast : "${exo}"`)),
       catchError(this.handleError<Podcast>('getPodcast', new Podcast()))
     );
   }
 
-  getEpisodes(podcastId: string): Observable<ArrayWrapper<Episode>> {
-    const request = this.baseUrl + '/' + podcastId + '/episodes';
+  getEpisodes(podcastExo: string): Observable<ArrayWrapper<Episode>> {
+    const request = this.baseUrl + '/' + podcastExo + '/episodes';
     console.log('GET ' + request);
     return this.http.get<ArrayWrapper<Episode>>(request).pipe(
-      tap(_ => console.log(`found episodes for podcast : "${podcastId}"`)),
+      tap(_ => console.log(`found episodes for podcast : "${podcastExo}"`)),
       catchError(this.handleError<ArrayWrapper<Episode>>('getEpisodesByPodcast', new ArrayWrapper<Episode>()))
     );
   }
 
-  getFeeds(podcastId: string): Observable<ArrayWrapper<Feed>> {
-    const request = this.baseUrl + '/' + podcastId + '/feeds';
+  getFeeds(podcastExo: string): Observable<ArrayWrapper<Feed>> {
+    const request = this.baseUrl + '/' + podcastExo + '/feeds';
     console.log('GET ' + request);
     return this.http.get<ArrayWrapper<Feed>>(request).pipe(
-      tap(_ => console.log(`found feeds for podcast : "${podcastId}"`)),
+      tap(_ => console.log(`found feeds for podcast : "${podcastExo}"`)),
       catchError(this.handleError<ArrayWrapper<Feed>>('getFeedsByPodcast', new ArrayWrapper<Feed>()))
     );
   }

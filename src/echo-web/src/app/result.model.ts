@@ -1,6 +1,6 @@
 export class Result {
     docType: string;
-    echoId: string;
+    exo: string;
     title: string;
     link: string;
     description: string;

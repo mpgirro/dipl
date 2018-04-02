@@ -1,5 +1,5 @@
 export class Feed {
-  echoId: string;
+  exo: string;
   url: string;
   lastChecked: string;
   registrationTimestamp: string;
