@@ -15,7 +15,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "podcast",
-    indexes = {@Index(name = "idx_podcast_echo_id",  columnList="echo_id", unique = true)})
+    indexes = {@Index(name = "idx_podcast_exo",  columnList="exo", unique = true)})
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PodcastEntity implements Serializable {
@@ -24,8 +24,8 @@ public class PodcastEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "echo_id")
-    private String echoId;
+    @Column(name = "exo")
+    private String exo;
 
     @Column(name = "title")
     private String title;
@@ -131,12 +131,12 @@ public class PodcastEntity implements Serializable {
         this.id = id;
     }
 
-    public String getEchoId() {
-        return echoId;
+    public String getExo() {
+        return exo;
     }
 
-    public void setEchoId(String echoId) {
-        this.echoId = echoId;
+    public void setExo(String exo) {
+        this.exo = exo;
     }
 
     public String getTitle() {
@@ -401,7 +401,7 @@ public class PodcastEntity implements Serializable {
     public String toString() {
         return "PodcastEntity{" +
             "id=" + id +
-            ", echoId='" + echoId + '\'' +
+            ", exo='" + exo + '\'' +
             ", title='" + title + '\'' +
             ", link='" + link + '\'' +
             ", description='" + description + '\'' +

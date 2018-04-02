@@ -30,20 +30,22 @@ public interface EpisodeMapper {
     EpisodeEntity toEntity(EpisodeDTO episode);
 
     @Mapping(source = "podcast.id", target = "podcastId")
-    @Mapping(source = "podcast.echoId", target = "podcastEchoId")
+    @Mapping(source = "podcast.exo", target = "podcastExo")
     @Mapping(source = "podcast.title", target = "podcastTitle")
     @Mapping(target = "chapters", ignore = true) // TODO this make DB persist calls fail
     ModifiableEpisodeDTO toModifiable(EpisodeEntity episode);
 
     default ImmutableEpisodeDTO toImmutable(EpisodeEntity episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(this::toModifiable)
             .map(ModifiableEpisodeDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiableEpisodeDTO toModifiable(EpisodeDTO episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(e -> {
                 if (e instanceof ModifiableEpisodeDTO) {
                     return (ModifiableEpisodeDTO) e;
@@ -54,7 +56,8 @@ public interface EpisodeMapper {
     }
 
     default ImmutableEpisodeDTO toImmutable(EpisodeDTO episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(e -> {
                 if (e instanceof ImmutableEpisodeDTO) {
                     return (ImmutableEpisodeDTO) e;
@@ -67,7 +70,8 @@ public interface EpisodeMapper {
     ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget ModifiableEpisodeDTO target);
 
     default ModifiableEpisodeDTO update(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableEpisodeDTO) {
                     return (ModifiableEpisodeDTO) t;
@@ -79,7 +83,8 @@ public interface EpisodeMapper {
     }
 
     default ImmutableEpisodeDTO updateImmutable(EpisodeDTO src, @MappingTarget EpisodeDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableEpisodeDTO) {
                     return (ModifiableEpisodeDTO) t;
@@ -92,15 +97,18 @@ public interface EpisodeMapper {
     }
 
     default ImmutableEpisodeDTO toImmutable(org.apache.lucene.document.Document doc) {
-        return Optional.ofNullable(doc)
+        return Optional
+            .ofNullable(doc)
             .map(d -> ImmutableEpisodeDTO.builder()
-                .setEchoId(d.get(IndexField.ECHO_ID))
+                .setExo(d.get(IndexField.EXO))
                 .setTitle(d.get(IndexField.TITLE))
                 .setLink(d.get(IndexField.LINK))
-                .setPubDate(Optional.ofNullable(d.get(IndexField.PUB_DATE))
+                .setPubDate(Optional
+                    .ofNullable(d.get(IndexField.PUB_DATE))
                     .map(DateMapper.INSTANCE::asLocalDateTime)
                     .orElse(null))
-                .setDescription(Stream.of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
+                .setDescription(Stream
+                    .of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null))
@@ -112,7 +120,8 @@ public interface EpisodeMapper {
     }
 
     default PodcastEntity podcastFromId(Long podcastId) {
-        return Optional.ofNullable(podcastId)
+        return Optional
+            .ofNullable(podcastId)
             .map(id -> {
                 final PodcastEntity p = new PodcastEntity();
                 p.setId(id);

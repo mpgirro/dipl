@@ -207,7 +207,7 @@ public class CoreApp {
             final String feedData = download(feed);
 
             final ModifiablePodcastDTO podcast = new ModifiablePodcastDTO().from(feedParser.parseFeed(feedData));
-            podcast.setEchoId(idGenerator.getNewExo());
+            podcast.setExo(idGenerator.getNewExo());
 
             this.committer.add(podcast.toImmutable());
 
@@ -218,7 +218,7 @@ public class CoreApp {
             for (ModifiableEpisodeDTO episode : episodes) {
                 episode.setPodcastTitle(podcast.getTitle());
                 out.println("  Episode: " + episode.getTitle());
-                episode.setEchoId(idGenerator.getNewExo());
+                episode.setExo(idGenerator.getNewExo());
                 this.committer.add(episode.toImmutable());
             }
         } catch (IOException | FeedParsingException e) {

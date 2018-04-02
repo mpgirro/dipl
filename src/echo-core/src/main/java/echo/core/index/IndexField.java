@@ -6,7 +6,7 @@ package echo.core.index;
 public class IndexField {
 
     public static final String DOC_TYPE = "doc_type";
-    public static final String ECHO_ID = "echo_id";
+    public static final String EXO = "exo";
     public static final String TITLE = "title";
     public static final String DESCRIPTION = "description";
     public static final String LINK = "link";

@@ -13,7 +13,7 @@ public interface IndexSearcher {
 
     ResultWrapperDTO search(String query, int page, int size) throws SearchException;
 
-    Optional<IndexDocDTO> findByEchoId(String id);
+    Optional<IndexDocDTO> findByExo(String id);
 
     void refresh();
 

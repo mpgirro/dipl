@@ -31,10 +31,10 @@ public interface EpisodeDTO {
     Long getPodcastId();
 
     @Nullable
-    String getEchoId();
+    String getExo();
 
     @Nullable
-    String getPodcastEchoId();
+    String getPodcastExo();
 
     @Nullable
     String getPodcastTitle();

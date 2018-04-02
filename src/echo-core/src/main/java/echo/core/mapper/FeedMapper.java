@@ -26,18 +26,20 @@ public interface FeedMapper {
     FeedEntity toEntity(FeedDTO feed);
 
     @Mapping(source = "podcast.id", target = "podcastId")
-    @Mapping(source = "podcast.echoId", target = "podcastEchoId")
+    @Mapping(source = "podcast.exo", target = "podcastExo")
     ModifiableFeedDTO toModifiable(FeedEntity feed);
 
     default ImmutableFeedDTO toImmutable(FeedEntity feed) {
-        return Optional.ofNullable(feed)
+        return Optional
+            .ofNullable(feed)
             .map(this::toModifiable)
             .map(ModifiableFeedDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiableFeedDTO toModifiable(FeedDTO feed) {
-        return Optional.ofNullable(feed)
+        return Optional
+            .ofNullable(feed)
             .map(f -> {
                 if (f instanceof ModifiableFeedDTO) {
                     return (ModifiableFeedDTO) f;
@@ -48,7 +50,8 @@ public interface FeedMapper {
     }
 
     default ImmutableFeedDTO toImmutable(FeedDTO feed) {
-        return Optional.ofNullable(feed)
+        return Optional
+            .ofNullable(feed)
             .map(f -> {
                 if (f instanceof ImmutableFeedDTO) {
                     return (ImmutableFeedDTO) f;
@@ -61,7 +64,8 @@ public interface FeedMapper {
     ModifiableFeedDTO update(FeedDTO src, @MappingTarget ModifiableFeedDTO target);
 
     default ModifiableFeedDTO update(FeedDTO src, @MappingTarget FeedDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableFeedDTO) {
                     return (ModifiableFeedDTO) t;
@@ -73,7 +77,8 @@ public interface FeedMapper {
     }
 
     default ImmutableFeedDTO updateImmutable(FeedDTO src, @MappingTarget FeedDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableFeedDTO) {
                     return (ModifiableFeedDTO) t;
@@ -86,7 +91,8 @@ public interface FeedMapper {
     }
 
     default PodcastEntity podcastFromId(Long podcastId) {
-        return Optional.ofNullable(podcastId)
+        return Optional
+            .ofNullable(podcastId)
             .map(id -> {
                 final PodcastEntity p = new PodcastEntity();
                 p.setId(id);

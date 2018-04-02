@@ -31,10 +31,10 @@ public interface FeedDTO {
     Long getPodcastId();
 
     @Nullable
-    String getEchoId();
+    String getExo();
 
     @Nullable
-    String getPodcastEchoId();
+    String getPodcastExo();
 
     @Nullable
     String getUrl();

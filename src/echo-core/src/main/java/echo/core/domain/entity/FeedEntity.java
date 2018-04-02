@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "feed",
-    indexes = {@Index(name = "idx_feed_echo_id",  columnList="echo_id", unique = true)})
+    indexes = {@Index(name = "idx_feed_exo",  columnList="exo", unique = true)})
 //@Cacheable(false)
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class FeedEntity implements Serializable {
@@ -24,8 +24,8 @@ public class FeedEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "echo_id")
-    private String echoId;
+    @Column(name = "exo")
+    private String exo;
 
     @Column(name = "url")
     private String url;
@@ -52,12 +52,12 @@ public class FeedEntity implements Serializable {
         this.id = id;
     }
 
-    public String getEchoId() {
-        return echoId;
+    public String getExo() {
+        return exo;
     }
 
-    public void setEchoId(String echoId) {
-        this.echoId = echoId;
+    public void setExo(String exo) {
+        this.exo = exo;
     }
 
     public String getUrl() {
@@ -124,7 +124,7 @@ public class FeedEntity implements Serializable {
     public String toString() {
         return "FeedEntity{" +
             "id=" + id +
-            ", echoId='" + echoId + '\'' +
+            ", exo='" + exo + '\'' +
             ", url='" + url + '\'' +
             ", lastChecked=" + lastChecked +
             ", lastStatus=" + lastStatus +

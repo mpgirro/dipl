@@ -27,7 +27,8 @@ public interface NullMapper {
     ModifiablePodcastDTO clearModifiable(PodcastDTO podcast);
 
     default ImmutablePodcastDTO clearImmutable(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(this::clearModifiable)
             .map(ModifiablePodcastDTO::toImmutable)
             .orElse(null);
@@ -38,7 +39,8 @@ public interface NullMapper {
     ModifiableEpisodeDTO clearModifiable(EpisodeDTO episode);
 
     default ImmutableEpisodeDTO clearImmutable(EpisodeDTO episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(this::clearModifiable)
             .map(ModifiableEpisodeDTO::toImmutable)
             .orElse(null);
@@ -49,7 +51,8 @@ public interface NullMapper {
     ModifiableFeedDTO clearModifiable(FeedDTO feed);
 
     default ImmutableFeedDTO clearImmutable(FeedDTO feed) {
-        return Optional.ofNullable(feed)
+        return Optional
+            .ofNullable(feed)
             .map(this::clearModifiable)
             .map(ModifiableFeedDTO::toImmutable)
             .orElse(null);
@@ -60,7 +63,8 @@ public interface NullMapper {
     ModifiableChapterDTO clearModifiable(ChapterDTO chapter);
 
     default ImmutableChapterDTO clearImmutable(ChapterDTO chapter) {
-        return Optional.ofNullable(chapter)
+        return Optional
+            .ofNullable(chapter)
             .map(this::clearModifiable)
             .map(ModifiableChapterDTO::toImmutable)
             .orElse(null);

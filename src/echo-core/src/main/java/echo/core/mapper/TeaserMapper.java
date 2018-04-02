@@ -24,9 +24,10 @@ public interface TeaserMapper {
     TeaserMapper INSTANCE = Mappers.getMapper( TeaserMapper.class );
 
     default PodcastDTO asTeaser(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(p -> ImmutablePodcastDTO.builder()
-                .setEchoId(p.getEchoId())
+                .setExo(p.getExo())
                 .setTitle(p.getTitle())
                 .setImage(p.getImage())
                 .setLanguage(p.getLanguage())
@@ -43,9 +44,10 @@ public interface TeaserMapper {
     }
 
     default PodcastDTO asTeaser(PodcastEntity podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(p -> ImmutablePodcastDTO.builder()
-                .setEchoId(p.getEchoId())
+                .setExo(p.getExo())
                 .setTitle(p.getTitle())
                 .setImage(p.getImage())
                 .setLanguage(p.getLanguage())
@@ -62,9 +64,10 @@ public interface TeaserMapper {
     }
 
     default EpisodeDTO asTeaser(EpisodeDTO episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(e -> ImmutableEpisodeDTO.builder()
-                .setEchoId(e.getEchoId())
+                .setExo(e.getExo())
                 .setTitle(e.getTitle())
                 .setPubDate(e.getPubDate())
                 .setDescription(e.getDescription())
@@ -75,9 +78,10 @@ public interface TeaserMapper {
     }
 
     default EpisodeDTO asTeaser(EpisodeEntity episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(e -> ImmutableEpisodeDTO.builder()
-                .setEchoId(e.getEchoId())
+                .setExo(e.getExo())
                 .setTitle(e.getTitle())
                 .setPubDate(DateMapper.INSTANCE.asLocalDateTime(e.getPubDate()))
                 .setDescription(e.getDescription())

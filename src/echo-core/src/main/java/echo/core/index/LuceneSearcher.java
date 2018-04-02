@@ -54,6 +54,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
                 IndexField.LINK,
                 IndexField.PODCAST_TITLE,
                 IndexField.CONTENT_ENCODED,
+                IndexField.TRANSCRIPT,
                 IndexField.WEBSITE_DATA,
                 IndexField.ITUNES_AUTHOR,
                 IndexField.ITUNES_SUMMARY,
@@ -101,7 +102,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
-            log.debug("Searching for query: "+query.toString());
+            log.debug("Searching for query : '{}'", query.toString());
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
 
@@ -160,19 +161,19 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public Optional<IndexDocDTO> findByEchoId(String id) {
+    public Optional<IndexDocDTO> findByExo(String id) {
         IndexSearcher indexSearcher = null;
         try {
 
-            final Query query = new TermQuery(new Term(IndexField.ECHO_ID, id));
+            final Query query = new TermQuery(new Term(IndexField.EXO, id));
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
 
-            log.debug("Searching for query: "+query.toString());
+            log.debug("Searching for query : '{}'", query.toString());
 
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if (topDocs.totalHits > 1) {
-                log.error("Searcher found multiple documents for unique {} : {}", IndexField.ECHO_ID, id);
+                log.error("Searcher found multiple documents for unique {} : {}", IndexField.EXO, id);
             }
             if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;

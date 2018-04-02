@@ -42,7 +42,7 @@ public interface PodcastDTO {
     Long getId();
 
     @Nullable
-    String getEchoId();
+    String getExo();
 
     @Nullable
     String getTitle();

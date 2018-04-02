@@ -27,7 +27,7 @@ public interface IndexDocDTO {
     String getDocType();
 
     @Nullable
-    String getEchoId();
+    String getExo();
 
     @Nullable
     String getTitle();

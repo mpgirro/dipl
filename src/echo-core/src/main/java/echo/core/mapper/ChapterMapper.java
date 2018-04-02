@@ -26,11 +26,12 @@ public interface ChapterMapper {
     ChapterEntity toEntity(ChapterDTO chapter);
 
     @Mapping(source = "episode.id", target = "episodeId")
-    @Mapping(source = "episode.echoId", target = "episodeExo")
+    @Mapping(source = "episode.exo", target = "episodeExo")
     ModifiableChapterDTO toModifiable(ChapterEntity chapter);
 
     default ModifiableChapterDTO toModifiable(ChapterDTO chapter) {
-        return Optional.ofNullable(chapter)
+        return Optional
+            .ofNullable(chapter)
             .map(c -> {
                 if (c instanceof ModifiableChapterDTO) {
                     return (ModifiableChapterDTO) c;
@@ -41,7 +42,8 @@ public interface ChapterMapper {
     }
 
     default ImmutableChapterDTO toImmutable(ChapterDTO chapter) {
-        return Optional.ofNullable(chapter)
+        return Optional
+            .ofNullable(chapter)
             .map(c -> {
                 if (c instanceof ImmutableChapterDTO) {
                     return (ImmutableChapterDTO) c;
@@ -54,7 +56,8 @@ public interface ChapterMapper {
     ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ModifiableChapterDTO target);
 
     default ModifiableChapterDTO update(ChapterDTO src, @MappingTarget ChapterDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableChapterDTO) {
                     return (ModifiableChapterDTO) t;
@@ -66,7 +69,8 @@ public interface ChapterMapper {
     }
 
     default ImmutableChapterDTO updateImmutable(ChapterDTO src, @MappingTarget ChapterDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiableChapterDTO) {
                     return (ModifiableChapterDTO) t;
@@ -79,7 +83,8 @@ public interface ChapterMapper {
     }
 
     default EpisodeEntity episodeFromId(Long episodeId) {
-        return Optional.ofNullable(episodeId)
+        return Optional
+            .ofNullable(episodeId)
             .map(id -> {
                 final EpisodeEntity e = new EpisodeEntity();
                 e.setId(id);

@@ -33,14 +33,16 @@ public interface PodcastMapper {
     ModifiablePodcastDTO toModifiable(PodcastEntity podcast);
 
     default ImmutablePodcastDTO toImmutable(PodcastEntity podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(this::toModifiable)
             .map(ModifiablePodcastDTO::toImmutable)
             .orElse(null);
     }
 
     default ModifiablePodcastDTO toModifiable(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(p -> {
                 if (p instanceof ModifiablePodcastDTO) {
                     return (ModifiablePodcastDTO) p;
@@ -51,7 +53,8 @@ public interface PodcastMapper {
     }
 
     default ImmutablePodcastDTO toImmutable(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
+        return Optional
+            .ofNullable(podcast)
             .map(p -> {
                 if (p instanceof ImmutablePodcastDTO) {
                     return (ImmutablePodcastDTO) p;
@@ -64,7 +67,8 @@ public interface PodcastMapper {
     ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget ModifiablePodcastDTO target);
 
     default ModifiablePodcastDTO update(PodcastDTO src, @MappingTarget PodcastDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiablePodcastDTO) {
                     return (ModifiablePodcastDTO) t;
@@ -76,7 +80,8 @@ public interface PodcastMapper {
     }
 
     default ImmutablePodcastDTO updateImmutable(PodcastDTO src, @MappingTarget PodcastDTO target) {
-        return Optional.ofNullable(target)
+        return Optional
+            .ofNullable(target)
             .map(t -> {
                 if (t instanceof ModifiablePodcastDTO) {
                     return (ModifiablePodcastDTO) t;
@@ -89,15 +94,18 @@ public interface PodcastMapper {
     }
 
     default ImmutablePodcastDTO toImmutable(org.apache.lucene.document.Document doc) {
-        return Optional.ofNullable(doc)
+        return Optional
+            .ofNullable(doc)
             .map(d -> ImmutablePodcastDTO.builder()
-                .setEchoId(d.get(IndexField.ECHO_ID))
+                .setExo(d.get(IndexField.EXO))
                 .setTitle(d.get(IndexField.TITLE))
                 .setLink(d.get(IndexField.LINK))
-                .setPubDate(Optional.ofNullable(d.get(IndexField.PUB_DATE))
+                .setPubDate(Optional
+                    .ofNullable(d.get(IndexField.PUB_DATE))
                     .map(DateMapper.INSTANCE::asLocalDateTime)
                     .orElse(null))
-                .setDescription(Stream.of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
+                .setDescription(Stream
+                    .of(d.get(IndexField.ITUNES_SUMMARY), d.get(IndexField.DESCRIPTION))
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null))

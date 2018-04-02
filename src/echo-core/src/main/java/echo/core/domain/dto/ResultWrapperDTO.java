@@ -41,7 +41,7 @@ public interface ResultWrapperDTO {
             .setCurrPage(0)
             .setMaxPage(0)
             .setTotalHits(0)
-            .setResults(Collections.emptyList())
+            .setResults(Collections.emptyList()) // this list is immutable
             .create();
     }
 

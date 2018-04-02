@@ -40,20 +40,24 @@ public interface IndexMapper {
     ModifiableIndexDocDTO toModifiable(EpisodeDTO episodeDTO);
 
     default ImmutableIndexDocDTO toImmutable(PodcastDTO podcast) {
-        return Optional.ofNullable(podcast)
-            .map(p -> toModifiable(p).toImmutable())
+        return Optional
+            .ofNullable(podcast)
+            .map(this::toModifiable)
+            .map(ModifiableIndexDocDTO::toImmutable)
             .orElse(null);
     }
 
     default ImmutableIndexDocDTO toImmutable(EpisodeDTO episode) {
-        return Optional.ofNullable(episode)
+        return Optional
+            .ofNullable(episode)
             .map(this::toModifiable)
             .map(ModifiableIndexDocDTO::toImmutable)
             .orElse(null);
     }
 
     default String map(List<ChapterDTO> chapters){
-        return Optional.ofNullable(chapters)
+        return Optional
+            .ofNullable(chapters)
             .map(cs -> String.join("\n", cs.stream()
                 .map(ChapterDTO::getTitle)
                 .collect(Collectors.toList())))
@@ -61,7 +65,8 @@ public interface IndexMapper {
     }
 
     default ModifiableIndexDocDTO toModifiable(IndexDocDTO doc) {
-        return Optional.ofNullable(doc)
+        return Optional
+            .ofNullable(doc)
             .map(d -> {
                 if (doc instanceof ModifiableIndexDocDTO) {
                     return (ModifiableIndexDocDTO) d;
@@ -72,7 +77,8 @@ public interface IndexMapper {
     }
 
     default ImmutableIndexDocDTO toImmutable(IndexDocDTO doc) {
-        return Optional.ofNullable(doc)
+        return Optional
+            .ofNullable(doc)
             .map(d -> {
                 if (d instanceof ImmutableIndexDocDTO) {
                     return (ImmutableIndexDocDTO) d;
@@ -101,8 +107,8 @@ public interface IndexMapper {
 
         Optional.ofNullable(doc.getDocType())
             .ifPresent(value -> lucene.add(new StringField(IndexField.DOC_TYPE, value, Field.Store.YES)));
-        Optional.ofNullable(doc.getEchoId())
-            .ifPresent(value -> lucene.add(new StringField(IndexField.ECHO_ID, value, Field.Store.YES)));
+        Optional.ofNullable(doc.getExo())
+            .ifPresent(value -> lucene.add(new StringField(IndexField.EXO, value, Field.Store.YES)));
         Optional.ofNullable(doc.getTitle())
             .ifPresent(value -> lucene.add(new TextField(IndexField.TITLE, value, Field.Store.YES)));
         Optional.ofNullable(doc.getLink())
