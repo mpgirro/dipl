@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByEchoId}
+import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByExo}
 import echo.actor.index.IndexProtocol.IndexStoreUpdateDocLink
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
@@ -180,7 +180,7 @@ class CrawlerActor extends Actor with ActorLogging {
                                 // if the link in the feed is redirected (which is often the case due
                                 // to some feed analytic tools, we set our records to the new location
                                 if (!url.equals(href)) {
-                                    directoryStore ! UpdateLinkByEchoId(exo, href)
+                                    directoryStore ! UpdateLinkByExo(exo, href)
                                     indexStore ! IndexStoreUpdateDocLink(exo, href)
                                 }
 

@@ -9,14 +9,14 @@ import org.springframework.data.repository.query.Param
   */
 trait EpisodeRepository extends JpaRepository[EpisodeEntity, java.lang.Long] {
 
-    def findOneByEchoId(echoId: String): EpisodeEntity
+    def findOneByExo(echoId: String): EpisodeEntity
 
     def findAllByPodcast(podcast: PodcastEntity): java.util.List[EpisodeEntity]
 
-    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.echoId = :podcastExo")
-    def findAllByPodcastEchoId(@Param("podcastExo") podcastExo: String): java.util.List[EpisodeEntity]
+    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.exo = :podcastExo")
+    def findAllByPodcastExo(@Param("podcastExo") podcastExo: String): java.util.List[EpisodeEntity]
 
-    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.echoId = :podcastExo AND episode.guid = :guid")
+    @Query("SELECT DISTINCT episode FROM EpisodeEntity episode WHERE episode.podcast.exo = :podcastExo AND episode.guid = :guid")
     def findAllByPodcastAndGuid(@Param("podcastExo") podcastExo: String,
                                 @Param("guid") guid: String): java.util.List[EpisodeEntity]
 
@@ -31,6 +31,6 @@ trait EpisodeRepository extends JpaRepository[EpisodeEntity, java.lang.Long] {
     @Query("SELECT count(episode) FROM EpisodeEntity episode")
     def countAll(): Long
 
-    @Query("SELECT count(episode) FROM EpisodeEntity episode WHERE episode.podcast.echoId = :podcastExo")
+    @Query("SELECT count(episode) FROM EpisodeEntity episode WHERE episode.podcast.exo = :podcastExo")
     def countByPodcast(@Param("podcastExo") podcastExo: String): Long
 }

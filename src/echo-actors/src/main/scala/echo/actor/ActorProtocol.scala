@@ -17,14 +17,14 @@ object ActorProtocol {
     case class UpdateEpisodesFetchJob(etag: String, lastMod: String) extends FetchJob
     case class WebsiteFetchJob() extends FetchJob
 
-    case class DownloadWithHeadCheck(echoId: String, url: String, job: FetchJob)
-    case class DownloadContent(echoId: String, url: String, job: FetchJob, encoding: Option[String])
+    case class DownloadWithHeadCheck(exo: String, url: String, job: FetchJob)
+    case class DownloadContent(exo: String, url: String, job: FetchJob, encoding: Option[String])
 
     // Crawler -> Parser
-    case class ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String)
-    case class ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String)
-    case class ParseWebsiteData(echoId: String, html: String)
-    case class ParseFyydEpisodes(podcastId: String, episodesData: String)
+    case class ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String)
+    case class ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String)
+    case class ParseWebsiteData(exo: String, html: String)
+    case class ParseFyydEpisodes(podcastExo: String, episodesData: String)
 
     // Gateway(= Web) -> Searcher
     case class SearchRequest(query: String, page: Option[Int], size: Option[Int])

@@ -50,7 +50,7 @@ class EpisodeDirectoryService (log: LoggingAdapter,
     @Transactional(readOnly = true)
     def findOneByEchoId(exo: String): Option[EpisodeDTO] = {
         log.debug("Request to get Episode (EXO) : {}", exo)
-        val result = episodeRepository.findOneByEchoId(exo)
+        val result = episodeRepository.findOneByExo(exo)
         Option(episodeMapper.toImmutable(result))
     }
 
@@ -76,7 +76,7 @@ class EpisodeDirectoryService (log: LoggingAdapter,
     @Transactional(readOnly = true)
     def findAllByPodcast(podcastExo: String): List[EpisodeDTO] = {
         log.debug("Request to get all Episodes by Podcast (EXO) : {}", podcastExo)
-        episodeRepository.findAllByPodcastEchoId(podcastExo)
+        episodeRepository.findAllByPodcastExo(podcastExo)
             .asScala
             .map(e => episodeMapper.toImmutable(e))
             .toList
@@ -85,7 +85,7 @@ class EpisodeDirectoryService (log: LoggingAdapter,
     @Transactional(readOnly = true)
     def findAllByPodcastAsTeaser(podcastExo: String): List[EpisodeDTO] = {
         log.debug("Request to get all Episodes by Podcast (EXO) as teaser : {}", podcastExo)
-        episodeRepository.findAllByPodcastEchoId(podcastExo)
+        episodeRepository.findAllByPodcastExo(podcastExo)
             .asScala
             .map(e => teaserMapper.asTeaser(e))
             .toList

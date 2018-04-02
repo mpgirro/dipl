@@ -11,9 +11,9 @@ object IndexProtocol {
 
     // Crawler/Parser/DirectoryStore -> IndexStore
     case class IndexStoreAddDoc(doc: IndexDocDTO) extends IndexCommand
-    case class IndexStoreUpdateDocWebsiteData(echoId: String, html: String) extends IndexCommand
-    case class IndexStoreUpdateDocImage(echoId: String, itunesImage: String) extends IndexCommand
-    case class IndexStoreUpdateDocLink(echoId: String, newLink: String) extends IndexCommand
+    case class IndexStoreUpdateDocWebsiteData(exo: String, html: String) extends IndexCommand
+    case class IndexStoreUpdateDocImage(exo: String, itunesImage: String) extends IndexCommand
+    case class IndexStoreUpdateDocLink(exo: String, newLink: String) extends IndexCommand
 
     // IndexStore -> IndexStore
     case class CommitIndex() extends IndexCommand

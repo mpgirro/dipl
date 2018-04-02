@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
 object PodcastJsonProtocol extends DefaultJsonProtocol {
     implicit object PodcastJsonFormat extends RootJsonFormat[PodcastDTO] {
         def write(p: PodcastDTO) = JsObject(
-            "echoId"                -> Option(p.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "exo"                   -> Option(p.getExo).map(value => JsString(value)).getOrElse(JsNull),
             "title"                 -> Option(p.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"                  -> Option(p.getLink).map(value => JsString(value)).getOrElse(JsNull),
             "pubDate"               -> Option(p.getPubDate).map(value => JsString(DateMapper.INSTANCE.asString(value))).getOrElse(JsNull),
@@ -37,16 +37,16 @@ object PodcastJsonProtocol extends DefaultJsonProtocol {
         )
         def read(value: JsValue): PodcastDTO = {
             value.asJsObject.getFields(
-                "echoId", "title", "link",
+                "exo", "title", "link",
                 "pubDate", "description",  "image",
                 "itunesCategories", "itunesSummary", "itunesAuthor", "itunesKeywords") match {
                 case Seq(
-                    JsString(echoId), JsString(title), JsString(link),
+                    JsString(exo), JsString(title), JsString(link),
                     JsString(pubDate), JsString(description), JsString(image),
                     JsArray(itunesCategories), JsString(itunesSummary), JsString(itunesAuthor), JsString(itunesKeywords)) =>
 
                     ImmutablePodcastDTO.builder()
-                        .setEchoId(echoId)
+                        .setExo(exo)
                         .setTitle(title)
                         .setLink(link)
                         .setPubDate(DateMapper.INSTANCE.asLocalDateTime(pubDate))

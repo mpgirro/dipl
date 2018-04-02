@@ -54,7 +54,7 @@ class PodcastDirectoryService (log: LoggingAdapter,
     @Transactional
     def findOneByEchoId(exo: String): Option[PodcastDTO] = {
         log.debug("Request to get Podcast (EXO) : {}", exo)
-        val result = podcastRepository.findOneByEchoId(exo)
+        val result = podcastRepository.findOneByExo(exo)
         Option(podcastMapper.toImmutable(result))
     }
 

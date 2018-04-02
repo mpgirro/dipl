@@ -11,11 +11,11 @@ import org.springframework.data.repository.query.Param
   */
 trait PodcastRepository extends JpaRepository[PodcastEntity, java.lang.Long] {
 
-    def findOneByEchoId(echoId: String): PodcastEntity
+    def findOneByExo(echoId: String): PodcastEntity
 
     @Query("SELECT DISTINCT podcast FROM PodcastEntity podcast " +
            "LEFT JOIN podcast.feeds feed " +
-           "WHERE feed.echoId = :feedExo")
+           "WHERE feed.exo = :feedExo")
     def findOneByFeed(@Param("feedExo") feedExo: String): PodcastEntity
 
     def findByRegistrationCompleteTrue(pageable: Pageable): java.util.List[PodcastEntity]

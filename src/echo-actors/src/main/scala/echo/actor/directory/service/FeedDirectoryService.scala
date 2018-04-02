@@ -50,7 +50,7 @@ class FeedDirectoryService (log: LoggingAdapter,
     @Transactional
     def findOneByEchoId(exo: String): Option[FeedDTO] = {
         log.debug("Request to get Feed (EXO) : {}", exo)
-        val result = feedRepository.findOneByEchoId(exo)
+        val result = feedRepository.findOneByExo(exo)
         Option(feedMapper.toImmutable(result))
     }
 

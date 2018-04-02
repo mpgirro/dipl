@@ -61,26 +61,26 @@ class IndexStore (indexPath: String,
             context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
         case IndexStoreAddDoc(doc) =>
-            log.debug("Received IndexStoreAddDoc({})", doc.getEchoId)
+            log.debug("Received IndexStoreAddDoc({})", doc.getExo)
             indexCommitter.add(doc)
             indexChanged = true
-            log.debug("Exit IndexStoreAddDoc({})", doc.getEchoId)
+            log.debug("Exit IndexStoreAddDoc({})", doc.getExo)
 
-        case IndexStoreUpdateDocWebsiteData(echoId, html) =>
-            log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", echoId)
-            updateWebsiteQueue.enqueue((echoId,html))
-            log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", echoId)
+        case IndexStoreUpdateDocWebsiteData(exo, html) =>
+            log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
+            updateWebsiteQueue.enqueue((exo,html))
+            log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", exo)
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
-        case IndexStoreUpdateDocImage(echoId, image) =>
-            log.debug("Received IndexStoreUpdateDocImage({},{})", echoId, image)
-            updateImageQueue.enqueue((echoId, image))
-            log.debug("Exit IndexStoreUpdateDocImage({},{})", echoId, image)
+        case IndexStoreUpdateDocImage(exo, image) =>
+            log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
+            updateImageQueue.enqueue((exo, image))
+            log.debug("Exit IndexStoreUpdateDocImage({},{})", exo, image)
 
-        case IndexStoreUpdateDocLink(echoId, link) =>
-            log.debug("Received IndexStoreUpdateDocLink({},'{}')", echoId, link)
-            updateLinkQueue.enqueue((echoId, link))
-            log.debug("Exit IndexStoreUpdateDocLink({},'{}')", echoId, link)
+        case IndexStoreUpdateDocLink(exo, link) =>
+            log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
+            updateLinkQueue.enqueue((exo, link))
+            log.debug("Exit IndexStoreUpdateDocLink({},'{}')", exo, link)
 
         case SearchIndex(query, page, size) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
@@ -91,7 +91,7 @@ class IndexStore (indexPath: String,
                 if(results.getTotalHits > 0){
                     sender ! IndexResultsFound(query,results)
                 } else {
-                    log.warning("No Podcast matching query: '"+query+"' found in the index")
+                    log.warning("No Podcast matching query: '{}' found in the index", query)
                     sender ! NoIndexResultsFound(query)
                 }
             } catch {
@@ -139,7 +139,7 @@ class IndexStore (indexPath: String,
     private def processWebsiteQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,html) = queue.dequeue()
-            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withWebsiteData(html))
                 case None      => log.error("Could not retrieve from index for update website: echoId={}", echoId)
@@ -152,7 +152,7 @@ class IndexStore (indexPath: String,
     private def processImageQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,image) = queue.dequeue()
-            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withImage(image))
                 case None      => log.error("Could not retrieve from index for update image: echoId={}", echoId)
@@ -165,7 +165,7 @@ class IndexStore (indexPath: String,
     private def processLinkQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
             val (echoId,link) = queue.dequeue()
-            val entry = indexSearcher.findByEchoId(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withLink(link))
                 case None      => log.error("Could not retrieve from index for update link: echoId={}", echoId)

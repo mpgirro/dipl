@@ -48,7 +48,7 @@ class ChapterDirectoryService (log: LoggingAdapter,
     @Transactional
     def findAllByEpisode(episodeExo: String): List[ChapterDTO] = {
         log.debug("Request to get all Chapters by Episode (EXO) : {}", episodeExo)
-        chapterRepository.findAllByEpisodeEchoId(episodeExo)
+        chapterRepository.findAllByEpisodeExo(episodeExo)
             .asScala
             .map(c => chapterMapper.toModifiable(c).toImmutable)
             .toList

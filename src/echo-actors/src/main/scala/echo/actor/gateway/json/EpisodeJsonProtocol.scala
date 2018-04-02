@@ -13,8 +13,8 @@ import scala.collection.JavaConverters._
 object EpisodeJsonProtocol extends DefaultJsonProtocol {
     implicit object EpisodeJsonFormat extends RootJsonFormat[EpisodeDTO] {
         def write(e: EpisodeDTO) = JsObject(
-            "echoId"          -> Option(e.getEchoId).map(value => JsString(value)).getOrElse(JsNull),
-            "podcastEchoId"   -> Option(e.getPodcastEchoId).map(value => JsString(value)).getOrElse(JsNull),
+            "exo"             -> Option(e.getExo).map(value => JsString(value)).getOrElse(JsNull),
+            "podcastExo"      -> Option(e.getPodcastExo).map(value => JsString(value)).getOrElse(JsNull),
             "podcastTitle"    -> Option(e.getPodcastTitle).map(value => JsString(value)).getOrElse(JsNull),
             "title"           -> Option(e.getTitle).map(value => JsString(value)).getOrElse(JsNull),
             "link"            -> Option(e.getLink).map(value => JsString(value)).getOrElse(JsNull),
@@ -32,19 +32,19 @@ object EpisodeJsonProtocol extends DefaultJsonProtocol {
         )
         def read(value: JsValue): EpisodeDTO = {
             value.asJsObject.getFields(
-                "echoId", "title", "link", "podcastEchoId", "podcastTitle",
+                "exo", "title", "link", "podcastExo", "podcastTitle",
                 "pubDate", "description", "image", "itunesDuration",
                 "itunesSubtitle", "itunesAuthor", "itunesSummary",
                 "enclosureLength, chapters") match {
                 case Seq(
-                    JsString(echoId), JsString(title), JsString(link), JsString(podcastEchoId),
+                    JsString(exo), JsString(title), JsString(link), JsString(podcastExo),
                     JsString(podcastTitle), JsString(pubDate), JsString(description), JsString(image),
                     JsString(itunesDuration), JsString(itunesSubtitle), JsString(itunesAuthor),
                     JsString(itunesSummary), JsNumber(enclosureLength), JsArray(chapters)) =>
 
                     val builder = ImmutableEpisodeDTO.builder()
-                        .setEchoId(echoId)
-                        .setPodcastEchoId(podcastEchoId)
+                        .setExo(exo)
+                        .setPodcastExo(podcastExo)
                         .setPodcastTitle(podcastTitle)
                         .setTitle(title)
                         .setLink(link)

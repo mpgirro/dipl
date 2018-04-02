@@ -64,43 +64,43 @@ class ParserActor extends Actor with ActorLogging {
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
-        case ParseNewPodcastData(feedUrl: String, podcastId: String, feedData: String) =>
+        case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
 
-            parse(podcastId, feedUrl, feedData, isNewPodcast = true)
+            parse(podcastExo, feedUrl, feedData, isNewPodcast = true)
 
-            log.debug("Finished ParseNewPodcastData({},{},_)", feedUrl, podcastId)
+            log.debug("Finished ParseNewPodcastData({},{},_)", feedUrl, podcastExo)
 
-        case ParseUpdateEpisodeData(feedUrl: String, podcastId: String, episodeFeedData: String) =>
-            log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastId)
+        case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String) =>
+            log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastExo)
 
-            parse(podcastId, feedUrl, episodeFeedData, isNewPodcast = false)
+            parse(podcastExo, feedUrl, episodeFeedData, isNewPodcast = false)
 
-            log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastId)
+            log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastExo)
 
 
-        case ParseWebsiteData(echoId: String, html: String) =>
-            log.debug("Received ParseWebsiteData({},_)", echoId)
+        case ParseWebsiteData(exo: String, html: String) =>
+            log.debug("Received ParseWebsiteData({},_)", exo)
 
             val readableText = Jsoup.parse(html).text()
-            indexStore ! IndexStoreUpdateDocWebsiteData(echoId, readableText)
+            indexStore ! IndexStoreUpdateDocWebsiteData(exo, readableText)
 
-            log.debug("Finished ParseWebsiteData({},_)", echoId)
+            log.debug("Finished ParseWebsiteData({},_)", exo)
 
-        case ParseFyydEpisodes(podcastId, json) =>
-            log.debug("Received ParseFyydEpisodes({},_)", podcastId)
+        case ParseFyydEpisodes(podcastExo, json) =>
+            log.debug("Received ParseFyydEpisodes({},_)", podcastExo)
 
             val episodes: List[EpisodeDTO] = fyydAPI.getEpisodes(json).asScala.toList
-            log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastId)
+            log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastExo)
             for(episode <- episodes){
-                registerEpisode(podcastId, episode)
+                registerEpisode(podcastExo, episode)
             }
 
-            log.debug("Finished ParseFyydEpisodes({},_)", podcastId)
+            log.debug("Finished ParseFyydEpisodes({},_)", podcastExo)
 
     }
 
-    private def parse(podcastId: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
+    private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
         try {
             val podcast = Option(feedParser.parseFeed(feedData))
             podcast match {
@@ -109,7 +109,7 @@ class ParserActor extends Actor with ActorLogging {
                     // TODO try-catch for Feedparseerror here, send update
                     // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    p.setEchoId(podcastId)
+                    p.setExo(podcastExo)
 
                     Option(p.getTitle).foreach(t => p.setTitle(t.trim))
                     Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
@@ -129,38 +129,38 @@ class ParserActor extends Actor with ActorLogging {
                         Option(p.getLink) match {
                             case Some(link) =>
                                 // crawler ! FetchWebsite(p.getEchoId, link)
-                                crawler ! DownloadWithHeadCheck(p.getEchoId, link, WebsiteFetchJob())
-                            case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getEchoId)
+                                crawler ! DownloadWithHeadCheck(p.getExo, link, WebsiteFetchJob())
+                            case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getExo)
                         }
                     }
 
                     // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcast(podcastId, feedUrl, p.toImmutable)
+                    directoryStore ! UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
 
                     // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
-                    processEpisodes(feedUrl, podcastId, feedData)
+                    processEpisodes(feedUrl, podcastExo, feedData)
                 case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
             }
         } catch {
             case e: FeedParsingException =>
                 log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                directoryStore ! FeedStatusUpdate(podcastId, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                directoryStore ! FeedStatusUpdate(podcastExo, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
             case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
         }
     }
 
-    private def processEpisodes(feedUrl: String, podcastId: String, feedData: String): Unit = {
+    private def processEpisodes(feedUrl: String, podcastExo: String, feedData: String): Unit = {
         val episodes = Option(feedParser.asInstanceOf[RomeFeedParser].extractEpisodes(feedData).asScala)
         episodes match {
             case Some(es) =>
                 for(e <- es){
-                    registerEpisode(podcastId, e)
+                    registerEpisode(podcastExo, e)
                 }
             case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
         }
     }
 
-    private def registerEpisode(podcastId: String, episode: EpisodeDTO): Unit = {
+    private def registerEpisode(podcastExo: String, episode: EpisodeDTO): Unit = {
 
         val e = episodeMapper.toModifiable(episode)
 
@@ -176,7 +176,7 @@ class ParserActor extends Actor with ActorLogging {
         })
         */
 
-        directoryStore ! RegisterEpisodeIfNew(podcastId, e.toImmutable)
+        directoryStore ! RegisterEpisodeIfNew(podcastExo, e.toImmutable)
     }
 
     private def base64Image(imageUrl: String): String = {
