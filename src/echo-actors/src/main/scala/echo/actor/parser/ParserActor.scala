@@ -17,7 +17,7 @@ import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
 import echo.core.mapper.{EpisodeMapper, IndexMapper, PodcastMapper}
 import echo.core.parse.api.FyydAPI
-import echo.core.parse.rss.{FeedParser, RomeFeedParser}
+import echo.core.parse.rss.RomeFeedParser
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
 
@@ -45,6 +45,25 @@ class ParserActor extends Actor with ActorLogging {
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
+    private var currFeedUrl = ""
+    private var currPodcastExo = ""
+
+    override def postRestart(cause: Throwable): Unit = {
+        log.info("{} has been restarted or resumed", self.path.name)
+        cause match {
+            case e: FeedParsingException =>
+                log.error("FeedParsingException occured while processing feed : {}", currFeedUrl)
+                directoryStore ! FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                currPodcastExo = ""
+                currFeedUrl = ""
+            case e: java.lang.StackOverflowError =>
+                log.error("StackOverflowError parsing : {} ; reason: {}", currFeedUrl, e.getMessage, e)
+            case e: Exception =>
+                log.error("Unhandled Exception : {}", e.getMessage, e)
+        }
+        super.postRestart(cause)
+    }
+
     override def postStop: Unit = {
         log.info("shutting down")
     }
@@ -66,25 +85,30 @@ class ParserActor extends Actor with ActorLogging {
         case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
 
+            currFeedUrl = feedUrl
+            currPodcastExo = podcastExo
+
             parse(podcastExo, feedUrl, feedData, isNewPodcast = true)
 
-            log.debug("Finished ParseNewPodcastData({},{},_)", feedUrl, podcastExo)
+            currFeedUrl = ""
+            currPodcastExo = ""
 
         case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String) =>
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastExo)
 
+            currFeedUrl = feedUrl
+            currPodcastExo = podcastExo
+
             parse(podcastExo, feedUrl, episodeFeedData, isNewPodcast = false)
 
-            log.debug("Finished ParseEpisodeData({},{},_)", feedUrl, podcastExo)
-
+            currFeedUrl = ""
+            currPodcastExo = ""
 
         case ParseWebsiteData(exo: String, html: String) =>
             log.debug("Received ParseWebsiteData({},_)", exo)
 
             val readableText = Jsoup.parse(html).text()
             indexStore ! IndexStoreUpdateDocWebsiteData(exo, readableText)
-
-            log.debug("Finished ParseWebsiteData({},_)", exo)
 
         case ParseFyydEpisodes(podcastExo, json) =>
             log.debug("Received ParseFyydEpisodes({},_)", podcastExo)
@@ -95,62 +119,54 @@ class ParserActor extends Actor with ActorLogging {
                 registerEpisode(podcastExo, episode)
             }
 
-            log.debug("Finished ParseFyydEpisodes({},_)", podcastExo)
-
     }
 
     private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
-        try {
-            val parser = RomeFeedParser.of(feedData)
-            Option(parser.getPodcast) match {
-                case Some(podcast) =>
-                    val p = podcastMapper.toModifiable(podcast)
-                    // TODO try-catch for Feedparseerror here, send update
-                    // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    p.setExo(podcastExo)
+        val parser = RomeFeedParser.of(feedData)
+        Option(parser.getPodcast) match {
+            case Some(podcast) =>
+                val p = podcastMapper.toModifiable(podcast)
+                // TODO try-catch for Feedparseerror here, send update
+                // directoryStore ! FeedStatusUpdate(feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
 
-                    Option(p.getTitle).foreach(t => p.setTitle(t.trim))
-                    Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
+                p.setExo(podcastExo)
 
-                    if (isNewPodcast) {
+                Option(p.getTitle).foreach(t => p.setTitle(t.trim))
+                Option(p.getDescription).foreach(d => p.setDescription(Jsoup.clean(d, Whitelist.basic())))
 
-                        /* TODO
-                        // experimental: this works but has terrible performance and assumes we have a GUI app
-                        Option(p.getItunesImage).foreach(img => {
-                            p.setItunesImage(base64Image(img))
-                        })
-                        */
+                if (isNewPodcast) {
 
-                        indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(p))
+                    /* TODO
+                    // experimental: this works but has terrible performance and assumes we have a GUI app
+                    Option(p.getItunesImage).foreach(img => {
+                        p.setItunesImage(base64Image(img))
+                    })
+                    */
 
-                        // request that the podcasts website will get added to the index as well, if possible
-                        Option(p.getLink) match {
-                            case Some(link) =>
-                                // crawler ! FetchWebsite(p.getEchoId, link)
-                                crawler ! DownloadWithHeadCheck(p.getExo, link, WebsiteFetchJob())
-                            case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getExo)
+                    indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(p))
+
+                    // request that the podcasts website will get added to the index as well, if possible
+                    Option(p.getLink) match {
+                        case Some(link) =>
+                            // crawler ! FetchWebsite(p.getEchoId, link)
+                            crawler ! DownloadWithHeadCheck(p.getExo, link, WebsiteFetchJob())
+                        case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getExo)
+                    }
+                }
+
+                // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
+                directoryStore ! UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
+
+                // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
+                Option(parser.getEpisodes) match {
+                    case Some(es) =>
+                        for(e <- es.asScala){
+                            registerEpisode(podcastExo, e)
                         }
-                    }
-
-                    // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                    directoryStore ! UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
-
-                    // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
-                    Option(parser.getEpisodes) match {
-                        case Some(es) =>
-                            for(e <- es.asScala){
-                                registerEpisode(podcastExo, e)
-                            }
-                        case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
-                    }
-                case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
-            }
-        } catch {
-            case e: FeedParsingException =>
-                log.error("FeedParsingException occured while processing feed: {}", feedUrl)
-                directoryStore ! FeedStatusUpdate(podcastExo, feedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-            case e: java.lang.StackOverflowError => log.error("StackOverflowError parsing: {}", feedUrl)
+                    case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
+                }
+            case None => log.warning("Parsing generated a NULL-PodcastDocument for feed: {}", feedUrl)
         }
     }
 

@@ -5,9 +5,9 @@ import java.net.{ConnectException, SocketTimeoutException, UnknownHostException}
 import java.nio.charset.IllegalCharsetNameException
 import javax.net.ssl.SSLHandshakeException
 
-import akka.actor.SupervisorStrategy.{Escalate, Restart, Resume, Stop}
+import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
-import akka.routing.{ActorRefRoutee, Broadcast, RoundRobinRoutingLogic, Router}
+import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefIndexStoreActor, ActorRefParserActor}
 import echo.core.exception.EchoException

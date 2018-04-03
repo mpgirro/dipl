@@ -1,9 +1,13 @@
 package echo.actor.index
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.actor.SupervisorStrategy.{Escalate, Resume}
+import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol.{IndexCommand, IndexQuery}
+import echo.core.exception.SearchException
+
+import scala.concurrent.duration._
 
 /**
   * @author Maximilian Irro
@@ -43,6 +47,13 @@ class IndexBroker extends Actor with ActorLogging {
         commandRouter = Router(BroadcastRoutingLogic(), routees)
         queryRouter = Router(RoundRobinRoutingLogic(), routees)
     }
+
+    // TODO is this working when running in a cluster setup?
+    override val supervisorStrategy: SupervisorStrategy =
+        OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
+            case _: SearchException => Resume
+            case _: Exception       => Escalate
+        }
 
     override def receive: Receive = {
 

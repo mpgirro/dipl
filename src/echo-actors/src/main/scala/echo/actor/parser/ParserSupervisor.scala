@@ -1,9 +1,13 @@
 package echo.actor.parser
 
-import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
+import akka.actor.SupervisorStrategy.{Escalate, Resume}
+import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
+import echo.core.exception.{FeedParsingException, SearchException}
+
+import scala.concurrent.duration._
 
 /**
   * @author Maximilian Irro
@@ -35,6 +39,12 @@ class ParserSupervisor extends Actor with ActorLogging {
         }
         Router(RoundRobinRoutingLogic(), routees)
     }
+
+    override val supervisorStrategy: SupervisorStrategy =
+        OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
+            case _: FeedParsingException => Resume
+            case _: Exception            => Escalate
+        }
 
     override def postStop: Unit = {
         log.info("shutting down")

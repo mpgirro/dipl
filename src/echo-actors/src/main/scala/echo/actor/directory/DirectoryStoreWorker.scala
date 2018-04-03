@@ -60,12 +60,13 @@ class DirectoryStoreWorker (workerIndex: Int,
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
 
-    override def postRestart(reason: Throwable): Unit = {
+    override def postRestart(cause: Throwable): Unit = {
+        log.info("{} has been restarted or resumed", self.path.name)
 
         repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
         emf = repositoryFactoryBuilder.getEntityManagerFactory
 
-        super.postRestart(reason)
+        super.postRestart(cause)
     }
 
     override def postStop(): Unit = {
@@ -658,9 +659,9 @@ class DirectoryStoreWorker (workerIndex: Int,
                 services.foreach(_.refresh(em))
                 task()
             } finally {
-                if(em.isOpen){
-                    em.close()
-                }
+                Option(em)
+                    .filter(_.isOpen)
+                    .foreach(_.close())
                 TransactionSynchronizationManager.unbindResource(emf)
             }
         }

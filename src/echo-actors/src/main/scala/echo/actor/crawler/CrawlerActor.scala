@@ -62,7 +62,7 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     override def postRestart(cause: Throwable): Unit = {
-        log.info("I was restarted")
+        log.info("{} has been restarted or resumed", self.path.name)
         cause match {
             case e: EchoException =>
                 log.error("HEAD response prevented fetching resource : {} [reason : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
@@ -77,9 +77,7 @@ class CrawlerActor extends Actor with ActorLogging {
             case e: java.io.UnsupportedEncodingException =>
                 log.error("java.io.UnsupportedEncodingException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: Exception =>
-                // TODO
-                log.error("Unhandled Exception on {} : {}", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                e.printStackTrace()
+                log.error("Unhandled Exception on {} : {}", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"), e)
         }
         super.postRestart(cause)
     }

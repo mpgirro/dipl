@@ -42,10 +42,25 @@ class IndexStore (indexPath: String,
     private val updateImageQueue: mutable.Queue[(String,String)] = new mutable.Queue
     private val updateLinkQueue: mutable.Queue[(String,String)] = new mutable.Queue
 
+    private var currQuery: String = ""
+
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
     // kickoff the committing play
     context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
+
+    override def postRestart(cause: Throwable): Unit = {
+        log.info("{} has been restarted or resumed", self.path.name)
+        cause match {
+            case e: SearchException =>
+                log.error("Error trying to search the index; reason: {}", e.getMessage)
+            case e: Exception =>
+                log.error("Unhandled Exception : {}", e.getMessage, e)
+                sender ! NoIndexResultsFound(currQuery) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
+                currQuery = ""
+        }
+        super.postRestart(cause)
+    }
 
     override def postStop: Unit = {
         Option(indexCommitter).foreach(_.destroy())
@@ -62,44 +77,40 @@ class IndexStore (indexPath: String,
 
         case IndexStoreAddDoc(doc) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
+
             indexCommitter.add(doc)
             indexChanged = true
-            log.debug("Exit IndexStoreAddDoc({})", doc.getExo)
 
         case IndexStoreUpdateDocWebsiteData(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
+
             updateWebsiteQueue.enqueue((exo,html))
-            log.debug("Exit IndexStoreUpdateDocWebsiteData({},_)", exo)
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case IndexStoreUpdateDocImage(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
+
             updateImageQueue.enqueue((exo, image))
-            log.debug("Exit IndexStoreUpdateDocImage({},{})", exo, image)
 
         case IndexStoreUpdateDocLink(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
+
             updateLinkQueue.enqueue((exo, link))
-            log.debug("Exit IndexStoreUpdateDocLink({},'{}')", exo, link)
 
         case SearchIndex(query, page, size) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
+            currQuery = query // make a copy in case of an exception
 
             indexSearcher.refresh()
-            try {
-                val results = indexSearcher.search(query, page, size)
-                if(results.getTotalHits > 0){
-                    sender ! IndexResultsFound(query,results)
-                } else {
-                    log.warning("No Podcast matching query: '{}' found in the index", query)
-                    sender ! NoIndexResultsFound(query)
-                }
-            } catch {
-                case e: SearchException =>
-                    log.error("Error trying to search the index [reason: {}]", e.getMessage)
-                    sender ! NoIndexResultsFound(query) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
+            val results = indexSearcher.search(query, page, size)
+            if(results.getTotalHits > 0){
+                sender ! IndexResultsFound(query,results)
+            } else {
+                log.warning("No Podcast matching query: '{}' found in the index", query)
+                sender ! NoIndexResultsFound(query)
             }
-            log.debug("Exit SearchIndex('{}',{},{}) message", query, page, size)
+
+            currQuery = "" // wipe the copy
 
     }
 
