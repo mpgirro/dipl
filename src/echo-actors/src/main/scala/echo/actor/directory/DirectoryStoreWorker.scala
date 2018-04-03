@@ -45,8 +45,8 @@ class DirectoryStoreWorker (workerIndex: Int,
     private var indexStore: ActorRef = _
     private var broker: ActorRef = _
 
-    private val repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
-    private val emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
+    private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
+    private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 
     private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
     private val episodeService = new EpisodeDirectoryService(log, repositoryFactoryBuilder)
@@ -60,8 +60,20 @@ class DirectoryStoreWorker (workerIndex: Int,
     private val indexMapper = IndexMapper.INSTANCE
     private val nullMapper = NullMapper.INSTANCE
 
-    override def postStop: Unit = {
+    override def postRestart(reason: Throwable): Unit = {
+
+        repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
+        emf = repositoryFactoryBuilder.getEntityManagerFactory
+
+        super.postRestart(reason)
+    }
+
+    override def postStop(): Unit = {
         log.info("shutting down")
+
+        Option(emf)
+            .filter(_.isOpen)
+            .foreach(_.close())
     }
 
     override def receive: Receive = {
