@@ -52,7 +52,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
-    private val httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
+    private var httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
     private var currUrl: String = _
     private var currJob: FetchJob = _
@@ -62,25 +62,26 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     override def postRestart(cause: Throwable): Unit = {
-        // TODO
-        super.postRestart(cause)
         log.info("I was restarted")
         cause match {
             case e: EchoException =>
                 log.error("HEAD response prevented fetching resource : {} [reason : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: java.net.ConnectException =>
-                log.error("java.net.ConnectException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("java.net.ConnectException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: java.net.SocketTimeoutException =>
-                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("java.net.SocketTimeoutException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: java.net.UnknownHostException =>
-                log.error("java.net.UnknownHostException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("java.net.UnknownHostException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: javax.net.ssl.SSLHandshakeException =>
-                log.error("javax.net.ssl.SSLHandshakeException for HEAD check on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+                log.error("javax.net.ssl.SSLHandshakeException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
+            case e: java.io.UnsupportedEncodingException =>
+                log.error("java.io.UnsupportedEncodingException on : {} [msg : {}]", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
             case e: Exception =>
                 // TODO
                 log.error("Unhandled Exception on {} : {}", currUrl, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
                 e.printStackTrace()
         }
+        super.postRestart(cause)
     }
 
     override def receive: Receive = {
@@ -158,80 +159,53 @@ class CrawlerActor extends Actor with ActorLogging {
     }
 
     private def headCheck(exo: String, url: String, job: FetchJob): Unit = {
+        blocking {
+            val headResult = httpClient.headCheck(url)
 
-        try {
+            val encoding = headResult.getContentEncoding.asScala
 
-            blocking {
-                val headResult = httpClient.headCheck(url)
+            val location = headResult.getLocation.asScala
 
-                val encoding = headResult.getContentEncoding.asScala
+            // TODO check if eTag differs from last known value
 
-                val location = headResult.getLocation.asScala
+            // TODO check if lastMod differs from last known value
 
-                // TODO check if eTag differs from last known value
+            location match {
+                case Some(href) =>
+                    log.debug("Sending message to download content : {}", href)
+                    job match {
+                        case WebsiteFetchJob() =>
+                            // if the link in the feed is redirected (which is often the case due
+                            // to some feed analytic tools, we set our records to the new location
+                            if (!url.equals(href)) {
+                                directoryStore ! UpdateLinkByExo(exo, href)
+                                indexStore ! IndexStoreUpdateDocLink(exo, href)
+                            }
 
-                // TODO check if lastMod differs from last known value
+                            // we always download websites, because we only do it once anyway
+                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                        //fetchContent(exo, href, job, encoding)
 
-                location match {
-                    case Some(href) =>
-                        log.debug("Sending message to download content : {}", href)
-                        job match {
-                            case WebsiteFetchJob() =>
-                                // if the link in the feed is redirected (which is often the case due
-                                // to some feed analytic tools, we set our records to the new location
-                                if (!url.equals(href)) {
-                                    directoryStore ! UpdateLinkByExo(exo, href)
-                                    indexStore ! IndexStoreUpdateDocLink(exo, href)
-                                }
+                        case _ =>
+                            // if the feed moved to a new URL, we will inform the directory, so
+                            // it will use the new location starting with the next update cycle
+                            if (!url.equals(href)) {
+                                directoryStore ! UpdateFeedUrl(url, href)
+                            }
 
-                                // we always download websites, because we only do it once anyway
-                                self ! DownloadContent(exo, href, job, encoding) // TODO
-                            //fetchContent(exo, href, job, encoding)
-
-                            case _ =>
-                                // if the feed moved to a new URL, we will inform the directory, so
-                                // it will use the new location starting with the next update cycle
-                                if (!url.equals(href)) {
-                                    directoryStore ! UpdateFeedUrl(url, href)
-                                }
-
-                                /*
-                                 * TODO
-                                 * here I have to do some voodoo with etag/lastMod to
-                                 * determine weither the feed changed and I really need to redownload
-                                 */
-                                self ! DownloadContent(exo, href, job, encoding) // TODO
-                            //fetchContent(exo, href, job, encoding)
-                        }
-                    case None =>
-                        log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
-                        sendErrorNotificationIfFeasable(exo, url, job)
-                }
+                            /*
+                             * TODO
+                             * here I have to do some voodoo with etag/lastMod to
+                             * determine weither the feed changed and I really need to redownload
+                             */
+                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                        //fetchContent(exo, href, job, encoding)
+                    }
+                case None =>
+                    log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
+                    sendErrorNotificationIfFeasable(exo, url, job)
             }
-
-        } catch {
-            case e: EchoException =>
-                log.error("HEAD response prevented fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                sendErrorNotificationIfFeasable(exo, url, job)
-            case e: java.net.ConnectException =>
-                log.error("java.net.ConnectException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: java.net.SocketTimeoutException =>
-                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: java.net.UnknownHostException =>
-                log.error("java.net.UnknownHostException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: javax.net.ssl.SSLHandshakeException =>
-                log.error("javax.net.ssl.SSLHandshakeException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: Exception =>
-                // TODO
-                log.error("Unhandled Exception during HEAD on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                e.printStackTrace()
-                sendErrorNotificationIfFeasable(exo, url, job)
         }
-
     }
 
     /**
@@ -243,48 +217,21 @@ class CrawlerActor extends Actor with ActorLogging {
       * @param job
       */
     private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String]): Unit = {
+        blocking {
+            val data = httpClient.fetchContent(url, encoding.asJava)
+            job match {
+                case NewPodcastFetchJob() =>
+                    parser ! ParseNewPodcastData(url, exo, data)
+                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
 
-        try {
+                case UpdateEpisodesFetchJob(etag, lastMod) =>
+                    parser ! ParseUpdateEpisodeData(url, exo, data)
+                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
 
-            blocking {
-                val data = httpClient.fetchContent(url, encoding.asJava)
-                job match {
-                    case NewPodcastFetchJob() =>
-                        parser ! ParseNewPodcastData(url, exo, data)
-                        directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-
-                    case UpdateEpisodesFetchJob(etag, lastMod) =>
-                        parser ! ParseUpdateEpisodeData(url, exo, data)
-                        directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-
-                    case WebsiteFetchJob() =>
-                        parser ! ParseWebsiteData(exo, data)
-                }
+                case WebsiteFetchJob() =>
+                    parser ! ParseWebsiteData(exo, data)
             }
-
-        } catch {
-            case e: EchoException =>
-                log.error("Error on fetching resource : {} [reason : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                sendErrorNotificationIfFeasable(exo, url, job)
-            case e: java.net.ConnectException =>
-                log.error("java.net.ConnectException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: java.net.SocketTimeoutException =>
-                log.error("java.net.SocketTimeoutException for HEAD check on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: java.net.UnknownHostException =>
-                log.error("java.net.UnknownHostException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: javax.net.ssl.SSLHandshakeException =>
-                log.error("javax.net.ssl.SSLHandshakeException for fetch on : {} [msg : {}]", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                //sendErrorNotificationIfFeasable(exo, url, job) // TODO
-            case e: Exception =>
-                // TODO
-                log.error("Unhandled Exception during GET on {} : {}", url, Option(e.getMessage).getOrElse("NO REASON GIVEN IN EXCEPTION"))
-                e.printStackTrace()
-                sendErrorNotificationIfFeasable(exo, url, job)
         }
-
     }
 
 }

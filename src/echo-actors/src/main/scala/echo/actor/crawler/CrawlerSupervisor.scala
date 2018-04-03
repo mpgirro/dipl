@@ -1,5 +1,6 @@
 package echo.actor.crawler
 
+import java.io.UnsupportedEncodingException
 import java.net.{ConnectException, SocketTimeoutException, UnknownHostException}
 import java.nio.charset.IllegalCharsetNameException
 import javax.net.ssl.SSLHandshakeException
@@ -45,13 +46,14 @@ class CrawlerSupervisor extends Actor with ActorLogging {
 
     override val supervisorStrategy: SupervisorStrategy =
         OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
-            case _: EchoException               => Resume
-            case _: ConnectException            => Resume
-            case _: SocketTimeoutException      => Resume
-            case _: UnknownHostException        => Resume
-            case _: SSLHandshakeException       => Resume
-            case _: IllegalCharsetNameException => Resume
-            case _: Exception                   => Escalate
+            case _: EchoException                => Resume
+            case _: ConnectException             => Resume
+            case _: SocketTimeoutException       => Resume
+            case _: UnknownHostException         => Resume
+            case _: SSLHandshakeException        => Resume
+            case _: IllegalCharsetNameException  => Resume
+            case _: UnsupportedEncodingException => Resume
+            case _: Exception                    => Escalate
         }
 
     override def postStop: Unit = {
