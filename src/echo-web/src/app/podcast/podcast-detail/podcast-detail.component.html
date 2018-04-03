@@ -68,6 +68,16 @@
       </div>
     </div>
 
+    <!-- Feeds -->
+    <h2 class="navbar-text h5 my-2">Feeds</h2>
+
+    <div class="mt-2">
+      <ng-container *ngFor="let feed of feeds">
+        <code>{{feed.url}}</code>
+      </ng-container>
+    </div>
+
+
   </div>
 </div>
 
