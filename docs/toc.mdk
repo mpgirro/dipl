@@ -177,6 +177,11 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Scalability , Elasticity
     * Configuration, logging, and deployment
     * Performance measurement of Microservices
+* Evaluation
+    * Quality Metrics
+        * Internal Quality Metrics
+            : Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
+        * External Quality Metrics
 * Discussion
     * The Case for Actors
         * Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
