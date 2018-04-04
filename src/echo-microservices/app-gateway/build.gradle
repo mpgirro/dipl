@@ -176,6 +176,7 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-ribbon', version: '1.4.3.RELEASE'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.3.RELEASE'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.3.RELEASE'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-spectator', version: '1.4.3.RELEASE'
     compile "org.springframework.retry:spring-retry"
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.3.RELEASE'

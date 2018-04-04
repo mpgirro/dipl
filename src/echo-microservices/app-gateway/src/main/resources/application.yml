@@ -1,0 +1,29 @@
+# Server
+server:
+    port: 3030
+
+echo:
+    gateway:
+        core-pool-size: 2
+        max-pool-size: 50
+        queue-capacity: 10000
+        fallback-title: "Uh oh"
+        fallback-description: "Data could not be loaded due to a temporary problem. Try again later"
+        catalog-url: localhost:3031/catalog
+        searcher-url: localhost:3035/searcher
+        default-page: 1
+        efault-size: 20
+
+feign:
+    httpclient:
+        connection-timeout: 5000
+    hystrix:
+        enabled: true
+
+hystrix:
+    command:
+        default:
+            execution:
+                isolation:
+                    thread:
+                        timeoutInMilliseconds: 10000
