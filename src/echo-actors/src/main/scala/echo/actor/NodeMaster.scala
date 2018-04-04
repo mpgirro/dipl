@@ -1,31 +1,32 @@
 package echo.actor
 
-import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, SupervisorStrategy, Terminated}
-import akka.util.Timeout
+import akka.actor.{Actor, ActorLogging, ActorRef, SupervisorStrategy, Terminated}
+import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.cli.CliActor
 import echo.actor.crawler.CrawlerSupervisor
-import echo.actor.directory.{DirectoryBroker, DirectoryStore}
+import echo.actor.directory.DirectoryBroker
 import echo.actor.gateway.GatewayActor
-import echo.actor.index.{IndexBroker, IndexStore}
-import echo.actor.parser.{ParserActor, ParserSupervisor}
+import echo.actor.index.IndexBroker
+import echo.actor.parser.ParserSupervisor
 import echo.actor.searcher.SearcherActor
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.Success
 
 /**
   * @author Maximilian Irro
   */
-class MasterSupervisor extends Actor with ActorLogging {
+class NodeMaster extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     override val supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
 
     private implicit val executionContext = context.system.dispatcher
+
+    private val cluster = Cluster(context.system)
 
     private val CONFIG = ConfigFactory.load()
     private implicit val INTERNAL_TIMEOUT = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
@@ -39,6 +40,8 @@ class MasterSupervisor extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     override def preStart(): Unit = {
+
+        val clusterDomainListener = context.watch(context.actorOf(ClusterDomainEventListener.props(), ClusterDomainEventListener.name))
 
         index = context.watch(context.actorOf(IndexBroker.props(), IndexBroker.name))
 
@@ -108,8 +111,10 @@ class MasterSupervisor extends Actor with ActorLogging {
         context.system.stop(parser)
         context.system.stop(searcher)
 
+        cluster.leave(cluster.selfAddress) // leave the cluster before shutdown
+
         context.system.terminate().onComplete(_ => log.info("system.terminate() finished"))
-        context.stop(self)  // master
+        //context.stop(self)  // master
 
     }
 
