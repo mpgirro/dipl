@@ -22,12 +22,12 @@ import scala.language.postfixOps
   * @author Maximilian Irro
   */
 
-object CrawlerActor {
+object CrawlerWorker {
     def name(workerIndex: Int): String = "worker-" + workerIndex
-    def props(): Props = Props(new CrawlerActor()).withDispatcher("echo.crawler.dispatcher")
+    def props(): Props = Props(new CrawlerWorker()).withDispatcher("echo.crawler.dispatcher")
 }
 
-class CrawlerActor extends Actor with ActorLogging {
+class CrawlerWorker extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

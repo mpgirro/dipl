@@ -26,12 +26,12 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-object ParserActor {
+object ParserWorker {
     def name(workerIndex: Int): String = "worker-" + workerIndex
-    def props(): Props = Props(new ParserActor()).withDispatcher("echo.parser.dispatcher")
+    def props(): Props = Props(new ParserWorker()).withDispatcher("echo.parser.dispatcher")
 }
 
-class ParserActor extends Actor with ActorLogging {
+class ParserWorker extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

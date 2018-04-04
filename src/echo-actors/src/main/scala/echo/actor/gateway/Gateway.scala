@@ -25,12 +25,12 @@ import scala.language.postfixOps
   * @author Maximilian Irro
   */
 
-object GatewayActor {
+object Gateway {
     def name(nodeIndex: Int): String = "gateway-" + nodeIndex
-    def props(): Props = Props(new GatewayActor()).withDispatcher("echo.gateway.dispatcher")
+    def props(): Props = Props(new Gateway()).withDispatcher("echo.gateway.dispatcher")
 }
 
-class GatewayActor extends Actor with ActorLogging with JsonSupport {
+class Gateway extends Actor with ActorLogging with JsonSupport {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

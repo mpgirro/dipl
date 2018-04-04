@@ -19,7 +19,7 @@ import scala.language.postfixOps
   * @author Maximilian Irro
   */
 
-object CliActor {
+object CLI {
     final val name = "cli"
     def props(master: ActorRef,
               indexStore: ActorRef,
@@ -29,19 +29,19 @@ object CliActor {
               directoryStore: ActorRef,
               gateway: ActorRef): Props = {
 
-        Props(new CliActor(master, indexStore, parser, searcher, crawler, directoryStore, gateway))
+        Props(new CLI(master, indexStore, parser, searcher, crawler, directoryStore, gateway))
             .withDispatcher("echo.cli.dispatcher")
 
     }
 }
 
-class CliActor (master: ActorRef,
-                indexStore: ActorRef,
-                parser: ActorRef,
-                searcher: ActorRef,
-                crawler: ActorRef,
-                directoryStore: ActorRef,
-                gateway: ActorRef) extends Actor with ActorLogging {
+class CLI(master: ActorRef,
+          indexStore: ActorRef,
+          parser: ActorRef,
+          searcher: ActorRef,
+          crawler: ActorRef,
+          directoryStore: ActorRef,
+          gateway: ActorRef) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -52,8 +52,8 @@ class CliActor (master: ActorRef,
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
-        "check podcast"  -> "[all|<echoId>]",
-        "check feed"     -> "[all|<echoId>]",
+        "check podcast"  -> "[all|<exo>]",
+        "check feed"     -> "[all|<exo>]",
         "count"          -> "[podcasts|episodes|feeds]",
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes|feeds]",
@@ -61,8 +61,8 @@ class CliActor (master: ActorRef,
         "load fyyd"      -> "[episodes <podcastId> <fyydId>]",
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
-        "get podcast"    -> "<echoId>",
-        "get episode"    -> "<echoId>"
+        "get podcast"    -> "<exo>",
+        "get episode"    -> "<exo>"
     )
 
 

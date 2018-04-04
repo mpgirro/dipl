@@ -13,12 +13,12 @@ import scala.concurrent.duration._
   * @author Maximilian Irro
   */
 
-object ParserSupervisor {
+object Parser {
     def name(nodeIndex: Int): String = "parser-" + nodeIndex
-    def props(): Props = Props(new ParserSupervisor())
+    def props(): Props = Props(new Parser())
 }
 
-class ParserSupervisor extends Actor with ActorLogging {
+class Parser extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -77,7 +77,7 @@ class ParserSupervisor extends Actor with ActorLogging {
     }
 
     private def createParserActor(): ActorRef = {
-        val parser = context.actorOf(ParserActor.props(), ParserActor.name(workerIndex))
+        val parser = context.actorOf(ParserWorker.props(), ParserWorker.name(workerIndex))
 
         workerIndex += 1
 

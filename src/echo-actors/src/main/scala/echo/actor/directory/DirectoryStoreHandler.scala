@@ -24,14 +24,14 @@ import scala.concurrent.blocking
   * @author Maximilian Irro
   */
 
-object DirectoryStoreWorker {
-    def name(workerIndex: Int): String = "worker-" + workerIndex
+object DirectoryStoreHandler {
+    def name(workerIndex: Int): String = "handler-" + workerIndex
     def props(workerIndex: Int, databaseUrl: String): Props = {
-        Props(new DirectoryStoreWorker(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
+        Props(new DirectoryStoreHandler(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
     }
 }
 
-class DirectoryStoreWorker (workerIndex: Int,
+class DirectoryStoreHandler(workerIndex: Int,
                             databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)

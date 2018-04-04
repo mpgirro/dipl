@@ -4,12 +4,12 @@ import akka.actor.{Actor, ActorLogging, ActorRef, SupervisorStrategy, Terminated
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.cli.CliActor
-import echo.actor.crawler.CrawlerSupervisor
+import echo.actor.cli.CLI
+import echo.actor.crawler.Crawler
 import echo.actor.directory.DirectoryBroker
-import echo.actor.gateway.GatewayActor
+import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
-import echo.actor.parser.ParserSupervisor
+import echo.actor.parser.Parser
 import echo.actor.searcher.SearcherActor
 
 import scala.concurrent.duration._
@@ -45,18 +45,18 @@ class NodeMaster extends Actor with ActorLogging {
 
         index = context.watch(context.actorOf(IndexBroker.props(), IndexBroker.name))
 
-        parser = context.actorOf(ParserSupervisor.props(), ParserSupervisor.name(1))
+        parser = context.actorOf(Parser.props(), Parser.name(1))
         context watch parser
 
         searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name(1)))
 
-        crawler = context.actorOf(CrawlerSupervisor.props(), CrawlerSupervisor.name(1))
+        crawler = context.actorOf(Crawler.props(), Crawler.name(1))
         context watch crawler
 
         directory = context.actorOf(DirectoryBroker.props(), DirectoryBroker.name)
         context watch directory
 
-        gateway = context.watch(context.actorOf(GatewayActor.props(), GatewayActor.name(1)))
+        gateway = context.watch(context.actorOf(Gateway.props(), Gateway.name(1)))
 
         createCLI()
 
@@ -119,8 +119,8 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     private def createCLI(): Unit = {
-        cli = context.actorOf(CliActor.props(self, index, parser, searcher, crawler, directory, gateway),
-            name = CliActor.name)
+        cli = context.actorOf(CLI.props(self, index, parser, searcher, crawler, directory, gateway),
+            name = CLI.name)
         context watch cli
     }
 

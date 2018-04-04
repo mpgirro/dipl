@@ -100,7 +100,7 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
 
     private def createDirectoryStoreWorkerActor(databaseUrl: String): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(DirectoryStoreWorker.props(workerIndex, databaseUrl), DirectoryStoreWorker.name(workerIndex))
+        val directoryStore = context.actorOf(DirectoryStoreHandler.props(workerIndex, databaseUrl), DirectoryStoreHandler.name(workerIndex))
         currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
