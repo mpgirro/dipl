@@ -1,0 +1,29 @@
+# [@Roe15] Akka in Action (Book)
+
+
+* Most general-purpose programming languages are written in sequence (Scala and
+Java being no exception to the rule). A concurrent programming model is required to
+bridge the gap between sequential definition and parallel execution.
+* Whereas parallelization is all about executing processes simultaneously, concur-rency concerns itself with defining processes that can function simultaneously, or can
+overlap in time, but don’t necessarily need to run simultaneously. A concurrent system
+is not by definition a parallel system. Concurrent processes can, for example, be exe-cuted on one CPU through the use of time slicing, where every process gets a certain
+amount of time to run on the CPU, one after another.
+* The JVM has a standard concurrent programming model (see figure 1.14), where,
+roughly speaking, processes are expressed in objects and methods, which are executed on threads.
+* Fault tolerance
+    * Let's recap the benefits of the let-it-crash approach:
+        * Fault isolation—A supervisor can decide to terminate an actor. The actor is removed from the actor system.
+        * Structure—The actor system hierarchy of actor references makes it possible to replace actor instances without other actors being affected.
+        * Redundancy—An actor can be replaced by another. In the example of the bro-ken database connection, the fresh actor instance could connect to a different database. The supervisor could also decide to stop the faulty actor and create another type instead. Another option would be to route messages in a load-balanced fashion to many actors, which will be discussed in chapter 9.
+        * Replacement—An actor can always be re-created from its Props. A supervisor can decide to replace a faulty actor instance with a fresh one, without having to know any of the details for re-creating the actor.
+        * Reboot—This can be done through a restart.
+        * Component lifecycle—An actor is an active component. It can be started, stopped, and restarted. In the next section, we’ll go into the details of how the actor goes through its lifecycle.
+        * Suspend—When an actor crashes, its mailbox is suspended until the supervisor decides what should happen with the actor.
+        * Separation of concerns—The normal actor message-processing and supervision fault recovery flows are orthogonal, and can be defined and evolve completely independently of each other.
+* Message channels
+    * Channel Type: Point to Point
+        * A channel transports the message from the sender to the receiver. The point-to-point channel sends the message to one receiver.
+        * It’s possible for a point-to-point channel to have multiple receivers, but the channel makes sure that only one receiver receives the message. The round-robin router in section 9.2.1 is an example of a channel having multiple receivers. The processing of the messages can be done concurrently by different receivers, but only one receiver consumes any given message. This is shown in figure 10.2.
+    * Channel Type: Publish-Subscribe
+        * You’ve seen in the previous section that the point-to-point channel delivers each mes-sage to only one receiver. In these cases the sender knows where the message has to be sent. But sometimes the sender doesn’t know who is interested in the message. This is the greatest difference between the point-to-point channel and the publish-subscribe channel. The channel, instead of the sender, is responsible for keeping track of the receivers who need the message. The channel can also deliver the same message to multiple receivers.
+        * 
