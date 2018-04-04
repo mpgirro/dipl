@@ -505,3 +505,6 @@ https://rss.prod.firstlook.media/deconstructed/podcast.rss
 http://feeds.feedburner.com/erklaermir
 https://kopfumkrone.at/feed/podcast
 https://www.embedded.fm/?format=rss
+https://www.infoq.com/feed/the-infoq-podcast
+http://feeds.soundcloud.com/users/soundcloud:users:215740450/sounds.rss
+http://www.podcastgarden.com/podcast/podcast-rss.php?id=2246
