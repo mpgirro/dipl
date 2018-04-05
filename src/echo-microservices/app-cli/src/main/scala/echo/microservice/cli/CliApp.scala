@@ -2,6 +2,8 @@ package echo.microservice.cli
 
 import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
+import echo.core.util.UrlUtil
+
 import scala.io.{Source, StdIn}
 
 class CliApp {
@@ -27,6 +29,7 @@ class CliApp {
 
     // TODO
     private val CATALOG_URL = "http://localhost:3031/catalog"
+    private val FEEDS_TXT = "../../feeds.txt"
 
     private implicit val backend = HttpURLConnectionBackend()
 
@@ -41,6 +44,11 @@ class CliApp {
 
                     case "propose" :: Nil   => usage("propose")
                     case "propose" :: feeds => feeds.foreach(f => propose(f))
+
+                    case "load" :: Nil                          => help()
+                    case "load" :: "feeds" :: Nil               => usage("load feeds")
+                    case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
+                    case "load" :: "feeds" :: _                 => usage("load feeds")
 
                     case _  => help()
                 }
@@ -75,6 +83,14 @@ class CliApp {
 
     private def propose(url: String): Unit = {
         sttp.post(uri"${CATALOG_URL}/feed/propose?url=${url}").send()
+    }
+
+    private def loadTestFeeds(): Unit = {
+        log.debug("Received LoadTestFeeds")
+        for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
+            log.info("Proposing feed : {}", feed)
+            propose(UrlUtil.sanitize(feed))
+        }
     }
 }
 
