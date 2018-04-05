@@ -48,6 +48,9 @@ class CLI(master: ActorRef,
     private val CONFIG = ConfigFactory.load()
     private implicit val INTERNAL_TIMEOUT: Timeout = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
 
+    private val FEEDS_TXT = "../feeds.txt"
+    private val MASSIVE_TXT = "../feeds_unique.txt"
+
     private var shutdown = false
 
     val usageMap = Map(
@@ -224,22 +227,16 @@ class CLI(master: ActorRef,
 
     private def loadTestFeeds(): Unit = {
         log.debug("Received LoadTestFeeds")
-
-        val filename = "../feeds.txt"
-        for (feed <- Source.fromFile(filename).getLines) {
+        for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
         }
-        log.debug("Finished LoadTestFeeds")
     }
 
     private def loadMassiveFeeds(): Unit = {
         log.debug("Received LoadMassiveFeeds")
-
-        val filename = "../feeds_unique.txt"
-        for (feed <- Source.fromFile(filename).getLines) {
+        for (feed <- Source.fromFile(MASSIVE_TXT).getLines) {
             directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
         }
-        log.debug("Finished LoadMassiveFeeds")
     }
 
     private def saveFeeds(dest: String): Unit = {
@@ -256,7 +253,6 @@ class CLI(master: ActorRef,
                 pw.close()
             case other => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
-        log.debug("Finished SaveFeeds : {}", dest)
     }
 
 }
