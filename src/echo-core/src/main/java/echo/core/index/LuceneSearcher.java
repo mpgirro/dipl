@@ -82,6 +82,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             throw new SearchException("Requested window size (s) required to be >1, got: " + s);
         }
 
+        // TODO obsolete? I can go beyond that now, can't I
         // ensure that we are within boundries of our search window
         if ((p*s) > MAX_RESULT_COUNT) {
             throw new SearchException("Request search range (p x s) exceeds maximum search window s of " + MAX_RESULT_COUNT);

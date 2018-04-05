@@ -7,6 +7,7 @@ buildscript {
     dependencies {
 //    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
         classpath 'net.ltgt.gradle:gradle-apt-plugin:0.13'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
     }
 }
 
@@ -20,6 +21,7 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'net.ltgt.apt' // required by mapstruct
 apply plugin: 'net.ltgt.apt-idea'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -49,6 +51,9 @@ ext {
     jackson_version = '2.9.4'
     immutables_version = '2.5.6'
     guava_version = '24.1-jre'
+    junit_vintage_version = '4.12'
+    junit_jupiter_version = '5.1.0'
+    junit_platform_version = '1.1.0'
 }
 
 repositories {
@@ -57,9 +62,7 @@ repositories {
 }
 
 dependencies {
-//  compile 'com.google.guava:guava:23.6-jre' // Google Core Libraries for Java
 
-//    testImplementation 'junit:junit:4.12'
     compile group: 'org.scala-lang', name: 'scala-compiler', version: "${scala_major_version}.${scala_minor_version}"
     compile group: 'org.scala-lang', name: 'scala-library', version: "${scala_major_version}.${scala_minor_version}"
 
@@ -104,13 +107,13 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version
 
-    /*
-    compile "joda-time:joda-time:2.9.9"
-    compile "org.apache.logging.log4j:log4j-api:$log4j_version"
-    compile "org.apache.logging.log4j:log4j-core:$log4j_version"
-    compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
-    compile "org.apache.solr:solr-solrj:$lucene_version" // TODO solr support is only experimental and not suitable for the scope of the thesis
-    */
+    // JUnit Jupiter API and TestEngine implementation
+    //test.useJUnitPlatform()
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_jupiter_version}"
+    testRuntimeOnly    "org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}"
+    //testCompile("junit:junit:4.12")
+    //testRuntime("org.junit.vintage:junit-vintage-engine:4.12.0") //Support JUnit 3 and JUnit 4 tests
+    testCompile "org.junit.platform:junit-platform-runner:${junit_platform_version}" // Enable use of the JUnitPlatform Runner within the IDE
 
 }
 
@@ -131,6 +134,7 @@ publishing {
 
 // Generating gradle wrapper so people don't have to have the Gradle version preinstalled
 task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
     gradleVersion = '4.6'
     distributionType = Wrapper.DistributionType.ALL
 }
@@ -142,4 +146,27 @@ run {
 run.doFirst {
     // Environment variables go here.
 }
+
+test {
+    useJUnitPlatform {
+        excludeTags 'slow'
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+
+    failFast = true
+
+    // Always run tests, even when nothing changed.
+    dependsOn 'cleanTest'
+
+    // Show test results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+
+junitPlatform {
+    details 'tree'
+}
+
 
