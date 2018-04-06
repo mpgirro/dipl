@@ -162,7 +162,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public Optional<IndexDocDTO> findByExo(String exo) {
+    public Optional<IndexDocDTO> findByExo(String exo) throws SearchException {
         IndexSearcher indexSearcher = null;
         try {
 
@@ -175,6 +175,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
             final TopDocs topDocs = indexSearcher.search(query, 1);
             if (topDocs.totalHits > 1) {
                 log.error("Searcher found multiple documents for unique {} : {}", IndexField.EXO, exo);
+                throw new SearchException("Multiple documents found in index for unique EXO '" + exo + "'");
             }
             if (topDocs.totalHits == 1) {
                 final ScoreDoc[] hits = indexSearcher.search(query, 1).scoreDocs;
