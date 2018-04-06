@@ -33,3 +33,7 @@ hystrix:
                 isolation:
                     thread:
                         timeoutInMilliseconds: 10000
+
+ribbon:
+    eureka:
+        enabled: false

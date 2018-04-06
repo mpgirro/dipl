@@ -22,3 +22,7 @@ spring:
         port: ${ECHO_RABBITMQ_PORT:5672}
         username: ${ECHO_RABBITMQ_USERNAME:guest}
         password: ${ECHO_RABBITMQ_PASSWORD:guest}
+
+ribbon:
+    eureka:
+        enabled: false

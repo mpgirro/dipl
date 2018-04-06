@@ -27,3 +27,7 @@ echo:
     amqp:
         exchange: echo.direct
         index-routingkey: echo.index.routingkey
+
+ribbon:
+    eureka:
+        enabled: false

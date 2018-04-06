@@ -58,3 +58,7 @@ echo:
         catalog-routingkey: echo.catalog.routingkey
         crawler-routingkey: echo.crawler.routingkey
         index-routingkey: echo.index.routingkey
+
+ribbon:
+    eureka:
+        enabled: false
