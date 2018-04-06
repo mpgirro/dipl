@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface FeedRepository extends JpaRepository<FeedEntity,Long> {
 
-    FeedEntity findOneByExo(String echoId);
+    FeedEntity findOneByExo(String exo);
 
     List<FeedEntity> findAllByUrl(String url);
 

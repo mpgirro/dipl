@@ -14,8 +14,8 @@ class CliApp {
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
-        "check podcast"  -> "[all|<echoId>]",
-        "check feed"     -> "[all|<echoId>]",
+        "check podcast"  -> "[all|<exo>]",
+        "check feed"     -> "[all|<exo>]",
         "count"          -> "[podcasts|episodes|feeds]",
         "search"         -> "query [query [query]]",
         "print database" -> "[podcasts|episodes|feeds]",
@@ -23,8 +23,8 @@ class CliApp {
         "load fyyd"      -> "[episodes <podcastId> <fyydId>]",
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
-        "get podcast"    -> "<echoId>",
-        "get episode"    -> "<echoId>"
+        "get podcast"    -> "<exo>",
+        "get episode"    -> "<exo>"
     )
 
     // TODO

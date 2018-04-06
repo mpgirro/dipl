@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface PodcastRepository extends JpaRepository<PodcastEntity,Long> {
 
-    PodcastEntity findOneByExo(String echoId);
+    PodcastEntity findOneByExo(String exo);
 
     @Query("SELECT DISTINCT podcast FROM PodcastEntity podcast " +
             "LEFT JOIN podcast.feeds feed " +

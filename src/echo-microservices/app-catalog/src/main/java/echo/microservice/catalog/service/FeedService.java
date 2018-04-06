@@ -109,7 +109,7 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<FeedDTO> findOneByUrlAndPodcastEchoId(String url, String podcastExo) {
+    public Optional<FeedDTO> findOneByUrlAndPodcastExo(String url, String podcastExo) {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : ", url, podcastExo);
         return Optional
             .ofNullable(feedRepository.findOneByUrlAndPodcastExo(url, podcastExo))
