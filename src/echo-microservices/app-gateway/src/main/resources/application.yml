@@ -2,16 +2,6 @@
 spring:
     application:
         name: echo-gateway
-    cloud:
-        consul:
-            discovery:
-                prefer-ip-address: true
-            host: localhost
-            port: 8500
-            config:
-                enabled: true
-                watch:
-                    enabled: true
 
 server:
     port: 3030

@@ -1,0 +1,94 @@
+version: '2'
+services:
+    echo-gateway:
+        container_name: "echo-gateway"
+        hostname: "echo-gateway"
+        image: echo-gateway:latest
+        #build: ../echo-microservices/app-gateway/Dockerfile
+        ports:
+            - 3030:3030
+        environment:
+            - ECHO_CONSUL_HOST=echo-consul
+        links:
+            - echo-catalog
+            - echo-searcher
+            - echo-consul
+    echo-catalog:
+        container_name: "echo-catalog"
+        hostname: "echo-catalog"
+        image: echo-catalog:latest
+        #build: ../echo-microservices/app-catalog/Dockerfile
+        ports:
+            - 3031:3031
+        environment:
+            - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_CONSUL_HOST=echo-consul
+        links:
+            - echo-consul
+            - echo-rabbitmq
+    echo-index:
+        container_name: "echo-index"
+        hostname: "echo-index"
+        image: echo-index:latest
+        #build: ../echo-microservices/app-index/Dockerfile
+        ports:
+            - 3032:3032
+        volumes:
+            - "/Users/max/volumes/echo/index"
+        environment:
+            - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_CONSUL_HOST=echo-consul
+        links:
+            - echo-consul
+            - echo-rabbitmq
+    echo-crawler:
+        container_name: "echo-crawler"
+        hostname: "echo-crawler"
+        image: echo-crawler:latest
+        #build: ../echo-microservices/app-crawler/Dockerfile
+        ports:
+            - 3033:3033
+        environment:
+            - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_CONSUL_HOST=echo-consul
+        links:
+            - echo-consul
+            - echo-rabbitmq
+    echo-parser:
+        container_name: "echo-parser"
+        hostname: "echo-parser"
+        image: echo-parser:latest
+        #build: ../echo-microservices/app-parser/Dockerfile
+        ports:
+            - 3034:3034
+        environment:
+            - ECHO_RABBITMQ_HOST=echo-rabbitmq
+        links:
+            - echo-consul
+            - echo-rabbitmq
+    echo-searcher:
+        container_name: "echo-searcher"
+        hostname: "echo-searcher"
+        image: echo-searcher:latest
+        #build: ../echo-microservices/app-searcher/Dockerfile
+        ports:
+            - 3035:3035
+        environment:
+            - ECHO_CONSUL_HOST=echo-consul
+        links:
+            - echo-index
+            - echo-consul
+    echo-consul:
+        container_name: "echo-consul"
+        hostname: "echo-consul"
+        environment:
+          - CONSUL_LOCAL_CONFIG='{"log-level":"debug"}'
+        extends:
+            file: consul.yml
+            service: consul
+    echo-rabbitmq:
+        container_name: "echo-rabbitmq"
+        hostname: "echo-rabbitmq"
+        extends:
+            file: rabbitmq.yml
+            service: rabbitmq

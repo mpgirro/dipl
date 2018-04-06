@@ -1,0 +1,12 @@
+spring:
+    cloud:
+        consul:
+            host: ${ECHO_CONSUL_HOST:localhost}
+            port: ${ECHO_CONSUL_PORT:8500}
+            discovery:
+                #instanceId: ${spring.application.name}:${random.value}
+                prefer-ip-address: true
+            config:
+                enabled: true
+                watch:
+                    enabled: true

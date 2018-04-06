@@ -23,7 +23,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
-defaultTasks 'clean build runBoot'
+defaultTasks 'clean build bootRun'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -96,8 +96,6 @@ task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/tests")
     reportOn test
 }
-
-apply from: 'gradle/docker.gradle'
 
 if (project.hasProperty('prod')) {
     apply from: 'gradle/profile_prod.gradle'
@@ -227,3 +225,4 @@ task stage(dependsOn: 'bootRepackage') {
 compileJava.dependsOn processResources
 processResources.dependsOn cleanResources,bootBuildInfo
 bootBuildInfo.mustRunAfter cleanResources
+

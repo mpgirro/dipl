@@ -1,7 +1,9 @@
-consul:
-  container_name: echo-consul
-  image: consul
-  ports:
-    - "8400:8400"
-    - "8500:8500"
-    - "8600:8600"
+version: '2'
+services:
+  consul:
+    container_name: consul
+    image: consul
+    ports:
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"

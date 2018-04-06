@@ -47,7 +47,7 @@ public class IndexService {
 
     @Async
     public void add(IndexDocDTO doc) {
-        log.debug("Request to add document to index : {}", doc);
+        log.info("Request to add document to index : {}", doc.getExo());
         indexCommitter.add(doc);
         indexCommitter.commit();
     }

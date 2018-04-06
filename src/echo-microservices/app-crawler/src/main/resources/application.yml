@@ -1,0 +1,26 @@
+
+server:
+    port: 3033
+
+echo:
+    crawler:
+        core-pool-size: 2
+        download-timeout: 10
+        download-maxbytes: 5242880
+        max-pool-size: 50
+        queue-capacity: 10000
+    rabbit:
+        crawler-queue: echo.crawler.queue
+    amqp:
+        exchange: echo.direct
+        crawler-routingkey: echo.crawler.routingkey
+        parser-routingkey: echo.parser.routingkey
+
+spring:
+    application:
+        name: echo-crawler
+    rabbitmq:
+        host: ${ECHO_RABBITMQ_HOST:localhost}
+        port: ${ECHO_RABBITMQ_PORT:5672}
+        username: ${ECHO_RABBITMQ_USERNAME:guest}
+        password: ${ECHO_RABBITMQ_PASSWORD:guest}

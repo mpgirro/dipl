@@ -22,20 +22,10 @@ spring:
             enabled: true
             path: /h2
     rabbitmq:
-            host: localhost
-            port: 5672
-            username: guest
-            password: guest
-    cloud:
-        consul:
-            discovery:
-                prefer-ip-address: true
-            host: localhost
-            port: 8500
-            config:
-                enabled: true
-                watch:
-                    enabled: true
+            host: ${ECHO_RABBITMQ_HOST:localhost}
+            port: ${ECHO_RABBITMQ_PORT:5672}
+            username: ${ECHO_RABBITMQ_USERNAME:guest}
+            password: ${ECHO_RABBITMQ_PASSWORD:guest}
 
 logging:
     level:

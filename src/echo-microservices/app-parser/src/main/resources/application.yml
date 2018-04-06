@@ -1,0 +1,24 @@
+
+server:
+    port: 3034
+
+echo:
+    parser:
+        core-pool-size: 2
+        max-pool-size: 50
+        queue-capacity: 10000
+    rabbit:
+        parser-queue: echo.parser.queue
+    amqp:
+        exchange: echo.direct
+        parser-routingkey: echo.parser.routingkey
+        catalog-routingkey: echo.catalog.routingkey
+
+spring:
+    application:
+        name: echo-parser
+    rabbitmq:
+        host: ${ECHO_RABBITMQ_HOST:localhost}
+        port: ${ECHO_RABBITMQ_PORT:5672}
+        username: ${ECHO_RABBITMQ_USERNAME:guest}
+        password: ${ECHO_RABBITMQ_PASSWORD:guest}

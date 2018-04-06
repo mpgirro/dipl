@@ -48,7 +48,7 @@ public class IndexResource {
         method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
-        log.debug("REST request to save doc : {}", doc);
+        log.debug("REST request to save doc : {}", doc.getExo());
         indexService.add(doc);
     }
 
