@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "searcher",
-    url  = "${echo.gateway.searcher-url}", // TODO obsolete once using registry service
+    name = "echo-searcher",
+    //url  = "${echo.gateway.searcher-url}/searcher", // TODO obsolete once using registry service
     fallbackFactory = SearcherClientFallbackFactory.class
 )
 public interface SearcherClient {
 
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/searcher/search")
     ResultWrapperDTO getSearchResults(@RequestParam("query") String query,
                                       @RequestParam("page") Integer page,
                                       @RequestParam("size") Integer size);

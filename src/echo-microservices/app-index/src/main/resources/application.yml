@@ -1,0 +1,39 @@
+
+spring:
+    application:
+        name: echo-index
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: guest
+        password: guest
+    cloud:
+        consul:
+            discovery:
+                prefer-ip-address: true
+            host: localhost
+            port: 8500
+            config:
+                enabled: true
+                watch:
+                    enabled: true
+
+server:
+    port: 3032
+
+management:
+    security:
+        enabled: false
+
+echo:
+    index:
+        lucene-path: /Users/max/volumes/echo/index
+        core-pool-size: 2
+        max-pool-size: 50
+        queue-capacity: 10000
+
+    rabbit:
+        index-queue: echo.index.queue
+    amqp:
+        exchange: echo.direct
+        index-routingkey: echo.index.routingkey

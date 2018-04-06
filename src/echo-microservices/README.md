@@ -52,3 +52,7 @@ $ ./gradlew app-crawler:run
 $ ./gradlew app-indexer:run
 $ ./gradlew app-searcher:run
 ```
+
+## Admin UIs
+
+* Consul: [http://localhost:8500]()

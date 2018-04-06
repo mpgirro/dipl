@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EntityScan("echo.core.domain.entity")
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 @EnableJpaRepositories("echo.microservice.catalog.repository")
 //@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware") // TODO guess I'll need this at some point
 @EnableTransactionManagement

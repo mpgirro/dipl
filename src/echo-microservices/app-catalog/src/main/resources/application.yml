@@ -1,0 +1,70 @@
+
+server:
+    port: 3031
+
+spring:
+    application:
+        name: echo-catalog
+    datasource:
+        url: jdbc:h2:mem:echo
+        username: sa
+        password:
+        driver-class-name: org.h2.Driver
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate.ddl-auto: none
+        show_sql: false
+        properties:
+            hibernate:
+                show_sql: false
+    h2:
+        console:
+            enabled: true
+            path: /h2
+    rabbitmq:
+            host: localhost
+            port: 5672
+            username: guest
+            password: guest
+    cloud:
+        consul:
+            discovery:
+                prefer-ip-address: true
+            host: localhost
+            port: 8500
+            config:
+                enabled: true
+                watch:
+                    enabled: true
+
+logging:
+    level:
+        org.hibernate.SQL: info
+
+management:
+    security:
+        enabled:
+            false
+
+liquibase:
+    change-log:
+        classpath:db/liquibase/master.xml
+    enabled: true
+#liquibase.url=jdbc:h2:mem:echo
+#liquibase.user=sa
+#liquibase.password=
+
+echo:
+    catalog:
+        default-page: 1
+        default-size: 20
+        core-pool-size: 2
+        max-pool-size: 50
+        queue-capacity: 10000
+    rabbit:
+        catalog-queue: echo.catalog.queue
+    amqp:
+        exchange: echo.direct
+        catalog-routingkey: echo.catalog.routingkey
+        crawler-routingkey: echo.crawler.routingkey
+        index-routingkey: echo.index.routingkey

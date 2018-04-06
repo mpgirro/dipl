@@ -10,28 +10,29 @@ import java.util.List;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "searcher",
-    url  = "${echo.gateway.catalog-url}", // TODO obsolete once using registry service
+    name = "echo-catalog",
+    //url  = "${echo.gateway.catalog-url}/catalog", // TODO obsolete once using registry service
     fallbackFactory = CatalogClientFallackFactory.class
 )
 public interface CatalogClient {
 
-    @GetMapping(value = "/podcast/{exo}")
+    @GetMapping(value = "/catalog/podcast/{exo}")
     PodcastDTO getPodcast(@PathVariable("exo") String exo);
 
-    @GetMapping(value = "/podcast/teaser")
-    ArrayWrapperDTO<PodcastDTO> getAllPodcasts(@RequestParam("page") Integer page, @RequestParam("size") Integer size);
+    @GetMapping(value = "/catalog/podcast/teaser")
+    ArrayWrapperDTO<PodcastDTO> getAllPodcasts(@RequestParam("page") Integer page,
+                                               @RequestParam("size") Integer size);
 
-    @GetMapping(value = "/episode/{exo}")
+    @GetMapping(value = "/catalog/episode/{exo}")
     EpisodeDTO getEpisode(@PathVariable("exo") String exo);
 
-    @GetMapping(value = "/podcast/{exo}/episodes")
+    @GetMapping(value = "/catalog/podcast/{exo}/episodes")
     ArrayWrapperDTO<EpisodeDTO> getEpisodesByPodcast(@PathVariable("exo") String exo);
 
-    @GetMapping(value = "/podcast/{exo}/feeds")
+    @GetMapping(value = "/catalog/podcast/{exo}/feeds")
     ArrayWrapperDTO<FeedDTO> getFeedsByPodcast(@PathVariable("exo") String exo);
 
-    @GetMapping(value = "/episode/{exo}/chapters")
+    @GetMapping(value = "/catalog/episode/{exo}/chapters")
     ArrayWrapperDTO<ChapterDTO> getChaptersByEpisode(@PathVariable("exo") String exo);
 
 }

@@ -1,7 +1,7 @@
 
 spring:
     application:
-        name: echo-gateway
+        name: echo-searcher
     cloud:
         consul:
             discovery:
@@ -14,23 +14,21 @@ spring:
                     enabled: true
 
 server:
-    port: 3030
+    port: 3035
 
 management:
     security:
         enabled: false
 
 echo:
-    gateway:
+    searcher:
+        default-page: 1
+        default-size: 20
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000
-        fallback-title: "Uh oh"
-        fallback-description: "Data could not be loaded due to a temporary problem. Try again later"
-        catalog-url: echo-catalog # TODO delete
-        searcher-url: echo-searcher # TODO delete
-        default-page: 1
-        efault-size: 20
+    gateway:
+        index-url: echo-index # TODO delete
 
 feign:
     httpclient:

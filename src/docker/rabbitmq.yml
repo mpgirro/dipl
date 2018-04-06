@@ -1,4 +1,5 @@
 rabbitmq:
+  container_name: echo-rabbitmq
   image: rabbitmq:management
   ports:
     - "5672:5672"
