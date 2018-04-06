@@ -27,8 +27,6 @@ echo:
         queue-capacity: 10000
         fallback-title: "Uh oh"
         fallback-description: "Data could not be loaded due to a temporary problem. Try again later"
-        catalog-url: echo-catalog # TODO delete
-        searcher-url: echo-searcher # TODO delete
         default-page: 1
         efault-size: 20
 

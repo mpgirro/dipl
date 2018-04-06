@@ -11,7 +11,6 @@ import java.util.List;
  */
 @FeignClient(
     name = "echo-catalog",
-    //url  = "${echo.gateway.catalog-url}/catalog", // TODO obsolete once using registry service
     fallbackFactory = CatalogClientFallackFactory.class
 )
 public interface CatalogClient {

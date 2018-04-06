@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(
     name = "echo-index",
-    //url = "${echo.gateway.index-url}/index", // TODO obsolete once using registry service
     fallbackFactory = IndexClientFallbackFactory.class
 )
 public interface IndexClient {
 
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/index/search")
     ResultWrapperDTO getSearchResults(@RequestParam("query") String query,
                                       @RequestParam("page") Integer page,
                                       @RequestParam("size") Integer size);

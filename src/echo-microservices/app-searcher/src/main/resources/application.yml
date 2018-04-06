@@ -27,8 +27,6 @@ echo:
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000
-    gateway:
-        index-url: echo-index # TODO delete
 
 feign:
     httpclient:

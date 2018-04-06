@@ -13,6 +13,7 @@ import java.util.Collections;
  */
 @Component
 public class CatalogClientFallackFactory implements FallbackFactory<CatalogClient> {
+
     private static final Logger log = LoggerFactory.getLogger(CatalogClientFallackFactory.class);
 
     @Override
