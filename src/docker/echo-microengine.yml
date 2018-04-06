@@ -81,8 +81,8 @@ services:
     echo-consul:
         container_name: "echo-consul"
         hostname: "echo-consul"
-        environment:
-          - CONSUL_LOCAL_CONFIG='{"log-level":"debug"}'
+        #environment:
+        #  - CONSUL_LOCAL_CONFIG="{\"log-level\":\"debug\"}"
         extends:
             file: consul.yml
             service: consul
