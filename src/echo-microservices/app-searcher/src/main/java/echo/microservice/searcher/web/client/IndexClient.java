@@ -1,6 +1,7 @@
 package echo.microservice.searcher.web.client;
 
 import echo.core.domain.dto.ResultWrapperDTO;
+import echo.microservice.searcher.config.FeignConfig;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(
     name = "echo-index",
+    configuration = FeignConfig.class,
     fallbackFactory = IndexClientFallbackFactory.class
 )
 public interface IndexClient {

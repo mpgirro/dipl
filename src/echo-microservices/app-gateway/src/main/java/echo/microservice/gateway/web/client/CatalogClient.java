@@ -1,6 +1,7 @@
 package echo.microservice.gateway.web.client;
 
 import echo.core.domain.dto.*;
+import echo.microservice.gateway.config.FeignConfig;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @FeignClient(
     name = "echo-catalog",
+    configuration = FeignConfig.class,
     fallbackFactory = CatalogClientFallackFactory.class
 )
 public interface CatalogClient {
