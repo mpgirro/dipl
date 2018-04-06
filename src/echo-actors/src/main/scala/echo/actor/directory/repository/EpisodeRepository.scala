@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param
   */
 trait EpisodeRepository extends JpaRepository[EpisodeEntity, java.lang.Long] {
 
-    def findOneByExo(echoId: String): EpisodeEntity
+    def findOneByExo(exo: String): EpisodeEntity
 
     def findAllByPodcast(podcast: PodcastEntity): java.util.List[EpisodeEntity]
 

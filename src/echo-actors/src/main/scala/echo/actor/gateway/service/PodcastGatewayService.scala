@@ -173,7 +173,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def putPodcast(id: String): Route = put {
         entity(as[PodcastDTO]) { podcast =>
 
-            // TODO update podcast with echoId
+            // TODO update podcast with exo
 
             complete(StatusCodes.NotImplemented)
         }

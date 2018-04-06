@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param
   */
 trait PodcastRepository extends JpaRepository[PodcastEntity, java.lang.Long] {
 
-    def findOneByExo(echoId: String): PodcastEntity
+    def findOneByExo(exo: String): PodcastEntity
 
     @Query("SELECT DISTINCT podcast FROM PodcastEntity podcast " +
            "LEFT JOIN podcast.feeds feed " +

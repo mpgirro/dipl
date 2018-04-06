@@ -96,7 +96,7 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
-        case DownloadWithHeadCheck(echoId, url, job) =>
+        case DownloadWithHeadCheck(exo, url, job) =>
 
             this.currUrl = url
             this.currJob = job
@@ -104,22 +104,22 @@ class CrawlerWorker extends Actor with ActorLogging {
             job match {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
-                        log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
-                        headCheck(echoId, url, job)
+                        log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
+                        headCheck(exo, url, job)
                     }
                 case _ =>
-                    log.info("Received DownloadWithHeadCheck({}, '{}', {})", echoId, url, job.getClass.getSimpleName)
-                    headCheck(echoId, url, job)
+                    log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
+                    headCheck(exo, url, job)
             }
 
 
-        case DownloadContent(echoId, url, job, encoding) =>
-            log.debug("Received Download({},'{}',{},{})", echoId, url, job.getClass.getSimpleName, encoding)
+        case DownloadContent(exo, url, job, encoding) =>
+            log.debug("Received Download({},'{}',{},{})", exo, url, job.getClass.getSimpleName, encoding)
 
             this.currUrl = url
             this.currJob = job
 
-            fetchContent(echoId, url, job, encoding) // TODO send encoding via message
+            fetchContent(exo, url, job, encoding) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
@@ -148,11 +148,11 @@ class CrawlerWorker extends Actor with ActorLogging {
         parser ! ParseFyydEpisodes(podcastId, json)
     }
 
-    private def sendErrorNotificationIfFeasable(echoId: String, url: String, job: FetchJob): Unit = {
+    private def sendErrorNotificationIfFeasable(exo: String, url: String, job: FetchJob): Unit = {
         job match {
             case WebsiteFetchJob() => // do nothing...
             case _ =>
-                directoryStore ! FeedStatusUpdate(echoId, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
         }
     }
 

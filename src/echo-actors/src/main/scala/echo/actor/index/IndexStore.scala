@@ -149,11 +149,11 @@ class IndexStore (indexPath: String,
 
     private def processWebsiteQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
-            val (echoId,html) = queue.dequeue()
-            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val (exo,html) = queue.dequeue()
+            val entry = indexSearcher.findByExo(exo).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withWebsiteData(html))
-                case None      => log.error("Could not retrieve from index for update website: echoId={}", echoId)
+                case None      => log.error("Could not retrieve from index for update website (EXO) : {}", exo)
             }
 
             processWebsiteQueue(queue)
@@ -162,11 +162,11 @@ class IndexStore (indexPath: String,
 
     private def processImageQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
-            val (echoId,image) = queue.dequeue()
-            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val (exo,image) = queue.dequeue()
+            val entry = indexSearcher.findByExo(exo).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withImage(image))
-                case None      => log.error("Could not retrieve from index for update image: echoId={}", echoId)
+                case None      => log.error("Could not retrieve from index for update image (EXO) : {}", exo)
             }
 
             processImageQueue(queue)
@@ -175,11 +175,11 @@ class IndexStore (indexPath: String,
 
     private def processLinkQueue(queue: mutable.Queue[(String,String)]): Unit = {
         if (queue.nonEmpty) {
-            val (echoId,link) = queue.dequeue()
-            val entry = indexSearcher.findByExo(echoId).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
+            val (exo,link) = queue.dequeue()
+            val entry = indexSearcher.findByExo(exo).asScala.map(_.asInstanceOf[ImmutableIndexDocDTO])
             entry match {
                 case Some(doc) => indexCommitter.update(doc.withLink(link))
-                case None      => log.error("Could not retrieve from index for update link: echoId={}", echoId)
+                case None      => log.error("Could not retrieve from index for update link (EXO) : {}", exo)
             }
 
             processLinkQueue(queue)

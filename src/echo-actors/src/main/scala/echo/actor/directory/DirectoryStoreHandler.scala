@@ -93,7 +93,7 @@ class DirectoryStoreHandler(workerIndex: Int,
 
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
 
-        case CheckPodcast(echoId) => onCheckPodcast(echoId)
+        case CheckPodcast(exo) => onCheckPodcast(exo)
 
         case CheckFeed(exo) => onCheckFeed(exo)
 
@@ -199,7 +199,7 @@ class DirectoryStoreHandler(workerIndex: Int,
     private def onFeedStatusUpdate(podcastExo: String, url: String, timestamp: LocalDateTime, status: FeedStatus): Unit = {
         log.debug("Received FeedStatusUpdate({},{},{})", url, timestamp, status)
         def task = () => {
-            feedService.findOneByUrlAndPodcastEchoId(url, podcastExo).map(f => {
+            feedService.findOneByUrlAndPodcastExo(url, podcastExo).map(f => {
                 val feed = feedMapper.toModifiable(f)
                 feed.setLastChecked(timestamp)
                 feed.setLastStatus(status)
@@ -335,7 +335,7 @@ class DirectoryStoreHandler(workerIndex: Int,
     }
 
     private def onUpdateLinkByExo(exo: String, newUrl: String): Unit = {
-        log.debug("Received UpdateLinkByEchoId({},'{}')", exo, newUrl)
+        log.debug("Received UpdateLinkByExo({},'{}')", exo, newUrl)
         def task = () => {
             podcastService.findOneByExo(exo).map(p => {
                 val podcast = podcastMapper.toModifiable(p)
@@ -471,10 +471,9 @@ class DirectoryStoreHandler(workerIndex: Int,
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
-                    //crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, f.getUrl)
                     crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 }).getOrElse({
-                    log.error("No Podcast found in Database for Feed with echoId : {}", feedId)
+                    log.error("No Podcast found in Database for Feed (EXO) : {}", feedId)
                 })
             }).getOrElse({
                 log.error("No Feed in Database (EXO) : {}", feedId)
@@ -491,7 +490,6 @@ class DirectoryStoreHandler(workerIndex: Int,
             podcastService.findAll(page, size).foreach(p => {
                 val feeds = feedService.findAllByPodcast(p.getExo)
                 if(feeds.nonEmpty){
-                    // crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, feeds.head.getUrl) // TODO
                     val f = feeds.head
                     crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 } else {
@@ -508,7 +506,6 @@ class DirectoryStoreHandler(workerIndex: Int,
         def task = () => {
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getExo).map{p => {
-                    // crawler ! FetchFeedForUpdateEpisodes(p.getEchoId, f.getUrl) // TODO
                     crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
                 }}.getOrElse({
                     log.error("No Podcast found in Database for Feed (EXO) : {}", f.getExo)
@@ -532,7 +529,7 @@ class DirectoryStoreHandler(workerIndex: Int,
 
                     val e = episodeMapper.toModifiable(episode)
 
-                    // generate a new episode echoId - the generator is (almost) ensuring uniqueness
+                    // generate a new episode exo - the generator is (almost) ensuring uniqueness
                     e.setExo(exoGenerator.getNewExo)
 
                     podcastService.findOneByExo(podcastExo).map(p => {
@@ -541,7 +538,6 @@ class DirectoryStoreHandler(workerIndex: Int,
 
                         // check if the episode has a cover image defined, and set the one of the episode
                         Option(e.getImage).getOrElse({
-                            // indexStore ! IndexStoreUpdateDocItunesImage(episode.getEchoId, p.getItunesImage)
                             e.setImage(p.getImage)
                         })
                     }).getOrElse({
@@ -583,7 +579,6 @@ class DirectoryStoreHandler(workerIndex: Int,
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
                     case Some(link) =>
-                        // crawler ! FetchWebsite(e.getEchoId, link)
                         crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getExo)
                 }

@@ -108,13 +108,13 @@ class CLI(master: ActorRef,
             case "check" :: "podcast" :: Nil           => usage("check podcast")
             case "check" :: "podcast" :: "all" :: Nil  => directoryStore ! CheckAllPodcasts
             case "check" :: "podcast" :: "all" :: _    => usage("check podcast")
-            case "check" :: "podcast" :: echoId :: Nil => directoryStore ! CheckPodcast(echoId)
+            case "check" :: "podcast" :: exo :: Nil    => directoryStore ! CheckPodcast(exo)
             case "check" :: "podcast" :: _ :: _        => usage("check podcast")
 
             case "check" :: "feed" :: Nil              => usage("check feed")
             case "check" :: "feed" :: "all" :: Nil     => directoryStore ! CheckAllFeeds
             case "check" :: "feed" :: "all" :: _       => usage("check feed")
-            case "check" :: "feed" :: echoId :: Nil    => directoryStore ! CheckFeed(echoId)
+            case "check" :: "feed" :: exo :: Nil       => directoryStore ! CheckFeed(exo)
             case "check" :: "feed" :: _ :: _           => usage("check feed")
 
             case "count" :: "podcasts" :: Nil => directoryStore ! DebugPrintCountAllPodcasts
@@ -138,31 +138,31 @@ class CLI(master: ActorRef,
             case "print" :: "database" :: _                 => usage("print database")
             case "print" :: _                               => help()
 
-            case "load" :: Nil                          => help()
-            case "load" :: "feeds" :: Nil               => usage("load feeds")
-            case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
-            case "load" :: "feeds" :: "massive" :: Nil  => loadMassiveFeeds()
-            case "load" :: "feeds" :: _                 => usage("load feeds")
+            case "load" :: Nil                         => help()
+            case "load" :: "feeds" :: Nil              => usage("load feeds")
+            case "load" :: "feeds" :: "test" :: Nil    => loadTestFeeds()
+            case "load" :: "feeds" :: "massive" :: Nil => loadMassiveFeeds()
+            case "load" :: "feeds" :: _                => usage("load feeds")
 
             case "load" :: "fyyd" :: "episodes" :: podcastId :: fyydId :: Nil => crawler ! LoadFyydEpisodes(podcastId, fyydId.toLong)
             case "load" :: "fyyd" :: _                                        => usage("load fyyd")
 
-            case "save" :: Nil                          => help()
-            case "save" :: "feeds" :: Nil               => usage("save feeds")
-            case "save" :: "feeds" :: dest :: Nil       => saveFeeds(dest)
-            case "save" :: "feeds" :: _                 => usage("save feeds")
+            case "save" :: Nil                    => help()
+            case "save" :: "feeds" :: Nil         => usage("save feeds")
+            case "save" :: "feeds" :: dest :: Nil => saveFeeds(dest)
+            case "save" :: "feeds" :: _           => usage("save feeds")
 
-            case "crawl" :: "fyyd" :: Nil           => usage("crawl fyyd")
-            case "crawl" :: "fyyd" :: count :: Nil  => crawler ! CrawlFyyd(count.toInt)
-            case "crawl" :: "fyyd" :: count :: _    => usage("crawl fyyd")
+            case "crawl" :: "fyyd" :: Nil          => usage("crawl fyyd")
+            case "crawl" :: "fyyd" :: count :: Nil => crawler ! CrawlFyyd(count.toInt)
+            case "crawl" :: "fyyd" :: count :: _   => usage("crawl fyyd")
 
-            case "get" :: "podcast" :: Nil           => usage("get podcast")
-            case "get" :: "podcast" :: echoId :: Nil => getAndPrintPodcast(echoId)
-            case "get" :: "podcast" :: echoId :: _   => usage("get podcast")
+            case "get" :: "podcast" :: Nil        => usage("get podcast")
+            case "get" :: "podcast" :: exo :: Nil => getAndPrintPodcast(exo)
+            case "get" :: "podcast" :: exo :: _   => usage("get podcast")
 
             case "get" :: "episode" :: Nil           => usage("get episode")
-            case "get" :: "episode" :: echoId :: Nil => getAndPrintEpisode(echoId)
-            case "get" :: "episode" :: echoId :: _   => usage("get episode")
+            case "get" :: "episode" :: exo :: Nil => getAndPrintEpisode(exo)
+            case "get" :: "episode" :: exo :: _   => usage("get episode")
 
             case _  => help()
         }
@@ -205,22 +205,22 @@ class CLI(master: ActorRef,
         }
     }
 
-    private def getAndPrintPodcast(echoId: String) = {
-        val future = directoryStore ? GetPodcast(echoId)
+    private def getAndPrintPodcast(exo: String) = {
+        val future = directoryStore ? GetPodcast(exo)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case PodcastResult(podcast)  => println(podcast.toString)
-            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with echoId : {}", unknownId)
+            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with EXO : {}", unknownId)
             case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
     }
 
-    private def getAndPrintEpisode(echoId: String) = {
-        val future = directoryStore ? GetEpisode(echoId)
+    private def getAndPrintEpisode(exo: String) = {
+        val future = directoryStore ? GetEpisode(exo)
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
         response match {
             case EpisodeResult(episode)  => println(episode.toString)
-            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with echoId : {}", unknownId)
+            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with EXO : {}", unknownId)
             case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
         }
     }

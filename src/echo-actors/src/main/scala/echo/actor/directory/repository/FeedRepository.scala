@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param
   */
 trait FeedRepository extends JpaRepository[FeedEntity, java.lang.Long] {
 
-    def findOneByExo(echoId: String): FeedEntity
+    def findOneByExo(exo: String): FeedEntity
 
     def findAllByUrl(url: String): java.util.List[FeedEntity]
 
@@ -17,8 +17,8 @@ trait FeedRepository extends JpaRepository[FeedEntity, java.lang.Long] {
     def findAllByPodcast(@Param("podcastExo") podcastExo: String): java.util.List[FeedEntity]
 
     @Query("SELECT DISTINCT feed FROM FeedEntity feed WHERE feed.url = :url AND feed.podcast.exo = :podcastExo")
-    def findOneByUrlAndPodcastEchoId(@Param("url") url: String,
-                                     @Param("podcastExo") podcastExo: String): FeedEntity
+    def findOneByUrlAndPodcastExo(@Param("url") url: String,
+                                  @Param("podcastExo") podcastExo: String): FeedEntity
 
     @Query("SELECT count(feed) FROM FeedEntity feed")
     def countAll(): Long

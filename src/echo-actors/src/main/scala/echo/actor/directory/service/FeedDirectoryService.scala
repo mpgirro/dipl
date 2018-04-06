@@ -79,9 +79,9 @@ class FeedDirectoryService (log: LoggingAdapter,
     }
 
     @Transactional
-    def findOneByUrlAndPodcastEchoId(url: String, podcastExo: String): Option[FeedDTO] = {
+    def findOneByUrlAndPodcastExo(url: String, podcastExo: String): Option[FeedDTO] = {
         log.debug("Request to get all Feeds by URL : {} and Podcast (EXO) : {}", url, podcastExo)
-        val result = feedRepository.findOneByUrlAndPodcastEchoId(url, podcastExo)
+        val result = feedRepository.findOneByUrlAndPodcastExo(url, podcastExo)
         Option(feedMapper.toImmutable(result))
     }
 
