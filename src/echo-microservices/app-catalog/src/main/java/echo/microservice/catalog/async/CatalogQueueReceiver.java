@@ -44,18 +44,22 @@ public class CatalogQueueReceiver {
         exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
         key      = "${echo.amqp.catalog-routingkey}")
     )
-    public void recievedMessage(CatalogJob job) {
-        log.debug("Recieved Message : {}", job);
-        if (job instanceof UpdatePodcastCatalogJob) {
-            final Optional<PodcastDTO> registered = podcastService.update(((UpdatePodcastCatalogJob) job).getPodcast());
+    public void recievedMessage(CatalogJob catalogJob) {
+        log.debug("Recieved Message : {}", catalogJob);
+        if (catalogJob instanceof UpdatePodcastCatalogJob) {
+            final UpdatePodcastCatalogJob job = (UpdatePodcastCatalogJob) catalogJob;
+            log.debug("Recieved UpdatePodcastCatalogJob for EXO : {}", job.getPodcast().getExo());
+            final Optional<PodcastDTO> registered = podcastService.update(job.getPodcast());
             if (registered.isPresent()) {
                 final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(registered.get()));
                 indexQueueSender.produceMsg(indexJob);
             }
-        } else if (job instanceof RegisterEpisodeIfNewJobCatalogJob) {
-            episodeService.register((RegisterEpisodeIfNewJobCatalogJob) job);
+        } else if (catalogJob instanceof RegisterEpisodeIfNewJobCatalogJob) {
+            final RegisterEpisodeIfNewJobCatalogJob job = (RegisterEpisodeIfNewJobCatalogJob) catalogJob;
+            log.debug("Recieved RegisterEpisodeIfNewJobCatalogJob for Podcast EXO : {}", job.getPodcastExo());
+            episodeService.register((RegisterEpisodeIfNewJobCatalogJob) catalogJob);
         } else {
-            throw new RuntimeException("Received unhandled CatalogJob of type : " + job.getClass());
+            throw new RuntimeException("Received unhandled CatalogJob of type : " + catalogJob.getClass());
         }
     }
 

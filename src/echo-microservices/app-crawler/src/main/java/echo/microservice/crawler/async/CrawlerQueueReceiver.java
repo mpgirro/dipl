@@ -30,12 +30,13 @@ public class CrawlerQueueReceiver {
         key      = "${echo.amqp.crawler-routingkey}")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
-        log.debug("Recieved Message : {}", crawlerJob);
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;
+            log.debug("Recieved NewFeedCrawlerJob for Podcast EXO : {}", job.exo());
             crawlerService.downloadFeed(job.exo(), job.url(), true);
         } else if (crawlerJob instanceof UpdateFeedCrawlerJob) {
             final UpdateFeedCrawlerJob job = (UpdateFeedCrawlerJob) crawlerJob;
+            log.debug("Recieved UpdateFeedCrawlerJob for Podcast EXO : {}", job.exo());
             crawlerService.downloadFeed(job.exo(), job.url(), false);
         } else {
             throw new RuntimeException("Received unhandled CrawlerJob of type : " + crawlerJob.getClass());

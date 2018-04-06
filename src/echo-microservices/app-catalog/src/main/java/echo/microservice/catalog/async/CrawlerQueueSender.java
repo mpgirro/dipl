@@ -26,8 +26,8 @@ public class CrawlerQueueSender {
     private String routingKey;
 
     public void produceMsg(CrawlerJob job){
+        //log.debug("Send msg : {}", job);
         amqpTemplate.convertAndSend(exchange, routingKey, job);
-        log.debug("Send msg : {}", job);
     }
 
 }

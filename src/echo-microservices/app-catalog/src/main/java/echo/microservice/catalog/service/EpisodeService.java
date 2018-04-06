@@ -56,7 +56,7 @@ public class EpisodeService {
 
     @Transactional
     public Optional<EpisodeDTO> save(EpisodeDTO episode) {
-        log.debug("Request to save Episode : {}", episode);
+        log.debug("Request to save Episode (EXO) : {}", episode.getExo());
         return Optional.of(episode)
             .map(episodeMapper::toModifiable)
             .map(episodeMapper::toEntity)
@@ -129,7 +129,7 @@ public class EpisodeService {
 
     @Transactional
     public Optional<EpisodeDTO> update(EpisodeDTO episode) {
-        log.debug("Request to update Episode : {}", episode);
+        log.debug("Request to update Episode (EXO) : {}", episode.getExo());
         return findOneByExo(episode.getExo())
             .map(episodeMapper::toModifiable)
             .map(e -> {

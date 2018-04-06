@@ -29,9 +29,9 @@ public class IndexQueueReceiver {
         key      = "${echo.amqp.index-routingkey}")
     )
     public void recievedMessage(IndexJob indexJob) {
-        log.debug("Recieved Message : {}", indexJob);
         if (indexJob instanceof AddOrUpdateDocIndexJob) {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
+            log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());
             indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
         } else {
             throw new RuntimeException("Received unhandled IndexJob of type : " + indexJob.getClass());

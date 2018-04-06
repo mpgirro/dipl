@@ -42,7 +42,7 @@ public class PodcastService {
 
     @Transactional
     public Optional<PodcastDTO> save(PodcastDTO podcastDTO) {
-        log.debug("Request to save Podcast : {}", podcastDTO);
+        log.debug("Request to save Podcast (EXO) : {}", podcastDTO.getExo());
         return Optional.of(podcastDTO)
             .map(podcastMapper::toModifiable)
             .map(podcastMapper::toEntity)
@@ -52,7 +52,7 @@ public class PodcastService {
 
     @Transactional
     public Optional<PodcastDTO> update(PodcastDTO podcastDTO) {
-        log.debug("Request to update Podcast : {}", podcastDTO);
+        log.debug("Request to update Podcast (EXO) : {}", podcastDTO.getExo());
         return findOneByExo(podcastDTO.getExo())
             .map(podcastMapper::toModifiable)
             .map(p -> {

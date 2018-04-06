@@ -50,7 +50,7 @@ public class EpisodeResource {
     @PostMapping("/episode/register")
     @ResponseStatus(HttpStatus.OK)
     public void registerEpisode(@RequestBody RegisterEpisodeIfNewJobCatalogJob job) throws URISyntaxException {
-        log.debug("REST request to register episode by podcast (EXO) : {}", job.getPodcastExo());
+        log.debug("REST request to register episode by Podcast (EXO) : {}", job.getPodcastExo());
         episodeService.register(job);
     }
 

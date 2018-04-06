@@ -26,8 +26,8 @@ public class ParserQueueSender {
     private String routingKey;
 
     public void produceMsg(ParserJob job){
+        //log.debug("Send msg : {}", job);
         amqpTemplate.convertAndSend(exchange, routingKey, job);
-        log.debug("Send msg : {}", job);
     }
 
 }

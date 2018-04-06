@@ -53,7 +53,7 @@ public class FeedService {
 
     @Transactional
     public Optional<FeedDTO> save(FeedDTO feedDTO) {
-        log.debug("Request to save Feed : {}", feedDTO);
+        log.debug("Request to save Feed (EXO) : {}", feedDTO.getExo());
         return Optional.of(feedDTO)
             .map(feedMapper::toModifiable)
             .map(feedMapper::toEntity)
@@ -63,7 +63,7 @@ public class FeedService {
 
     @Transactional
     public Optional<FeedDTO> update(FeedDTO feed) {
-        log.debug("Request to update Feed : {}", feed);
+        log.debug("Request to update Feed (EXO) : {}", feed.getExo());
         return findOneByExo(feed.getExo())
             .map(feedMapper::toModifiable)
             .map(f -> {
@@ -132,7 +132,7 @@ public class FeedService {
 
     @Transactional
     public void propose(String feedUrl) {
-        log.debug("Request to propose Feed by URL : {}", feedUrl);
+        log.info("Request to propose Feed by URL : {}", feedUrl);
         if (findAllByUrl(feedUrl).isEmpty()) {
 
             // TODO for now we always create a podcast for an unknown feed, but we will have to check if the feed is an alternate to a known podcast

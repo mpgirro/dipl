@@ -26,8 +26,8 @@ public class IndexQueueSender {
     private String routingKey;
 
     public void produceMsg(IndexJob job){
+        //log.debug("Send msg : {}", job);
         amqpTemplate.convertAndSend(exchange, routingKey, job);
-        log.debug("Send msg : {}", job);
     }
 
 }
