@@ -1,6 +1,7 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.domain.dto.*;
+import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.EpisodeService;
 import echo.microservice.catalog.service.FeedService;
 import echo.microservice.catalog.service.PodcastService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -36,6 +38,8 @@ public class PodcastResource {
     @Autowired
     private FeedService feedService;
 
+    private IdMapper idMapper = IdMapper.INSTANCE;
+
     @RequestMapping(
         value    = "/podcast",
         method   = RequestMethod.POST,
@@ -46,8 +50,9 @@ public class PodcastResource {
         log.debug("REST request to save Podcast : {}", podcast);
         final Optional<PodcastDTO> created = podcastService.save(podcast);
         return created
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(p -> new ResponseEntity<>(
+                (PodcastDTO) p,
                 HttpStatus.CREATED))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -62,8 +67,9 @@ public class PodcastResource {
         log.debug("REST request to update Podcast : {}", podcast);
         final Optional<PodcastDTO> updated = podcastService.update(podcast);
         return updated
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(p -> new ResponseEntity<>(
+                (PodcastDTO) p,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -77,8 +83,9 @@ public class PodcastResource {
         log.info("REST request to get Podcast (EXO) : {}", exo);
         final Optional<PodcastDTO> podcast = podcastService.findOneByExo(exo);
         return podcast
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(p -> new ResponseEntity<>(
+                (PodcastDTO) p,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -90,7 +97,9 @@ public class PodcastResource {
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getEpisodesByPodcast(@PathVariable String exo) {
         log.info("REST request to get Episodes by Podcast (EXO) : {}", exo);
-        final List<EpisodeDTO> episodes = episodeService.findAllByPodcast(exo);
+        final List<EpisodeDTO> episodes = episodeService.findAllByPodcast(exo).stream()
+            .map(idMapper::clearImmutable)
+            .collect(Collectors.toList());
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(episodes),
             HttpStatus.OK);
@@ -103,7 +112,9 @@ public class PodcastResource {
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getFeedsByPodcast(@PathVariable String exo) {
         log.info("REST request to get Feeds by Podcast (EXO) : {}", exo);
-        final List<FeedDTO> feeds = feedService.findAllByPodcast(exo);
+        final List<FeedDTO> feeds = feedService.findAllByPodcast(exo).stream()
+            .map(idMapper::clearImmutable)
+            .collect(Collectors.toList());
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(feeds),
             HttpStatus.OK);
@@ -118,7 +129,9 @@ public class PodcastResource {
     public ResponseEntity<ArrayWrapperDTO> getAll(@RequestParam("page") Integer page,
                                                   @RequestParam("size") Integer size) {
         log.info("REST request to get all Podcasts by page/size : ({},{})", page, size);
-        final List<PodcastDTO> podcasts = podcastService.findAll(page, size);
+        final List<PodcastDTO> podcasts = podcastService.findAll(page, size).stream()
+            .map(idMapper::clearImmutable)
+            .collect(Collectors.toList());
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts"); // TODO
         final HttpHeaders headers = new HttpHeaders();
         return new ResponseEntity<>(
@@ -136,7 +149,9 @@ public class PodcastResource {
     public ResponseEntity<ArrayWrapperDTO> getAllAsTeasers(@RequestParam("page") Integer page,
                                                            @RequestParam("size") Integer size) {
         log.info("REST request to get all Podcasts as teaser by page/size : ({},{})", page, size);
-        final List<PodcastDTO> teasers = podcastService.findAllAsTeaser(page, size);
+        final List<PodcastDTO> teasers = podcastService.findAllAsTeaser(page, size).stream()
+            .map(idMapper::clearImmutable)
+            .collect(Collectors.toList());
         //final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/catalog/podcasts/teasers"); // TODO
         final HttpHeaders headers = new HttpHeaders();
         return new ResponseEntity<>(

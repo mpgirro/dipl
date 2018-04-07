@@ -5,6 +5,7 @@ import echo.core.domain.dto.ArrayWrapperDTO;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.ImmutableArrayWrapperDTO;
+import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.ChapterService;
 import echo.microservice.catalog.service.EpisodeService;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -35,14 +37,17 @@ public class EpisodeResource {
     @Autowired
     private ChapterService chapterService;
 
+    private IdMapper idMapper = IdMapper.INSTANCE;
+
     @PostMapping("/episode")
     @Transactional
     public ResponseEntity<EpisodeDTO> createEpisode(@RequestBody EpisodeDTO episode) throws URISyntaxException {
         log.debug("REST request to save Episode : {}", episode);
         final Optional<EpisodeDTO> created = episodeService.save(episode);
         return created
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(e -> new ResponseEntity<>(
+                (EpisodeDTO) e,
                 HttpStatus.CREATED))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -60,8 +65,9 @@ public class EpisodeResource {
         log.debug("REST request to update Episode : {}", episode);
         final Optional<EpisodeDTO> updated = episodeService.update(episode);
         return updated
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(e -> new ResponseEntity<>(
+                (EpisodeDTO) e,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -75,8 +81,9 @@ public class EpisodeResource {
         log.debug("REST request to get Episode (EXO) : {}", exo);
         final Optional<EpisodeDTO> episode = episodeService.findOneByExo(exo);
         return episode
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(e -> new ResponseEntity<>(
+                (EpisodeDTO) e,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -88,7 +95,9 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
-        final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo);
+        final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo).stream()
+            .map(idMapper::clearImmutable)
+            .collect(Collectors.toList());
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(chapters),
             HttpStatus.OK);

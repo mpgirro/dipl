@@ -1,6 +1,8 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.domain.dto.FeedDTO;
+import echo.core.mapper.IdMapper;
+import echo.core.parse.rss.FeedParser;
 import echo.microservice.catalog.service.FeedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +28,17 @@ public class FeedResource {
     @Autowired
     private FeedService feedService;
 
+    private IdMapper idMapper = IdMapper.INSTANCE;
+
     @PostMapping("/feed")
     @Transactional
     public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feed) throws URISyntaxException {
         log.debug("REST request to save Feed : {}", feed);
         final Optional<FeedDTO> created = feedService.save(feed);
         return created
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(f -> new ResponseEntity<>(
+                (FeedDTO) f,
                 HttpStatus.CREATED))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -55,8 +60,9 @@ public class FeedResource {
         log.debug("REST request to update Feed : {}", feed);
         final Optional<FeedDTO> updated = feedService.update(feed);
         return updated
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(f -> new ResponseEntity<>(
+                (FeedDTO) f,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -70,8 +76,9 @@ public class FeedResource {
         log.debug("REST request to get Feed (EXO) : {}", exo);
         final Optional<FeedDTO> feed = feedService.findOneByExo(exo);
         return feed
-            .map(result -> new ResponseEntity<>(
-                result,
+            .map(idMapper::clearImmutable)
+            .map(f -> new ResponseEntity<>(
+                (FeedDTO) f,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
