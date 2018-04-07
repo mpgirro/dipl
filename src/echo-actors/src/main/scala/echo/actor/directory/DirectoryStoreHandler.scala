@@ -58,7 +58,7 @@ class DirectoryStoreHandler(workerIndex: Int,
     private val feedMapper = FeedMapper.INSTANCE
     private val chapterMapper = ChapterMapper.INSTANCE
     private val indexMapper = IndexMapper.INSTANCE
-    private val nullMapper = NullMapper.INSTANCE
+    private val idMapper = IdMapper.INSTANCE
 
     override def postRestart(cause: Throwable): Unit = {
         log.info("{} has been restarted or resumed", self.path.name)
@@ -182,8 +182,8 @@ class DirectoryStoreHandler(workerIndex: Int,
                     feedService.save(feed).map(f => {
 
                         broker ! AddPodcastAndFeedIfUnknown(
-                            nullMapper.clearImmutable(p),
-                            nullMapper.clearImmutable(f))
+                            idMapper.clearImmutable(p),
+                            idMapper.clearImmutable(f))
 
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
@@ -367,7 +367,7 @@ class DirectoryStoreHandler(workerIndex: Int,
         doInTransaction(task, List(podcastService))
             .asInstanceOf[Option[PodcastDTO]]
             .map(p => {
-                sender ! PodcastResult(nullMapper.clearImmutable(p))
+                sender ! PodcastResult(idMapper.clearImmutable(p))
             }).getOrElse({
                 sender ! NothingFound(podcastExo)
             })
@@ -380,7 +380,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             podcastService.findAll(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => idMapper.clearImmutable(p)))
     }
 
     private def onGetAllPodcastsRegistrationComplete(page: Int, size: Int): Unit = {
@@ -389,7 +389,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             podcastService.findAllRegistrationCompleteAsTeaser(page, size)
         }
         val podcasts = doInTransaction(task, List(podcastService)).asInstanceOf[List[PodcastDTO]]
-        sender ! AllPodcastsResult(podcasts.map(p => nullMapper.clearImmutable(p)))
+        sender ! AllPodcastsResult(podcasts.map(p => idMapper.clearImmutable(p)))
     }
 
     private def onGetAllFeeds(page: Int, size: Int): Unit = {
@@ -398,7 +398,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             feedService.findAll(page, size)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! AllFeedsResult(feeds.map(f => nullMapper.clearImmutable(f)))
+        sender ! AllFeedsResult(feeds.map(f => idMapper.clearImmutable(f)))
     }
 
     private def onGetEpisode(episodeExo: String): Unit= {
@@ -414,7 +414,7 @@ class DirectoryStoreHandler(workerIndex: Int,
         doInTransaction(task, List(episodeService))
             .asInstanceOf[Option[EpisodeDTO]]
             .map(e => {
-                sender ! EpisodeResult(nullMapper.clearImmutable(e))
+                sender ! EpisodeResult(idMapper.clearImmutable(e))
             }).getOrElse({
                 sender ! NothingFound(episodeExo)
             })
@@ -427,7 +427,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             episodeService.findAllByPodcastAsTeaser(podcastId)
         }
         val episodes = doInTransaction(task, List(episodeService)).asInstanceOf[List[EpisodeDTO]]
-        sender ! EpisodesByPodcastResult(episodes.map(e => nullMapper.clearImmutable(e)))
+        sender ! EpisodesByPodcastResult(episodes.map(e => idMapper.clearImmutable(e)))
     }
 
     private def onGetFeedsByPodcast(podcastId: String): Unit = {
@@ -436,7 +436,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             feedService.findAllByPodcast(podcastId)
         }
         val feeds = doInTransaction(task, List(feedService)).asInstanceOf[List[FeedDTO]]
-        sender ! FeedsByPodcastResult(feeds.map(f => nullMapper.clearImmutable(f)))
+        sender ! FeedsByPodcastResult(feeds.map(f => idMapper.clearImmutable(f)))
     }
 
     private def onGetChaptersByEpisode(episodeId: String): Unit = {
@@ -446,7 +446,7 @@ class DirectoryStoreHandler(workerIndex: Int,
             chapterService.findAllByEpisode(episodeId)
         }
         val chapters = doInTransaction(task, List(chapterService)).asInstanceOf[List[ChapterDTO]]
-        sender ! ChaptersByEpisodeResult(chapters.map(c => nullMapper.clearImmutable(c)))
+        sender ! ChaptersByEpisodeResult(chapters.map(c => idMapper.clearImmutable(c)))
     }
 
     private def onCheckPodcast(podcastId: String): Unit = {
@@ -552,11 +552,11 @@ class DirectoryStoreHandler(workerIndex: Int,
                     result
                         .map(r => episodeMapper.toImmutable(r)
                             .withPodcastTitle(e.getPodcastTitle))
-                        .map(r => nullMapper.clearImmutable(r)
+                        .map(r => idMapper.clearImmutable(r)
                             .withChapters(Option(e.getChapters)
                                 .map(_
                                     .asScala
-                                    .map(c => nullMapper.clearImmutable(c))
+                                    .map(c => idMapper.clearImmutable(c))
                                     .asJava)
                                 .orNull))
             }
@@ -574,7 +574,7 @@ class DirectoryStoreHandler(workerIndex: Int,
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                broker ! UpdateEpisode(podcastExo, nullMapper.clearImmutable(e))
+                broker ! UpdateEpisode(podcastExo, idMapper.clearImmutable(e))
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
