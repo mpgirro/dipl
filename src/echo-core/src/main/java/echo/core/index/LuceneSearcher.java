@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 /**
  * @author Maximilian Irro
  */
@@ -80,6 +82,10 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
 
         if ( s < 1 ) {
             throw new SearchException("Requested window size (s) required to be >1, got: " + s);
+        }
+
+        if (isNullOrEmpty(q)) {
+            throw new SearchException("Query must not be null or empty");
         }
 
         // TODO obsolete? I can go beyond that now, can't I
