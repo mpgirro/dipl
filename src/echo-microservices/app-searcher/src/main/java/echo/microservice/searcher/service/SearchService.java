@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 /**
  * @author Maximilian Irro
  */
@@ -35,6 +37,7 @@ public class SearchService {
         final int p = page.orElse(DEFAULT_PAGE);
         final int s = size.orElse(DEFAULT_SIZE);
 
+        if (isNullOrEmpty(query)) return ResultWrapperDTO.empty();
         if (p < 0) return ResultWrapperDTO.empty();
         if (s < 0) return ResultWrapperDTO.empty();
 
