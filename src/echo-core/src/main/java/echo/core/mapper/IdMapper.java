@@ -6,7 +6,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This mapper cleans all database IDs by setting them to null. Database IDs are only
@@ -19,9 +21,9 @@ import java.util.Optional;
  * @author Maximilian Irro
  */
 @Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface NullMapper {
+public interface IdMapper {
 
-    NullMapper INSTANCE = Mappers.getMapper( NullMapper.class );
+    IdMapper INSTANCE = Mappers.getMapper( IdMapper.class );
 
     @Mapping(target = "id", ignore = true)
     ModifiablePodcastDTO clearModifiable(PodcastDTO podcast);
