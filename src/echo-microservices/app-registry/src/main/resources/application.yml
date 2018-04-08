@@ -1,0 +1,19 @@
+
+spring:
+    application:
+        name: echo-registry
+
+server:
+    port: ${ECHO_REGISTRY_PORT:3036}
+
+management:
+    security:
+        enabled: false
+eureka:
+    instance:
+        hostname: echo-registry
+    client:
+        registerWithEureka: false
+        fetchRegistry: false
+    server:
+        enableSelfPreservation: false
