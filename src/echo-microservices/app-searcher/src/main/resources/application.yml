@@ -35,3 +35,5 @@ hystrix:
 ribbon:
     eureka:
         enabled: false
+    echo-index:
+        listOfServers: echo-index,localhost:3032
