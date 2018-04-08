@@ -205,7 +205,7 @@ class CLI(master: ActorRef,
 
     private def getAndPrintPodcast(exo: String) = {
         val future = directoryStore ? GetPodcast(exo)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
         response match {
             case PodcastResult(podcast)  => println(podcast.toString)
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with EXO : {}", unknownId)
@@ -215,7 +215,7 @@ class CLI(master: ActorRef,
 
     private def getAndPrintEpisode(exo: String) = {
         val future = directoryStore ? GetEpisode(exo)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
         response match {
             case EpisodeResult(episode)  => println(episode.toString)
             case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with EXO : {}", unknownId)
@@ -241,7 +241,7 @@ class CLI(master: ActorRef,
         log.debug("Received SaveFeeds : {}", dest)
 
         val future = directoryStore ? GetAllFeeds(0, 10000)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryResult]
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
         response match {
             case AllFeedsResult(feeds)  =>
                 import java.io._

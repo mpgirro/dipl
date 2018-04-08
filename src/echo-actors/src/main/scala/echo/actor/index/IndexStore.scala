@@ -2,7 +2,6 @@ package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeAck}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol._
 import echo.core.domain.dto.ImmutableIndexDocDTO
@@ -10,9 +9,9 @@ import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
 
 import scala.collection.mutable
+import scala.compat.java8.OptionConverters._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.compat.java8.OptionConverters._
 import scala.language.postfixOps
 
 /**
@@ -36,10 +35,7 @@ class IndexStore (indexPath: String,
     private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
     */
 
-    private val eventStreamName = Option(CONFIG.getString("echo.index.event-stream")).getOrElse("index-event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
-    mediator ! Subscribe(eventStreamName, self) // subscribe to the topic (= event stream)
-    mediator ! Put(self) // register to the path
 
     private val indexCommitter: IndexCommitter = new LuceneCommitter(indexPath, createIndex) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
@@ -77,9 +73,6 @@ class IndexStore (indexPath: String,
     }
 
     override def receive: Receive = {
-
-        case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
-            log.info("successfully subscribed to : {}", eventStreamName)
 
         case CommitIndex =>
             commitIndexIfChanged()

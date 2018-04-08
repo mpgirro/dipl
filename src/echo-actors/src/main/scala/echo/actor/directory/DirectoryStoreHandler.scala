@@ -41,13 +41,13 @@ class DirectoryStoreHandler(workerIndex: Int,
     private val CONFIG = ConfigFactory.load()
     private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
 
+    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
     private val exoGenerator: ExoGenerator = new ExoGenerator(workerIndex)
 
     private var crawler: ActorRef = _
-    private var broker: ActorRef = _
 
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -86,10 +86,6 @@ class DirectoryStoreHandler(workerIndex: Int,
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            broker = ref
 
         case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
 
@@ -151,6 +147,10 @@ class DirectoryStoreHandler(workerIndex: Int,
 
     }
 
+    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
+        mediator ! Publish(directoryEventStream, event)
+    }
+
     private def emitIndexEvent(event: IndexEvent): Unit = {
         mediator ! Publish(indexEventStream, event)
     }
@@ -185,9 +185,10 @@ class DirectoryStoreHandler(workerIndex: Int,
                         .create()
                     feedService.save(feed).map(f => {
 
-                        broker ! AddPodcastAndFeedIfUnknown(
+                        val directoryEvent = AddPodcastAndFeedIfUnknown(
                             idMapper.clearImmutable(p),
                             idMapper.clearImmutable(f))
+                        emitDirectoryEvent(directoryEvent)
 
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
@@ -579,7 +580,8 @@ class DirectoryStoreHandler(workerIndex: Int,
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                broker ! UpdateEpisode(podcastExo, idMapper.clearImmutable(e))
+                val directoryEvent = UpdateEpisode(podcastExo, idMapper.clearImmutable(e))
+                emitDirectoryEvent(directoryEvent)
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {

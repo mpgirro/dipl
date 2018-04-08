@@ -5,7 +5,7 @@ import java.sql.{Connection, DriverManager}
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor}
+import echo.actor.ActorProtocol.ActorRefCrawlerActor
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
@@ -32,7 +32,6 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
     private var currentWorkerIndex = 1
 
     private var crawler: ActorRef = _
-    private var broker: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -52,14 +51,10 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
+
         case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            router.routees.foreach(r => r.send(msg, sender()))
-
-        case msg @ ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            broker = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
         case Terminated(corpse) =>
@@ -99,7 +94,6 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
-        Option(broker).foreach(b => directoryStore ! ActorRefDirectoryStoreActor(b))
 
         directoryStore
     }

@@ -2,9 +2,11 @@ package echo.actor.index
 
 import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeAck}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.index.IndexProtocol.{IndexEvent, IndexQuery}
+import echo.actor.index.IndexProtocol.{IndexCommand, IndexEvent, IndexQuery}
 import echo.core.exception.SearchException
 
 import scala.concurrent.duration._
@@ -26,13 +28,18 @@ class IndexBroker extends Actor with ActorLogging {
     private val INDEX_PATHs = Array("/Users/max/volumes/echo/index_1", "/Users/max/volumes/echo/index_2") // TODO I'll have to thing about a better solution in a distributed context
     private val CREATE_INDEX: Boolean = Option(CONFIG.getBoolean("echo.index.create-index")).getOrElse(false)
 
+    private val eventStreamName = Option(CONFIG.getString("echo.index.event-stream")).getOrElse("index-event-stream")
+    private val mediator = DistributedPubSub(context.system).mediator
+    mediator ! Subscribe(eventStreamName, self) // subscribe to the topic (= event stream)
+    mediator ! Put(self) // register to the path
+
     /*
      * We define two separate routings, based on the Command–query separation principle
      * - Command messages (create/update/delete) are PubSub sent to all stores
      * - Query messages (read) are sent to one store
      */
-    private var commandRouter: Router = _ ;
-    private var queryRouter: Router = _ ;
+    private var broadcastRouter: Router = _ ;
+    private var roundRobinRouter: Router = _ ;
     {
         // TODO 1 to List(STORE_COUNT, INDEX_PATHs.length).min
         val routees: Vector[ActorRefRoutee] = (1 to List(STORE_COUNT, INDEX_PATHs.length).min)
@@ -44,8 +51,8 @@ class IndexBroker extends Actor with ActorLogging {
             })
             .to[Vector]
 
-        commandRouter = Router(BroadcastRoutingLogic(), routees)
-        queryRouter = Router(RoundRobinRoutingLogic(), routees)
+        broadcastRouter = Router(BroadcastRoutingLogic(), routees)
+        roundRobinRouter = Router(RoundRobinRoutingLogic(), routees)
     }
 
     // TODO is this working when running in a cluster setup?
@@ -57,13 +64,20 @@ class IndexBroker extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case command: IndexEvent =>
+        case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
+            log.info("successfully subscribed to : {}", eventStreamName)
+
+        case command: IndexCommand =>
             log.debug("Routing command: {}", command.getClass)
-            commandRouter.route(command, sender())
+            roundRobinRouter.route(command, sender())
+
+        case event: IndexEvent =>
+            log.debug("Routing event: {}", event.getClass)
+            broadcastRouter.route(event, sender())
 
         case query: IndexQuery =>
             log.debug("Routing query : {}", query.getClass)
-            queryRouter.route(query, sender())
+            roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
             log.warning(s"A ${self.path} store died : {}", corpse.path.name)
@@ -71,7 +85,7 @@ class IndexBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            commandRouter.route(message, sender())
+            broadcastRouter.route(message, sender())
 
     }
 
@@ -84,9 +98,9 @@ class IndexBroker extends Actor with ActorLogging {
     }
 
     private def removeStore(routee: ActorRef): Unit = {
-        commandRouter = commandRouter.removeRoutee(routee)
-        queryRouter = queryRouter.removeRoutee(routee)
-        if (commandRouter.routees.isEmpty || queryRouter.routees.isEmpty) {
+        broadcastRouter = broadcastRouter.removeRoutee(routee)
+        roundRobinRouter = roundRobinRouter.removeRoutee(routee)
+        if (broadcastRouter.routees.isEmpty || roundRobinRouter.routees.isEmpty) {
             log.error("Broker shutting down due to no more stores available")
             context.stop(self)
         }

@@ -9,11 +9,11 @@ import javax.imageio.ImageIO
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Publish
+import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import com.mortennobel.imagescaling.ResampleOp
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
+import echo.actor.directory.DirectoryProtocol._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
@@ -46,10 +46,11 @@ class ParserWorker extends Actor with ActorLogging {
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
+    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
-    private var directoryStore: ActorRef = _
+    //private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
     private var currFeedUrl = ""
@@ -60,7 +61,9 @@ class ParserWorker extends Actor with ActorLogging {
         cause match {
             case e: FeedParsingException =>
                 log.error("FeedParsingException occured while processing feed : {}", currFeedUrl)
-                directoryStore ! FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                //directoryStore ! FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                val directoryEvent = FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                emitDirectoryEvent(directoryEvent)
                 currPodcastExo = ""
                 currFeedUrl = ""
             case e: java.lang.StackOverflowError =>
@@ -76,10 +79,6 @@ class ParserWorker extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref
 
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
@@ -126,6 +125,14 @@ class ParserWorker extends Actor with ActorLogging {
 
     }
 
+    private def sendDirectoryCommand(command: DirectoryCommand): Unit = {
+        mediator ! Send("/user/node/directory", command, localAffinity = true)
+    }
+
+    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
+        mediator ! Publish(directoryEventStream, event)
+    }
+
     private def emitIndexEvent(event: IndexEvent): Unit = {
         mediator ! Publish(indexEventStream, event)
     }
@@ -165,7 +172,8 @@ class ParserWorker extends Actor with ActorLogging {
                 }
 
                 // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                directoryStore ! UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
+                val directoryEvent = UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
+                emitDirectoryEvent(directoryEvent)
 
                 // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                 Option(parser.getEpisodes) match {
@@ -195,7 +203,8 @@ class ParserWorker extends Actor with ActorLogging {
         })
         */
 
-        directoryStore ! RegisterEpisodeIfNew(podcastExo, e.toImmutable)
+        val directoryCommand = RegisterEpisodeIfNew(podcastExo, e.toImmutable)
+        sendDirectoryCommand(directoryCommand)
     }
 
     private def base64Image(imageUrl: String): String = {

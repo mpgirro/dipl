@@ -4,11 +4,11 @@ import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Publish
+import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByExo}
+import echo.actor.directory.DirectoryProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
@@ -48,11 +48,11 @@ class CrawlerWorker extends Actor with ActorLogging {
     private implicit val actorSystem: ActorSystem = context.system
     private implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
 
+    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
     private var parser: ActorRef = _
-    private var directoryStore: ActorRef = _
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
@@ -92,10 +92,6 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
 
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref
-
         case DownloadWithHeadCheck(exo, url, job) =>
 
             this.currUrl = url
@@ -127,6 +123,14 @@ class CrawlerWorker extends Actor with ActorLogging {
 
     }
 
+    private def sendDirectoryCommand(command: DirectoryCommand): Unit = {
+        mediator ! Send("/user/node/directory", command, localAffinity = true)
+    }
+
+    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
+        mediator ! Publish(directoryEventStream, event)
+    }
+
     private def onCrawlFyyd(count: Int) = {
         log.debug("Received CrawlFyyd({})", count)
 
@@ -137,7 +141,8 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         val it = feeds.iterator()
         while (it.hasNext) {
-            directoryStore ! ProposeNewFeed(it.next())
+            val directoryCommand = ProposeNewFeed(it.next())
+            sendDirectoryCommand(directoryCommand)
         }
     }
 
@@ -156,7 +161,8 @@ class CrawlerWorker extends Actor with ActorLogging {
         job match {
             case WebsiteFetchJob() => // do nothing...
             case _ =>
-                directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                emitDirectoryEvent(directoryEvent)
         }
     }
 
@@ -180,7 +186,9 @@ class CrawlerWorker extends Actor with ActorLogging {
                             // if the link in the feed is redirected (which is often the case due
                             // to some feed analytic tools, we set our records to the new location
                             if (!url.equals(href)) {
-                                directoryStore ! UpdateLinkByExo(exo, href)
+                                //directoryStore ! UpdateLinkByExo(exo, href)
+                                val directoryEvent = UpdateLinkByExo(exo, href)
+                                emitDirectoryEvent(directoryEvent)
 
                                 val indexEvent = UpdateDocLinkIndexEvent(exo, href)
                                 emitIndexEvent(indexEvent)
@@ -188,13 +196,15 @@ class CrawlerWorker extends Actor with ActorLogging {
 
                             // we always download websites, because we only do it once anyway
                             self ! DownloadContent(exo, href, job, encoding) // TODO
-                        //fetchContent(exo, href, job, encoding)
+                            //fetchContent(exo, href, job, encoding)
 
                         case _ =>
                             // if the feed moved to a new URL, we will inform the directory, so
                             // it will use the new location starting with the next update cycle
                             if (!url.equals(href)) {
-                                directoryStore ! UpdateFeedUrl(url, href)
+                                //directoryStore ! UpdateFeedUrl(url, href)
+                                val directoryEvent = UpdateFeedUrl(url, href)
+                                emitDirectoryEvent(directoryEvent)
                             }
 
                             /*
@@ -203,7 +213,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                              * determine weither the feed changed and I really need to redownload
                              */
                             self ! DownloadContent(exo, href, job, encoding) // TODO
-                        //fetchContent(exo, href, job, encoding)
+                            //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
                     log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")
@@ -226,11 +236,13 @@ class CrawlerWorker extends Actor with ActorLogging {
             job match {
                 case NewPodcastFetchJob() =>
                     parser ! ParseNewPodcastData(url, exo, data)
-                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    emitDirectoryEvent(directoryEvent)
 
                 case UpdateEpisodesFetchJob(etag, lastMod) =>
                     parser ! ParseUpdateEpisodeData(url, exo, data)
-                    directoryStore ! FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    emitDirectoryEvent(directoryEvent)
 
                 case WebsiteFetchJob() =>
                     parser ! ParseWebsiteData(exo, data)
