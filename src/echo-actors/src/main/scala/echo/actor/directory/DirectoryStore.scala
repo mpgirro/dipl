@@ -5,11 +5,11 @@ import java.sql.{Connection, DriverManager}
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor}
 import liquibase.database.jvm.JdbcConnection
-import liquibase.{Contexts, LabelExpression, Liquibase}
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
+import liquibase.{Contexts, LabelExpression, Liquibase}
 
 /**
   * @author Maximilian Irro
@@ -32,7 +32,6 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
     private var currentWorkerIndex = 1
 
     private var crawler: ActorRef = _
-    private var indexStore: ActorRef = _
     private var broker: ActorRef = _
 
     private var router: Router = {
@@ -56,11 +55,6 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
         case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            router.routees.foreach(r => r.send(msg, sender()))
-
-        case msg @ ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
         case msg @ ActorRefDirectoryStoreActor(ref) =>
@@ -105,7 +99,6 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
-        Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
         Option(broker).foreach(b => directoryStore ! ActorRefDirectoryStoreActor(b))
 
         directoryStore

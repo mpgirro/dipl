@@ -11,7 +11,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
-import echo.actor.index.IndexProtocol.AddDocIndexEvent
+import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent}
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
@@ -47,7 +47,6 @@ class DirectoryStoreHandler(workerIndex: Int,
     private val exoGenerator: ExoGenerator = new ExoGenerator(workerIndex)
 
     private var crawler: ActorRef = _
-    private var indexStore: ActorRef = _
     private var broker: ActorRef = _
 
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
@@ -87,10 +86,6 @@ class DirectoryStoreHandler(workerIndex: Int,
         case ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
 
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
@@ -154,6 +149,10 @@ class DirectoryStoreHandler(workerIndex: Int,
 
         case DebugPrintCountAllFeeds => debugPrintCountAllFeeds()
 
+    }
+
+    private def emitIndexEvent(event: IndexEvent): Unit = {
+        mediator ! Publish(indexEventStream, event)
     }
 
     private def proposeFeed(url: String): Unit = {
@@ -574,9 +573,8 @@ class DirectoryStoreHandler(workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastExo, e.getExo)
 
-                //indexStore ! AddDocIndexEvent(indexMapper.toImmutable(e))
                 val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e))
-                mediator ! Publish(indexEventStream, indexEvent)
+                emitIndexEvent(indexEvent)
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a

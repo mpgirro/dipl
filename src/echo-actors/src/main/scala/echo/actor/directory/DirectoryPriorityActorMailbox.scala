@@ -13,7 +13,6 @@ class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Conf
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
         case ActorRefCrawlerActor(_)    => 0
-        case ActorRefIndexStoreActor(_) => 0
         case DebugPrintAllPodcasts      => 0
         case DebugPrintAllEpisodes      => 0
         case DebugPrintAllFeeds         => 0

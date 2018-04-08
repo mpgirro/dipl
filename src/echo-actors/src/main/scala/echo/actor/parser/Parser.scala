@@ -4,8 +4,8 @@ import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
-import echo.core.exception.{FeedParsingException, SearchException}
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor}
+import echo.core.exception.FeedParsingException
 
 import scala.concurrent.duration._
 
@@ -27,7 +27,6 @@ class Parser extends Actor with ActorLogging {
 
     private var workerIndex = 1
 
-    private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
@@ -51,11 +50,6 @@ class Parser extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
-            router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
@@ -82,7 +76,6 @@ class Parser extends Actor with ActorLogging {
         workerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
-        Option(indexStore).foreach(i => parser ! ActorRefIndexStoreActor(i) )
         Option(directoryStore).foreach(d => parser ! ActorRefDirectoryStoreActor(d))
         Option(crawler).foreach(c => parser ! ActorRefCrawlerActor(c))
 

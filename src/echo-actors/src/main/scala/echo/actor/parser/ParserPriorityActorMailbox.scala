@@ -12,7 +12,6 @@ import echo.actor.ActorProtocol._
 class ParserPriorityActorMailbox(settings: ActorSystem.Settings, config: Config) extends UnboundedPriorityMailbox(
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
-        case ActorRefIndexStoreActor(_)     => 0
         case ActorRefDirectoryStoreActor(_) => 0
         case ActorRefCrawlerActor(_)        => 0
         case ParseUpdateEpisodeData(_,_,_)  => 1

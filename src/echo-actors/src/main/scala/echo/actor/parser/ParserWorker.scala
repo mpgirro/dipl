@@ -14,7 +14,7 @@ import com.mortennobel.imagescaling.ResampleOp
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, RegisterEpisodeIfNew, UpdatePodcast}
-import echo.actor.index.IndexProtocol.{AddDocIndexEvent, UpdateDocWebsiteDataIndexEvent}
+import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
@@ -49,7 +49,6 @@ class ParserWorker extends Actor with ActorLogging {
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
-    private var indexStore: ActorRef = _
     private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
 
@@ -77,10 +76,6 @@ class ParserWorker extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
 
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
@@ -117,7 +112,6 @@ class ParserWorker extends Actor with ActorLogging {
 
             val readableText = Jsoup.parse(html).text()
 
-            // indexStore ! UpdateDocWebsiteDataIndexEvent(exo, readableText)
             val indexEvent = UpdateDocWebsiteDataIndexEvent(exo, readableText)
             mediator ! Publish(indexEventStream, indexEvent)
 
@@ -130,6 +124,10 @@ class ParserWorker extends Actor with ActorLogging {
                 registerEpisode(podcastExo, episode)
             }
 
+    }
+
+    private def emitIndexEvent(event: IndexEvent): Unit = {
+        mediator ! Publish(indexEventStream, event)
     }
 
     private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
@@ -155,9 +153,8 @@ class ParserWorker extends Actor with ActorLogging {
                     })
                     */
 
-                    //indexStore ! AddDocIndexEvent(indexMapper.toImmutable(p))
                     val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(p))
-                    mediator ! Publish(indexEventStream, indexEvent)
+                    emitIndexEvent(indexEvent)
 
                     // request that the podcasts website will get added to the index as well, if possible
                     Option(p.getLink) match {

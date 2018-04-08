@@ -63,9 +63,7 @@ class NodeMaster extends Actor with ActorLogging {
         // pass around references not provided by constructors due to circular dependencies
         crawler ! ActorRefParserActor(parser)
         crawler ! ActorRefDirectoryStoreActor(directory)
-        crawler ! ActorRefIndexStoreActor(index)
 
-        parser ! ActorRefIndexStoreActor(index)
         parser ! ActorRefDirectoryStoreActor(directory)
         parser ! ActorRefCrawlerActor(crawler)
 
@@ -75,7 +73,6 @@ class NodeMaster extends Actor with ActorLogging {
         gateway ! ActorRefDirectoryStoreActor(directory)
 
         directory ! ActorRefCrawlerActor(crawler)
-        directory ! ActorRefIndexStoreActor(index)
         directory ! ActorRefDirectoryStoreActor(directory)
 
         log.info("up and running")
@@ -119,7 +116,7 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     private def createCLI(): Unit = {
-        cli = context.actorOf(CLI.props(self, index, parser, searcher, crawler, directory, gateway),
+        cli = context.actorOf(CLI.props(self, parser, searcher, crawler, directory, gateway),
             name = CLI.name)
         context watch cli
     }

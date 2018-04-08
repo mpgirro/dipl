@@ -22,21 +22,19 @@ import scala.language.postfixOps
 object CLI {
     final val name = "cli"
     def props(master: ActorRef,
-              indexStore: ActorRef,
               parser: ActorRef,
               searcher: ActorRef,
               crawler: ActorRef,
               directoryStore: ActorRef,
               gateway: ActorRef): Props = {
 
-        Props(new CLI(master, indexStore, parser, searcher, crawler, directoryStore, gateway))
+        Props(new CLI(master, parser, searcher, crawler, directoryStore, gateway))
             .withDispatcher("echo.cli.dispatcher")
 
     }
 }
 
 class CLI(master: ActorRef,
-          indexStore: ActorRef,
           parser: ActorRef,
           searcher: ActorRef,
           crawler: ActorRef,

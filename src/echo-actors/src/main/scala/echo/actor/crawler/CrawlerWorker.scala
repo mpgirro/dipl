@@ -9,7 +9,7 @@ import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByExo}
-import echo.actor.index.IndexProtocol.UpdateDocLinkIndexEvent
+import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -53,7 +53,6 @@ class CrawlerWorker extends Actor with ActorLogging {
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
-    private var indexStore: ActorRef = _
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
@@ -96,10 +95,6 @@ class CrawlerWorker extends Actor with ActorLogging {
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref
-
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
 
         case DownloadWithHeadCheck(exo, url, job) =>
 
@@ -153,6 +148,10 @@ class CrawlerWorker extends Actor with ActorLogging {
         parser ! ParseFyydEpisodes(podcastId, json)
     }
 
+    private def emitIndexEvent(event: IndexEvent): Unit = {
+        mediator ! Publish(indexEventStream, event)
+    }
+
     private def sendErrorNotificationIfFeasable(exo: String, url: String, job: FetchJob): Unit = {
         job match {
             case WebsiteFetchJob() => // do nothing...
@@ -183,9 +182,8 @@ class CrawlerWorker extends Actor with ActorLogging {
                             if (!url.equals(href)) {
                                 directoryStore ! UpdateLinkByExo(exo, href)
 
-                                //indexStore ! UpdateDocLinkIndexEvent(exo, href)
                                 val indexEvent = UpdateDocLinkIndexEvent(exo, href)
-                                mediator ! Publish(indexEventStream, indexEvent)
+                                emitIndexEvent(indexEvent)
                             }
 
                             // we always download websites, because we only do it once anyway

@@ -9,7 +9,7 @@ import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefIndexStoreActor, ActorRefParserActor}
+import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefParserActor}
 import echo.core.exception.EchoException
 
 import scala.concurrent.duration._
@@ -33,7 +33,6 @@ class Crawler extends Actor with ActorLogging {
 
     private var parser: ActorRef = _
     private var directory: ActorRef = _
-    private var indexStore: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -70,11 +69,6 @@ class Crawler extends Actor with ActorLogging {
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directory = ref
             router.routees.foreach(r => r.send(ActorRefDirectoryStoreActor(directory), sender()))
-
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
-            router.routees.foreach(r => r.send(ActorRefIndexStoreActor(indexStore), sender()))
 
         case Terminated(corpse) =>
             //log.info("Child '{}' terminated" + corpse.path.name)

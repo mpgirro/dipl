@@ -3,7 +3,7 @@ package echo.actor.directory
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor, ActorRefIndexStoreActor}
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefDirectoryStoreActor}
 import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryQuery}
 
 /**
@@ -24,7 +24,6 @@ class DirectoryBroker extends Actor with ActorLogging {
     private val DATABASE_URLs = Array("jdbc:h2:mem:echo1", "jdbc:h2:mem:echo2")// TODO I'll have to thing about a better solution in a distributed context
 
     private var crawler: ActorRef = _
-    private var indexStore: ActorRef = _
 
     /*
      * We define two separate routings, based on the Command–query separation principle
@@ -52,14 +51,10 @@ class DirectoryBroker extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
+
         case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            commandRouter.route(msg, sender())
-
-        case msg @ ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
-            indexStore = ref
             commandRouter.route(msg, sender())
 
         case msg @ ActorRefDirectoryStoreActor(ref) =>
@@ -89,7 +84,6 @@ class DirectoryBroker extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
-        Option(indexStore).foreach(i => directoryStore ! ActorRefIndexStoreActor(i))
 
         directoryStore
     }
