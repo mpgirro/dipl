@@ -8,15 +8,12 @@ services:
         ports:
             - 3030:3030
         environment:
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
-        #    - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
             - echo-catalog
             - echo-searcher
-        #    - echo-consul
             - echo-registry
         depends_on:
-        #     - echo-consul
             - echo-registry
     echo-catalog:
         container_name: "echo-catalog"
@@ -27,14 +24,11 @@ services:
             - 3031:3031
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
-        #    - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
         depends_on:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
     echo-index:
@@ -48,14 +42,11 @@ services:
             - "/Users/max/volumes/echo/index"
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
-        #    - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
         depends_on:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
     echo-crawler:
@@ -67,14 +58,11 @@ services:
             - 3033:3033
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
-        #    - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
         depends_on:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
     echo-parser:
@@ -86,13 +74,11 @@ services:
             - 3034:3034
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
         depends_on:
-        #    - echo-consul
             - echo-rabbitmq
             - echo-registry
     echo-searcher:
@@ -103,15 +89,13 @@ services:
         ports:
             - 3035:3035
         environment:
-        #    - ECHO_CONSUL_HOST=echo-consul
-            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+            - ECHO_REGISTRY_HOST=echo-registry
         links:
             - echo-index
-        #    - echo-consul
+
             - echo-registry
         depends_on:
             - echo-registry
-        #    - echo-consul
             - echo-rabbitmq
     echo-registry:
         container_name: "echo-registry"
@@ -120,14 +104,6 @@ services:
         #build: ../echo-microservices/app-registry/Dockerfile
         ports:
             - 3036:3036
-    #echo-consul:
-    #    container_name: "echo-consul"
-    #    hostname: "echo-consul"
-    #    image: consul
-    #    ports:
-    #      - "8400:8400"
-    #      - "8500:8500"
-    #      - "8600:8600"
     echo-rabbitmq:
         container_name: "echo-rabbitmq"
         hostname: "echo-rabbitmq"
