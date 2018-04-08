@@ -159,6 +159,7 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Load balancing
         * Server and Client Side LB
     * Elasticity / Code Mobility
+        : Location transparency
 * An Actor-based Problem Solution
     * Isolation
         : State + Behaviour
@@ -217,3 +218,15 @@ Some core papers/books I really need to include and focus on:
 
 * Immutability Changes Everything. Helland, Pat. 2015
 * Reactive Microservice Architectures. Boner Jonas. Book
+
+---
+
+Publicationen die ich vll brauchen kann, wenn ich gewissen Themenfelder bearbeite/argumentiere
+
+## Concurrency Probleme durch Datenbanken
+
+* Bernstein, P .; Hadzilacos, V .; Goodman, N. (1987). “Concurrency Control and Recovery in Database Systems”, Addison Wesley, ISBN 0-201-10715-5.
+
+## Parallel/Distributed
+
+* Isard, M.; Budiu, M.; Yu, Y.; Birrell, A.; Fetterly, D. (2007) “Dryad: Distributed Data-Parallel Programs from Sequential Building Blocks” European Conf on Computer Systems (EuroSys) 
