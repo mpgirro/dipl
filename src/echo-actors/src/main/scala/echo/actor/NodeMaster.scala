@@ -1,6 +1,6 @@
 package echo.actor
 
-import akka.actor.{Actor, ActorLogging, ActorRef, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
@@ -18,6 +18,12 @@ import scala.language.postfixOps
 /**
   * @author Maximilian Irro
   */
+
+object NodeMaster {
+    final val name = "node"
+    def props(): Props = Props(new NodeMaster())
+}
+
 class NodeMaster extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
@@ -48,7 +54,7 @@ class NodeMaster extends Actor with ActorLogging {
         parser = context.actorOf(Parser.props(), Parser.name(1))
         context watch parser
 
-        searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name(1)))
+        searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name))
 
         crawler = context.actorOf(Crawler.props(), Crawler.name(1))
         context watch crawler
@@ -69,7 +75,6 @@ class NodeMaster extends Actor with ActorLogging {
 
         searcher ! ActorRefIndexStoreActor(index)
 
-        gateway ! ActorRefSearcherActor(searcher)
         gateway ! ActorRefDirectoryStoreActor(directory)
 
         directory ! ActorRefCrawlerActor(crawler)

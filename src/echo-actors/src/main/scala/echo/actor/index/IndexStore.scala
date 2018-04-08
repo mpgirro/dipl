@@ -2,7 +2,7 @@ package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
+import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeAck}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol._
 import echo.core.domain.dto.ImmutableIndexDocDTO
@@ -39,6 +39,7 @@ class IndexStore (indexPath: String,
     private val eventStreamName = Option(CONFIG.getString("echo.index.event-stream")).getOrElse("index-event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(eventStreamName, self) // subscribe to the topic (= event stream)
+    mediator ! Put(self) // register to the path
 
     private val indexCommitter: IndexCommitter = new LuceneCommitter(indexPath, createIndex) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
@@ -124,14 +125,14 @@ class IndexStore (indexPath: String,
     }
 
     private def commitIndexIfChanged(): Unit = {
-        if(indexChanged) {
+        if (indexChanged) {
             log.debug("Committing Index due to pending changes")
             indexCommitter.commit()
             indexChanged = false
             log.debug("Finished Index due to pending changes")
         }
 
-        if(updateWebsiteQueue.nonEmpty){
+        if (updateWebsiteQueue.nonEmpty) {
             log.debug("Processing pending entries in website queue")
             indexSearcher.refresh()
             processWebsiteQueue(updateWebsiteQueue)
@@ -139,7 +140,7 @@ class IndexStore (indexPath: String,
             log.debug("Finished pending entries in website queue")
         }
 
-        if(updateImageQueue.nonEmpty){
+        if (updateImageQueue.nonEmpty) {
             log.debug("Processing pending entries in image queue")
             indexSearcher.refresh()
             processImageQueue(updateImageQueue)
@@ -147,7 +148,7 @@ class IndexStore (indexPath: String,
             log.debug("Finished pending entries in image queue")
         }
 
-        if(updateLinkQueue.nonEmpty){
+        if (updateLinkQueue.nonEmpty) {
             log.debug("Processing pending entries in link queue")
             indexSearcher.refresh()
             processLinkQueue(updateLinkQueue)

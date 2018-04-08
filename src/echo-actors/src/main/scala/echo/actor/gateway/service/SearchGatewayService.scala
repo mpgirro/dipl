@@ -2,7 +2,9 @@ package echo.actor.gateway.service
 
 import javax.ws.rs.Path
 
-import akka.actor.{ActorContext, ActorRef}
+import akka.actor.ActorContext
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Send
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.StatusCodes.{InternalServerError, TooManyRequests}
@@ -17,6 +19,7 @@ import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import io.swagger.annotations._
 
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
@@ -35,14 +38,16 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    private var searcher: ActorRef = _
+    //private var searcher: ActorRef = _
+
+    private val mediator = DistributedPubSub(context.system).mediator
 
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
     override val route: Route = pathPrefix("search") { pathEndOrSingleSlash { search } }
 
 
-    def setSearcherActorRef(searcher: ActorRef): Unit = this.searcher = searcher
+    //def setSearcherActorRef(searcher: ActorRef): Unit = this.searcher = searcher
 
     /*
     @Path("/search")
@@ -85,7 +90,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            onCompleteWithBreaker(breaker)(searcher ? SearchRequest(query, page, size)) {
+            onCompleteWithBreaker(breaker)(emitSearchQuery(query, page, size)) {
                 case Success(res) =>
                     res match {
                         case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
@@ -111,5 +116,10 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
             }
 
         }
+    }
+
+    def emitSearchQuery(query: String, page: Option[Int], size: Option[Int]): Future[Any] = {
+        val request = SearchRequest(query, page, size)
+        mediator ? Send(path = "/user/node/searcher", msg = request, localAffinity = true)
     }
 }

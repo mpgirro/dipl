@@ -16,15 +16,8 @@ object EchoApp {
     def main(args: Array[String]): Unit = {
 
         val config = ConfigFactory.load
-        //println("Configuration : " + config.getObject("echo"))
-
-        val nodeName: String = Option(config.getString("echo.node-name")).getOrElse("unnamed-node")
-
-        println("Starting node : " + nodeName)
-
         val system = ActorSystem("echo", config)
-
-        system.actorOf(Props(new NodeMaster), nodeName)
+        system.actorOf(Props(new NodeMaster), NodeMaster.name)
 
         //Await.ready(system.whenTerminated, Duration.Inf)
 

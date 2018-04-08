@@ -1,6 +1,8 @@
 package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Put
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.SearchIndex
@@ -10,7 +12,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 object SearcherActor {
-    def name(index: Int): String = "searcher-" + index
+    final val name = "searcher"
     def props(): Props = Props(new SearcherActor()).withDispatcher("echo.searcher.dispatcher")
 }
 
@@ -23,6 +25,9 @@ class SearcherActor extends Actor with ActorLogging {
     private val DEFAULT_PAGE: Int = Option(CONFIG.getInt("echo.gateway.default-page")).getOrElse(1)
     private val DEFAULT_SIZE: Int = Option(CONFIG.getInt("echo.gateway.default-size")).getOrElse(20)
     private val INTERNAL_TIMEOUT: FiniteDuration = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
+
+    private val mediator = DistributedPubSub(context.system).mediator
+    mediator ! Put(self) // register to the path
 
     private var indexStore: ActorRef = _
 

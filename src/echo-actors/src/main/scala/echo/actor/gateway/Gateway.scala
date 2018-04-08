@@ -110,10 +110,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
     }
 
     override def receive: Receive = {
-        case ActorRefSearcherActor(ref) =>
-            log.debug("Received ActorRefSearcherActor(_)")
-            searcher = ref
-            searchService.setSearcherActorRef(searcher)
+
         case ActorRefDirectoryStoreActor(ref) =>
             log.debug("Received ActorRefDirectoryStoreActor(_)")
             directoryStore = ref

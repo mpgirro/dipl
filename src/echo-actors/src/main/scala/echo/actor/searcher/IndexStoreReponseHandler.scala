@@ -38,7 +38,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
     override def receive: Receive = {
 
         case IndexResultsFound(query: String, resultWrapper: ResultWrapperDTO) =>
-            log.info("Received {} resultWrapper from index for query '{}'", resultWrapper.getTotalHits, query)
+            log.info("Received {} results from index for query '{}'", resultWrapper.getTotalHits, query)
             timeoutMessager.cancel
 
             // TODO remove <img> tags from description, I suspect it to cause troubles
@@ -65,7 +65,9 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
             timeoutMessager.cancel
             sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty()))
 
-        case IndexRetrievalTimeout => sendResponseAndShutdown(IndexRetrievalTimeout)
+        case IndexRetrievalTimeout =>
+            log.warning("IndexRetrievalTimeout triggered")
+            sendResponseAndShutdown(IndexRetrievalTimeout)
 
         case _ =>
             log.debug("Stopping because received an unknown message : {}", self.path.name)
