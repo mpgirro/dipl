@@ -90,7 +90,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            onCompleteWithBreaker(breaker)(emitSearchQuery(query, page, size)) {
+            onCompleteWithBreaker(breaker)(emitSearchQuery(SearchRequest(query, page, size))) {
                 case Success(res) =>
                     res match {
                         case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
@@ -118,8 +118,14 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
         }
     }
 
-    def emitSearchQuery(query: String, page: Option[Int], size: Option[Int]): Future[Any] = {
-        val request = SearchRequest(query, page, size)
-        mediator ? Send(path = "/user/node/searcher", msg = request, localAffinity = true)
+    /**
+      * Sends message to a searcher within the cluster, NOT prefering locally available searchers,
+      * because we more likely will operate only one gateway, but have multiple index stores
+      * @param requestMsg
+      * @return Future producing the result message
+      */
+    private def emitSearchQuery(requestMsg: SearchRequest): Future[Any] = {
+        log.debug("Sending request message to some searcher in the cluster : {}", requestMsg)
+        mediator ? Send(path = "/user/node/searcher", msg = requestMsg, localAffinity = false)
     }
 }

@@ -2,11 +2,12 @@ package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Put
+import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Send}
+import com.google.common.base.Strings.isNullOrEmpty
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.index.IndexProtocol.SearchIndex
-import echo.core.domain.dto.{ImmutableResultWrapperDTO, ResultWrapperDTO}
+import echo.actor.index.IndexProtocol.{IndexQuery, SearchIndex}
+import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -57,6 +58,10 @@ class SearcherActor extends Actor with ActorLogging {
                 case None    => DEFAULT_SIZE
             }
 
+            if (isNullOrEmpty(query)) {
+                sender ! SearchResults(ResultWrapperDTO.empty())
+            }
+
             if (p < 0) {
                 sender ! SearchResults(ResultWrapperDTO.empty())
             }
@@ -68,11 +73,24 @@ class SearcherActor extends Actor with ActorLogging {
             val originalSender = Some(sender) // this is important to not expose the handler
 
             responseHandlerCounter += 1
-            val handler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
+            val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
 
-            indexStore.tell(SearchIndex(query, p, s), handler)
+            val indexQuery = SearchIndex(query, p, s)
+            //emitIndexQuery(indexQuery, responseHandler)
+            indexStore.tell(SearchIndex(query, p, s), responseHandler)
 
-            log.debug("Finished SearchRequest('{}',{},{})", query, page, size)
+    }
 
+    /**
+      * Sends index query message to one Index Store within the Cluster, prefering a locally available Store for speed.
+      * This will expect the index to response with a message. This will not be handled by this Searcher, but delegated
+      * to the responseHandler
+      * @param queryMsg
+      * @param responseHandler
+      * @return Nothing
+      */
+    private def emitIndexQuery(queryMsg: IndexQuery, responseHandler: ActorRef): Unit = {
+        log.debug("Sending query message to one index store in the cluster : {}", queryMsg)
+        mediator.tell(Send("/user/node/index", queryMsg, localAffinity = true), responseHandler)
     }
 }

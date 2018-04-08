@@ -78,7 +78,7 @@ class IndexStore (indexPath: String,
 
     override def receive: Receive = {
 
-        case SubscribeAck(Subscribe(eventStreamName, None, `self`)) =>
+        case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
             log.info("successfully subscribed to : {}", eventStreamName)
 
         case CommitIndex =>
