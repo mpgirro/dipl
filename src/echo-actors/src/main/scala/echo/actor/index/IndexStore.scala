@@ -1,6 +1,8 @@
 package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging, Props}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import com.typesafe.config.ConfigFactory
 import echo.actor.index.IndexProtocol._
 import echo.core.domain.dto.ImmutableIndexDocDTO
@@ -33,6 +35,10 @@ class IndexStore (indexPath: String,
     /*
     private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
     */
+
+    private val eventStreamName = Option(CONFIG.getString("echo.index.event-stream")).getOrElse("index-event-stream")
+    private val mediator = DistributedPubSub(context.system).mediator
+    mediator ! Subscribe(eventStreamName, self) // subscribe to the topic (= event stream)
 
     private val indexCommitter: IndexCommitter = new LuceneCommitter(indexPath, createIndex) // TODO do not alway re-create the index
     private val indexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
@@ -71,28 +77,31 @@ class IndexStore (indexPath: String,
 
     override def receive: Receive = {
 
+        case SubscribeAck(Subscribe(eventStreamName, None, `self`)) =>
+            log.info("successfully subscribed to : {}", eventStreamName)
+
         case CommitIndex =>
             commitIndexIfChanged()
             context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
-        case IndexStoreAddDoc(doc) =>
+        case AddDocIndexEvent(doc) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
             indexCommitter.add(doc)
             indexChanged = true
 
-        case IndexStoreUpdateDocWebsiteData(exo, html) =>
+        case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
 
             updateWebsiteQueue.enqueue((exo,html))
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
-        case IndexStoreUpdateDocImage(exo, image) =>
+        case UpdateDocImageIndexEvent(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
 
             updateImageQueue.enqueue((exo, image))
 
-        case IndexStoreUpdateDocLink(exo, link) =>
+        case UpdateDocLinkIndexEvent(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
 
             updateLinkQueue.enqueue((exo, link))

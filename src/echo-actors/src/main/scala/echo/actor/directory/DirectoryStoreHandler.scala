@@ -4,12 +4,14 @@ import java.time.LocalDateTime
 import javax.persistence.{EntityManager, EntityManagerFactory}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol._
 import echo.actor.directory.repository.RepositoryFactoryBuilder
 import echo.actor.directory.service._
-import echo.actor.index.IndexProtocol.IndexStoreAddDoc
+import echo.actor.index.IndexProtocol.AddDocIndexEvent
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
@@ -38,6 +40,9 @@ class DirectoryStoreHandler(workerIndex: Int,
 
     private val CONFIG = ConfigFactory.load()
     private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
+
+    private val indexEventStream = CONFIG.getString("echo.index.event-stream")
+    private val mediator = DistributedPubSub(context.system).mediator
 
     private val exoGenerator: ExoGenerator = new ExoGenerator(workerIndex)
 
@@ -569,7 +574,9 @@ class DirectoryStoreHandler(workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastExo, e.getExo)
 
-                indexStore ! IndexStoreAddDoc(indexMapper.toImmutable(e))
+                //indexStore ! AddDocIndexEvent(indexMapper.toImmutable(e))
+                val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e))
+                mediator ! Publish(indexEventStream, indexEvent)
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a

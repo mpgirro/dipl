@@ -13,9 +13,9 @@ class IndexStorePriorityActorMailbox(settings: ActorSystem.Settings, config: Con
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
         case SearchIndex(_,_,_)                         => 0
-        case IndexStoreAddDoc(_)                        => 1
-        case IndexStoreUpdateDocImage(_,_)              => 2
-        case IndexStoreUpdateDocWebsiteData(_,_)        => 2
-        case IndexStoreUpdateDocLink(_,_)               => 2
+        case AddDocIndexEvent(_)                        => 1
+        case UpdateDocImageIndexEvent(_,_)              => 2
+        case UpdateDocWebsiteDataIndexEvent(_,_)        => 2
+        case UpdateDocLinkIndexEvent(_,_)               => 2
         case _                                          => 3 // other messages
     })

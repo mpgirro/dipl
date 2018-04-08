@@ -7,13 +7,16 @@ import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
   */
 object IndexProtocol {
 
-    trait IndexCommand
+    trait IndexEvent
 
     // Crawler/Parser/DirectoryStore -> IndexStore
-    case class IndexStoreAddDoc(doc: IndexDocDTO) extends IndexCommand
-    case class IndexStoreUpdateDocWebsiteData(exo: String, html: String) extends IndexCommand
-    case class IndexStoreUpdateDocImage(exo: String, itunesImage: String) extends IndexCommand
-    case class IndexStoreUpdateDocLink(exo: String, newLink: String) extends IndexCommand
+    case class AddDocIndexEvent(doc: IndexDocDTO) extends IndexEvent
+    case class UpdateDocWebsiteDataIndexEvent(exo: String, html: String) extends IndexEvent
+    case class UpdateDocImageIndexEvent(exo: String, image: String) extends IndexEvent
+    case class UpdateDocLinkIndexEvent(exo: String, newLink: String) extends IndexEvent
+
+
+    trait IndexCommand
 
     // IndexStore -> IndexStore
     case class CommitIndex() extends IndexCommand
@@ -25,10 +28,10 @@ object IndexProtocol {
     case class SearchIndex(query: String, page: Int, size: Int) extends IndexQuery
 
 
-    trait IndexResult
+    trait IndexQueryResult
 
     // IndexStore -> Searcher
-    case class IndexResultsFound(query: String, results: ResultWrapperDTO) extends IndexResult
-    case class NoIndexResultsFound(query: String) extends IndexResult
+    case class IndexResultsFound(query: String, results: ResultWrapperDTO) extends IndexQueryResult
+    case class NoIndexResultsFound(query: String) extends IndexQueryResult
 
 }

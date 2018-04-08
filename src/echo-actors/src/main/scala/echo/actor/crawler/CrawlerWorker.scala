@@ -3,11 +3,13 @@ package echo.actor.crawler
 import java.time.LocalDateTime
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.directory.DirectoryProtocol.{FeedStatusUpdate, ProposeNewFeed, UpdateFeedUrl, UpdateLinkByExo}
-import echo.actor.index.IndexProtocol.IndexStoreUpdateDocLink
+import echo.actor.index.IndexProtocol.UpdateDocLinkIndexEvent
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -45,6 +47,9 @@ class CrawlerWorker extends Actor with ActorLogging {
 
     private implicit val actorSystem: ActorSystem = context.system
     private implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
+
+    private val indexEventStream = CONFIG.getString("echo.index.event-stream")
+    private val mediator = DistributedPubSub(context.system).mediator
 
     private var parser: ActorRef = _
     private var directoryStore: ActorRef = _
@@ -177,7 +182,10 @@ class CrawlerWorker extends Actor with ActorLogging {
                             // to some feed analytic tools, we set our records to the new location
                             if (!url.equals(href)) {
                                 directoryStore ! UpdateLinkByExo(exo, href)
-                                indexStore ! IndexStoreUpdateDocLink(exo, href)
+
+                                //indexStore ! UpdateDocLinkIndexEvent(exo, href)
+                                val indexEvent = UpdateDocLinkIndexEvent(exo, href)
+                                mediator ! Publish(indexEventStream, indexEvent)
                             }
 
                             // we always download websites, because we only do it once anyway

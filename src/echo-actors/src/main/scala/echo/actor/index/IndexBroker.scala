@@ -4,7 +4,7 @@ import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.index.IndexProtocol.{IndexCommand, IndexQuery}
+import echo.actor.index.IndexProtocol.{IndexEvent, IndexQuery}
 import echo.core.exception.SearchException
 
 import scala.concurrent.duration._
@@ -57,7 +57,7 @@ class IndexBroker extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case command: IndexCommand =>
+        case command: IndexEvent =>
             log.debug("Routing command: {}", command.getClass)
             commandRouter.route(command, sender())
 
