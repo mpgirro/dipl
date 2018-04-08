@@ -11,7 +11,7 @@ management:
         enabled: false
 eureka:
     instance:
-        hostname: echo-registry
+        hostname: localhost
     client:
         registerWithEureka: false
         fetchRegistry: false

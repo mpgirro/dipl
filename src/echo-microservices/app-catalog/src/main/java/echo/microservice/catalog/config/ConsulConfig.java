@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Maximilian Irro
  */
-@Configuration
-@EnableDiscoveryClient
+//@Configuration
+//@EnableDiscoveryClient
 public class ConsulConfig {
 }

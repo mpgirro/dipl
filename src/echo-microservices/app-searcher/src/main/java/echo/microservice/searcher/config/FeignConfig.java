@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
  * @author Maximilian Irro
  */
 @Configuration
-@EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"echo.microservice.searcher.web.client"})
 @EnableCircuitBreaker
 public class FeignConfig {

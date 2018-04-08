@@ -1,6 +1,6 @@
 
 server:
-    port: 3034
+    port: ${ECHO_PARSER_PORT:3034}
 
 echo:
     parser:
@@ -23,6 +23,11 @@ spring:
         username: ${ECHO_RABBITMQ_USERNAME:guest}
         password: ${ECHO_RABBITMQ_PASSWORD:guest}
 
-ribbon:
-    eureka:
-        enabled: false
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${ECHO_REGISTRY_HOST:http://localhost:3036}/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2
+

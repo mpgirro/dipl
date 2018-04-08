@@ -8,13 +8,16 @@ services:
         ports:
             - 3030:3030
         environment:
-            - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+        #    - ECHO_CONSUL_HOST=echo-consul
         links:
             - echo-catalog
             - echo-searcher
-            - echo-consul
+        #    - echo-consul
+            - echo-registry
         depends_on:
-             - echo-consul
+        #     - echo-consul
+            - echo-registry
     echo-catalog:
         container_name: "echo-catalog"
         hostname: "echo-catalog"
@@ -24,13 +27,16 @@ services:
             - 3031:3031
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+        #    - ECHO_CONSUL_HOST=echo-consul
         links:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
         depends_on:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
     echo-index:
         container_name: "echo-index"
         hostname: "echo-index"
@@ -42,13 +48,16 @@ services:
             - "/Users/max/volumes/echo/index"
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+        #    - ECHO_CONSUL_HOST=echo-consul
         links:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
         depends_on:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
     echo-crawler:
         container_name: "echo-crawler"
         hostname: "echo-crawler"
@@ -58,13 +67,16 @@ services:
             - 3033:3033
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
-            - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
+        #    - ECHO_CONSUL_HOST=echo-consul
         links:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
         depends_on:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
     echo-parser:
         container_name: "echo-parser"
         hostname: "echo-parser"
@@ -74,12 +86,15 @@ services:
             - 3034:3034
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
         links:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
         depends_on:
-            - echo-consul
+        #    - echo-consul
             - echo-rabbitmq
+            - echo-registry
     echo-searcher:
         container_name: "echo-searcher"
         hostname: "echo-searcher"
@@ -88,24 +103,35 @@ services:
         ports:
             - 3035:3035
         environment:
-            - ECHO_CONSUL_HOST=echo-consul
+        #    - ECHO_CONSUL_HOST=echo-consul
+            - ECHO_REGISTRY_HOST=http://echo-registry:3036
         links:
             - echo-index
-            - echo-consul
+        #    - echo-consul
+            - echo-registry
         depends_on:
-            - echo-consul
+            - echo-registry
+        #    - echo-consul
             - echo-rabbitmq
-    echo-consul:
-        container_name: "echo-consul"
-        hostname: "echo-consul"
-        #environment:
-        #  - CONSUL_LOCAL_CONFIG="{\"log-level\":\"debug\"}"
-        extends:
-            file: consul.yml
-            service: consul
+    echo-registry:
+        container_name: "echo-registry"
+        hostname: "echo-registry"
+        image: echo-registry:latest
+        #build: ../echo-microservices/app-registry/Dockerfile
+        ports:
+            - 3036:3036
+    #echo-consul:
+    #    container_name: "echo-consul"
+    #    hostname: "echo-consul"
+    #    image: consul
+    #    ports:
+    #      - "8400:8400"
+    #      - "8500:8500"
+    #      - "8600:8600"
     echo-rabbitmq:
         container_name: "echo-rabbitmq"
         hostname: "echo-rabbitmq"
-        extends:
-            file: rabbitmq.yml
-            service: rabbitmq
+        image: rabbitmq:management
+        ports:
+          - "5672:5672"
+          - "15672:15672"

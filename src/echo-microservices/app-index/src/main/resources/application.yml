@@ -9,7 +9,7 @@ spring:
         password: ${ECHO_RABBITMQ_PASSWORD:guest}
 
 server:
-    port: 3032
+    port: ${ECHO_INDEX_PORT:3032}
 
 management:
     security:
@@ -28,6 +28,10 @@ echo:
         exchange: echo.direct
         index-routingkey: echo.index.routingkey
 
-ribbon:
-    eureka:
-        enabled: false
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${ECHO_REGISTRY_HOST:http://localhost:3036}/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2

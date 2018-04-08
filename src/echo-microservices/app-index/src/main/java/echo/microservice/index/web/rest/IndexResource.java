@@ -36,7 +36,7 @@ public class IndexResource {
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Integer page,
                                                         @RequestParam("size") Integer size) throws SearchException {
-        log.debug("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
+        log.info("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
         final ResultWrapperDTO result = indexService.search(query, page, size);
         return new ResponseEntity<>(
             result,

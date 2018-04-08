@@ -4,7 +4,7 @@ spring:
         name: echo-gateway
 
 server:
-    port: 3030
+    port: ${ECHO_GATEWAY_PORT:3030}
 
 management:
     security:
@@ -20,11 +20,24 @@ echo:
         default-page: 1
         efault-size: 20
 
-feign:
-    httpclient:
-        connection-timeout: 5000
-    hystrix:
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${ECHO_REGISTRY_HOST:http://localhost:3036}/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2
+
+ribbon:
+    eureka:
         enabled: true
+        MaxAutoRetries: 3
+        MaxAutoRetriesNextServer: 1
+        ReadTimeout: 1000
+    #echo-catalog:
+    #    listOfServers: echo-catalog,localhost:3031
+    #echo-searcher:
+    #    listOfServers: echo-searcher,localhost:3035
 
 hystrix:
     command:
@@ -34,10 +47,8 @@ hystrix:
                     thread:
                         timeoutInMilliseconds: 10000
 
-ribbon:
-    eureka:
-        enabled: false
-    echo-catalog:
-        listOfServers: echo-catalog,localhost:3031
-    echo-searcher:
-        listOfServers: echo-searcher,localhost:3035
+feign:
+    httpclient:
+        connection-timeout: 5000
+    hystrix:
+        enabled: true

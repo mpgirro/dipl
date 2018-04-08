@@ -1,6 +1,6 @@
 
 server:
-    port: 3033
+    port: ${ECHO_CRAWLER_PORT:3033}
 
 echo:
     crawler:
@@ -25,6 +25,10 @@ spring:
         username: ${ECHO_RABBITMQ_USERNAME:guest}
         password: ${ECHO_RABBITMQ_PASSWORD:guest}
 
-ribbon:
-    eureka:
-        enabled: false
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${ECHO_REGISTRY_HOST:http://localhost:3036}/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2

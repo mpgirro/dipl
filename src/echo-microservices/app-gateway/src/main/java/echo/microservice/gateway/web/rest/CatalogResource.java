@@ -37,7 +37,7 @@ public class CatalogResource {
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PodcastDTO> getPodcast(@PathVariable String exo) {
-        log.debug("REST request to get Podcast (EXO) : {}", exo);
+        log.info("REST request to get Podcast (EXO) : {}", exo);
         final Optional<PodcastDTO> podcast = catalogService.getPodcast(exo);
         return podcast
             .map(result -> new ResponseEntity<>(
@@ -51,7 +51,7 @@ public class CatalogResource {
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getEpisodesByPodcast(@PathVariable String exo) {
-        log.debug("REST request to get Episodes by Podcast (EXO) : {}", exo);
+        log.info("REST request to get Episodes by Podcast (EXO) : {}", exo);
         final List<EpisodeDTO> episodes = catalogService.getEpisodesByPodcast(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(episodes),
@@ -63,7 +63,7 @@ public class CatalogResource {
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getFeedsByPodcast(@PathVariable String exo) {
-        log.debug("REST request to get Feeds by Podcast (EXO) : {}", exo);
+        log.info("REST request to get Feeds by Podcast (EXO) : {}", exo);
         final List<FeedDTO> feeds = catalogService.getFeedsByPodcast(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(feeds),
@@ -76,7 +76,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getAllPodcasts(@RequestParam("p") Optional<Integer> page,
                                                           @RequestParam("s") Optional<Integer> size) {
-        log.debug("REST request to get all Podcasts by page/size : ({},{})", page, size);
+        log.info("REST request to get all Podcasts by page/size : ({},{})", page, size);
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(podcasts),
@@ -88,7 +88,7 @@ public class CatalogResource {
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
-        log.debug("REST request to get Episode (EXO) : {}", exo);
+        log.info("REST request to get Episode (EXO) : {}", exo);
         final Optional<EpisodeDTO> episode = catalogService.getEpisode(exo);
         return episode
             .map(result -> new ResponseEntity<>(
@@ -102,7 +102,7 @@ public class CatalogResource {
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
-        log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
+        log.info("REST request to get Chapters by Episode (EXO) : {}", exo);
         final List<ChapterDTO> chapters = catalogService.getChaptersByEpisode(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(chapters),

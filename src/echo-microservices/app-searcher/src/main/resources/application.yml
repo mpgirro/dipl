@@ -4,7 +4,7 @@ spring:
         name: echo-searcher
 
 server:
-    port: 3035
+    port: ${ECHO_SEARCHER_PORT:3035}
 
 management:
     security:
@@ -18,11 +18,22 @@ echo:
         max-pool-size: 50
         queue-capacity: 10000
 
-feign:
-    httpclient:
-        connection-timeout: 5000
-    hystrix:
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${ECHO_REGISTRY_HOST:http://localhost:3036}/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2
+
+ribbon:
+    eureka:
         enabled: true
+        MaxAutoRetries: 3
+        MaxAutoRetriesNextServer: 1
+        ReadTimeout: 1000
+    #echo-index:
+    #    listOfServers: echo-index,localhost:3032
 
 hystrix:
     command:
@@ -32,8 +43,8 @@ hystrix:
                     thread:
                         timeoutInMilliseconds: 10000
 
-ribbon:
-    eureka:
-        enabled: false
-    echo-index:
-        listOfServers: echo-index,localhost:3032
+feign:
+    httpclient:
+        connection-timeout: 5000
+    hystrix:
+        enabled: true

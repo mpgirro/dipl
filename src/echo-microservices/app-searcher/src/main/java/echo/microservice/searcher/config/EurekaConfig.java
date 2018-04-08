@@ -1,12 +1,12 @@
 package echo.microservice.searcher.config;
 
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Maximilian Irro
  */
-//@Configuration
-//@EnableDiscoveryClient
-public class ConsulConfig {
+@Configuration
+@EnableEurekaClient
+public class EurekaConfig {
 }
