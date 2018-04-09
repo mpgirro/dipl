@@ -90,11 +90,8 @@ class IndexBroker extends Actor with ActorLogging {
     }
 
     private def createIndexStore(storeIndex: Int, indexPath: String): ActorRef = {
-        val index = context.watch(context.actorOf(Props(new IndexStore(indexPath, CREATE_INDEX))
-            .withDispatcher("echo.index.dispatcher"),
-            name = "store-" + storeIndex))
-
-        index
+        val index = context.actorOf(IndexStore.props(indexPath, CREATE_INDEX), IndexStore.name(storeIndex))
+        context.watch(index)
     }
 
     private def removeStore(routee: ActorRef): Unit = {

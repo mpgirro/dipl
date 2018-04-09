@@ -76,8 +76,7 @@ class SearcherActor extends Actor with ActorLogging {
             val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
 
             val indexQuery = SearchIndex(query, p, s)
-            //emitIndexQuery(indexQuery, responseHandler)
-            indexStore.tell(SearchIndex(query, p, s), responseHandler)
+            sendIndexQuery(indexQuery, responseHandler)
 
     }
 
@@ -89,7 +88,7 @@ class SearcherActor extends Actor with ActorLogging {
       * @param responseHandler
       * @return Nothing
       */
-    private def emitIndexQuery(queryMsg: IndexQuery, responseHandler: ActorRef): Unit = {
+    private def sendIndexQuery(queryMsg: IndexQuery, responseHandler: ActorRef): Unit = {
         log.debug("Sending query message to one index store in the cluster : {}", queryMsg)
         mediator.tell(Send("/user/node/index", queryMsg, localAffinity = true), responseHandler)
     }
