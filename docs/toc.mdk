@@ -116,50 +116,69 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
 --------
 
 
+* Abstract
+* Preface
+* Acknowledgements
+* Table of Contents
 * Introduction
+    * Motivation
+    * Scope of this Thesis
+    * Methodology used
+    * Road Map
 * Concurrent Programming
+    * Execution Order and Nondeterminism
+    * Threads, Locks and Shared State
 * Distributed Programming
     * The Process
     * Inter-process Communication
     * Inherent Concurrency
-* Microservice Architecture
+* Microservice Paradigm
     * Principles of MS
         : No shared state, etc
     * Communication Channels
-        : Point to Point, Publish/Subscribe
+        : Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
+    * Service Granularity: Size vs. Number of Services
+        : "micro should refere to the scope of responsibility, not the lines of code"
+    * Polyglot Programming
     * OO-Perspective
         * Are MS just Distributed Objects (done right)?
 * Actor-based Programming
+    * Basic Actor Idea
     * Isolation
+        : every actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
     * Immutable Message Passing
     * Typed Actors/Active Objects
-    * Combining Actor and Future based Concurrent Programming
+    * Combining Actor with other Concurrency Models
+        * Futures
+        * Software Transactional Memory (STM)
     * OO-Perspective
         * Are Actors (and Active Objects) just Distributed Objects?
-* Principles of Concurrent, Parallel and Distributed Programming
-    * ??? --> hier die allgemeinen anforderungen beschreiben
-        : scalability, elasticity ("move around in isolation"), fault tolerance ("failure isolation"), resilience ("ability to heal from failure" - break free from strong coupling of synchron comm.), autonomy ("promise behaviour via API/protocol"), 
-* A Concurrent, Parallel and Distributed Problem Scenario: Domain Specific Search Engine 
-    * Domain Description
-    * Concurrent Tasks
-    * Scalability Opportunities
-        * Scalability through Parallelization 
-        * Scalability through Distribution
-    * Elasticity Considerations
-    * Polyglot Persistence (based on Isolation)
-* Considerations/Requirements/Concerns (allgemeine Diskussion)
-    * Isolation
+* Common concerns of Concurrent, Parallel and Distributed Programming
+    * Isolation and autonomy
+        : "promise behaviour via API/protocol" --> design by contract
     * Communication and Data Coupling
         : Sync vs Async, Immutable Messages
     * Persistance
         : Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
     * Fault tolerance
+        : "failure isolation"
     * Resilience
+        : "ability to heal from failure" - break free from strong coupling of synchron comm.
     * Scalability
     * Load balancing
         * Server and Client Side LB
     * Elasticity / Code Mobility
-        : Location transparency
+        : Location transparency, elasticity = "move around in isolation"
+* A Concurrent, Parallel and Distributed Problem Scenario: Domain Specific Search Engine 
+    * Domain Description
+        : Podcasts = Decentralized media syndication
+    * Concurrent Tasks
+        * Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
+    * Scalability Opportunities
+        * Scalability through ??? (scaling up = changing allocated resources: memory, CPU)
+        * Scalability through Parallelization and Distribution (scaling out)
+    * Elasticity Considerations
+    * Polyglot Persistence (based on Isolation)
 * An Actor-based Problem Solution
     * Isolation
         : State + Behaviour
@@ -168,7 +187,7 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Data Coupling
         : Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
     * Persistence
-        : Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections; Polyglot Persistance
+        : Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
     * Load balancing: 
         : Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
     * Fault Tolerance
@@ -205,13 +224,15 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
         * Internal Quality Metrics
             : Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
         * External Quality Metrics
+    * Performance Measurement
 * Discussion
     * The Case for Actors
         * Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
     * The Case for Microservices
     * Empirical Indications
         : Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refactorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
-
+* Outlook & Conclusion
+    : Services as First-Class Citizens
 ---
 
 Some core papers/books I really need to include and focus on:
