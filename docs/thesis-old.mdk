@@ -7,7 +7,7 @@ Subtitle     : Do suffciently concurrent programming languages need microservice
 <!--Title        : Concurrent Programming Languages and Microservice Architectures-->
 Title        : Concurrent Programming
                and the Microservice Architecture Style
-Subtitle     : Hier könnte Ihre Werbung stehen!
+Subtitle     : Approaches to Parallel, Scalable, Distributed, Fault Tolerance Software Systems demonstrated on a Domain Specific Search Engine
 Author       : Maximilian Irro
 Email        : max@irro.at
 Copyright    : Maximilian Irro, 2017
@@ -96,16 +96,18 @@ A PDF Version of this thesis is available at [max.irro.at/pub/thesis/dipl.pdf](h
 ~
 -->
 
-
+[TOC]
 
 
 <!-- TODO hier müssen sachen wie titleseite, frontmatter etc eingefügt werden -->
 
 
-~HtmlOnly
-[TOC]
-~
 
+
+
+# Danksagung { -; toc:clear; }
+
+TODO
 
 <!--
 * Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich sie viel zu selten anrufe.
@@ -117,10 +119,6 @@ In recent time, a new architectural style called *microservice architecture* gai
 We test our findings on the implementations of the architecture of a domain specific search engine.
 
 # Kurzfassung { -; toc:clear; }
-
-# Danksagung { -; toc:clear; }
-
-TODO
 
 # Preface / Authors Note { -; toc:clear; }
 
@@ -157,6 +155,7 @@ Maximilian Irro
 ~
 
 
+
 Introduction
 ============
 
@@ -178,297 +177,420 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 
 
-Concurrent Programming
-======================
+Programming Paradigms
+=====================
 
 
 
-## Execution Order and Nondeterminism
+## Imperative, Structured and Procedual Programming
 
+
+## Object-oriented Programming
+
+* Data Abstraction and Modularity
+
+### History of Objects: Simula and Smalltalk
+
+## Functional Programming
+
+
+## Event-Driven and Flow-Driven Programming
+
+## Logic and Constraint Programming
+
+## Role-based Programming
+
+## Other Programming Paradigms
+
+
+
+Models of Concurrent Computation
+================================
+
+
+
+## Basic Concepts in Concurrency
+
+### Execution Order and Nondeterminism
+
+* see chapter 14 in "Concepts in Programming Languages" by Mitchell
+
+### Concurrency at the Programming Language Level
+
+Channel, Coroutine, Futures and promises
+
+### Concurrency at the Operating System Level
+
+Computer multitasking, Process, Thread
+
+### Concurrency at the Network Level
+
+laut wikipedia: "networked systems are generally concurrent by their nature, as they consist of separate devices"
 
 ## Threads, Locks and Shared State
 
+### Case Study: the Java Concurrency Model
 
-## Concurrency at the Programming Language Level
+## Actors and Active Objects
 
-~ Note
-allgemeines über die Abstraktionen von Nebenläufigkeit, zB Futures, STM, etc
+### Case Study: the Scala Concurrency Model
+
+## Software Transactional Memory
+
+### Case Study: the Clojure Concurrency Model
+
+## Event-driven Concurrency
+
+### Case Study: the JavaScript/node.js Concurrency Model
+
+## Parallel Architecture
+
+~LitNote
+* siehe [@But14] zu den 4 Teilen:
+  * Bit-Level Parallelism
+  * Instruction-Level Parallelism
+  * Data Parallelism
+  * Task_level Parallelism (das ist das für mich wichtige)
+    * hier wird zwischen Shared-memory und Distributed-memory unterschieden, mit guter Erklärung
 ~
 
-## Concurrency at the Operating System Level
+### Inter-process Communication
 
-~Note
-The Process, Inter-process Communication, inherent concurrency
+~LitNote
+* [@But14]
+  * shared-memory: inter-process comm. through memory (faster)
+  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
+    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
 ~
 
-## Concurrency at the Network Level
+## Concurrency Models and Distributed Systems Similarities
+
+## Other Approaches and Concurrency Primitives
 
 
 
-The Microservice Paradigm
-=====================
+The Microservice Architecture Style
+===================================
 
-At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
 
-Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns ["of ???" - diesen Teil kann ich sicher etwas ausschmücken und auf B. Meyer verweisen]{.mind}, yet the transformation from the abstraction of program code to machine code leads to a result where the different module components are merged into one unified construct: the (monilithic) *executable*. [@Dra17a] defines:
 
-~ Definition {#def-monolith; caption: "Monolith"}
-A monolith is a software application whose modules cannot be executed independently.
-~   
+## Service-oriented Systems
 
-* Microservice
- : A microservice is a cohesive, independent process interacting via messages      
+## Key Concepts
 
-## Microservice Principles
+## Architecture Properties
 
-~ Epigraph { caption: "Groucho Marx"}
-These are my principles. If you don't like them, I have others.
+### Geographically Distributed Code: Concurrency Beyond Multiple Cores
+
+~LitNote
+* seet [@But14] was "geographically distributed code" bedeutet (im zusammenhang eines concurrency models); MSA haben dies wieder einmal inherent
 ~
 
-No shared state, etc
+### Resilience
 
-## Communication Channels
+## Architectural Elements
 
-Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
+### Communication Channel ()
 
-## Service Granularity: Size vs. Number of Services
+mostly HTTP
 
-"micro should refere to the scope of responsibility, not the lines of code"
+### Database per Service
 
-## Polyglot Programming
+### API Gateway: Request Broker and Curcuit Breaker
 
-## OO-Perspective
+#### Case Study: Hysterix and Akka
 
-### Are MS just Distributed Objects (done right)?
+## Quality Issues
 
-The Actor Model
-=======================
+### Software Quality Attributes
 
-~ Epigraph { caption: "Carl Hewitt"}
-One actor is no actor. Actors come in systems.
+#### Performance
+
+##### Case Study: JSON in Service as a Performance factor (siehe [@OBr05] p.15)
+
+## Design Concerns
+
+### Smart endpoints and dumb pipes (geklaut von M.Fowler)
+
+### Failure is inevitable
+
+### Service Granularity: Size vs. Number of Services
+
+### Satisfaction of local vs. global Quality Properties
+
+### Polyglot Programming
+
+## Patterns (Kapitel notwendig?)
+
+### Event-driven architecture
+
+## Development, Testing, Debugging and Maintenance
+
+~ Epigraph { caption: "Filipe Fortes" }
+Debugging is like being the detective in a crime movie where you're also the murderer.
 ~
 
-## Basic Actor Idea
+* [@Dra17a]: microservices implement a limited amount of functionalities, which makes their code base small and inherently limits the scope of a bug.Moreover, since microservices are independent, a developer can directly test and investigate their functionalities in isolation with respect to the rest of the system
 
-## Isolation
+* Service Component Test http://microservices.io/patterns/testing/service-component-test.html
+* Service Integration Contract Test http://microservices.io/patterns/testing/service-integration-contract-test.html
 
-every actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
 
-## Immutable Message Passing
+Towards a (Micro)service-Oriented Paradigm: A Look at Analogies
+======================================================
 
-## Typed Actors/Active Objects
 
-## Combining Actor with other Concurrency Models
 
-### Futures
+## Data Abstraction
 
-### Software Transactional Memory (STM)
+### Encapsulation
 
-## OO-Perspective
+### Information Hiding
 
-### Data Abstractions
+## Identity and Equality
 
-Encapsulation and Information Hiding
+* Identity = unique network address (may be abstracted behind gayteway proxy)
+* Equality = multiple (stateless) instances of the same service executable 
 
-### SOLID design principles
+## SOLID design principles
 
-### Design by Contract
+## Design by Contract and REST
 
-### Substitution and Behaviour
+~LitNote
+bzgl REST:
 
-### Are Actors (and Active Objects) just Distributed Objects?
-
-Common concerns of Concurrent, Parallel and Distributed Programming
-=====================
-
-~ Epigraph { caption: "Pamela Zave"}
-The purpose of software engineering is to control complexity, not to create it.
+* see [Mon16b], section 7, "RESTful services"
 ~
 
-## Isolation and autonomy
+### REpresentational State Transfer 
 
-"promise behaviour via API/protocol" --> design by contract
+### Pre- and Postconditions
 
-## Communication and Data Coupling
+### Invariants and History-constraints
 
-Sync vs Async, Immutable Messages
+## Substitution and Behaviour
 
-## Persistance
+* Ersetzbarkeit von Services (zB durch neue Version)
+  * Wenn Schnittstellen gleich
+  * Wenn Verhalten (nach außen) gleich/kompatibel
 
-Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
+## Delegation: Delegation: Sharing partial implementation
 
-## Fault tolerance
+~LitNote
+* see [@Sny93] "Essense of Objects"
+~
 
-"failure isolation"
+### Case Study: Delegation in JavaScript
 
-## Resilience
+## Message Passing: Avoiding Shared State
 
-"ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
+## Clients Request Services
 
-## Scalability
+~LitNote
+In [@Sny93] steht zu den *essential concepts* von Objekten u.a. "**Clients request services from objects**". Die folgenden Unterpunkte sind gegeben:
 
-## Load balancing
-Server and Client Side LB
+1. Clients issue requests
+2. Objects are encapsulated
+3. Requests identify operations
+4. Requests can identify objects
 
-## Elasticity / Code Mobility
+Diese 4 Punkte kann ich am konkreten Bsp eines MS durchspielen:
 
-Location transparency, elasticity = "move around in isolation"
+1. aufruft eines andere MS mittels REST call: einfach die REST URL angeben
+2. Encapsulation ist trivial zu argumentieren: jeder MS eigenes Program
+3. Die Operation wird identifiziert durch die REST Methode (PUT, GET, POST, DELETE) und den relativen Pfad (der hinter der Network-Addr.)
+4. Die Identification wird über die URL (den Teil mit der Network-Addr) gezeigt
 
-A Concurrent, Parallel and Distributed Problem Scenario
-===================== 
+Punkt 2 ist etwas überflüssig, aber kann man ja argumentieren. Punkt 3 und 4 sind besser vertauscht zu zeigen
+~
 
-## Domain Description
+## Event-based View
 
-Podcasts = Decentralized media syndication
+## Flow-based View   
 
-## Components
+## Process-, Behavioural-, and Session-Types
 
-## Information Flow
+~LitNote
+* "Behavioural types are types that can describe the behaviour of services and can be used to
+check that two (or more) services have compatible actions" [@Dra17a]
+* "Session types are a prime example of behavioural types" [@Dra17a]
+* "Session types have been successfully applied to many contexts already, ranging from parallel to distributed computing." [@Dra17a]
 
-## Concurrent Tasks
+zu Session Types: 
 
-Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
+* see "*Kohei Honda, Vasco Vasconcelos, and Makoto Kubo. Language primitives and type disciplines for structured communication-based programming. pages 22–138, 1998*"
+* see "*Kohei Honda, Nobuko Yoshida, and Marco Carbone. Multiparty asynchronous session types. Journal of the ACM,63(1):9, 2016. Also: POPL, 2008, pages 273–284*"
+~
 
-## Scalability Opportunities
+## Choreographies
 
-### Scalability through ??? (scaling up = changing allocated resources: memory, CPU)
+~LitNote
+* "Choreographies are high-level descriptions of the communications that we want to happen in a system in contrast with the typical methodology of defining the behaviour of each service separately" [@Dra17a]
+* see [@Mon13] "*Choreographic Programming*"
+~
 
-### Scalability through Parallelization and Distribution (scaling out)
 
-## Elasticity Considerations
 
-## Polyglot Persistence (based on Isolation)
+The Microservice Concurrency Model
+==================================
 
-An Actor-based Problem Solution
-=====================
 
-## Isolation
 
-State + Behaviour
+## Immutable Messages
 
-## Synchronous and Asynchronous Communication
+### Asynchronouse Dataflow with Synchronous Messages
 
-Channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
+## Message Processing and Transactional Memory
 
-## Data Coupling
+jeder REST request (der von einem DB state abhängt) wird mit STM gekennzeichnet (zB `@Transactional` in Java)
 
-Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
+## Applicability for Concurrent Problems
 
-## Persistence
+## Applicability for Parallel Problems
 
-Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
+## Resilient Code
 
-## Load balancing
+## Geographically Distributed Code
 
-Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
+## Distributed Computation
 
-## Fault Tolerance
+## Concurrent Process Types for Services
 
-Supervision and Error Kernel
 
-## Resilience
 
-## Scalability
+Scenario-based Experiment
+=========================
 
-## Elasticity / Code Mobility
-Cluster / Remoting of Akka, built in discovery system among nodes  
 
-## Configuration, logging, and deployment
 
-## Performance measurement of Actors
+## Scenario
 
-# A Microservice-based Problem Solution
+Anforderungen an das Szenario; welche Showcases müssen demonstriert werden können:
 
-## Isolation
+* Update von Funktionalität ohne Änderung des Gesamtsystems
+  * Deployment einer einzigen neuen MS-Programversion
+  * Update durch neuen Untertyp und Deployment mittels Dependency Injection
+* Synchronized access to shared data (zB die Fabrikshalle)
+  * Datastore MS, der von mehrere MS gleichzeitig benutzt werden kann
+  * Actor/ActiveObj/WasAuchImmer, welches die Sync to irgendeinem Datenspeicher übernimmt
+* Coarse grained operations on shared "objects" (in active objects), bzw auf services allgemein
+  * Kommunikation mit einem Roboter ist wohl ein einfaches Beispiel (via Object oder via Service Kommunikation)
+* Kein shared state
+  * Alle Actors/ActiveObbj/WasAuchImmer hat eigenen Datenspeicher
+  * MS haben eigenen State (und möglicherweise sogar eigene DB)
+  * Gemeinsame Datenspeicher via DataStore "pattern" (ist das irgendwie als echtes Pattern festgehalten?)
+* reusing, orchestration, aggrgation
+  * "every MS can be reused, orchestrated and aggregated with others"
+    * reuse: mehrere instanzen des selben MS starten
+    * orchestration: ?
+    * aggregation: ?
+  * passendes gegenstück zu concurrency model/objecten/etc?
+    * reuse
+    * orchestration
+    * aggregation
+* Bounded context
+  * MS: "Related functionalities are combined into a single business capability; implemented as a service"
+  * OOP: __Wie lauten die genauen definitionen, zB aus dem Buch von Meyer??__: 1) sich nur um eine Concern kümmern; 2)
+* Size
+  * OOP: nicht zu groß, sonst mehrere klassen; für maintainability; OOP generell für extendibility
+* Technology heterogeneity
+  * in MSA können unterschiedliche MS in unterschiedlichen programmiersprachen geschrieben werden: wäre interessant für implementierung, einen service nicht in Java (zB Scala, Clojure, Ruby, irgendwas anderes) zu schreiben; idealerweise einen der nicht aufwändig ist!
+  * nicht machbar in OOP etc
 
-State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
 
-## Synchronous and Asynchronous Communication
+~TODO
+Hier beschreibe ich kurz die "Angabe" zu meinen Implementierungen. Es soll durch eine Geschichte motiviert werden
+~
 
-REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+In order to base our implementations on a realistic scenario, we motivate the generel setting the implementations could actually be put to their use in a short summary:
 
-## Data Coupling
+~ {font-style: italic; width: 40%; margin: 2ex;}
+A long time ago in a galaxy far, far away....
 
-No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
-        
-## Persistence
+The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku. His Separatist Droid Army is produced automatically inside Smart Factories somewhere in the Outer Rim. All production steps are performed by autonomouse droids. This highly concurrent system will lead to the ultimate victory over the Jedi....
+~
 
-One DB per MS
+In this scenario, we simulate the production processes of such a *smart factory*. A variaty of coordination problems therefore have to be handled. The following actors (here, we mean the "droid" actors, not actors as in the actor model) are involved:
 
-## Load balancing    
+* customers (separatist leaders ordering battle-droids)
+* management droids
+* logistic droids
+* assembly droids
+* quality-assurance droids
+* delivery droids
 
-to be done manually in API gateway, or via MQ 
+The following poducts (battle droid models) can be produced inside the smart factory:
 
-## Cluster / Remoting
+~TODO
+droids siehe: http://starwars.wikia.com/wiki/Separatist_Droid_Army
+~
 
-Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+* B1 battle droid
+* B2 super battle droid
+* Droideka
+* Super tactical droid
 
-## Fault Tolerance
 
-Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
+We created two prototypical impelementations simulating the descripated *smart factory*. One implementation is written in Erlang using its actor model. The other implementation is written with a microservice architecture, in [**Java ?**] / [**Go ?**]
 
-## Resilience
+## Prototype using Standard Models of Concurrency
 
-## Scalability
+### Case Study: Why do Java Programmers like MSA?
 
-## Elasticity / Code Mobility
+## Prototype based on a Micorservice Architecture
 
-requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
+## Findings
 
-## Configuration, logging, and deployment
 
-## Performance measurement of Microservices
-
-Evaluation
-=====================
-
-## Software Quality Attributes
-
-SOA qual. attr.
-
-* Performance
-* Scalability
-* Availability
-* Modifiability
-* Development distributability (???)
-* Deployability
-* Portability (Mobility?)
-
-## Quality Metrics
-
-### Internal Quality Metrics
-
-Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
-
-### External Quality Metrics
-
-## Performance Measurement
 
 Discussion
-=====================
-
-## The Case for Actors
-
-### Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
-
-## The Case for Microservices
-
-## Empirical Indications
-
-  Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refactorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
+==========
 
 
-Outlook & Conclusion
+
+## Comparision of Attributes/Features/etc
+
+## Comparison of the MSA-Concurrency-Model with the others
+
+## Why Developers adopt MSA
+
+## Problems of Developers with Concurrency Models
+
+### Case Study: Why Do Scala Developers Mix the Actor Model with other Concurrency Models?
+
+## Do Sufficiently Concurrent Programming Languages need MSA?
+
+### Jolie
+
+~LitNote
+* Jolie "natively" supports decorator pattern
+  * see https://www.reddit.com/r/programming/comments/5hrxh5/jolie_natively_supports_decorator_pattern_maybe/
+  * see http://fmontesi.github.io/2016/11/12/service-decorators.html
+~
+
+### Distributed Erlang
+
+#### Scalability and Reliability
+
+### Plattform and Middleware-based Approaches
+
+#### Virtual Machines
+
+~ LitNote
+* see [@Xu16] zu CAOPLE and VMs
+~
+
+#### XVSM/MozartSpaces
+
+
+
+Outlook
 =======
 
 
 
 ~ Epigraph { caption: "Niels Bohr" }
 Predicition is very difficult, especially about the future.
-~
-
-~Note
-Services as First-Class Citizens
 ~
 
 In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, we want to argue that instead of a rivalry, both approaches should instead be combined to define a new style of programming. 
@@ -493,6 +615,9 @@ On this observaton we want to motivate that it seems to be a good idea to integr
   * formal methods based on well-known techniques seem to be a promising starting point for tackling the issue of writing correct microservice systems;
   * these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics;
   
+
+Conclusion
+==========
 
 [BIB]
 

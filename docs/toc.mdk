@@ -128,10 +128,11 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
 * Concurrent Programming
     * Execution Order and Nondeterminism
     * Threads, Locks and Shared State
-* Distributed Programming
-    * The Process
-    * Inter-process Communication
-    * Inherent Concurrency
+    * Concurrency at the Programming Language Level
+        : allgemeines über die Abstraktionen von Nebenläufigkeit, zB Futures, STM, etc
+    * Concurrency at the Operating System Level
+        : The Process, Inter-process Communication, inherent concurrency
+    * Concurrency at the Network Level
 * Microservice Paradigm
     * Principles of MS
         : No shared state, etc
@@ -152,6 +153,11 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
         * Futures
         * Software Transactional Memory (STM)
     * OO-Perspective
+        * Data Abstractions
+            : Encapsulation and Information Hiding
+        * SOLID design principles
+        * Design by Contract
+        * Substitution and Behaviour
         * Are Actors (and Active Objects) just Distributed Objects?
 * Common concerns of Concurrent, Parallel and Distributed Programming
     * Isolation and autonomy
@@ -163,7 +169,7 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Fault tolerance
         : "failure isolation"
     * Resilience
-        : "ability to heal from failure" - break free from strong coupling of synchron comm.
+        : "ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
     * Scalability
     * Load balancing
         * Server and Client Side LB
@@ -220,6 +226,8 @@ Actors, Comparison, Semantics, Abstractions, Microservice, Event-driven Architec
     * Configuration, logging, and deployment
     * Performance measurement of Microservices
 * Evaluation
+    * Software Quality Attributes
+        : SOA qual. attr.
     * Quality Metrics
         * Internal Quality Metrics
             : Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
