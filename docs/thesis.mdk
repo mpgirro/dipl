@@ -170,6 +170,8 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 
 ## Scope of this Thesis
 
+In this thesis, we will take a close look at two concept, the Actor programming model, and the microservice style, and compare them to each other.
+
 ## Methodology used
 
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
@@ -181,6 +183,12 @@ Begin at the beginning," the King said gravely, and go on till you come to the e
 Concurrent Programming
 ======================
 
+~LitNote
+* [@Agh85] describes 3 "foundational issues" of concurrent systems
+    * Shared resources
+    * Dynamic Reconfiguration
+    * Inherent Parallelism
+~
 
 
 ## Execution Order and Nondeterminism
@@ -205,8 +213,10 @@ The Process, Inter-process Communication, inherent concurrency
 
 
 
-The Microservice Paradigm
-=====================
+The Microservice Paradigm {#ch-microservice-paradigm}
+=========================
+
+
 
 At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
 
@@ -241,8 +251,12 @@ Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
 
 ### Are MS just Distributed Objects (done right)?
 
-The Actor Model
-=======================
+
+
+The Actor Model {#ch-actor-model}
+===============
+
+
 
 ~ Epigraph { caption: "Carl Hewitt"}
 One actor is no actor. Actors come in systems.
@@ -278,11 +292,17 @@ Encapsulation and Information Hiding
 
 ### Are Actors (and Active Objects) just Distributed Objects?
 
-Common concerns of Concurrent, Parallel and Distributed Programming
+Common concerns of Concurrent, Parallel and Distributed Programming (Commonalities of Actors and Microservices)
 =====================
 
 ~ Epigraph { caption: "Pamela Zave"}
 The purpose of software engineering is to control complexity, not to create it.
+~
+
+~LitNote
+* Diskussion: MS behandeln ebenfalls die 3 "foundational issues" die laut [@Agh85] concurrency modelle lösen sollten
+* Weiters zitiert [@Agh85]: "It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change (Hewitt and de Jong 85)."
+    * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
 ## Isolation and autonomy
@@ -314,8 +334,40 @@ Server and Client Side LB
 
 Location transparency, elasticity = "move around in isolation"
 
+## Availability
+
+* Actors, siehe: [@Agh85]
+
+## Extensibility
+
+* Actors, siehe: [@Agh85]
+
+## Internal and External Concurrency (schlechter Titel)
+
+~Note
+Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
+~
+
+In chapter [#ch-actor-model] we discussed the actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
+
+```
+WHILE TRUE:
+    GET next message from mailbox
+    process message
+    repeat 
+```
+
+Nothing wihin an actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An actor itself is a non-concurrent entity. Therefore, the actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. Yet from the semantics of this programming model follows a special requirement: there has to be more than one actor [citation needed]{.mind}. A single actor is unfit for any useful processing, the basic reason for any programming model, because it would never receive any messages, and knows no addresses to send any messages to [obacht! ein actor könnte sich dauernd selbst messages schreiben, damit liese sich schon was machen - also hab ich hier ein wackeliges argument]{.mind}. The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". This requirement for an *actor system* drives the programming model. An this ...[TODO]{.mind}
+
+As we discussed, a microservice on the other hand can also be considered a concurrent component within a system, either on the operating system level or the network level (or both). Yet it's notion of concurrency is defiant from that of an actor. Though it also received message of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice can therefore behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [irgendwas allgemeines zu locking und read zitieren]{.mind} 
+
+Programming with microservices does not - unlike actors - free one from many of the hassles of concurrent programming per se. Depending on the model used for internal service concurrency, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is the limiting factor to the growth of complexity of internal concurrency considerations [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
+
+
 A Concurrent, Parallel and Distributed Problem Scenario
-===================== 
+=======================================================
+
+
 
 ## Domain Description
 
@@ -339,8 +391,12 @@ Fetching data (feeds/websites), parsing data (feeds,websites), registering new e
 
 ## Polyglot Persistence (based on Isolation)
 
+
+
 An Actor-based Problem Solution
-=====================
+===============================
+
+
 
 ## Isolation
 
@@ -371,13 +427,31 @@ Supervision and Error Kernel
 ## Scalability
 
 ## Elasticity / Code Mobility
+
 Cluster / Remoting of Akka, built in discovery system among nodes  
 
-## Configuration, logging, and deployment
+## Deployment
+
+Mostly of no concern, bit of configutation for cluster setup (seed nodes for peer to peer discovery), cluster singleton and cluster sharding for complex deployment setups
+
+## Availability
+
+* siehe: [@Agh85]
+
+## Extensibility
+
+* iehe: [@Agh85]
+
+## Configuration, logging, etc
 
 ## Performance measurement of Actors
 
-# A Microservice-based Problem Solution
+
+
+A Microservice-based Problem Solution
+=====================================
+
+
 
 ## Isolation
 
@@ -415,12 +489,28 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 
 requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
 
-## Configuration, logging, and deployment
+## Deployment
+
+depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
+
+## Availability
+
+
+
+## Extensibility
+
+* [@Mon16a]: "New versions of components can be gradually intro- duced in a system, by deploying them side to side with previous versions. This advantage can be incorporated in Continuous Integration"
+
+## Configuration, logging, etc
 
 ## Performance measurement of Microservices
 
+
+
 Evaluation
-=====================
+==========
+
+
 
 ## Software Quality Attributes
 
@@ -444,8 +534,12 @@ Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, aut
 
 ## Performance Measurement
 
+
+
 Discussion
 =====================
+
+
 
 ## The Case for Actors
 
@@ -456,6 +550,7 @@ Discussion
 ## Empirical Indications
 
   Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refactorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
+
 
 
 Outlook & Conclusion

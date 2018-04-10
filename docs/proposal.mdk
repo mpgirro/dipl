@@ -208,7 +208,7 @@ We subsequently ask the question:
 -->
 
 > **RQ3**: Do sufficiently concurrent programming languages need microservice 
-  architectures, i.e. are there features of the microservice paradigm regarding concurrent system design 
+  architectures, i.e. are there capabilities of the microservice paradigm regarding concurrent system design 
   that a classic concurrency model cannot provide?
 
 > **RQ3**: Do programming languages facilitating libraries/frameworks/language constructs with sufficiently advanced actor semantics need (event-driven) microservice architectures, i.e. are there features of MSA regarding concurrent and distributed software design that the actor sematics do not or can not provide?
