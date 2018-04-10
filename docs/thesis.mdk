@@ -232,7 +232,9 @@ One actor is no actor. Actors come in systems.
 
 ## Isolation
 
+~LitNote
 every actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
+~
 
 ## Immutable Message Passing
 
@@ -287,7 +289,7 @@ No shared state, etc
 ## Communication Channels {#sec-ms-communication}
 
 ~LitNote
-Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
+Open/well-defined Communication Interface
 ~
 
 
@@ -352,13 +354,18 @@ extension based on actor systems: encapsulation, fairness, location transparency
 
 ## Communication and Data Coupling
 
+~LitNote
 * Sync vs Async, Immutable Messages
+* Point to Point, Publish/Subscribe, 
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between actors"
+~
 
 ## Fair scheduling
 
+~LitNote
 * [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination actor except for its permanent “disability”, and no actor can be permanently starved
 * MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
+~
 
 ## Autonomy
 
@@ -410,9 +417,24 @@ Programming with microservices does not, unlike actors, free one from the many h
     * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
 ~
 
+### Location Transparency and Distributed Objects
+
+~LitNote
+* Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
+~
+
+An extension to the Object concept is the idea of *Distributed Objects*. Here, objects are attached to a thread/process. For every distr. obj. a proxy object is created, which wrappes the method calls to the distributed object. This allows for a location transparent method call. These distributed objects can then be distributed (hence the name) outside the original programs scope [quelle für den absatz]{.mind}.
+
+We already discussed the analogies of actors and microservices to the notion of objects. Now, with these similarities and the fact that actors and microservices each provide mechanisms for location transparent messaging too, we should discuss the following three questions:
+
+* Are Actors (and Active Objects) just Distributed Objects?
+* Are MS just Distributed Objects (done right)?
+
 ## Persistance
 
+~LitNote
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
+~
 
 ## Mobility
 
@@ -431,24 +453,42 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 
 ## Elasticity
 
+~LitNote
+* Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)
+* Actors can easily be created and kill by messages. A system must support elastic mechanism itself. question is from which components is this command issues? also a management framework? or is the system this detected by itself. in case of cluster, are new actors spawned on random node, or some metric for node with most free resources?
+    * interessesting are cases for Stores, because DB/Index resources need to be present, and how are they being brought up to current state --> Event sourcing
+* IDEE: Ich werde elasticity nur theoretisch unterstützen. 
+    * die MS sind an sich darauf vorbereitet, müsste nur eine neue abstraktionsebene hinzugefügt werden (management framework) die das regelt; event sourcing subsystem für stores fehlt
+    * actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
+~
+
 ## Fault tolerance
 
+~LitNote
 "failure isolation"
+~
 
 ## Resilience
 
+~LitNote
 "ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
 
 Location transparency, elasticity = "move around in isolation"
+~
 
 ## Availability
 
+~LitNote
 * Actors, siehe: [@Agh85]
+~
 
 ## Extensibility
 
+~LitNote
 * Actors, siehe: [@Agh85]
-
+* gradual/separate replacement of MS
+* substitution and subtyping für actors
+~
 
 
 A Concurrent, Parallel and Distributed Problem Scenario
@@ -493,19 +533,27 @@ State + Behaviour
 
 ## Synchronous and Asynchronous Communication
 
-Channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
+~LitNote
+howto channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
+~
 
 ## Data Coupling
 
+~LitNote
 Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
+~
 
 ## Persistence
 
+~LitNote
 Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
+~
 
 ## Load balancing
 
+~LitNote
 Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
+~
 
 ## Fault Tolerance
 
@@ -517,19 +565,28 @@ Supervision and Error Kernel
 
 ## Elasticity / Code Mobility
 
+~LitNote
 Cluster / Remoting of Akka, built in discovery system among nodes  
+~
 
 ## Deployment
 
+~LitNote
 Mostly of no concern, bit of configutation for cluster setup (seed nodes for peer to peer discovery), cluster singleton and cluster sharding for complex deployment setups
+~
 
 ## Availability
 
+~LitNote
 * siehe: [@Agh85]
+~
 
 ## Extensibility
 
-* iehe: [@Agh85]
+~LitNote
+* siehe: [@Agh85]
+* hier allgemein zu actor subtyping und substituion schreiben etc 
+~
 
 ## Configuration, logging, etc
 
@@ -544,31 +601,45 @@ A Microservice-based Problem Solution
 
 ## Isolation
 
+~LitNote
 State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
+~
 
 ## Synchronous and Asynchronous Communication
 
-REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+~LitNote
+howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+~
 
 ## Data Coupling
 
+~LitNote
 No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
-        
+~       
+
 ## Persistence
 
+~LitNote
 One DB per MS
+~
 
 ## Load balancing    
 
+~LitNote
 to be done manually in API gateway, or via MQ 
+~
 
 ## Cluster / Remoting
 
+~LitNote
 Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+~
 
 ## Fault Tolerance
 
+~LitNote
 Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
+~
 
 ## Resilience
 
@@ -576,11 +647,15 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 
 ## Elasticity / Code Mobility
 
+~LitNote
 requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
+~
 
 ## Deployment
 
+~LitNote
 depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
+~
 
 ## Availability
 
@@ -588,7 +663,9 @@ depending on specific need, some sort of cloud management framework (or a combin
 
 ## Extensibility
 
+~LitNote
 * [@Mon16a]: "New versions of components can be gradually intro- duced in a system, by deploying them side to side with previous versions. This advantage can be incorporated in Continuous Integration"
+~
 
 ## Configuration, logging, etc
 
@@ -603,6 +680,7 @@ Evaluation
 
 ## Software Quality Attributes
 
+~LitNote
 SOA qual. attr.
 
 * Performance
@@ -612,12 +690,15 @@ SOA qual. attr.
 * Development distributability (???)
 * Deployability
 * Portability (Mobility?)
+~
 
 ## Quality Metrics
 
 ### Internal Quality Metrics
 
+~LitNote
 Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
+~
 
 ### External Quality Metrics
 
@@ -638,7 +719,9 @@ Discussion
 
 ## Empirical Indications
 
+~LitNote
   Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refactorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
+~
 
 
 
@@ -669,6 +752,7 @@ On this observaton we want to motivate that it seems to be a good idea to integr
 
 **Und dann noch weiteren blabla, aber das ist doch schon mal ein guter Ansatz das anzugehen, und den Outlook mit diesem Thema doch drinnen zu haben!**   
 
+~LitNote
 * "Programming Services as a new Paradigm"
   * Hier die Vision und die Gründe/Vorteile von einem neuen Paradigma beschreiben
   * Bsp der Datenbank-Services: 
@@ -682,7 +766,7 @@ On this observaton we want to motivate that it seems to be a good idea to integr
   * explanations of how interactions among multiple services (multiparty sessions) are related to well-known techniques for logical reasoning [16,13];
   * formal methods based on well-known techniques seem to be a promising starting point for tackling the issue of writing correct microservice systems;
   * these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics;
-  
+~
 
 [BIB]
 
