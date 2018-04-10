@@ -213,6 +213,47 @@ The Process, Inter-process Communication, inherent concurrency
 
 
 
+The Actor Model {#ch-actor-model}
+===============
+
+
+
+~ Epigraph { caption: "Carl Hewitt"}
+One actor is no actor. Actors come in systems.
+~
+
+## Basic Actor Idea
+
+## Isolation
+
+every actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
+
+## Immutable Message Passing
+
+## Typed Actors/Active Objects
+
+## Combining Actor with other Concurrency Models
+
+### Futures
+
+### Software Transactional Memory (STM)
+
+## OO-Perspective
+
+### Data Abstractions
+
+Encapsulation and Information Hiding
+
+### SOLID design principles
+
+### Design by Contract
+
+### Substitution and Behaviour
+
+### Are Actors (and Active Objects) just Distributed Objects?
+
+
+
 The Microservice Paradigm {#ch-microservice-paradigm}
 =========================
 
@@ -253,47 +294,10 @@ Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
 
 
 
-The Actor Model {#ch-actor-model}
-===============
-
-
-
-~ Epigraph { caption: "Carl Hewitt"}
-One actor is no actor. Actors come in systems.
-~
-
-## Basic Actor Idea
-
-## Isolation
-
-every actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
-
-## Immutable Message Passing
-
-## Typed Actors/Active Objects
-
-## Combining Actor with other Concurrency Models
-
-### Futures
-
-### Software Transactional Memory (STM)
-
-## OO-Perspective
-
-### Data Abstractions
-
-Encapsulation and Information Hiding
-
-### SOLID design principles
-
-### Design by Contract
-
-### Substitution and Behaviour
-
-### Are Actors (and Active Objects) just Distributed Objects?
-
-Common concerns of Concurrent, Parallel and Distributed Programming (Commonalities of Actors and Microservices)
+Commonalities of Actors and Microservices
 =====================
+
+
 
 ~ Epigraph { caption: "Pamela Zave"}
 The purpose of software engineering is to control complexity, not to create it.
@@ -312,6 +316,32 @@ The purpose of software engineering is to control complexity, not to create it.
 ## Communication and Data Coupling
 
 Sync vs Async, Immutable Messages
+
+
+## Internal and external Component Concurrency
+
+~LitNote
+Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
+~
+
+In chapter [#ch-actor-model] we discussed the actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
+
+```
+WHILE TRUE:
+    GET next message from mailbox
+    process message
+    repeat 
+```
+
+Nothing wihin an actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An actor itself is a non-concurrent entity. Therefore, the actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. The most basic case is a single actor. It only knows about itself, therefore can only receive messages from itself, process them, and send messages to itself. The semantic of this behaviour is a simple loop, where no state information leaves the scope of the actor. It results in a simple, single threaded program. 
+
+The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". The overall idea of - and driving reason to use - the actor programming model is to have more than one actor in place. The models semantic allows to send messages freely between actors within a system. While each actor itself is a non-concurrent entity, this exchange of (immutable) messages semantically allows actors to be executed in a concurrent fashion by the system. 
+
+Actors by themselfs are not concurrent, but their semantic allows them to be executed within a system in a concurrent manner. If the actor semantic is preserved at all time - how this has to be done and if it can be guaranteed is up to the actually used actor system implementation - then an actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing.   
+
+A microservice on the other hand can also be considered a concurrent component within a system, as we discussed either on the operating system level or the network level (or both). Yet it's notion of concurrency is divergent from that of an actor. Though it also received message of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
+
+Programming with microservices does not, unlike actors, free one from the many hassles of internal component concurrency problems per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
 
 ## Persistance
 
@@ -342,26 +372,6 @@ Location transparency, elasticity = "move around in isolation"
 
 * Actors, siehe: [@Agh85]
 
-## Internal and External Concurrency (schlechter Titel)
-
-~Note
-Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
-~
-
-In chapter [#ch-actor-model] we discussed the actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
-
-```
-WHILE TRUE:
-    GET next message from mailbox
-    process message
-    repeat 
-```
-
-Nothing wihin an actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An actor itself is a non-concurrent entity. Therefore, the actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. Yet from the semantics of this programming model follows a special requirement: there has to be more than one actor [citation needed]{.mind}. A single actor is unfit for any useful processing, the basic reason for any programming model, because it would never receive any messages, and knows no addresses to send any messages to [obacht! ein actor könnte sich dauernd selbst messages schreiben, damit liese sich schon was machen - also hab ich hier ein wackeliges argument]{.mind}. The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". This requirement for an *actor system* drives the programming model. An this ...[TODO]{.mind}
-
-As we discussed, a microservice on the other hand can also be considered a concurrent component within a system, either on the operating system level or the network level (or both). Yet it's notion of concurrency is defiant from that of an actor. Though it also received message of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice can therefore behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [irgendwas allgemeines zu locking und read zitieren]{.mind} 
-
-Programming with microservices does not - unlike actors - free one from many of the hassles of concurrent programming per se. Depending on the model used for internal service concurrency, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is the limiting factor to the growth of complexity of internal concurrency considerations [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
 
 
 A Concurrent, Parallel and Distributed Problem Scenario
@@ -397,6 +407,8 @@ An Actor-based Problem Solution
 ===============================
 
 
+
+When using the actor model in practice, it is important define which model is used. There is not *the* actor model, there is only the theoretical concept of the basic  
 
 ## Isolation
 
