@@ -187,7 +187,7 @@ knowledge aquired in RQ1 and RQ2a, we are interrested in:
   convenient for the commonalities identified in RQ1?
 -->
 
-> **RQ2b**: Demonstrated on two exemplary applications implementing the same scenario, which  concurrency model has the most resemblance to the microservice architecture style?
+> **RQ2b**: Demmonstrated on a prototypical problem szenario with concurrent, parallel and distributed requirements, how can the problem be implemented with a classic concurrency approach and a microservice architecture? 
 
 ~ Answer
 **Answer**: Hängt primär von der gewählten Kommunikationsstrategie (Kanal + 
@@ -208,8 +208,8 @@ We subsequently ask the question:
 -->
 
 > **RQ3**: Do sufficiently concurrent programming languages need microservice 
-  architectures, i.e. are there features of MSA regarding concurrent software design 
-  that languages facilitating classic concurrency models do not provide?
+  architectures, i.e. are there features of the microservice paradigm regarding concurrent system design 
+  that a classic concurrency model cannot provide?
 
 > **RQ3**: Do programming languages facilitating libraries/frameworks/language constructs with sufficiently advanced actor semantics need (event-driven) microservice architectures, i.e. are there features of MSA regarding concurrent and distributed software design that the actor sematics do not or can not provide?
 
