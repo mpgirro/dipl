@@ -175,6 +175,8 @@ In this thesis, we will take a close look at two concept, the Actor programming 
 ## Methodology used
 
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
+* literature review for chapter: concurrency, actor model, microservice paradigm, similarities and differences
+* practical work for actor solution, microservice solution
 
 ## Road Map
 
@@ -194,7 +196,11 @@ Concurrent Programming
 ## Execution Order and Nondeterminism
 
 
-## Threads, Locks and Shared State
+## Synchronization and Coordination as Concurrency Control
+
+
+* Threads, Locks and Shared State
+* Message passing
 
 
 ## Concurrency at the Programming Language Level
@@ -278,9 +284,36 @@ These are my principles. If you don't like them, I have others.
 
 No shared state, etc
 
-## Communication Channels
+## Communication Channels {#sec-ms-communication}
 
+~LitNote
 Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
+~
+
+
+Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or UNIX pipes.
+
+The microservice idiom specifies the following requirements on service IPC:
+
+1. Messages between services should be immutable [citation needed]{.mind} 
+2. Communication channels should be light-weighted [citation needed]{.mind} 
+3. Communication channels should only act as message routers, and therefore should not introduce data processing logic of their own [citation needed]{.mind} . Fowler calls this characteristic "smart endpoints and dumb pipes" [@Fow14]
+
+From the two example IPC mechanisms above, UNIX pipes and shared memory, only the pipes qualify for a valid microservice communication channel. UNIX pipes transport text strings between processes. The strings represent serialized data (= state information) of one service an is transported in an immutable way between the endpoints of the pipe[^fn-unix-pipes]. This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
+
+[^fn-unix-pipes]: UNIX pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A chain of pipes will therefore in general represent a modifying communication route, but each single pipe is transporting immutable data. 
+
+
+## Inherent Concurrency and Distribution
+
+Any microservice within an MSA is by design a dedicated process. As we discussed in chapter [?]{.mind}, processes are inherently concurrent on the operating system level. Any microservice architecture is therefore an inherently concurrent system.
+
+In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like UNIX pipes) are also only capable of sending messages between processes on the same operating system. Alternatively, a generally more safe alternative
+
+Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
+
+
+Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 
 ## Service Granularity: Size vs. Number of Services
 
@@ -294,8 +327,8 @@ Point to Point, Publish/Subscribe, Open/well-defined Communication Interface
 
 
 
-Commonalities of Actors and Microservices
-=====================
+Commonalities and Differences of Actors and Microservices
+=========================================================
 
 
 
@@ -309,19 +342,31 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
-## Isolation and autonomy
+## State Encapsulation
 
-"promise behaviour via API/protocol" --> design by contract
+~LitNote
+* "promise behaviour via API/protocol" --> design by contract
+* [@Kan12] 4 four important semantic properties of our
+extension based on actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
+~
 
 ## Communication and Data Coupling
 
-Sync vs Async, Immutable Messages
+* Sync vs Async, Immutable Messages
+* [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between actors"
 
+## Fair scheduling
+
+* [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination actor except for its permanent “disability”, and no actor can be permanently starved
+* MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
+
+## Autonomy
 
 ## Internal and external Component Concurrency
 
 ~LitNote
-Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
+* Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
+* Ich sollte anmerken, dass beide Ansätze per se einmal gar nicht zwingend für Concurrency sind/sein müssen (Actors sind auch ein allg. Programming model). Nur ihre **semantik** führt automatisch zu einer nebenläufigen, ggf auch automatisch zu einer parallelen, Ausführung 
 ~
 
 In chapter [#ch-actor-model] we discussed the actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
@@ -333,19 +378,58 @@ WHILE TRUE:
     repeat 
 ```
 
-Nothing wihin an actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An actor itself is a non-concurrent entity. Therefore, the actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. The most basic case is a single actor. It only knows about itself, therefore can only receive messages from itself, process them, and send messages to itself. The semantic of this behaviour is a simple loop, where no state information leaves the scope of the actor. It results in a simple, single threaded program. 
+Nothing wihin an actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An actor itself is a non-concurrent entity *internally*. Therefore, the actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. The most basic case is a single actor. It only knows about itself, therefore can only receive messages from itself, process them, and send messages to itself. The semantic of this behaviour is a simple loop, where no state information leaves the scope of the actor. It results in a simple, single threaded program. 
 
 The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". The overall idea of - and driving reason to use - the actor programming model is to have more than one actor in place. The models semantic allows to send messages freely between actors within a system. While each actor itself is a non-concurrent entity, this exchange of (immutable) messages semantically allows actors to be executed in a concurrent fashion by the system. 
 
-Actors by themselfs are not concurrent, but their semantic allows them to be executed within a system in a concurrent manner. If the actor semantic is preserved at all time - how this has to be done and if it can be guaranteed is up to the actually used actor system implementation - then an actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing.   
+Actors by themselfs are not concurrent, but their semantic allows them to be executed *externally* in a concurrent manner, within a system. If the actor semantic is preserved at all time - how this has to be done and if it can be guaranteed is up to the actual actor system implementation - then an actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing. [hier könnte ich noch irgendwas brauchbares aus dem Paper das die Concurrency Bugs behandelt zum besten geben]{.mind}   
 
-A microservice on the other hand can also be considered a concurrent component within a system, as we discussed either on the operating system level or the network level (or both). Yet it's notion of concurrency is divergent from that of an actor. Though it also received message of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
+A microservice on the other hand has the basic abstraction of a process. Any system process for itself is, from an external point of view, not especially concurrent [??]{.mind}. But within a system, these processes form, just like actors, concurrent nature due to the semantic properties of proccesses. 
+
+Through the basic process semantic [hier sollte ich diese semantik aufzählen: isolation, messages, fair scheduling + quelle]{.mind}, just like with actors, any system of processes lead to a concurrent system. The services external concurrency is always either on the operating system level or the network level (or both). Yet their notion of internal concurrency is divergent from that of an actor. Though it also receives messages of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
 
 Programming with microservices does not, unlike actors, free one from the many hassles of internal component concurrency problems per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
+
+## Location Transparency and Distribution
+
+~LitNote
+* Actors und MS ist es an sich egal ob sie lokal oder verteilt ausgeführt werden, beide können dies gut abstrahieren
+* [@Reh13] defines requirements on distributed actors:
+    * R1: Distributability: Non-distributed applications must be easy to be migrated to clustered set-ups.
+    * R2: API-uniformity: The distribution API must be similar for intra-node as well as inter-node applications
+    * R3: Compatibility: An application that works locally on one node should also work distributed in a cluster.
+    * R4: Flexibility: Beside actors that have access to specific hardware, the developer should freely decide which actor runs on which node of the cluster.
+    * R5: Configurability: Simple configuration of the clustering subsystem and the distribution layout.
+* [@Kan15] (über distributed/cloud actors)
+    * "There (actor) distinctive features make it suitable to support distributed memory parallelism, and it has been widely used in many industrial languages such as Erlang[2], Scala [3], Akka [4]"
+    * "However, most related works focus on multi-core environment. Neither inter-parallelism or task parallelism can be easy applied in dynamic distributed environment, because actors distributing over cluster may be- have indeterminable interrelationship, such as uncertain com- munication, dependency and failure"
+* [@Kan12] (über distributed actors)
+    * Computers connect by network, which makes the environment distributed, disparate, mutable and unreliable
+    * According to classifications of parallel programming models in process interaction, mechanisms of which make the parallel processes able to communication with each other, the most common forms of interaction are shared memory, message passing, and implicit [4]
+    * In Actor model, location transparency means the actual location of an actor does not affect its name. That is to say, if one actor knows another, they can communicate only by names instead of specific address --> kommunikating via ActorRef instead of pointer; bei MS muss das zB für REST extra ein Service Discovery übernehmen, der dies abstrahiert; 
+    * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
+~
 
 ## Persistance
 
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
+
+## Mobility
+
+~LitNote
+* [@Kan12] (über distributed erlang actors)
+    * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
+    * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
+    * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
+~
+
+## Scalability
+
+## Load balancing
+
+* Server and Client Side LB
+
+## Elasticity
 
 ## Fault tolerance
 
@@ -354,13 +438,6 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 ## Resilience
 
 "ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
-
-## Scalability
-
-## Load balancing
-Server and Client Side LB
-
-## Elasticity / Code Mobility
 
 Location transparency, elasticity = "move around in isolation"
 
@@ -549,7 +626,7 @@ Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, aut
 
 
 Discussion
-=====================
+==========
 
 
 
@@ -574,13 +651,19 @@ Outlook & Conclusion
 Predicition is very difficult, especially about the future.
 ~
 
-~Note
-Services as First-Class Citizens
+~LitNote
+* Services as First-Class Citizens
+* [@Kan15] beschreibt eine distributed Actors in Erlang, mit Erweiterungen:
+    * "This new model is designed for representing Cloud applications based on actors in a deterministic, expressive and scalable way. It can also solve certain categories of problems more productively than original actor model, and more advantageously in multi-computer ar- chitecture than other deterministic concurrency models such as task parallelism"
+    * By introducing distask model, a number of constructs can now be supported. It provides a flexible set of primitives and runtime support to easily write various of distributed applications scaling over a dynamic changeable environment. New capabilities can be summed up for three main points, introduced below:
+        * Deterministic Expression: The key powerful expressivity of deterministic concurrency allows programmers to encapsulate complicated communica- tion and synchronization protocols as first-class abstractions
+        * Advanced Concurrency in Actors Internal: Internal parallelization, Join Calculus --> **internal parallelization ist genau das was MS mit ihrer internal concurrency auch haben -> das habe ich in einem unterkapitel auch angemerkt. sollte ich auf jeden falls hier zusammenbringen!**
+        * Scalability & Fault Tolerance
 ~
 
-In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, we want to argue that instead of a rivalry, both approaches should instead be combined to define a new style of programming. 
+In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, instead of rivalry, want to entertain the though of a unification of both towards a new style of programming. 
 One the one hand, we analyzed microservices for their core concepts and found that their natural characteristics implied a high form of isolation. Combined with an asynchronouse communication mechanism, they become highly decoupled and the resulting architecture enjoys the principles of Actor based concurrency combined with the feature of distribution and mobility that agent based systems defined long ago. Yet programming a microservice architecture results in a significant overhead in terms of complexity, maintainability, etc. 
-On the other hand, we discussed the classic concurrency models of actors, and found that if it gets extended by additional concepts, such as it is done in existing implementations today, the resulting artifacts yield similar benefits as the microservice approach to. For these implementations are integrated into many mainstream programming languages, they are naturally available to developers to use without increasing complexity and related software development concerns as microservices architectures do. It seems programming concurrency is still unnatural or at least not loved by programmers. The microservice apporach seems to let them better think and plan the separation of concerns inside their software architecture in a divide an conquer way that concurrency primitives of programming languages do.
+On the other hand, we discussed the classic concurrency model through actors, and found that if it gets extended by additional concepts, such as it is done in existing implementations today, the resulting artifacts yield similar benefits as the microservice approach to. For these implementations are integrated into many mainstream programming languages, they are naturally available to developers to use without increasing complexity and related software development concerns as microservices architectures do. It seems programming concurrency is still unnatural or at least not loved by programmers. The microservice apporach seems to let them better think and plan the separation of concerns inside their software architecture in a divide an conquer way that concurrency primitives of programming languages do.
 
 On this observaton we want to motivate that it seems to be a good idea to integrate the concepts of the service as a principle component into programming languages (like objects) is a good approach. In fact, this is done in some projects already. As the most promising one, we see Jolie. This approach allows developers to write microservice styled programm architectures in a single codebase, while in principle they write software with and actor-based concurrency and distribution approach as we discussed in this thesis.
 
