@@ -87,6 +87,9 @@ CSS Header      :
   .toc a, .toc a:visited { 
     color: #0000EE;  
   }
+  .a, a:visited {
+    color: #0000EE;  
+  }
 
 [TITLE]
 
@@ -203,20 +206,27 @@ Concurrent Programming
 * Message passing
 
 
-## Concurrency at the Programming Language Level
+## Concurrency at the Programming Language Level {#sec-concurrency-language-level}
 
-~ Note
-allgemeines über die Abstraktionen von Nebenläufigkeit, zB Futures, STM, etc
+~ LitNote
+allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, Futures, STM, etc
 ~
 
-## Concurrency at the Operating System Level
+## Concurrency at the Operating System Level {#sec-concurrency-os-level}
 
-~Note
-The Process, Inter-process Communication, inherent concurrency
+~LitNote
+* The Process, Inter-process Communication, inherent concurrency
+* C like fork-join pattern was always a basic a way of write concurrency (outsourcing the concurrency aspect to the OS) --> Literatur?!
+* Middlewares/Virtual machines can provide a transparent way to distribute threads to multiple cores --> Literatur?!
 ~
 
-## Concurrency at the Network Level
+## Concurrency at the Network Level {#sec-concurrency-network-level}
 
+~ LitNote
+* "Distributed is truely concurrent"
+    * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
+    * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
+~
 
 
 The Actor Model {#ch-actor-model}
@@ -238,7 +248,41 @@ every actor owns its state exclusively (should also have unique DB -> bad perfor
 
 ## Immutable Message Passing
 
-## Typed Actors/Active Objects
+## Typed Actors/Active Objects {#sec-active-objects}
+
+~LitNote
+* active objects are basically actors with a different API
+    * realized with a proxy object
+* vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten actor) auch wirklich verarbeitet werden können
+~
+
+```java
+class Foo {
+    private int a = 1;
+    void add(int b) {
+        a += b;
+    }
+    int get() {
+        return a;
+    }
+}
+```
+
+Using the above class `Foo`, we can create the following simple program:
+
+```java
+1 void doSomething() {
+2   Foo f = ...; // get reference to a Foo instance
+3   f.add(1);
+4
+5   print(f.get()); 
+6 }
+```
+
+In a single threaded program, once line `4` is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line `5` will result in `2`. 
+
+Altering the definition to `class Foo extends ActiveObject {...}`, with some arbitrary base class `ActiveObject` that will turn `Foo` into an active object implementation, this observation does not hold any more. When reaching line `4`, there is no guarantee that the addition has actually been executed. Line `3` only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line `5` will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But be cannot assume that we will receive the value `2`, because other messages could have reached 
+
 
 ## Combining Actor with other Concurrency Models
 
@@ -246,7 +290,7 @@ every actor owns its state exclusively (should also have unique DB -> bad perfor
 
 ### Software Transactional Memory (STM)
 
-## OO-Perspective
+## Object-Oriented Perspective
 
 ### Data Abstractions
 
@@ -257,8 +301,6 @@ Encapsulation and Information Hiding
 ### Design by Contract
 
 ### Substitution and Behaviour
-
-### Are Actors (and Active Objects) just Distributed Objects?
 
 
 
@@ -293,7 +335,7 @@ Open/well-defined Communication Interface
 ~
 
 
-Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or UNIX pipes.
+Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes.
 
 The microservice idiom specifies the following requirements on service IPC:
 
@@ -301,31 +343,41 @@ The microservice idiom specifies the following requirements on service IPC:
 2. Communication channels should be light-weighted [citation needed]{.mind} 
 3. Communication channels should only act as message routers, and therefore should not introduce data processing logic of their own [citation needed]{.mind} . Fowler calls this characteristic "smart endpoints and dumb pipes" [@Fow14]
 
-From the two example IPC mechanisms above, UNIX pipes and shared memory, only the pipes qualify for a valid microservice communication channel. UNIX pipes transport text strings between processes. The strings represent serialized data (= state information) of one service an is transported in an immutable way between the endpoints of the pipe[^fn-unix-pipes]. This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
+From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. Unix pipes transport text strings between processes. The strings represent serialized data (= state information) of one service and is transported in an immutable way between the opposite endpoint of the pipe[^fn-unix-pipes]. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
 
-[^fn-unix-pipes]: UNIX pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A chain of pipes will therefore in general represent a modifying communication route, but each single pipe is transporting immutable data. 
+> "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools". 
 
+This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
+
+[^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A chain of pipes will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
 
 ## Inherent Concurrency and Distribution
 
-Any microservice within an MSA is by design a dedicated process. As we discussed in chapter [?]{.mind}, processes are inherently concurrent on the operating system level. Any microservice architecture is therefore an inherently concurrent system.
+Any microservice within an MSA is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
 
-In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like UNIX pipes) are also only capable of sending messages between processes on the same operating system. Alternatively, a generally more safe alternative
+In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. Alternatively, a generally more safe alternative
 
 Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
 
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 
-## Service Granularity: Size vs. Number of Services
+## Service Granularity (Size, Scope and Granularity)
 
-"micro should refere to the scope of responsibility, not the lines of code"
+~LitNote
+* "micro should refere to the scope of responsibility, not the lines of code"
+* Size vs. Number of Services
+~
+
+...
+
+Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained but a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
+
+[^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas (ed. note).
 
 ## Polyglot Programming
 
-## OO-Perspective
-
-### Are MS just Distributed Objects (done right)?
+## Object-Oriented Perspective
 
 
 
@@ -350,6 +402,7 @@ The purpose of software engineering is to control complexity, not to create it.
 * "promise behaviour via API/protocol" --> design by contract
 * [@Kan12] 4 four important semantic properties of our
 extension based on actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
+* [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
 ~
 
 ## Communication and Data Coupling
@@ -360,14 +413,26 @@ extension based on actor systems: encapsulation, fairness, location transparency
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between actors"
 ~
 
+## Isolation
+
+~LitNote
+* [@Bon17] "Isolation makes it easier to scale each service, as well as allowing them to be monitored, debugged, and tested independently"
+~
+
+## Autonomy
+
+~LitNote
+* [@Bon17] 
+    * "Isolation is a prerequisite for autonomy. Only when services are iso‐ lated can they be fully autonomous and make decisions independ‐ ently, act independently, and cooperate and coordinate with others to solve problems"
+    * "Working with autonomous services opens up flexibility around ser‐ vice orchestration, workflow management, and collaborative behav‐ ior, as well as scalability, availability, and runtime management, at the cost of putting more thought into well-defined and composable APIs"
+~
+
 ## Fair scheduling
 
 ~LitNote
 * [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination actor except for its permanent “disability”, and no actor can be permanently starved
 * MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
 ~
-
-## Autonomy
 
 ## Internal and external Component Concurrency
 
@@ -389,7 +454,7 @@ Nothing wihin an actor expects a concurrent access to its state, or [??? irgendw
 
 The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". The overall idea of - and driving reason to use - the actor programming model is to have more than one actor in place. The models semantic allows to send messages freely between actors within a system. While each actor itself is a non-concurrent entity, this exchange of (immutable) messages semantically allows actors to be executed in a concurrent fashion by the system. 
 
-Actors by themselfs are not concurrent, but their semantic allows them to be executed *externally* in a concurrent manner, within a system. If the actor semantic is preserved at all time - how this has to be done and if it can be guaranteed is up to the actual actor system implementation - then an actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing. [hier könnte ich noch irgendwas brauchbares aus dem Paper das die Concurrency Bugs behandelt zum besten geben]{.mind}   
+Actors by themselfs are not concurrent, but their semantic allows them to be executed *externally* in a concurrent manner, within a system. If the actor semantic is preserved at all time - how this can be guaranteed is up to the actual actor system implementation - then an actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing. [hier könnte ich noch irgendwas brauchbares aus dem Paper das die Concurrency Bugs behandelt zum besten geben]{.mind}   
 
 A microservice on the other hand has the basic abstraction of a process. Any system process for itself is, from an external point of view, not especially concurrent [??]{.mind}. But within a system, these processes form, just like actors, concurrent nature due to the semantic properties of proccesses. 
 
@@ -417,18 +482,80 @@ Programming with microservices does not, unlike actors, free one from the many h
     * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
 ~
 
-### Location Transparency and Distributed Objects
+### The leaky Abstraction of Distributed Objects
 
 ~LitNote
 * Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
 ~
 
-An extension to the Object concept is the idea of *Distributed Objects*. Here, objects are attached to a thread/process. For every distr. obj. a proxy object is created, which wrappes the method calls to the distributed object. This allows for a location transparent method call. These distributed objects can then be distributed (hence the name) outside the original programs scope [quelle für den absatz]{.mind}.
+*Distributed Objects* (DO) was a concept of some 20 years ago. It is an extension to the original object concept. Here, objects did not have to exists within the same program boundary, but could be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like actors or active objects do. 
 
-We already discussed the analogies of actors and microservices to the notion of objects. Now, with these similarities and the fact that actors and microservices each provide mechanisms for location transparent messaging too, we should discuss the following three questions:
+However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
-* Are Actors (and Active Objects) just Distributed Objects?
-* Are MS just Distributed Objects (done right)?
+~Todo
+hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
+~
+
+We already discussed the analogies of actors and microservices to the notion of objects. Now, with these similarities and the fact that actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
+
+#### Do Microservices qualify as Distributed Objects? (ÜBERSETZEN!)
+
+~Todo
+Nein. Beim Konzept der vert. Obj wird der Ort des Obj versteckt. Dh bei einem Methodenaufruft ist mir nicht bekannt, ob das Obj lokal oder remote liegt. Da vert. Obj die selbe API wie "normale" (= lokale Obj) haben, habe ich keinerlei Hemmungen low-level API methoden anzuwenden. Bsp: Aufsummieren einer Eigenschaft "Size" über alle meine Objekte einer Kategorie. Bei lokalen Objekte iteriere ich über alle Objekte, rufe o.getSize() auf und summiere die Werte auf. Bei vert. Obj ist mir nicht bekannt ob die Objekte lokal oder remote liegen, deshalb sieht hier die Summenbildung entsprechend gleich aus. Bei angenommen 1000 Objekten führt dies im Worst Case zu 1000 separaten RPCs.
+Bei Microservices würde man eine derartige API vermeiden, denn hier ist immer klar, welche Aufrufe lokal (innerhalb des MS) sind, und welche einen RPC (also den aufruf eines anderen MS) bewirken, da man aktiv zB die REST-Schnittstellen ansprechen muss. Um beim Summenbeispiel zu bleiben würde man hier entweder über lokale Elemente iterieren, oder einen ensprechenden Endpoint einrichten, welcher die Summe über alle Elemente eines entfernten MS anfordert.
+
+=> MS != distr. Obj.
+~
+
+#### Do Actors qualify as Distributed Objects? (ÜBERSETZEN!)
+
+~Todo
+Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
+Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
+~
+
+#### Do Active Objects qualify as Distributed Objects? (ÜBERSETZEN!)
+
+In section [#sec-active-objects] we gave a example of the concurrent semantic the API of active objects provide. The method call is separated from the message execution. We demonstrated how the behaviour in case of method APIs with and without return values. Lets consider another example:
+
+```
+1 List<Foo> fs = ....; // list of 1000 objects
+2 int sum = 0;
+3 for (Foo f : fs) {
+4     sum += f.get();
+5 }
+```
+
+The program iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
+
+1. The programs will block 1000 times for each element separately
+2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 1000 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
+
+The first issue is a result out of bad coding, which could be solved by using e.g. [wie heißt dieser syntax in Akka, wo `yield (a,b,c)` in solchen fällen verwendet wird?]{.mind}.
+
+The second issue is the same basic issue distributed objects face. Therefore, the active object abstraction can be considered as distributed objects.
+
+~Todo
+Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
+~
+
+## Mobility
+
+~LitNote
+* Laut jones Bonér folgt mobility aus location transparency
+* [@Kan12] (über distributed erlang actors)
+    * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
+    * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
+    * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
+~
+
+## Single Responsibility
+
+~LitNote
+* Unix philosophy
+* [@Bon16]
+* [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
+~
 
 ## Persistance
 
@@ -436,16 +563,11 @@ We already discussed the analogies of actors and microservices to the notion of 
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
 ~
 
-## Mobility
+## Scalability
 
 ~LitNote
-* [@Kan12] (über distributed erlang actors)
-    * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
-    * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
-    * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
+* 
 ~
-
-## Scalability
 
 ## Load balancing
 
@@ -491,10 +613,17 @@ Location transparency, elasticity = "move around in isolation"
 ~
 
 
-A Concurrent, Parallel and Distributed Problem Scenario
+A Concurrent, Parallel and Distributed Problem Scenario {#ch-problem-scenario}
 =======================================================
 
 
+
+## Why is a search engine a concurrent/parall./distr. task?
+
+~LitNote
+* Search Engines appears as a closed monolithic system (frontend), but is actually composed of many components that act in an decoupled and asynchronouse manmer (if the searc engine should perform)
+* search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall*, which we will not pay attention to in this work (we will only use some simple scoring methods and trust that the results will be fine)
+~
 
 ## Domain Description
 
@@ -520,12 +649,22 @@ Fetching data (feeds/websites), parsing data (feeds,websites), registering new e
 
 
 
-An Actor-based Problem Solution
+An Actor-based Problem Solution {#ch-actor-solution}
 ===============================
 
 
 
-When using the actor model in practice, it is important define which model is used. There is not *the* actor model, there is only the theoretical concept of the basic  
+In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an actor-based programming model approach. When talking about the practical application of an actor model, it is importent to realize that there is not *the* actor model per se, but a big variaty of implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [citation needed]{.mind}. In chapter [#ch-actor-model] we discussed the theoretical concept of actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the actor semantics opens up. The actual actor implementations available are based upon this semantics and resulting possibilities, but vary in terms of features and [???]{.mind}. Therefore it is important to state the specific actor variant used when discussing any actor based system. Our scenario solution is conceived through the Akka actor model. 
+
+## Akka {#sec-akka}
+
+Akka [@Akka17] is an actor implementation available for the JVM that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called Akka.NET) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution is solely based on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
+
+Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the actor model with the intent to be close to Armstrongs actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
+
+~Todo
+* Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
+~ 
 
 ## Isolation
 
@@ -546,7 +685,7 @@ Messages are always "state at a specific point in time", but when the receiver g
 ## Persistence
 
 ~LitNote
-Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
+* Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
 ~
 
 ## Load balancing
@@ -563,7 +702,11 @@ Supervision and Error Kernel
 
 ## Scalability
 
-## Elasticity / Code Mobility
+## Elasticity
+
+
+
+## Clustering and Mobility
 
 ~LitNote
 Cluster / Remoting of Akka, built in discovery system among nodes  
@@ -594,10 +737,12 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 
 
 
-A Microservice-based Problem Solution
+A Microservice-based Problem Solution {#ch-ms-solution}
 =====================================
 
 
+
+In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using a microservice architecture approach.
 
 ## Isolation
 
@@ -620,19 +765,21 @@ No direct referencing via REST, async messages same temporal decoupling as with 
 ## Persistence
 
 ~LitNote
-One DB per MS
+* One DB per MS (e.g. PostgreSQL for directory/catalog) and lucene for index
+* PostgreSQL accessed by multiple threads concurrently *within* the MS
 ~
 
 ## Load balancing    
 
 ~LitNote
-to be done manually in API gateway, or via MQ 
+to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
 ~
 
-## Cluster / Remoting
+## Service discovery
 
 ~LitNote
-Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+* Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+* requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
 ~
 
 ## Fault Tolerance
@@ -645,10 +792,20 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 
 ## Scalability
 
-## Elasticity / Code Mobility
+## Mobility
 
 ~LitNote
-requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
+* follows from isolation and location transparency
+~
+
+## Elasticity
+
+~LitNote
+* benötigt ein (oder in Kombination mehrere) sog. Cloud Management Framework(s)
+* Last muss gemessen werden
+* MS müssen damit umgehen können dynamisch dem system hinzugefügt oder entfernt zu werden
+    * problemlos bei stateless MS workern, insofern isolation + location transparency gegeben ist
+    * problematisch bei stateful actors, konkret bei den stores, weil der state (also DB/Index) auf den aktuellen stand gebracht werden muss --> wie? Event sourcing zB
 ~
 
 ## Deployment
@@ -713,9 +870,25 @@ Discussion
 
 ## The Case for Actors
 
+~LitNote
+- easy to write from the ground up
+- has to be started as a small programm, and extended one by one (otherwise one gets totally lost in the messages)
+- less to do (the actor framework/middleware does a lot for you), but has to live/work with the particula restrictions
+- thread switching within an actor can get a problem, e.g. with locking (have seen it with lucene)
+~
+
 ### Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
 
 ## The Case for Microservices
+
+~LitNote
+* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
+* MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
+* Jonas Boner beschreibt in einem Youtube Talk und im Podcast, dass MS in für große Unternehmen gut sein können, wo es wichtig ist die Code base aufzuspalten um produktiv zu bleiben
+* good to break up large monoliths
+* literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
+* freedom to practically do whatever you want (if it works within a monolith, this particual function also works within a smaller program = MS)
+~
 
 ## Empirical Indications
 

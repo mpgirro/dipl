@@ -1,3 +1,0 @@
-* Search Engines appears as a closed monolithic system (frontend), but is actually composed of many components that act in an decoupled and asynchronouse manmer (if the searc engine should perform)
-* search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall*, which we will not pay attention to in this work (we will only use some simple scoring methods and trust that the results will be fine)
-* 
