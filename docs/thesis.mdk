@@ -226,6 +226,7 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 * "Distributed is truely concurrent"
     * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
     * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
+* **this chapter should explain why distribution is just another form of concurrency within a system**
 ~
 
 
@@ -524,6 +525,7 @@ In section [#sec-active-objects] we gave a example of the concurrent semantic th
 3 for (Foo f : fs) {
 4     sum += f.get();
 5 }
+6 println(sum);
 ```
 
 The program iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
@@ -531,9 +533,22 @@ The program iterates over all elements and makes a blocking call to retrieve the
 1. The programs will block 1000 times for each element separately
 2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 1000 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
-The first issue is a result out of bad coding, which could be solved by using e.g. [wie heißt dieser syntax in Akka, wo `yield (a,b,c)` in solchen fällen verwendet wird?]{.mind}.
+The first issue is a result out of bad coding. The second issue is based on the same leaky abstraction distributed objects offer. The `get()` method could be called without the programmer being aware that it actually offers a result value. The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
 
-The second issue is the same basic issue distributed objects face. Therefore, the active object abstraction can be considered as distributed objects.
+Both issues [wird issue 2 wirklich so gefixt? gehen typed actors in akka so?]{.mind} could be fixed by having `get()` return a `Future[Int]`{language:scala} instead. In functional languages like Scala, handling futures can often be done in an elegant syntactic way due to the data transformation approch that comes natural in functional programming styles, e.g.:
+
+``` {language:scala}
+1 Future.sequence(fs.map(_.get))
+2  .map(_.sum) 
+3  .onComplete {
+4    case Success(sum) => println(sum)
+5    case Failure(_)   => println("error")
+6  }
+```
+
+This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the actor semantic. Line `1` transforms `fs: List[Foo]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The actor system's dispatcher can then wait [hibernate? dispense? the actor]{.mind} until this future's completion without blocking the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
+
+We see, active objects have the potential to be used in the same problematic way distributed object are. If not used with utmost care, method calls can easily introduce remote procedure call semantic in a transparent way, causing bottlenecks, deadlock, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
 
 ~Todo
 Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
@@ -618,7 +633,7 @@ A Concurrent, Parallel and Distributed Problem Scenario {#ch-problem-scenario}
 
 
 
-In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also provides the opportunities to have tasks solves in parallel, and utilize the advantages for scalability, reliability, etc that come with distribution. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of actors and microservices in orther to satisfy the concurrent requirements.
+In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also opens up the opportunities to salvage the benefits that come with parallelization and distribution:  scalability, reliability, etc. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of actors and microservices in orther to satisfy the concurrent requirements.
 
 The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destinction, the respective implementations will be referenced to as *Echo:Actors* and *Echo:Microservices*.
 
