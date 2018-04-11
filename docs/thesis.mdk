@@ -256,7 +256,7 @@ every actor owns its state exclusively (should also have unique DB -> bad perfor
 * vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten actor) auch wirklich verarbeitet werden können
 ~
 
-```java
+``` {language:java}
 class Foo {
     private int a = 1;
     void add(int b) {
@@ -270,7 +270,7 @@ class Foo {
 
 Using the above class `Foo`, we can create the following simple program:
 
-```java
+``` {language:java}
 1 void doSomething() {
 2   Foo f = ...; // get reference to a Foo instance
 3   f.add(1);
@@ -281,7 +281,7 @@ Using the above class `Foo`, we can create the following simple program:
 
 In a single threaded program, once line `4` is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line `5` will result in `2`. 
 
-Altering the definition to `class Foo extends ActiveObject {...}`, with some arbitrary base class `ActiveObject` that will turn `Foo` into an active object implementation, this observation does not hold any more. When reaching line `4`, there is no guarantee that the addition has actually been executed. Line `3` only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line `5` will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But be cannot assume that we will receive the value `2`, because other messages could have reached 
+Altering the definition to `class Foo extends ActiveObject {...}`{language:java}, with some arbitrary base class `ActiveObject` that will turn `Foo` into an active object implementation, this observation does not hold any more. When reaching line `4`, there is no guarantee that the addition has actually been executed. Line `3` only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line `5` will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But be cannot assume that we will receive the value `2`, because other messages could have reached 
 
 
 ## Combining Actor with other Concurrency Models
@@ -518,8 +518,8 @@ Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte d
 
 In section [#sec-active-objects] we gave a example of the concurrent semantic the API of active objects provide. The method call is separated from the message execution. We demonstrated how the behaviour in case of method APIs with and without return values. Lets consider another example:
 
-```
-1 List<Foo> fs = ....; // list of 1000 objects
+``` {language:java}
+1 List<Foo> fs = ....; // list of 1000 references
 2 int sum = 0;
 3 for (Foo f : fs) {
 4     sum += f.get();
@@ -618,6 +618,12 @@ A Concurrent, Parallel and Distributed Problem Scenario {#ch-problem-scenario}
 
 
 
+In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also provides the opportunities to have tasks solves in parallel, and utilize the advantages for scalability, reliability, etc that come with distribution. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of actors and microservices in orther to satisfy the concurrent requirements.
+
+The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destinction, the respective implementations will be referenced to as *Echo:Actors* and *Echo:Microservices*.
+
+[^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
+
 ## Why is a search engine a concurrent/parall./distr. task?
 
 ~LitNote
@@ -686,6 +692,8 @@ Messages are always "state at a specific point in time", but when the receiver g
 
 ~LitNote
 * Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
+* consider using non-blocking IO/DB APIs (if available), the futures will crowed up the thread pool, therefore use dispatchers for bulkheading (= the thread pool becomes an implicit backpressure)
+* if blocking IO has to be done, use dispatchers for bulkheading too, and delegate blocking operations to child actors/workers. This is demonstrated in the Echo implementation
 ~
 
 ## Load balancing
