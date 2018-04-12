@@ -189,11 +189,14 @@ Concurrent Programming
 ======================
 
 ~LitNote
-* [@Agh85] describes 3 "foundational issues" of concurrent systems
+* [@Agh85b] describes 3 "foundational issues" of concurrent systems
     * Shared resources
     * Dynamic Reconfiguration
     * Inherent Parallelism
 ~
+
+
+For the scope of this thesis, it is important to gain a notion of *where* concurrency is happening. We will focus on three levels, namly the 
 
 
 ## Execution Order and Nondeterminism
@@ -222,6 +225,10 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 
 ## Concurrency at the Network Level {#sec-concurrency-network-level}
 
+~ Epigraph { caption: "Unknown"}
+Distributed is truely concurrent
+~
+
 ~ LitNote
 * "Distributed is truely concurrent"
     * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
@@ -249,16 +256,17 @@ every Actor owns its state exclusively (should also have unique DB -> bad perfor
 
 ## Immutable Message Passing
 
-## Typed Actors/Active Objects {#sec-active-objects}
+## Active Objects {#sec-active-objects}
 
 ~LitNote
+* [@Lav95] "Active Object -- An Object Behavioral Pattern for Concurrent Programming"
 * active objects are basically Actors with a different API
     * realized with a proxy object
 * vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten Actor) auch wirklich verarbeitet werden können
 ~
 
 ``` {language:java}
-class Foo {
+class Fnord {
     private int a = 1;
     void add(int b) {
         a += b;
@@ -269,23 +277,23 @@ class Foo {
 }
 ```
 
-Using the above class `Foo`, we can create the following simple program:
+Using the above class `Fnord`{language:java}, we can create the following simple program:
 
 ``` {language:java}
 1  void doSomething() {
-2    Foo f = ...; // get reference to a Foo instance
+2    Fnord f = ...; // get reference to a Fnord instance
 3    f.add(1);
 4 
 5    print(f.get()); 
 6  }
 ```
 
-In a single threaded program, once line `4` is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line `5` will result in `2`. 
+In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 5 will result in `2`. 
 
-Altering the definition to `class Foo extends ActiveObject {...}`{language:java}, with some arbitrary base class `ActiveObject` that will turn `Foo` into an active object implementation, this observation does not hold any more. When reaching line `4`, there is no guarantee that the addition has actually been executed. Line `3` only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line `5` will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But be cannot assume that we will receive the value `2`, because other messages could have reached 
+Altering the definition to `class Fnord extends ActiveObject {...}`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have by received by and therefore processes before the unterlying Actor of `f`. 
 
 
-## Combining Actor with other Concurrency Models
+## Combination with other Concurrency Abstractions
 
 ### Futures
 
@@ -373,11 +381,13 @@ Channels for distributed communication are more likely to provide options to app
 ~LitNote
 * "micro should refere to the scope of responsibility, not the lines of code"
 * Size vs. Number of Services
+* [@Par72] "On the Criteria To Be Used in Decomposing Systems into Modules"
+* [@Sha17a] "Microservices: Granularity vs. Performance"
 ~
 
 ...
 
-Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained but a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
+Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas (ed. note).
 
@@ -397,8 +407,8 @@ The purpose of software engineering is to control complexity, not to create it.
 ~
 
 ~LitNote
-* Diskussion: MS behandeln ebenfalls die 3 "foundational issues" die laut [@Agh85] concurrency modelle lösen sollten
-* Weiters zitiert [@Agh85]: "It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change (Hewitt and de Jong 85)."
+* Diskussion: MS behandeln ebenfalls die 3 "foundational issues" die laut [@Agh85b] concurrency modelle lösen sollten
+* Weiters zitiert [@Agh85b]: "It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change (Hewitt and de Jong 85)."
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
@@ -417,6 +427,7 @@ extension based on Actor systems: encapsulation, fairness, location transparency
 * Sync vs Async, Immutable Messages
 * Point to Point, Publish/Subscribe, 
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
+* [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
 ~
 
 ## Isolation
@@ -492,9 +503,11 @@ Programming with microservices does not, unlike Actors, free one from the many h
 
 ~LitNote
 * Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
+* [@Siv99] "The specification of distributed objects: liveness and locality"
+* [@Wal96] "A Note on Distributed Computing"
 ~
 
-*Distributed Objects* (DO) was a concept of some 20 years ago. It is an extension to the original object concept. Here, objects did not have to exists within the same program boundary, but could be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
+*Distributed Objects* (DO) is a concept that has been popularized in the 1990 [citation needed]{.mind}. It is an extension to the original Object concept. Here, Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
 
 However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
@@ -525,7 +538,7 @@ Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte d
 In section [#sec-active-objects] we gave a example of the concurrent semantic the API of active objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Lets consider another example:
 
 ``` {language:scala}
-1  val fs: List[Foo] = ... // list of 100 references
+1  val fs: List[Fnord] = ... // list of 100 references
 2  var sum = 0
 3  for (f <- fs) {
 4      sum += f.get()
@@ -538,9 +551,9 @@ The program iterates over all elements and makes a blocking call to retrieve the
 1. The programs will block sequentially 100 times, once for each element.
 2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
-The first issue is a result out of bad coding. The second issue is based on the same leaky abstraction distributed objects offer. The `get()` method could be called without the programmer being aware that it actually offers a result value (though with this particular method usage and name it hopefully is unlikely). The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
+The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value (though with this particular method name and usage it hopefully is unlikely). The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
 
-Both issues could be fixed by having `get()` return a `Future[Int]`{language:scala} instead. In functional languages like Scala, handling futures can be done elegant if they have monadic behaviour that comes natural with functional programming styles, e.g.:
+Both issues could be fixed by having `get()` return a `Future[Int]`{language:scala} instead. In functional languages like Scala, handling futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g.:
 
 ``` {language:scala}
 1  Future.sequence(fs.map(_.get))
@@ -551,9 +564,9 @@ Both issues could be fixed by having `get()` return a `Future[Int]`{language:sca
 6   }
 ```
 
-This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line `1` transforms `fs:List[Foo]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can then wait [hibernate? dispense? the Actor]{.mind} until this future's completion without blocking the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
+This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without blocking the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
 
-We see, active objects have the potential to be used in the same problematic way distributed object are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
+We see, Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
 
 ~Todo
 Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
@@ -567,6 +580,9 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
     * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
     * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
     * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
+* [@Fug98] "Understanding Code Mobility"
+* [@Agh14] "Actors Programming for the Mobile Cloud"
+* [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
 ~
 
 ## Single Responsibility
@@ -607,7 +623,8 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 ## Fault tolerance
 
 ~LitNote
-"failure isolation"
+* "failure isolation"
+* [@Myt17] "Handling partial failures in distributed reactive programming"
 ~
 
 ## Resilience
@@ -621,13 +638,13 @@ Location transparency, elasticity = "move around in isolation"
 ## Availability
 
 ~LitNote
-* Actors, siehe: [@Agh85]
+* Actors, siehe: [@Agh85b]
 ~
 
 ## Extensibility
 
 ~LitNote
-* Actors, siehe: [@Agh85]
+* Actors, siehe: [@Agh85b]
 * gradual/separate replacement of MS
 * substitution and subtyping für Actors
 ~
@@ -636,6 +653,12 @@ Location transparency, elasticity = "move around in isolation"
 A Concurrent, Parallel and Distributed Problem Scenario {#ch-problem-scenario}
 =======================================================
 
+
+~LitNote
+* [@Bes10] "Podcast search: user goals and retrieval technologies"
+* [@Brin98] "The Anatomy of a Large-Scale Hypertextual Web Search Engine"
+* [@Cho04] "Agent Space Architecture for Search Engines"
+~
 
 
 In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also opens up the opportunities to salvage the benefits that come with parallelization and distribution:  scalability, reliability, etc. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of Actors and microservices in orther to satisfy the concurrent requirements.
@@ -682,13 +705,17 @@ An Actor-based Problem Solution {#ch-Actor-solution}
 
 In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an Actor-based programming model approach. When talking about the practical application of an Actor model, it is importent to realize that there is not *the* Actor model per se, but a big variaty of implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [citation needed]{.mind}. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor implementations available are based upon this semantics and resulting possibilities, but vary in terms of features and [???]{.mind}. Therefore it is important to state the specific Actor variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor model. 
 
+~LitNote
+* [@Kar09] Actor Frameworks for the JVM Platform: A Comparative Analysis
+~
+
 ## Akka {#sec-akka}
 
 Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
 Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
 
-As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we motivated the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given code snipped would be executed using the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing), the desired non-blocking behaviour would depend on the actual `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Foo`{language:java} uses the Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
+As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we motivated the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given code snipped is executed using the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing), the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses the Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
 
 ~Todo
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
@@ -755,13 +782,13 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 ## Availability
 
 ~LitNote
-* siehe: [@Agh85]
+* siehe: [@Agh85b]
 ~
 
 ## Extensibility
 
 ~LitNote
-* siehe: [@Agh85]
+* siehe: [@Agh85b]
 * hier allgemein zu Actor subtyping und substituion schreiben etc 
 ~
 
@@ -868,6 +895,11 @@ Evaluation
 ==========
 
 
+~LitNote
+* [@Gri17] "Performance Evaluation Of Massively Distributed Microservices Based Applications"
+* [@Ros16] "Profiling actor utilization and communication in Akka"
+~
+
 
 ## Software Quality Attributes
 
@@ -908,6 +940,8 @@ Discussion
   * CQS ist im Meyer Buch ausführlich definiert, dh ich kann darauf verweisen. Yay!
   * CQS ist demnach gut für die ganzen gründe weswegen Actors/MS verwendet werden
 ~
+
+## Saga Pattern 
 
 ## The Case for Actors
 
@@ -956,6 +990,8 @@ Predicition is very difficult, especially about the future.
         * Deterministic Expression: The key powerful expressivity of deterministic concurrency allows programmers to encapsulate complicated communica- tion and synchronization protocols as first-class abstractions
         * Advanced Concurrency in Actors Internal: Internal parallelization, Join Calculus --> **internal parallelization ist genau das was MS mit ihrer internal concurrency auch haben -> das habe ich in einem unterkapitel auch angemerkt. sollte ich auf jeden falls hier zusammenbringen!**
         * Scalability & Fault Tolerance
+* [@Gho12] "Programming language impact on the development of distributed systems"
+* [@Gui17] "Microservices: A Language-Based Approach"
 ~
 
 In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, instead of rivalry, want to entertain the though of a unification of both towards a new style of programming. 
