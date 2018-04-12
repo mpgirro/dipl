@@ -1,0 +1,73 @@
+The Actor Model {#ch-actor-model}
+===============
+
+
+
+~ Epigraph { caption: "Carl Hewitt"}
+One actor is no actor. Actors come in systems.
+~
+
+## Basic Actor Idea
+
+## Isolation
+
+~LitNote
+every Actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter)
+~
+
+## Immutable Message Passing
+
+## Active Objects {#sec-active-objects}
+
+~LitNote
+* [@Lav95] "Active Object -- An Object Behavioral Pattern for Concurrent Programming"
+* active objects are basically Actors with a different API
+    * realized with a proxy object
+* vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten Actor) auch wirklich verarbeitet werden können
+~
+
+``` {language:java}
+class Fnord {
+    private int a = 1;
+    void add(int b) {
+        a += b;
+    }
+    int get() {
+        return a;
+    }
+}
+```
+
+Using the above class `Fnord`{language:java}, we can create the following simple program:
+
+``` {language:java}
+1  void doSomething() {
+2    Fnord f = ...; // get reference to a Fnord instance
+3    f.add(1);
+4 
+5    print(f.get()); 
+6  }
+```
+
+In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 5 will result in `2`. 
+
+Altering the definition to `class Fnord extends ActiveObject {...}`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have by received by and therefore processes before the unterlying Actor of `f`. 
+
+
+## Combination with other Concurrency Abstractions
+
+### Futures
+
+### Software Transactional Memory (STM)
+
+## Object-Oriented Perspective
+
+### Data Abstractions
+
+Encapsulation and Information Hiding
+
+### SOLID design principles
+
+### Design by Contract
+
+### Substitution and Behaviour

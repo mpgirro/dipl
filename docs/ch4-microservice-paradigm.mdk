@@ -1,0 +1,81 @@
+The Microservice Paradigm {#ch-microservice-paradigm}
+=========================
+
+
+
+At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
+
+Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns ["of ???" - diesen Teil kann ich sicher etwas ausschmücken und auf B. Meyer verweisen]{.mind}, yet the transformation from the abstraction of program code to machine code leads to a result where the different module components are merged into one unified construct: the (monilithic) *executable*. [@Dra17a] defines:
+
+~ Definition {#def-monolith; caption: "Monolith"}
+A monolith is a software application whose modules cannot be executed independently.
+~   
+
+* Microservice
+ : A microservice is a cohesive, independent process interacting via messages      
+
+## Microservice Principles
+
+~ Epigraph { caption: "Groucho Marx"}
+These are my principles. If you don't like them, I have others.
+~
+
+No shared state, etc
+
+## Communication Channels {#sec-ms-communication}
+
+
+~ Epigraph { caption: "Doug McIlroy"}
+One favorite pipeline was `bc | speak` — a talking desk calculator. It knew number names up to a vigintillion.
+~
+
+
+~LitNote
+Open/well-defined Communication Interface
+~
+
+Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes.
+
+The microservice idiom specifies the following requirements on service IPC:
+
+1. Messages between services should be immutable [citation needed]{.mind} 
+2. Communication channels should be light-weighted [citation needed]{.mind} 
+3. Communication channels should only act as message routers, and therefore should not introduce data processing logic of their own [citation needed]{.mind} . Fowler calls this characteristic "smart endpoints and dumb pipes" [@Fow14]
+
+From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. Unix pipes transport text strings between processes. The strings represent serialized data (= state information) of one service and is transported in an immutable way between the opposite endpoint of the pipe[^fn-unix-pipes]. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
+
+> "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools". 
+
+This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
+
+[^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up into a so-called *pipeline*, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A pipeline will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
+
+## Inherent Concurrency and Distribution
+
+Any microservice within an MSA is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
+
+In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. Alternatively, a generally more safe alternative
+
+Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
+
+
+Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
+
+## Service Granularity (Size, Scope and Granularity)
+
+~LitNote
+* "micro should refere to the scope of responsibility, not the lines of code"
+* Size vs. Number of Services
+* [@Par72] "On the Criteria To Be Used in Decomposing Systems into Modules"
+* [@Sha17a] "Microservices: Granularity vs. Performance"
+~
+
+...
+
+Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
+
+[^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas (ed. note).
+
+## Polyglot Programming
+
+## Object-Oriented Perspective

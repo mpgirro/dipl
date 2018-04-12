@@ -1,0 +1,251 @@
+Commonalities and Differences of Actors and Microservices
+=========================================================
+
+
+
+~ Epigraph { caption: "Pamela Zave"}
+The purpose of software engineering is to control complexity, not to create it.
+~
+
+~LitNote
+* Diskussion: MS behandeln ebenfalls die 3 "foundational issues" die laut [@Agh85b] concurrency modelle lösen sollten
+* Weiters zitiert [@Agh85b]: "It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change (Hewitt and de Jong 85)."
+    * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
+~
+
+## State Encapsulation
+
+~LitNote
+* "promise behaviour via API/protocol" --> design by contract
+* [@Kan12] 4 four important semantic properties of our
+extension based on Actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
+* [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
+~
+
+## Communication and Data Coupling
+
+~LitNote
+* Sync vs Async, Immutable Messages
+* Point to Point, Publish/Subscribe, 
+* [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
+* [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
+~
+
+## Isolation
+
+~LitNote
+* [@Bon17] "Isolation makes it easier to scale each service, as well as allowing them to be monitored, debugged, and tested independently"
+~
+
+## Autonomy
+
+~LitNote
+* [@Bon17] 
+    * "Isolation is a prerequisite for autonomy. Only when services are iso‐ lated can they be fully autonomous and make decisions independ‐ ently, act independently, and cooperate and coordinate with others to solve problems"
+    * "Working with autonomous services opens up flexibility around ser‐ vice orchestration, workflow management, and collaborative behav‐ ior, as well as scalability, availability, and runtime management, at the cost of putting more thought into well-defined and composable APIs"
+~
+
+## Fair scheduling
+
+~LitNote
+* [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination Actor except for its permanent “disability”, and no Actor can be permanently starved
+* MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
+~
+
+## Internal and external Component Concurrency
+
+~LitNote
+* Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
+* Ich sollte anmerken, dass beide Ansätze per se einmal gar nicht zwingend für Concurrency sind/sein müssen (Actors sind auch ein allg. Programming model). Nur ihre **semantik** führt automatisch zu einer nebenläufigen, ggf auch automatisch zu einer parallelen, Ausführung 
+~
+
+In chapter [#ch-actor-model] we discussed the Actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an Actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
+
+```
+WHILE TRUE:
+    GET next message from mailbox
+    process message
+    repeat 
+```
+
+Nothing wihin an Actor expects a concurrent access to its state, or [??? irgendwas zweites]{.mind}. An Actor itself is a non-concurrent entity *internally*. Therefore, the Actor model is sometimes refered to as simply a *programming model* [citation needed]{.mind}, an approach to writing software components. The most basic case is a single Actor. It only knows about itself, therefore can only receive messages from itself, process them, and send messages to itself. The semantic of this behaviour is a simple loop, where no state information leaves the scope of the Actor. It results in a simple, single threaded program. 
+
+The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". The overall idea of - and driving reason to use - the Actor programming model is to have more than one Actor in place. The models semantic allows to send messages freely between Actors within a system. While each Actor itself is a non-concurrent entity, this exchange of (immutable) messages semantically allows Actors to be executed in a concurrent fashion by the system. 
+
+Actors by themselfs are not concurrent, but their semantic allows them to be executed *externally* in a concurrent manner, within a system. If the Actor semantic is preserved at all time - how this can be guaranteed is up to the actual Actor system implementation - then an Actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that Actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing. [hier könnte ich noch irgendwas brauchbares aus dem Paper das die Concurrency Bugs behandelt zum besten geben]{.mind}   
+
+A microservice on the other hand has the basic abstraction of a process. Any system process for itself is, from an external point of view, not especially concurrent [??]{.mind}. But within a system, these processes form, just like Actors, concurrent nature due to the semantic properties of proccesses. 
+
+Through the basic process semantic [hier sollte ich diese semantik aufzählen: isolation, messages, fair scheduling + quelle]{.mind}, just like with Actors, any system of processes lead to a concurrent system. The services external concurrency is always either on the operating system level or the network level (or both). Yet their notion of internal concurrency is divergent from that of an Actor. Though it also receives messages of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
+
+Programming with microservices does not, unlike Actors, free one from the many hassles of internal component concurrency problems per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
+
+## Location Transparency and Distribution
+
+~LitNote
+* Actors und MS ist es an sich egal ob sie lokal oder verteilt ausgeführt werden, beide können dies gut abstrahieren
+* [@Reh13] defines requirements on distributed Actors:
+    * R1: Distributability: Non-distributed applications must be easy to be migrated to clustered set-ups.
+    * R2: API-uniformity: The distribution API must be similar for intra-node as well as inter-node applications
+    * R3: Compatibility: An application that works locally on one node should also work distributed in a cluster.
+    * R4: Flexibility: Beside Actors that have access to specific hardware, the developer should freely decide which Actor runs on which node of the cluster.
+    * R5: Configurability: Simple configuration of the clustering subsystem and the distribution layout.
+* [@Kan15] (über distributed/cloud Actors)
+    * "There (Actor) distinctive features make it suitable to support distributed memory parallelism, and it has been widely used in many industrial languages such as Erlang[2], Scala [3], Akka [4]"
+    * "However, most related works focus on multi-core environment. Neither inter-parallelism or task parallelism can be easy applied in dynamic distributed environment, because Actors distributing over cluster may be- have indeterminable interrelationship, such as uncertain com- munication, dependency and failure"
+* [@Kan12] (über distributed Actors)
+    * Computers connect by network, which makes the environment distributed, disparate, mutable and unreliable
+    * According to classifications of parallel programming models in process interaction, mechanisms of which make the parallel processes able to communication with each other, the most common forms of interaction are shared memory, message passing, and implicit [4]
+    * In Actor model, location transparency means the actual location of an Actor does not affect its name. That is to say, if one Actor knows another, they can communicate only by names instead of specific address --> kommunikating via ActorRef instead of pointer; bei MS muss das zB für REST extra ein Service Discovery übernehmen, der dies abstrahiert; 
+    * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
+~
+
+### The leaky Abstraction of Distributed Objects {#sec-distributed-objects}
+
+~LitNote
+* Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
+* [@Siv99] "The specification of distributed objects: liveness and locality"
+* [@Wal96] "A Note on Distributed Computing"
+~
+
+*Distributed Objects* (DO) is a concept that has been popularized in the 1990 [citation needed]{.mind}. It is an extension to the original Object concept. Here, Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
+
+However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
+
+~Todo
+hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
+~
+
+We already discussed the analogies of Actors and microservices to the notion of objects. Now, with these similarities and the fact that Actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
+
+#### Qualify Microservices as Distributed Objects? (ÜBERSETZEN!)
+
+~Todo
+Nein. Beim Konzept der vert. Obj wird der Ort des Obj versteckt. Dh bei einem Methodenaufruft ist mir nicht bekannt, ob das Obj lokal oder remote liegt. Da vert. Obj die selbe API wie "normale" (= lokale Obj) haben, habe ich keinerlei Hemmungen low-level API methoden anzuwenden. Bsp: Aufsummieren einer Eigenschaft "Size" über alle meine Objekte einer Kategorie. Bei lokalen Objekte iteriere ich über alle Objekte, rufe o.getSize() auf und summiere die Werte auf. Bei vert. Obj ist mir nicht bekannt ob die Objekte lokal oder remote liegen, deshalb sieht hier die Summenbildung entsprechend gleich aus. Bei angenommen 1000 Objekten führt dies im Worst Case zu 1000 separaten RPCs.
+Bei Microservices würde man eine derartige API vermeiden, denn hier ist immer klar, welche Aufrufe lokal (innerhalb des MS) sind, und welche einen RPC (also den aufruf eines anderen MS) bewirken, da man aktiv zB die REST-Schnittstellen ansprechen muss. Um beim Summenbeispiel zu bleiben würde man hier entweder über lokale Elemente iterieren, oder einen ensprechenden Endpoint einrichten, welcher die Summe über alle Elemente eines entfernten MS anfordert.
+
+=> MS != distr. Obj.
+~
+
+#### Qualify Actors as Distributed Objects? (ÜBERSETZEN!)
+
+~Todo
+Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
+Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
+~
+
+#### Qualify Active Objects as Distributed Objects? (ÜBERSETZEN!)
+
+In section [#sec-active-objects] we gave a example of the concurrent semantic the API of active objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Lets consider another example:
+
+``` {language:scala}
+1  val fs: List[Fnord] = ... // list of 100 references
+2  var sum = 0
+3  for (f <- fs) {
+4      sum += f.get()
+5  }
+6  println(sum)
+```
+
+The program iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
+
+1. The programs will block sequentially 100 times, once for each element.
+2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
+
+The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value (though with this particular method name and usage it hopefully is unlikely). The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
+
+Both issues could be fixed by having `get()` return a `Future[Int]`{language:scala} instead. In functional languages like Scala, handling futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g.:
+
+``` {language:scala}
+1  Future.sequence(fs.map(_.get))
+2   .map(_.sum) 
+3   .onComplete {
+4     case Success(sum) => println(sum)
+5     case Failure(_)   => println("error")
+6   }
+```
+
+This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without blocking the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
+
+We see, Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
+
+~Todo
+Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
+~
+
+## Mobility
+
+~LitNote
+* Laut jones Bonér folgt mobility aus location transparency
+* [@Kan12] (über distributed erlang Actors)
+    * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
+    * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
+    * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
+* [@Fug98] "Understanding Code Mobility"
+* [@Agh14] "Actors Programming for the Mobile Cloud"
+* [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
+~
+
+## Single Responsibility
+
+~LitNote
+* Unix philosophy
+* [@Bon16]
+* [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
+~
+
+## Persistance
+
+~LitNote
+Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
+~
+
+## Scalability
+
+~LitNote
+* 
+~
+
+## Load balancing
+
+* Server and Client Side LB
+
+## Elasticity
+
+~LitNote
+* Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)
+* Actors can easily be created and kill by messages. A system must support elastic mechanism itself. question is from which components is this command issues? also a management framework? or is the system this detected by itself. in case of cluster, are new Actors spawned on random node, or some metric for node with most free resources?
+    * interessesting are cases for Stores, because DB/Index resources need to be present, and how are they being brought up to current state --> Event sourcing
+* IDEE: Ich werde elasticity nur theoretisch unterstützen. 
+    * die MS sind an sich darauf vorbereitet, müsste nur eine neue abstraktionsebene hinzugefügt werden (management framework) die das regelt; event sourcing subsystem für stores fehlt
+    * Actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
+~
+
+## Fault tolerance
+
+~LitNote
+* "failure isolation"
+* [@Myt17] "Handling partial failures in distributed reactive programming"
+~
+
+## Resilience
+
+~LitNote
+"ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
+
+Location transparency, elasticity = "move around in isolation"
+~
+
+## Availability
+
+~LitNote
+* Actors, siehe: [@Agh85b]
+~
+
+## Extensibility
+
+~LitNote
+* Actors, siehe: [@Agh85b]
+* gradual/separate replacement of MS
+* substitution and subtyping für Actors
+~

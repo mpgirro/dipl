@@ -1,0 +1,90 @@
+A Microservice-based Problem Solution {#ch-ms-solution}
+=====================================
+
+
+
+In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using a microservice architecture approach.
+
+## Isolation
+
+~LitNote
+State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
+~
+
+## Synchronous and Asynchronous Communication
+
+~LitNote
+howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+~
+
+## Data Coupling
+
+~LitNote
+No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
+~       
+
+## Persistence
+
+~LitNote
+* One DB per MS (e.g. PostgreSQL for directory/catalog) and lucene for index
+* PostgreSQL accessed by multiple threads concurrently *within* the MS
+~
+
+## Load balancing    
+
+~LitNote
+to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
+~
+
+## Service discovery
+
+~LitNote
+* Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
+* requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
+~
+
+## Fault Tolerance
+
+~LitNote
+Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
+~
+
+## Resilience
+
+## Scalability
+
+## Mobility
+
+~LitNote
+* follows from isolation and location transparency
+~
+
+## Elasticity
+
+~LitNote
+* benötigt ein (oder in Kombination mehrere) sog. Cloud Management Framework(s)
+* Last muss gemessen werden
+* MS müssen damit umgehen können dynamisch dem system hinzugefügt oder entfernt zu werden
+    * problemlos bei stateless MS workern, insofern isolation + location transparency gegeben ist
+    * problematisch bei stateful Actors, konkret bei den stores, weil der state (also DB/Index) auf den aktuellen stand gebracht werden muss --> wie? Event sourcing zB
+~
+
+## Deployment
+
+~LitNote
+depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
+~
+
+## Availability
+
+
+
+## Extensibility
+
+~LitNote
+* [@Mon16a]: "New versions of components can be gradually intro- duced in a system, by deploying them side to side with previous versions. This advantage can be incorporated in Continuous Integration"
+~
+
+## Configuration, logging, etc
+
+## Performance measurement of Microservices

@@ -1,0 +1,97 @@
+An Actor-based Problem Solution {#ch-Actor-solution}
+===============================
+
+
+
+In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an Actor-based programming model approach. When talking about the practical application of an Actor model, it is importent to realize that there is not *the* Actor model per se, but a big variaty of implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [citation needed]{.mind}. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor implementations available are based upon this semantics and resulting possibilities, but vary in terms of features and [???]{.mind}. Therefore it is important to state the specific Actor variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor model. 
+
+~LitNote
+* [@Kar09] Actor Frameworks for the JVM Platform: A Comparative Analysis
+~
+
+## Akka {#sec-akka}
+
+Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
+
+Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
+
+As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we motivated the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given code snipped is executed using the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing), the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses the Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
+
+~Todo
+* Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
+~ 
+
+## Isolation
+
+State + Behaviour
+
+## Synchronous and Asynchronous Communication
+
+~LitNote
+howto channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
+~
+
+## Data Coupling
+
+~LitNote
+Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between Actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
+~
+
+## Persistence
+
+~LitNote
+* Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
+* consider using non-blocking IO/DB APIs (if available), the futures will crowed up the thread pool, therefore use dispatchers for bulkheading (= the thread pool becomes an implicit backpressure)
+* if blocking IO has to be done, use dispatchers for bulkheading too, and delegate blocking operations to child Actors/workers. This is demonstrated in the Echo implementation
+~
+
+## Mailbox, Dispatcher and Backpressure (= Load balancing)
+
+~LitNote
+Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
+~
+
+## Supervision and Error Kernel (= Fault Tolerance)
+
+~LitNote
+* Supervision and Error Kernel
+* Circruit Breaker kurz anreißen und darauf hinweisen, dass die in Unterkapitel von MS genauer erklärt werden, da MS deutlich mehr darauf angewiesen sind (benötigen höhere Fault Tolerance einzelner Services, da Ausfall der Componente vergleichsweise teurer)
+~
+
+## Resilience
+
+## Scalability
+
+## Elasticity
+
+
+
+## Clustering and Mobility
+
+~LitNote
+* Cluster / Remoting of Akka, built in discovery system among nodes  
+* Cluster Singleton, Cluster Sharding
+~
+
+## Deployment
+
+~LitNote
+Mostly of no concern, bit of configutation for cluster setup (seed nodes for peer to peer discovery), cluster singleton and cluster sharding for complex deployment setups
+~
+
+## Availability
+
+~LitNote
+* siehe: [@Agh85b]
+~
+
+## Extensibility
+
+~LitNote
+* siehe: [@Agh85b]
+* hier allgemein zu Actor subtyping und substituion schreiben etc 
+~
+
+## Configuration, logging, etc
+
+## Performance measurement of Actors

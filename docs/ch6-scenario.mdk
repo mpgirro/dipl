@@ -1,0 +1,45 @@
+A Concurrent, Parallel and Distributed Problem Scenario {#ch-problem-scenario}
+=======================================================
+
+
+~LitNote
+* [@Bes10] "Podcast search: user goals and retrieval technologies"
+* [@Brin98] "The Anatomy of a Large-Scale Hypertextual Web Search Engine"
+* [@Cho04] "Agent Space Architecture for Search Engines"
+~
+
+
+In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also opens up the opportunities to salvage the benefits that come with parallelization and distribution:  scalability, reliability, etc. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of Actors and microservices in orther to satisfy the concurrent requirements.
+
+The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destinction, the respective implementations will be referenced to as *Echo:Actors* and *Echo:Microservices*.
+
+[^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
+
+## Why is a search engine a concurrent/parall./distr. task?
+
+~LitNote
+* Search Engines appears as a closed monolithic system (frontend), but is actually composed of many components that act in an decoupled and asynchronouse manmer (if the searc engine should perform)
+* search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall*, which we will not pay attention to in this work (we will only use some simple scoring methods and trust that the results will be fine)
+~
+
+## Domain Description
+
+Podcasts = Decentralized media syndication
+
+## Components
+
+## Information Flow
+
+## Concurrent Tasks
+
+Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
+
+## Scalability Opportunities
+
+### Scalability through ??? (scaling up = changing allocated resources: memory, CPU)
+
+### Scalability through Parallelization and Distribution (scaling out)
+
+## Elasticity Considerations
+
+## Polyglot Persistence (based on Isolation)
