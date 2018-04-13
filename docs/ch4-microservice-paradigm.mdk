@@ -79,3 +79,10 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 ## Polyglot Programming
 
 ## Object-Oriented Perspective
+
+
+## Relation to Communicating Sequential Processes
+
+~LitNote
+* Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
+~

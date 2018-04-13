@@ -34,6 +34,8 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 * The Process, Inter-process Communication, inherent concurrency
 * C like fork-join pattern was always a basic a way of write concurrency (outsourcing the concurrency aspect to the OS) --> Literatur?!
 * Middlewares/Virtual machines can provide a transparent way to distribute threads to multiple cores --> Literatur?!
+* [@Fel90] "Language and System Support for Concurrent Programming"
+    * Kapitel 3: Concurrency at the Operating System Level
 ~
 
 ## Concurrency at the Network Level {#sec-concurrency-network-level}

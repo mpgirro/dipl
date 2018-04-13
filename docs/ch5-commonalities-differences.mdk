@@ -13,7 +13,7 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
-## State Encapsulation
+## Encapsulation and Information Hiding
 
 ~LitNote
 * "promise behaviour via API/protocol" --> design by contract
@@ -108,7 +108,7 @@ Programming with microservices does not, unlike Actors, free one from the many h
 * [@Wal96] "A Note on Distributed Computing"
 ~
 
-*Distributed Objects* (DO) is a concept that has been popularized in the 1990 [citation needed]{.mind}. It is an extension to the original Object concept. Here, Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
+*Distributed Objects* (DO) is a concept that has been popularized in the 1990s [citation needed]{.mind}. It is an extension to the original Object concept. Here, Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such  DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
 
 However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
@@ -219,6 +219,8 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 * IDEE: Ich werde elasticity nur theoretisch unterstützen. 
     * die MS sind an sich darauf vorbereitet, müsste nur eine neue abstraktionsebene hinzugefügt werden (management framework) die das regelt; event sourcing subsystem für stores fehlt
     * Actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
+* [Akm90] vergleicht Actors mit CSP und erläutert, dass Actors "permits one to increase the distributivity of computation as it evolves" (= elastic) weil sie neue Actors erzeugen können. CSPs hingegen können nur andere Processe "aktiviere", und sind nicht natürlich elastisch. Wenn ich argumentieren kann das MS auf CSP logik basieren, dann ist das ein gutes Argument. Die Folge ist ja nämlich, dass MSA eine zsätzliche Abstraktion brauchen für Elastizität, nämlich Cloud Management Frameworks.
+    * [@Agh85b] beschreibt, das CSP die dynamisch Actor Erzeugungs Semantik "violated", weil die "interconnetion topology of processes" statisch ist --> MS müssen das via Service Discovery Abstraction lösen (wo ebene die Discovery Services statisch sind und weiterleiten)
 ~
 
 ## Fault tolerance
@@ -248,4 +250,10 @@ Location transparency, elasticity = "move around in isolation"
 * Actors, siehe: [@Agh85b]
 * gradual/separate replacement of MS
 * substitution and subtyping für Actors
+~
+
+## Polyglott Programming
+
+~LitNote
+* [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
 ~
