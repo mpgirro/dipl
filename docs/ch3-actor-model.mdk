@@ -24,7 +24,7 @@ In order to send a message, the unique *address* of an Actor must be known. The 
 
 Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation [citation needed]{.mind}
 
-## Message Passing and Isolation 
+## Message Passing and Encapsulation {#sec-actor-messaging-encapsulation}
 
 ~LitNote
 * every Actor owns its state exclusively (should also have unique DB -> bad performance, discuss in Actor-Impl chapter) --> das DB thema sollte ich lieber im praktischen solution teil bei "persistence" beschreiben
@@ -42,41 +42,24 @@ Changing internal state within an Actor is modeled with the third of the basic p
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [citation needed]{.mind}. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
 
-Preserving Actor semantics can be a challenge when used with programming languages focusing on different concepts and values. In *Object Oriented Programming* (OOP), encapsulation is the principle that the internal object state is only available within the object. Therefore, only an objects instance methods are allowed to access the instances state [@Mey97]. Object methods provide well-defined interfaces realizing access control, and are used to issue requests to modify or read state variables [@Sny93]. 
+Preserving Actor semantics can be a challenge depending on the programming language paradigm used. In *Object Oriented Programming* (OOP), encapsulation generally referes to enforce:
 
-Object-oriented Actor implementations might be facing challenges here however. The concept of *visibility* often found in OOP might break loosen up the consistency of encapsulation [citation needed]{.mind}. The *Java* programming languages for example offers multiple granularities for the visibility of class fields. A `public`{language:java} field can be accessed without using a method interface and - given it is not declared `final`{language:java} - may also be modified the same way. The following code snippet illustrates the problem in Java using Akka (which will be discussed in more detail in chapter [#ch-Actor-solution])):
+1. adressing only the attributes within scope
+2. respecting access rights 
 
-``` {language:java}
-public class Foo extends UntypedActor { 
 
-    public String bar;
 
-    public void onReceive(final Object msg) {  
-        // handle msg
-    } 
-}
-```
+encapsulation is the principle that the internal object state is only available within the object. Therefore, only an objects instance methods are allowed to access the instances state [@Kni96]. 
 
-Any Java-based Actor implementation faces the potential problem that custom written Actor classes might easily break the required Actor semantic. Object-oriented Actor implementations therefore often offer APIs where interaction with an Actor instance is not issued directly through the object instances method interfaces:
 
-``` {language:java}
-final ActorRef foo = Actors.actorOf(Foo.class).start();
-```
+Object methods provide well-defined interfaces realizing access control, and are used to issue requests to modify or read state variables [@Sny93]. 
 
-An instance of `Foo`{language:java} is not created using the `new`{language:java} as is custom in Java, but hidden inside a factory method. Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef` instances do not have the public interface of the Actor class they represent, but ...
-
-Messages to the Actor `foo` are sent..
+[ab diesem punkt das folgende vll eher in den praktischen teil?]{.mind}
 
 
 
 
 
-* The communication with an Actor through a `ActorRef` proxy also has the benefit of loosening the referential transparency up to a *location transparent* [hier lehne ich mich weit aus dem fenster - vll ref. transparency komplett raus lassen?]{.mind} ; ... also opens up to possibility of *location transparency*, a form of decoupling where 
-
-
-
-* ensure state is not exposed, example java factor, visibility of fields/methods may break actor semantics
-* hier irgendwo [@Sub11] zitieren!
 
 ## Active Objects {#sec-active-objects}
 

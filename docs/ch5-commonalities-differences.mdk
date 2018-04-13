@@ -13,14 +13,22 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
-## Encapsulation and Information Hiding
+## Information Hiding and Isolation {#sec-commonalities-isolation}
 
 ~LitNote
 * "promise behaviour via API/protocol" --> design by contract
 * [@Kan12] 4 four important semantic properties of our
 extension based on Actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
 * [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
+* [@Kni96] "Encapsulation is probably the only feature that is generally agreed to be an indispensable (sine qua non) characteristic of object-oriented languages. Some researchers even consider encapsulation to be the fundamental object-oriented concept and that all other object-oriented mechanisms and approaches exploit encapsulation to various ends ([9]). There also seems to be general agreement on the fact that encapsulation and sharing are incompatible: sharing tends to violate encapsulation while encapsulation tends to prevent sharing."
+* MS sind per definition, insofern sie auf shared memory konzepte verzichten, immer perfekt isoliert, durch das OS. Bei Actor müssen die verschiedenen "notions of state" beachtet werden, um eine strong state notion einzuhalten, also preserve local state and transient state, wie es in [@Kni96] beschrieben ist
 ~
+
+Both Actor and Microservice semantics rely on a strict separation of component states. Any form of shared resource is to be prevented. This is generally easy for Microservice components due to the fact that the services are within their separate system processes, and as long as they do not arrange a shared memory section there is no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}.
+
+Actor are generally faced with more challenges in ensuring state separation. 
+
+* TODO hier einfach die ganze Encapsulation = Visibility + Accessibility sache erklären?
 
 ## Communication and Data Coupling
 
