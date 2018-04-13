@@ -26,9 +26,11 @@ extension based on Actor systems: encapsulation, fairness, location transparency
 
 Both Actor and Microservice semantics rely on a strict separation of component states. Any form of shared resource is to be prevented. This is generally easy for Microservice components due to the fact that the services are within their separate system processes, and as long as they do not arrange a shared memory section there is no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}.
 
-Actor are generally faced with more challenges in ensuring state separation. 
+Actors are generally faced with more challenges in ensuring state separation, because the components can exist within the same process boundries, and have therefore access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming language paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the user.
 
-* TODO hier einfach die ganze Encapsulation = Visibility + Accessibility sache erklären?
+As Snyder points out, *Object Oriented Programming* (OOP) usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - which are not to be confused with the *service* concept we will introduce with Microservices - are what Meyer calls well-defined interfaces, or simply routines (method), and considers to be a necessity for encapsulation [@Mey97]. 
+
+However, though OOP offers methods to encapsulate state within objects and prevent access to it, it r it usually remains quite easy for an object to *exposing* its state to others [citation sowas von needed]{.mind}. This can become especially problematic for object-oriented Actor implementations if the system has no way of checking or ensuring message immutability by itself. Section [#sec-ensuring-actor-isolation] describes in detail the challenges this poses for a specific Actor system.
 
 ## Communication and Data Coupling
 

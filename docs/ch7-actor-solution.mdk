@@ -15,13 +15,13 @@ Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machin
 
 Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
 
-As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given code snipped is executed using the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing), the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
+As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor {...}`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
 
 ~Todo
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
 ~ 
 
-## Ensuring Isolation
+## Ensuring Isolation {#sec-ensuring-actor-isolation}
 
 Object-oriented Actor implementations can face problems when it comes to ensuring Actor isolation. As was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
@@ -138,3 +138,10 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 ## Configuration, logging, etc
 
 ## Performance measurement of Actors
+
+
+## Summary {#actor-solution-summary}
+
+In this chapter, we discussed the impact of implementational defails on the theoretical concept of Actors: 
+
+* True isolation can in general not be ensured as strictly as hard process boundries do. Special care has to be taken by the user in order to have decent enought Actors state encapsulated inside the same JVM to prevent breaking the model semantic. 
