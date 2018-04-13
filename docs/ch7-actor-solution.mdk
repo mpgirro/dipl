@@ -23,27 +23,15 @@ As we already mentioned, different Actor implementations have different capabili
 
 ## Ensuring Isolation
 
-~LitNote
-* State + Behaviour
-* prevent creating actors directly, instead via factory to get ActorRef
-* message immutability is not ensured automatically, must be done manually!
-~
-
 Object-oriented Actor implementations can face problems when it comes to ensuring Actor isolation. As was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
 As was pointed out, this model is capable of providing a transparent interface for component communication that might exist within the same local scope (same process) or remote scope (distinct processes). 
 
-In the first case, the different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
+In the first case, different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
 
-Actor semantics implies the need for a strict conception of encapsulation where the strong state is exclusive to the Actor, i.e. no transient state must overlap with any other Actor [citation needed? sollte man sich ja mittlerweile auch selber überlegen können]{.mind}.
+Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping shared mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
 Section [#sec-commonalities-isolation] discussed the potential issues with object-oriented Actors. Visibility was given as a concern for encapsulation. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
-
-<!--
-Granting *external visibility* to a field or method extends it to the specification of the external interface of an object, thus influencing the objects encapsulation [@Kni96]. 
-
-A `public`{language:java} field becomes visible outside the object and is also accessible without using a method interface and - given it is not declared `final`{language:java} - may also be modified the same way. The following code snippet illustrates the resulting problem:
--->
 
 ``` {language:java}
 public class Foo extends UntypedActor { 
@@ -59,23 +47,22 @@ public class Foo extends UntypedActor {
 
 Field `bar` in class `Foo`{language:java} has been given *external visibility* by declaring it to be `public`{language:java}. Thus it is part of any object of type `Foo`{language:java}s external interface and therefore influencing the objects encapsulation [@Kni96]. Because visibility and accessibility are orthogonal, `bar` is also accessible from outside the scope of `Foo`{language:java}, and - for it is not delared `final`{language:java} - may be modified the same way too. This violates Actor semantic requirements. 
 
-Any Java-based Actor implementation therefore faces the potential problem that custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like:
+Any Java-based Actor implementation therefore faces the potential problem where custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like:
 
 ``` {language:java}
 final ActorRef foo = Actors.actorOf(Foo.class).start();
 ```
 
-An instance of `Foo`{language:java} is not created using the `new`{language:java} keyword as is custom in Java, but by using a factory method that hides the actual instantiation. Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be available to the Actor within its `onReceive` method [@Sub11].
+An instance of `Foo`{language:java} is not created using the `new`{language:java} keyword as is custom in Java, but by using a factory method that hides the actual instantiation. Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be delivered to and consumed by the Actor through its `onReceive` method [@Sub11].
 
-This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [which must have been explain in some chapter previously]{.mind}.
+This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [which must have been explain in some chapter previously]{.mind}.
 
-Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing strong state. The method signature `void onReceive(Object message)` indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter contains a copy of the address of the object it represents [citation needed! dringend!]{.mind}.
+Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter contains a copy of the address of the object it represents [^fn-java-pass-by-value]. This means that any message sent between Actors is a reference to an object representing the message. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
 
-This means that any message sent between Actors is a reference to an object representing the message. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the transient state of both the sending and the receiving Actor, violating the strong state requirement.
+However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [irgendwo stand das. zitieren!]{.mind}. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
-However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared transient state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any holder. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced by their parameters. For Java classes, it is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments[^fn-java-immutables]. We've found that libraries utilizing source-level annotation processing provide useful abstraction for generating consistent value objects. Such use annotated `interfaces`{language:java} declarations to generate consistent implementations offering builder and factory objects in the generated artifact. 
-
-[^fn-java-immutables]: for example https://immutables.github.io
+[^fn-java-pass-by-value]: This causes the confusion that Java has pass-by-reference parameters. It does not.
+[^fn-java-immutables]: Such as <https://immutables.github.io> for example.
 
 <!-- WO STAND DAS NOCHMAL? ICH FIND SAS NICHT MEHR
 Therefore, Akka recommends using Scala `case class`{language:scala} constructs for message sending only, with  this is actually only a prob
