@@ -81,8 +81,18 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 ## Object-Oriented Perspective
 
 
-## Relation to Communicating Sequential Processes
+## Relation to Processes Calculi
 
 ~LitNote
 * Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
+* siehe <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
+    * scheint weniger CSP, als CCS und pi-calculus zu sein
+* JOLIE basiert auf der theorie eines Process-calculie (steht in "Microservice: a language-based approach"). Dh es müsste zumindest bei denen etwas genauer beschreiben sein, wie man das Konzept von Service-oriented Programming zusammen mit Process calculi bringt. Da kann ich mir hoffentlich eine Seite aus den Fingern saugen
+* Es gibt zB auch calculi die "mobility" unterstützen
+    * *Robin Milner, Joachim Parrow and David Walker. A calculus of mobile processes Computer Science Dept. Edinburgh. Reports ECS-LFCS-89-85 and ECS-LFCS-89-86. June 1989. Revised Sept. 1990 and Oct. 1990 respectively.*
+    * *Cédric Fournet, Georges Gonthier, Jean-Jacques Lévy, Luc Maranget, and Didier Rémy. A Calculus of Mobile Agents CONCUR 1996.*
+    * *Tatsurou Sekiguchi and Akinori Yonezawa. A Calculus with Code Mobility FMOODS 1997.*
+* *Nancy Lynch and Michael Fischer. On describing the behavior of distributed systems in Semantics of Concurrent Computation. Springer-Verlag. 1979.*
+* *Nissim Francez, C.A.R. Hoare, Daniel Lehmann, and Willem de Roever. Semantics of nondetermiism, concurrency, and communication Journal of Computer and System Sciences. December 1979.*
+* Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
 ~

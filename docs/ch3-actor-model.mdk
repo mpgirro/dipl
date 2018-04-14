@@ -10,6 +10,10 @@ One actor is no actor. Actors come in systems.
 ~LitNote
 * [@Agh85a] "ACTORS: A Model of Concurrent Computation in Distributed Systems"
 * [@Agh85b] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"
+* <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
+    * 1973 mathematical model
+    * Bill Kornfeld and Carl Hewitt [1981] showed that the Actor model could encompass large-scale concurrency.
+    * Agha developed Actors as a fundamental model for concurrent computation
 ~
 
 In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it build upon the abstraction of *Actors*. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. Therefore it performes actions in response to received messages.
@@ -74,7 +78,7 @@ Using the above class `Fnord`{language:java}, we can create the following simple
 
 ``` {language:java}
 1  void doSomething() {
-2    Fnord f = ...; // get reference to a Fnord instance
+2    Fnord f = ...; // obtain reference to a Fnord instance
 3    f.add(1);
 4 
 5    print(f.get()); 
