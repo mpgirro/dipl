@@ -1,10 +1,5 @@
 [INCLUDE=style/marticle]
 
-<!--
-Title        : A crack in the monolith
-Subtitle     : Do suffciently concurrent programming languages need microservice architectures?
--->
-<!--Title        : Concurrent Programming Languages and Microservice Architectures-->
 Title        : Concurrent Programming
                and the Microservice Architecture Style
 Subtitle     : Hier könnte Ihre Werbung stehen!
@@ -111,7 +106,8 @@ A PDF Version of this thesis is available at [max.irro.at/pub/thesis/dipl.pdf](h
 
 
 <!--
-* Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich sie viel zu selten anrufe.
+* Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
+* Meine Betreuer, Franz Puntigam, für all die guten Ratschläge im Bezug auf diese Arbeit. Sie haben sich alle bewährt.
 -->
 
 # Abstract { -; toc:clear; }

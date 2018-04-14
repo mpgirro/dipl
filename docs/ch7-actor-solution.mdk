@@ -1,3 +1,4 @@
+
 An Actor-based Problem Solution {#ch-Actor-solution}
 ===============================
 
@@ -19,6 +20,9 @@ As we already mentioned, different Actor implementations have different capabili
 
 ~Todo
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
+* [@AkkaJMM] beschreibt das Akka garantiertieren muss, wie sich das abarbeiten von nachrichten verhält, weil die actors ja auf threads laufen, aber nicht zwingend 2 nachrichten hintereinander auf dem selben thread ausgeführt werden
+    * "The actor send rule: the send of the message to an actor happens before the receive of that message by the same actor."
+    * "The actor subsequent processing rule: processing of one message happens before processing of the next message by the same actor."
 ~ 
 
 ## Ensuring Isolation {#sec-ensuring-actor-isolation}
@@ -59,7 +63,7 @@ This has the benefit that no direct contact with an Actor instance object is pos
 
 Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter is a copy of the address of the object it represents. This means that any message sent between Actors contains a reference to an object representing the message[^fn-java-pass-by-value]. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
 
-However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [irgendwo stand das. zitieren!]{.mind}. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [irgendwo stand das. zitieren!]{.mind}. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
 [^fn-java-pass-by-value]: This causes the confusion that Java has pass-by-reference parameters. It does not.
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
@@ -75,6 +79,16 @@ These restrictions still cannot even prevent all obstacles Java offers to break 
 <!-- WO STAND DAS NOCHMAL? ICH FIND SAS NICHT MEHR
 Therefore, Akka recommends using Scala `case class`{language:scala} constructs for message sending only, with  this is actually only a prob
 -->
+
+## Mixing Concurrency Concepts
+
+~Todo
+* Hier sollte ich ein beispiel bringen das wenn man einen Future innerhalb eines Actors verwendet, man aufpassen muss keinen mutable state innerhalb des Futures zu verwenden. Denn es gibt keinen synchronized access, und dies kann wieder zu probleme führen.
+* Außerdem kann ich dann wieder darauf zurückkommen, dass das *Visibility* Concept hier das eigentliche problem ist (weil Actor state im Future visible sein kann)
+* [@AkkaJMM] "Akka and the Java Memory Model"
+    * "The completion of a Future “happens before” the invocation of any callbacks registered to it are executed."
+    * "We recommend not to close over non-final fields (final in Java and val in Scala), and if you do choose to close over non-final fields, they must be marked volatile in order for the current value of the field to be visible to the callback."
+~ 
 
 ## Synchronous and Asynchronous Communication
 

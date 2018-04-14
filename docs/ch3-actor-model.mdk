@@ -1,3 +1,4 @@
+
 The Actor Model {#ch-actor-model}
 ===============
 
@@ -23,7 +24,7 @@ Upon receiving a message, an Actor can react in with three basic primitives:
 1. Sending a finite number of messages to itself or other known actors.
 2. Creating a finite number of new actors.
 3. Changing its internal behaviour for the next message that it receives with the so-called *replacement behaviour*.
- 
+
 In order to send a message, the unique *address* of an Actor must be known. The unterlying system delivers the message. In general, the order of delivery is non-deterministic. Actor addresses can be announced to other Actors by sending the address as a message. This allows for *dynamic reconfiguration* [@Agh90].
 
 Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation [citation needed]{.mind}
@@ -45,12 +46,6 @@ To ensure snapshots do not violate encapsulation semantic and prevent accidental
 Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. 
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [citation needed]{.mind}. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
-
-
-
-
-
-
 
 
 ## Active Objects {#sec-active-objects}
