@@ -25,7 +25,7 @@ extension based on Actor systems: encapsulation, fairness, location transparency
 * [@Kni96] "Encapsulation is probably the only feature that is generally agreed to be an indispensable (sine qua non) characteristic of object-oriented languages. Some researchers even consider encapsulation to be the fundamental object-oriented concept and that all other object-oriented mechanisms and approaches exploit encapsulation to various ends ([9]). There also seems to be general agreement on the fact that encapsulation and sharing are incompatible: sharing tends to violate encapsulation while encapsulation tends to prevent sharing."
     * hier muss ich auch noch was zu visibility schreiben, weil ich im actor-solution kapitel schreibe das es hier schon vorgekommen ist!
 * MS sind per definition, insofern sie auf shared memory konzepte verzichten, immer perfekt isoliert, durch das OS. Bei Actor müssen die verschiedenen "notions of state" beachtet werden, um eine strong state notion einzuhalten, also preserve local state and transient state, wie es in [@Kni96] beschrieben ist
-* [Kar09] Encapsulation = State Encpasulation + Safe Messaging
+* [@Kar09] Encapsulation = State Encpasulation + Safe Messaging
     * nach meiner auffassung ist das genau isolation; das sollte ich vll hier anbringen
 ~
 
@@ -253,7 +253,7 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 * IDEE: Ich werde elasticity nur theoretisch unterstützen. 
     * die MS sind an sich darauf vorbereitet, müsste nur eine neue abstraktionsebene hinzugefügt werden (management framework) die das regelt; event sourcing subsystem für stores fehlt
     * Actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
-* [Akm90] vergleicht Actors mit CSP und erläutert, dass Actors "permits one to increase the distributivity of computation as it evolves" (= elastic) weil sie neue Actors erzeugen können. CSPs hingegen können nur andere Processe "aktiviere", und sind nicht natürlich elastisch. Wenn ich argumentieren kann das MS auf CSP logik basieren, dann ist das ein gutes Argument. Die Folge ist ja nämlich, dass MSA eine zsätzliche Abstraktion brauchen für Elastizität, nämlich Cloud Management Frameworks.
+* [@Akm90] vergleicht Actors mit CSP und erläutert, dass Actors "permits one to increase the distributivity of computation as it evolves" (= elastic) weil sie neue Actors erzeugen können. CSPs hingegen können nur andere Processe "aktiviere", und sind nicht natürlich elastisch. Wenn ich argumentieren kann das MS auf CSP logik basieren, dann ist das ein gutes Argument. Die Folge ist ja nämlich, dass MSA eine zsätzliche Abstraktion brauchen für Elastizität, nämlich Cloud Management Frameworks.
     * [@Agh85b] beschreibt, das CSP die dynamisch Actor Erzeugungs Semantik "violated", weil die "interconnetion topology of processes" statisch ist --> MS müssen das via Service Discovery Abstraction lösen (wo ebene die Discovery Services statisch sind und weiterleiten)
 ~
 

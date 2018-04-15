@@ -75,7 +75,7 @@ Channels for distributed communication are more likely to provide options to app
 
 Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
-[^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas (ed. note).
+[^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
 ## Polyglot Programming
 

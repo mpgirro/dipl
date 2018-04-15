@@ -45,9 +45,9 @@ To ensure snapshots do not violate encapsulation semantic and prevent accidental
 
 Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. 
 
-This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [citation needed]{.mind}. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
+This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [@Agh14]. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
 
-## Unifying Concurrent, Parallel and Distributed Execution
+## Unifying Concurrent, Parallel and Distributed Computation
 
 ~LitNote
 * Hier beschreiben dass die Actor semantic eine nebenläufige und sogar verteilte ausführung erlaubt
@@ -60,17 +60,53 @@ This strict encapsulation of state and decoupling via immutable, asynchronous me
 
 Up until now, the Actor model was described as a general model of computation. It was initially conceived as such by Hewitt [citation needed?!]{.mind}. However, the abstraction of Actors presented so far provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. As such, Actors encapsulate not only data and functionality, but also their own *thread of control*, making Actors autonomous [@Agh99]. Hewit and [??]{.mind} later showed that this allows for a concurrent execution of such components [citation? war das wirklich erst später?]{.mind}, effectivly making the Actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
 
-There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], for it can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. For state is never shared, but only communicated via asynchronous message passing, this eliminates a whole class of errors, the *race conditions* [@Cha13]. The dynamic data flow of messages is the primary source of nondeterminism, for the order of processing the messages affects the behaviour, but therefore eliminates unnecessary synchronization overhead [@Kar09; @Agh99].
+There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], as such can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. For state is never shared, but only communicated via asynchronous message passing, this eliminates a whole class of errors, the *race conditions* [@Cha13]. The dynamic data flow of messages is the primary source of nondeterminism, for the order of processing the messages affects the behaviour, but therefore eliminates unnecessary synchronization overhead [@Kar09; @Agh99].
 
-On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, like with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
+On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
 
-The Actor model however provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These addresses are virtual by not exposing any physical location information [@Ber14], and are thus not restricting the Actors to the limitations of such. Concurrently executed components are not required to be inside the same process boundry, because their addresses can abstract the gape in physical distance between them. This concept is usually refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
+The Actor model on the other hand provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These addresses are virtual by not exposing any physical location information [@Ber14], and are thus not restricting the Actors to the limitations of such. Concurrently executed components are not required to be inside the same process boundry, because their addresses can abstract the gape in physical distance between them. This concept is generally refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
 
-Traditionally, distributed computation is regared its own research discipline separate from parallel computation. However, as was pointed out by Agha and Kim, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Again, location transparent addresses allow for referencing actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
+Traditionally, distributed computation is regarded its own research discipline separate from parallel computation. However, as was pointed out by Agha and Kim, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Again, location transparent addresses allow for referencing Actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
 
 
-...Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
+[...]{.mind} Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
 
+
+
+
+## Combination with other Concurrency Abstractions
+
+~LitNote
+* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
+* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
+~
+
+### Futures
+
+### Software Transactional Memory (STM)
+
+~LitNote
+* [@Sub11] demonstrates how Akka support STM together with Actors
+~
+
+
+
+
+## Object-Oriented Perspective
+
+~LitNote
+* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
+~
+
+### Data Abstractions
+
+Encapsulation and Information Hiding
+
+### SOLID design principles
+
+### Design by Contract
+
+### Substitution and Behaviour
 
 ## Active Objects {#sec-active-objects}
 
@@ -107,36 +143,4 @@ Using the above class `Fnord`{language:java}, we can create the following simple
 
 In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 5 will result in `2`. 
 
-Altering the definition to `class Fnord extends ActiveObject {...}`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have by received by and therefore processes before the unterlying Actor of `f`. 
-
-
-## Combination with other Concurrency Abstractions
-
-~LitNote
-* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
-* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
-~
-
-### Futures
-
-### Software Transactional Memory (STM)
-
-~LitNote
-* [@Sub11] demonstrates how Akka support STM together with Actors
-~
-
-## Object-Oriented Perspective
-
-~LitNote
-* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
-~
-
-### Data Abstractions
-
-Encapsulation and Information Hiding
-
-### SOLID design principles
-
-### Design by Contract
-
-### Substitution and Behaviour
+Altering the definition to `class Fnord extends ActiveObject`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have by received by and therefore processes before the unterlying Actor of `f`. 
