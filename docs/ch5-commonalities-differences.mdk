@@ -1,8 +1,8 @@
 
-Commonalities and Differences of Actors and Microservices
+Commonalities and Differences 
 =========================================================
 
-
+<!-- of Actors and Microservices -->
 
 ~ Epigraph { caption: "Pamela Zave"}
 The purpose of software engineering is to control complexity, not to create it.
@@ -21,9 +21,12 @@ The purpose of software engineering is to control complexity, not to create it.
 * [@Kan12] 4 four important semantic properties of our
 extension based on Actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
 * [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
+* [@Bon17] "Isolation makes it easier to scale each service, as well as allowing them to be monitored, debugged, and tested independently"
 * [@Kni96] "Encapsulation is probably the only feature that is generally agreed to be an indispensable (sine qua non) characteristic of object-oriented languages. Some researchers even consider encapsulation to be the fundamental object-oriented concept and that all other object-oriented mechanisms and approaches exploit encapsulation to various ends ([9]). There also seems to be general agreement on the fact that encapsulation and sharing are incompatible: sharing tends to violate encapsulation while encapsulation tends to prevent sharing."
     * hier muss ich auch noch was zu visibility schreiben, weil ich im actor-solution kapitel schreibe das es hier schon vorgekommen ist!
 * MS sind per definition, insofern sie auf shared memory konzepte verzichten, immer perfekt isoliert, durch das OS. Bei Actor müssen die verschiedenen "notions of state" beachtet werden, um eine strong state notion einzuhalten, also preserve local state and transient state, wie es in [@Kni96] beschrieben ist
+* [Kar09] Encapsulation = State Encpasulation + Safe Messaging
+    * nach meiner auffassung ist das genau isolation; das sollte ich vll hier anbringen
 ~
 
 Both Actor and Microservice semantics rely on a strict separation of component states. Any form of shared resource is to be prevented. This is generally easy for Microservice components due to the fact that the services are within their separate system processes, and as long as they do not arrange a shared memory section there is no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}.
@@ -41,12 +44,8 @@ However, though OOP offers methods to encapsulate state within objects and preve
 * Point to Point, Publish/Subscribe, 
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
 * [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
-~
-
-## Isolation
-
-~LitNote
-* [@Bon17] "Isolation makes it easier to scale each service, as well as allowing them to be monitored, debugged, and tested independently"
+* [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
+* [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
 ~
 
 ## Autonomy
@@ -62,6 +61,7 @@ However, though OOP offers methods to encapsulate state within objects and preve
 ~LitNote
 * [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination Actor except for its permanent “disability”, and no Actor can be permanently starved
 * MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
+* [Kar09] beschreibt fair scheduling bei actors
 ~
 
 ## Internal and external Component Concurrency
@@ -102,6 +102,9 @@ Programming with microservices does not, unlike Actors, free one from the many h
 * [@Hal09] Scala Actors: Unifying thread-based and event-based programming
     * "There is an impedance mismatch between message-passing concurrency and virtual machines, such as the JVM. VMs usually map their threads to heavyweight OS processes. Without a lightweight process abstraction, users are often forced to write parts of concurrent applications in an event-driven style which obscures control flow, and increases the burden on the programmer"
     * --> Event Driven Programming Style (also so Callbacks in Java zB) sind Mist, 
+* [@Agh91] "Actors as Processes: The representation that we are implementing models actors as light-weight processes and requires the presence of a kernel run-time system on each node."
+* Hier kann ich die gesamte Erlang Literatur einbauen, denn die nennen ihre lightweight constructs ja auch *process*
+* [Kar09] beschreibt location transparency bei actors
 ~
 
 
@@ -209,6 +212,7 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 * [@Fug98] "Understanding Code Mobility"
 * [@Agh14] "Actors Programming for the Mobile Cloud"
 * [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
+* [Kar09] beschreibt mobility bei actors
 ~
 
 ## Single Responsibility

@@ -8,6 +8,8 @@ The Actor Model {#ch-actor-model}
 One actor is no actor. Actors come in systems.
 ~
 
+## A Model of Computation
+
 ~LitNote
 * [@Agh85a] "ACTORS: A Model of Concurrent Computation in Distributed Systems"
 * [@Agh85b] "Concurrent Programming Using Actors: Exploiting Large-Scale Parallelism"
@@ -17,7 +19,7 @@ One actor is no actor. Actors come in systems.
     * Agha developed Actors as a fundamental model for concurrent computation
 ~
 
-In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it build upon the abstraction of *Actors*. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. Therefore it performes actions in response to received messages.
+In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. Therefore it performes actions in response to received messages.
 
 Upon receiving a message, an Actor can react in with three basic primitives:
 
@@ -29,6 +31,7 @@ In order to send a message, the unique *address* of an Actor must be known. The 
 
 Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation [citation needed]{.mind}
 
+
 ## Message Passing and Encapsulation {#sec-actor-messaging-encapsulation}
 
 ~LitNote
@@ -39,6 +42,8 @@ Messages are processed one at a time. Therefore, they have to be buffered in the
 
 The Actor abstraction defines that the only possible form of communication between Actors is by exchanging messages. This implies that there is no directly shared state between them [citation needed]{.mind}. Actor semantic means state is *encapsulated* within an Actor exclusively. To access the state, it must be requested by sending an appropriate message. 
 
+Processing a message is *atomic*, i.e. it is not interrupted by other messages to the Actor [@Agh99], for they get buffered inside the mailbox.
+
 It is important to realize that requested state informations are always mere snapshots of any Actors state at a specific point in time (the point where this Actor processes the requesting message), and the information might therefore be already outdated once the requestor receives the snapshot answer [citation needed]{.mind}. This is the semantic of any form of asynchronous communication [citation needed]{.mind}. On the other hand, it frees Actors from the implications any form of shared state or resource handling, like the bottle-necks introduces by sequential locking, brings with it [@Agh90].  
 
 To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be *immutable* [citation needed?]{.mind}. This allows save coordination at a distance [@Hel15]. 
@@ -46,6 +51,26 @@ To ensure snapshots do not violate encapsulation semantic and prevent accidental
 Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. 
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [citation needed]{.mind}. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
+
+## Unifying Concurrent, Parallel and Distributed Execution
+
+~LitNote
+* Hier beschreiben dass die Actor semantic eine nebenläufige und sogar verteilte ausführung erlaubt
+* [@Agh99] "Actors: A unifying model for parallel and distributed computing"
+~
+
+Up until now, the Actor model was described as a general model of computation. It was initially conceived as such by Hewitt [citation needed?!]{.mind}. However, the abstraction of Actors presented so far provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. As such, Actors encapsulate not only data and functionality, but also their own *thread of control*, making Actors autonomous [@Agh99]. Hewit and [??]{.mind} later showed that this allows for a concurrent execution of such components [citation? war das wirklich erst später?]{.mind}, effectivly making the Actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
+
+There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], for it can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. For state is never shared, but only communicated via asynchronous message passing, this eliminates a whole class of errors, the *race conditions* [@Cha13]. The dynamic data flow of messages is the primary source of nondeterminism, for the order of processing the messages affects the behaviour, but therefore eliminates unnecessary synchronization overhead [@Kar09; @Agh99].
+
+On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccess for parallelization [citation needed]{.mind}. But writing explicit parallel code can be painful and requires to explicitly prepare code segments that are ment to be run in parallel, introducing tighter coupling to a machine architecture that is expected to provide parallel execution [citation needed!]{.mind}.
+
+The Actor model however provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These address may be virtual [citation needed - irgendwo bei diesem Orleans?]{.mind}, and therefore not subject to restrictions regarding the physical location it references. Concurrently executed components are not required to be inside the same process boundry, as long as the Actor address can abstract the gape in physical distance between them. This concept is usually refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
+
+Traditionally, distributed computation is regared its own research discipline separate from parallel computation. However, as was pointed out by Agha and Kim, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Again, location transparent addresses allow for referencing actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
+
+
+...Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
 
 
 ## Active Objects {#sec-active-objects}
@@ -55,6 +80,7 @@ This strict encapsulation of state and decoupling via immutable, asynchronous me
 * active objects are basically Actors with a different API
     * realized with a proxy object
 * vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten Actor) auch wirklich verarbeitet werden können
+* Act.Obj sind sowohl ein Pattern, als auch prinzipiell eine object-orientierte Abstraction des Actor Models (bzw der Actor Semantic?). Actors können Prinzipiell in welchem Paradigma auch immer umgesetzt sein. Entsprechend sind Act.Obj die "besonders object-orientierten Actors"
 ~
 
 ``` {language:java}
@@ -87,6 +113,11 @@ Altering the definition to `class Fnord extends ActiveObject {...}`{language:jav
 
 ## Combination with other Concurrency Abstractions
 
+~LitNote
+* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
+* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
+~
+
 ### Futures
 
 ### Software Transactional Memory (STM)
@@ -96,6 +127,10 @@ Altering the definition to `class Fnord extends ActiveObject {...}`{language:jav
 ~
 
 ## Object-Oriented Perspective
+
+~LitNote
+* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
+~
 
 ### Data Abstractions
 

@@ -22,6 +22,8 @@ For the scope of this thesis, it is important to gain a notion of *where* concur
 * Threads, Locks and Shared State
 * Message passing
 
+## Concurrency and Parallelism
+
 
 ## Concurrency at the Programming Language Level {#sec-concurrency-language-level}
 

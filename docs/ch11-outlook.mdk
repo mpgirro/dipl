@@ -18,6 +18,9 @@ Predicition is very difficult, especially about the future.
         * Scalability & Fault Tolerance
 * [@Gho12] "Programming language impact on the development of distributed systems"
 * [@Gui17] "Microservices: A Language-Based Approach"
+* [@Cha13]
+  * "It applies to concurrency as well as distribution, but has not yet entered the native programming domain. This paper contributes the design of a native actor extension for C++, and the report on a software platform that implements our design for (a) concurrent, (b) distributed, and (c) heterogeneous hardware environments"
+  * "Our design includes a lightweight, lock-free, and network-transparent message passing system that is implemented without context switching"
 ~
 
 In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, instead of rivalry, want to entertain the though of a unification of both towards a new style of programming. 
