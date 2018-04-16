@@ -234,6 +234,8 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
 ~
 
+## Independent deployment
+
 ## Scalability
 
 ~LitNote

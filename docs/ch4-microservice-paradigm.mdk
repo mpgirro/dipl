@@ -4,16 +4,25 @@ The Microservice Paradigm {#ch-microservice-paradigm}
 
 
 
-At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
+At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. Dragoni et al. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
 
-Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns ["of ???" - diesen Teil kann ich sicher etwas ausschmücken und auf B. Meyer verweisen]{.mind}, yet the transformation from the abstraction of program code to machine code leads to a result where the different module components are merged into one unified construct: the (monilithic) *executable*. [@Dra17a] defines:
+Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns ["of ???" - diesen Teil kann ich sicher etwas ausschmücken und auf B. Meyer verweisen]{.mind}, yet the transformation from the abstraction of program code to machine code leads to a result where the different module components are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
+
+These naturally introduces a relative strong form of coupling, for each module tends to expect the presence of any other module [citation needed]{.mind}. *Coupling* is a **metric that describes the amount of dependencies between components** [so irgendwie ?]{.mind}. It is usually effected by the kind of interaction between the components. Any form of in-memory call communication eases the tightening of coupling, for it is a relatively easy and direct way of addressing components [frei erfunden, hat das mal jemand so argumentiert?]{.mind}.
+
+Any application subject to tight coupling of its modules suffers from certain issues. With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a]. Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
+
+To loosen uo
+
+[@Dra17a] defines:
 
 ~ Definition {#def-monolith; caption: "Monolith"}
 A monolith is a software application whose modules cannot be executed independently.
 ~   
 
-* Microservice
- : A microservice is a cohesive, independent process interacting via messages      
+~ Definition {#def-microservice; caption: "Microservice"}
+A microservice is a cohesive, independent process interacting via messages.
+~   
 
 ## Microservice Principles
 
@@ -85,6 +94,7 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 ## Relation to Processes Calculi
 
 ~LitNote
+* <https://en.wikipedia.org/wiki/Process_calculus>
 * Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
 * siehe <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
     * scheint weniger CSP, als CCS und pi-calculus zu sein

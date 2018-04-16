@@ -7,6 +7,8 @@ Concurrency (Concurrent Programming?)
     * Shared resources
     * Dynamic Reconfiguration
     * Inherent Parallelism
+* [@Agh93] "Abstraction and Modularity Mechanisms for Concurrent Computing"
+    * Allgemeine Argumente für Concurrency und Parallel Exec.
 ~
 
 
@@ -22,8 +24,9 @@ For the scope of this thesis, it is important to gain a notion of *where* concur
 * Threads, Locks and Shared State
 * Message passing
 
-## Concurrency and Parallelism
+## Concurrent vs. Parallel Execution
 
+TODO
 
 ## Concurrency at the Programming Language Level {#sec-concurrency-language-level}
 
