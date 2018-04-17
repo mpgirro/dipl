@@ -4,6 +4,10 @@ The Microservice Paradigm {#ch-microservice-paradigm}
 
 
 
+~LitNote
+* Unlike the Actor model, Microservices were not invented as a specific form of computation, but emerged as the result of an historical evolution. --> von mir gescgrieben, muss ich irgendwie in den kontext setzen
+~
+
 At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of scientific contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But he focuses on describing the common characteristics from a more practical engineering perspective. Dragoni et al. [@Dra17a] tried to give a more general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
 
 Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns ["of ???" - diesen Teil kann ich sicher etwas ausschmücken und auf B. Meyer verweisen]{.mind}, yet the transformation from the abstraction of program code to machine code leads to a result where the different module components are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
@@ -12,7 +16,21 @@ These naturally introduces a relative strong form of coupling, for each module t
 
 Any application subject to tight coupling of its modules suffers from certain issues. With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a]. Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
 
-To loosen uo
+Scholars identified many more issues that come with monolithic applications [mehr? citation?]{.mind}. Such have been first encountered in the more early days in computing history. From the early 1970s, an interrest in distributing applications accross multiple host machines arose, originally due to the limits of the machines back than [citation needed. hab ich irgendwas zu concurrency history?]{.mind}. Due to Moore's law, machine power increased, because the number of transistors in a processing unit (e.g. CPU) "roughly" doubles every two years. 
+
+
+This does not hold exactly true anymore[^fn-moores-law]] sind the 2000s, for transistor increasment since than is backed to the trend of including multiple cores into a single CPU [@Mac11]. The importance of multicore programming increased significantely since than. 
+
+
+[^fn-moores-law]: In fact, Moores original observation about *doubling of components per chip* never held true *exactly* very long. But over the decates various trends in semiconductor development 
+
+
+The empirical observation that the number of transistors in a processing unit (e.g. CPU) roughly doubles every two years, thus increasing computation power. This does not hold exactly true anymore sind the 2000s, for transistor increasment since than is backed to the trend of including multiple cores into a single CPU. The importance of multicore programming increased significantely since than. 
+
+ Even though the  
+
+
+For an in depth review on how Microservices historically evolved from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and Service Oriented Architectures, we refere the interrested reader to Salah et al. [@Sal16].
 
 [@Dra17a] defines:
 
@@ -86,7 +104,7 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
-## Polyglot Programming
+
 
 ## Object-Oriented Perspective
 

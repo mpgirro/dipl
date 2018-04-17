@@ -46,6 +46,7 @@ However, though OOP offers methods to encapsulate state within objects and preve
 * [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
 * [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
 * [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
+* "loose coupling" [@Sal16]
 ~
 
 ## Autonomy
@@ -218,6 +219,8 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 * [@Agh14] "Actors Programming for the Mobile Cloud"
 * [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
 * [Kar09] beschreibt mobility bei actors
+* [@Sal16] "The Evolution of Distributed Systems Towards Microservices Architecture"
+    * ad *Mobile Agent*: "An agent is composed of three parts which also take place in travelling: Data, State and Code."
 ~
 
 ## Single Responsibility
@@ -226,6 +229,7 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 * Unix philosophy
 * [@Bon16]
 * [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
+* "functional separation" [@Sal16]
 ~
 
 ## Persistance
@@ -242,11 +246,11 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 * 
 ~
 
-## Load balancing
+### Load balancing
 
 * Server and Client Side LB
 
-## Elasticity
+### Elasticity
 
 ~LitNote
 * Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)
@@ -257,6 +261,7 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
     * Actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
 * [@Akm90] vergleicht Actors mit CSP und erläutert, dass Actors "permits one to increase the distributivity of computation as it evolves" (= elastic) weil sie neue Actors erzeugen können. CSPs hingegen können nur andere Processe "aktiviere", und sind nicht natürlich elastisch. Wenn ich argumentieren kann das MS auf CSP logik basieren, dann ist das ein gutes Argument. Die Folge ist ja nämlich, dass MSA eine zsätzliche Abstraktion brauchen für Elastizität, nämlich Cloud Management Frameworks.
     * [@Agh85b] beschreibt, das CSP die dynamisch Actor Erzeugungs Semantik "violated", weil die "interconnetion topology of processes" statisch ist --> MS müssen das via Service Discovery Abstraction lösen (wo ebene die Discovery Services statisch sind und weiterleiten)
+* "elastic scaling"
 ~
 
 ## Fault tolerance
@@ -292,6 +297,13 @@ Location transparency, elasticity = "move around in isolation"
 
 ~LitNote
 * [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
+~
+
+## Mobile Agents
+
+~LitNote
+* [@Sal16] "The Evolution of Distributed Systems Towards Microservices Architecture"
+    * Keywords: Distributed Systems; Microservices; Mobile Agents; Service Oriented Architecture
 ~
 
 ## Actor Model and Process Calculi
