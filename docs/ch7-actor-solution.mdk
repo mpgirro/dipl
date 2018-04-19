@@ -16,7 +16,7 @@ Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machin
 
 Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
 
-As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. 
+As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. When refering to futures from now on, we will always assume the prior ones (depending on the Akka API binding used).
 
 ~Todo
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
@@ -95,6 +95,46 @@ Therefore, Akka recommends using Scala `case class`{language:scala} constructs f
 ~LitNote
 howto channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
 ~
+
+~Todo
+* den einfachen tell befehlt erklären, also `!`
+~
+
+The Actor model is soley built on the concept of message passing, therefore by definition asynchronous communication. As such, not synchronous communication is intended. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and to not due any processing inbetween.
+
+*Echo:Actor* faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
+
+[grafik hier einfügen]{.mind}
+
+Fortunatelly, any synchronous communication can be modeled via asynchronous communication, by having the caller block until an answer was received.
+
+Akka provides multiple mechanisms to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. Such method calls resemble the tell semantic, by dispatching the method argument as a message. However, unlike `!`, it offers a result value, respective the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
+
+Section [#sec-distributed-objects] demonstrated how the `Future`{language:scala} abstraction can be utilized to prevent unnecessary sequences of blocking operations, by efficiently waiting on their resolving. This can also be combined when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax with the so-called *for-comprehension*:
+
+```{language:scala}
+val f1 = actor1 ? Some(request)
+val f2 = actor2 ? Some(request)
+val f3 = actor3 ? Some(request)
+
+val res = for {
+   r1 <- f1
+   r2 <- f2
+   r3 <- f3
+} yield (r1+r2+r3)
+```
+
+It is important however, that the messages are dispatched prior to the `for {...} yield`{language:scala} block scope. Otherwise the dispatcher will enforce sequential composition, if the ask-calls are inlined into the block scope [citation needed]{.mind}.
+
+Basic Actor model semantics states that any Actor can spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. Resolving any ask-call result `Future`{language:scala} inside an Actor prevents it from processing any messages in the meantime - even though the underlying thread does not get blocked. Such should be avoided if the instance is expected to process messages reasonable time, like the Searcher. Thus, resolving the dispatched synchronous calls should not be done inside a Searcher directly, for it would prevent the instance from processing any other request until an answer from an Index was received. 
+
+Therefore, the result handling is delegated to a dedicated new spawned child Actor. Its sole purpose is to resolve the `Future`{language:scala} or abort after a given timeout, and provide the result to the requesting Actor.
+
+~Todo
+* syntax support mit `?`, gibt aber einen future auf den man entweder warten muss oder währenddessen noch was macht
+* priority mailbox
+* mehrere asks und ein gemeinsames wait können verwendet werden, so wie ich das schon im anderen kaputel mit `Future.sequence` demonstriert hab.
+~ 
 
 ## Data Coupling
 

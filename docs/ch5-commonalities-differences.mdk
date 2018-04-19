@@ -14,7 +14,7 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
-In chapter [#ch-actor-model] and [#ch-microservice-paradigm]
+In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. This chapter brings both ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
 
 ## Information Hiding and Isolation {#sec-commonalities-isolation}
 

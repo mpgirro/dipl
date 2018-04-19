@@ -7,6 +7,13 @@ The Microservice Paradigm {#ch-microservice-paradigm}
 ~LitNote
 * Unlike the Actor model, Microservices were not invented as a specific form of computation, but emerged as the result of an historical evolution. --> von mir gescgrieben, muss ich irgendwie in den kontext setzen
 * Dragoni [@Dra17a] calls it "Service-Oriented Architecture and Programming from the large to the small."
+* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
+* [@Maz16] "Towards Microservices and Beyond: An incoming Paradigm Shift in Distributed Computing"
+* [@Fra17] "Architecting Microservices"
+* [@Sha17a] "Microservices: Granularity vs. Performance"
+* [@Dra17b] "Microservices: How To Make Your Application Scale"
+* [@New15] "Building Microservices"
+* [@Fow14] "Microservices: a definition of this new architectural term"
 ~
 
 At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler[^fn-microservice-term] and Lewis [@Fow14] gave the first overall review to the microservice concept, and is the original source most scientists refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni et al. [@Dra17a] tried to give a general, conceptial description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
