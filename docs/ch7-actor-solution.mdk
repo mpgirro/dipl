@@ -100,7 +100,7 @@ howto channel types (point-to-point, pub/sub), specialized channels (dead letter
 * den einfachen tell befehlt erklären, also `!`
 ~
 
-The Actor model is soley built on the concept of message passing, therefore by definition asynchronous communication. As such, not synchronous communication is intended. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and to not due any processing inbetween.
+The Actor model is soley built on the concept of message passing, therefore by definition asynchronous communication. As such, no synchronous communication is intended. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and to not due any processing inbetween.
 
 *Echo:Actor* faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
 
@@ -108,27 +108,35 @@ The Actor model is soley built on the concept of message passing, therefore by d
 
 Fortunatelly, any synchronous communication can be modeled via asynchronous communication, by having the caller block until an answer was received.
 
-Akka provides multiple mechanisms to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. Such method calls resemble the tell semantic, by dispatching the method argument as a message. However, unlike `!`, it offers a result value, respective the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
+Akka provides multiple mechanisms to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. Such method calls resemble the tell semantic, by dispatching the method argument as a message to the Actor behind the reference. However, unlike `!`, it offers a result value, respective the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
 
-Section [#sec-distributed-objects] demonstrated how the `Future`{language:scala} abstraction can be utilized to prevent unnecessary sequences of blocking operations, by efficiently waiting on their resolving. This can also be combined when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax with the so-called *for-comprehension*:
+Section [#sec-distributed-objects] demonstrated how the `Future`{language:scala} abstraction can be utilized to prevent unnecessary sequences of blocking operations, by efficiently waiting on their resolving. This can also be combined when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax through the so-called *for-comprehension*:
 
 ```{language:scala}
 val f1 = actor1 ? Some(request)
 val f2 = actor2 ? Some(request)
 val f3 = actor3 ? Some(request)
 
-val res = for {
+val result: Future = for {
    r1 <- f1
    r2 <- f2
    r3 <- f3
 } yield (r1+r2+r3)
 ```
 
-It is important however, that the messages are dispatched prior to the `for {...} yield`{language:scala} block scope. Otherwise the dispatcher will enforce sequential composition, if the ask-calls are inlined into the block scope [citation needed]{.mind}.
+Assuming `request` to be some mutable internal state of the Actor with some basic data type (`Int`{language:scala}, `String`{language:scala}, etc.) [sind diese typen wirklich safe? citation]{.mind}, then wrapping it with an `case class`{language:scala} - where `Some`{language:scala} is one of the two forms of `Option`{language:scala} - is a way of preventing that the reference to `request` gets shared, for the `case class`{language:scala} constructor create a copy [ACHTUNG: stimmt das überhaupt]{.mind}.
 
-Basic Actor model semantics states that any Actor can spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. Resolving any ask-call result `Future`{language:scala} inside an Actor prevents it from processing any messages in the meantime - even though the underlying thread does not get blocked. Such should be avoided if the instance is expected to process messages reasonable time, like the Searcher. Thus, resolving the dispatched synchronous calls should not be done inside a Searcher directly, for it would prevent the instance from processing any other request until an answer from an Index was received. 
+It is important however, that the messages are dispatched prior to the `for {...} yield`{language:scala} block scope. Otherwise the dispatcher will enforce sequential composition, if the ask-calls are inlined into the block scope, due to... [@AkkaFuture].
 
-Therefore, the result handling is delegated to a dedicated new spawned child Actor. Its sole purpose is to resolve the `Future`{language:scala} or abort after a given timeout, and provide the result to the requesting Actor.
+Resolving any ask-call `result:Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher. On the other hand, further processing of `result` could simply be defined, once again by utilizing its monadic methods. 
+
+However, this has two downsides. First it is a waste of resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. Thus, the ask pattern per se is problematic in any case. 
+
+Basic Actor model semantics states that any Actor can spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
+
+The result handling is delegated to a dedicated newly spawned child Actor. Its sole purpose is to pose as the original sender of a simple tell-style message and eventually receive an answer to the query. Upon message receival, it then either passes the result on, or reacts to a timeout message it self defined. Such can be esily done via [TODO]{.mind}
+
+This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 
 ~Todo
 * syntax support mit `?`, gibt aber einen future auf den man entweder warten muss oder währenddessen noch was macht
