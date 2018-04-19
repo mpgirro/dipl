@@ -14,6 +14,8 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
+In chapter [#ch-actor-model] and [#ch-microservice-paradigm]
+
 ## Information Hiding and Isolation {#sec-commonalities-isolation}
 
 ~LitNote
@@ -293,10 +295,11 @@ Location transparency, elasticity = "move around in isolation"
 * substitution and subtyping für Actors
 ~
 
-## Polyglott Programming
+## Polyglott Programming / Technology Heterogeneity
 
 ~LitNote
 * [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
+* [@New15] Newmann calls it "Technology Heterogeneity"
 ~
 
 ## Mobile Agents
