@@ -240,6 +240,10 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
 ~
 
+## Governance
+
+(Partially) Centralized with Actor systems, decentralized with MS (aber was ist mit cloud management frameworks)
+
 ## Independent deployment
 
 ## Scalability

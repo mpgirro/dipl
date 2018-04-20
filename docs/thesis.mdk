@@ -167,6 +167,32 @@ Maximilian Irro
 [INCLUDE=ch10-discussion]
 [INCLUDE=ch11-outlook]
 
+# Acronyms { - }
+
+These arconyms are used throughout the thesis.
+
+* AMQP Advanced Message Queue Protocol
+* DO Distributed object
+* IPC Inter-process communication
+* JVM Java Virtual Machine
+* MOM Message-oriented middleware
+* MS Microservice
+* MSA Microservice Architecture
+* OOP Object-oriented programming
+* REST Representational State Transfer
+* RPC Remote procedure call
+
+# Glossary { - }
+
+* Akka
+  : TODO
+
+* Microservice Architecture (MSA)
+  : TODO
+
+* Message oriented middleware (MOM)
+  : TODO
+
 [BIB]
 
 <!-- TODO glossar, nomenclature, index -->

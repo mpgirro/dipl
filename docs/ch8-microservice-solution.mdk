@@ -18,6 +18,16 @@ State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB 
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
 ~
 
+Synchronous communication patterns are easily implemented in Microservice environments. REST-based communication - that is state transportation between to endpoints using HTTP methods - for instance complies to the requirements on communication channels for the Microservice paradigm. It is relatively lightweight, immutable and completely open to be used by all kinds of endpoints, that is technologically independent. Due to the protocol nature, REST call favour a synchronous scenario. As such, it is up to the actual HTTP client technology (library, etc.) used to provide an interface to handle dispatched method calls. The most easy form is the abstraction of simple remote procedure calls, but also more asynchronous Future-based variants are possible (e.g. with the Apache HTTP client library [reference]{.mind})
+
+In general, unlike with Actors, the full span of an RPC never leaves the scope of a Microservice, and therefore it is completely handled by the initiating service. The dispatch of a new dedicated service is too expensive, and folding the result route is hard with HTTP [wie soll ich den absatz zitieren? oder anders formulieren?]{.mind}. Thus, a service needs to cope with the fact that it blocks internally for each REST call it dispatches. However, due to the freedom the MS paradigm offers, this is usually easy to handle. Using internal service concurrency, the service can be prevented by blocking as a whole, by instead dedicating one of its threads of control handle each RPC. Thus, a service should be able to handle multiple connections at the same time.
+
+In any case, if using REST or some other mechanism, such RPC styled requests always lead to a more tight coupling in contrast to an asynchronous messaging style. The later is also an option for service communication. For message delivery a so-called *message oriented middleware* (MOM) has to be applied. Many options for such are available. However, such messaging technologies often pose as whole middlewares, offering many features usually undesired by the Microservice principles [da muss ich irgendwas zitieren. umbedingt]{.mind}. Special care has to be applied when seleting a technology. 
+
+*Echo:MS* is relying n RabbitMQ [citation]{.mind}
+
+[TODO kann auch für async eingesetzt werden, google REST callbacks]{.mind}
+
 ## Data Coupling
 
 ~LitNote
