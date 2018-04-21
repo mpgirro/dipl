@@ -575,3 +575,7 @@ https://rss.art19.com/star-wars-minute
 http://podcast.nowplayingpodcast.com/feed/
 http://strangeindeed.libsyn.com/rss
 http://terrorpodcast.libsyn.com/rss
+https://www1.wdr.de/mediathek/audio/wdr5/wdr5-die-drei-sonnen/die-drei-sonnen--102.podcast
+https://www1.wdr.de/mediathek/audio/feature-depot/feature_depot132.podcast
+https://www1.wdr.de/mediathek/audio/wdr5/wdr5-leonardo-service-computer/service_computer100.podcast
+https://www1.wdr.de/mediathek/audio/wdr4/wdr4-meilensteine-und-legenden/meilensteine-100.podcast
