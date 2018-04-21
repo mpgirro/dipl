@@ -114,7 +114,7 @@ Fortunatelly, any synchronous communication can be modeled via asynchronous comm
 
 ### Ask Pattern and Future Result (Extra Pattern)
 
-Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. Such method calls resemble the tell semantic, by dispatching the method argument as a message to the Actor behind the reference. However, unlike `!`, it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
+Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
@@ -138,9 +138,9 @@ It is important however, that the messages are dispatched prior to the `for {...
 val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 ```
 
-It is clear to see that if the ask calls would be inlined into the `for`{language:scala} block, then the second message would only get dispatched once the first future has been resolved.
+It is clear to see that if the ask calls would be inlined into the `for`{language:scala} block, then the second message would only get dispatched once the first future has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
 
-However useful, this approach has two downsides. First it is a waste of resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
+However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
 
 ### Transparent Asynchronous Composition (Cameo Pattern)
 
@@ -178,7 +178,13 @@ class CustomMailbox(settings: ActorSystem.Settings, config: Config)
 Hier beschreiben wie timeouts modelliert werden können
 ~
 
-Any synchronous information flow should provide some sort of timeout, to prevent starvation [citation  needed]{.mind}. 
+Any synchronous information flow should provide some sort of timeout, to prevent starvation [citation  needed]{.mind}. When using futures, this has to be done explicitly using language specific constructs. The already demonstrated for-comprehension syntax of Scala for examples makes it difficult however to introduces timeouts.
+
+Another advantage of the cameo pattern [andere bezeichnung?]{.mind} is that the child Actors can easily simulate timeouts. When spawned, they register to receive a timeout message after a given time period and and define an appropriate message handling behaviour. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occures and [dann muss halt der timeout gehandled werden]{.mind}  
+
+It is of interrest how such timed messages can be defined. Timers require some sort of concurrent timer thread the constantly checks the current time and perform registered actions upon certain timepoints [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor semantic ??
+
+Akka provides a special `Schedular` construct:
 
 ... or reacts to a timeout message it self defined. Such can be esily done via [TODO]{.mind}
 
@@ -195,6 +201,8 @@ Messages are always "state at a specific point in time", but when the receiver g
 * consider using non-blocking IO/DB APIs (if available), the futures will crowed up the thread pool, therefore use dispatchers for bulkheading (= the thread pool becomes an implicit backpressure)
 * if blocking IO has to be done, use dispatchers for bulkheading too, and delegate blocking operations to child Actors/workers. This is demonstrated in the Echo implementation
 ~
+
+Actors encapsulate their state. 
 
 ## Mailbox, Dispatcher and Backpressure (= Load balancing)
 
@@ -253,3 +261,5 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 In this chapter, we discussed the impact of implementational defails on the theoretical concept of Actors: 
 
 * True isolation can in general not be ensured as strictly as hard process boundries do. Special care has to be taken by the user in order to have decent enought Actors state encapsulated inside the same JVM to prevent breaking the model semantic. 
+* Futures can be used to abstract synchronous information flow, without blocking the unterlying thread. More idiomatic and Future-independet is the utilization custom spawned child Actors to act as response handlers with single purpose lifetime and to 
+* Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor., all without blocking the unterlying thread.
