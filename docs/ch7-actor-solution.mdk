@@ -1,10 +1,10 @@
 
-An Actor-based Problem Solution {#ch-Actor-solution}
+Actor-based Scenario Implementation {#ch-actor-solution}
 ===============================
 
 
 
-In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an Actor-based programming model approach. When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [citation needed]{.mind}. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
+In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an Actor-based programming model approach. When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [@Kos16]. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
 
 ~LitNote
 * [@Kar09] Actor Frameworks for the JVM Platform: A Comparative Analysis
@@ -14,11 +14,15 @@ In this chapter, we will discuss a practical implementation of the problem scena
 
 Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
+Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16].
+
 Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
 
 As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. When refering to futures from now on, we will always assume the prior ones (depending on the Akka API binding used).
 
-~Todo
+~LitNote
+* Beschreiben, dass viele Actors existieren können, und diese ab und zu auf einem Thread innerhalb eines viel kleineren Thread Pools laufen. Threads sind teurer als Actors, daher viel weniger
+* Die originalen Scala Actors hatten 2 verschiedene Arten von Actors, jene die auf theads ausgeführt werden (receive) und jene die nur als Callback durch einen closure ausgeführt werden (react). Letztere sind viel leichtgewichtiger, können aber nicht mehr auf den state zugreifen [@Kos16; @Hal09] --> vll sollte ich dies in einem allgemeineren Kapitel weiter oben beschreiben? Dort wo ich dann auch was zu Erlang schreibe? Vll in den Commonalities, bzgl was die schwergewichtung von Prozessen/Threads bzw dann nur callback-clojures betrifft.
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
 * [@AkkaJMM] beschreibt das Akka garantiertieren muss, wie sich das abarbeiten von nachrichten verhält, weil die actors ja auf threads laufen, aber nicht zwingend 2 nachrichten hintereinander auf dem selben thread ausgeführt werden
     * "The actor send rule: the send of the message to an actor happens before the receive of that message by the same actor."
@@ -27,13 +31,17 @@ As we already mentioned, different Actor implementations have different capabili
 
 ## Ensuring Isolation {#sec-ensuring-actor-isolation}
 
-Object-oriented Actor implementations can face problems when it comes to ensuring Actor isolation. As was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
+How the Isolated Turn Principle is ensured depends on the language paradigm used. Purely functional languages usually can only modify Actor state by changing the behaviour. The imperative paradigm however presents some challanges in order to guarantee isolation [@Kos16].
+
+Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language - and this paradigm requires to take extra care.
+
+Therefore it is especially interresting how the Isolated Turn Principle is handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
 As was pointed out, this model is capable of providing a transparent interface for component communication that might exist within the same local scope (same process) or remote scope (distinct processes). 
 
 In the first case, different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
 
-Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping shared mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
+Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
 Section [#sec-commonalities-isolation] discussed the potential issues with object-oriented Actors. Visibility was given as a concern for encapsulation. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
 
@@ -67,22 +75,14 @@ This has the benefit that no direct contact with an Actor instance object is pos
 
 Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter is a copy of the address of the object it represents [@Gos15]. This means that any message sent between Actors contains a reference to an object representing the message[^fn-java-pass-by-value]. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
 
-However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that there is no memory with read-write or write-write access by two distrinct Actors [@Kos16], i.e. the facts cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. 
+
+One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
 [^fn-java-pass-by-value]: This causes the illusion that Java has pass-by-reference parameters. It does not.
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
 
 These restrictions still cannot even prevent all obstacles Java offers to break model semantic. Nothing can prevent an Actor from sending its own `this`{language:java} reference to another Actor. This alone is to be refrained at all times per se. But Java access modifiers are on class-level instead of object-level. Therefore, if the recipient is of the same dynamic type as the `this`{language:java} reference sender, then the recipient - after  appropriatethe corresponding typecast - has access to all `private`{language:java} fields of the message. This breaks the design by contract principle [habe ich das schon vorher irgendwo eingeführt?]{.mind}, but is intended by Javas encapsulation principle. 
-
-~LitNote
-* Da ist noch der ganz besondere Supergau. Würde ein Actor die `this` referenz auf sich selbst an einen actor des selben typs schicken, wäre nicht nur er selber geteilt, sondern auch sein kompletter strong state, denn in so einem fall kann sogar `private` visibility ganz einfach ausgehebelt werden
-    * da hilft auch die ganze actorref sache nix.
-~
-
-
-<!-- WO STAND DAS NOCHMAL? ICH FIND SAS NICHT MEHR
-Therefore, Akka recommends using Scala `case class`{language:scala} constructs for message sending only, with  this is actually only a prob
--->
 
 ## Mixing Concurrency Concepts
 
@@ -216,7 +216,9 @@ Actors encapsulate their state.
 ## Mailbox, Dispatcher and Backpressure (= Load balancing)
 
 ~LitNote
-Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
+* Mailbox, Dispatcher, Command-query separation for stores (CQS, siehe wikipedia, definiert von Bertrand Meyer; create/update/delete = command messages need to be sent to all stores, read = query messages need only to be sent to one store --> **das hier vll eher ein Thema zu Event sourcing?**); Router and Routing Logic (Broker, RoundRobin)
+* [@Kos16] beschreibt "Actor System Properties", u.a. zu Message Reception die Eigenschaften: Interface, Flexibility, Number of Interfaces, Order
+    * Order: zB kann durch einen PriorityMailbox die Order beeinflusst werden.
 ~
 
 ## Fault Tolerance

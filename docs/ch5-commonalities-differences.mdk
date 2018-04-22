@@ -64,7 +64,7 @@ However, though OOP offers methods to encapsulate state within objects and preve
 ~LitNote
 * [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination Actor except for its permanent “disability”, and no Actor can be permanently starved
 * MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
-* [Kar09] beschreibt fair scheduling bei actors
+* [@Kar09] beschreibt fair scheduling bei actors
 ~
 
 ## Internal and external Component Concurrency
@@ -107,7 +107,7 @@ Programming with microservices does not, unlike Actors, free one from the many h
     * --> Event Driven Programming Style (also so Callbacks in Java zB) sind Mist, 
 * [@Agh91] "Actors as Processes: The representation that we are implementing models actors as light-weight processes and requires the presence of a kernel run-time system on each node."
 * Hier kann ich die gesamte Erlang Literatur einbauen, denn die nennen ihre lightweight constructs ja auch *process*
-* [Kar09] beschreibt location transparency bei actors
+* [@Kar09] beschreibt location transparency bei actors
 ~
 
 
@@ -220,7 +220,7 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 * [@Fug98] "Understanding Code Mobility"
 * [@Agh14] "Actors Programming for the Mobile Cloud"
 * [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
-* [Kar09] beschreibt mobility bei actors
+* [@Kar09] beschreibt mobility bei actors
 * [@Sal16] "The Evolution of Distributed Systems Towards Microservices Architecture"
     * ad *Mobile Agent*: "An agent is composed of three parts which also take place in travelling: Data, State and Code."
 ~
@@ -299,7 +299,7 @@ Location transparency, elasticity = "move around in isolation"
 * substitution and subtyping für Actors
 ~
 
-## Polyglott Programming / Technology Heterogeneity
+## Polyglott Programming / Technology Heterogeneity [#sec-technological-heterogeneity]
 
 ~LitNote
 * [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
@@ -319,6 +319,8 @@ Location transparency, elasticity = "move around in isolation"
 * <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi>
 * <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
 * Wenn ich es im MS kapitel schaffe mir was zu Process Calculi zu überlegen, gibt es genügend 
+* [@Kos16] vergleich Asynchronous Sequential Processes (ASP) mit Active Objects, nur mit gröberer Granularität
+* [@Kos16] beschreibt das die sog. "Communicating Event-Loop Actor Model" ähnlichkeiten zu Asynchronous Sequential Processes (ASP) hat
 ~
 
 ## Verification

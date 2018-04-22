@@ -19,9 +19,10 @@ One actor is no actor. Actors come in systems.
     * Agha developed Actors as a fundamental model for concurrent computation
 ~
 
-In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. Therefore it performes actions in response to received messages.
+In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt et al. [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
 
-Upon receiving a message, an Actor can react in with three basic primitives:
+
+Agha reformulated the Actor model into three basic primitives and Actor can perform upon receiving a message [@Agh85a]:
 
 1. Sending a finite number of messages to itself or other known actors.
 2. Creating a finite number of new actors.
@@ -41,11 +42,15 @@ Processing a message is *atomic*, i.e. it is not interrupted by other messages t
 
 It is important to realize that requested state informations are always mere snapshots of any Actors state at a specific point in time (the point where this Actor processes the requesting message), and the information might therefore be already outdated once the requestor receives the snapshot answer [citation needed]{.mind}. This is the semantic of any form of asynchronous communication [citation needed]{.mind}. On the other hand, it frees Actors from the implications any form of shared state or resource handling, like the bottle-necks introduces by sequential locking, brings with it [@Agh90].  
 
-To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be *immutable* [citation needed?]{.mind}. This allows save coordination at a distance [@Hel15]. 
+To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be immutable, copied or proxied [@Kos16]. This allows save coordination at a distance [@Hel15]. 
 
 Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. 
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [@Agh14]. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
+
+Additionally, state can only be changed while processing a message. Therefore, as De Koster et al. illustrate in detail, the processing of a single message can be viewed as an isolated operation. This is important when reasoning about Actors, because "the granularity of reasoning is at the level of a turn[^fn-isolated-turn-principle]" [@Kos16]. They call this *Isolated Turn Principle*. It guarantees that Actors are free of low-level data races (for only one message is processed at a time, and each message belongs to a single Actor), but high-level races (depending on the interleaving of messages within the mailbox) can still occure. 
+
+[^fn-isolated-turn-principle]: In this context, *turn* is used to refere to the processing of a single message. Various terminilogies have been used for this over the decades. [@Kos16] gives a good overview of Actor model taxonomy and the equivalence of various terms.
 
 ## Unifying Concurrent, Parallel and Distributed Computation
 
@@ -87,13 +92,18 @@ Again, location transparent addresses allow for referencing Actors even outside 
 
 ### Futures
 
+* Futures
+* Promises?
+
 ### Software Transactional Memory (STM)
 
 ~LitNote
 * [@Sub11] demonstrates how Akka support STM together with Actors
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
 ~
 
-
+Operations that span several messages
 
 
 ## Object-Oriented Perspective
@@ -120,6 +130,9 @@ Encapsulation and Information Hiding
     * realized with a proxy object
 * vorteil: typsicherheit zur compile time, dass nachrichten an das object (den dahinterliegenden generierten Actor) auch wirklich verarbeitet werden können
 * Act.Obj sind sowohl ein Pattern, als auch prinzipiell eine object-orientierte Abstraction des Actor Models (bzw der Actor Semantic?). Actors können Prinzipiell in welchem Paradigma auch immer umgesetzt sein. Entsprechend sind Act.Obj die "besonders object-orientierten Actors"
+* [Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * -> Gleiche Zeit wie Agha das Actor model neu formuliert hat, hat Yonezawa (in [@Yon86]) prinzipiell die Active Objects eingeführt
+* [@Yon86] "Object-oriented concurrent programming ABCL/1"
 ~
 
 ``` {language:java}

@@ -149,4 +149,6 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 * *Nancy Lynch and Michael Fischer. On describing the behavior of distributed systems in Semantics of Concurrent Computation. Springer-Verlag. 1979.*
 * *Nissim Francez, C.A.R. Hoare, Daniel Lehmann, and Willem de Roever. Semantics of nondetermiism, concurrency, and communication Journal of Computer and System Sciences. December 1979.*
 * Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
+* Asynchronous Sequential Processes (ASP) --> "D. Caromel, L. Henrio, and B. P. Serpette. Asynchronous sequential processes. Inf. Comput., 207(4):459–495, Apr. 2009"
+    * [@Kos16] vergleich diese mit Active Objects, nur mit gröberer Granularität
 ~
