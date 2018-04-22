@@ -67,7 +67,7 @@ This has the benefit that no direct contact with an Actor instance object is pos
 
 Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter is a copy of the address of the object it represents [@Gos15]. This means that any message sent between Actors contains a reference to an object representing the message[^fn-java-pass-by-value]. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
 
-However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [irgendwo stand das. zitieren!]{.mind}. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that the facts it represents cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
 [^fn-java-pass-by-value]: This causes the illusion that Java has pass-by-reference parameters. It does not.
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
@@ -101,7 +101,7 @@ howto channel types (point-to-point, pub/sub), specialized channels (dead letter
 ~
 
 ~Todo
-* den einfachen tell befehlt erklären, also `!`
+* den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
 ~
 
 The Actor model is soley built on the concept of message passing, therefore by definition asynchronous communication. As such, no synchronous communication is intended. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and to not due any processing inbetween.
@@ -114,7 +114,7 @@ Fortunatelly, any synchronous communication can be modeled via asynchronous comm
 
 ### Ask Pattern and Future Result (Extra Pattern)
 
-Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala}. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
+Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
@@ -182,11 +182,20 @@ Any synchronous information flow should provide some sort of timeout, to prevent
 
 Another advantage of the cameo pattern [andere bezeichnung?]{.mind} is that the child Actors can easily simulate timeouts. When spawned, they register to receive a timeout message after a given time period and and define an appropriate message handling behaviour. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occures and [dann muss halt der timeout gehandled werden]{.mind}  
 
-It is of interrest how such timed messages can be defined. Timers require some sort of concurrent timer thread the constantly checks the current time and perform registered actions upon certain timepoints [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor semantic ??
+It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time [was zitieren? dieses buch von Boner?]{.mind}.
 
-Akka provides a special `Schedular` construct:
+To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler` instance that is unique for each system. Internally it is based on the so-called *Timing Wheels* by Varghese and Lauck [@Var87].
 
-... or reacts to a timeout message it self defined. Such can be esily done via [TODO]{.mind}
+Actors can register a message sending operation to be triggered after a certain period of time:
+
+```{language:scala}
+val timeoutMessager: Cancellable = context.system.scheduler.
+    scheduleOnce(5.seconds) { 
+        self ! IndexRetrievalTimeout
+    }
+```
+
+The provided `Chancellable`{language:scala} reference allows to prevent the trigger from fireing through `timeoutMessager.cancel`{language:scala}. This introduces a notion of timing into the Actor semantic, that is natural to the model [@AkkaScheduler]. In combination with the cameo pattern, it is possible to abstract synchronous information flow semantic including timeout boundries by using purely asynchronous message passing operations. 
 
 ## Data Coupling
 

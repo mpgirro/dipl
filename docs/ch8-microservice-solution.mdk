@@ -14,8 +14,12 @@ State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB 
 
 ## Synchronous and Asynchronous Communication
 
-~LitNote
+~Todo
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
+~
+
+~LitNote
+* Kafka benutzt ebenfalls die Hierarchical Timing Wheels von [@Var87], behauptet <https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/>
 ~
 
 Synchronous communication patterns are easily implemented in Microservice environments. REST-based communication - that is state transportation between to endpoints using HTTP methods - for instance complies to the requirements on communication channels for the Microservice paradigm. It is relatively lightweight, immutable and completely open to be used by all kinds of endpoints, that is technologically independent. Due to the protocol nature, REST call favour a synchronous scenario. As such, it is up to the actual HTTP client technology (library, etc.) used to provide an interface to handle dispatched method calls. The most easy form is the abstraction of simple remote procedure calls, but also more asynchronous Future-based variants are possible (e.g. with the Apache HTTP client library [reference]{.mind})

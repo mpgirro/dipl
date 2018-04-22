@@ -21,3 +21,5 @@ In this thesis, we will take a close look at two concept, the Actor programming 
 * practical work for Actor solution, microservice solution
 
 ## Road Map
+
+The following thesis is ordered as follows: In chapter [#ch-concurrency] discusses Concurrency in general. Chapter 
