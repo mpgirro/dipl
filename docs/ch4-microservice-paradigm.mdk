@@ -70,7 +70,7 @@ These are my principles. If you don't like them, I have others.
 
 No shared state, etc
 
-## Communication Channels {#sec-ms-communication}
+## Service Communication {#sec-ms-communication}
 
 
 ~ Epigraph { caption: "Doug McIlroy"}

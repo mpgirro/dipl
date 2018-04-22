@@ -33,13 +33,11 @@ As we already mentioned, different Actor implementations have different capabili
 
 How the Isolated Turn Principle is ensured depends on the language paradigm used. Purely functional languages usually can only modify Actor state by changing the behaviour. The imperative paradigm however presents some challanges in order to guarantee isolation [@Kos16].
 
-Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language - and this paradigm requires to take extra care.
+Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
 
-Therefore it is especially interresting how the Isolated Turn Principle is handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
+Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
-As was pointed out, this model is capable of providing a transparent interface for component communication that might exist within the same local scope (same process) or remote scope (distinct processes). 
-
-In the first case, different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
+As was pointed out, Akkas Actor system is capable of providing a transparent interface for component communication that might exist within the same local scope (same process) or remote scope (distinct processes). In the first case, different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
 
 Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
@@ -157,7 +155,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 
 This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 
-In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO order [citation needed]{.mind}. Large mailboxes (that is with many messages queued up) deplay eager message processing. 
+In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO (**F**irst **I**n **F**irst **O**ut) order [citation needed]{.mind}. Large mailboxes (that is with many messages queued up) deplay eager message processing. 
 
 In order to prevent such fallities [ist das das wort das ich hier will?]{.mind}, Akka offers the concept of a *priority mailbox*. Basically it alters mailbox behaviour into a priority queue. 
 
