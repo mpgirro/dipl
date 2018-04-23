@@ -151,7 +151,7 @@ val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the offizial sender of the message. Thus it will be able to receive a response.
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive a response.
 
 This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 

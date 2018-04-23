@@ -129,7 +129,17 @@ Programming with microservices does not, unlike Actors, free one from the many h
     * According to classifications of parallel programming models in process interaction, mechanisms of which make the parallel processes able to communication with each other, the most common forms of interaction are shared memory, message passing, and implicit [4]
     * In Actor model, location transparency means the actual location of an Actor does not affect its name. That is to say, if one Actor knows another, they can communicate only by names instead of specific address --> kommunikating via ActorRef instead of pointer; bei MS muss das zB für REST extra ein Service Discovery übernehmen, der dies abstrahiert; 
     * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
+* [@Fel90] "Language and System Support for Concurrent Programming"
+    * beschreibt das Message passing ganz prinzipiell nicht davon abhängig ist, wo die beteiligten componenten sind (im gegensatz zu shared variables/memory)
 ~
+
+Communication via message passing has one fundamental property: no memory is shared between the communicating components. Though we will see later, that this semantic can actually be violated due to implementational hazards used for passing messages, conceptionally it does not require that the components are within the same memory space. Thus, it does not matter weither they run on the same processor, different cores or even the same host machine [@Fel90]. In short, message passing allows for distribution. 
+
+The Actor model intrinsically builds upon message passing to share state information between Actors. Additionally, Actors are well isolted from each other. Based on these properties, Agha recast the initial notion of Actors in the light of distributed computation [citation? die diss? oder dieses 43 year paper auch noch]{.mind}. 
+
+~Todo
+Microservices können auch message passing, aber auch synchrone. Die location transparency kommt entweder von der MOM, oder eben von einem lookup service für die REST endpoints.
+~  
 
 ### The leaky Abstraction of Distributed Objects {#sec-distributed-objects}
 
@@ -313,6 +323,15 @@ Location transparency, elasticity = "move around in isolation"
     * Keywords: Distributed Systems; Microservices; Mobile Agents; Service Oriented Architecture
 ~
 
+## Components per Execution Environment
+
+~LitNote
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * Beschreibt ch4.4 "Actors Per Execution Environment"
+    * Classic Actors and Processes (Erlang) sind auf dem "level of abstraction" wie objekte in OO, oder abstract data types in FP
+    * Active Objects und Communicating Event-Loops sind auf dem level of abstraction von "components" in OO, oder modulen in FP  
+~
+
 ## Actor Model and Process Calculi
 
 ~LitNote
@@ -321,6 +340,10 @@ Location transparency, elasticity = "move around in isolation"
 * Wenn ich es im MS kapitel schaffe mir was zu Process Calculi zu überlegen, gibt es genügend 
 * [@Kos16] vergleich Asynchronous Sequential Processes (ASP) mit Active Objects, nur mit gröberer Granularität
 * [@Kos16] beschreibt das die sog. "Communicating Event-Loop Actor Model" ähnlichkeiten zu Asynchronous Sequential Processes (ASP) hat
+* [@Car04] "Asynchronous and Deterministic Objects"
+    * "Relying on the active object concept, the ASP model is rather closed to, and was somehow inspired by, the notion of actors [2, 3]."
+* [@Agh97] "A foundation for actor computation"
+    * beschreibt ebenfalls den zusammenhang von Actors und Process Algebras (pi-calc., ect.), auch in einem historischen context.
 ~
 
 ## Verification

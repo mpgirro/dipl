@@ -13,6 +13,9 @@ chead        :
 Toc depth    : 3 
 Bibliography : dipl
 Bib style    : style/keynat.bst
+<!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
+<!--Bib style : plainnat-->
+<!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
 Cite All     : False
 
 <!--  Blockquotes for chapter headers -->
