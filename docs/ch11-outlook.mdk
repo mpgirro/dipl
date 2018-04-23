@@ -24,6 +24,8 @@ Predicition is very difficult, especially about the future.
 * [@Ber14] "Orleans: Distributed Virtual Actors for Programmability and Scalability"
 * [@Dra17a] "Microservices: yesterday, today, and tomorrow"
   * "First and foremost, languages that embrace the service-oriented paradigm are needed (instead, for the most part, microservice architectures still use OO lan-guages like Java and Javascript or functional ones)."
+* [@Aue94] "High-level language support for programming distributed systems"
+  * Beschreibt auch schon wie man auf Language ebene Processe programmiert, mit Ports und Communication und allem, was dann Jolie auch macht.
 ~
 
 In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, instead of rivalry, want to entertain the though of a unification of both towards a new style of programming. 

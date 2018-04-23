@@ -235,7 +235,20 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
     * ad *Mobile Agent*: "An agent is composed of three parts which also take place in travelling: Data, State and Code."
 ~
 
-## Single Responsibility
+## Object-oriented Perspective
+
+~Todo
+Die Unterkapitel in Actor-Ch und Microservice-Ch rausnehmen, und stattdessen hier gemeinsam diskutieren. Data abstraction (Encapsulation and Information Hiding), Design by Contract, SOLID design principles, Substitution and Behaviour 
+~
+
+~LitNote
+* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
+* [Dra17a] "Microservices: yesterday, today, and tomorrow"
+    * "However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing."
+    * "It is therefore a paradigm shift, where both the paradigms share the common idea of componentization."
+~
+
+### Single Responsibility
 
 ~LitNote
 * Unix philosophy

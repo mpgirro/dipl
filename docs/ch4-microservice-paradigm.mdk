@@ -125,15 +125,6 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
 
-
-## Object-Oriented Perspective
-
-~LitNote
-* [Dra17a] "Microservices: yesterday, today, and tomorrow"
-    * "However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing."
-    * "It is therefore a paradigm shift, where both the paradigms share the common idea of componentization."
-~
-
 ## Relation to Processes Calculi
 
 ~LitNote
