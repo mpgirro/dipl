@@ -16,6 +16,10 @@ The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destincti
 
 [^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
 
+---
+
+The next two chapters will cover implementations based on Actors and Microservices of this scenario for a concurrent system. These implementations together with the scope of the requirements of this scenario will act as the guidpost for our discussion on comparing Actors and Microservices at the end of this thesis.
+
 ## Why is a search engine a concurrent/parall./distr. task?
 
 ~LitNote

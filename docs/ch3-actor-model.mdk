@@ -139,11 +139,14 @@ Erlang is backed by the Actor model by design. While Scala also was conceived wi
 * [@Agh90] "Concurrent Object-Oriented Programming"
     * "Actor primitives provide a very low-level description of concurrent systems - much like an assembly language"
     * "High language constructs are necessary both for raising the granularity of description and for encpasulating faults"
+* Wenn alle AO ihren eigenen Thread haben, sind sie ja viel heavy-weight als Actors (eher vergleichbar mit Microservices?) --> soll ich das hier andeuten oder eher weiter unten, zB bei den Distr. Obj.?
 ~
 
-Objects encapsulate data and offers operations on this data [@Agh90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
+*Object-oriented Programming* (OOP) is a programming concept ...
 
-Yonezawa et al. introduced a programming language called ABCL/1 [@Yon86]. There, objects are extended by their own *thread of control*. 
+Objects encapsulate data and offer operations on this data [@Agh90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
+
+Yonezawa et al. introduced a programming language called ABCL/1 [@Yon86]. There, objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods 
 
 
 introduced a notion of classic objects extended by concurrent
@@ -181,18 +184,22 @@ In a single threaded program, once line 4 is reached, it is save to assume that 
 
 Altering the definition to `class Fnord extends ActiveObject`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have been received by and therefore processes before the unterlying Actor of `f`. 
 
-In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
+The major benefit of the Active Object abstraction compared to classic Actors is *type safety*. An Actor in general can receive any type of message. Only when the message was received and is about to be processed, the Actor can decide weither it is actually able to understand the message's type. This is a form of *dynamic type checking* at runtime [citation needed - für den ganzen Absatz]{.mind} - even in statically typed programming languages.
+
+Active Objects on the other hand provide ordinary object-like interfaces. Sending a message to an AO means calling a method with a fixed signature of the object (the proxy respectivly). Thus, only the methods available in the objects *public interface* are even valid to be called, and a compiler is able to statically ensure this during compile time [citation?]{.mind}. This is true for the messages dispatched, as well as for state passed by a messages via any method arguments.
+
+The Active Objects method signatures do not only provide a certain degree of static type safety, but also influence the behaviour of the objects thread of control. In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
 
 * Past Type ("send and no wait")
   : The message is dispatched and the sending objects thread of control immediatelly continues. It does not wait until the message has been processed by the receiver. This is equal to message passing in the Actor model.
 
 * Now Type ("send and wait")
-  : The message is dispatched and the sender waits for a result. Its thread of control is blocked until the receiver processed the message and replied the result. This is equal to a procedure call with a return value.
+  : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replied the result. This is equal to a procedure call with a return value.
 
 * Future Type ("reply to me later")
   : The senders thread of control immediatelly returns, but receives a reference to the result that will be available at some point in the future, once the receiving object has processed the message and replied.
 
-The example illustrates two of these behaviours of method invocation of Active Objects. While `void add`{language:java} only dispatches a message and immediately returns (past type), `int get`{language:java} actually waits for a result (now type). Using the future type actually requires to introduce an additional abstraction of concurrency, the *Future*. 
+The example above illustrates two of these behaviours of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 
 
 ## Combination with other Concurrency Abstractions
 

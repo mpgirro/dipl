@@ -116,7 +116,7 @@ Fortunatelly, any synchronous communication can be modeled via asynchronous comm
 
 ### Ask Pattern and Future Result (Extra Pattern)
 
-Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved.
+Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
@@ -159,7 +159,7 @@ val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive the response. Altering the reply destination this way is a form of the *delegation* concept [@Yon86].
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive the response. Altering the reply destination this way is a form of the *delegation* concept known from Object-orientation [@Yon86].
 
 This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 
