@@ -114,7 +114,7 @@ The Actor model is soley built on the concept of message passing, therefore by d
 
 Fortunatelly, any synchronous communication can be modeled via asynchronous communication.
 
-### Ask Pattern and Future Result (Extra Pattern)
+### Future-typed messaging pattern
 
 Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
 
@@ -144,15 +144,15 @@ It is clear to see that if the ask calls would be inlined into the `for`{languag
 
 However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
 
-### Transparent Asynchronous Composition (Cameo Pattern -- DELEGATION)
+### Delegation-based messaging pattern
 
 ~Todo
 Handelt es sich hierbei einfach nur um Delegation?
 ~
 
-Basic Actor model semantics states that any Actor can spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
+On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
 
-The result handling is delegated to a dedicated newly spawned child Actor. Its sole purpose is to pose as the original sender of a simple tell-style message and eventually receive an answer in a purely asynchronous fashion to the query. Upon message receival, it then passes the result on and deconstructs.
+The result handling is delegated to a dedicated newly spawned child Actor. Its sole purpose is to pose as the original sender of a simple tell-style message dispatch and eventually receive an answer in a purely asynchronous fashion. Upon message receival, it passes on the result and deconstructs. Creating such a child and setting it as the reply destination is done in Akka via:
 
 ```{language:scala}
 val handler = context.actorOf(ReponseHandler.props())
@@ -161,7 +161,7 @@ index.tell(msg, handler)
 
 Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive the response. Altering the reply destination this way is a form of the *delegation* concept known from Object-orientation [@Yon86].
 
-This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
+This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like Future to be combined with are offered by the Actor System [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 
 In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO (**F**irst **I**n **F**irst **O**ut) order [citation needed]{.mind}. Large mailboxes (that is with many messages queued up) deplay eager message processing. 
 

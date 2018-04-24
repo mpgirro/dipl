@@ -141,7 +141,7 @@ The Actor model intrinsically builds upon message passing to share state informa
 Microservices können auch message passing, aber auch synchrone. Die location transparency kommt entweder von der MOM, oder eben von einem lookup service für die REST endpoints.
 ~  
 
-### The leaky Abstraction of Distributed Objects {#sec-distributed-objects}
+## Distributed Object Abstraction {#sec-distributed-objects}
 
 ~LitNote
 * Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
@@ -164,7 +164,7 @@ hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
 
 We already discussed the analogies of Actors and microservices to the notion of objects. Now, with these similarities and the fact that Actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
 
-#### Qualify Microservices as Distributed Objects? (ÜBERSETZEN!)
+### Qualify Microservices as Distributed Objects? (ÜBERSETZEN!)
 
 ~Todo
 Nein. Beim Konzept der vert. Obj wird der Ort des Obj versteckt. Dh bei einem Methodenaufruft ist mir nicht bekannt, ob das Obj lokal oder remote liegt. Da vert. Obj die selbe API wie "normale" (= lokale Obj) haben, habe ich keinerlei Hemmungen low-level API methoden anzuwenden. Bsp: Aufsummieren einer Eigenschaft "Size" über alle meine Objekte einer Kategorie. Bei lokalen Objekte iteriere ich über alle Objekte, rufe o.getSize() auf und summiere die Werte auf. Bei vert. Obj ist mir nicht bekannt ob die Objekte lokal oder remote liegen, deshalb sieht hier die Summenbildung entsprechend gleich aus. Bei angenommen 1000 Objekten führt dies im Worst Case zu 1000 separaten RPCs.
@@ -173,16 +173,18 @@ Bei Microservices würde man eine derartige API vermeiden, denn hier ist immer k
 => MS != distr. Obj.
 ~
 
-#### Qualify Actors as Distributed Objects? (ÜBERSETZEN!)
+### Qualify Actors as Distributed Objects? (ÜBERSETZEN!)
 
 ~Todo
 Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
 Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
 ~
 
-#### Qualify Active Objects as Distributed Objects? (ÜBERSETZEN!)
+### Qualify Active Objects as Distributed Objects? (ÜBERSETZEN!)
 
-In section [#sec-active-objects] we gave a example of the concurrent semantic the API of active objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Lets consider another example:
+We have discussed now weither Actors or Microservices qualify as abstractions of the Distributed Object concept, and came to the conclusion that the risk of being misused as DO's is moderate for both. However, section [#sec-active-objects] introduced another variant of the Actor model that is worth discussing here, for it explicitely capitalises an object-oriented abstraction, just like DO's do: Active Objects.
+
+Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program (note that this switches to Scala here for following demonstrations, which is no problem due to Scala's interoperability with Java):
 
 ``` {language:scala}
 1  val fs: List[Fnord] = ... // list of 100 references

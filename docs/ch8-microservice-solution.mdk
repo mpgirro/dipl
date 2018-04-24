@@ -6,13 +6,21 @@ Microservice-based Scenario Implementation {#ch-ms-solution}
 
 In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using a microservice architecture approach.
 
-## Isolation
+---
+
+This chapter discusses an implementation of the scenario outlined in chapter [#ch-problem-scenario]. We will focus on concerns specific to using Microservices for meeting the system requirements.
+
+## Isolation and Persistence
 
 ~LitNote
-State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
+* State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
+* One DB per MS (e.g. PostgreSQL for directory/catalog) and lucene for index
+* PostgreSQL accessed by multiple threads concurrently *within* the MS
 ~
 
-## Synchronous and Asynchronous Communication
+## Communication Channels
+
+Synchronous and Asynchronous Communication
 
 ~Todo
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
@@ -51,13 +59,6 @@ The combination of no shared memory and well-defined serialized data exchange fr
 ~Todo
 Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
 ~   
-
-## Persistence
-
-~LitNote
-* One DB per MS (e.g. PostgreSQL for directory/catalog) and lucene for index
-* PostgreSQL accessed by multiple threads concurrently *within* the MS
-~
 
 ## Load balancing    
 
