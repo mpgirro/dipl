@@ -198,9 +198,9 @@ The program iterates over all elements and makes a blocking call to retrieve the
 1. The programs will block sequentially 100 times, once for each element.
 2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
-The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value (though with this particular method name and usage it hopefully is unlikely). The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
+The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value (though with this particular method name and usage it hopefully is unlikely). Additionally it is not clear if the method dispatch will be locally or remotely. The abstraction hides too much. Such calls are always blocking, and through the tight coupling they introduce [...was sind hier die katastrophen? Boner erzählt davon ja dauernd]{.mind}
 
-Both issues could be fixed by having `get()` return a `Future[Int]`{language:scala} instead. In functional languages like Scala, handling futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g.:
+Both issues could be fixed by using the *future type* of message passing for Active Objects that has been introduced. This is done by changing the declaration of `get()` to return a `Future[Int]`{language:scala} instead. In functional languages, handling Futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g. in Scala:
 
 ``` {language:scala}
 1  Future.sequence(fs.map(_.get))
@@ -211,7 +211,7 @@ Both issues could be fixed by having `get()` return a `Future[Int]`{language:sca
 6    }
 ```
 
-This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without havin to block the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
+This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without having to block the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
 
 We see, Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
 

@@ -122,38 +122,6 @@ Erlang is backed by the Actor model by design. While Scala also was conceived wi
 
 [^fn-computing-fabric]: In case of directly to machine code compiled languages, the *fabric*  
 
-## Combination with other Concurrency Abstractions
-
-~LitNote
-* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
-* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
-~
-
-### Futures
-
-~LitNote
-* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
-* [@Boe07] "A Complete Guide to the Future"
-* [@Fla99] "The semantics of future and an application"
-    * wirkt eher unbrauchbar...
-* [@Car04] "Asynchronous and Deterministic Objects"
-~
-
-* Futures
-* Promises?
-
-### Software Transactional Memory (STM)
-
-~LitNote
-* [@Sub11] demonstrates how Akka support STM together with Actors
-* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
-    * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
-~
-
-Operations that span several messages
-
-
-
 ## Active Objects {#sec-active-objects}
 
 ~LitNote
@@ -167,6 +135,7 @@ Operations that span several messages
     * AO "support fixed actor interfaces"
 * [@Yon86] "Object-oriented concurrent programming ABCL/1"
     * originale Quelle für das Prinzip von AO?
+    * "Thus message passing takes place in a point-to-point (object-to-object) fashion. No message can be broadcast."
 * [@Agh90] "Concurrent Object-Oriented Programming"
     * "Actor primitives provide a very low-level description of concurrent systems - much like an assembly language"
     * "High language constructs are necessary both for raising the granularity of description and for encpasulating faults"
@@ -174,7 +143,14 @@ Operations that span several messages
 
 Objects encapsulate data and offers operations on this data [@Agh90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
 
-Yonezawa et al. [@Yon86] introduced a notion of classic objects extended by concurrent
+Yonezawa et al. introduced a programming language called ABCL/1 [@Yon86]. There, objects are extended by their own *thread of control*. 
+
+
+introduced a notion of classic objects extended by concurrent
+
+~Todo
+Erklären wieso Active Objekte was mit Actors zu tun haben. Im prinzip sind sie nur eine OO abstraktion er actor semantik
+~
 
 ---
 
@@ -204,3 +180,46 @@ Using the above class `Fnord`{language:java}, we can create the following simple
 In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 5 will result in `2`. 
 
 Altering the definition to `class Fnord extends ActiveObject`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have been received by and therefore processes before the unterlying Actor of `f`. 
+
+In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
+
+* Past Type ("send and no wait")
+  : The message is dispatched and the sending objects thread of control immediatelly continues. It does not wait until the message has been processed by the receiver. This is equal to message passing in the Actor model.
+
+* Now Type ("send and wait")
+  : The message is dispatched and the sender waits for a result. Its thread of control is blocked until the receiver processed the message and replied the result. This is equal to a procedure call with a return value.
+
+* Future Type ("reply to me later")
+  : The senders thread of control immediatelly returns, but receives a reference to the result that will be available at some point in the future, once the receiving object has processed the message and replied.
+
+The example illustrates two of these behaviours of method invocation of Active Objects. While `void add`{language:java} only dispatches a message and immediately returns (past type), `int get`{language:java} actually waits for a result (now type). Using the future type actually requires to introduce an additional abstraction of concurrency, the *Future*. 
+
+## Combination with other Concurrency Abstractions
+
+~LitNote
+* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
+* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
+~
+
+### Futures
+
+~LitNote
+* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
+* [@Boe07] "A Complete Guide to the Future"
+* [@Fla99] "The semantics of future and an application"
+    * wirkt eher unbrauchbar...
+* [@Car04] "Asynchronous and Deterministic Objects"
+~
+
+* Futures
+* Promises?
+
+### Software Transactional Memory (STM)
+
+~LitNote
+* [@Sub11] demonstrates how Akka support STM together with Actors
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
+~
+
+Operations that span several messages

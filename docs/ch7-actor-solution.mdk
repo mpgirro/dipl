@@ -67,7 +67,11 @@ Any Java-based Actor implementation therefore faces the potential problem where 
 final ActorRef foo = system.actorOf(Foo.props());
 ```
 
-An instance of `Foo`{language:java} is not created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the instantiating Java 8 lambda. Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be delivered to and consumed by the Actor through its `onReceive` method [@Sub11].
+An instance of `Foo`{language:java} is not created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the creating Java 8 lambda. For Java lambdas are basically functional closures[^fn-clojure], they only allow to access effectively `final`{language:java} fields inside the lambda scope, preventing the exposure of mutable state to any constructor.
+
+[^fn-clojure]: Not to be confused with *Clojure*, a dialect of the programming language Lisp for the JVM.
+
+Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be delivered to and consumed by the Actor through its `onReceive` method [@Sub11].
 
 This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [which must have been explain in some chapter previously]{.mind}.
 
@@ -75,12 +79,12 @@ Yet preventing visibility of Actor fields and methods is not sufficient for guar
 
 However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that there is no memory with read-write or write-write access by two distrinct Actors [@Kos16], i.e. the facts cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. 
 
-One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only, which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
 [^fn-java-pass-by-value]: This causes the illusion that Java has pass-by-reference parameters. It does not.
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
 
-These restrictions still cannot even prevent all obstacles Java offers to break model semantic. Nothing can prevent an Actor from sending its own `this`{language:java} reference to another Actor. This alone is to be refrained at all times per se. But Java access modifiers are on class-level instead of object-level. Therefore, if the recipient is of the same dynamic type as the `this`{language:java} reference sender, then the recipient - after  appropriatethe corresponding typecast - has access to all `private`{language:java} fields of the message. This breaks the design by contract principle [habe ich das schon vorher irgendwo eingeführt?]{.mind}, but is intended by Javas encapsulation principle. 
+These restrictions still cannot even prevent all obstacles Java offers to break model semantic. Nothing can prevent an Actor from sending its own `this`{language:java} reference to another Actor. This alone is to be refrained at all times per se. But Java access modifiers are on class-level instead of object-level. Therefore, if the recipient is of the same dynamic type as the `this`{language:java} reference sender, then the recipient - after the corresponding typecast - has access to all `private`{language:java} fields of the message. This breaks the design by contract principle [habe ich das schon vorher irgendwo eingeführt?]{.mind}, but is intended by Javas encapsulation principle. 
 
 ## Mixing Concurrency Concepts
 
@@ -140,7 +144,11 @@ It is clear to see that if the ask calls would be inlined into the `for`{languag
 
 However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
 
-### Transparent Asynchronous Composition (Cameo Pattern)
+### Transparent Asynchronous Composition (Cameo Pattern -- DELEGATION)
+
+~Todo
+Handelt es sich hierbei einfach nur um Delegation?
+~
 
 Basic Actor model semantics states that any Actor can spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
 
@@ -151,7 +159,7 @@ val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive a response.
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive the response. Altering the reply destination this way is a form of the *delegation* concept [@Yon86].
 
 This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like future combination is available [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
 
