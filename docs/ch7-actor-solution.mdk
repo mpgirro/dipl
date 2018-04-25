@@ -37,6 +37,8 @@ Akka offers interfaces for Scala and Java. Both languages support object-orienta
 
 Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
+### Data hiding
+
 As was pointed out, Akkas Actor system is capable of providing a transparent interface for component communication that might exist within the same local scope (same process) or remote scope (distinct processes). In the first case, different notions of state have to be taken into account. Kniesel defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables) [@Kni96]. 
 
 Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
@@ -75,7 +77,9 @@ Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `A
 
 This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [which must have been explain in some chapter previously]{.mind}.
 
-Yet preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter is a copy of the address of the object it represents [@Gos15]. This means that any message sent between Actors contains a reference to an object representing the message[^fn-java-pass-by-value]. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
+### References and Immutability 
+
+Preventing visibility of Actor fields and methods is not sufficient for guaranteeing the required strong state encapsulation on the JVM. The method signature `void onReceive(Object message)`{language:java} indicates that messages are received with type `Object`{language:java}. Though Java has pass-by-value method parameters, any variable for a non primitive type (`byte`{language:java}, `int`{language:java}, `char`{language:java}, etc.) is actually a reference variable, storing the address to an object. Thus, a passed by value parameter is a copy of the address of the object it represents [@Gos15]. This means that any message sent between Actors contains a reference to an object representing the message[^fn-java-pass-by-value]. In general, this reference may point to *one and the same* object, for Akka only serializes messages in case both counterparts are not within the same JVM [@Sub11]. In this case, given object is therefore in the scope of both the sending and the receiving Actor, introducing shared state, which is in contrast to the strong state encapsulation requirement.
 
 However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that there is no memory with read-write or write-write access by two distrinct Actors [@Kos16], i.e. the facts cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. 
 
@@ -114,7 +118,7 @@ The Actor model is soley built on the concept of message passing, therefore by d
 
 Fortunatelly, any synchronous communication can be modeled via asynchronous communication.
 
-### Future-typed messaging pattern
+### Future-typed Messaging Style
 
 Akka provides a mechanism to deal with synchronous information flow. In addition to the asynchronous *tell* command semantic, it also offers the *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
 
@@ -144,7 +148,7 @@ It is clear to see that if the ask calls would be inlined into the `for`{languag
 
 However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
 
-### Delegation-based messaging pattern
+### Delegation-based Messaging Style
 
 ~Todo
 Handelt es sich hierbei einfach nur um Delegation?
@@ -227,7 +231,12 @@ Actors encapsulate their state.
     * Order: zB kann durch einen PriorityMailbox die Order beeinflusst werden.
 ~
 
-## Fault Tolerance
+## Fault Tolerance, Supervision and Resilience
+
+In section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. 
+
+Another important reason for providing more expressive constructs is for such are required to model adequat encapsulation of faults [@Agh90].
+
 
 ## Supervision and Error Kernel (= Resilience)
 

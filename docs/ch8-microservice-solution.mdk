@@ -18,7 +18,7 @@ This chapter discusses an implementation of the scenario outlined in chapter [#c
 * PostgreSQL accessed by multiple threads concurrently *within* the MS
 ~
 
-## Communication Channels
+## Communication Channels and Service Interfaces
 
 Synchronous and Asynchronous Communication
 
@@ -28,11 +28,16 @@ howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async
 
 ~LitNote
 * Kafka benutzt ebenfalls die Hierarchical Timing Wheels von [@Var87], behauptet <https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/>
+* beschreiben das MS mehrere total verschiedene interfaces haben können (REST, AMQP)
 ~
 
-Synchronous communication patterns are easily implemented in Microservice environments. REST-based communication - that is state transportation between to endpoints using HTTP methods - for instance complies to the requirements on communication channels for the Microservice paradigm. It is relatively lightweight, immutable and completely open to be used by all kinds of endpoints, that is technologically independent. Due to the protocol nature, REST call favour a synchronous scenario. As such, it is up to the actual HTTP client technology (library, etc.) used to provide an interface to handle dispatched method calls. The most easy form is the abstraction of simple remote procedure calls, but also more asynchronous Future-based variants are possible (e.g. with the Apache HTTP client library [reference]{.mind})
+Microservices in general do not face difficulties for realizing different communication styles. Synchronous or asynchronous dispatch has only to be supported by the communication channel used. As was discussed, such channels only have to suffice the ... [bedingingen]{.mind}
 
-In general, unlike with Actors, the full span of an RPC never leaves the scope of a Microservice, and therefore it is completely handled by the initiating service. The dispatch of a new dedicated service is too expensive, and folding the result route is hard with HTTP [wie soll ich den absatz zitieren? oder anders formulieren?]{.mind}. Thus, a service needs to cope with the fact that it blocks internally for each REST call it dispatches. However, due to the freedom the MS paradigm offers, this is usually easy to handle. Using internal service concurrency, the service can be prevented by blocking as a whole, by instead dedicating one of its threads of control handle each RPC. Thus, a service should be able to handle multiple connections at the same time.
+---
+
+Synchronous communication is easily implemented using REST principles - that is state transportation between to endpoints using HTTP methods - which complies to the requirements on communication channels for the Microservice paradigm. It is relatively lightweight, immutable and completely open to be used by all kinds of endpoints, therefore as such technologically independent. Due to the nature of the HTTP protocol, REST calls favour a synchronous scenario. Although, it is up to the actual HTTP client technology (library, etc.) used to provide an interface to handle dispatched method calls. The most easy form is the abstraction of simple remote procedure calls, but also more asynchronous Future-based variants are possible (e.g. with the Apache HTTP client library [reference]{.mind})
+
+In general,the full span of an RPC never leaves the scope of a Microservice - unlike with Actors where it can be delegated to an on demand spawned child - and therefore it is completely handled by the initiating service. The dispatch of a new dedicated service is too expensive, and folding the result route is hard with HTTP [wie soll ich den absatz zitieren? oder anders formulieren?]{.mind}. Thus, a service needs to cope with the fact that it blocks internally for each REST call it dispatches. However, due to the freedom the MS paradigm offers, this is usually easy to handle. Using internal service concurrency, the service can be prevented by blocking as a whole, by instead dedicating one of its threads of control handle each RPC. Thus, a service should be able to handle multiple connections at the same time.
 
 In any case, if using REST or some other mechanism, such RPC styled requests always lead to a more tight coupling in contrast to an asynchronous messaging style. The later is also an option for service communication. For message delivery a so-called *message oriented middleware* (MOM) has to be applied. Many options for such are available. However, such messaging technologies often pose as whole middlewares, offering many features usually undesired by the Microservice principles [da muss ich irgendwas zitieren. umbedingt]{.mind}. Special care has to be applied when seleting a technology. 
 

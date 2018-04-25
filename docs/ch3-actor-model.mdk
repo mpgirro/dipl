@@ -8,7 +8,7 @@ The Actor Model {#ch-actor-model}
 One actor is no actor. Actors come in systems.
 ~
 
-## A Model of Computation
+## A Model of Computation {#sec-actor-primitives}
 
 ~LitNote
 * [@Agh85a] "ACTORS: A Model of Concurrent Computation in Distributed Systems"
@@ -44,7 +44,7 @@ It is important to realize that requested state informations are always mere sna
 
 To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be immutable, copied or proxied [@Kos16]. This allows save coordination at a distance [@Hel15]. 
 
-Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. 
+Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. In general, this primitive can be used to change the behaviour of the Actor entirely - in the Actor taxonomy also called to *become* different operations for all following messages. However, it can also become the same operations, but for a different state [@Weg90]. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. The Actor logically stays the same, but will behave differently when processing the next message.
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [@Agh14]. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
 
@@ -81,7 +81,7 @@ Again, location transparent addresses allow for referencing Actors even outside 
 [...]{.mind} Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
 
 
-## Variations in Actor Systems
+## Variations in Actor Systems {#sec-actor-systems}
 
 ~Todo
 Hier kann ich ein paar Systeme anteasern. zB die Erlang, die alten Scala Actors, (kurz Akka?), und Kilim
@@ -105,10 +105,19 @@ Hier sollte ich erklären das die Actors keinen ganzen Thread benötigen, stattd
 * [@Hal09] "Scala Actors : Unifying thread-based and event-based programming"
 ~
 
-The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge for implementations, depending on the underlying programming model [will ich diese bezeichnung hier verwenden?]{.mind}. The idioms provided must be used to map concurrency to the Actor abstraction. In thread-based environments like the *Java Virtial Machine* (JVM), the relatively heavy JVM threads must be used to implement relatively light-weighted Actor abstration. The JVM maps its threads to OS processes, which leads to...
+The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge to be used by programmers, depending on the underlying programming model. Programming languages or libraries providing Actor-based concurrency usually aim towards providing more high-level primitives [@Agh90; @Weg90]. Such can be different kinds of message sending, or in terms of expressing behaviour replacement operations. In functional programming, replacement behaviour is usually expressed by a different function that handles the message processing [irgendwo hab ich sowas mal gelesen. war das das noch mal?!]{.mind}. The imperative paradigm realizes this through all flavours of assignment variants [will ich das so sagen??]{.mind}.
+
+
+
+
+
+[will ich diese bezeichnung hier verwenden?]{.mind}. The idioms provided must be used to map concurrency to the Actor abstraction. In thread-based environments like the *Java Virtial Machine* (JVM), the relatively heavy JVM threads must be used to implement relatively light-weighted Actor abstration. The JVM maps its threads to OS processes, which leads to...
+
+
 
  a This is to a certain degree contrary. Haller & Odersky [@Hal09] call this an "impedance mismatch" between message passing (event-based) and thread-based programming.  
 
+Additionally, the basic Actor primitives introduced in section [#sec-actor-primitives] provide a very low-level abstraction to model computation via an (almost) pure communication paradigm [@Weg90]. Thus they are not too programmer friendly and [es braucht höhere abstraktionen? hab ich da eine quelle?]{.mind} 
 
 ---
 
@@ -142,17 +151,21 @@ Erlang is backed by the Actor model by design. While Scala also was conceived wi
 * Wenn alle AO ihren eigenen Thread haben, sind sie ja viel heavy-weight als Actors (eher vergleichbar mit Microservices?) --> soll ich das hier andeuten oder eher weiter unten, zB bei den Distr. Obj.?
 ~
 
-*Object-oriented Programming* (OOP) is a programming concept ...
+As was pointed out, Actor systems try to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *Objects* introduces in the *Object-oriented Programming* (OOP) paradigm. In OOP, ....
 
-Objects encapsulate data and offer operations on this data [@Agh90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
+Objects encapsulate state and offer operations on this data [@Agh90; @Weg90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
 
-Yonezawa et al. introduced a programming language called ABCL/1 [@Yon86]. There, objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods 
+Yonezawa et al. was the first introduced a programming language called ABCL/1 [@Yon86] where classic "passiv" objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects*. 
 
 
 introduced a notion of classic objects extended by concurrent
 
 ~Todo
 Erklären wieso Active Objekte was mit Actors zu tun haben. Im prinzip sind sie nur eine OO abstraktion er actor semantik
+~
+
+~Todo
+Hinweis zur Verwending von Namen "Actor" und "Active Objects". Manchmal werden die Namen synonym verwendet, und für das Act.Obj. Prinzip dann "Agents" ?
 ~
 
 ---

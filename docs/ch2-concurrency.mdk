@@ -55,4 +55,6 @@ Distributed is truely concurrent
     * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
     * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
 * **this chapter should explain why distribution is just another form of concurrency within a system**
+* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
+    * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
 ~

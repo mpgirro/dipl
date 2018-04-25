@@ -16,6 +16,14 @@ The purpose of software engineering is to control complexity, not to create it.
 
 In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. This chapter brings both ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
 
+
+## Separation of Concerns
+
+~LitNote
+* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
+    * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
+~
+
 ## Information Hiding and Isolation {#sec-commonalities-isolation}
 
 ~LitNote
@@ -149,7 +157,9 @@ Microservices können auch message passing, aber auch synchrone. Die location tr
 * [@Wal96] "A Note on Distributed Computing"
 ~
 
-*Distributed Objects* (DO) is a concept that has been popularized in the 1990s [citation needed]{.mind}. It is an extension to the original Object concept. Here, Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
+In object-oriented programming, the overall programs state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, from a logical point of view, the state is as such distributed [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. And yet, both architecture styles can be integrated such that objects support pyhsical distribution. The result is called *Distributed Objects* (DO). 
+
+The concept that has been popularized in the 1990s [citation needed]{.mind}. Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. For every DO a proxy object is created, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
 
 However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
@@ -164,7 +174,14 @@ hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
 
 We already discussed the analogies of Actors and microservices to the notion of objects. Now, with these similarities and the fact that Actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
 
-### Qualify Microservices as Distributed Objects? (ÜBERSETZEN!)
+### Actors as Distributed Objects
+
+~Todo
+Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
+Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
+~
+
+### Microservices as Distributed Objects
 
 ~Todo
 Nein. Beim Konzept der vert. Obj wird der Ort des Obj versteckt. Dh bei einem Methodenaufruft ist mir nicht bekannt, ob das Obj lokal oder remote liegt. Da vert. Obj die selbe API wie "normale" (= lokale Obj) haben, habe ich keinerlei Hemmungen low-level API methoden anzuwenden. Bsp: Aufsummieren einer Eigenschaft "Size" über alle meine Objekte einer Kategorie. Bei lokalen Objekte iteriere ich über alle Objekte, rufe o.getSize() auf und summiere die Werte auf. Bei vert. Obj ist mir nicht bekannt ob die Objekte lokal oder remote liegen, deshalb sieht hier die Summenbildung entsprechend gleich aus. Bei angenommen 1000 Objekten führt dies im Worst Case zu 1000 separaten RPCs.
@@ -173,18 +190,11 @@ Bei Microservices würde man eine derartige API vermeiden, denn hier ist immer k
 => MS != distr. Obj.
 ~
 
-### Qualify Actors as Distributed Objects? (ÜBERSETZEN!)
-
-~Todo
-Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
-Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
-~
-
-### Qualify Active Objects as Distributed Objects? (ÜBERSETZEN!)
+### Active Objects as Distributed Objects
 
 We have discussed now weither Actors or Microservices qualify as abstractions of the Distributed Object concept, and came to the conclusion that the risk of being misused as DO's is moderate for both. However, section [#sec-active-objects] introduced another variant of the Actor model that is worth discussing here, for it explicitely capitalises an object-oriented abstraction, just like DO's do: Active Objects.
 
-Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program (note that this switches to Scala here for following demonstrations, which is no problem due to Scala's interoperability with Java):
+Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program (note that this switches to Scala syntax here for further demonstrations, which is no problem due to Scala's interoperability with Java):
 
 ``` {language:scala}
 1  val fs: List[Fnord] = ... // list of 100 references
@@ -200,7 +210,7 @@ The program iterates over all elements and makes a blocking call to retrieve the
 1. The programs will block sequentially 100 times, once for each element.
 2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
-The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block (though with this particular method name and usage it hopefully is unlikely). Additionally it is not clear if the method dispatch will be locally or remotely. The abstraction simply hides too much.
+The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block (though with this particular method name and usage it hopefully is unlikely). Additionally it is not clear weither the dispatched method will execute locally or remotely. The abstraction simply hides too much.
 
 Both issues could be fixed by using the *future type* of message passing for Active Objects that has been introduced. This is done by changing the declaration of `get()` to return a `Future[Int]`{language:scala} instead. In functional languages, handling Futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g. in Scala:
 
@@ -219,6 +229,19 @@ We see, Active Objects have the potential to be used in the same problematic way
 
 ~Todo
 Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
+~
+
+## Component Interface Compatibility
+
+~Todo
+Actors und Microservices können zur Compile-time idR nicht garantieren, dass die Nachrichten die sie bekommen werden auch verstehen können. Active Objects (und zu einem gewissen Grad auch Distr. Obj.) sind reizvoll weil sie diesen Markel beheben.
+~
+
+~LitNote
+* Hier kann ich an Franz zitieren!
+* Punt: "In Components We Trust – Programming Language Support for Weak Protection"
+* Punt: "Coordination of CORBA Ob jects with Process Types"
+* Punt: "Practical Expressive Types for Active Objects"
 ~
 
 ## Mobility
@@ -359,6 +382,11 @@ Location transparency, elasticity = "move around in isolation"
     * "Relying on the active object concept, the ASP model is rather closed to, and was somehow inspired by, the notion of actors [2, 3]."
 * [@Agh97] "A foundation for actor computation"
     * beschreibt ebenfalls den zusammenhang von Actors und Process Algebras (pi-calc., ect.), auch in einem historischen context.
+* Punt: "Type Specications with Processes" <http://www.complang.tuwien.ac.at/franz/papers/Punt95a>
+    * Hier beschreibt er wie er Process Types (was Typen von Processen eines Process Calculus sind) verwendet um das Actor model abzubilden. Dürfte sich sehr eignen!
+* Punt. forschte daran wie man mit Prozess Typen (und somit in Process Calculi?) modellieren kann, das zu gewissen Zeiten nur gewissen Nachrichten akzeptiert werden. Das "become" Primitive von Actors kann ebenfalls dazu verwendet werden, um die Menge der Messages die ein Actor gerade verarbeiten kann zu verändern (also die Typen für die eben ein Verhalten definiert ist). Dh das ist im Prinzip das selbe
+    * beste quelle? Punt: "State information in statically checked interfaces"    
+    * Punt: "Types that reflect changes of object usability"                                             
 ~
 
 ## Verification
