@@ -115,6 +115,10 @@ A PDF Version of this thesis is available at [max.irro.at/pub/thesis/dipl.pdf](h
 
 # Abstract { -; toc:clear; }
 
+Common problems...
+
+---
+
 In recent time, a new architectural style called *microservice architecture* gain popularity in the scientific community and industrial applications. In this time, applications are composed of small independent and isolated components called *microservices* communicating via lightweigt communication mechanism. This inherent distributed components result in an concurrent nature of the overall application. In this thesis, we explore the interrelations of the microservice architecture style with programming concurrent applications. We argue that the microservice components have much similarity to the Actor model, and that many of todays Actor implementations are extensions of the theoretical Actor model by characteristics shared by the principle ideas behind microservices. It remains to ask if microservice architectures have aspects exalted to those of Actor-based software architectures, or else Actor-based concurrent could would/should/could have been the answer to the needs that lead to microservices in the first place. 
 We test our findings on the implementations of the architecture of a domain specific search engine.
 
@@ -185,6 +189,7 @@ These arconyms are used throughout the thesis.
 * OOP Object-oriented programming
 * REST Representational State Transfer
 * RPC Remote procedure call
+* STM Software Transactional Memory
 
 # Glossary { - }
 

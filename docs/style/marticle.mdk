@@ -11,7 +11,7 @@ Package       : setspace
 
 Tex Header    :
   \parindent=0pt
-  \parskip 1ex
+  \parskip 2ex
   %\renewcommand{\baselinestretch}{1.1}
   %\pagestyle{fancy}
   %\lhead{}

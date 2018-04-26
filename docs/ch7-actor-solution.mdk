@@ -75,7 +75,7 @@ An instance of `Foo`{language:java} is not created using the `new`{language:java
 
 Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be delivered to and consumed by the Actor through its `onReceive` method [@Sub11].
 
-This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [which must have been explain in some chapter previously]{.mind}.
+This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [@AkkaActor] [which must have been explain in some chapter previously]{.mind}.
 
 ### References and Immutability 
 
@@ -90,30 +90,32 @@ One option for Scala is to use `case class`{language:scala} constructs, which ar
 
 These restrictions still cannot even prevent all obstacles Java offers to break model semantic. Nothing can prevent an Actor from sending its own `this`{language:java} reference to another Actor. This alone is to be refrained at all times per se. But Java access modifiers are on class-level instead of object-level. Therefore, if the recipient is of the same dynamic type as the `this`{language:java} reference sender, then the recipient - after the corresponding typecast - has access to all `private`{language:java} fields of the message. This breaks the design by contract principle [habe ich das schon vorher irgendwo eingeführt?]{.mind}, but is intended by Javas encapsulation principle. 
 
-## Mixing Concurrency Concepts
-
-~Todo
-* Hier sollte ich ein beispiel bringen das wenn man einen Future innerhalb eines Actors verwendet, man aufpassen muss keinen mutable state innerhalb des Futures zu verwenden. Denn es gibt keinen synchronized access, und dies kann wieder zu probleme führen.
-* Außerdem kann ich dann wieder darauf zurückkommen, dass das *Visibility* Concept hier das eigentliche problem ist (weil Actor state im Future visible sein kann)
-* [@AkkaJMM] "Akka and the Java Memory Model"
-    * "The completion of a Future “happens before” the invocation of any callbacks registered to it are executed."
-    * "We recommend not to close over non-final fields (final in Java and val in Scala), and if you do choose to close over non-final fields, they must be marked volatile in order for the current value of the field to be visible to the callback."
-~ 
+## Integration of other Concurrency Constructs
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.
 
-Akka provides 
+Akka offered multiple such constructs, although version 2.3 dropped support for combining Actors with Software Transactional Memory into so-called *Transactors*. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, and thus was dropped eventually.
+
+Besides STM, much more prominetly used is the Future construct. Its somewhat special meaning has already been teasered at the beginning of this chapter. It allows to define concurrent computation *inside* an Actor [@AkkaFuture]. However, Futures are not without perils of their own. The following example illulstrates such:
 
 ```{language:scala}
 var a = 0
 def receive = {
-    case _ =>
-        implicit val ec = context.dispatcher
-        Future { a += 1 }
-        a -= 1
-        println(a)
+  case _ =>
+    implicit val ec = context.dispatcher
+    Future { a += 1 }
+    a -= 1
+    println(a)
 }
 ```
+
+First of all, Akka requires a so-called `ExecutionContext`{language:scala} in scope to run a Future. In the example the Actor's `Dispatcher`{language:scala}, which represents the thread-pool the Actor is running on, is being used, but another could be specified instead [@AkkaFuture].
+
+Most importantly however, Futures can be misused to introduce non-determinism into the scope of an Actor. The example defines some mutable state variable. Upon receiving an arbitrary message, a `Future`{language:scala} is being dispatched with the task of incrementing the state. Concurrently, the Actor will continue processing the message, and attempt to decrement the very same state variable. Due to the non-deterministic nature of the underlying thread-pool, multiple orders of execution are possible, and thus also multiple results for the output statement.
+
+If we recall the Isolated Turn Principle, it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
+
+There are other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
 
 ## Synchronous and Asynchronous Communication
 
@@ -161,13 +163,9 @@ val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 
 It is clear to see that if the ask calls would be inlined into the `for`{language:scala} block, then the second message would only get dispatched once the first future has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
 
-However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
+However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitely. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case. 
 
 ### Delegation-based Messaging Style
-
-~Todo
-Handelt es sich hierbei einfach nur um Delegation?
-~
 
 On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
 
@@ -199,10 +197,6 @@ class CustomMailbox(settings: ActorSystem.Settings, config: Config)
 
 ### Timeouts
 
-~Todo
-Hier beschreiben wie timeouts modelliert werden können
-~
-
 Any synchronous information flow should provide some sort of timeout, to prevent starvation [citation  needed]{.mind}. When using futures, this has to be done explicitly using language specific constructs. The already demonstrated for-comprehension syntax of Scala for examples makes it difficult however to introduces timeouts.
 
 Another advantage of the cameo pattern [andere bezeichnung?]{.mind} is that the child Actors can easily simulate timeouts. When spawned, they register to receive a timeout message after a given time period and and define an appropriate message handling behaviour. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occures and [dann muss halt der timeout gehandled werden]{.mind}  
@@ -222,31 +216,37 @@ val timeoutMessager: Cancellable = context.system.scheduler.
 
 The provided `Chancellable`{language:scala} reference allows to prevent the trigger from fireing through `timeoutMessager.cancel`{language:scala}. This introduces a notion of timing into the Actor semantic, that is natural to the model [@AkkaScheduler]. In combination with the cameo pattern, it is possible to abstract synchronous information flow semantic including timeout boundries by using purely asynchronous message passing operations. 
 
-### Type safe messaging
+### Type-safe Messaging
 
-One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general does not define any restrictions on the types of messages that are being sent. They may be of arbitrary types and a receiving Actor only decides if it can handle a messages once it processes it, i.e. at runtime.
+One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general this does not define any restrictions on the types of messages that are being sent. They may be of arbitrary nnature and a receiving Actor only decides if it can handle a messages once it processes it, i.e. at runtime.
 
-As we've already discussed, the Active Object concept aims to provide a higher-level abstraction that fixes this flaw, but at the cost of introducing new pitfalls through the leaky abstraction it shares with Distributed Objects.
+As we've already discussed, the Active Object concept aims to provide a higher-level abstraction that fixes this flaw, but at the cost of introducing new pitfalls through the leaky abstraction it shares with Distributed Objects. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its *TypedActor* abstrction for Active Objects. The APIs for this are sumarized under the name *Akka Typed* [@AkkaTyped].
 
-Current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its *TypedActor* Active Objects abstraction. The APIs for this are sumarized under the (somewhat confusing) name *Akka Typed* [@AkkaTyped].
+One part of Akkas strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} proxies (tell, ask). These interfaces take arbitrary types as messages. The basic idea of *Akka Typed* now is simple. By introducing a generic type parameter to the address abstraction, i.e. `ActorRef[U]`{language:scala}, the range of acceptable message types may be limited. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
-One part of hardening isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces (tell, ask) of `ActorRef`{language:scala} proxies. These interfaces take arbitrary types as messages. The basic idea of *Akka Typed* now is simple. By introducing a generic type parameter `ActorRef[U]`{language:scala}, the range of acceptable message types may be limited. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
+It is worth mentioning that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with top type `Object`{language:java} and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their common supertype. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive types wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received [sollte ich für den absatz was zitieren? zumindest die Java Spec?]{.mind}.
 
-This is not without its drawbacks however. The third basic model primitive states that Actor may change their behaviour. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes, any new behaviour is constrained to also process messages of type `U`. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, the behavior function of Actors must be typed too:
+In any case, type parameters for Actor addressed are not without their drawbacks however. The third basic model primitive states that Actors may change their behaviour. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes transparently, any new behaviour is constrained to also process messages of type `U`{language:scala}. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would break the semantic and thus become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, the behavior function of Actors must be typed too:
 
 ```{language:scala}
 val behavior: Behavior[U] = Actor.immutable[U] { 
-    (ctx, msg) =>
+    (_, msg) =>
         // process msg
         Actor.same
     }
 ```
 
-Here, the `msg` parameter is guaranteed to be of type `U`{language:scala}. The example also demonstrated how Actor behaviors can be expressed in a purely functional way. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
+Here, the typization `msg:U`{language:scala} is guaranteed. The example also demonstrates how Actor behaviors can be expressed in a purely functional way. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
 
-Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, *Process Types* are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
+Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, higher-order types [sind die wirklich higher-order?]{.mind} - so-called *Process Types* - are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
 
-However useful this message saftey restrictions pose to be, the *Akka Typed* library is in the current Akka version 2.5.x still marked as "may change" and under active research, therefore not to be considered stable. Thus, despite we consider it a very promising concept that most other Actor Systems lack, *Echo:Actor* refrains from using this feature at this point. 
+However useful this message saftey restrictions pose to be, the *Akka Typed* library is in the current Akka version 2.5 still under active research and marked as "may change". Thus, despite we consider it a very promising concept that most other Actor Systems lack, we do not consider it to be stable, and *Echo:Actor* refrains from using this feature at this point. 
+
+## Information Routing and Delivery Reliability
+
+~LitNote
+Point-to-point communication and Pub/Sub
+~
 
 ## Data Coupling
 
