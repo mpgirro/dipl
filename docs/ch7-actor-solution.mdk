@@ -4,7 +4,9 @@ Actor-based Scenario Implementation {#ch-actor-solution}
 
 
 
-In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using an Actor-based programming model approach. When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [@Kos16]. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
+This chapter covers an Actor-based programming approach used to implement the concurrent system outlined in the previous chapter. We will focus our discussion on how specific techniques enable us the realize the requirements.
+
+When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [@Kos16]. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
 
 ~LitNote
 * [@Kar09] Actor Frameworks for the JVM Platform: A Comparative Analysis
@@ -83,7 +85,7 @@ Preventing visibility of Actor fields and methods is not sufficient for guarante
 
 However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that there is no memory with read-write or write-write access by two distrinct Actors [@Kos16], i.e. the facts cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. 
 
-One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for immutability. It is required to have `final`{language:java} fields only, which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for expressing immutability. It is required to have `final`{language:java} fields only, which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating consistent value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
 
 [^fn-java-pass-by-value]: This causes the illusion that Java has pass-by-reference parameters. It does not.
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
@@ -94,13 +96,13 @@ These restrictions still cannot even prevent all obstacles Java offers to break 
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.
 
-Akka offered multiple such constructs, although version 2.3 dropped support for combining Actors with Software Transactional Memory into so-called *Transactors*. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, and thus was dropped eventually.
+Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, and thus has been removed eventually.
 
-Besides STM, much more prominetly used is the Future construct. Its somewhat special meaning has already been teasered at the beginning of this chapter. It allows to define concurrent computation *inside* an Actor [@AkkaFuture]. However, Futures are not without perils of their own. The following example illulstrates such:
+Besides STM, much more prominetly used is the Future concept. Its somewhat special meaning has already been teasered at the beginning of this chapter. It allows to define concurrent computation *inside* an Actor [@AkkaFuture]. However, Futures are not without perils of their own. The following example illulstrates such:
 
 ```{language:scala}
 var a = 0
-def receive = {
+override def receive = {
   case _ =>
     implicit val ec = context.dispatcher
     Future { a += 1 }
@@ -109,11 +111,11 @@ def receive = {
 }
 ```
 
-First of all, Akka requires a so-called `ExecutionContext`{language:scala} in scope to run a Future. In the example the Actor's `Dispatcher`{language:scala}, which represents the thread-pool the Actor is running on, is being used, but another could be specified instead [@AkkaFuture].
+First of all, Akka requires a so-called `ExecutionContext`{language:scala} in scope to run the Future on. In the example the Actor's `Dispatcher`{language:scala}, which represents the thread-pool the Actor is being executed on, is used, but another could also be specified instead [@AkkaFuture].
 
 Most importantly however, Futures can be misused to introduce non-determinism into the scope of an Actor. The example defines some mutable state variable. Upon receiving an arbitrary message, a `Future`{language:scala} is being dispatched with the task of incrementing the state. Concurrently, the Actor will continue processing the message, and attempt to decrement the very same state variable. Due to the non-deterministic nature of the underlying thread-pool, multiple orders of execution are possible, and thus also multiple results for the output statement.
 
-If we recall the Isolated Turn Principle, it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
+The Isolated Turn Principle states that it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
 
 There are other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
 
@@ -222,9 +224,9 @@ One of the basic Actor primitives allows Actors to send messages to any other Ac
 
 As we've already discussed, the Active Object concept aims to provide a higher-level abstraction that fixes this flaw, but at the cost of introducing new pitfalls through the leaky abstraction it shares with Distributed Objects. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its *TypedActor* abstrction for Active Objects. The APIs for this are sumarized under the name *Akka Typed* [@AkkaTyped].
 
-One part of Akkas strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} proxies (tell, ask). These interfaces take arbitrary types as messages. The basic idea of *Akka Typed* now is simple. By introducing a generic type parameter to the address abstraction, i.e. `ActorRef[U]`{language:scala}, the range of acceptable message types may be limited. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
+One part of Akkas strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (tell, ask). These interfaces take arbitrary types as messages. The basic idea of *Akka Typed* now is simple. By introducing a generic type parameter to the address abstraction, i.e. `ActorRef[U]`{language:scala}, the range of acceptable message types may be limited. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
-It is worth mentioning that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with top type `Object`{language:java} and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their common supertype. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive types wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received [sollte ich für den absatz was zitieren? zumindest die Java Spec?]{.mind}.
+It is worth pointing out that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with top type `Object`{language:java} and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their common supertype. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive types wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received [sollte ich für den absatz was zitieren? zumindest die Java Spec?]{.mind}.
 
 In any case, type parameters for Actor addressed are not without their drawbacks however. The third basic model primitive states that Actors may change their behaviour. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes transparently, any new behaviour is constrained to also process messages of type `U`{language:scala}. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would break the semantic and thus become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, the behavior function of Actors must be typed too:
 
@@ -236,7 +238,7 @@ val behavior: Behavior[U] = Actor.immutable[U] {
     }
 ```
 
-Here, the typization `msg:U`{language:scala} is guaranteed. The example also demonstrates how Actor behaviors can be expressed in a purely functional way. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
+Here, the typization `msg:U`{language:scala} is guaranteed. The example also demonstrates how Actor behaviors can be expressed in a more functional way. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
 
 Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, higher-order types [sind die wirklich higher-order?]{.mind} - so-called *Process Types* - are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
 
@@ -272,12 +274,44 @@ Actors encapsulate their state.
     * Order: zB kann durch einen PriorityMailbox die Order beeinflusst werden.
 ~
 
-## Fault Tolerance, Supervision and Resilience
+## Supervision, Fault Tolerance and Resilience
 
 In section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. 
 
-Another important reason for providing more expressive constructs is for such are required to model adequat encapsulation of faults [@Agh90].
+Another important reason for providing more expressive constructs is for such are required to model adequat encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequatly is key especially in a distributed context [citation]{.mind}.
 
+The key to handling faults in Akka is its concept of *supervision*. No Actor exists for itself, but is always subordinate to its supervisor. This build a dependency relationship, the so-called *supervision hierarchy*. The Actor System provides a default supervisor at the top-level [@AkkaSupervision].  
+
+The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept to reacting to the notification of their failures. A failure can be of arbitrary nature, i.e. an unhandled exception or invalid state. An Actor automatically suspends itself and all its subordinates upon the occurence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle the failure. 
+
+### Supervision Strategy
+
+The signaling of an occured failure is not communicated via a "normal" Actor message, but on a side channel [@AkkaSupervision]. The following example illustrates how such a notifcation is received and failure handling happens:
+
+```{language:scala}
+override val supervisorStrategy =
+  OneForOneStrategy(maxNrOfRetries = 3, withinTimeRange = 1.minute) {
+    case _: ArithmeticException      => Resume
+    case _: IllegalArgumentException => Restart
+    case _: TimeoutException         => Stop
+    case _                           => Escalate
+  }
+```
+
+Failure notifications are handled by a `SupervisionStrategy`{language:scala}. Such is able to define various behaviours. At its core, it defines one of four possible actions:
+
+1. Resuming the suspended child, when the fault can be safely ignored.
+2. Restarting the suspended child, in case its internal state is in an invalid state.
+3. Stopping the child completely, refraining from continuing any of its execution.
+4. Escalating the failure, if the exception is not covered by this Actor. Thus the supervisor fails itself.
+
+Note that a supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. 
+
+The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for this would have to have the knowledge to interprete the state in order to evaluate it in a meaningful way [hier muss ich was zitieren, nur was? irgendwie sowas hab ich mal auf StackOverflow gelesen]{.mind}. Therefore, in case of the child being resumed, the cleanup of the failure actually falls to the child itself. All other action discard the childs state in any case.  
+
+### Fault tolerance
+
+Additionally, a `SupervisionStrategy`{language:scala} may also define some behavior besides local, single event handling. In case a child keeps failing repeatly withing a certain timeframe, it  
 
 ## Supervision and Error Kernel (= Resilience)
 

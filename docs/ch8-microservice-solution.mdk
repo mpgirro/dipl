@@ -4,11 +4,7 @@ Microservice-based Scenario Implementation {#ch-ms-solution}
 
 
 
-In this chapter, we will discuss a practical implementation of the problem scenario outlined in chapter [#ch-problem-scenario] using a microservice architecture approach.
-
----
-
-This chapter discusses an implementation of the scenario outlined in chapter [#ch-problem-scenario]. We will focus on concerns specific to using Microservices for meeting the system requirements.
+This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-problem-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
 
 ## Isolation and Persistence
 
