@@ -19,7 +19,7 @@ One actor is no actor. Actors come in systems.
     * Agha developed Actors as a fundamental model for concurrent computation
 ~
 
-In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt et al. [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
+In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt, Bishop and Steiger [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
 
 
 Agha reformulated the Actor model into three basic primitives and Actor can perform upon receiving a message [@Agh85a]:
@@ -186,7 +186,7 @@ Using the above class `Fnord`{language:java}, we can create the following simple
 
 ``` {language:java}
 1  void doSomething() {
-2    Fnord f = ...; // obtain reference to a Fnord instance
+2    final Fnord f = ...; // obtain reference to an instance
 3    f.add(1);
 4 
 5    print(f.get()); 
@@ -214,7 +214,7 @@ The Active Objects method signatures do not only provide a certain degree of sta
 
 The example above illustrates two of these behaviours of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 
 
-## Combination with other Concurrency Abstractions
+## Combination with other Concurrency Abstractions {#sec-actor-concurrency-combination}
 
 ~LitNote
 * [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
