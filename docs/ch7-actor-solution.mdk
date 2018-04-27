@@ -96,7 +96,7 @@ These restrictions still cannot even prevent all obstacles Java offers to break 
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.
 
-Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, and thus has been removed eventually.
+Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, for STM requires shared memory which is hard across JVMs [@Swa14], and thus it has been removed eventually.
 
 Besides STM, much more prominetly used is the Future concept. Its somewhat special meaning has already been teasered at the beginning of this chapter. It allows to define concurrent computation *inside* an Actor [@AkkaFuture]. However, Futures are not without perils of their own. The following example illulstrates such:
 
@@ -240,7 +240,7 @@ val behavior: Behavior[U] = Actor.immutable[U] {
 
 Here, the typization `msg:U`{language:scala} is guaranteed. The example also demonstrates how Actor behaviors can be expressed in a more functional way. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
 
-Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, higher-order types [sind die wirklich higher-order?]{.mind} - so-called *Process Types* - are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
+Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, higher-order types [sind die wirklich higher-order?]{.mind} - so-called *Session Types* or *Process Types* [beides wirklich das selbe? Punt: PT, rest der Welt: ST]{.mind} - are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
 
 However useful this message saftey restrictions pose to be, the *Akka Typed* library is in the current Akka version 2.5 still under active research and marked as "may change". Thus, despite we consider it a very promising concept that most other Actor Systems lack, we do not consider it to be stable, and *Echo:Actor* refrains from using this feature at this point. 
 
@@ -282,7 +282,7 @@ Another important reason for providing more expressive constructs is for such ar
 
 The key to handling faults in Akka is its concept of *supervision*. No Actor exists for itself, but is always subordinate to its supervisor. This build a dependency relationship, the so-called *supervision hierarchy*. The Actor System provides a default supervisor at the top-level [@AkkaSupervision].  
 
-The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept to reacting to the notification of their failures. A failure can be of arbitrary nature, i.e. an unhandled exception or invalid state. An Actor automatically suspends itself and all its subordinates upon the occurence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle the failure. 
+The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept of being notified of and reacting to subordinate's failures. A fault can be of arbitrary nature, i.e. an unhandled exception or invalid state. An Actor automatically suspends itself and all its subordinates upon the occurence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle the failure. 
 
 ### Supervision Strategy
 

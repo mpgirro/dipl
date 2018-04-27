@@ -125,7 +125,7 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
 
-## Relation to Processes Calculi
+## Relation to Processes Calculi {#sec-ms-process-calculus}
 
 ~LitNote
 * <https://en.wikipedia.org/wiki/Process_calculus>
@@ -143,3 +143,9 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 * Asynchronous Sequential Processes (ASP) --> "D. Caromel, L. Henrio, and B. P. Serpette. Asynchronous sequential processes. Inf. Comput., 207(4):459–495, Apr. 2009"
     * [@Kos16] vergleich diese mit Active Objects, nur mit gröberer Granularität
 ~
+
+Among the theories of formulating concurrent computation is found a family called *process calculi*. Such define mathematical models composed of so-called *processes* which are communicating within the laws and conditions layed out by the calculus [citation]{.mind}.
+
+Depending on the calculus, communication may be of a synchronous (e.g. in the Communicating Sequential Processes - CSP [citation]{.mind}) or asynchronous (like Asynchronous Sequential Processes - ASP[citation]{.mind}). The unifying properties of all these calculi are that they avoid any kind of shared state and rely on message-passing for communication [citation]{.mind}. This already bears resemblence to the Microservice paradigm.
+
+In fact, some scientific approaches on modelling interacting processes, which were also found to be well suited for expressing Microservices, like Jolie[citation]{.mind} or CAOPLE[citation]{.mind}, are based on a process calculus theory [citation]{.mind}. 

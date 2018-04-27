@@ -219,6 +219,7 @@ The example above illustrates two of these behaviours of method invocation of Ac
 ~LitNote
 * [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
 * [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
+* [@Swa14] "Towards Composable Concurrency Abstractions"
 ~
 
 ### Futures
@@ -233,6 +234,11 @@ The example above illustrates two of these behaviours of method invocation of Ac
 
 * Futures
 * Promises?
+
+
+The term "Future" is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and ???. Although all of these describe concepts where a placeholder 
+is defined for a value that will be available at a later point in time [@Swa14],
+they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion in the later parts of this thesis, we will refere to the Future concept like it is found in Java and Scala. 
 
 ### Software Transactional Memory (STM)
 

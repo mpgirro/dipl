@@ -116,6 +116,9 @@ Programming with microservices does not, unlike Actors, free one from the many h
 * [@Agh91] "Actors as Processes: The representation that we are implementing models actors as light-weight processes and requires the presence of a kernel run-time system on each node."
 * Hier kann ich die gesamte Erlang Literatur einbauen, denn die nennen ihre lightweight constructs ja auch *process*
 * [@Kar09] beschreibt location transparency bei actors
+* [@Swa14] "Towards composable concurrency abstractions"
+    * "We classify concurrencymodels that use structured communication in terms of messages, instead of relying on shared memory, as communicating threads."
+    * "Often, each thread has only private memory, ensuring that all communication is done via messages."
 ~
 
 
@@ -231,19 +234,6 @@ We see, Active Objects have the potential to be used in the same problematic way
 Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
 ~
 
-## Component Interface Compatibility
-
-~Todo
-Actors und Microservices können zur Compile-time idR nicht garantieren, dass die Nachrichten die sie bekommen werden auch verstehen können. Active Objects (und zu einem gewissen Grad auch Distr. Obj.) sind reizvoll weil sie diesen Markel beheben.
-~
-
-~LitNote
-* Hier kann ich an Franz zitieren!
-* Punt: "In Components We Trust – Programming Language Support for Weak Protection"
-* Punt: "Coordination of CORBA Ob jects with Process Types"
-* Punt: "Practical Expressive Types for Active Objects"
-~
-
 ## Mobility
 
 ~LitNote
@@ -280,6 +270,23 @@ Die Unterkapitel in Actor-Ch und Microservice-Ch rausnehmen, und stattdessen hie
 * [@Bon16]
 * [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
 * "functional separation" [@Sal16]
+~
+
+### Design by Contract
+
+~Todo
+Both have a clear interface (Actors via the messages they accept, MS via their REST interface or the AMQP msg they consume). However, both also have problems in terms of checking this. Actors only check at runtime if they "unserstand" the current message. Microservices lack tools to ensure composability at compile time (das will ich vll fürs MS-solution kapitel aufheben)
+~
+
+~Todo
+Actors und Microservices können zur Compile-time idR nicht garantieren, dass die Nachrichten die sie bekommen werden auch verstehen können. Active Objects (und zu einem gewissen Grad auch Distr. Obj.) sind reizvoll weil sie diesen Markel beheben.
+~
+
+~LitNote
+* Hier kann ich an Franz zitieren!
+* Punt: "In Components We Trust – Programming Language Support for Weak Protection"
+* Punt: "Coordination of CORBA Ob jects with Process Types"
+* Punt: "Practical Expressive Types for Active Objects"
 ~
 
 ## Persistance
@@ -388,6 +395,13 @@ Location transparency, elasticity = "move around in isolation"
     * beste quelle? Punt: "State information in statically checked interfaces"    
     * Punt: "Types that reflect changes of object usability"                                             
 ~
+
+In section [#sec-ms-process-calculus] we've motivated why the Microservice paradigm in general has relations to the theories of process calculi. This is especially interresting, for the Actor model and the Process calculi share a long history. Both theoretical approaches have been conceived around the same time in the 1970s. Since then, over time both... [citation]{.mind}
+
+It is important to realize that there is one only theoretical Actor model. Though many implementations of this (the Actor Systems) exist, which vary in terms of [???]{.mind}, they are all based on the same fundamental theoretical model semantic. 
+On the other hand, there is not one process calculus, but a large variaty of calculi. All are distinct in terms of component traits and communication semantic. The only really homogenous characteristic is that communication is based on message-passing, rather than on shared memory [citation]{.mind}. They share this trait of isolated state and decoupled information exchange with the Actor model.
+
+In a classification of concurrency model, Swalens et al. summarize all abstractions avoiding shared memory and using structured message-passing instead as *communicating threads* [@Swa14]. In this chapter we've already discussed the commonalities of thread-based and process-based concurrency. [ja und jetzt weiter?...]{.mind}
 
 ## Verification
 
