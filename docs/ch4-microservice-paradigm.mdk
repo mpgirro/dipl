@@ -109,7 +109,7 @@ Any form of communication has to happen via an inter-process communication mecha
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 
-## Service Granularity (Size, Scope and Granularity)
+## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 
 ~LitNote
 * "micro should refere to the scope of responsibility, not the lines of code"
@@ -148,4 +148,8 @@ Among the theories of formulating concurrent computation is found a family calle
 
 Depending on the calculus, communication may be of a synchronous (e.g. in the Communicating Sequential Processes - CSP [citation]{.mind}) or asynchronous (like Asynchronous Sequential Processes - ASP[citation]{.mind}). The unifying properties of all these calculi are that they avoid any kind of shared state and rely on message-passing for communication [citation]{.mind}. This already bears resemblence to the Microservice paradigm.
 
-In fact, some scientific approaches on modelling interacting processes, which were also found to be well suited for expressing Microservices, like Jolie[citation]{.mind} or CAOPLE[citation]{.mind}, are based on a process calculus theory [citation]{.mind}. 
+In fact, some scientific approaches on modelling interacting processes, which were also found to be well suited for expressing Microservices, like Jolie[citation]{.mind} or CAOPLE[citation]{.mind}, have their theoretic foundation in a process calculus [citation]{.mind}. 
+
+~Todo
+In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der anderen abarbeiten. Ist das generell so? Weil MS können intern schon Concurrent sein. Dann müsste ich explizit darauf hinweißen, dass mit Process Calculi zwar MS Architecturen beschrieben werden können, aber nicht jeder Microservice deswegen einem Process Calculus entsprechen muss. Irgendwo sollte da Literatur bei diesem "MS: Language-based Approach" sein!
+~

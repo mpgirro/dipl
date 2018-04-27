@@ -47,6 +47,11 @@ As Snyder points out, *Object Oriented Programming* (OOP) usually offers mechani
 
 However, though OOP offers methods to encapsulate state within objects and prevent access to it, it r it usually remains quite easy for an object to *exposing* its state to others [citation sowas von needed]{.mind}. This can become especially problematic for object-oriented Actor implementations if the system has no way of checking or ensuring message immutability by itself. Section [#sec-ensuring-actor-isolation] describes in detail the challenges this poses for a specific Actor system.
 
+
+--- 
+
+The components of any Microservice Architecture are stricly distinct processes. The paradigm states that those refrain from allocating any kind of shared memory. Thus allown suffices that state is stricly isolated within each service. Therefore the paradigm neither does nor needs to dictate any instructions on how state has to be handled internally within each service. The memory boundries of processes are safeguarded on the operating system level [citation needed]{.mind}.
+
 ## Communication and Data Coupling
 
 ~LitNote
@@ -106,6 +111,10 @@ A microservice on the other hand has the basic abstraction of a process. Any sys
 Through the basic process semantic [hier sollte ich diese semantik aufzählen: isolation, messages, fair scheduling + quelle]{.mind}, just like with Actors, any system of processes lead to a concurrent system. The services external concurrency is always either on the operating system level or the network level (or both). Yet their notion of internal concurrency is divergent from that of an Actor. Though it also receives messages of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
 
 Programming with microservices does not, unlike Actors, free one from the many hassles of internal component concurrency problems per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
+
+~Todo
+Andere Concurrency Abstractions können schon interne concurrency in Actors einbringen (formal bricht das halt die Actor Semantik!). Verweis darauf das wir Futures bereits angedeutet haben, und das nachher gleich ein beispiel bringt.
+~
 
 ## Threads and Processes
 

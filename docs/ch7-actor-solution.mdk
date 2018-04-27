@@ -16,9 +16,11 @@ When talking about the practical application of the Actor model, it is importent
 
 Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
-Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16].
+Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16]. An archetype has been Erlangs style of Actors. 
 
-Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. Since Scala 2.10 it replaces the default Actor implementation offered by Scala [citation needed]{.mind}. Among the reasons were [??? paar sachen aufzählen]{.mind}
+Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. 
+
+Akka replaces the default Actor implementation offered by Scala (we will refere to them as *Scala Actors* in contrast to *Akka Actors*) from version 2.10 upwards [citation needed]{.mind}. Among the reasons were their better performance (in fact Akka Actors can be up to XXX times more performant [wo stand das nochmal?]{.mind}), transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13].
 
 As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. When refering to futures from now on, we will always assume the prior ones (depending on the Akka API binding used).
 
@@ -91,6 +93,21 @@ One option for Scala is to use `case class`{language:scala} constructs, which ar
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
 
 These restrictions still cannot even prevent all obstacles Java offers to break model semantic. Nothing can prevent an Actor from sending its own `this`{language:java} reference to another Actor. This alone is to be refrained at all times per se. But Java access modifiers are on class-level instead of object-level. Therefore, if the recipient is of the same dynamic type as the `this`{language:java} reference sender, then the recipient - after the corresponding typecast - has access to all `private`{language:java} fields of the message. This breaks the design by contract principle [habe ich das schon vorher irgendwo eingeführt?]{.mind}, but is intended by Javas encapsulation principle. 
+
+We see, a library-based Actor version as Akka cannot enforce strict Actor semantic by itself, if the programming language offers programmers concepts to break it. Enforcing a strict notion of the semantic could only be guaranteed on a language level. However, in general it is sufficient if programmers comply with coding conventions specific to the language to avoid shared state by accident [@Tas13].
+
+It is worth pointing out that though the Actor model is Scalas standard concurrency abstraction, the language was not designed to enforce a strict Actor semantic. Instead it accepts the perils that come with a library-based implementation. The arguments for a library are [@Hal09; @Tas13]:
+
+* It does not require special support by the compiler, JVM or extra syntax.
+* It can be easily extended, adapted, and even replaced. This has already happend, when the standard Scala Actors have been replaced under the hood by Akka Actors.
+* It can break the Actor semantic *intentionally*, e.g. to introduce an additional concurrency abstraction. The next section will demonstrate this. 
+
+
+
+
+~Todo
+Hier vll noch was schreiben das Erlang die sache strikt sieht -- tut sie das denn?
+~
 
 ## Integration of other Concurrency Constructs
 
@@ -218,7 +235,7 @@ val timeoutMessager: Cancellable = context.system.scheduler.
 
 The provided `Chancellable`{language:scala} reference allows to prevent the trigger from fireing through `timeoutMessager.cancel`{language:scala}. This introduces a notion of timing into the Actor semantic, that is natural to the model [@AkkaScheduler]. In combination with the cameo pattern, it is possible to abstract synchronous information flow semantic including timeout boundries by using purely asynchronous message passing operations. 
 
-### Type-safe Messaging
+### Type-safe Messaging and Compatibility
 
 One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general this does not define any restrictions on the types of messages that are being sent. They may be of arbitrary nnature and a receiving Actor only decides if it can handle a messages once it processes it, i.e. at runtime.
 

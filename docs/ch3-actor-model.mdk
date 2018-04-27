@@ -69,7 +69,7 @@ There are numerous models that are able to provide inherent concurrency, such as
 
 On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
 
-The Actor model on the other hand provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These addresses are virtual by not exposing any physical location information [@Ber14], and are thus not restricting the Actors to the limitations of such. Concurrently executed components are not required to be inside the same process boundry, because their addresses can abstract the gape in physical distance between them. This concept is generally refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
+The Actor model on the other hand provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These addresses are virtual by not exposing any physical location information [@Ber14; @Tas13], and are thus not restricting the Actors to the limitations of such. Concurrently executed components are not required to be inside the same process boundry, because their addresses can abstract the gape in physical distance between them. This concept is generally refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
 
 Traditionally, distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]:
 
@@ -155,8 +155,9 @@ As was pointed out, Actor systems try to provide a more high-level interface tha
 
 Objects encapsulate state and offer operations on this data [@Agh90; @Weg90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
 
-Yonezawa et al. was the first introduced a programming language called ABCL/1 [@Yon86] where classic "passiv" objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects*. 
+Yonezawa et al. was the first introduced a programming language called ABCL/1[^fn-abcl1] [@Yon86] where classic "passiv" objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects*. 
 
+[^fn-abcl1]: *ABCL* stands for **A**ctor-**B**ased **C**oncurrent **L**anguage. The */1* indicates that it is merely the first of a whole family of languages. Thus it's often omitted in the literature. Consecutive versions do not follow a sequential numbering though, e.g. *ABCL/R*, *ABCL/f* or *ABCL/c+*.
 
 introduced a notion of classic objects extended by concurrent
 
@@ -218,8 +219,22 @@ The example above illustrates two of these behaviours of method invocation of Ac
 
 ~LitNote
 * [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
+    * "that many of the programs mix actors with other kinds of concurrent entities such as Java threads."
 * [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
 * [@Swa14] "Towards Composable Concurrency Abstractions"
+~
+
+The actor model is a mature, general purpose model for expressing concurrent computation. However, it does not facilitate some requirements as well as other better than others. An easy example is synchronous communication, which is not intended by the model. As such, developers ...
+
+~LitNote
+* Drawbacks of breaking the Actor semantic [@Tas13]:
+    * potential of fine-grained (low level?) data races (also in [@Swa14], see "safety")
+    * reduce readability, maintainability
+* [@Swa14]: "We consider two models *composable* if combining them cannot produce new safety or liveness issues"
+    * "Safety means that, given a correct input, a program will not produce an incorrect result"
+        * "Race conditions are caused by an incorrect interleaving between two models.""
+    * "Liveness guarantees a program will terminate if its input is correct"
+        * Deadlocks, Livelocks
 ~
 
 ### Futures
@@ -230,15 +245,24 @@ The example above illustrates two of these behaviours of method invocation of Ac
 * [@Fla99] "The semantics of future and an application"
     * wirkt eher unbrauchbar...
 * [@Car04] "Asynchronous and Deterministic Objects"
+* [@Swa14] "Towards composable concurrency abstractions"
+    * Reading a Future value inside an Actor can cause a deadlock (potential block operation)
+* [@Tas13] "Why DO scala developers mix the actor model with other concurrency models?"
+    * "Futures are place-holders for asyn-chronously computed values; they block the current thread of execution when it tries to access a yet unresolved value. This way, futures provide a light form of synchronization between the producer and the consumer of the value. With their blocking result-resolution semantics, futures provide a natural way of adding par-tial synchrony to actor programs."
 ~
 
 * Futures
 * Promises?
 
 
-The term "Future" is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and ???. Although all of these describe concepts where a placeholder 
+The term *Future* is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and ???. Although all of these describe concepts where a placeholder 
 is defined for a value that will be available at a later point in time [@Swa14],
 they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion in the later parts of this thesis, we will refere to the Future concept like it is found in Java and Scala. 
+
+
+... 
+
+There has been a long tradition of combining Actors with Futures. It can be traced back to ABCL/1 and its Active Object notion. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type, now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated as part of another example later on.
 
 ### Software Transactional Memory (STM)
 

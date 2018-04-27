@@ -1,8 +1,12 @@
 [INCLUDE=style/marticle]
 
+Title        : Actors and Microservices
+Subtitle     : A conceptual Analysis of conceiving Concurrent Systems based on the Actor Model of Computation versus the Microservice Architecture Style
+<!--
 Title        : Concurrent Programming
                and the Microservice Architecture Style
 Subtitle     : Hier könnte Ihre Werbung stehen!
+-->
 Author       : Maximilian Irro
 Email        : max@irro.at
 Copyright    : Maximilian Irro, 2017
