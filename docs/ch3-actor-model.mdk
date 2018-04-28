@@ -224,17 +224,24 @@ The example above illustrates two of these behaviours of method invocation of Ac
 * [@Swa14] "Towards Composable Concurrency Abstractions"
 ~
 
-The actor model is a mature, general purpose model for expressing concurrent computation. However, it does not facilitate some requirements as well as other better than others. An easy example is synchronous communication, which is not intended by the model. As such, developers ...
+The actor model is a mature, general purpose model for expressing concurrent computation. It has some clear principles which must be upheld in order to ensure the intended semantic. Besides these, the model does not make additional assumptions on the environment it is used in [schlecht formuliert]{.mind}. This make the Actor model flexible and applicable for general purpose computation. Concurrency is basically a mere side-effect from its principles [citation?]{.mind}. As a result, it allows the model to be combined with additional arbitrary approaches to express computation, as long as such do not jeopardize the Actor semantic. Even other concurrency abstractions are not excluded from this.
+
+As such, mixing Actors with other concurrency models has always been common. The reasons for introducing additional abstractions are manyfold. Tasharofi et al. empirically found that the major inadequacies of Actor Systems are found in there lack of efficiently supporting blocking operations (especially IO) and that developers find many communication protocols hard to express in an asynchronous messaging style [@Tas13].  
+
+Therefore, in order to overcome these shortcommings, additonal concurrency models are interweaved. This raises the issue of the requirements for any two concurrency models being *composable* without any inconsistencies.
+
+Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding safety and liveness that have not been there before [@Swa14]. They define these two properties as follows: 
+
+* Safety
+  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced non-determinism.  
+* Liveness
+  : Given correct inputs are guaranteed correct outputs in finite time (termination). Cases where this might be prevented are called *deadlocks* (blocking operations which for some reason do not unblock) and *livelocks* (loops never meeting their termination condition)
+
 
 ~LitNote
 * Drawbacks of breaking the Actor semantic [@Tas13]:
     * potential of fine-grained (low level?) data races (also in [@Swa14], see "safety")
     * reduce readability, maintainability
-* [@Swa14]: "We consider two models *composable* if combining them cannot produce new safety or liveness issues"
-    * "Safety means that, given a correct input, a program will not produce an incorrect result"
-        * "Race conditions are caused by an incorrect interleaving between two models.""
-    * "Liveness guarantees a program will terminate if its input is correct"
-        * Deadlocks, Livelocks
 ~
 
 ### Futures

@@ -22,6 +22,8 @@ Discussion
 - thread switching within an Actor can get a problem, e.g. with locking (have seen it with lucene)
 - obwohl Active Obj. "leider" die selben Probleme wie Distr. Obj. haben, ist genau diese enge Verbindung der Proof of Concept bzgl Technology Heterogenity. Distr Obj varianten erlauben auch Bindings via verschiedene Technologien (zB CORBA), und demonstrieren somit, dass auch die statische - dh zur compile time - garantierte Kompatibilität der Typen von Messages zwischen Objekte über verschiedene Technologie hinaus garaniert werden kann.
   * hier gibts es sicherlich neue Probleme. In den Publikationen vom Franz dürfte dazu einiges stehen! Der hat doch eh ein CORBA Paper zB geschrieben. Und welche das so Act. Obj. Typen teilweise statisch/teilweise dynamisch evaluiert werden.
+* [@Tas13] "Why do scala developers mix the actor model with other concurrency models?"
+  * "This implies that developers tend to use other ways than remote actors for implementing distributed computations."
 ~
 
 ### Case Study: Why do Scala Programmers mix Actors with other Concurrency Constructs?
