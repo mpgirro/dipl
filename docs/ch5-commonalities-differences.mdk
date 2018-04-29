@@ -395,6 +395,7 @@ Location transparency, elasticity = "move around in isolation"
 * [@Kos16] vergleich Asynchronous Sequential Processes (ASP) mit Active Objects, nur mit gröberer Granularität
 * [@Kos16] beschreibt das die sog. "Communicating Event-Loop Actor Model" ähnlichkeiten zu Asynchronous Sequential Processes (ASP) hat
 * [@Car04] "Asynchronous and Deterministic Objects"
+    * describes implementing ASP as Active Objects
     * "Relying on the active object concept, the ASP model is rather closed to, and was somehow inspired by, the notion of actors [2, 3]."
 * [@Agh97] "A foundation for actor computation"
     * beschreibt ebenfalls den zusammenhang von Actors und Process Algebras (pi-calc., ect.), auch in einem historischen context.

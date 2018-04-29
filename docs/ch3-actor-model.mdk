@@ -28,7 +28,7 @@ Agha reformulated the Actor model into three basic primitives and Actor can perf
 2. Creating a finite number of new actors.
 3. Changing its internal behaviour for the next message that it receives with the so-called *replacement behaviour*.
 
-In order to send a message, the unique *address* of an Actor must be known. The unterlying system delivers the message. In general, the order of delivery is non-deterministic. Actor addresses can be announced to other Actors by sending the address as a message. This allows for *dynamic reconfiguration* [@Agh90].
+In order to send a message, the unique *address* of an Actor must be known. The unterlying system delivers the message. In general, the order of delivery is nondeterministic. Actor addresses can be announced to other Actors by sending the address as a message. This allows for *dynamic reconfiguration* [@Agh90].
 
 Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation [citation needed]{.mind}
 
@@ -65,7 +65,9 @@ Additionally, state can only be changed while processing a message. Therefore, a
 
 Up until now, the Actor model was described as a general model of computation. It was initially conceived as such by Hewitt [citation needed?!]{.mind}. However, the abstraction of Actors presented so far provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. As such, Actors encapsulate not only data and functionality, but also their own *thread of control*, making Actors autonomous [@Agh99]. Hewit and [??]{.mind} later showed that this allows for a concurrent execution of such components [citation? war das wirklich erst später?]{.mind}, effectivly making the Actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
 
-There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], as such can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. For state is never shared, but only communicated via asynchronous message passing, this eliminates a whole class of errors, the *race conditions* [@Cha13]. The dynamic data flow of messages is the primary source of nondeterminism, for the order of processing the messages affects the behaviour, but therefore eliminates unnecessary synchronization overhead [@Kar09; @Agh99].
+There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], as such can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. For state is never shared, but only communicated via asynchronous message passing, this eliminates a whole class of errors, the *race conditions* [@Cha13]. 
+
+The dynamic data flow of messages is the primary source of nondeterminism, for no order of messages is guaranteed when multiple Actor sends messages to the same Actor. However, the actual order of processing the messages affects the behaviour, thus it is nondeterministic. On the other hand, this eliminates unnecessary synchronization overhead [@Kar09; @Agh90; @Agh99].
 
 On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
 
@@ -95,6 +97,10 @@ Hier kann ich ein paar Systeme anteasern. zB die Erlang, die alten Scala Actors,
 * [@Ber14] "Orleans: Distributed Virtual Actors for Programmability and Scalability"
 * [@Kar09] "Actor frameworks for the JVM platform: A Comparative Analysis"
 * [@Cha13] "Native actors- a scalable software platform for distributed, heterogeneous environments"
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * beschreibt mehrere Actor Systems
+    * beschreibt Actor System Properties
+* dieses Paper zu Kilim
 ~
 
 ~Todo
@@ -131,6 +137,15 @@ Erlang is backed by the Actor model by design. While Scala also was conceived wi
 
 [^fn-computing-fabric]: In case of directly to machine code compiled languages, the *fabric*  
 
+
+### Actor System Properties
+
+Some basic properties can be obererves across system implementations.
+
+* TODO: At most once delivery, siehe zB [@AkkaMDR]
+* As already outlined, when multiple Actor sends messages to the same recipient, no order of messages in the mailbox is guaranteed. This is the reason for nondeterminism in the Actor model. Some Actor systems however tend to narrow down this property, by ensuring that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched [@AkkaMDR].
+* ..  
+
 ## Active Objects {#sec-active-objects}
 
 ~LitNote
@@ -142,34 +157,26 @@ Erlang is backed by the Actor model by design. While Scala also was conceived wi
 * [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
     * -> Gleiche Zeit wie Agha das Actor model neu formuliert hat, hat Yonezawa (in [@Yon86]) prinzipiell die Active Objects eingeführt
     * AO "support fixed actor interfaces"
-* [@Yon86] "Object-oriented concurrent programming ABCL/1"
-    * originale Quelle für das Prinzip von AO?
-    * "Thus message passing takes place in a point-to-point (object-to-object) fashion. No message can be broadcast."
 * [@Agh90] "Concurrent Object-Oriented Programming"
     * "Actor primitives provide a very low-level description of concurrent systems - much like an assembly language"
     * "High language constructs are necessary both for raising the granularity of description and for encpasulating faults"
 * Wenn alle AO ihren eigenen Thread haben, sind sie ja viel heavy-weight als Actors (eher vergleichbar mit Microservices?) --> soll ich das hier andeuten oder eher weiter unten, zB bei den Distr. Obj.?
 ~
 
-As was pointed out, Actor systems try to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *Objects* introduces in the *Object-oriented Programming* (OOP) paradigm. In OOP, ....
+As was pointed out, Actor systems try to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *Objects* introduces in the *Object-oriented Programming* (OOP) paradigm. In OOP, [...]{.mind}
 
 Objects encapsulate state and offer operations on this data [@Agh90; @Weg90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called message to an object [@Bla13]. This already bears resemblence to the Actor concepts and terminology.
 
-Yonezawa et al. was the first introduced a programming language called ABCL/1[^fn-abcl1] [@Yon86] where classic "passiv" objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects*. 
+Yonezawa et al. was the first introduced a programming language called ABCL/1[^fn-abcl1] [@Yon86] where classic "passiv" objects are extended by their own *thread of control*. Their state is only accessible from within the objects themselves. Access or modification to any state is achieved by invoking the objects public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects* (AO). 
 
 [^fn-abcl1]: *ABCL* stands for **A**ctor-**B**ased **C**oncurrent **L**anguage. The */1* indicates that it is merely the first of a whole family of languages. Thus it's often omitted in the literature. Consecutive versions do not follow a sequential numbering though, e.g. *ABCL/R*, *ABCL/f* or *ABCL/c+*.
 
-introduced a notion of classic objects extended by concurrent
+Though AOs aim to provide a purely object-oriented abstraction of Actors, it has been argued that Actors themself already represent the very essence of object-orientation [citation needed]{.mind}. Scholars have long argued about the fundamental concepts of object-orientation. The only truely undebated characteristic seems to be encapsulation of state [@Kni96] coupled to a set of operations sharing this data [@Weg90]. Additionally, Actors share object concepts like their ability to be created, having a unique identity (address), a public interface... [@Sny93] ... [noch irgendwie weiter biegen das halt smalltalk objecte auch immer nebenläufig sind]{.mind}
 
-~Todo
-Erklären wieso Active Objekte was mit Actors zu tun haben. Im prinzip sind sie nur eine OO abstraktion er actor semantik
-~
+Its worth pointing out that due to this conformity of the Actor construct with the object essence, scholars do not use the terminologies consistently. In this thesis, we use *Actors* to refere to the concept formulated by Hewitt and refined by Agha, and *Active Objects* for the pattern introduced by Yonezawa to abstract the Actor semantic into a classic object API. However, in the literature, "Active Object" can also be found to be used interchangably with the term "Actor", e.g. as does Guessoum [@Gue99] [um referenzen zu sparen könnte ich diese einfach entfernen, insofern ich sie nirgends sonst mehr verwende]{.mind}.
 
-~Todo
-Hinweis zur Verwending von Namen "Actor" und "Active Objects". Manchmal werden die Namen synonym verwendet, und für das Act.Obj. Prinzip dann "Agents" ?
-~
 
----
+The following example illustrates the subtle difference in the behaviour of classic versus active objects:
 
 ``` {language:java}
 class Fnord {
@@ -183,7 +190,7 @@ class Fnord {
 }
 ```
 
-Using the above class `Fnord`{language:java}, we can create the following simple program:
+Using the above class `Fnord`{language:java}, we can create the following simple procedure:
 
 ``` {language:java}
 1  void doSomething() {
@@ -200,7 +207,9 @@ Altering the definition to `class Fnord extends ActiveObject`{language:java}, wi
 
 The major benefit of the Active Object abstraction compared to classic Actors is *type safety*. An Actor in general can receive any type of message. Only when the message was received and is about to be processed, the Actor can decide weither it is actually able to understand the message's type. This is a form of *dynamic type checking* at runtime [citation needed - für den ganzen Absatz]{.mind} - even in statically typed programming languages.
 
-Active Objects on the other hand provide ordinary object-like interfaces. Sending a message to an AO means calling a method with a fixed signature of the object (the proxy respectivly). Thus, only the methods available in the objects *public interface* are even valid to be called, and a compiler is able to statically ensure this during compile time [citation?]{.mind}. This is true for the messages dispatched, as well as for state passed by a messages via any method arguments.
+Active Objects on the other hand provide ordinary object-like interfaces. Sending a message to an AO means calling a method with a fixed signature of the object (the proxy respectivly). Thus, only the methods available in the objects *public interface* are even valid to be called, and a compiler is able to statically ensure this during compile time [citation?]{.mind}. This is true for the messages dispatched, as well as for state passed by a messages via any method arguments. On the other hand, due to the nature of AO interfaces, they only provide message passing in a point-to-point communication style. Broadcasting messages would require one method call to address multiple objects, which isn't intended by the object abstraction [@Yon86].
+
+However, unlike as with classic Actors, due to the nature of object interfaces, AOs only offer messaging in a point-to-point communication style [@Yon86], while in general the address concept of classic Actos allows to abstract multiple recipients behind a single address, this a broadcasting of messages [citation]{.mind}.
 
 The Active Objects method signatures do not only provide a certain degree of static type safety, but also influence the behaviour of the objects thread of control. In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
 
@@ -230,13 +239,14 @@ As such, mixing Actors with other concurrency models has always been common. The
 
 Therefore, in order to overcome these shortcommings, additonal concurrency models are interweaved. This raises the issue of the requirements for any two concurrency models being *composable* without any inconsistencies.
 
-Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding safety and liveness that have not been there before [@Swa14]. They define these two properties as follows: 
+Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. They define these two properties as follows: 
 
 * Safety
-  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced non-determinism.  
+  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced nondeterminism.  
 * Liveness
-  : Given correct inputs are guaranteed correct outputs in finite time (termination). Cases where this might be prevented are called *deadlocks* (blocking operations which for some reason do not unblock) and *livelocks* (loops never meeting their termination condition)
+  : Given correct inputs are guaranteed correct outputs in finite time (termination). Cases where this might be prevented are called *deadlocks* (blocking operations which for some reason do not unblock) and *livelocks* (loops never meeting their termination condition).
 
+The Isolated Turn Principle of the Actor model already gives a strong notion to ensure these properties [@Kos16]. 
 
 ~LitNote
 * Drawbacks of breaking the Actor semantic [@Tas13]:
@@ -262,12 +272,12 @@ Swalens et a. regard two concurrency models composable if their integration does
 * Promises?
 
 
-The term *Future* is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and ???. Although all of these describe concepts where a placeholder 
+The term *Future* is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and [???]{.mind}. Although all of these describe concepts where a placeholder 
 is defined for a value that will be available at a later point in time [@Swa14],
-they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion in the later parts of this thesis, we will refere to the Future concept like it is found in Java and Scala. 
+they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion in the later parts of this thesis, we will refere to the Future concept like it is found in the Java and Scala programming languages. 
 
 
-... 
+... Futures erklären.
 
 There has been a long tradition of combining Actors with Futures. It can be traced back to ABCL/1 and its Active Object notion. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type, now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated as part of another example later on.
 
@@ -278,5 +288,7 @@ There has been a long tradition of combining Actors with Futures. It can be trac
 * [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
     * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
 ~
+
+The Actor model semantic does not provide an adequat mechanism to abstract operations spanning multiple messages. Such has to be in general taken care of by the programmer.
 
 Operations that span several messages
