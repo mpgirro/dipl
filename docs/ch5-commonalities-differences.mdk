@@ -125,6 +125,8 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 * Punt: "Practical Expressive Types for Active Objects"
 ~
 
+### Substitution and Behaviour
+
 ## Autonomy
 
 ~LitNote
@@ -195,6 +197,13 @@ Andere Concurrency Abstractions können schon interne concurrency in Actors einb
 * [@Kar09] beschreibt fair scheduling bei actors
 ~
 
+Actors are entities inside an Actor System. As such, their scheduling falls to this system. In depends on the execution strategy pursued by the system... [TODO]{.mind}
+
+~Todo
+es gibt eine gnaz allgemeine definition von [@Kan12]. ansonsten: Thread vs Event based Actors, VM scheduling wo es teil der sprache ist (Erlang), wie macht das zB Akka und Kilim?
+~
+
+For Microservices on the other hand, scheduling is a nonconcern. Any MSA is by definition a composition of system processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. Operating systems tend to pursue a [???]{.mind} scheduling strategy [hab ich hier irgendwas das ich zitieren kann?].
 
 ## Distribution
 
