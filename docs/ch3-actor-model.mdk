@@ -38,7 +38,7 @@ Messages are processed one at a time. Therefore, they have to be buffered in the
 
 The Actor abstraction defines that the only possible form of communication between Actors is by exchanging messages. This implies that there is no directly shared state between them [citation needed]{.mind}. Actor semantic means state is *encapsulated* within an Actor exclusively. To access the state, it must be requested by sending an appropriate message. 
 
-Processing a message is *atomic*, i.e. it is not interrupted by other messages to the Actor [@Agh99], for they get buffered inside the mailbox.
+Processing messages is done in a serialized fashion. This provides the basis for *isolation* [@Les09]. All state modifications done while processing a single message appears *atomic*, i.e. it is not interrupted by other messages to the Actor [@Agh99], for they get buffered inside the mailbox.
 
 It is important to realize that requested state informations are always mere snapshots of any Actors state at a specific point in time (the point where this Actor processes the requesting message), and the information might therefore be already outdated once the requestor receives the snapshot answer [citation needed]{.mind}. This is the semantic of any form of asynchronous communication [citation needed]{.mind}. On the other hand, it frees Actors from the implications any form of shared state or resource handling, like the bottle-necks introduces by sequential locking, brings with it [@Agh90].  
 
@@ -109,6 +109,10 @@ Hier sollte ich erklären das die Actors keinen ganzen Thread benötigen, stattd
 
 ~LitNote
 * [@Hal09] "Scala Actors : Unifying thread-based and event-based programming"
+~
+
+~Todo
+We do not provide a comprehensive review on actor systems here
 ~
 
 The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge to be used by programmers, depending on the underlying programming model. Programming languages or libraries providing Actor-based concurrency usually aim towards providing more high-level primitives [@Agh90; @Weg90]. Such can be different kinds of message sending, or in terms of expressing behaviour replacement operations. In functional programming, replacement behaviour is usually expressed by a different function that handles the message processing [irgendwo hab ich sowas mal gelesen. war das das noch mal?!]{.mind}. The imperative paradigm realizes this through all flavours of assignment variants [will ich das so sagen??]{.mind}.
@@ -242,11 +246,11 @@ Therefore, in order to overcome these shortcommings, additonal concurrency model
 Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. They define these two properties as follows: 
 
 * Safety
-  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced nondeterminism.  
+  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced nondeterminism.
 * Liveness
   : Given correct inputs are guaranteed correct outputs in finite time (termination). Cases where this might be prevented are called *deadlocks* (blocking operations which for some reason do not unblock) and *livelocks* (loops never meeting their termination condition).
 
-The Isolated Turn Principle of the Actor model already gives a strong notion to ensure these properties [@Kos16]. 
+The Isolated Turn Principle of the Actor model already gives a strong boundry to ensure these properties [@Kos16]. Added concurrency concepts therefore must not weaken this.
 
 ~LitNote
 * Drawbacks of breaking the Actor semantic [@Tas13]:
@@ -287,8 +291,19 @@ There has been a long tradition of combining Actors with Futures. It can be trac
 * [@Sub11] demonstrates how Akka support STM together with Actors
 * [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
     * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
+* [@Sha17c]:
+    "control the isolation level across concurrent computations"
 ~
 
-The Actor model semantic does not provide an adequat mechanism to abstract operations spanning multiple messages. Such has to be in general taken care of by the programmer.
+As we've pointed out, the Actor model provides single-threaded semantic inside an Actor while processing one message. On the other hand however, the asynchronous messaging style tends to become a burden when it is required to have some sort of consensus between multiple Actors, for the model does not provide an adequat mechanism to abstract operations involving multiple messages [@Sub11]. Such is expected to be taken care of by the programmer.
 
-Operations that span several messages
+A well known concept to provide a single-threaded appearence on accessing some state or memory that is generally accesses concurrently, is called *transaction*. A transaction is a computation that does not have to be atomic by itself (e.g. larger code block), but still logically appreas to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If for some reason the transaction becomes invalid, usually for it can not be guaranteed to run in isolation due to a write collisions [@Sub11], all state modifications are rolled back accross the entire code segments involved in the transaction.
+
+There are multiple ways how transactions are realized. For example, they can be done directly in hardware [citation!]{.mind}. This means on the other hand they are also possible to be modeled entirely within software. 
+
+~Todo
+Hier etwas erklären wie STM intern funktioniert, siehe [@Les09]
+~  
+
+Combining transactions with Actors can have a huge impact on performance. Especially write collisions raise the amount of coordination required. Though this can be done transparently by abstractions provided by an Actor system, it always means additional message processing of the Actors involved, potentially turning into a bottleneck [@Sub11]. This is especially crucial e.g. for proposed database concepts leveraging the Actor model, for transactions are an essential functionality in database systems [@Sha17c].
+

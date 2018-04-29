@@ -11,6 +11,7 @@ Concurrency (Concurrent Programming?) {#ch-concurrency}
     * Allgemeine Argumente für Concurrency und Parallel Exec.
 * [@Fel90] "Language and System Support for Concurrent Programming"
 * [@Bac03] "Operating Systems: concurrent and distributed software design"
+* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
 ~
 
 

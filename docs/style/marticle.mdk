@@ -60,3 +60,6 @@ CSS Header      :
 .important {
   color:red
 }
+.delete {
+  color:red
+}
