@@ -9,6 +9,10 @@ The purpose of software engineering is to control complexity, not to create it.
 ~
 
 ~LitNote
+* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
+* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
+    * "However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing."
+    * "It is therefore a paradigm shift, where both the paradigms share the common idea of componentization."
 * Diskussion: MS behandeln ebenfalls die 3 "foundational issues" die laut [@Agh85b] concurrency modelle lösen sollten
 * Weiters zitiert [@Agh85b]: "It is reasonable to expect that large-scale parallel systems will be composed of independently developed and maintained modules. Such systems will be open-ended and continually undergoing change (Hewitt and de Jong 85)."
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
@@ -16,19 +20,11 @@ The purpose of software engineering is to control complexity, not to create it.
 
 In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. This chapter brings both ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
 
-## Isolation {#sec-commonalities-isolation}
+## Information hiding and Isolation {#sec-commonalities-isolation}
 
-### Shared and Mutable State
-
-One fundamental characteristic of both Actors and Microservices is their notion of shared state. Summarizing chapter [#ch-actor-model], the Actor model encapsulates state exclusively within an Actor. Therefore it can only be accessed and modified by the Actor itself. Additionally, Actors provide single-threaded semantic while processing messages, i.e. only one message is processed at a time. This eliminates any need for synchronization, for a message has exclusive access to the Actors current state, and thus is free of low-level data races. The Actors state is fully isolated.
-
-On the other hand, such reasoning cannot be done for Microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm used to implement the service, i.e. multiple objects could have access the same memory location. Furthermore, these state accesses could be executed concurrently, e.g. as a reaction to multiple invocations of the services interface within a short timespan. Microservices do not ensure any kind of single-threaded semantic. This requires synchronization to internal service state.
-
-However, the Microservice paradigm dictates that shared memory *between* services is to be avoided, as are all kinds of shared resources in general. For every service runs within its own system process, avoiding shared memory implies no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}. Such channels tend to provide some sort of message passing (which can also be in a synchronous fashion, e.g. REST), which is designed to transfer information between the different memory spaces of distinct processes [@Les09].
-
-Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behaviour is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
-
-### Information Hiding
+~todo
+Hier die Sachen von unten als Einführung beschreiben (ohnehin nicht mehr all zu viel übrig)
+~
 
 ~LitNote
 * "promise behaviour via API/protocol" --> design by contract
@@ -58,6 +54,17 @@ However, though OOP offers methods to encapsulate state within objects and preve
 
 The components of any Microservice Architecture are stricly distinct processes. The paradigm states that those refrain from allocating any kind of shared memory. Thus allown suffices that state is stricly isolated within each service. Therefore the paradigm neither does nor needs to dictate any instructions on how state has to be handled internally within each service. The memory boundries of processes are safeguarded on the operating system level [citation needed]{.mind}.
 
+### Shared and Mutable State
+
+One fundamental characteristic of both Actors and Microservices is their notion of shared state. Summarizing chapter [#ch-actor-model], the Actor model encapsulates state exclusively within an Actor. Therefore it can only be accessed and modified by the Actor itself. Additionally, Actors provide single-threaded semantic while processing messages, i.e. only one message is processed at a time. This eliminates any need for synchronization, for a message has exclusive access to the Actors current state, and thus is free of low-level data races. The Actors state is fully isolated.
+
+On the other hand, such reasoning cannot be done for Microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm used to implement the service, i.e. multiple objects could have access the same memory location. Furthermore, these state accesses could be executed concurrently, e.g. as a reaction to multiple invocations of the services interface within a short timespan. Microservices do not ensure any kind of single-threaded semantic. This requires synchronization to internal service state.
+
+However, the Microservice paradigm dictates that shared memory *between* services is to be avoided, as are all kinds of shared resources in general. For every service runs within its own system process, avoiding shared memory implies no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}. Such channels tend to provide some sort of message passing (which can also be in a synchronous fashion, e.g. REST), which is designed to transfer information between the different memory spaces of distinct processes [@Les09].
+
+Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behaviour is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
+
+
 ### Persistance
 
 ~LitNote
@@ -84,21 +91,6 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
     * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
 ~
 
-## Cohesion and Coupling
-
-## Object-oriented Perspective
-
-~Todo
-Die Unterkapitel in Actor-Ch und Microservice-Ch rausnehmen, und stattdessen hier gemeinsam diskutieren. Data abstraction (Encapsulation and Information Hiding), Design by Contract, SOLID design principles, Substitution and Behaviour 
-~
-
-~LitNote
-* [@Agh99] "Actors are similar to sequential objects in that they encapsulate data and procedures"
-* [Dra17a] "Microservices: yesterday, today, and tomorrow"
-    * "However, the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing."
-    * "It is therefore a paradigm shift, where both the paradigms share the common idea of componentization."
-~
-
 ### Single Responsibility
 
 ~LitNote
@@ -108,7 +100,7 @@ Die Unterkapitel in Actor-Ch und Microservice-Ch rausnehmen, und stattdessen hie
 * "functional separation" [@Sal16]
 ~
 
-### Design by Contract
+### Communication and Design by Contract
 
 ~Todo
 Both have a clear interface (Actors via the messages they accept, MS via their REST interface or the AMQP msg they consume). However, both also have problems in terms of checking this. Actors only check at runtime if they "unserstand" the current message. Microservices lack tools to ensure composability at compile time (das will ich vll fürs MS-solution kapitel aufheben)
@@ -125,9 +117,13 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 * Punt: "Practical Expressive Types for Active Objects"
 ~
 
+
+
 ### Substitution and Behaviour
 
-## Autonomy
+### Cohesion and Coupling
+
+### Autonomy
 
 ~LitNote
 * [@Bon17] 
@@ -136,8 +132,9 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 ~
 
 
+## Notion of Concurrency
 
-## Component Concurrency
+Both Actors and Microservices are the components that are being executed concurrently within their system architectures. However, both constructs have different notions of concurrency, which is a direct result of the underlying concepts. The following discusses the differences and their implications.
 
 ### Threads and Processes
 
@@ -157,7 +154,7 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgesetzt sind: Als event-based mit callbacks, mit einem threadpool anstatt jedem Actor seinen eigenen, weil threads ebenfalls fett sind (bei der JVM jeder thread ein process); in Erlang auch "process", was aber light-weight thread speziell durch die BEAM VM
 ~
 
-### Internal and external Concurrency
+### Component Concurrency (internal+external)
 
 ~LitNote
 * Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
@@ -450,7 +447,7 @@ On the other hand, there is not one process calculus, but a large variaty of cal
 
 In a classification of concurrency model, Swalens et al. summarize all abstractions avoiding shared memory and using structured message-passing instead as *communicating threads* [@Swa14]. In this chapter we've already discussed the commonalities of thread-based and process-based concurrency. [ja und jetzt weiter?...]{.mind}
 
-## Verification
+### Verification
 
 ~LitNote
 * [@Pan17] "Verification in the Age of Microservices"
