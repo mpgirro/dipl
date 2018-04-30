@@ -153,6 +153,10 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
     * "Often, each thread has only private memory, ensuring that all communication is done via messages."
 ~
 
+~todo
+Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgesetzt sind: Als event-based mit callbacks, mit einem threadpool anstatt jedem Actor seinen eigenen, weil threads ebenfalls fett sind (bei der JVM jeder thread ein process); in Erlang auch "process", was aber light-weight thread speziell durch die BEAM VM
+~
+
 ### Internal and external Concurrency
 
 ~LitNote
@@ -199,11 +203,19 @@ Andere Concurrency Abstractions können schon interne concurrency in Actors einb
 
 Actors are entities inside an Actor System. As such, their scheduling falls to this system. In depends on the execution strategy pursued by the system... [TODO]{.mind}
 
+Actors are passiv components in the sense that they only react to events, i.e. received messages. If an Actor's mailbox is empty, it is not necessary for the system to invoke it, for there is nothing to do for it. This way, an Actor system can greatly reduce processing resource consumption [citation?]{.mind}.
+
+~Todo
+Dieses einsparen von rechenleistung bei Actors, dass geht bei Orleans so weit, dass die meisten actors sowieso nur virtuell sind, daher per default zwar offiziell existieren (virtuel), aber keinerlei resourcen brauchen.
+~
+
 ~Todo
 es gibt eine gnaz allgemeine definition von [@Kan12]. ansonsten: Thread vs Event based Actors, VM scheduling wo es teil der sprache ist (Erlang), wie macht das zB Akka und Kilim?
 ~
 
 For Microservices on the other hand, scheduling is a nonconcern. Any MSA is by definition a composition of system processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. Operating systems tend to pursue a [???]{.mind} scheduling strategy [hab ich hier irgendwas das ich zitieren kann?].
+
+There is one drawback to the lack of scheduling concern in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any service will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are a simple waste of energy [hab ich da was zu energy consumption?]{.mind}.
 
 ## Distribution
 
@@ -226,6 +238,10 @@ For Microservices on the other hand, scheduling is a nonconcern. Any MSA is by d
 * [@Fel90] "Language and System Support for Concurrent Programming"
     * beschreibt das Message passing ganz prinzipiell nicht davon abhängig ist, wo die beteiligten componenten sind (im gegensatz zu shared variables/memory)
 ~
+
+Distribution is decoupled execution in space [citation - Boner]{.mind}. As we've already motivated, any space-decoupled concurrent execution is inherently parallel. In the same context it was stated that relatively local parallelism is called intra-node parallelism, while actually distributed parallelism is called inter-node.
+
+---
 
 Communication via message passing has one fundamental property: no memory is shared between the communicating components. Though we will see later, that this semantic can actually be violated due to implementational hazards used for passing messages, conceptionally it does not require that the components are within the same memory space. Thus, it does not matter weither they run on the same processor, different cores or even the same host machine [@Fel90]. In short, message passing allows for distribution. 
 
