@@ -20,6 +20,12 @@ The purpose of software engineering is to control complexity, not to create it.
 
 In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. This chapter brings both ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
 
+First of all however, it must be argued why it is valid to compare a concept of programming concurrency with a software architecture style for distributed systems. The argumentations is fairly simple. Expressing computation with the Actor model yields artefacts - the Actors - which are fit to be executed concurrently. Thus it historically evolved into a model of concurrent computation. 
+
+A Microservice Architectre on the other hand is a composition of processes - the Microservices. The idea that processes can be seens as concurrent constructs is known at least since 1978 from a paper by [??? irgendwo hab ich das mal gelesen, ich brauch die quelle!]{.mind}. It is no coincidence therefore that the Actor constructs in the Erlang programming language are being called *processes* [citation]{.mind}.
+
+This chapter will therefore dive into the interrelations between concurrent constructs of the Actor kind and system processes flavored by the charcteristics as are dictated by the Microservice paradigm. On this basis, we will be able to discuss weither one of the two approaches is supreme to the other [will ich diesen satz wirklich?]{.mind}.  
+
 ## Information hiding and Isolation {#sec-commonalities-isolation}
 
 ~todo
@@ -71,19 +77,6 @@ Actors are generally faced with more challenges when it comes to truely ensuring
 Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
 ~
 
-
-## Communication and Data Coupling
-
-~LitNote
-* Sync vs Async, Immutable Messages
-* Point to Point, Publish/Subscribe, 
-* [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
-* [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
-* [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
-* [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
-* "loose coupling" [@Sal16]
-~
-
 ## Separation of Concerns
 
 ~LitNote
@@ -117,9 +110,17 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 * Punt: "Practical Expressive Types for Active Objects"
 ~
 
-
-
-### Substitution and Behaviour
+~LitNote
+* Sync vs Async, Immutable Messages
+* Point to Point, Publish/Subscribe, 
+* [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
+* [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
+* [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
+* [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
+* "loose coupling" [@Sal16]
+* bzgl REST:
+    * see [Mon16b], section 7, "RESTful services"
+~
 
 ### Cohesion and Coupling
 
@@ -131,6 +132,22 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
     * "Working with autonomous services opens up flexibility around ser‐ vice orchestration, workflow management, and collaborative behav‐ ior, as well as scalability, availability, and runtime management, at the cost of putting more thought into well-defined and composable APIs"
 ~
 
+### Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
+
+Extensibility:
+
+~LitNote
+* Actors, siehe: [@Agh85b]
+* gradual/separate replacement of MS
+* substitution and subtyping für Actors
+~
+
+Technology Heterogeneity:
+
+~LitNote
+* [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
+* [@New15] Newmann calls it "Technology Heterogeneity"
+~
 
 ## Notion of Concurrency
 
@@ -154,7 +171,11 @@ Both Actors and Microservices are the components that are being executed concurr
 Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgesetzt sind: Als event-based mit callbacks, mit einem threadpool anstatt jedem Actor seinen eigenen, weil threads ebenfalls fett sind (bei der JVM jeder thread ein process); in Erlang auch "process", was aber light-weight thread speziell durch die BEAM VM
 ~
 
-### Component Concurrency (internal+external)
+### Concurrency of Components
+
+~todo
+difference between internal and external component concurrency
+~
 
 ~LitNote
 * Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
@@ -248,18 +269,16 @@ The Actor model intrinsically builds upon message passing to share state informa
 Microservices können auch message passing, aber auch synchrone. Die location transparency kommt entweder von der MOM, oder eben von einem lookup service für die REST endpoints.
 ~  
 
-### Location Transparency
+### Identity and Equality
 
-### Components per Execution Environment
+* Identity = unique network address (may be abstracted behind gayteway proxy)
+* Equality = multiple (stateless) instances of the same service executable 
 
-~LitNote
-* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
-    * Beschreibt ch4.4 "Actors Per Execution Environment"
-    * Classic Actors and Processes (Erlang) sind auf dem "level of abstraction" wie objekte in OO, oder abstract data types in FP
-    * Active Objects und Communicating Event-Loops sind auf dem level of abstraction von "components" in OO, oder modulen in FP  
-~
 
-### Mobility
+### Location Transparency and Mobility
+
+
+Mobility:
 
 ~LitNote
 * Laut jones Bonér folgt mobility aus location transparency
@@ -274,6 +293,8 @@ Microservices können auch message passing, aber auch synchrone. Die location tr
 * [@Sal16] "The Evolution of Distributed Systems Towards Microservices Architecture"
     * Keywords: Distributed Systems; Microservices; Mobile Agents; Service Oriented Architecture
     * ad *Mobile Agent*: "An agent is composed of three parts which also take place in travelling: Data, State and Code."
+* MS service discovery:
+    * see [@Mon16a] for example solutions/implementations/technologies 
 ~
 
 ### Distributed Object Abstraction {#sec-distributed-objects}
@@ -358,18 +379,34 @@ We see, Active Objects have the potential to be used in the same problematic way
 Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wird der Methodenaufruf von der Methodenausführung getrennt. Mit anderen Worten, in der Zeile nachdem man `actObj.doSomething()` aufgerufen hat, ist diese Methode noch nicht umbedingt garantiert fertig (ja es kann gut sein, dass sie noch nicht einmal angefangen wurde auszuführen). Aktive Objekte (jedenfalls in Akka) sind intern via Actors implementiert. Während man einem Aktor jede beliebige Nachricht schicken kann, und dieser **zur Laufzeit** unterscheidet ob er diese versteht/bearbeiten kann, ist bei einem aktiven Objekt durch die Ansprache des aktiven Objekts über eine Methode via das Typsystem **zur Compiletime** sichergestellt, dass der interne Actor die Nachricht auch verarbeiten kann (daher werden aktive Objekte in Akka auch "Typed Actors" genannt). Asynchron ist ein aufruf nur, wenn die Methoden alle `void` als Rückgabewert haben. Ansonsten handelt es sich beim Methodenaufrufs eines Typed Actors um einen synchronen Aufruft (!), und im Falle einer Ortsverteilung der beiden Akteure auch wieder nur um einen RPC. Daher können aktive Objekte in die selben Probleme laufen, wie sie vert. Objekte haben. 
 ~
 
-## Governance and Independent Deployment
+### Components per Execution Environment
 
+~LitNote
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+    * Beschreibt ch4.4 "Actors Per Execution Environment"
+    * Classic Actors and Processes (Erlang) sind auf dem "level of abstraction" wie objekte in OO, oder abstract data types in FP
+    * Active Objects und Communicating Event-Loops sind auf dem level of abstraction von "components" in OO, oder modulen in FP  
+~
+
+## Governance and Deployment
+
+~Todo
 (Partially) Centralized with Actor systems, decentralized with MS (aber was ist mit cloud management frameworks)
+~
 
-## Scalability
+~Todo
+Independent deployment
+~
 
-### Load balancing
+## Scalability and Elasticity
 
-* Server and Client Side LB
 
-### Elasticity
+~Todo
+Server and Client Side Load balancing
+~
 
+Elasticity:
+ 
 ~LitNote
 * Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)
 * Actors can easily be created and kill by messages. A system must support elastic mechanism itself. question is from which components is this command issues? also a management framework? or is the system this detected by itself. in case of cluster, are new Actors spawned on random node, or some metric for node with most free resources?
@@ -403,22 +440,6 @@ Location transparency, elasticity = "move around in isolation"
 * Actors, siehe: [@Agh85b]
 ~
 
-## Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
-
-Extensibility:
-
-~LitNote
-* Actors, siehe: [@Agh85b]
-* gradual/separate replacement of MS
-* substitution and subtyping für Actors
-~
-
-Technology Heterogeneity:
-
-~LitNote
-* [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
-* [@New15] Newmann calls it "Technology Heterogeneity"
-~
 
 ## Actor Model and Process Calculi
 
@@ -447,8 +468,30 @@ On the other hand, there is not one process calculus, but a large variaty of cal
 
 In a classification of concurrency model, Swalens et al. summarize all abstractions avoiding shared memory and using structured message-passing instead as *communicating threads* [@Swa14]. In this chapter we've already discussed the commonalities of thread-based and process-based concurrency. [ja und jetzt weiter?...]{.mind}
 
+~LitNote
+* [@Pan17] "Verification in the Age of Microservices"
+~
+
+
+### Substitution and Behaviour
+
+Process-, Behavioural-, and Session-Types:
+
+~LitNote
+* "Behavioural types are types that can describe the behaviour of services and can be used to check that two (or more) services have compatible actions" [@Dra17a]
+* "Session types are a prime example of behavioural types" [@Dra17a]
+* "Session types have been successfully applied to many contexts already, ranging from parallel to distributed computing." [@Dra17a]
+
+zu Session Types: 
+
+* see "*Kohei Honda, Vasco Vasconcelos, and Makoto Kubo. Language primitives and type disciplines for structured communication-based programming. pages 22–138, 1998*"
+* see "*Kohei Honda, Nobuko Yoshida, and Marco Carbone. Multiparty asynchronous session types. Journal of the ACM,63(1):9, 2016. Also: POPL, 2008, pages 273–284*"
+~
+
+
 ### Verification
 
 ~LitNote
-* [@Pan17] "Verification in the Age of Microservices"
+* "Choreographies are high-level descriptions of the communications that we want to happen in a system in contrast with the typical methodology of defining the behaviour of each service separately" [@Dra17a]
+* see [@Mon13] "*Choreographic Programming*"
 ~

@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
 Title        : Actors versus Microservices
-Subtitle     : A conceptual comparison on composing concurrent systems through the Actor Model of Computation against the Microservice Architecture Style
+Subtitle     : A conceptual analysis of modeling concurrent systems based on the Actor Model of Computation or the Microservice Architecture Style
 <!--
 Title        : Concurrent Programming
                and the Microservice Architecture Style

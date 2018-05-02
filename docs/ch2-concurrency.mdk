@@ -12,6 +12,12 @@ Concurrency (Concurrent Programming?) {#ch-concurrency}
 * [@Fel90] "Language and System Support for Concurrent Programming"
 * [@Bac03] "Operating Systems: concurrent and distributed software design"
 * [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
+* siehe [@But14] zu den 4 Teilen:
+  * Bit-Level Parallelism
+  * Instruction-Level Parallelism
+  * Data Parallelism
+  * Task_level Parallelism (das ist das für mich wichtige)
+    * hier wird zwischen Shared-memory und Distributed-memory unterschieden, mit guter Erklärung
 ~
 
 
@@ -60,4 +66,8 @@ Distributed is truely concurrent
 * **this chapter should explain why distribution is just another form of concurrency within a system**
 * [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
     * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
+* [@But14]
+  * shared-memory: inter-process comm. through memory (faster)
+  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
+    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
 ~

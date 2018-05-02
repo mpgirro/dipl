@@ -165,6 +165,7 @@ Some basic properties can be obererves across system implementations.
     * "Actor primitives provide a very low-level description of concurrent systems - much like an assembly language"
     * "High language constructs are necessary both for raising the granularity of description and for encpasulating faults"
 * Wenn alle AO ihren eigenen Thread haben, sind sie ja viel heavy-weight als Actors (eher vergleichbar mit Microservices?) --> soll ich das hier andeuten oder eher weiter unten, zB bei den Distr. Obj.?
+* "A paper by C. Ellis and S. Gibbs distinguishes between active objects and passive objects.[20] Passive objects comprise information and behaviour, as stated above, but they cannot determine the timing of this behaviour. Active objects on the other hand can do this. In their article Ellis and Gibbs state that active objects have much more potential for the development of maintainable systems than do passive objects." (*C. Ellis and S. Gibbs, Active Objects: Realities and Possibilities, in Object-Oriented Concepts, Databases, and Applications, eds. W. Kim and F.H. Lochovsky, ACM Press, Addison-Wesley, 1989*)
 ~
 
 As was pointed out, Actor systems try to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *Objects* introduces in the *Object-oriented Programming* (OOP) paradigm. In OOP, [...]{.mind}

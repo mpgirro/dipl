@@ -68,6 +68,18 @@ A microservice is a cohesive, independent process interacting via messages.
 These are my principles. If you don't like them, I have others.
 ~
 
+~LitNote
+* [@Bro16]
+    * "larger grained APIs"
+    * "deployment: serveral small applications implementing part of the whole"
+    * "strictly limit types of network connectivity that a service can implement to achieve maximum simplicity"
+    * "more choices via polyglot programming / polyglot persistence"
+    * "avoid thight coupling via implicit communication through databas"
+    * "all communication from service to service must be through the service API"
+    * "different services evolve at different rates; allows that evolution to proceed at is own natural pace"
+    * "horizontal scaling of single services"
+~
+
 No shared state, etc
 
 ## Service Communication {#sec-ms-communication}
