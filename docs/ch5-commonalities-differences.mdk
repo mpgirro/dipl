@@ -26,7 +26,7 @@ A Microservice Architectre on the other hand is a composition of processes - the
 
 This chapter will therefore dive into the interrelations between concurrent constructs of the Actor kind and system processes flavored by the charcteristics as are dictated by the Microservice paradigm. On this basis, we will be able to discuss weither one of the two approaches is supreme to the other [will ich diesen satz wirklich?]{.mind}.  
 
-## Information hiding and Isolation {#sec-commonalities-isolation}
+## Encapsulation and Isolation {#sec-commonalities-isolation}
 
 ~todo
 Hier die Sachen von unten als Einführung beschreiben (ohnehin nicht mehr all zu viel übrig)
@@ -45,20 +45,15 @@ extension based on Actor systems: encapsulation, fairness, location transparency
     * nach meiner auffassung ist das genau isolation; das sollte ich vll hier anbringen
 ~
 
-~delete
-Both Actor and Microservice semantics rely on a strict separation of component states. Any form of shared resource is to be prevented. This is generally easy for Microservice components due to the fact that the services are within their separate system processes, and as long as they do not arrange a shared memory section there is no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in section [#sec-ms-communication] also prevent any form of reference sharing to joined mutable data [citation needed? oder kann ich das als zusammenfassung von schon erklärtem verkaufen?]{.mind}.
+Actor and Microservice semantics rely on a strict separation of component states. This arises the need to ensure that state is conceptually encapsulated within a component and practically isolated from the outside. 
 
-Actors are generally faced with more challenges in ensuring state separation, because the components can exist within the same process boundries, and have therefore access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming language paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the user.
-~
+The conceptual need is known from Object Oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the concept of a *Microservice* - are what Meyer calls well-defined interfaces, or simply routines, and considers to be a necessity for encapsulation [@Mey97]. 
 
-As Snyder points out, *Object Oriented Programming* (OOP) usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the *service* concept we will introduce with Microservices - are what Meyer calls well-defined interfaces, or simply routines (methods), and considers to be a necessity for encapsulation [@Mey97]. 
+Both Actors and Microservices define such well-defined interfaces in their own way. For Actors its the sum of messages it understands through its behavior. For Microservices its based on the facilitated communication channels, e.g. the REST interfaces it exposes, or the messages it consumes from a message broker (AMQP queue, Kafka, etc.). Only through these interfaces can the state of an Actor be accesses or modification to it be issued.
 
-However, though OOP offers methods to encapsulate state within objects and prevent access to it, it r it usually remains quite easy for an object to *exposing* its state to others [citation sowas von needed]{.mind}. This can become especially problematic for object-oriented Actor implementations if the system has no way of checking or ensuring message immutability by itself. Section [#sec-ensuring-actor-isolation] describes in detail the challenges this poses for a specific Actor system.
+Ensuring that state is only accessible through the a components interface, i.e. that it is isolated from any illegal access from the components outside, is rather different for both styles due to their conceptual differences.
 
-
---- 
-
-The components of any Microservice Architecture are stricly distinct processes. The paradigm states that those refrain from allocating any kind of shared memory. Thus allown suffices that state is stricly isolated within each service. Therefore the paradigm neither does nor needs to dictate any instructions on how state has to be handled internally within each service. The memory boundries of processes are safeguarded on the operating system level [citation needed]{.mind}.
+...
 
 ### Shared and Mutable State
 
@@ -71,11 +66,19 @@ However, the Microservice paradigm dictates that shared memory *between* service
 Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behaviour is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
 
 
-### Persistance
+### Persistance {#sec-commonalities-persistance}
 
-~LitNote
-Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für mehrere parallele Stores, wenn einer nachträglich online geht)
-~
+The encapsulation and isolation principle of Actors or Microservices has one more important implication for both concepts. For state is exclusive to a single component, each must also take exclusive care if given state is expected to be durable accross the components livetime. This property is usually refered to as *persistence* [kann ich da was zitieren?]{.mind}.
+
+Persisting information can be implemented in many different strategies. Database systems are one well established approach. Sharing a database between two or more components would grant access to one component's persistent state to all others connceted to the same database used. This would not only provide a simple way to skip any isolation mechanisms and bypass the components interface, thus breaking the encapsulation principle. Additionally, it would also open up a form of implicit communication through shared mutable state [hierzu hab ich irgendwo literatur]{.mind}.
+
+The consequence is, that any component must have its very own database, or persistance mechanism in general, if such is required. This restriction has to be taken care of by programmers, for neither an Actor System, nor any Microservice technique can enforce this. Unfortunatelly, this is a rather unintuitive requirement, for database systems have always been design to be accessed and used by multiple components concurrently in general. Database APIs tend to allow that multiple modules (concurrent or not) inside a single program might read from and write to the same database instance, thus it is easy easy in general for multiple Actors too.
+
+Inside a Microservice, this is not a problem. Multiple internal modules may use a database exclusive to the service, as is with any other monolithic application. However, multiple Microservices must not leverage the same database that could be available for both of them. 
+
+This restriction opens up another opportunity however. Monolithic applications tend to rely on as few database systems as possible, for a multitier architecture traditionally has the data access layer at the bottom, and consecutive layers are build relative to it. Thus, any new database system bringt the risk of fundamentally impacting a programs architecture. It is therefore unusual for program modules to have their own persistance layer exclusive to them. However, due to their respective natures, modules based on the Actor abstraction and systems composed of Microservices make it easy to add a persistance layer to accomodate their special requirements. 
+
+This approach on introducing specialized database systems based on respective persistance needs, at the risk of introducing potential redundancies, is sometimes refered to as *polyglott persistance* [citation?]{.mind}.
 
 ## Separation of Concerns
 
@@ -84,6 +87,10 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
     * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
 ~
 
+The strict encapsulation of state offers the opportunity to introduce multiple persistance strategies, without having an impact on the architectural layout. There is a more general concept to describe this form of modularization, called *Separation of Concerns* (SoC).
+
+Having state strictly encapsulated, up to  
+
 ### Single Responsibility
 
 ~LitNote
@@ -91,6 +98,7 @@ Polyglot Persistance, Event/Command Sourcing (??? brauche ich das? - vll für me
 * [@Bon16]
 * [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
 * "functional separation" [@Sal16]
+* single responsibility ist ein gutes beispiel, wieso man exlusive datenbanken gut gebrauchen kann
 ~
 
 ### Communication and Design by Contract
@@ -124,13 +132,6 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 
 ### Cohesion and Coupling
 
-### Autonomy
-
-~LitNote
-* [@Bon17] 
-    * "Isolation is a prerequisite for autonomy. Only when services are iso‐ lated can they be fully autonomous and make decisions independ‐ ently, act independently, and cooperate and coordinate with others to solve problems"
-    * "Working with autonomous services opens up flexibility around ser‐ vice orchestration, workflow management, and collaborative behav‐ ior, as well as scalability, availability, and runtime management, at the cost of putting more thought into well-defined and composable APIs"
-~
 
 ### Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
 
@@ -269,12 +270,6 @@ The Actor model intrinsically builds upon message passing to share state informa
 Microservices können auch message passing, aber auch synchrone. Die location transparency kommt entweder von der MOM, oder eben von einem lookup service für die REST endpoints.
 ~  
 
-### Identity and Equality
-
-* Identity = unique network address (may be abstracted behind gayteway proxy)
-* Equality = multiple (stateless) instances of the same service executable 
-
-
 ### Location Transparency and Mobility
 
 
@@ -388,7 +383,7 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
     * Active Objects und Communicating Event-Loops sind auf dem level of abstraction von "components" in OO, oder modulen in FP  
 ~
 
-## Governance and Deployment
+## Governance, Deployment and Autonomy
 
 ~Todo
 (Partially) Centralized with Actor systems, decentralized with MS (aber was ist mit cloud management frameworks)
@@ -398,14 +393,27 @@ Possibly. Worin unterscheiden sich aktive Objekte von Actors? In der API. Es wir
 Independent deployment
 ~
 
-## Scalability and Elasticity
+Autonomy:
+
+~LitNote
+* [@Bon17] 
+    * "Isolation is a prerequisite for autonomy. Only when services are iso‐ lated can they be fully autonomous and make decisions independ‐ ently, act independently, and cooperate and coordinate with others to solve problems"
+    * "Working with autonomous services opens up flexibility around ser‐ vice orchestration, workflow management, and collaborative behav‐ ior, as well as scalability, availability, and runtime management, at the cost of putting more thought into well-defined and composable APIs"
+~
+
+## Scalability
+
+### Identity and Equality
+
+* Identity = unique network address (may be abstracted behind gayteway proxy)
+* Equality = multiple (stateless) instances of the same service executable 
 
 
 ~Todo
 Server and Client Side Load balancing
 ~
 
-Elasticity:
+### Elasticity
  
 ~LitNote
 * Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)

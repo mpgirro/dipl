@@ -273,16 +273,6 @@ Point-to-point communication and Pub/Sub
 Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between Actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
 ~
 
-## Persistence and IO
-
-~LitNote
-* Database (Postgres/Lucene) owning based on isolation, Subactor Handlers for DB access: many workers for one "logical" store because the backend data stores (DB, search index) can handle multiple connections --> breaking the "own your state exclusively paradigm"; Polyglot Persistance
-* consider using non-blocking IO/DB APIs (if available), the futures will crowed up the thread pool, therefore use dispatchers for bulkheading (= the thread pool becomes an implicit backpressure)
-* if blocking IO has to be done, use dispatchers for bulkheading too, and delegate blocking operations to child Actors/workers. This is demonstrated in the Echo implementation
-~
-
-Actors encapsulate their state. 
-
 ## Mailbox, Dispatcher and Backpressure (= Load balancing)
 
 ~LitNote
@@ -290,6 +280,20 @@ Actors encapsulate their state.
 * [@Kos16] beschreibt "Actor System Properties", u.a. zu Message Reception die Eigenschaften: Interface, Flexibility, Number of Interfaces, Order
     * Order: zB kann durch einen PriorityMailbox die Order beeinflusst werden.
 ~
+
+## Persistence and IO
+
+As was discussed in section [#sec-commonalities-persistance], encapsulate for Actors requires them to persist their state in isolation, i.e. in a dedicated database. However, due to their single threaded semantic, only a single interaction with the database is possible at the same time. This is inefficient, for database access is input/output (IO), and such is a performance limiting factor in general [@Sub11]. Theoretically, this would make database transactions obsolete, but we've found that common APIs require active transaction in any case, e.g. with JPA.
+
+One approach to overcome the single threaded limitation is by utilizing a non-blocking API for database connections. Such provide a `Future`{language:scala} reference to an eventual result, at the cost of stressing the Actors thread pool. Monadic methods once again allow to define further computation on this result, once it becomes available, introducing the immanent risk of accidential data races by passing mutable state into the `Future`{language:scala}'s scope.  
+
+If non-blocking APIs are not available, then the efficient strategy to handle multiple requests requires to intentionally weaken the encapsulation principle. Thus, multiple child Actors maintain connections to a shared database representing the persistant state. The original Actor then delegates database interaction to these children.
+
+Isolation must not be broken though, therefore these children do not share the same database connection interface object, or any other immutable data. Simply the restriction on encapsulation the persistant part of state inside one single Actor is loosened up to allow a narrow group of Actors to manage it instead. These must utilize the database systems transaction system, as is required by any concurrent database interaction [für diesen absatz muss ich irgendwas zutieren. fragt sich nur woher ich das nehme. hab ich mir ja theoretisch wie praktisch selber ausgedacht...]{.important}. 
+
+The second strategie is persued in *Echo:Actor*. It still involves blocking operations inside Actors. In fact, it increases it by the factor equal to the number of used child Actors. Therefore, a shared dispatcher should be used for all Actors involved in the logical encapsulation of the persistant state. The underlying thread pool can use a fixed number of threads equal to the number of involved Actors. This provides a predictable impact on performance, in contrast to Akkas default dynamically sized thread pools, where threads are added when high demand (i.e. due to many blocking operations) is being detected. Such can consume a lot of system resources [@All13].
+
+We see, efficient handling of IO persues the same strategies as the introduced abstractions of synchronouse Actor communication.
 
 ## Supervision, Fault Tolerance and Resilience
 

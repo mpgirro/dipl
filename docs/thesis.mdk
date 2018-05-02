@@ -187,12 +187,12 @@ These arconyms are used throughout the thesis.
 * IPC Inter-process communication
 * JVM Java Virtual Machine
 * MOM Message-oriented middleware
-* MPI Message-passing Interface
 * MS Microservice
 * MSA Microservice Architecture
 * OOP Object-oriented programming
 * REST Representational State Transfer
 * RPC Remote procedure call
+* SoC Separation of Concerns
 * STM Software Transactional Memory
 
 # Glossary { - }
