@@ -63,49 +63,6 @@ CSS Header      :
 * see "Marco Carbone, Sam Lindley, Fabrizio Montesi, Carsten Schürmann, and Philip Wadler. Coherence generalises duality: A logical explanation of multiparty session types. In CONCUR, 2016. To appear"
 * see "Nicolas Tabareau, Mario Südholt, and Eric Tanter. Aspectual session types. In MODULARITY, pages 193–204, 2014"
 
-## Curcuit breakers
-
-* laut [@Mon16a]
-  * have been popularised in (book) "Release it! Design and Deploy Production-Ready Software (Pragmatic Programmers). 2007"
-  * Akka provides a circuit breaker implementation that supports basic configuration parameters
-    * => hat somit Scala (und vll Spring Boot) ebenfalls inherent einen Curcuit Breaker eingebaut im Actor Modell?
-  * Hysterix is much more flexible and currently one of the reference solutions; it supports rolling statistics, fallback mechanisms, resource control and control over the states and transitions of circuit breakers
-
-## Service Discovery
-
-* see [@Mon16a] for example solutions/implementations/technologies 
-
-
-## Security Vulnerabilities of SOA
-
-* see *Len Bass, Paulo Merson, and Liam O’Brien. Quality attributes and service-oriented architectures. Department of Defense, Technical Report September,2005*
-
-# SOA (general stuff)
-
-
-
----
-
-
-
----
-
-# Concurrent Programming
-
-## Foundational Issues of concurrent systems
-
-* [@Agh85] zu foundational issues in the design of programming languages for concurrent systems
-  * shared resources: may chance their internal state while shared 
-  * dynamic reconfiguration: dealw ith creation of new objects in the evolution of the system; must be a mechanism to for communicating the existance of such new objects or processes to already existing ones
-    * in MSA ist genau das die kernaufgabe der gateway
-  * inherent parallelism: programming model should exhibit inherent parallelism in the sense that the amount of available concurrency should be determined as mich as possible from the structure of the programs written
-    * also MSA nutzt parallelism inherent, da jeder MS ein prozess, und daher die nebenläufigkeit des OS herangezogen wird (ggf mit multicore-paralllelität); bei aufteilung auf mehr maschinen, sowieso parallel
-    
-
-## Concurrent OOP
-
-
-
 ---
 
 

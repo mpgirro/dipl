@@ -1,4 +1,0 @@
-
-MSA application besteht aus viele MS. Jeder MS ist ein Prozess. Prozesse können als Concurrent Constructs betrachtet werden (diese Idee bereits aus einem Paper aus 1978 bekannt), da jeder Prozess durch das Betriebssystem nebenläufig, und bei Multicore auch parallel. Durch den Verzicht auf Shared-memory und stattdessen der Netzwerkkommunikation auch verteil. 
-
-Um es also mit anderen Concurrency Modellen vergleichen zu können, müssen wir welche suchen die ebenfalls die Grundeigenschaften erfüllen: Den Concurrent Constructs ist es egal ob sie parallel oder gar verteilt verwendet werden (die soll möglichst transparent geschehen). Ein Grundmodell das dies bietet ist das Actor Model. Worum muss also das theoretische Grundmodell von Actors alles erweitert werden, damit sie gleich mächtig wie Microservices und deren Architecturen sind? Und wenn Actors all dies leisten können, gibt es dann überhaupt einen Grund Microservices zu verwenden (Mehraufwand, etc)?
