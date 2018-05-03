@@ -128,6 +128,7 @@ Channels for distributed communication are more likely to provide options to app
 * Size vs. Number of Services
 * [@Par72] "On the Criteria To Be Used in Decomposing Systems into Modules"
 * [@Sha17a] "Microservices: Granularity vs. Performance"
+* "key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)" [@Mon16a]
 ~
 
 ...
