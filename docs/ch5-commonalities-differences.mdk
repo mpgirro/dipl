@@ -324,20 +324,27 @@ We already discussed the analogies of Actors and microservices to the notion of 
 
 #### Actors as Distributed Objects
 
-~Todo
-Nein. Hier gilt im Prinzip das selbe Argument wie bei MS. Einen anderen Actor anzusprechen ist eine dedizierte Operation, die sich vom Aufruft der API eines "normalen" Objekts unterscheidet (am Ende läuft es auf den konkreten Syntax der Actor Implementierung hinaus, aber es sollte jedenfalls so sein - Akka macht es einem aus genau diesem Grund sehr sehr schwer einen Actor direkt mittels `new` zu instanzieren - was besonders bei der Java API auffällt - und verlangt stattdessen, dass man via einer `ActorRef` kommuniziert, welche ausschließlich das Senden von Actor-Nachrichten erlaubt, und alle direkten Methodenaufrufe verhindert).
-Bzgl des Simmenbeispiels würde man entweder innerhalb des Actors alle Objekte durchiterieren, oder eine Nachricht an einen anderen Actor schicken, dass dieser über alle Objekte die dort vorhanden sind iteriert. Idealerweise sollte dieser dann auch gleich mit dem Ergebnis weiterarbeiten können, sodass der aktuelle Actor nicht auf eine Antwort warten muss. Somit ist auch bei Actors der lokale und der nebenläufige (ggf verteilte) Aufruft nicht zu verwechseln
-~
+As with Distributed Object, the Actor model has the potential to address distributed components transparently. Actors use the concept of addresses, which substitute for local interfaces, just like DO proxies. As such, they might allow for different interfaces however. The Erlang programming language famously introduced the style `address ! message` to send a message of arbitrary form to an Actor itentified by a known address [vll was zitieren]{.mind}. Of course, Erlang does not implement object-orientation, and thus accessing state and message passing are strictly separate constructs by design.
+
+However, other Actor systems have adopted this style, e.g. as was done in Scala. There the type system opens up the opportunity to use a punctuation-free syntax to invoke methodson object which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, this allows to use different syntactic constructs for referencing ordinary objects, and addressing Actors, if merely by convention. 
+
+[^fn-punctuation-free-call]: The expression `address ! message`{language:scala} is therefore simply syntactic sugar for `address.!(message)`{language:scala}.
+
+The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. Any asynchronous messaging is decoupled in time [cite Boner]{.mind}. It does not introduce the expectation of an immediate response as could be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods.
+
+Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging. Chaper [#ch-actor-solution] will discuss in detail the challenges and approaches in designing Actor interface to prevent problematic abstractions, on the example of a specific Actor System.
+
+In there principles however, we deem that Actors avoid the problematic abstraction of Distributed Objects. 
 
 #### Microservices as Distributed Objects
 
-In the Distributed Object concept, the method call makes it transparent for clients weither a method call is addressing a local or remote server object. Within the Microservice paradigm, there is no such objective in general. Service-internal interaction within its modules use the standard paradigms of the technology used to implement the service, e.g. calling an object's method, or referencing a function. To issue any external communication, a respective wrapper interface has to be issued (again depending on the service) which is dedicated to the communication channel, e.g. a HTTP library or message queue API. Thus, any external interaction should be recognisable to the programmer in general. 
+The method call on a DO proxy object makes it transparent for clients weither a locally available or remote server object is addressed. Within the Microservice paradigm, there is no such abstraction in general. Service-internal interaction within its modules use the standard paradigms of the technology used to implement the service, e.g. calling an object's method, or referencing a function. To issue any external request (despite expecting a reply or not) a respective communication interface has to be issued. Such is dedicated to the communication channel, e.g. a HTTP library or message queue API. Thus, any external interaction should be recognisable to the programmer in general. 
 
-Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. It is in the responsibility of the programmer to issue appropriate design desicions. 
+Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. It is in the responsibility of the programmer to select [???-adjektiv]{.mind} frameworks and issue appropriate design desicions. 
 
-An additional argument is the granularity of service interfaces. While objects may provide very fine grained interfaces in general, e.g. to access each of its state variables separately, service tend to have more course grained interfaces. Thus, Microservices tend to make it harder to accidentially introduce [versehentlich 1000 requests absetzen um eine variable abzurufen, wie im beispiel unten]{.mind}
+An additional argument is the granularity of service interfaces. While objects may provide very fine grained interfaces in general, e.g. to access each of its state variables separately, service tend to have more course grained interfaces. In a Microservices context it is more likely that messages between services do not issue very fine grained operations on the receiving service in general, but instead aggregate more course grained operations relative to the interface granularity. Thus, [???]{.mind}
 
-Therefore, we deem it unlikely for Microservices to introduce the leaky Distributed Object abstraction.
+Therefore, we deem it unlikely for Microservices to suffer from the leaking Distributed Object abstraction.
 
 #### Active Objects as Distributed Objects
 
@@ -354,10 +361,10 @@ for (f <- fs) {
 println(sum)
 ```
 
-The program iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
+The code snippet iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
 
 1. The programs will block sequentially 100 times, once for each element.
-2. If some, or in the worst case all, of the elements are not within the local scope of the program but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
+2. If some, or in the worst case all, of the elements are not within the same local boundries but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
 The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block (though with this particular method name and usage it hopefully is unlikely). Additionally it is not clear weither the dispatched method will execute locally or remotely. The abstraction simply hides too much.
 

@@ -248,8 +248,8 @@ It is worth pointing out that in Scala general messages may be of type `Any`{lan
 In any case, type parameters for Actor addressed are not without their drawbacks however. The third basic model primitive states that Actors may change their behaviour. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes transparently, any new behaviour is constrained to also process messages of type `U`{language:scala}. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would break the semantic and thus become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, the behavior function of Actors must be typed too:
 
 ```{language:scala}
-val behavior: Behavior[U] = Actor.immutable[U] { 
-    (_, msg) =>
+val behavior: Behavior[U] = 
+    Actor.immutable[U] { (_, msg) =>
         // process msg
         Actor.same
     }
