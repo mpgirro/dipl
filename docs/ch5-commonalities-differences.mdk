@@ -176,6 +176,20 @@ Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgese
 
 ### Concurrency of Components
 
+Actors and Microservices have significantly different notions of concurrency. The Isolated Turn Principle essentially define Actors as single-threaded entities. Only in combination with asynchronous message passing as dictated by the model allows for a concurrent execution of the components. As such, an Actor has no notion of any concurrency at all in general.
+
+However, chapter [#ch-actor-model] discussed the possibility of combining Actors with other abstractions of concurrent computation, as long as these do not break the model semantic. Futures were given as one option. Such abstract a value which will be available at some point in time eventually. Basically they introduce a notion of semi-blocking behaviour [irgendwo hab ich hierfür ein zitat!]{.mind}. Either the value is available when trying to access it, or blocking is the consequence until it is. A third way of handling Futures is possible, which directly defines consecutive computation on the value without blocking, but once it becomes available. 
+
+Thus, Futures have the potential to introduce a notion of concurrent computation inside an Actor. This poses to be problematic though, for it easily allows to violate the Isolated Turn Principle. Section [#sec-actor-solution-concurrency] provides a more detailed discussion in the context of a specific Actor System.
+
+Microservices on the other hand do not face such challenges. They have the basic abstraction of a process. Composed into a system, they form concurrent entities due to their concurrent execution through the operating system, potentially on distributed hardware. Thus, from an external perspective, a service is concurrent on the OS or the network level (or both). 
+
+Their notion of internal concurrency is divergent from Actors however. Though a service also receives messages of some kind via its public API and reacts to them, the flexibility in the design the Microservices paradigm offers, allows to create services that react to multiple messages concurrently. There is no restriction as the Isolated Turn Principle, thus a service may freely have a notion of internal concurrency. A concurrently written service allows e.g. to make a synchronouse call and blocking wait for a reply within the routines code, without blocking as a whole. It can therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locks and can savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
+
+Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. Howeverm the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
+
+---
+
 ~todo
 difference between internal and external component concurrency
 ~
@@ -187,31 +201,6 @@ difference between internal and external component concurrency
 
 ~Mind
 Die sache das actors an sich keine concurrency kennen sollte ich besser im Actor Model kapitel schon beschreiben, wenn es darum geht es mit anderen concurrency modellen zu mixen. Hier stattdessen noch darauf hinweisen, dass MS intern alles machen können was man will, und Actors dafür eben diese kombinationsmöglchkeiten anwenden müssen um halbwegs verwendbar zu sein - wenngleich man hier darauf achten muss, dass die kombinierten Modelle nicht die actor semantik gefähren
-~
-
-In chapter [#ch-actor-model] we discussed the Actor model explicitely as a *concurrency model*. Yet this claim is worth debating. In the basic semantic of an Actor we discussed, there is no notion of concurrency at all. It is a strictly linear component, that follows a clear, non-concurrent execution schema [hier sollte ich etwas zitieren, und den pseudocode von jemand anderen heranziehen]{.mind}:
-
-```
-WHILE TRUE:
-    GET next message from mailbox
-    process message
-    repeat 
-```
-
-Nothing wihin an Actor expects a concurrent access to its state [obacht! da hab ich wo gelesen das es schon andere concurrency auch geben kann, in irgendeinem paper]{.mind}. As was discussed in detail, whilest Actor model properties are not violated, state is encapsulated within an Actor exclusively, and modifications happen only as a reaction to received messages, the processing of which is guaranteed to be atomic. An Actor itself is a non-concurrent entity *internally*. Therefore, the Actor model is also refered to, and was initially conceived as, simply a programming model [citation needed?]{.mind}, an approach to writing software components. The most basic case is a single Actor. It only knows about itself, therefore can only receive messages from itself, process them, and send messages to itself. The semantic of this behaviour is a simple loop, where no state information leaves the scope of the Actor. It results in a simple, single threaded program. 
-
-The title of chapter [#ch-actor-model] features a famouse quote of Carl Hewitt: "*One actor is no actor. Actors come in systems*". The overall idea of - and driving reason to use - the Actor programming model is to have more than one Actor in place. The models semantic allows to send messages freely between Actors within a system. While each Actor itself is a non-concurrent entity, this exchange of (immutable) messages semantically allows Actors to be executed in a concurrent fashion by the system. 
-
-Actors by themselfs are not concurrent, but their semantic allows them to be executed *externally* in a concurrent manner, within a system. If the Actor semantic is preserved at all time - how this can be guaranteed is up to the actual Actor system implementation - then an Actor does not have to have any awareness of any concurrent processing at all [citation needed]{.mind}. Of course, this does not mean that Actor systems are free from the concurrent problems that are introduced by any form of indeterminism, respectivly by message passing. [hier könnte ich noch irgendwas brauchbares aus dem Paper das die Concurrency Bugs behandelt zum besten geben]{.mind}   
-
-A microservice on the other hand has the basic abstraction of a process. Any system process for itself is, from an external point of view, not especially concurrent [??]{.mind}. But within a system, these processes form, just like Actors, concurrent nature due to the semantic properties of proccesses. 
-
-Through the basic process semantic [hier sollte ich diese semantik aufzählen: isolation, messages, fair scheduling + quelle]{.mind}, just like with Actors, any system of processes lead to a concurrent system. The services external concurrency is always either on the operating system level or the network level (or both). Yet their notion of internal concurrency is divergent from that of an Actor. Though it also receives messages of some kind via its public API, and reacts to them, the flexibility in the design of microservices allows to create services that react to multiple messages concurrently. They can have internal notion of concurrent processing. This allows a service to make a synchronouse call (and blocking wait for an answer within the routines code), without blocking as a whole. A microservice therefore can behave as a concurrently accessible resource within the system. The drawback of this degree of freedom is the set of issues any concurrent resource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locking and may savely assume its state as up to date. When a microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
-
-Programming with microservices does not, unlike Actors, free one from the many hassles of internal component concurrency problems per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. But the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
-
-~Todo
-Andere Concurrency Abstractions können schon interne concurrency in Actors einbringen (formal bricht das halt die Actor Semantik!). Verweis darauf das wir Futures bereits angedeutet haben, und das nachher gleich ein beispiel bringt.
 ~
 
 ### Fair scheduling

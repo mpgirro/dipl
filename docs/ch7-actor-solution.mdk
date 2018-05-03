@@ -109,7 +109,7 @@ It is worth pointing out that though the Actor model is Scalas standard concurre
 Hier vll noch was schreiben das Erlang die sache strikt sieht -- tut sie das denn?
 ~
 
-## Integration of other Concurrency Constructs
+## Integration of other Concurrency Constructs {#sec-actor-solution-concurrency}
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.
 
