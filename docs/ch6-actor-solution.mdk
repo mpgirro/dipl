@@ -1,5 +1,5 @@
 
-Actor-based Scenario Implementation {#ch-actor-solution}
+Actor-based System Implementation {#ch-actor-solution}
 ===============================
 
 
@@ -121,7 +121,7 @@ Besides STM, much more prominetly used is the Future concept. Its somewhat speci
 var a = 0
 override def receive = {
   case _ =>
-    implicit val ec = context.dispatcher
+    implicit val ec: ExecutionContext = context.dispatcher
     Future { a += 1 }
     a -= 1
     print(a)
