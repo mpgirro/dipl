@@ -127,9 +127,9 @@ Only with C11[^fn-c11] did the C programming language add explicit support for e
 
 [^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
 
-An operating system allows a process to spawn new processes. The spawner is refered to as the *parent*, the spawnee as the *child*. A C program refered to as the *parent* uses system calls provided by the OS to a spawn new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables provided via a filesystem path. However the spawned children replace the parent process, thus preventing concurrency [@Lov07]. 
+An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls are unsuitable to compose concurrency [@Lov07]. 
 
-The expedient path is the concept of *fork* calls. Such replicate the current processes address space into a spearate address space of a newly spawned child [@Bac03]. The following example illustrates the control flow:
+The expedient path is the alternative *fork* call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03]. The following example illustrates the control flow:
 
 ```{language:cpp}
 void parentBehavior(void);
@@ -145,21 +145,15 @@ int main(void)
 }
 ```
 
-Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()`, while a child gets no information. This allows to destinct between the further program flow of both processes, effectivly allowing for two separate behaviors. Consecutive forks are of course possible. 
+Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing for two separate behaviors. Consecutive forks are of course possible. 
 
-A pipe can be set up between the any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03].
+A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03].
 
-A fork/pipe based process system is executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated state through the process boundries of their distinct address spaces (all child states are replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is arguably if such systems apply for a Microservice Architecture.
+Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is arguably if such systems apply for a Microservice Architecture.
 
-~Todo
-concurrency beschreiben
-~
+Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
 
-~Todo
-diskutieren ob das eine MSA ist (man kann die processe nicht unabhängig von einander austauschen), schweirig sich von außerhalb in die pipe einzuklinken (außer mit named pipes); definitiv nur lokal verwendbar, da kein Netzwerk-Interface
-~
-
-Although *named pipe* constructs allow processes to hook into a common pipe without a shared ancestor, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for all services relying on this communication channel.
+To overcome these restriction, the construct of *named pipes* were introduced into later Unix system,allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for all services relying on this communication channel.
 
 ## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 

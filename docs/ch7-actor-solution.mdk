@@ -328,7 +328,11 @@ Failure notifications are handled by a `SupervisionStrategy`{language:scala}. Su
 
 Note that a supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. 
 
-The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for this would have to have the knowledge to interprete the state in order to evaluate it in a meaningful way [hier muss ich was zitieren, nur was? irgendwie sowas hab ich mal auf StackOverflow gelesen]{.mind}. Therefore, in case of the child being resumed, the cleanup of the failure actually falls to the child itself. All other action discard the childs state in any case.  
+The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for this would have to have the knowledge to interprete the state in order to evaluate it in a meaningful way [hier muss ich was zitieren, nur was? irgendwie sowas hab ich mal auf StackOverflow gelesen]{.mind}. Therefore, in case of the child being resumed, the cleanup of the failure actually falls to the child itself. All other action discard the childs state in any case. 
+
+~Todo
+The supervision concept bears resemblence to the processes hierarchy as outlined in the C process case study of section [TODO]{.mind}. When the parent of a fork goes down, the child is terminated too.
+~ 
 
 ### Fault tolerance
 

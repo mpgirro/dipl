@@ -129,6 +129,9 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
 * bzgl REST:
     * see [Mon16b], section 7, "RESTful services"
 * new versions can be gradually introduced into a system [@Mon16a]
+* [@Siv99] "The specification of distributed objects: liveness and locality"
+    * "The design-by-contract philosophy of software design partitions responsibility for correctness between the caller of a method and the callee. It is the obligation of the caller to establish the proconditions before the method is invoked and it is the obligation of the callee, given these preconditions, to ensure the postconditions when the method terminates"
+    * ad pre/postconditions: "Certain subtleties, however, arise tin teir use in dtstributed systems. For example, sunce there may be many concurrent threads of execution, the caller of a method cannot unilaterally guarantee that the required preconditions hold when the method begins executing. Thus phenomenon, termed the precondition paradox, has been neglected by many specification methodologies."
 ~
 
 ### Cohesion and Coupling
@@ -374,6 +377,10 @@ However, the one major benefit of Active as well as Distributed Objects compared
 ~
 
 ## Communication
+
+~LitNote
+* [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
+~
 
 |------------------|------------------------|-------------------------|
 |                  | One-to-One             | One-to-Many             |
