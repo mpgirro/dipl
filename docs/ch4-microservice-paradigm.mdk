@@ -102,7 +102,7 @@ The microservice idiom specifies the following requirements on service IPC:
 2. Communication channels should be light-weighted [citation needed]{.mind} 
 3. Communication channels should only act as message routers, and therefore should not introduce data processing logic of their own [citation needed]{.mind} . Fowler calls this characteristic "smart endpoints and dumb pipes" [@Fow14]
 
-From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. Unix pipes transport text strings between processes. The strings represent serialized data (= state information) of one service and is transported in an immutable way between the opposite endpoint of the pipe[^fn-unix-pipes]. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
+From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. Pipes are a form of byte stream between processes [@Bac03]. If data is in the form of text strings, it represents serialized data (= state information) of one service that is transported in an immutable way between the opposite endpoint of the pipe[^fn-unix-pipes]. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
 
 > "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools". 
 
@@ -120,6 +120,46 @@ Any form of communication has to happen via an inter-process communication mecha
 
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
+
+### Case Study: Concurrent Processes in C
+
+Only with C11[^fn-c11] did the C programming language add explicit support for expressing concurrency via threads. At its core it is a rather old language (though still heavily used), thus the strategy was for decades to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03]. 
+
+[^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
+
+An operating system allows a process to spawn new processes. The spawner is refered to as the *parent*, the spawnee as the *child*. A C program refered to as the *parent* uses system calls provided by the OS to a spawn new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables provided via a filesystem path. However the spawned children replace the parent process, thus preventing concurrency [@Lov07]. 
+
+The expedient path is the concept of *fork* calls. Such replicate the current processes address space into a spearate address space of a newly spawned child [@Bac03]. The following example illustrates the control flow:
+
+```{language:cpp}
+void parentBehavior(void);
+void childBehavior(void);
+
+int main(void) 
+{
+    pid=fork();
+    if (pid == 0) 
+        childBehavior();
+    else
+        parentBehavior();
+}
+```
+
+Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()`, while a child gets no information. This allows to destinct between the further program flow of both processes, effectivly allowing for two separate behaviors. Consecutive forks are of course possible. 
+
+A pipe can be set up between the any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03].
+
+A fork/pipe based process system is executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated state through the process boundries of their distinct address spaces (all child states are replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is arguably if such systems apply for a Microservice Architecture.
+
+~Todo
+concurrency beschreiben
+~
+
+~Todo
+diskutieren ob das eine MSA ist (man kann die processe nicht unabhängig von einander austauschen), schweirig sich von außerhalb in die pipe einzuklinken (außer mit named pipes); definitiv nur lokal verwendbar, da kein Netzwerk-Interface
+~
+
+Although *named pipe* constructs allow processes to hook into a common pipe without a shared ancestor, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for all services relying on this communication channel.
 
 ## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 

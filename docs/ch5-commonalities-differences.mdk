@@ -22,7 +22,7 @@ In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Acto
 
 First of all however, it must be argued why it is valid to compare a concept of programming concurrency with a software architecture style for distributed systems. The argumentations is fairly simple. Expressing computation with the Actor model yields artefacts - the Actors - which are fit to be executed concurrently. Thus it historically evolved into a model of concurrent computation. 
 
-A Microservice Architectre on the other hand is a composition of processes - the Microservices. The idea that processes can be seens as concurrent constructs is known at least since 1978 from a paper by [??? irgendwo hab ich das mal gelesen, ich brauch die quelle!]{.mind}. It is no coincidence therefore that the Actor constructs in the Erlang programming language are being called *processes* [citation]{.mind}.
+A Microservice Architectre on the other hand is a composition of processes - the Microservices. The idea that distributed processes can be seen as concurrent constructs is known at least since 1978 from Brinch Hansen [@Han78]. It is no coincidence therefore that the Actor constructs in the Erlang programming language are being called *processes* [citation]{.mind}.
 
 This chapter will therefore dive into the interrelations between concurrent constructs of the Actor kind and system processes flavored by the charcteristics as are dictated by the Microservice paradigm. On this basis, we will be able to discuss weither one of the two approaches is supreme to the other [will ich diesen satz wirklich?]{.mind}.  
 
@@ -188,21 +188,6 @@ Their notion of internal concurrency is divergent from Actors however. Though a 
 
 Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, the pains of threads, locks, transactions, coroutines, etc. are still to be dealt with. Howeverm the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. 
 
----
-
-~todo
-difference between internal and external component concurrency
-~
-
-~LitNote
-* Hier möchte ich einen gewissen Gedanken diskutieren, aber habe keine gute Idee in welchem Kontext (Überschrift bzw einordnung in einem anderen Kapitel) ich das am besten tun sollte. Somit ist es erstmals hier.
-* Ich sollte anmerken, dass beide Ansätze per se einmal gar nicht zwingend für Concurrency sind/sein müssen (Actors sind auch ein allg. Programming model). Nur ihre **semantik** führt automatisch zu einer nebenläufigen, ggf auch automatisch zu einer parallelen, Ausführung 
-~
-
-~Mind
-Die sache das actors an sich keine concurrency kennen sollte ich besser im Actor Model kapitel schon beschreiben, wenn es darum geht es mit anderen concurrency modellen zu mixen. Hier stattdessen noch darauf hinweisen, dass MS intern alles machen können was man will, und Actors dafür eben diese kombinationsmöglchkeiten anwenden müssen um halbwegs verwendbar zu sein - wenngleich man hier darauf achten muss, dass die kombinierten Modelle nicht die actor semantik gefähren
-~
-
 ### Fair scheduling
 
 ~LitNote
@@ -226,6 +211,10 @@ es gibt eine gnaz allgemeine definition von [@Kan12]. ansonsten: Thread vs Event
 For Microservices on the other hand, scheduling is a nonconcern. Any MSA is by definition a composition of system processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. Operating systems tend to pursue a [???]{.mind} scheduling strategy [hab ich hier irgendwas das ich zitieren kann?].
 
 There is one drawback to the lack of scheduling concern in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any service will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are a simple waste of energy [hab ich da was zu energy consumption?]{.mind}.
+
+~todo
+Scheduling von processen in chapter 4.6 von [@Bac03]
+~
 
 ## Distribution
 
@@ -290,6 +279,7 @@ Mobility:
 * Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
 * [@Siv99] "The specification of distributed objects: liveness and locality"
 * [@Wal96] "A Note on Distributed Computing"
+* chapter 2.8 in [@Bac03]
 ~
 
 In object-oriented programming, the overall programs state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, from a logical point of view, the state is as such distributed [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. And yet, both architecture styles can be integrated such that objects support pyhsical distribution. The result is called *Distributed Objects* (DO). 

@@ -73,7 +73,7 @@ Any Java-based Actor implementation therefore faces the potential problem where 
 final ActorRef foo = system.actorOf(Foo.props());
 ```
 
-An instance of `Foo`{language:java} is not created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the creating Java 8 lambda. For Java lambdas are basically functional closures[^fn-clojure], they only allow to access effectively `final`{language:java} fields inside the lambda scope, preventing the exposure of mutable state to any constructor.
+An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the creating Java 8 lambda. For Java lambdas are basically functional closures[^fn-clojure], they only allow to access effectively `final`{language:java} fields inside the lambda scope, preventing the exposure of mutable state to any constructor.
 
 [^fn-clojure]: Not to be confused with *Clojure*, a dialect of the programming language Lisp for the JVM.
 
@@ -124,7 +124,7 @@ override def receive = {
     implicit val ec = context.dispatcher
     Future { a += 1 }
     a -= 1
-    println(a)
+    print(a)
 }
 ```
 

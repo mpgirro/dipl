@@ -1,14 +1,14 @@
 [INCLUDE=style/marticle]
 
 Title        : Actors versus Microservices
-Subtitle     : A conceptual analysis of modeling concurrent systems based on the Actor Model of Computation or the Microservice Architecture Style
+Subtitle     : A conceptual Analysis comparing the Actor Model of Computation against the Microservice Architecture Style regarding the Composition of Concurrent Systems
 <!--
 Title        : Concurrent Programming
                and the Microservice Architecture Style
 Subtitle     : Hier könnte Ihre Werbung stehen!
 -->
 Author       : Maximilian Irro
-Email        : max@irro.at
+<!--mail        : max@irro.at-->
 Copyright    : Maximilian Irro, 2017
 Title Footer : 2018
 <!-- TODO delete with new layout -->
@@ -79,6 +79,8 @@ CSS Header      :
   @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
   body.madoko {
     font-family: "Crimson Text", serif;
+    font-size: 16px;
+    max-width: 38em;
   }
   .madoko .math-rendering {
     color: black;
@@ -128,9 +130,11 @@ We test our findings on the implementations of the architecture of a domain spec
 
 # Kurzfassung { -; toc:clear; }
 
+[TODO]{.important}
+
 # Danksagung { -; toc:clear; }
 
-TODO
+[TODO]{.important}
 
 # Preface / Authors Note { -; toc:clear; }
 
@@ -183,15 +187,17 @@ Maximilian Irro
 These arconyms are used throughout the thesis.
 
 * AMQP Advanced Message Queue Protocol
-* DO Distributed object
-* IPC Inter-process communication
+* AO Active Object
+* DO Distributed Object
+* IPC Inter-Process Communication
 * JVM Java Virtual Machine
-* MOM Message-oriented middleware
+* MOM Message-Oriented Middleware
 * MS Microservice
 * MSA Microservice Architecture
-* OOP Object-oriented programming
+* OOP Object-Oriented Programming
+* OS Operating System
 * REST Representational State Transfer
-* RPC Remote procedure call
+* RPC Remote Procedure Call
 * SoC Separation of Concerns
 * STM Software Transactional Memory
 
