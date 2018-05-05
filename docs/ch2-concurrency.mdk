@@ -39,6 +39,18 @@ For the scope of this thesis, it is important to gain a notion of *where* concur
 * [@Roe15] "Whereas parallelization is all about executing processes simultaneously, concur-rency concerns itself with defining processes that can function simultaneously, or can overlap in time, but don’t necessarily need to run simultaneously. A concurrent system is not by definition a parallel system. Concurrent processes can, for example, be exe-cuted on one CPU through the use of time slicing, where every process gets a certain amount of time to run on the CPU, one after another."
 ~
 
+## Implicit and explicit concurrency
+
+* siehe [@Bus90], ch 1.1.1
+
+## Distinguishing concurrent, parallel, and distributed programs
+
+* siehe [@Bus90], ch 1.1.2
+
+## Distinguishing concurrent programs and concurrent systems
+
+* siehe [@Bus90], ch 1.1.3
+
 ## Concurrency at the Programming Language Level {#sec-concurrency-language-level}
 
 ~ LitNote

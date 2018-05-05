@@ -22,7 +22,11 @@ Akka is designed as a toolkit collection consisting of several libraries, able t
 
 Akka replaces the default Actor implementation offered by Scala (we will refere to them as *Scala Actors* in contrast to *Akka Actors*) from version 2.10 upwards [citation needed]{.mind}. Among the reasons were their better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
 
-As we already mentioned, different Actor implementations have different capabilities. This effects the execution semantics [ist das das wort das ich hier verwenden will?]{.mind} that results from applying the Actor programming model. In section [#sec-distributed-objects] we outlined the combination along with additional concurrency abstractions by giving an example for handling Active Object method dispatch semantics through utilizing Future constructs. At that point we did not discuss the implications the used Actor implementation would have on the correct behaviour. Assuming the given class is changed to use the Active Object abstraction Akka provides (called *TypedActor* for it offers type safty for message passing) by changed it to `class Fnord extends TypedActor`{language:java}, the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. When refering to futures from now on, we will always assume the prior ones (depending on the Akka API binding used).
+~important
+Der nachfolgende Absatz sollte am besten gleich nach unten verschoben werden, anstatt sich hier darauf zu beziehen was später gezeigt wird (relikt aus dem verschieben der kapitel)
+~
+
+
 
 ~LitNote
 * Beschreiben, dass viele Actors existieren können, und diese ab und zu auf einem Thread innerhalb eines viel kleineren Thread Pools laufen. Threads sind teurer als Actors, daher viel weniger
@@ -47,6 +51,7 @@ As was pointed out, Akkas Actor system is capable of providing a transparent int
 
 Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
+[der Hinweis auf das das bereits besprochen wurde ist falsch --> umschreiben!]{.important}
 Section [#sec-commonalities-isolation] discussed the potential issues with object-oriented Actors. Visibility was given as a concern for encapsulation. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
 
 ``` {language:java}

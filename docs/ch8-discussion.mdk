@@ -1,6 +1,6 @@
 
-Discussion: Commonalities and Differences 
-=========================================
+Discussion: Commonalities & Differences 
+=======================================
 
 <!-- of Actors and Microservices -->
 
@@ -363,7 +363,9 @@ Both issues could be fixed by using the *future type* of message passing for Act
 
 This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without having to block the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
 
-We see, Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
+However, this argumentation only holds under certain assumptions. As we already mentioned, different Actor Systems have different capabilities. In section [#sec-active-objects] we've stated that class `Fnord`{language:scala} extends some arbitrary `ActiveObject`{language:scala} class, but did not discuss the implications the used implementation would have on the correct behaviour. Assuming `Fnord`{language:scala} is changed to use the concrete Active Object abstraction Akka provides (called `TypedActor`{language:java} for it offers type safty for message passing), the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture]. When refering to futures from now on, we will always assume the prior ones (depending on the Akka API binding used).
+
+We see, in general Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
 
 However, the one major benefit of Active as well as Distributed Objects compared to classic Actors and Microservices is their type safety. It is statically known weither a server will be able to understand a request, and respectivly a client may only dispatch messages which are guaranteed to be acceptable [kann ich da was zitieren?]{.mind}. 
 
@@ -557,38 +559,3 @@ Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, aut
 
 ### Performance Measurement
 
-## Was ist besser?!
-
-### The Case for Actors
-
-~LitNote
-- easy to write from the ground up
-- has to be started as a small programm, and extended one by one (otherwise one gets totally lost in the messages)
-- less to do (the Actor framework/middleware does a lot for you), but has to live/work with the particula restrictions
-- thread switching within an Actor can get a problem, e.g. with locking (have seen it with lucene)
-- obwohl Active Obj. "leider" die selben Probleme wie Distr. Obj. haben, ist genau diese enge Verbindung der Proof of Concept bzgl Technology Heterogenity. Distr Obj varianten erlauben auch Bindings via verschiedene Technologien (zB CORBA), und demonstrieren somit, dass auch die statische - dh zur compile time - garantierte Kompatibilität der Typen von Messages zwischen Objekte über verschiedene Technologie hinaus garaniert werden kann.
-  * hier gibts es sicherlich neue Probleme. In den Publikationen vom Franz dürfte dazu einiges stehen! Der hat doch eh ein CORBA Paper zB geschrieben. Und welche das so Act. Obj. Typen teilweise statisch/teilweise dynamisch evaluiert werden.
-* [@Tas13] "Why do scala developers mix the actor model with other concurrency models?"
-  * "This implies that developers tend to use other ways than remote actors for implementing distributed computations."
-~
-
-
-### The Case for Microservices
-
-~LitNote
-* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
-* MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
-* Jonas Boner beschreibt in einem Youtube Talk und im Podcast, dass MS in für große Unternehmen gut sein können, wo es wichtig ist die Code base aufzuspalten um produktiv zu bleiben
-* good to break up large monoliths
-* literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
-* freedom to practically do whatever you want (if it works within a monolith, this particual function also works within a smaller program = MS)
-~
-
-### Empirical Indications
-
-~LitNote
-  Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refActorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
-* [@Has16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
-  * "Among these problems is finalising the level of granularity of a microservice too early. “Splitting too soon can make things very difficult to reason about. It will likely happen that you (the software architect) will learn in the process. [1]."
-  * [@Tai17] "Processes, Motivations, and Issues for Migrating to Microservices Architectures: An Empirical Investigation"
-~

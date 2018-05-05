@@ -145,11 +145,11 @@ int main(void)
 }
 ```
 
-Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing for two separate behaviors. Consecutive forks are of course possible. 
+Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
 A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03].
 
-Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is arguably if such systems apply for a Microservice Architecture.
+Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
 
 Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
 
