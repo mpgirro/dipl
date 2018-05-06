@@ -18,6 +18,7 @@ Concurrency {#ch-concurrency}
   * Data Parallelism
   * Task_level Parallelism (das ist das für mich wichtige)
     * hier wird zwischen Shared-memory und Distributed-memory unterschieden, mit guter Erklärung
+* [@And83] "Concepts and Notations for Concurrent Programming"
 ~
 
 

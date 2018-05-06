@@ -18,7 +18,7 @@ The purpose of software engineering is to control complexity, not to create it.
     * und "Actor languages are intended to provide linguistic support for such open systems" -> dh Actor werden als sprachfeature für das verwendet werden, was MS im prinzip sind.
 ~
 
-In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. This chapter brings both ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
+In chapter [#ch-actor-model] and [#ch-microservice-paradigm], we introduced Actors and Microservices separately and focused on their individual concepts. Alert readers will already have spotted conceptual similarities between both approaches. However, as was demonstrated in chapters [#ch-actor-impl] and [#ch-microservice-impl], different solution strategies still have to be applied due to conceptual differences. This chapter brings the ideas together and discusses the similarities their respective concepts share, and the differences that distinguish them. 
 
 First of all however, it must be argued why it is valid to compare a concept of programming concurrency with a software architecture style for distributed systems. The argumentations is fairly simple. Expressing computation with the Actor model yields artefacts - the Actors - which are fit to be executed concurrently. Thus it historically evolved into a model of concurrent computation. 
 

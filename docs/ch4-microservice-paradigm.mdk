@@ -153,7 +153,7 @@ Fork/pipe based systems are executed in a concurrent fashion through the process
 
 Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
 
-To overcome these restriction, the construct of *named pipes* were introduced into later Unix system,allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for all services relying on this communication channel.
+To overcome these restriction, the construct of *named pipes* were introduced into later Unix system, allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for the services facilitating this communication channel.
 
 ## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 

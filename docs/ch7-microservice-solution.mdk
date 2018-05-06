@@ -1,10 +1,14 @@
 
-Microservice-based System Implementation {#ch-ms-solution}
+Microservice-based System Implementation {#ch-microservice-impl}
 =====================================
 
 
 
 This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-problem-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
+
+## Service Technology Stack
+
+Java + Spring Boot Stack for all Services
 
 ## Isolation and Persistence
 
