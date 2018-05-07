@@ -113,7 +113,7 @@ This satisfies the channel requirements given above. Therefore pipes are a valid
 ## Inherent Concurrency and Distribution
 
 ~Todo
-Soll das überhaupt hier sein? Oder unten bei der diskussion?
+Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
 ~
 
 Any microservice within an MSA is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
