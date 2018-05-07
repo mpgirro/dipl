@@ -155,9 +155,29 @@ Technology Heterogeneity:
 * [@New15] Newmann calls it "Technology Heterogeneity"
 ~
 
-## Notion of Concurrency
+## Levels of Concurrency
 
 Both Actors and Microservices are the components that are being executed concurrently within their system architectures. However, both constructs have different notions of concurrency, which is a direct result of the underlying concepts. The following discusses the differences and their implications.
+
+...
+
+~LitNote
+Je nachdem ob ich es oben schon erwähnen will, aber [@And83] definiert 3 "main issues of concurrency" (ACHTUNG wörtliches zitat):
+
+1. "how to indicate concurrent execution"
+2. "which mode of interprocess communication to use"
+3. "which synchronization mechanism to use"
+
+...
+
+Andrews and Schneider argue that there are three main issues regarding the "design of a notation for expressing a concurrent computation" [@And83]: indication of execution, interprocess-communication and synchronization mechanism.
+
+* Any concurrent execution has to be *indicated* in some form (And83). This can be explicit (Threads, etc.) or implicit (bezug nehmend auf Ch2)
+* The kind of interprocess communication, i.e. the characteristics of the mechanism
+* The approach towards synchronization
+
+Actors as we
+~
 
 ### Threads and Processes
 

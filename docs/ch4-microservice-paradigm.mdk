@@ -106,54 +106,48 @@ From the two example IPC mechanisms above, Unix pipes and shared memory, only th
 
 > "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools". 
 
-This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
+This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03]. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
 
 [^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up into a so-called *pipeline*, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A pipeline will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
 
 ## Inherent Concurrency and Distribution
 
+~Todo
+Soll das überhaupt hier sein? Oder unten bei der diskussion?
+~
+
 Any microservice within an MSA is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
 
-In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. Alternatively, a generally more safe alternative
+In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. However, recalling the case study on process system programming in C from section [#sec-concurrent-c], such fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. For the concurrent components have strictly isolated states through the boundries of their distinct address spaces and the communication mechanism is sufficient in general, it's worth debating weither such systems apply for a Microservice Architecture.
+
+The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and present a certain degree of coupling [@Bac03], such that it is difficult to replace the systems components independently.
+
+To overcome these restriction, the construct of *named pipes* were introduced into later Unix system, allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for the services facilitating this communication channel.
+
+<!--
+The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
+-->
+
+<!--
+We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. 
+-->
+
+<!--
+Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
+-->
+
+<!--
+Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
+-->
+
+
+
+...
 
 Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
 
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
-
-### Case Study: Concurrent Processes in C
-
-Only with C11[^fn-c11] did the C programming language add explicit support for expressing concurrency via threads. At its core it is a rather old language (though still heavily used), thus the strategy was for decades to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03]. 
-
-[^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
-
-An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls are unsuitable to compose concurrency [@Lov07]. 
-
-The expedient path is the alternative *fork* call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03]. The following example illustrates the control flow:
-
-```{language:cpp}
-void parentBehavior(void);
-void childBehavior(void);
-
-int main(void) 
-{
-    pid=fork();
-    if (pid == 0) 
-        childBehavior();
-    else
-        parentBehavior();
-}
-```
-
-Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
-
-A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03].
-
-Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
-
-Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
-
-To overcome these restriction, the construct of *named pipes* were introduced into later Unix system, allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for the services facilitating this communication channel.
 
 ## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 

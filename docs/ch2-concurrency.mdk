@@ -1,5 +1,5 @@
 
-Concurrency {#ch-concurrency}
+Notions of Concurrency {#ch-concurrency}
 ======================
 
 ~LitNote
@@ -22,7 +22,10 @@ Concurrency {#ch-concurrency}
 ~
 
 
-For the scope of this thesis, it is important to gain a notion of *where* concurrency is happening. We will focus on three levels, namly the 
+For the scope of this thesis, it is important to gain a notion of concurrent computation, especially *where* it is happening. We will focus on three levels, namly the 
+
+...
+
 
 
 ## Execution Order and Nondeterminism
@@ -67,6 +70,40 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 * [@Fel90] "Language and System Support for Concurrent Programming"
     * Kapitel 3: Concurrency at the Operating System Level
 ~
+
+### Case Study: Concurrent Processes in C {#sec-concurrent-c}
+
+~Todo
+Weil es jetzt weiter oben ist, muss ich hier noch Pipes erklären! Und das UNIX system. Und POSIX!
+~
+
+Only with C11[^fn-c11] did the C programming language add explicit support for expressing concurrency via threads. At its core it is a rather old language (though still heavily used), thus the strategy was for decades to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03]. 
+
+[^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
+
+An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls alone are insufficient to compose concurrency [@Lov07]. 
+
+The expedient path is the alternative *fork* call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03; @Fel90]. The following example illustrates the control flow:
+
+```{language:cpp}
+void parentBehavior(void);
+void childBehavior(void);
+
+int main(void) 
+{
+    pid=fork();
+    if (pid == 0) 
+        childBehavior();
+    else
+        parentBehavior();
+}
+```
+
+Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
+
+A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. 
+
+...
 
 ## Concurrency at the Network Level {#sec-concurrency-network-level}
 
