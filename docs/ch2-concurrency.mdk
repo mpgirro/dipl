@@ -85,19 +85,13 @@ new Thread(task).start();
 ```
 
 
-Java offers the `synchronized`{language:java} primitive to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, access to the `count` state variable has to be managed between two threads. The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. For both threads have the reference to `count` inside their scope, it can simply double as the monitor in addition to being the shared resource. 
+The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, the `count` state variable has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. 
 
-In contrast, `synchronized`{language:java} keyword can also be used as part of the method signature, which is equal to defining `synchronized(this)`{language:java} around the whole method's body. For it is a simple ...
+In contrast, the `synchronized`{language:java} keyword could also be used as part of a method signature, which would be equal to defining `synchronized(this)`{language:java} around the whole method's body. Thus the method's object reference acts as the monitor. However, in the example this would lock on the respective `Thread`{language:java}s the `Runnable`{language:java}s are executed on, which are distinct references and thus unsuitable for locking `count`. Simply declaring methods to be synchronized is only viable if the required resource is exlusively accessible inside the method's object.
 
-However, in the example this would lock on the reference the `Thread`{language:java}'s the `Runnable`{language:java}s are executed on, which are *distinct* and thus unsuitable for locking `count`. Simply declaring methods to be synchronized is only viable if the required resource is exlusively accessible inside the method's object.
+A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. simultaniour access for multiple readers [@Sub11].
 
-A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. access to multiple readers [@Sub11].
-
-~Todo
-die oberen beiden absätze muss ich zitieren! das Concurrency on the JVM buch? Vll auch das java manual?
-~
-
-We see, expressing concurrency on a programming language level, and especially through the locking of shared state, has its perils when not planed with utmost care by the programmer.
+Expressing concurrency on the programming language level has its perils due to the overlapings of  languages concepts, e.g. the introduction of mutable state due to scopes or via visibility (wich will be discussed in detail in further chapters). Many concepts might have an influence on concurrency considerations. Shared mutability requiring synchronization especially requires utmost care by the programmer for handling access to any data.
 
 ## Concurrency at the Operating System Level {#sec-concurrency-os-level}
 
@@ -160,4 +154,13 @@ Distributed is truely concurrent
   * shared-memory: inter-process comm. through memory (faster)
   * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
     * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
+~
+
+
+### Case Study: Distributed Database Systems 
+
+~LitNote
+* <https://pdfs.semanticscholar.org/cd48/1697170f25b366dee904dcfca7988bb87645.pdf>
+* <http://www.ict.griffith.edu.au/~rwt/uoe/1.4.dcc.html>
+* <http://www.vldb.org/pvldb/vol10/p553-harding.pdf>
 ~
