@@ -45,8 +45,7 @@ As was pointed out, Akkas Actor system is capable of providing a transparent int
 
 Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
-[der Hinweis auf das das bereits besprochen wurde ist falsch --> umschreiben!]{.important}
-Section [#sec-commonalities-isolation] discussed the potential issues with object-oriented Actors. Visibility was given as a concern for encapsulation. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
+*Visibility* is a property of variables and methods of objects if they are part of the objects interface [@Kni96]. It is a non-trivial concern for encapsulation and subsequently shared mutability [@Sub11; @Goe06]. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
 
 ``` {language:java}
 public class Foo extends UntypedActor { 
@@ -88,7 +87,7 @@ Preventing visibility of Actor fields and methods is not sufficient for guarante
 
 However, messages are ment to represent snapshot information of a state at a given point in time. Therefore, shared state is not a problem if it referes to immutable snapshotes, such that there is no memory with read-write or write-write access by two distrinct Actors [@Kos16], i.e. the facts cannot be modified by any of the holders. Thus the encapsulation requirement explicitly referes to *mutable* strong state. Immutability avoids what Akka calls the *shared mutable state trap* [@AkkaJMM]. 
 
-One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for expressing immutability. It is required to have `final`{language:java} fields only, which need to be instantiated through constructor arguments. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation. 
+One option for Scala is to use `case class`{language:scala} constructs, which are immutable by default except for the transient state introduced through constructor parameters [@AkkaActor]. Java offers less syntactic support for expressing immutability. The property is neither formally defined in the Language Specification nor the Memory Model [@Gos15; @Goe06]. However, the basic requirement is to have `final`{language:java} fields only. This means that the transient state through internally referenced objects must be marked `final`{language:java} too. We've found that libraries utilizing source-level annotation processing[^fn-java-immutables] provide useful abstraction for generating value objects. Such use annotated `interface`{language:java} declarations to generate consistent implementations offering builders and factory methods for instantiation [@Goe06]. 
 
 [^fn-java-immutables]: Such as <https://immutables.github.io> for example.
 

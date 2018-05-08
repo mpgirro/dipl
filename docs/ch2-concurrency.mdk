@@ -21,6 +21,9 @@ Notions of Concurrency {#ch-concurrency}
 * [@And83] "Concepts and Notations for Concurrent Programming"
 ~
 
+Concurrent computation, or simply concurrency, is a characteristic of a program or software system [citation]{.mind}. It describes...
+
+...
 
 For the scope of this thesis, it is important to gain a notion of concurrent computation, especially *where* it is happening. We will focus on three levels, namly the 
 
@@ -61,6 +64,41 @@ For the scope of this thesis, it is important to gain a notion of concurrent com
 allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, Futures, STM, etc
 ~
 
+### Case Study: Concurrency in Java
+
+Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [irgendwas zitieren!]{.mind}. The following example illustrates the usage for the subsequent discussion:
+
+```{language:java}
+Integer count = 0;
+
+final Runnable task = new Runnable() {
+  public void run() {
+    synchronized(count) {
+      count += 1;
+      System.out.println(Thread.currentThread().getName() + " " + count);
+    }
+  }
+}
+
+new Thread(task).start();
+new Thread(task).start();
+```
+
+
+Java offers the `synchronized`{language:java} primitive to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, access to the `count` state variable has to be managed between two threads. The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. For both threads have the reference to `count` inside their scope, it can simply double as the monitor in addition to being the shared resource. 
+
+In contrast, `synchronized`{language:java} keyword can also be used as part of the method signature, which is equal to defining `synchronized(this)`{language:java} around the whole method's body. For it is a simple ...
+
+However, in the example this would lock on the reference the `Thread`{language:java}'s the `Runnable`{language:java}s are executed on, which are *distinct* and thus unsuitable for locking `count`. Simply declaring methods to be synchronized is only viable if the required resource is exlusively accessible inside the method's object.
+
+A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. access to multiple readers [@Sub11].
+
+~Todo
+die oberen beiden absätze muss ich zitieren! das Concurrency on the JVM buch? Vll auch das java manual?
+~
+
+We see, expressing concurrency on a programming language level, and especially through the locking of shared state, has its perils when not planed with utmost care by the programmer.
+
 ## Concurrency at the Operating System Level {#sec-concurrency-os-level}
 
 ~LitNote
@@ -77,7 +115,7 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 Weil es jetzt weiter oben ist, muss ich hier noch Pipes erklären! Und das UNIX system. Und POSIX!
 ~
 
-Only with C11[^fn-c11] did the C programming language add explicit support for expressing concurrency via threads. At its core it is a rather old language (though still heavily used), thus the strategy was for decades to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03]. 
+Only with C11[^fn-c11] did the C programming language add explicit support for expressing concurrency via threads. At its core it is a rather old language (though still heavily used), thus the strategy was for decades to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 
 [^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
 
