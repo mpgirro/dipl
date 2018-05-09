@@ -255,7 +255,11 @@ Here, the typization `msg:U`{language:scala} is guaranteed. The behavior is cons
 
 Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. In contrast, higher-order types [sind die wirklich higher-order?]{.mind} - so-called *Session Types* or *Process Types* [beides wirklich das selbe? Punt: PT, rest der Welt: ST]{.mind} - are able to express such constraints [citation, irgendwas vom Franz!]{.mind}, and as such they are not compatible with the Actor model [stimmt das? hab ich da irgendwo literatur wo das so gesagt wird?]{.mind}.
 
+We've found that such kinds of message saftey restrictions, i.e. without the tighter coupling Active Objects provide [tun sie das wirklich? schon oder? kann ich das einfach so behaupten?]{.mind}, are a rare capability among Actor Systems. However, the *Akka Typed* library is in the current Akka version 2.5 still under active research and marked as "may change", thus not to be considered stable.
+
+~delete
 However useful this message saftey restrictions pose to be, the *Akka Typed* library is in the current Akka version 2.5 still under active research and marked as "may change". Thus, despite we consider it a very promising concept that most other Actor Systems lack, we do not consider it to be stable, and *Echo:Actor* refrains from using this feature at this point. 
+~
 
 ## Information Routing and Delivery Reliability
 

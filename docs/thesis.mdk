@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
 Title        : Actors versus Microservices
-Subtitle     : Comparing the Actor Model of Computation against the Microservice Architecture Style regarding concurrent system construction
+Subtitle     : A conceptual analysis comparing the Actor Model of Computation and the Microservice Architecture Style regarding the construction of concurrent system
 <!--
 Subtitle     : A conceptual analysis comparing the Actor Model of Computation against the Microservice Architecture Style regarding their capabilities for concurrent system construction
 -->
@@ -203,6 +203,7 @@ These arconyms are used throughout the thesis.
 * MSA Microservice Architecture
 * OOP Object-Oriented Programming
 * OS Operating System
+* PID Process Identifier
 * REST Representational State Transfer
 * RPC Remote Procedure Call
 * SoC Separation of Concerns

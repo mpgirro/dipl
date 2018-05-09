@@ -21,6 +21,14 @@ Notions of Concurrency {#ch-concurrency}
 * [@And83] "Concepts and Notations for Concurrent Programming"
 ~
 
+Computation can be viewed and expressed in a most basic form as the sequential execution of instructions. Such activities are called *sequential*. Under certain conditions [welche wären das? will ich das nicht lieber anders schreiben?]{.mind}, given two or more sequential activities can be executed either pseudo simultaniously (in alternation on one single processing unit) or truely simultaneously (on multiple processing units). We call this characteristic *concurrency*. 
+
+[@Ben90; @And83; @Bus90; @Fel90]
+
+In a most basic form, computation is by executing statements in a sequential form as a sequence of statements   
+
+...
+
 Concurrent computation, or simply concurrency, is a characteristic of a program or software system [citation]{.mind}. It describes...
 
 ...
@@ -70,22 +78,21 @@ Java is an object-oriented programming language with a C-inspired syntax for the
 
 ```{language:java}
 class State {
-  public int a = 0;
+    public int a = 0;
 }
 
 final State s = new State();
 
 final Runnable task = () -> {
-  synchronized(s) {
-    s.a += 1;
-    System.out.println(Thread.currentThread().getName() + " " + s.a);
-  }
+    synchronized(s) {
+        s.a += 1;
+        System.out.println(Thread.currentThread().getName() + " " + s.a);
+    }
 };
 
 new Thread(task).start();
 new Thread(task).start();
 ```
-
 
 The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, some state denoted by `s` has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. Note that though `s` is declared `final`{language:java}, its member `a` remains mutable and is publicly visible.
 
@@ -135,7 +142,7 @@ int main(void)
 }
 ```
 
-Both processes are based on the same program image. The parent receives its *process ID* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
+Both processes are based on the same program image. The parent receives its *Process Identifier* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
 A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. 
 

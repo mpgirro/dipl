@@ -277,6 +277,23 @@ The Isolated Turn Principle of the Actor model already gives a strong boundry to
 * Promises?
 
 
+
+...
+
+The traditional notion of a procedure call dictates that the execution flow continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution, this the flow of control may actually return earlier in general. However, if given procedure provides a result (return value), the comtrol flow is expected to *block* until respective value is calculated and thus available. Thus, all procedure calls protentially limit the concurrency of any program, the more the longer they demand processing time [irgendwas muss ich hier zitieren]{.mind}.
+
+However, in many cases 
+
+`f :: a -> F[b]`{language:haskell;replace: "/->/\(->|&rarr;\)/g";}
+
+`def f(a: Int): Future[Int]`
+
+Traditional procedural programming has the notion of calling a procedure and 
+
+Liskov [@Lis88] 
+
+...
+
 The term *Future* is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and [???]{.mind}. Although all of these describe concepts where a placeholder 
 is defined for a value that will be available at a later point in time [@Swa14],
 they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion in the later parts of this thesis, we will refere to the Future concept like it is found in the Java and Scala programming languages. 
