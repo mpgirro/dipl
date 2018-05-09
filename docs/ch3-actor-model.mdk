@@ -282,7 +282,17 @@ The Isolated Turn Principle of the Actor model already gives a strong boundry to
 
 The traditional notion of a procedure call dictates that the execution flow continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution, this the flow of control may actually return earlier in general. However, if given procedure provides a result (return value), the comtrol flow is expected to *block* until respective value is calculated and thus available. Thus, all procedure calls protentially limit the concurrency of any program, the more the longer they demand processing time [irgendwas muss ich hier zitieren]{.mind}.
 
-However, in many cases 
+However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value. Thus it is possible to resume the callers threads of control, while the called thread of control (i.e the procedures body) is executed concurrently. 
+
+In order to indicate such semantic, the intended result cannot be the actual result type of the procedure. 
+
+This however presents a problem for the typification of a procedure. Given $f: a \rightarrow b$ indicates that executing `f` results in a value `b` once `f` has finished. In order to indicate that `b` will be available as some point in time, a wrapper `F[b]` has to be troubled instead, i.e. `f :: a -> F[b]`{language:haskell;replace: "/->/\(->|&rarr;\)/g";}.
+
+...
+
+Such asynchronously available results are not uniformly named in the literature. Baker and Hewitt [@Bak77] describe a *Future* that "delivers the value of an expression at some later time". Liskov [@Lis88] introduced a concept called *Promise* where [???]{.mind}. More seldomly used are *eventual*, *delay* and *deferred*.
+
+However, all of terms refere to the fundamental idea of an asynchronously available value. Many programming languages and technologies implement some notion of this idea, and one name of the above to refere to this concept. Thus these designations tend to be used interchangeably. We will stick to "Future" throughout the remainder of this thesis, for it is the choosen term of the technologies refered to in chapters [#ch-actor-impl] and [#ch-microservice-impl].
 
 `f :: a -> F[b]`{language:haskell;replace: "/->/\(->|&rarr;\)/g";}
 
@@ -290,7 +300,7 @@ However, in many cases
 
 Traditional procedural programming has the notion of calling a procedure and 
 
-Liskov [@Lis88] 
+
 
 ...
 
