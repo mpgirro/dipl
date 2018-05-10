@@ -30,10 +30,9 @@ Scholars identified many more issues that come with monolithic applications [meh
 
 This does not hold exactly true anymore[^fn-moores-law] since the 2000s, for speed increasment since than is not backed by increasing transistors inside a processor, but to the trend of including multiple cores into a single CPU [@Mac11]. The importance of multicore programming increased significantely since then [citation needed?]{.mind}. 
 
-[^fn-moores-law]: In fact, Moores original empirical observation about *doubling of components per chip* never held true very long. But over the decades various trends in semiconductor manufacturing still resulted in a rough doubling of processing power. Mack [@Mac11] gives an interresting review on how this is not due to Moores obersation being a law, but a result of economic will to make it so.
+[^fn-moores-law]: In fact, Moores original empirical observation about *doubling of components per chip* never held true very long. But over the decades various trends in semiconductor manufacturing still resulted in a rough doubling of processing power. Mack [@Mac11] gives an interresting analysis on this being simply the result of an economic will to make the law come true.
 
-
- Even though the processing power increases all the time, any monolith inevidently reaches a limit when it comes to scalability. This limit is influenced by many factors, e.g. [wie gut man es eben monolith. scalieren kann??]{.mind}, but eventually reaches an upper bound based on hardware limitations of the host machine [citation]{.mind}.
+Even though the processing power increases all the time, any monolith inevidently reaches a limit when it comes to scalability. This limit is influenced by many factors, e.g. [wie gut man es eben monolith. scalieren kann??]{.mind}, but eventually reaches an upper bound based on hardware limitations of the host machine [citation]{.mind}.
 
 Many approaches to overcome this limit have been proposed over the years. All of them have distribution in mind [faderer satz geht ja nimma...]{.mind}. Previously, the *Service Oriented Architecture* (SOA) approach gained popularity. It is based on the idea of interconnecting the capabilities of multiple monolithic applications, by connceting them on a single, uniform communication channel. Such integration mechanisms, like the so-called *Enterprise-service Buses* (ESB), however [...sind auch nicht gut]{.mind}
 

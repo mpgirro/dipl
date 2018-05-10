@@ -74,7 +74,7 @@ allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, 
 
 ### Case Study: Concurrency in Java
 
-Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [irgendwas zitieren!]{.mind}. The following example illustrates the usage for the subsequent discussion:
+Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
 
 ```{language:java}
 class State {
