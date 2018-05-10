@@ -38,6 +38,7 @@ For the scope of this thesis, it is important to gain a notion of concurrent com
 ...
 
 
+The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. To be able to discuss different concepts and notions, we will therefore denote such units of activity as *tasks* through the remainder of this thesis. In the Ada programming language, "task" referes to an activity associated with a concurrent unit. We employ this term for it is well known and will not intersect with any of the other concepts terminology discussed in due course, thus offering us a neutral way of refering any kind of concurrently executed computation within a logical unit.
 
 ## Execution Order and Nondeterminism
 
