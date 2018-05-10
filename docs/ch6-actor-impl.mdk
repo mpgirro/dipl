@@ -124,11 +124,11 @@ override def receive = {
 }
 ```
 
-First of all, Akka requires a so-called `ExecutionContext`{language:scala} in scope to run the Future on. In the example the Actor's `Dispatcher`{language:scala}, which represents the thread-pool the Actor is being executed on, is used, but another could also be specified instead [@AkkaFuture].
+First of all, Akka requires a so-called `ExecutionContext`{language:scala} in scope to run the Future on [@Hal18]. In the example the Actor's `Dispatcher`{language:scala}, which represents the thread-pool the Actor is being executed on, is used, but another could also be specified instead [@AkkaFuture].
 
-Most importantly however, Futures can be misused to introduce nondeterminism into the scope of an Actor. The example defines some mutable state variable. Upon receiving an arbitrary message, a `Future`{language:scala} is being dispatched with the task of incrementing the state. Concurrently, the Actor will continue processing the message, and attempt to decrement the very same state variable. Due to the nondeterministic nature of the underlying thread-pool, multiple orders of execution are possible, and thus also multiple results for the output statement. This is a prime example of a data race.
+Most importantly however, Futures can be misused to introduce nondeterminism into the scope of an Actor. The example defines some mutable state variable. Upon receiving an arbitrary message, a `Future`{language:scala} is being dispatched with the task of incrementing the state. Concurrently, the Actor will continue processing the message, and attempt to decrement the very same state variable. Due to the nondeterministic nature of the underlying thread-pool, multiple orders of execution are possible, and thus also multiple results for the output statement. This is possible because Java as well as Scala `Future`{language:java}s do not provide any kind of guarantee regarding the safety of data inside their scope that is exceding the regular notion of this characteristic of the respective language [@Wel05].
 
-The Isolated Turn Principle states that it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
+The Isolated Turn Principle states that it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope, while the saftety permits it to be actually mutated. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
 
 There are other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
 
@@ -156,7 +156,7 @@ Akka provides a primitive to abstract a synchronous information flow. In additio
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
-To prevent unnecessary blocking, monadic methods of Scalas `Future`{language:scala} trait can be used to define subsequent computation once the result becomes available. This can also be utilized when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax through the so-called *for-comprehension*:
+To prevent unnecessary blocking, monadic methods of Scalas `Future`{language:scala} trait can be used to define subsequent computation once the result becomes available. This can also be utilized when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
 ```{language:scala}
 val f1: Future[Int] = actor1 ? msg1
@@ -170,13 +170,13 @@ val r = for {
 } yield (r1 + r2 + r3)
 ```
 
-It is important however, that the messages are dispatched prior to the `for {...} yield`{language:scala} block scope. Otherwise it will enforce sequential composition, if the ask-calls are inlined into the block scope [@AkkaFuture]. This is because for-comprehension is unfolded by the compiler to monadic `flatMap` and `map` usage, which is sequential by nature. The example above becomes:
+It is important however, that the messages are dispatched prior to the `for`{language:scala}-block's scope. Otherwise it will enforce sequential composition, if the ask-calls are inlined into the block scope [@AkkaFuture]. This is because for-comprehension unfolds to monadic combinator usage of `flatMap` and `map`, which are sequential by nature [@Hal18]. The example above becomes:
 
 ```{language:scala}
 val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 ```
 
-It is clear to see that if the ask calls would be inlined into the `for`{language:scala} block, then the second message would only get dispatched once the first future has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
+It is clear to see that if the ask calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first future has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
 
 However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitely. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
 

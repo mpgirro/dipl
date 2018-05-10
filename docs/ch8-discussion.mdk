@@ -146,6 +146,8 @@ Extensibility:
 * gradual/separate replacement of MS
 * substitution and subtyping für Actors
 * MS: "new versions can be gradually introduced into a system" [@Mon16a]
+* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
+    * describe the concept of Promise for "heterogeneous computing in which programs written in different programming languages, and running under different operating systems on different hardware, can use one another as components over a network"
 ~
 
 Technology Heterogeneity:
