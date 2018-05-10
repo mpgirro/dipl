@@ -44,7 +44,7 @@ Epigraph {
             </blockquote>&nl;\
            ~ End HtmlOnly"
 }
-.epigraph { max-width:50%; margin-left: auto; margin-right: 0; }
+.epigraph { max-width:60%; margin-left: auto; margin-right: 0; }
 .epigraph-footer { float:right; }
 <!-- # # # # # # # # # # # # # # # # # # # # # # -->
 
@@ -195,7 +195,7 @@ Maximilian Irro
 
 # Acronyms { - }
 
-These arconyms are used throughout the thesis.
+These arconyms occur throughout the thesis.
 
 * AMQP Advanced Message Queue Protocol
 * AO Active Object

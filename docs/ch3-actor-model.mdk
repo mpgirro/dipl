@@ -267,47 +267,28 @@ If you promise something to someone, you are responsible for keeping it, but if 
 
 ~LitNote
 * [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
-* [@Boe07] "A Complete Guide to the Future"
 * [@Fla99] "The semantics of future and an application"
-    * wirkt eher unbrauchbar...
-* [@Car04] "Asynchronous and Deterministic Objects"
-* [@Swa14] "Towards composable concurrency abstractions"
-    * Reading a Future value inside an Actor can cause a deadlock (potential block operation)
-* [@Tas13] "Why DO scala developers mix the actor model with other concurrency models?"
-    * "Futures are place-holders for asyn-chronously computed values; they block the current thread of execution when it tries to access a yet unresolved value. This way, futures provide a light form of synchronization between the producer and the consumer of the value. With their blocking result-resolution semantics, futures provide a natural way of adding par-tial synchrony to actor programs."
 ~
 
 The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of control may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated. Thus, all procedure calls protentially limit the concurrency of any program, the more the longer they demand processing time [irgendwas muss ich hier zitieren]{.mind}.
 
-However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will hold the actual result value at some point in the future [@Wel05]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously*. The two threads are again *synchronized* once the placeholder is issued for the actual result. This is sometimes called to *touch* or *claim* the value, and may extend in a blocking of the execution if the values is not yet available [@Wel05; @Tas13].
+However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13].
 
-~Todo
-irgendwo hatte ich eine Quelle wo Futures als semi-synchron beschrieben werden, weil sie async sind, bis zu dem punkt an dem man auf sie zugreift.
- ~
+The concept of such evnetually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18].
 
-The concept of such delayed values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* argument that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. We've found more seldomly used terms like *eventual*, *delay* and *deferred* [@Pra18].
-
-~ {color:red}
-
-However, all of these terms refere to the fundamental idea of an asynchronously available value. Many programming languages implement some notion of this idea, and use one of these names to describe it. They tend to indicate such asynchronously available values in terms of typization. Instead of an concrete type `b` a proxy `F[b]` is used. Thus an arbitrary procedure `f: a -> b` becomes asynchronous by declaring the result as `f: a -> F[b]` [hier muss ich was zitieren, und stimmt das überhaupt so?! sehr dünnes eis!]{.mind}  
-
-...
-
-... all of these describe concepts where a placeholder is defined for a value that will be available at a later point in time [@Swa14]. They tend to indicate such values in terms of typization. Instead of an concrete type `b` a proxy `F[b]` is used. Thus an arbitrary procedure `f: a -> b` becomes asynchronous by declaring the result as `f: a -> F[b]` [hier muss ich was zitieren, und stimmt das überhaupt so?! sehr dünnes eis!]{.mind}  
-
-...
-
-The term *Future* is not consistently found in the literature. It is sometimes interchangably used and set equal to concepts like Promises and [???]{.mind}. Although all of these describe concepts where a placeholder is defined for a value that will be available at a later point in time [@Swa14],
-they tend to vary slightly in their definitions [liskow citieren?]{.mind}. For the sake of an easier discussion throught the remainder of this thesis, we will refere to the Future concept like it is found in the Java and Scala programming languages. 
-~
-
-Java and Scala (but also C#, Dart, etc.) have a special notion of this concept, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, the `Future`{language:java} represents a read-only container used as the placeholder for the asynchronously available value, while the `Promise`{language:java} is a single-assignment variable used explicitely set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise` [@Hal18; @Pra18].
+Java and Scala (but also C#, Dart and more) have a special notion of this concept, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, the `Future`{language:java} represents a read-only container used as the placeholder for the asynchronously available value, while the `Promise`{language:java} is a single-assignment variable used explicitely set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} [@Hal18; @Pra18].
 
 [^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java}.
 
-Though all designations tend to be used interchangeably, and refere to roughly the same idea, we will confine to the term "Future" as it is used in Java and Scala, and to the concepts semantic as is provided by these languages.
+Though today all designations tend to be used interchangeably, and refere to roughly the same idea [@Swa14], we will confine to the term "Future" as it is used in Java and Scala, and to its semantic as is provided by these languages.
+
+~Todo
+used for async (remote) procedure calls; may be type safe as in Java/Scala (but was originally dynamically typed)
+~
 
 There has been a long tradition of combining Actors with Futures. It can be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated in subsequent examples.
+
+For a in-depth formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
 
 ### Software Transactional Memory (STM)
 
