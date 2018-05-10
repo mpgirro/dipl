@@ -4,7 +4,7 @@ Actor-based System Implementation {#ch-actor-impl}
 
 
 
-This chapter covers an Actor-based programming approach used to implement the concurrent system outlined in the previous chapter. We will focus our discussion on how specific techniques enable us the realize the requirements.
+This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. We will focus our discussion on how specific techniques enable us the realize the requirements.
 
 When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [@Kos16]. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
 
@@ -77,7 +77,7 @@ An instance of `Foo`{language:java} is not directly created using the `new`{lang
 
 Only a proxy object of type `ActorRef`{language:java} is exposed to the user. `ActorRef`{language:java} instances do not have the external interface of the Actor class they represent, but only expose a variaty of methods for sending messages to the Actor, which will then be delivered to and consumed by the Actor through its `onReceive` method [@Sub11].
 
-This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [@AkkaActor] [which must have been explain in some chapter previously]{.mind}.
+This has the benefit that no direct contact with an Actor instance object is possible, preventing both visbibility and accessibility to any fields, or method calls. Additionally, the communication through an `ActorRef`{language:java} proxy enables *location transparency* [@AkkaActor].
 
 ### References and Immutability 
 
@@ -176,9 +176,9 @@ It is important however, that the messages are dispatched prior to the `for`{lan
 val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 ```
 
-It is clear to see that if the ask calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first future has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
+It is clear to see that if the ask-calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first `Future`{language:scala} has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
 
-However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitely. Secondly, futures always pose the risk of accidentially passing the Actors internal, mutable state into the scope of the future, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
+However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitely. Secondly, there is always the risk of accidentially passing the Actors internal, mutable state into the `Future`{language:scala}s scope, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
 
 ### Delegation-based Messaging
 

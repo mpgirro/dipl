@@ -19,7 +19,7 @@ One actor is no actor. Actors come in systems.
     * Agha developed Actors as a fundamental model for concurrent computation
 ~
 
-In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt, Bishop and Steiger [original referenced needed]{.mind} introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
+In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt, Bishop and Steiger [@Hew73] introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
 
 
 Agha reformulated the Actor model into three basic primitives and Actor can perform upon receiving a message [@Agh85a]:
@@ -198,17 +198,15 @@ class Fnord {
 Using the above class `Fnord`{language:java}, we can create the following simple procedure:
 
 ``` {language:java}
-1  void doSomething() {
-2    final Fnord f = ...; // obtain reference to an instance
-3    f.add(1);
-4 
-5    print(f.get()); 
-6  }
+1   final Fnord f = ...; // obtain reference to an instance
+2   f.add(1);
+3 
+4   print(f.get()); 
 ```
 
-In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 5 will result in `2`. 
+In a single threaded program, once line 4 is reached, it is save to assume that the the addition has been executed and the internal field `a` was altered. The returned value by the `get()` call in line 4 will result in `2`. 
 
-Altering the definition to `class Fnord extends ActiveObject`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 4, there is no guarantee that the addition has actually been executed. Line 3 only dispatched the message, and returned to leave `doSomething` to its own flow of controll. Line 5 will block (because `get` has a return value) and therefore wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have been received by and therefore processes before the unterlying Actor of `f`. 
+Altering the definition to `class Fnord extends ActiveObject`{language:java}, with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an Active Object implementation, this observation does not hold any more. When reaching line 3, there is no guarantee that the addition has actually been executed. Line 2 only dispatched the message, and returned to leave the activity to its own flow of execution. Line 54 will block (because `get` has a return value) and wait until the message has been dispatched and an answer arrived. But we cannot assume that we will receive the value `2`, because other messages could have been received by and therefore processes before the unterlying Actor of `f`. 
 
 The major benefit of the Active Object abstraction compared to classic Actors is *type safety*. An Actor in general can receive any type of message. Only when the message was received and is about to be processed, the Actor can decide weither it is actually able to understand the message's type. This is a form of *dynamic type checking* at runtime [citation needed - für den ganzen Absatz]{.mind} - even in statically typed programming languages.
 
@@ -270,13 +268,13 @@ If you promise something to someone, you are responsible for keeping it, but if 
 * [@Fla99] "The semantics of future and an application"
 ~
 
-The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of control may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated. Thus, all procedure calls protentially limit the concurrency of any program, the more the longer they demand processing time [irgendwas muss ich hier zitieren]{.mind}.
+The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of execution may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated. [irgendwas sollte ich hier zitieren]{.mind}
 
-However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13].
+However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13]. 
 
-The concept of such evnetually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18].
+The concept of such eventually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18]. The kind of evaluation order expressed by these concepts is sometimes refered to as *call-by-future* [@Bak77] or *call-by-need* [@Agh85a].
 
-Java and Scala (but also C#, Dart and more) have a special notion of this concept, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, the `Future`{language:java} represents a read-only container used as the placeholder for the asynchronously available value, while the `Promise`{language:java} is a single-assignment variable used explicitely set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} [@Hal18; @Pra18].
+Java and Scala, among others like C#, Dart, etc., have a special notion of such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
 
 [^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java}.
 
@@ -286,9 +284,9 @@ Though today all designations tend to be used interchangeably, and refere to rou
 used for async (remote) procedure calls; may be type safe as in Java/Scala (but was originally dynamically typed)
 ~
 
-There has been a long tradition of combining Actors with Futures. It can be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated in subsequent examples.
+There has been a long tradition of combining Actors with Futures. Agha describes that Actors are often used to model call-by-need computation [@Agh85a], which is essentially a Future. It can also be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated in subsequent examples.
 
-For a in-depth formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
+For a complete formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
 
 ### Software Transactional Memory (STM)
 
