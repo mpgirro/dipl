@@ -73,15 +73,14 @@ On a programming language level, referencing components is usually subject to ph
 
 The Actor model on the other hand provides a strict concept of isolated and decoupled components. The only link between Actors is the delivery of messages, based on their address. These addresses are virtual by not exposing any physical location information [@Ber14; @Tas13], and are thus not restricting the Actors to the limitations of such. Concurrently executed components are not required to be inside the same process boundry, because their addresses can abstract the gape in physical distance between them. This concept is generally refered to as *location transparency* [@Kar09]. Thus, the abstraction of concurrent components of the Actor model inherently also supports parallel execution of such.
 
-Traditionally, distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]:
-
-> "In a parallel computation some actions overlap in time; by implication these events must be distributed in space."
-
-Again, location transparent addresses allow for referencing Actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
+The location transparent addresses allow for referencing Actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
 
 
 [...]{.mind} Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
 
+...
+
+Thus, a particular characteristic of the Actor Model is its facilitation of one and the same primitive for task unit communication in concurrent, parallel and distributed execution contexts.
 
 ## Variations in Actor Systems {#sec-actor-systems}
 
@@ -274,7 +273,7 @@ However, in many cases the respective result is not required immediatelly by the
 
 The concept of such eventually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18]. The kind of evaluation order expressed by these concepts is sometimes refered to as *call-by-future* [@Bak77] or *call-by-need* [@Agh85a].
 
-Java and Scala, among others like C#, Dart, etc., have a special notion of such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
+Java and Scala, among others like C#, Dart, etc., have a special view on such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
 
 [^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java}.
 

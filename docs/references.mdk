@@ -4,5 +4,29 @@ Bibliography : dipl
 <!--Bib style    : style/keynat.bst-->
 Cite All     : True
 
+CSS Header      :
+  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
+  @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+  body.madoko {
+    font-family: "Crimson Text", serif;
+    font-size: 16px;
+    max-width: 38em;
+  }
+  .madoko code, .madoko pre {
+    font-family: "Source Code Pro", monospace;
+  }
+  .madoko .math-rendering {
+    color: black;
+  }
+  hr.figureline.madoko {
+    display: none;
+  }
+  .toc a, .toc a:visited { 
+    color: #0000EE;  
+  }
+  .a, a:visited {
+    color: #0000EE;  
+  }
+
 [BIB]
 

@@ -134,6 +134,11 @@ Actors und Microservices können zur Compile-time idR nicht garantieren, dass di
     * ad pre/postconditions: "Certain subtleties, however, arise tin teir use in dtstributed systems. For example, sunce there may be many concurrent threads of execution, the caller of a method cannot unilaterally guarantee that the required preconditions hold when the method begins executing. Thus phenomenon, termed the precondition paradox, has been neglected by many specification methodologies."
 ~
 
+
+~Todo
+Bisl blabla darüber, dass Actors dyn typed sind, dass Akka Typed da bisl was dran ändert, dass MS keine Tools haben um die Kompatibilität zu prüfen und das wie im MS Kapitel anedeutet dedizierte Sprachen das ganze Verbessen können, hin zu all dem Behavioural Types zeugs...
+~
+
 ### Cohesion and Coupling
 
 
@@ -157,7 +162,7 @@ Technology Heterogeneity:
 * [@New15] Newmann calls it "Technology Heterogeneity"
 ~
 
-## Levels of Concurrency
+## Notions of Concurrency
 
 Both Actors and Microservices are the components that are being executed concurrently within their system architectures. However, both constructs have different notions of concurrency, which is a direct result of the underlying concepts. The following discusses the differences and their implications.
 
@@ -181,7 +186,7 @@ Andrews and Schneider argue that there are three main issues regarding the "desi
 Actors as we
 ~
 
-### Threads and Processes
+### Threads, Processes and Tasks
 
 ~LitNote
 * [@Hal09] Scala Actors: Unifying thread-based and event-based programming
@@ -198,6 +203,15 @@ Actors as we
 ~todo
 Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgesetzt sind: Als event-based mit callbacks, mit einem threadpool anstatt jedem Actor seinen eigenen, weil threads ebenfalls fett sind (bei der JVM jeder thread ein process); in Erlang auch "process", was aber light-weight thread speziell durch die BEAM VM
 ~
+
+Akka Actors are executed on threads, sharing such from 
+
+This is not a requirement. Originally, Scala Actors supported two distinct kinds of defining Actors: the thread-based Actors, similar to the Akka variant, and event-based Actors, a more light-weight but also more limited implementation based on the idea of method callbacks [@Hal09].
+
+Microservices run in their own process. Such are relatively heavyweight
+
+
+
 
 ### Concurrency of Components
 
@@ -354,7 +368,7 @@ Therefore, we deem it unlikely for Microservices to suffer from the leaking Dist
 
 We have discussed now weither Actors or Microservices qualify as abstractions of the Distributed Object concept, and came to the conclusion that the risk of being misused as DO's is moderate for both. However, section [#sec-active-objects] introduced another variant of the Actor model that is worth discussing here, for it explicitely capitalises an object-oriented abstraction, just like DO's do: Active Objects.
 
-Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program (note that this switches to Scala syntax here for further demonstrations, which is no problem due to Scala's interoperability with Java):
+Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program:
 
 ``` {language:scala}
 val fs: List[Fnord] = ... // list of 100 references
@@ -362,7 +376,7 @@ var sum = 0
 for (f <- fs) {
     sum += f.get()
 }
-println(sum)
+print(sum)
 ```
 
 The code snippet iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
@@ -378,8 +392,8 @@ Both issues could be fixed by using the *future type* of message passing for Act
 1  Future.sequence(fs.map(_.get))
 2    .map(_.sum) 
 3    .onComplete {
-4       case Success(res) => println(res)
-5       case Failure(_)   => println("error")
+4       case Success(res) => print(res)
+5       case Failure(_)   => print("error")
 6    }
 ```
 
@@ -406,6 +420,23 @@ However, the one major benefit of Active as well as Distributed Objects compared
 * [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
 ~
 
+Actors facilitate by definition message passing for component communication [some sources]{.mind}. For Microservices, message passing is too the joint perception for communication style  [source 1, 2, 3]{.mind}. As such, their communication capabilities still deviate.
+
+For any sort of information exchange between two concurrent task units, there are two general modes of communication: *shared state* and *message passing*. The former relates to any form of controlled access and modification to a common memory, while the later strictly prohibits mutuable shared memory and instead relies on communication links used as I/O mechanism by the tasks [@Bac03; @Fel90]
+
+Thus, message passing must occure through a so-called *communication channel*. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies a synchronizing the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state communication must explicitely define an order of accessing information [@And83].
+
+
+---
+
+We've identified various forms of information flow in the literature [citation, multiple!]{.mind}
+
+~LitNote
+* [@Mon14a] Jolie kennt: 
+    * (one-way), (request-response), (notification), (solicit-response) == async response?
+~
+
+~ center
 |------------------|------------------------|-------------------------|
 |                  | One-to-One             | One-to-Many             |
 +------------------+------------------------+-------------------------+
@@ -415,6 +446,10 @@ However, the one major benefit of Active as well as Distributed Objects compared
 |                  | Request/async response | Publish/async responses |
 |------------------|------------------------|-------------------------|
 {  }
+~
+
+The by far most prominent example in the literature [referenzen]{.mind} for viable Microservice communication is REST. However, it is merely a representative of the synchronouse one-to-one style. Other [TODO...]{.mind}
+
 
 ## Governance, Deployment and Autonomy
 

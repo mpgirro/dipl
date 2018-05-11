@@ -194,3 +194,39 @@ In fact, some scientific approaches on modelling interacting processes, which we
 ~Todo
 In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der anderen abarbeiten. Ist das generell so? Weil MS können intern schon Concurrent sein. Dann müsste ich explizit darauf hinweißen, dass mit Process Calculi zwar MS Architecturen beschrieben werden können, aber nicht jeder Microservice deswegen einem Process Calculus entsprechen muss. Irgendwo sollte da Literatur bei diesem "MS: Language-based Approach" sein!
 ~
+
+### Language-based Approaches
+
+~LitNote
+* Jolie, CAOPLE
+* grundstein in Process Calculi
+* hier die basis für die spätere Diskussion zu Behavioural Types legen (die ich schon in der diskussion bei design by conract bringen will, ansatt erst in der Conclusion anteaser)
+* [@Gui17] "Microservices: a Language-based Approach"
+* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
+* [@Xu16] "CAOPLE : A Programming Language for Microservices SaaS"
+~
+
+The Microservice approach has gain much attention first in the industry and nowadays well as in the academic community. As such, many different research disciplines focus on [work on this...]{.mind}.
+
+From a scientific point of view, the freedom provided by the principles can be rather unsatisfactory. It is difficult to reason about services in general, for they only have to comply to rather abstract [???]{.mind}
+
+... for service composition is not [vorgegeben]{.mind} by dedicated abstractions [@Gui17].
+
+do not provide dedicated abstractions for service composition.
+
+...
+
+* JOLIE
+  : Jolie [@Mon14a;@Gui17] ...
+
+* CAOPLE
+  : CAOPLE [@Xu16] ...
+
+
+
+*CAOPLE* is a ....
+
+
+### Behavioural Types
+
+Session Types, Process Types, etc.
