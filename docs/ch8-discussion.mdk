@@ -581,7 +581,11 @@ zu Session Types:
 * see [@Mon13] "*Choreographic Programming*"
 ~
 
----
+In general, reasoning in Actor Systems is hard due to the intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren]. Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.
+
+Microservices share this fate. The general principles are rather allowing regarding the integration and composition of technologies, which makes it especially hard to apply any kind of global verification methodology. There is simply an almost complete lack of tool support for any kind of reasoning. Of course, scientific [???]{.mind} have already come up with first [???]{.mind}, like the already mentioned `ucheck` invariant enforcement system.  
+
+Dedicated programming languages for service-oriented programming have the potential to [die sache besser machen]{.mind}. If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
 
 ## Evaluation
 

@@ -64,8 +64,8 @@ For Actors are identified by their unique address, which is specific to a concre
 Though such receiving is in principle conform to the Actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to the Actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. An alternative interface is required:
 
 ```{language:scala}
-Http().singleRequest(HttpRequest(URI("http://example.com")
-  .withQuery("name", "value"))
+Http().singleRequest(HttpRequest(URI(s"http://example.com")
+  .withQuery(s"name", s"value"))
   .pipeTo(self)
 ```
 

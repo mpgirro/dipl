@@ -209,7 +209,7 @@ In fact, some scientific approaches on modelling interacting processes, which we
 In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der anderen abarbeiten. Ist das generell so? Weil MS können intern schon Concurrent sein. Dann müsste ich explizit darauf hinweißen, dass mit Process Calculi zwar MS Architecturen beschrieben werden können, aber nicht jeder Microservice deswegen einem Process Calculus entsprechen muss. Irgendwo sollte da Literatur bei diesem "MS: Language-based Approach" sein!
 ~
 
-### Language-based Approaches
+### Dedicated Programming Languages
 
 ~LitNote
 * Jolie, CAOPLE
@@ -256,6 +256,6 @@ passen schnittstellen zusammen?
 *Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}
 
 
-In the Microservice-intrinsic context of distributed systems, concepts so far build on post facto analysis approaches, e.g. via randomization testing or error log analysis. Panda et al. [@Pan17] discuss a Microservice-specific invariance model at least capable to detect violations at runtime, at the cost limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
+In the Microservice-intrinsic context of distributed systems, concepts so far build on post facto analysis approaches, e.g. via randomization testing or error log analysis. Panda et al. [@Pan17] discuss a Microservice-specific invariance model called `ucheck` that is at least capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
 
 The general problem for ensuring invariants and performing verification is that Microservices [...]{.mind}
