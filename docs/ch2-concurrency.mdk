@@ -66,8 +66,6 @@ The overall requisite for any kind of concurrency is the simultaneous presence o
 
 ## Distinguishing Concurrency, Parallelism and Distribution
 
-## Distinguishing concurrent, parallel, and distributed programs
-
 * siehe [@Bus90], ch 1.1.2
 
 
@@ -90,7 +88,7 @@ define difference between process and node
 
 Deadlock, Livelocks, Safety, Liveness, Races, etc...
 
-## Levels of Concurrency
+## Realizations of Concurrent Execution
 
 
 
@@ -100,45 +98,7 @@ Deadlock, Livelocks, Safety, Liveness, Races, etc...
 allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, Futures, STM, etc
 ~
 
-
-
-### Operating System Approach to Concurrency {#sec-concurrency-os-level}
-
-~LitNote
-* The Process, Inter-process Communication, inherent concurrency
-* C like fork-join pattern was always a basic a way of write concurrency (outsourcing the concurrency aspect to the OS) --> Literatur?!
-* Middlewares/Virtual machines can provide a transparent way to distribute threads to multiple cores --> Literatur?!
-* [@Fel90] "Language and System Support for Concurrent Programming"
-    * Kapitel 3: Concurrency at the Operating System Level
-~
-
-
-
-### Network Approach to Concurrency {#sec-concurrency-network-level}
-
-~ Epigraph { caption: "Unknown"}
-Distributed is truely concurrent
-~
-
-~ LitNote
-* "Distributed is truely concurrent"
-    * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
-    * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
-* **this chapter should explain why distribution is just another form of concurrency within a system**
-* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
-    * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
-* [@But14]
-  * shared-memory: inter-process comm. through memory (faster)
-  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
-    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
-~
-
-
-
-
-## Case Studies
-
-### Case Study: Concurrency in Java
+##### Case Study: Concurrency in Java
 
 Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
 
@@ -170,7 +130,19 @@ A more modern alternative towards synchronization is offered by the `Lock`{langu
 
 Expressing concurrency on the programming language level has its perils due to the overlapings of  languages concepts, e.g. the introduction of mutable state due to scopes or via visibility. Many concepts might have an influence on concurrency considerations. Shared mutability and synchronization especially require utmost care by the programmer for handling access to any data.
 
-### Case Study: Concurrent Processes in C {#sec-concurrent-c}
+
+### Operating System Approach to Concurrency {#sec-concurrency-os-level}
+
+~LitNote
+* The Process, Inter-process Communication, inherent concurrency
+* C like fork-join pattern was always a basic a way of write concurrency (outsourcing the concurrency aspect to the OS) --> Literatur?!
+* Middlewares/Virtual machines can provide a transparent way to distribute threads to multiple cores --> Literatur?!
+* [@Fel90] "Language and System Support for Concurrent Programming"
+    * Kapitel 3: Concurrency at the Operating System Level
+~
+
+
+#### Case Study: Concurrent Processes in C {#sec-concurrent-c}
 
 ~Todo
 Weil es jetzt weiter oben ist, muss ich hier noch Pipes erklären! Und das UNIX system. Und POSIX!
@@ -209,7 +181,28 @@ A pipe can be set up between any such two processes as an IPC by utilizing addit
 
 ...
 
-### Case Study: Distributed Database Systems 
+
+### Network Approach to Concurrency {#sec-concurrency-network-level}
+
+~ Epigraph { caption: "Unknown"}
+Distributed is truely concurrent
+~
+
+~ LitNote
+* "Distributed is truely concurrent"
+    * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
+    * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
+* **this chapter should explain why distribution is just another form of concurrency within a system**
+* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
+    * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
+* [@But14]
+  * shared-memory: inter-process comm. through memory (faster)
+  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
+    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
+~
+
+
+#### Case Study: Distributed Database Systems 
 
 ~LitNote
 * <https://pdfs.semanticscholar.org/cd48/1697170f25b366dee904dcfca7988bb87645.pdf>
