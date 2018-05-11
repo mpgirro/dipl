@@ -40,6 +40,47 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
   * [@Tai17] "Processes, Motivations, and Issues for Migrating to Microservices Architectures: An Empirical Investigation"
 ~
 
+## Integrating Actors and Microservices
+
+~important
+Das hier ist relativ frei aus der Hand geschrieben. Hier sollte ich Dinge zitieren, abseits von der Akka-HTTP Dokumentation!
+~
+
+In our discussion, we've focused on Actors and Microservices as competing approaches for constructing concurrent systems so far. However, it is worth to entertain the thought of *combining* both concepts instead. 
+
+The Microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice. Actors on the other hand are more restricted, for the model semantic requires them to receive *message* constructs in a uniform way. However, by implication this means different communication channels could be integrated as long as they comply to a homogenous message receiving abstraction.
+
+*Akka HTTP* is part of the Akka library collection (like the support for remoting and clustering). It provides a full client- and server-side HTTP stack ontop of the basic Actor abstraction. Thus, HTTP requests may be received as messages, just like from any other Actor: 
+
+```{language:scala}
+override def receive = {
+  case SomeMessage(_)                           => // handle message
+  case HttpResponse(status, headers, entity, _) => // process response
+}
+```
+
+For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI (**U**niform **R**esource **I**dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
+
+Though such receiving is in principle conform to the Actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to the Actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. An alternative interface is required:
+
+```{language:scala}
+Http().singleRequest(HttpRequest(URI("http://example.com")
+  .withQuery("name", "value"))
+  .pipeTo(self)
+```
+
+The example uses `pipeTo` to have the integration layer reroute any response as an `HttpResponse`{language:scala} message to the sending Actor.
+
+We see, not all the basic Actor primitives are suitable to be used outside the Actor abstraction. However, good abstractions still allow to integrate other [???]{.mind} into the Actor System. Thus, communication between Actors and Microservices is possible in principle. This allows to construct systems where tasks are distributed between Actors and Microservices.  
+
+This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* Framework[^fn-lagom], a reactive microservice system framework built ontop of Akka.
+
+[^fn-lagom]: <https://www.lagomframework.com> 
+
+~important
+Thus, it is easy to write Microservices from an Actor abstraction, but Microservices do not qualify as Actors in general. 
+~
+
 ## Outlook
 
 
