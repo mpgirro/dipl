@@ -1,16 +1,14 @@
 [INCLUDE=style/marticle]
 
-<!--
 Title        : Concurrent Programming with Actors and Microservices
--->
 <!--
 Title        : Concurrent Programming
 Subtitle     : Actors versus Microservices
 -->
-
+<!--
 Title        : Actors versus Microservices
 Subtitle     : Concurrent Programming with the Actor Model of Computation and the Microservice Architecture Style
-
+-->
 <!--
 Subtitle     : A conceptual analysis comparing the Actor Model of Computation and the Microservice Architecture Style regarding the construction of concurrent system
 -->
@@ -116,6 +114,9 @@ CSS Header      :
   .a, a:visited {
     color: #0000EE;  
   }
+  .titleheader {
+    max-width: 80%;
+  }
 
 [TITLE]
 
@@ -215,6 +216,7 @@ These arconyms occur throughout the thesis.
 * AMQP Advanced Message Queue Protocol
 * AO Active Object
 * DO Distributed Object
+* FIFO First In First Out
 * IPC Inter-Process Communication
 * JVM Java Virtual Machine
 * MOM Message-Oriented Middleware

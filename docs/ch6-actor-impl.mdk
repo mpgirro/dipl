@@ -151,7 +151,7 @@ The Actor model is soley built on the concept of message passing, therefore by d
 
 Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow.
 
-### Future-typed Messaging
+### Future-based Messaging
 
 Akka provides a primitive to abstract a synchronous information flow. In addition to the asynchronous `tell/!` command, it also offers the so-called *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
 

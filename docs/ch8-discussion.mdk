@@ -80,6 +80,44 @@ This restriction opens up another opportunity however. Monolithic applications t
 
 This approach on introducing specialized database systems based on respective persistance needs, at the risk of introducing potential redundancies, is sometimes refered to as *polyglott persistance* [citation?]{.mind}.
 
+## Communication
+
+~LitNote
+* [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
+~
+
+Actors facilitate by definition message passing for component communication [some sources]{.mind}. For Microservices, message passing is too the joint perception for communication style  [source 1, 2, 3]{.mind}. As such, their communication capabilities still deviate.
+
+For any sort of information exchange between two concurrent task units, there are two general modes of communication: *shared state* and *message passing*. The former relates to any form of controlled access and modification to a common memory, while the later strictly prohibits mutuable shared memory and instead relies on communication links used as I/O mechanism by the tasks [@Bac03; @Fel90]
+
+Thus, message passing must occure through a so-called *communication channel*. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies a synchronizing the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state communication must explicitely define an order of accessing information [@And83].
+
+
+---
+
+We've identified various forms of information flow in the literature [citation, multiple!]{.mind}
+
+~LitNote
+* [@Mon14] Jolie kennt: 
+    * (one-way), (request-response), (notification), (solicit-response) == async response?
+* [@Gui09] hat die von Jolie
+~
+
+~ center
+|------------------|------------------------|-------------------------|
+|                  | One-to-One             | One-to-Many             |
++------------------+------------------------+-------------------------+
+| **Synchronous**  | Request/response       | -                       |
+| -----------------| -----------------------| ------------------------|
+| **Asynchronous** | Notification           | Publish/subscribe       |
+|                  | Request/async response | Publish/async responses |
+|------------------|------------------------|-------------------------|
+{  }
+~
+
+The by far most prominent example in the literature [referenzen]{.mind} for viable Microservice communication is REST. However, it is merely a representative of the synchronouse one-to-one style. Other [TODO...]{.mind}
+
+
 ## Separation of Concerns
 
 ~LitNote
@@ -413,43 +451,6 @@ However, the one major benefit of Active as well as Distributed Objects compared
     * Classic Actors and Processes (Erlang) sind auf dem "level of abstraction" wie objekte in OO, oder abstract data types in FP
     * Active Objects und Communicating Event-Loops sind auf dem level of abstraction von "components" in OO, oder modulen in FP  
 ~
-
-## Communication
-
-~LitNote
-* [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
-~
-
-Actors facilitate by definition message passing for component communication [some sources]{.mind}. For Microservices, message passing is too the joint perception for communication style  [source 1, 2, 3]{.mind}. As such, their communication capabilities still deviate.
-
-For any sort of information exchange between two concurrent task units, there are two general modes of communication: *shared state* and *message passing*. The former relates to any form of controlled access and modification to a common memory, while the later strictly prohibits mutuable shared memory and instead relies on communication links used as I/O mechanism by the tasks [@Bac03; @Fel90]
-
-Thus, message passing must occure through a so-called *communication channel*. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies a synchronizing the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state communication must explicitely define an order of accessing information [@And83].
-
-
----
-
-We've identified various forms of information flow in the literature [citation, multiple!]{.mind}
-
-~LitNote
-* [@Mon14a] Jolie kennt: 
-    * (one-way), (request-response), (notification), (solicit-response) == async response?
-~
-
-~ center
-|------------------|------------------------|-------------------------|
-|                  | One-to-One             | One-to-Many             |
-+------------------+------------------------+-------------------------+
-| **Synchronous**  | Request/response       | -                       |
-| -----------------| -----------------------| ------------------------|
-| **Asynchronous** | Notification           | Publish/subscribe       |
-|                  | Request/async response | Publish/async responses |
-|------------------|------------------------|-------------------------|
-{  }
-~
-
-The by far most prominent example in the literature [referenzen]{.mind} for viable Microservice communication is REST. However, it is merely a representative of the synchronouse one-to-one style. Other [TODO...]{.mind}
-
 
 ## Governance, Deployment and Autonomy
 

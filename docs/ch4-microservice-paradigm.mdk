@@ -81,7 +81,13 @@ These are my principles. If you don't like them, I have others.
 
 No shared state, etc
 
-## Service Communication {#sec-ms-communication}
+...
+
+---
+
+The term "service" is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it referes to a computational task unit, e.g. a process, as part of a service-oriented architecture. That's what's [am öftensten mit der bezeichnung gemeint]{.mind} when refering to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. Thus, scholars have proposed a clear distinction be using the term "service" only for the functionality part. By doing so [@Xu16]  
+
+### Service Communication {#sec-ms-communication}
 
 
 ~ Epigraph { caption: "Doug McIlroy"}
@@ -109,7 +115,7 @@ This satisfies the channel requirements given above. Therefore pipes are a valid
 
 [^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up into a so-called *pipeline*, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A pipeline will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
 
-## Inherent Concurrency and Distribution
+### Inherent Concurrency and Distribution
 
 ~Todo
 Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
@@ -148,7 +154,7 @@ Any form of communication has to happen via an inter-process communication mecha
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 
-## Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
+### Service Granularity (Size, Scope and Granularity) {#sec-ms-granularity}
 
 ~LitNote
 * "micro should refere to the scope of responsibility, not the lines of code"
@@ -166,7 +172,15 @@ Bonér criticizes the term "micro" for it encourages debating the actual size of
 
 ## Conceptual Roots
 
-## Relation to Processes Calculi {#sec-ms-process-calculus}
+SOA, OOP
+
+## Service-oriented Programming
+
+### Processes Calculi {#sec-ms-process-calculus}
+
+~important
+Nachdem das überkapitel und die anderen Unterkapitel jetzt eh anders sind, vll die ganze diskussion nach unten schieben?
+~
 
 ~LitNote
 * <https://en.wikipedia.org/wiki/Process_calculus>
@@ -206,9 +220,9 @@ In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der an
 * [@Xu16] "CAOPLE : A Programming Language for Microservices SaaS"
 ~
 
-The Microservice approach has gain much attention first in the industry and nowadays well as in the academic community. As such, many different research disciplines focus on [work on this...]{.mind}.
+The Microservice approach has gained much attention first in the industry and nowadays as well in the academic community. As such, many different research disciplines focus on incorporating the Microservice paradigm into their respective field [...]{.mind}.
 
-From a scientific point of view, the freedom provided by the principles can be rather unsatisfactory. It is difficult to reason about services in general, for they only have to comply to rather abstract [???]{.mind}
+
 
 ... for service composition is not [vorgegeben]{.mind} by dedicated abstractions [@Gui17].
 
@@ -216,17 +230,32 @@ do not provide dedicated abstractions for service composition.
 
 ...
 
-* JOLIE
-  : Jolie [@Mon14a;@Gui17] ...
+* Jolie
+  : Jolie [@Mon14;@Gui17] ... In fact, Jolie is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06]
 
 * CAOPLE
   : CAOPLE [@Xu16] ...
 
+...
 
-
-*CAOPLE* is a ....
+For Microservices share many similarities with objects in general [citation?]{.mind}, such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16; @Sny93]. CAOPLE even supports polymorphism via an inheritance mechanism, and Jolie [...???]{.mind}.
 
 
 ### Behavioural Types
 
+~Todo
 Session Types, Process Types, etc.
+~
+
+From a scientific point of view, the freedom provided by the Microservice principles can also be rather unsatisfactory though. It is difficult to reason about services in general, for they only have to comply to rather abstract [???]{.mind}
+
+~ important
+passen schnittstellen zusammen?
+~
+
+*Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}
+
+
+In the Microservice-intrinsic context of distributed systems, concepts so far build on post facto analysis approaches, e.g. via randomization testing or error log analysis. Panda et al. [@Pan17] discuss a Microservice-specific invariance model at least capable to detect violations at runtime, at the cost limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
+
+The general problem for ensuring invariants and performing verification is that Microservices [...]{.mind}

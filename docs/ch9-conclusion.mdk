@@ -88,6 +88,18 @@ Thus, it is easy to write Microservices from an Actor abstraction, but Microserv
 Predicition is very difficult, especially about the future.
 ~
 
+...
+
+Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, an Jolie in particular, are having much in common with Actor Systems, as we've demonstrated in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]
+
+~todo
+Weiters in [@Gui17]: "However, Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
+~ 
+
+
+
+---
+
 ~LitNote
 * Services as First-Class Citizens
 * [@Kan15] beschreibt eine distributed Actors in Erlang, mit Erweiterungen:
