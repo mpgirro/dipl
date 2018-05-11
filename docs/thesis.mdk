@@ -1,7 +1,22 @@
 [INCLUDE=style/marticle]
 
+<!--
+Title        : Concurrent Programming with Actors and Microservices
+-->
+<!--
+Title        : Concurrent Programming
+Subtitle     : Actors versus Microservices
+-->
+
 Title        : Actors versus Microservices
+Subtitle     : Concurrent Programming with the Actor Model of Computation and the Microservice Architecture Style
+
+<!--
 Subtitle     : A conceptual analysis comparing the Actor Model of Computation and the Microservice Architecture Style regarding the construction of concurrent system
+-->
+<!--
+Subtitle     : A conceptual analysis comparing the Actor Model and the Microservice Architecture Style regarding the composition of concurrent computation
+-->
 <!--
 Subtitle     : A conceptual analysis comparing the Actor Model of Computation against the Microservice Architecture Style regarding their capabilities for concurrent system construction
 -->
