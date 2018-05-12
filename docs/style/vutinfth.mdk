@@ -1,0 +1,133 @@
+Doc Class     : [draft,final] style/vutinfth.cls
+
+Cite All      : false
+Logo          : False
+Package       : lmodern 
+<!-- Latin Modern Font, not CM, but avoids some of its problems -->
+Package       : [T1]fontenc
+<!--Package       : [utf8]inputenc-->
+Package       : fixltx2e
+Package       : amsmath
+Package       : amssymb
+Package       : mathtools
+Package       : microtype
+Package       : enumitem
+Package       : multirow
+Package       : booktabs
+Package       : subcaption
+Package       : [ruled,linesnumbered,algochapter]algorithm2e
+Package       : nag
+Package       : hyperref
+Package       : [acronym,toc]glossaries
+Heading Endperiod   :
+<!-- IMPORTANT! make sure headings get mapped to \chapters -->
+Heading Base        : 1
+
+Math Mode       : static
+
+@if tex {
+  Maketitle     : True
+}
+
+Tex Header    :
+    % Define convenience functions to use the author name and the thesis title in the PDF document properties.
+    \newcommand{\authorname}{&Author;} % The author name without titles.
+    \newcommand{\thesistitle}{&Title;} % The title of the thesis. The English version should be used, if it exists.
+    %
+    % Set PDF document properties
+    \hypersetup{
+        pdfpagelayout   = TwoPageRight,           % How the document is shown in PDF viewers (optional).
+        %linkbordercolor = {Melon},                % The color of the borders of boxes around crosslinks (optional).
+        pdfauthor       = {\authorname},          % The author's name in the document properties (optional).
+        pdftitle        = {\thesistitle},         % The document's title in the document properties (optional).
+        pdfsubject      = {Subject},              % The document's subject in the document properties (optional).
+        pdfkeywords     = {&keywords;} % The document's keywords in the document properties (optional).
+    }
+    %
+    \setsecnumdepth{subsection} % Enumerate subsections.
+    %
+    \nonzeroparskip             % Create space between paragraphs (optional).
+    \setlength{\parindent}{0pt} % Remove paragraph identation (optional).
+    %
+    \makeindex      % Use an optional index.
+    \makeglossaries % Use an optional glossary.
+    %\glstocfalse   % Remove the glossaries from the table of contents.
+    %
+    % Set persons with 4 arguments:
+    %  {title before name}{name}{title after name}{gender}
+    %  where both titles are optional (i.e. can be given as empty brackets {}).
+    \setauthor{&author-pretitle;}{\authorname}{&author-posttitle;}{&author-gender;}
+    \setadvisor{&advisor-pretitle;}{&advisor;}{&advisor-posttitle;}{&advisor-gender;}
+    %
+    % For bachelor and master theses:
+    %\setfirstassistant{Pretitle}{&assistant-1st;}{Posttitle}{male}
+    %\setsecondassistant{Pretitle}{&assistant-2nd;}{Posttitle}{male}
+    %\setthirdassistant{Pretitle}{&assistant-3rd;}{Posttitle}{male}
+    %
+    % For dissertations:
+    %\setfirstreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+    %\setsecondreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+    %
+    % For dissertations at the PhD School:
+    %\setsecondadvisor{Pretitle}{Forename Surname}{Posttitle}{male}
+    %
+    % Required data.
+    \setaddress{&author-address;}
+    \setregnumber{&regnumber;}
+    \setdate{&day;}{&month;}{&year;}
+    \settitle{\thesistitle}{&title;} % Sets English and German version of the title (both can be English or German).
+    \setsubtitle{&subtitle-en;}{&subtitle-de;} % Sets English and German version of the subtitle (both can be English or German).
+    %
+    % Select the thesis type: bachelor / master / doctor / phd-school.
+    % Bachelor:
+    %\setthesis{bachelor}
+    %
+    % Master:
+    \setthesis{master}
+    \setmasterdegree{dipl.} % dipl. / rer.nat. / rer.soc.oec. / master
+    %
+    % Doctor:
+    %\setthesis{doctor}
+    %\setdoctordegree{rer.soc.oec.}% rer.nat. / techn. / rer.soc.oec.
+    %
+    % Doctor at the PhD School
+    %\setthesis{phd-school} % Deactivate non-English title pages (see below)
+    %
+    % For bachelor and master:
+    \setcurriculum{&curriculum-en;}{&curriculum-de;} % Sets the English and German name of the curriculum.
+    %
+    % For dissertations at the PhD School:
+    \setfirstreviewerdata{Affiliation, Country}
+    \setsecondreviewerdata{Affiliation, Country}
+    %
+    % Define convenience macros.
+    \newcommand{\todo}[1]{{\color{red}\textbf{TODO: {#1}}}} % Comment for the final version, to raise errors.
+
+Tex Doc Header  :
+    \frontmatter % Switches to roman numbering.
+    % The structure of the thesis has to conform to
+    %  http://www.informatik.tuwien.ac.at/dekanat
+    %
+    \addtitlepage{naustrian} % German title page (not for dissertations at the PhD School).
+    \addtitlepage{english} % English title page.
+    \addstatementpage
+
+<!--
+@if html {
+  Css Header :
+    .toc a, .toc a:visited {
+      color: #135;
+    }
+    .code {
+      background-color: #EEE;
+      padding: 0ex 0.2ex 0.1ex 0.2ex;
+      border-radius: 0.5ex;
+    }
+    pre .code {
+      background-color: inherit;
+    }
+    .madoko .math-rendering {
+      color: black;
+    }
+}
+-->
