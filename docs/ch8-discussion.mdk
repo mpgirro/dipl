@@ -101,6 +101,7 @@ We've identified various forms of information flow in the literature [citation, 
 * [@Mon14] Jolie kennt: 
     * (one-way), (request-response), (notification), (solicit-response) == async response?
 * [@Gui09] hat die von Jolie
+* [@Spe90] "point to point (rendez-vous) or diffusion (broadcast and multicast)""
 ~
 
 ~ center
@@ -329,6 +330,16 @@ Microservices können auch message passing, aber auch synchrone. Die location tr
 
 ### Location Transparency and Mobility
 
+
+...
+
+Microservices allow for arbitrary communication channels, as long as those conform to the paradigm. Pipes have been stated a a viable example. However, as we've pointed out, such are limited to the memory boundries of a single OS [soll ich da was zitieren? hab ich eh schon 1000 erklärt]{.mind}. Channels operating on network level intrinsically distributed communication mechanisms, which facilitate message passing [@Bar97] and provide a uniform interface for remote as well as local communication [@Spe90].
+
+...
+
+Mobility means changing topologies (brauche was aus dem ich das zitieren kann). Location transparency offers the possibility for topologies of components to change. Such moving is called *mobility*.
+
+---
 
 Mobility:
 
@@ -581,7 +592,7 @@ zu Session Types:
 * see [@Mon13] "*Choreographic Programming*"
 ~
 
-In general, reasoning in Actor Systems is hard due to the intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren]. Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.
+In general, reasoning in Actor Systems is hard due to the intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren - stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}. Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.
 
 Microservices share this fate. The general principles are rather allowing regarding the integration and composition of technologies, which makes it especially hard to apply any kind of global verification methodology. There is simply an almost complete lack of tool support for any kind of reasoning. Of course, scientific [???]{.mind} have already come up with first [???]{.mind}, like the already mentioned `ucheck` invariant enforcement system.  
 

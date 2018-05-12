@@ -85,7 +85,10 @@ No shared state, etc
 
 ---
 
-The term "service" is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it referes to a computational task unit, e.g. a process, as part of a service-oriented architecture. That's what's [am öftensten mit der bezeichnung gemeint]{.mind} when refering to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. Thus, scholars have proposed a clear distinction be using the term "service" only for the functionality part. By doing so [@Xu16]  
+The term "service" is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it referes to a computational task unit, e.g. a process, as part of a service-oriented architecture. That's what's [am öftensten mit der bezeichnung gemeint]{.mind} when refering to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
+
+
+In order to avoid confusion, some scholars propose a clear distinction. For example, Xu et al. [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi and Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 
 ### Service Communication {#sec-ms-communication}
 
@@ -149,6 +152,9 @@ Though isolation is ensured and communication adequate, it is still difficult to
 
 ...
 
+
+[das hier in den praktisch teil, also REST und AMQP einführen!]{.important}
+
 Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
 
 
@@ -197,6 +203,10 @@ Nachdem das überkapitel und die anderen Unterkapitel jetzt eh anders sind, vll 
 * Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
 * Asynchronous Sequential Processes (ASP) --> "D. Caromel, L. Henrio, and B. P. Serpette. Asynchronous sequential processes. Inf. Comput., 207(4):459–495, Apr. 2009"
     * [@Kos16] vergleich diese mit Active Objects, nur mit gröberer Granularität
+* [@Spe90] The main features CSP are:
+    * conlmutrication management by means of input and output commands and the use of channels,
+    * the exploitation of parallelism by means of the parallel command, and
+    * nondeterminism management by guarded commands.
 ~
 
 Among the theories of formulating concurrent computation is found a family called *process calculi*. Such define mathematical models composed of so-called *processes* which are communicating within the laws and conditions layed out by the calculus [citation]{.mind}.
@@ -241,13 +251,19 @@ do not provide dedicated abstractions for service composition.
 For Microservices share many similarities with objects in general [citation?]{.mind}, such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16; @Sny93]. CAOPLE even supports polymorphism via an inheritance mechanism, and Jolie [...???]{.mind}.
 
 
-### Behavioural Types
+### Behavioral Types
 
 ~Todo
 Session Types, Process Types, etc.
 ~
 
+So far, we've covered concerns both Actors and Microservices provide respective approaches for [hä?]{.mind}. However, there are sibjects both concepts provide a lack of support ????
+
+...
+
+~ delete
 From a scientific point of view, the freedom provided by the Microservice principles can also be rather unsatisfactory though. It is difficult to reason about services in general, for they only have to comply to rather abstract [???]{.mind}
+~
 
 ~ important
 passen schnittstellen zusammen?
@@ -259,3 +275,47 @@ passen schnittstellen zusammen?
 In the Microservice-intrinsic context of distributed systems, concepts so far build on post facto analysis approaches, e.g. via randomization testing or error log analysis. Panda et al. [@Pan17] discuss a Microservice-specific invariance model called `ucheck` that is at least capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
 
 The general problem for ensuring invariants and performing verification is that Microservices [...]{.mind}
+
+... 
+
+
+Behavioral Types are well known from object-oriented programming, e.g. as so-called *session types* [citation(s)?]{.mind} or *process types* [ref-franz-habit]{.mind}.
+
+~LitNote
+* [@Anc16] "Behavioral Types in Programming Languages"
+    * "Session types can be seen as a special case of typestate, in which the ordered operations are the sends and receives on communication channels"
+~
+
+
+...
+
+~Todo
+Eigentlich möchte ich hier auch was zu Actors schreiben. Denn zwar zeigt Akka Typed, dass man static type safe messaging (mit entsprechenden einschränkungen) haben kann, aber laut der Akka doku kann man das den state eines behaviour nicht zur compile time sicherstellen. dort schreibe ich "Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model". 
+
+Allerdings könnten das vll Active Objects? Denn da Franz hat dazu was geschrieben! Das könnte ich dann hier einbauen.
+~
+
+---
+
+...
+
+The task units of both Actor Systems as well as Microservices Architectures support "hot-swapping" [das schreibt Punt. in einem seiner Paper so, sollte ich vll ein anderes Wort aus der Literatur suchen]{.mind} of their respective components. We've discussed the independent deployment capabilities of both approaches. On the one hand, the full isolation of Microservices allows to replace services independently. As long as the new service is reachable as the same destination through the communication channel(s), location transparency is ensured. On the other hand, the Actor model demands that Actors may change their behavior, 
+
+...
+
+Contracts ... static interfaces
+
+...
+
+*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. 
+
+We've refered to `ucheck` as an approach towards verification regarding invariants within MSA, but  general tool support is scarce for heterogenous service compositions. Dedicated programming languages like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
+
+...Jolie builds upon WSDL...
+
+However, all these approaches towards component contracts still take rather basic information into account. 
+
+
+... only pre- and postconditions, and to a certain degree invariants.
+
+... no notion of history constraints...

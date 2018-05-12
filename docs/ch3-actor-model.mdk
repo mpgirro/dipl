@@ -274,7 +274,7 @@ The concept of such eventually retrievable values is not uniformly named in the 
 
 Java and Scala, among others like C#, Dart, etc., have a special view on such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
 
-[^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java}.
+[^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java} as is in Scala.
 
 Though today all designations tend to be used interchangeably, and refere to roughly the same idea [@Swa14], we will confine to the term "Future" as it is used in Java and Scala, and to its semantic as is provided by these languages.
 

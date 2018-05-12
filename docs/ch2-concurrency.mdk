@@ -104,15 +104,15 @@ Java is an object-oriented programming language with a C-inspired syntax for the
 
 ```{language:java}
 class State {
-    public int a = 0;
+    public int x = 0;
 }
 
 final State s = new State();
 
 final Runnable task = () -> {
     synchronized(s) {
-        s.a += 1;
-        System.out.println(Thread.currentThread().getName() + " " + s.a);
+        x.a += 1;
+        System.out.println(Thread.currentThread().getName() + " " + s.x);
     }
 };
 
@@ -120,13 +120,13 @@ new Thread(task).start();
 new Thread(task).start();
 ```
 
-The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, some state denoted by `s` has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. Note that though `s` is declared `final`{language:java}, its member `a` remains mutable and is publicly visible.
+The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, some state denoted by `s` has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. Note that though `s` is declared `final`{language:java}, its publicly visible member `x` remains mutable.
 
 The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. 
 
 In contrast, the `synchronized`{language:java} keyword could also be used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
 
-A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11].
+A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11;@Goe06].
 
 Expressing concurrency on the programming language level has its perils due to the overlapings of  languages concepts, e.g. the introduction of mutable state due to scopes or via visibility. Many concepts might have an influence on concurrency considerations. Shared mutability and synchronization especially require utmost care by the programmer for handling access to any data.
 

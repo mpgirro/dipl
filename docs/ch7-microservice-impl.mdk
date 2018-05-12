@@ -1,6 +1,6 @@
 
-Microservice-based System Implementation {#ch-microservice-impl}
-=====================================
+Microservice-based Implementation {#ch-microservice-impl}
+=================================
 
 
 
@@ -18,9 +18,11 @@ Java + Spring Boot Stack for all Services
 * PostgreSQL accessed by multiple threads concurrently *within* the MS
 ~
 
-## Communication Channels and Service Interfaces
+## Service Communication
 
 Synchronous and Asynchronous Communication
+
+Communication Channels and Service Interfaces
 
 ~Todo
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)

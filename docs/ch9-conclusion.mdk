@@ -69,7 +69,7 @@ Http().singleRequest(HttpRequest(URI(s"http://example.com")
   .pipeTo(self)
 ```
 
-The example uses `pipeTo` to have the integration layer reroute any response as an `HttpResponse`{language:scala} message to the sending Actor.
+The example uses `pipeTo` to have the integration layer reroute any response as an `HttpResponse`{language:scala} message to the sending Actor (delegation).
 
 We see, not all the basic Actor primitives are suitable to be used outside the Actor abstraction. However, good abstractions still allow to integrate other [???]{.mind} into the Actor System. Thus, communication between Actors and Microservices is possible in principle. This allows to construct systems where tasks are distributed between Actors and Microservices.  
 
@@ -96,6 +96,13 @@ Languages like Jolie demonstrate how (micro-)service oriented computing can be f
 Weiters in [@Gui17]: "However, Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
 ~ 
 
+...
+
+... Boner schlägt zB vor das Microservices gechrieben werden sollen nach den Actor Prinzipien; schlägt dafür sogar einen komischen Namen vor
+
+... dafür einfach dedizierte sprachen erfinden die beides vereinen
+
+...außerdem sollen sie behavioral types unterstützen...
 
 
 ---
