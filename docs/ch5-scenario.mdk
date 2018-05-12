@@ -33,7 +33,7 @@ Podcasts = Decentralized media syndication
 
 ## System Components
 
-### Crawler
+### Crawler { -; toc:clear }
 
 - lädt neue (= bisher unbekannte) feeds und gibt sie an indexer
 - updated bereits bekannte feed (nach schlauen methoden sieht er nach ob sich was geändert hat, = content-seen test), und gibt die neuen info ggf an indexer
@@ -60,9 +60,9 @@ Podcasts = Decentralized media syndication
 
 - siehe "Mercator: A scalable, extensible Web crawler" https://dl.acm.org/citation.cfm?id=598733
 
-### Parser
+### Parser { -; toc:clear }
 
-### IndexStore
+### IndexStore { -; toc:clear }
 
 - verwaltet den zugriff auf den lucene index
 
@@ -80,15 +80,15 @@ Podcasts = Decentralized media syndication
     - Acronyms
     - etc.
 
-### DirectoryStore
+### DirectoryStore { -; toc:clear }
 
-### Searcher
-
-
-### Gateway
+### Searcher { -; toc:clear }
 
 
-### Updater
+### Gateway { -; toc:clear }
+
+
+### Updater { -; toc:clear }
 
 - siehe "Effective page refresh policies for Web crawlers" https://dl.acm.org/citation.cfm?id=958945
 
