@@ -556,29 +556,19 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
     * ad pre/postconditions: "Certain subtleties, however, arise tin teir use in dtstributed systems. For example, sunce there may be many concurrent threads of execution, the caller of a method cannot unilaterally guarantee that the required preconditions hold when the method begins executing. Thus phenomenon, termed the precondition paradox, has been neglected by many specification methodologies."
 ~
 
-
-~Todo
-Bisl blabla darüber, dass Actors dyn typed sind, dass Akka Typed da bisl was dran ändert, dass MS keine Tools haben um die Kompatibilität zu prüfen und das wie im MS Kapitel anedeutet dedizierte Sprachen das ganze Verbessen können, hin zu all dem Behavioural Types zeugs...
-~
-
----
-
-~LitNote
-* [@Pan17] "Verification in the Age of Microservices"
-* "Choreographies are high-level descriptions of the communications that we want to happen in a system in contrast with the typical methodology of defining the behaviour of each service separately" [@Dra17a]
-* see [@Mon13] "*Choreographic Programming*"
-~
-
-
 So far, we've covered concerns both Actors and Microservices provide respective approaches for [hä?]{.mind}. However, there are subjects with yet little to no support in either context. One such concern we've found is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
 
-We've already discussed capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others. However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the [system will break...gscheiter formulieren und was zitieren]{.mind}. 
+We've already discussed capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the [system will break...gscheiter formulieren und was zitieren]{.mind}. 
 
 An interface can be generally seens as a contract... [TODO: input, output, etc. pp...]{.important}
 
 The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that S is a subtype of T if an incarnation of T can be safely replace by any incarnation of S, i.e. S respects the contract promised by T. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 ### Contract Verification
+
+~LitNote
+* [@Pan17] "Verification in the Age of Microservices"
+~
 
 Component substitution in Actor Systems can take the most basic form of behavior replacement. As we've pointed out, this primitive does not affect an Actor's address, therefore the instance defined by the new behavior transparently replaces the old. As a result, a new Actor might receive the same kinds of messages as did its predecessor, but fail to provide an appropriate reaction to such through the new behavior. 
 
@@ -594,10 +584,6 @@ An attempt towards a solution can be the utilization of a neutral tool with rega
 
 Of course, this is not possible for dynamically typed languages. For MSAs are often implemented with a mixture of static and dynamic programming languages, the common denominator fallback is often basic informal documentaion in natural language [@Dra17a]. 
 
-
-
-...Microservice Architectures share that same fate as Actors do. Even worse, the MS principles are rather allowing regarding heterogenous service integration and composition, which makes it especially hard to apply any kind of global verification methodology. [We've simply found an almost complete lack of tool support for any kind of reasoning.]{.important} 
-
 ~Todo
 Preconditions, postconditions...
 ~
@@ -606,10 +592,7 @@ Preconditions, postconditions...
 
 In the intrinsic context of distributed systems, concepts for verification build so far on post facto analysis approaches, e.g. via randomization testing or error log analysis. For example, Panda et al. [@Pan17] propose a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
 
-The general problem for ensuring invariants and performing verification is that Microservices [...]{.mind}
 ...
-
-... REST and AMQP offer the possibility of well defined interfaces, but with limited tool support for verifying if heterogenous components comply to such.
 
 Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
 
@@ -624,8 +607,6 @@ Dedicated programming languages for service-oriented programming like Jolie open
 ...If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
 
 ...
-
-
 
 ### Behavioral Types
 
@@ -643,54 +624,20 @@ There is a generalization of describing [???]{.important} for objects. Two separ
 ...
 
 
-...
-
 Due to the nature of Actors and Microservices, these concepts intrinsically allow to define nonuniform interfaces.
-
-...
-
-In the literature there are two kinds of .... such based on ??? called *session types* and such based on process calculi called *process types* 
-
 
 ...
 
 Behavior type theory concepts seem to be not widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain applicability of services, which is undesired by programmers. 
 
-...
-
-
-We have'nt found any behavioral type concept to be much applied in practice yet [bisl gar ein zutate aus Dra17a]{.mind}
 
 ...
 
-Such considerations are revelant in general for both contexts of Actors as well as Microservices. The dynamic changes in system topologies and replacements of components by new versions (subtypes) demand a [sicherstellen, dass das dann auch noch alles zusammenpasst -- aber kann ich da irgendwas zitieren? muss ich fast]{.mind}
-
-...important for concurrent and distributed systems []
 
 ~LitNote
-* "Behavioural types are types that can describe the behaviour of services and can be used to check that two (or more) services have compatible actions" [@Dra17a]
-* "Session types are a prime example of behavioural types" [@Dra17a]
-* "Session types have been successfully applied to many contexts already, ranging from parallel to distributed computing." [@Dra17a]
-
-zu Session Types: 
-
-* see "*Kohei Honda, Vasco Vasconcelos, and Makoto Kubo. Language primitives and type disciplines for structured communication-based programming. pages 22–138, 1998*"
-* see "*Kohei Honda, Nobuko Yoshida, and Marco Carbone. Multiparty asynchronous session types. Journal of the ACM,63(1):9, 2016. Also: POPL, 2008, pages 273–284*"
-
 * distributed objects as processes, define a behaviour 
     * see [@Bar97]
 ~
-
-
-... 
-
-Behavioral Types are well known from object-oriented programming, e.g. as so-called *session types* [citation(s)?]{.mind} or *process types* [ref-franz-habit]{.mind}.
-
-~LitNote
-* [@Anc16] "Behavioral Types in Programming Languages"
-    * "Session types can be seen as a special case of typestate, in which the ordered operations are the sends and receives on communication channels"
-~
-
 
 ...
 
@@ -700,15 +647,6 @@ Eigentlich möchte ich hier auch was zu Actors schreiben. Denn zwar zeigt Akka T
 Allerdings könnten das vll Active Objects? Denn da Franz hat dazu was geschrieben! Das könnte ich dann hier einbauen.
 ~
 
-...
-
-~ delete
-The task units of both Actor Systems as well as Microservices Architectures support "hot-swapping" [das schreibt Punt. in einem seiner Paper so, sollte ich vll ein anderes Wort aus der Literatur suchen]{.mind} of their respective components. We've discussed the independent deployment capabilities of both approaches. On the one hand, the full isolation of Microservices allows to replace services independently. As long as the new service is reachable as the same destination through the communication channel(s), location transparency is ensured. On the other hand, the Actor model demands that Actors may change their behavior, 
-~
-
-...
-
-*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
 ...
 
@@ -720,17 +658,13 @@ However, all these approaches towards component contracts still take rather basi
 
 ... no notion of history constraints...
 
-Issues that could be addressed by behavioral type:
+...
 
-* Nonuniform method/service availability
-  : Within the context of objects, research as been done regarding *nonuniform method availability*. This is, depending on an objects internal state, method may or may not be available through the objects public interface. As was already pointed out, 
-  
-  
-  
-  ....manchmal sind methoden vorhanden, manchmal nicht. zB wenn ein Actor sein behavior ändert, und das neue gewisse methoden nicht mehr verarbeiten kann/will....
+Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental approach towards this concept.
 
-  Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental approach towards this concept.
+...
 
+*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
 ...
 
