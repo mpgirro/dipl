@@ -596,6 +596,10 @@ In general, reasoning in Actor Systems is hard due to this intrinsic property of
 
 The same requirement holds for Microservices. When replacing the engine of any service component, it must be ensured that the service behavior complies to the substitution principle. When it comes to verifing this, Microservice Architectures share that same fate as Actors do. Even worse, the MS principles are rather allowing regarding heterogenous service integration and composition, which makes it especially hard to apply any kind of global verification methodology. [We've simply found an almost complete lack of tool support for any kind of reasoning.]{.important} 
 
+~Todo
+Preconditions, postconditions...
+~
+
 *Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}
 
 In the intrinsic context of distributed systems, concepts for verification build so far on post facto analysis approaches, e.g. via randomization testing or error log analysis. For example, Panda et al. [@Pan17] propose a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
@@ -613,6 +617,27 @@ Dedicated programming languages for service-oriented programming like Jolie open
 ...If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
 
 ### Behavioral Types
+
+Active Objects primarily address the problem of contracts for Actors. Their object abstraction provide static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. 
+
+The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages. This is intuitively somewhat contrary to the static object notion of AOs, for it would mean that their offered methods are not a static set, but change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
+
+
+There is a generalization of describing ??? for objects. Two separate path towards this have been taken in the literature. One focusing on introducing process calculi-like types into object, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special kind of typestates, refered to as *session types* [@Anc16]. We've found that *process types* [franz c1, c2, c3]{.mind} aim towards combining both directions under a unified type theory [stimmt das überhaupt?]{.important}.
+
+...
+
+Due to the nature of Actors and Microservices, these concepts intrinsically allow to define nonuniform interfaces.
+
+...
+
+In the literature there are two kinds of .... such based on ??? called *session types* and such based on process calculi called *process types* 
+
+
+...
+
+Such considerations are revelant in general for both contexts of Actors as well as Microservices. The dynamic changes in system topologies and replacements of components by new versions (subtypes) demand a [sicherstellen, dass das dann auch noch alles zusammenpasst -- aber kann ich da irgendwas zitieren? muss ich fast]{.mind}
+
 
 ~LitNote
 * "Behavioural types are types that can describe the behaviour of services and can be used to check that two (or more) services have compatible actions" [@Dra17a]
@@ -680,6 +705,10 @@ Issues that could be addressed by behavioral type:
   ....manchmal sind methoden vorhanden, manchmal nicht. zB wenn ein Actor sein behavior ändert, und das neue gewisse methoden nicht mehr verarbeiten kann/will....
 
   Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental approach towards this concept.
+
+  ---
+
+  For an in-depth overview on session types and behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16], and for a detail discussion of behavioral types from a programming language point of view (include service-oriented ones), to Ancona et al. [@Anc16].
 
 ## Evaluation
 
