@@ -1,6 +1,6 @@
 <!--[INCLUDE=style/marticle]-->
 
-Title        : Concurrent Programming with &br; Actors and Microservices
+Title        : Concurrent Programming with Actors and Microservices
 Subtitle     :
 <!--
 Title        : Concurrent Programming
@@ -24,7 +24,7 @@ Title        : Concurrent Programming
                and the Microservice Architecture Style
 Subtitle     : Hier könnte Ihre Werbung stehen!
 -->
-Author       : Maximilian P.G. Irro
+Author       : Maximilian Irro
 <!--mail        : max@irro.at-->
 Copyright    : Maximilian Irro, 2017
 Title Footer : 2018
@@ -38,8 +38,8 @@ Author Pretitle   :
 Author Posttitle  : BSc BSc
 Author Address    : Pfalzstraße 10, 5282 Ranshofen
 Regnumber         : 1026859
-Curriculum EN     : Software Engineering and Internet Computing
-Curriculum DE     : Software Engineering and Internet Computing
+Curriculum EN     : Software Engineering \& Internet Computing
+Curriculum DE     : Software Engineering \& Internet Computing
 
 
 Advisor           : Franz Puntigam

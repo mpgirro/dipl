@@ -312,6 +312,13 @@ Mobility:
 * MS: "Location of MS may not be statically known at design time" [@Mon16a]
 ~
 
+Mobility:
+
+~LitNote
+* [@Gui09] "Reasoning About a Service-oriented Programming Paradigm
+    * Slave service mobility andMaster service mobility
+~
+
 ### Distributed Object Abstraction {#sec-distributed-objects}
 
 ~LitNote
@@ -535,31 +542,14 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 ## Design by Contract
 
-~Todo
-Both have a clear interface (Actors via the messages they accept, MS via their REST interface or the AMQP msg they consume). However, both also have problems in terms of checking this. Actors only check at runtime if they "unserstand" the current message. Microservices lack tools to ensure composability at compile time (das will ich vll fürs MS-solution kapitel aufheben)
-~
-
-~Todo
-Actors und Microservices können zur Compile-time idR nicht garantieren, dass die Nachrichten die sie bekommen werden auch verstehen können. Active Objects (und zu einem gewissen Grad auch Distr. Obj.) sind reizvoll weil sie diesen Markel beheben.
-~
-
 ~LitNote
-* Hier kann ich an Franz zitieren!
-* Punt: "In Components We Trust – Programming Language Support for Weak Protection"
-* Punt: "Coordination of CORBA Ob jects with Process Types"
-* Punt: "Practical Expressive Types for Active Objects"
-~
-
-~LitNote
-* Sync vs Async, Immutable Messages
-* Point to Point, Publish/Subscribe, 
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
 * [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
 * [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
 * [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
 * "loose coupling" [@Sal16]
 * bzgl REST:
-    * see [Mon16b], section 7, "RESTful services"
+    * see [@Mon16b], section 7, "RESTful services"
 * new versions can be gradually introduced into a system [@Mon16a]
 * [@Siv99] "The specification of distributed objects: liveness and locality"
     * "The design-by-contract philosophy of software design partitions responsibility for correctness between the caller of a method and the callee. It is the obligation of the caller to establish the proconditions before the method is invoked and it is the obligation of the callee, given these preconditions, to ensure the postconditions when the method terminates"
@@ -586,7 +576,7 @@ We've already discussed capabilities and notions regarding concerns like isolati
 
 An interface can be generally seens as a contract... [TODO: input, output, etc. pp...]{.important}
 
-The *Liskov Substitution Principle* [citation?]{.mind} states that S is a subtype of T if an incarnation of T can be safely replace by any incarnation of S, i.e. S respects the contract promised by T. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
+The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that S is a subtype of T if an incarnation of T can be safely replace by any incarnation of S, i.e. S respects the contract promised by T. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 ### Contract Verification
 
@@ -594,7 +584,19 @@ Component substitution in Actor Systems can take the most basic form of behavior
 
 In general, reasoning in Actor Systems is hard due to this intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren - stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}. [Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.]{.important}
 
-The same requirement holds for Microservices. When replacing the engine of any service component, it must be ensured that the service behavior complies to the substitution principle. When it comes to verifing this, Microservice Architectures share that same fate as Actors do. Even worse, the MS principles are rather allowing regarding heterogenous service integration and composition, which makes it especially hard to apply any kind of global verification methodology. [We've simply found an almost complete lack of tool support for any kind of reasoning.]{.important} 
+...
+
+The same requirement holds for Microservices. Replacing the engine of any service component requires that the service behavior must comply to the substitution principle. When it comes to verifing this, the freedom of the Microservice paradigm to allow heterogenous technologies among services becomes a hindrance.   
+
+Different technologies (programming languages and framework) and communication mechanisms (e.g. REST or AMQP) have different means of support for expressing contracts. There is no guarantee that any kind of compatibility checking tool is even available, yet compatible with a verification toolchain [@Dra17a]. 
+
+An attempt towards a solution can be the utilization of a neutral tool with regard to language and technologies. For example, Apache Thrift [@Sle07] provides an independent format to formulize data types and interface specifications, and then generate static code in various supported languages to be used for implementing communication ports. Such can subsequently serve for applying static type checking regarding well-defined interfaces, however without incorporating channel protocols [@Dra17a].
+
+Of course, this is not possible for dynamically typed languages. For MSAs are often implemented with a mixture of static and dynamic programming languages, the common denominator fallback is often basic informal documentaion in natural language [@Dra17a]. 
+
+
+
+...Microservice Architectures share that same fate as Actors do. Even worse, the MS principles are rather allowing regarding heterogenous service integration and composition, which makes it especially hard to apply any kind of global verification methodology. [We've simply found an almost complete lack of tool support for any kind of reasoning.]{.important} 
 
 ~Todo
 Preconditions, postconditions...
@@ -607,23 +609,39 @@ In the intrinsic context of distributed systems, concepts for verification build
 The general problem for ensuring invariants and performing verification is that Microservices [...]{.mind}
 ...
 
+... REST and AMQP offer the possibility of well defined interfaces, but with limited tool support for verifying if heterogenous components comply to such.
 
 Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
 
 
 ...Jolie builds upon WSDL...
 
+...WSDL and Pre/post conditions!
+
+...WSDL can express preconditions? e.g. that some a>1 etc.?
+
 
 ...If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
 
+...
+
+
+
 ### Behavioral Types
 
-Active Objects primarily address the problem of contracts for Actors. Their object abstraction provide static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. 
+Guidi and Montesi [@Gui09] define three kinds of interfaces: functional (distinguished by a name, input and output types), work-flow (requireing a valid sequence of interaction) and semantic (offering semantic information about functionality through some onthology). The previous section discussed contracts of the functional kinds, which are rather simple for the only information used to check them is weither the input and output types are compatible. This can be done in general with respect to the substitution principle [citation?]{.mind}.
 
-The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages. This is intuitively somewhat contrary to the static object notion of AOs, for it would mean that their offered methods are not a static set, but change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
+Actor and Microservice Systems require its components to be interoperable in order to ensure reliability and correctness. The mere compatibility of formally defined interfaces in not incorporating sufficient information in general in order to be able to ensure this for communication-centered concurrent and distributed system components. Message exchange has an influence on internal task unit state, thus a precise message order can be required [@Anc16;@Dra17a]. This is not considered in functional types. However, the mentioned work-flow kind incorporates this into a notion of typization. Such types are generally subsumized as *behavioral types* [@Anc16]. 
+
+...
+
+Active Objects primarily address the problem of contracts for Actors. Their object abstraction provides static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages, i.e. a certain sequence of messages is required. Intuitively this is somewhat contrary to the static notion of objects the AO abstraction facilitates, for it would mean that their offered methods are not a static set, but may change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
 
 
-There is a generalization of describing ??? for objects. Two separate path towards this have been taken in the literature. One focusing on introducing process calculi-like types into object, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special kind of typestates, refered to as *session types* [@Anc16]. We've found that *process types* [franz c1, c2, c3]{.mind} aim towards combining both directions under a unified type theory [stimmt das überhaupt?]{.important}.
+There is a generalization of describing [???]{.important} for objects. Two separate paths towards this have been taken in the literature. One focusing on introducing process calculi like types into objects, thus sometimes refered to as *process types* [@Pun95a;@Hut16, REF3] ...[stimmt das?!]{.important}, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special variant of typestate refered to as *session types* [@Anc16].
+
+...
+
 
 ...
 
@@ -636,8 +654,18 @@ In the literature there are two kinds of .... such based on ??? called *session 
 
 ...
 
+Behavior type theory concepts seem to be not widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain applicability of services, which is undesired by programmers. 
+
+...
+
+
+We have'nt found any behavioral type concept to be much applied in practice yet [bisl gar ein zutate aus Dra17a]{.mind}
+
+...
+
 Such considerations are revelant in general for both contexts of Actors as well as Microservices. The dynamic changes in system topologies and replacements of components by new versions (subtypes) demand a [sicherstellen, dass das dann auch noch alles zusammenpasst -- aber kann ich da irgendwas zitieren? muss ich fast]{.mind}
 
+...important for concurrent and distributed systems []
 
 ~LitNote
 * "Behavioural types are types that can describe the behaviour of services and can be used to check that two (or more) services have compatible actions" [@Dra17a]
@@ -654,9 +682,7 @@ zu Session Types:
 ~
 
 
-
 ... 
-
 
 Behavioral Types are well known from object-oriented programming, e.g. as so-called *session types* [citation(s)?]{.mind} or *process types* [ref-franz-habit]{.mind}.
 
@@ -674,8 +700,6 @@ Eigentlich möchte ich hier auch was zu Actors schreiben. Denn zwar zeigt Akka T
 Allerdings könnten das vll Active Objects? Denn da Franz hat dazu was geschrieben! Das könnte ich dann hier einbauen.
 ~
 
----
-
 ...
 
 ~ delete
@@ -684,8 +708,9 @@ The task units of both Actor Systems as well as Microservices Architectures supp
 
 ...
 
-*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. 
+*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
+...
 
 
 However, all these approaches towards component contracts still take rather basic information into account. 
@@ -706,9 +731,12 @@ Issues that could be addressed by behavioral type:
 
   Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental approach towards this concept.
 
-  ---
 
-  For an in-depth overview on session types and behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16], and for a detail discussion of behavioral types from a programming language point of view (include service-oriented ones), to Ancona et al. [@Anc16].
+...
+
+An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction [@Dra17a]. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
+
+For a broader overview on behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16] and Ancona et al. [@Anc16].
 
 ## Evaluation
 
