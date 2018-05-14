@@ -18,7 +18,9 @@ Java + Spring Boot Stack for all Services
 * PostgreSQL accessed by multiple threads concurrently *within* the MS
 ~
 
-## Service Communication
+## Communication Channels
+
+REST, AMQP
 
 Synchronous and Asynchronous Communication
 

@@ -206,7 +206,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 
 <!-- HTML -->
 ~ Begin HtmlOnly
-# Danksagung {-}
+# Danksagung { -; toc:clear }
 ~ End HtmlOnly
 
 [TODO]{.important}
@@ -226,7 +226,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 
 <!-- HTML -->
 ~ Begin HtmlOnly
-# Zusammenfassung {-}
+# Zusammenfassung { -; toc:clear }
 ~ End HtmlOnly
 
 [TODO]{.important}
@@ -241,7 +241,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 
 <!-- HTML -->
 ~ Begin HtmlOnly
-# Abstract {-}
+# Abstract { -; toc:clear }
 ~ End HtmlOnly
 
 Common problems...
@@ -328,11 +328,13 @@ These arconyms occur throughout the thesis.
 * PID Process Identifier
 * REST Representational State Transfer
 * RPC Remote Procedure Call
+* SOA Service Oriented Architecture
 * SoC Separation of Concerns
+* SOC Service Oriented Computing
 * STM Software Transactional Memory
 * URI Uniform Resource Identifier
 * URL Uniform Resource Locator
-* WSDL
+* WSDL Web Services Description Language
 
 # Glossary { - }
 

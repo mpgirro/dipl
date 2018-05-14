@@ -80,6 +80,12 @@ The major differences to parallel execution is that the task units cannot not sh
 define difference between process and node
 ~
 
+...
+
+~Todo
+Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
+~
+
 ## Distinguishing concurrent programs and concurrent systems
 
 * siehe [@Bus90], ch 1.1.3

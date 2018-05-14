@@ -211,7 +211,7 @@ class CustomMailbox(settings: ActorSystem.Settings, config: Config)
     })
 ```
 
-### Modelling Timeouts
+### Modelling Timeouts {#sec-actor-timeouts}
 
 Any synchronous information flow should provide some sort of timeout, to prevent starvation [citation  needed]{.mind}. When using futures, this has to be done explicitly using language specific constructs. The already demonstrated for-comprehension syntax of Scala for examples makes it difficult however to introduces timeouts.
 
