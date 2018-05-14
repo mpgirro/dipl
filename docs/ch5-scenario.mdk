@@ -33,6 +33,31 @@ Podcasts = Decentralized media syndication
 
 ## System Components
 
+~ Important
+Diese hier als Description Lists aufzählen
+~
+
+* Crawler 
+  : TODO
+
+* Parser 
+  : TODO
+
+* IndexStore 
+  : TODO
+
+* DirectoryStore 
+  : TODO
+
+* Gateway 
+  : TODO
+
+* Searcher 
+  : TODO
+  
+* Updater 
+  : TODO
+
 ### Crawler { -; toc:clear }
 
 - lädt neue (= bisher unbekannte) feeds und gibt sie an indexer

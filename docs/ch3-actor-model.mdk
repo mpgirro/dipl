@@ -214,13 +214,13 @@ However, unlike as with classic Actors, due to the nature of object interfaces, 
 
 The Active Objects method signatures do not only provide a certain degree of static type safety, but also influence the behaviour of the objects thread of control. In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
 
-* Past Type ("send and no wait")
+* Past Type
   : The message is dispatched and the sending objects thread of control immediatelly continues. It does not wait until the message has been processed by the receiver. This is equal to message passing in the Actor model.
 
-* Now Type ("send and wait")
+* Now Type
   : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replied the result. This is equal to a procedure call with a return value.
 
-* Future Type ("reply to me later")
+* Future Type
   : The senders thread of control immediatelly returns, but receives a reference to the result that will be available at some point in the future, once the receiving object has processed the message and replied.
 
 The example above illustrates two of these behaviours of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 

@@ -1,8 +1,8 @@
 [INCLUDE=style/marticle]
 
 Title        : Master Thesis Proposal
-Subtitle     : Concurrent Programming and the Microservice Architecture Style
-Title Note   : DRAFT, &date; (version 1.2)
+Subtitle     : Concurrent Programming with Actors and Microservice
+Title Note   : DRAFT, &date; (version 1.3)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
 

@@ -26,6 +26,13 @@ Synchronous and Asynchronous Communication
 
 Communication Channels and Service Interfaces
 
+...
+
+Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
+
+
+Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
+
 ~Todo
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
 ~
