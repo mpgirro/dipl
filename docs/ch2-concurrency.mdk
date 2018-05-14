@@ -189,7 +189,7 @@ Both processes are based on the same program image. The parent receives the *Pro
 
 [TODO: pipe erklären]{.important}
 
-A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in reading mode, and the second `fd[1]`{language:cpp} in writing mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` could then read it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, this pipes are heavily employed in the C programming language.
+A so-called *pipe* can be set up between any such two processes by utilizing additional system calls, in order to have a means fo communication between the memory boundries of these process [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in reading mode, and the second `fd[1]`{language:cpp} in writing mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` could then read it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, this pipes are heavily employed in the C programming language.
 
 ...
 

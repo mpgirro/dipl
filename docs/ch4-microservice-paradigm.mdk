@@ -118,7 +118,7 @@ This satisfies the channel requirements given above. Therefore pipes are a valid
 
 [^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up into a so-called *pipeline*, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A pipeline will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
 
-### Concurrency and Distributed Building Block
+### Concurrent and Distributed Building Blocks
 
 ~Todo
 Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
@@ -154,7 +154,6 @@ Though isolation is ensured and communication adequate, it is still difficult to
 ~LitNote
 * "micro should refere to the scope of responsibility, not the lines of code"
 * Size vs. Number of Services
-* [@Par72] "On the Criteria To Be Used in Decomposing Systems into Modules"
 * [@Sha17a] "Microservices: Granularity vs. Performance"
 * "key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)" [@Mon16a]
 ~

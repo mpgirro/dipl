@@ -20,12 +20,15 @@ The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destincti
 
 The next two chapters will cover implementations based on Actors and Microservices of this scenario for a concurrent system. These implementations together with the scope of the requirements of this scenario will act as the guidpost for our discussion on comparing Actors and Microservices at the end of this thesis.
 
-## Why is a search engine a concurrent/parall./distr. task?
+...
 
-~LitNote
-* Search Engines appears as a closed monolithic system (frontend), but is actually composed of many components that act in an decoupled and asynchronouse manmer (if the searc engine should perform)
-* search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall*, which we will not pay attention to in this work (we will only use some simple scoring methods and trust that the results will be fine)
-~
+It offers us the opportunity to discuss commonalities, differences and general conceptualities regarding Actors and Microservice when such are utilized to implement concurrent systems. 
+
+...
+
+Search Engines cause the illusion to be closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
+
+Search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall* [zitieren?]{.mind}, which we will not pay attention to in this work. We will merely use some simple scoring methods provided by the information retrieval library used and trust that its results will sufficient.
 
 ## Domain Description
 
@@ -37,11 +40,11 @@ Podcasts = Decentralized media syndication
 Diese hier als Description Lists aufzählen
 ~
 
-* Crawler 
-  : TODO
+* Crawlers
+  : are tasked with downloading data from feed's URLs, as well as gathering information to discover new feeds. They can achieve this e.g. by crawling existing directories. 
 
-* Parser 
-  : TODO
+* Parsers
+  : analyze feed XML data, and extract Echo relevant data into internal system representation format.
 
 * IndexStore 
   : TODO
@@ -64,7 +67,7 @@ Diese hier als Description Lists aufzählen
 
 ....
 
-A web interface is provided that both backends have to support. It is written in with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for the correct functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
+A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
 
 In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend, e.g. the actual searching in the Lucene index or parsing RSS/Atom feed files. The library offers a Java interface, such that it is interoperable with most JVM based programming languages. 
 
@@ -132,18 +135,26 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 - siehe "Effective page refresh policies for Web crawlers" https://dl.acm.org/citation.cfm?id=958945
 
-## Information Flow
 
-## Concurrent Tasks
+## Concurrent Tasks and Information Flow
 
+~Todo
 Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
+~
 
-## Scalability Opportunities
+In general, all previously described components have to be executed concurrently. However, from a more general perspective, there are certain concerns that have to be met in a concurrent fashion, in order to ensure a "running" search engine. These involve multiple task units, and therefore these have to corporate in terms of an information flow between them.
 
-### Scalability through ??? (scaling up = changing allocated resources: memory, CPU)
 
-### Scalability through Parallelization and Distribution (scaling out)
+* Searching
+  : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher, who is doing some basic query processing and then realizes a  concrete query to the IndexStore. Its found results are then propagated back via the Searcher and the Gateway to the web UI. This has to happen in a timely manner.
+* Discovering the Directory
+  : The search engine provides besides searching index data records also a complete database of all known podcasts and episodes. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded to the DirectoryStore in a timely fashion.
+* Adding new feeds
+  : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
+* Processing Feeds
+  : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. [updater finds this out by regularly asking a DirectoryStore for the feeds that have not been updated the longest]{.mind}. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all DirectoryStores. Each episode metadata record is used to check weiter an episode is yet known, or if the feed contained a new entry. This can only be detected by a DirectoryStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index datastructures.
 
-## Elasticity Considerations
+...
 
-## Polyglot Persistence (based on Isolation)
+
+For example the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interacton do, thus synchronization or transactions are generally an undesireable and less expidient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
