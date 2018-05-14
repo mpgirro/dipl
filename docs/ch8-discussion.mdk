@@ -1,6 +1,6 @@
 
-Discussion: Commonalities & Differences 
-=======================================
+Discussion
+==========
 
 <!-- of Actors and Microservices -->
 
@@ -594,15 +594,18 @@ In the intrinsic context of distributed systems, concepts for verification build
 
 ...
 
-Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
-
-
-...Jolie builds upon WSDL...
-
-...WSDL and Pre/post conditions!
 
 ...WSDL can express preconditions? e.g. that some a>1 etc.?
 
+Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm. In SOA, web services publish(ed) their interface description in a standardized format and discoverable way. Most prominently used is the WSDL (**W**eb **S**ervices **D**escription **L**anguage) format [@Anc16]. However, Microservices tend to [dont do this because it is too complicated, and people like to write simple JSON interfaces instead -- irgendwo hab ich das mal so ähnlich gelesen]{.important}
+
+...
+
+Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
+
+... For example, Jolie incoorporates WSDL specifications of service interfaces automatically.
+
+...
 
 ...If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
 
@@ -616,10 +619,11 @@ Actor and Microservice Systems require its components to be interoperable in ord
 
 ...
 
-Active Objects primarily address the problem of contracts for Actors. Their object abstraction provides static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages, i.e. a certain sequence of messages is required. Intuitively this is somewhat contrary to the static notion of objects the AO abstraction facilitates, for it would mean that their offered methods are not a static set, but may change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
+Active Objects primarily address the problem of contracts for Actors. Their object abstraction provides static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages, i.e. a only a certain sequence of messages is then valid. Intuitively this is somewhat contrary to the static notion of objects the AO abstraction facilitates, for it would mean that their offered methods are not a static set, but may change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
 
 
-There is a generalization of describing [???]{.important} for objects. Two separate paths towards this have been taken in the literature. One focusing on introducing process calculi like types into objects, thus sometimes refered to as *process types* [@Pun95a;@Hut16, REF3] ...[stimmt das?!]{.important}, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special variant of typestate refered to as *session types* [@Anc16].
+
+There is a generalization of describing [???]{.important} for objects. Two kinds of notions have been established in the literature. One focusing on introducing process calculi like types into objects, thus sometimes refered to as *process types* [@Pun95a;@Hut16, REF3] ...[stimmt das?!]{.important}, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special variant of typestate refered to as *session types* [@Anc16].
 
 ...
 
@@ -650,13 +654,9 @@ Allerdings könnten das vll Active Objects? Denn da Franz hat dazu was geschrieb
 
 ...
 
-
 However, all these approaches towards component contracts still take rather basic information into account. 
 
-
 ... only pre- and postconditions, and to a certain degree invariants.
-
-... no notion of history constraints...
 
 ...
 
@@ -667,6 +667,8 @@ Within the context of Actors, scientific exploration of static constraints on Ac
 *Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
 ...
+
+WSDL was mentions as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details. More sophisticated standards provide the expression towards behaviors contracts, e.g. WS-BPEL (**W**eb **Service** - **B**usiness **P**rocess **E**xecution **L**anguage) [@Anc16]. As with WSDL, its has been utilized in the SOA context, but seems to be neglected in the Microservice domain. We presume this is due to the same complexity and [workload? besseres wort]{.mind} reasons as for WSDL. Once again, we argue for programming language based solutions to overcome thus. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction [@Dra17a]. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
 
