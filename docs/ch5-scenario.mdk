@@ -54,9 +54,24 @@ Diese hier als Description Lists aufzählen
 
 * Searcher 
   : TODO
-  
+
 * Updater 
   : TODO
+
+...
+
+... Lucene[^fn-lucene] for actual search index
+
+....
+
+A web interface is provided that both backends have to support. It is written in with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for the correct functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
+
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend, e.g. the actual searching in the Lucene index or parsing RSS/Atom feed files. The library offers a Java interface, such that it is interoperable with most JVM based programming languages. 
+
+...
+
+[^fn-anngular]: <https://angular.io>
+[^fn-lucene]: <https://lucene.apache.org>
 
 ### Crawler { -; toc:clear }
 

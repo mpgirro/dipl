@@ -587,7 +587,7 @@ An attempt towards a solution can be the utilization of a neutral tool with rega
 Of course, this is not possible for dynamically typed languages. For MSAs are often implemented with a mixture of static and dynamic programming languages, the common denominator fallback is often basic informal documentaion in natural language [@Dra17a]. 
 
 ~Todo
-Preconditions, postconditions...
+können irgendwie Preconditions, postconditions, invariants spezifiziert werden?
 ~
 
 *Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}

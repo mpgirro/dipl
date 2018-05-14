@@ -154,7 +154,7 @@ Expressing concurrency on the programming language level has its perils due to t
 Weil es jetzt weiter oben ist, muss ich hier noch Pipes erklären! Und das UNIX system. Und POSIX!
 ~
 
-Only with C11[^fn-c11] did the C programming language add full support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
+Only with C11[^fn-c11] did the C programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 
 [^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
 [^fn-posix]: **P**ortable **O**perating **S**ystem **I**nterface, a collection of standardized programming interfaces for operating systems. The **X** is a remnant from the original draft name "IEEE-IX".
@@ -165,25 +165,31 @@ The expedient path is the alternative *fork* call. Such replicates the current p
 
 ```{language:cpp}
 void 
-parentBehavior(void);
+parentBehavior(int fd[]);
 
 void 
-childBehavior(void);
+childBehavior(int fd[]);
 
 int 
 main(void) 
 {
-    int pid = fork();
+    int fd[2];
+    pipe(fd);
+
+    pid_t pid = fork();
+
     if (pid == 0) 
-        childBehavior();
+        childBehavior(fd);
     else
-        parentBehavior();
+        parentBehavior(fd);
 }
 ```
 
-Both processes are based on the same program image. The parent receives its *Process Identifier* (PID) as a result of `fork()` while a child gets no information. This offers to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
+Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. Thus they are heavily employed in the C programming language. Additionally, be using the pipe mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}
+[TODO: pipe erklären]{.important}
+
+A pipe can be set up between any such two processes as an IPC by utilizing additional system calls. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in reading mode, and the second `fd[1]`{language:cpp} in writing mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` could then read it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, this pipes are heavily employed in the C programming language.
 
 ...
 

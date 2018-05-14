@@ -8,6 +8,10 @@ This chapter covers a Microservice Architecture approach used to implement the c
 
 ## Service Technology Stack
 
+Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, such are as of yet still at an early stage. Among them, Jolie seems to be the most matured, but it also misses an ecosystem and tool support we are looking for compared to Akka. Therefore we refrained from used it to implement Echo. 
+
+Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language
+
 Java + Spring Boot Stack for all Services
 
 ## Isolation and Persistence
