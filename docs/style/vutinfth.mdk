@@ -46,8 +46,8 @@ Tex Header    :
     %
     \setsecnumdepth{subsection} % Enumerate subsections.
     %
-    \nonzeroparskip             % Create space between paragraphs (optional).
-    \setlength{\parindent}{0pt} % Remove paragraph identation (optional).
+    %\nonzeroparskip             % Create space between paragraphs (optional).
+    %\setlength{\parindent}{0pt} % Remove paragraph identation (optional).
     %
     \makeindex      % Use an optional index.
     \makeglossaries % Use an optional glossary.

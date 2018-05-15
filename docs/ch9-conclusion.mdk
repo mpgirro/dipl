@@ -96,6 +96,9 @@ Weiters in [@Gui17]: "However, Erlang and Go do not separate behavior from deplo
 
 ...
 
+
+... Bonèr is arguing for an evolution of the Microservice principles towards reactive systems [...die mehr actors ensprechen]{.important}. We've found his arguments to have resemblance to the fundamentals of process algebra theory [...dh er will das die MS sich mehr an so eine theory halten (?) --> Jolie macht ja genau das]{.mind}. ...Languages dedicated to the service-oriented programming paradigm can be an promising approach towards this ...
+
 ... Boner schlägt zB vor das Microservices gechrieben werden sollen nach den Actor Prinzipien; schlägt dafür sogar einen komischen Namen vor
 
 ... dafür einfach dedizierte sprachen erfinden die beides vereinen

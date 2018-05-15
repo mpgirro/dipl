@@ -147,9 +147,9 @@ In general, all previously described components have to be executed concurrently
 
 * Searching
   : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher, who is doing some basic query processing and then realizes a  concrete query to the IndexStore. Its found results are then propagated back via the Searcher and the Gateway to the web UI. This has to happen in a timely manner.
-* Discovering the Directory
+* Exploring the Directory
   : The search engine provides besides searching index data records also a complete database of all known podcasts and episodes. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded to the DirectoryStore in a timely fashion.
-* Adding new feeds
+* Adding new Feeds
   : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
 * Processing Feeds
   : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. [updater finds this out by regularly asking a DirectoryStore for the feeds that have not been updated the longest]{.mind}. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all DirectoryStores. Each episode metadata record is used to check weiter an episode is yet known, or if the feed contained a new entry. This can only be detected by a DirectoryStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index datastructures.

@@ -97,11 +97,6 @@ In order to avoid confusion, some scholars propose a clear distinction. For exam
 One favorite pipeline was `bc | speak` — a talking desk calculator. It knew number names up to a vigintillion.
 ~
 
-
-~LitNote
-Open/well-defined Communication Interface
-~
-
 Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes.
 
 The microservice idiom specifies the following requirements on service IPC:
@@ -110,13 +105,19 @@ The microservice idiom specifies the following requirements on service IPC:
 2. Communication channels should be light-weighted [citation needed]{.mind} 
 3. Communication channels should only act as message routers, and therefore should not introduce data processing logic of their own [citation needed]{.mind} . Fowler calls this characteristic "smart endpoints and dumb pipes" [@Fow14]
 
-From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. Pipes are a form of byte stream between processes [@Bac03]. If data is in the form of text strings, it represents serialized data (= state information) of one service that is transported in an immutable way between the opposite endpoint of the pipe[^fn-unix-pipes]. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
+From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. If data is in the form of text strings, it represents serialized data (= state information) of one service that is transported in an immutable way between the opposite endpoint of the pipe. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
 
 > "*Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools.*" 
 
 This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03]. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
 
-[^fn-unix-pipes]: Unix pipes are often used in a *pipe and filter* combination. This can cause the impression that pipes are able to perform data transformation (= filter) operations when multiple filters are chained up into a so-called *pipeline*, and are therefore not guaranteed to transport data unmodified. However, the pipe itself is not applying any processing logic, only endpoints are doing data transformation. A pipeline will therefore in general present a modifying communication route, but each single pipe is transporting immutable data. 
+~todo
+Open/well-defined Communication Interface, such that heterogenous components can interact
+~
+
+## Conceptual Roots
+
+SOA, OOP
 
 ### Concurrent and Distributed Building Blocks
 
@@ -124,13 +125,13 @@ This satisfies the channel requirements given above. Therefore pipes are a valid
 Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
 ~
 
-Any microservice within an MSA is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
+Each Microservice is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
 
 In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. However, recalling the case study on process system programming in C from section [#sec-concurrent-c], such fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. For the concurrent components have strictly isolated states through the boundries of their distinct address spaces and the communication mechanism is sufficient in general, it's worth debating weither such systems apply for a Microservice Architecture.
 
 The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and present a certain degree of coupling [@Bac03], such that it is difficult to replace the systems components independently.
 
-To overcome these restriction, the construct of *named pipes* were introduced into later Unix system, allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for the services facilitating this communication channel.
+To overcome these restriction, the construct of *named pipes* were introduced into later Unix system, allowing processes to hook into a common pipe without a shared ancestor [@Bac03]. However, this IPC mechanism definitely does not provide communication outside the boundry of the common operating system. Thus it limits scalability by restricting the service architecture onto a single host maschine, at least partially for the services facilitating this communication channel. Network-based IPC mechanism on the other hand overcome this restriction inherently [citation?]{.mind}. 
 
 <!--
 The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
@@ -160,11 +161,11 @@ Though isolation is ensured and communication adequate, it is still difficult to
 
 ...
 
-Bonér criticizes the term "micro" for it encourages debating the actual size of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called "microservice". Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
+Bonér criticizes the term "micro" for it encourages debating the actual *size* of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called *Micro*service. Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
-Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined limited scope, and complex functionality should be realized by composing multiple simple programs. This concept is also found in object-oriented design, where Martin  [citation?!]{.mind} introduced the so-called *Single Responsibility Principle* (SRP).
+Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where Martin  [citation?!]{.mind} introduced the so-called *Single Responsibility Principle* (SRP) for objects.
 
 
 ...from [@Bon16] and more!
@@ -177,54 +178,17 @@ be another of Raymond's 17 UNIX rules, respective the *Rule of ???* [@Ray03].
 
 ...
 
-However, to fine a granularity can become an issues. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addresses services and delay penalties resulting from unavailability all have to be considered when designing the granularitiy of Microservices [@Sha17a].
+However, to fine a granularity can become an issues. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularitiy of Microservices [@Sha17a].
 
 ...
 
 As such, one of the major destinction from the Microservice paradigm compared to its predecessor SOA is the granularity of service, where the former built upon the interaction of monoliths each offering a huge variety of functionalities, while the later constrains on much smaller, limited scope components [und dann noch irgendeine erkenntnis]{.important} ... [@Mon16a]
 
-## Conceptual Roots
 
-SOA, OOP
 
 ## Service-oriented Programming
 
-### Processes Calculi {#sec-ms-process-calculus}
 
-~important
-Nachdem das überkapitel und die anderen Unterkapitel jetzt eh anders sind, vll die ganze diskussion nach unten schieben?
-~
-
-~LitNote
-* <https://en.wikipedia.org/wiki/Process_calculus>
-* Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
-* siehe <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
-    * scheint weniger CSP, als CCS und pi-calculus zu sein
-* JOLIE basiert auf der theorie eines Process-calculie (steht in "Microservice: a language-based approach"). Dh es müsste zumindest bei denen etwas genauer beschreiben sein, wie man das Konzept von Service-oriented Programming zusammen mit Process calculi bringt. Da kann ich mir hoffentlich eine Seite aus den Fingern saugen
-* Es gibt zB auch calculi die "mobility" unterstützen
-    * *Robin Milner, Joachim Parrow and David Walker. A calculus of mobile processes Computer Science Dept. Edinburgh. Reports ECS-LFCS-89-85 and ECS-LFCS-89-86. June 1989. Revised Sept. 1990 and Oct. 1990 respectively.*
-    * *Cédric Fournet, Georges Gonthier, Jean-Jacques Lévy, Luc Maranget, and Didier Rémy. A Calculus of Mobile Agents CONCUR 1996.*
-    * *Tatsurou Sekiguchi and Akinori Yonezawa. A Calculus with Code Mobility FMOODS 1997.*
-* *Nancy Lynch and Michael Fischer. On describing the behavior of distributed systems in Semantics of Concurrent Computation. Springer-Verlag. 1979.*
-* *Nissim Francez, C.A.R. Hoare, Daniel Lehmann, and Willem de Roever. Semantics of nondetermiism, concurrency, and communication Journal of Computer and System Sciences. December 1979.*
-* Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
-* Asynchronous Sequential Processes (ASP) --> "D. Caromel, L. Henrio, and B. P. Serpette. Asynchronous sequential processes. Inf. Comput., 207(4):459–495, Apr. 2009"
-    * [@Kos16] vergleich diese mit Active Objects, nur mit gröberer Granularität
-* [@Spe90] The main features CSP are:
-    * conlmutrication management by means of input and output commands and the use of channels,
-    * the exploitation of parallelism by means of the parallel command, and
-    * nondeterminism management by guarded commands.
-~
-
-Among the theories of formulating concurrent computation is found a family called *process calculi*. Such define mathematical models composed of so-called *processes* which are communicating within the laws and conditions layed out by the calculus [citation]{.mind}.
-
-Depending on the calculus, communication may be of a synchronous (e.g. in the Communicating Sequential Processes - CSP [citation]{.mind}) or asynchronous (like Asynchronous Sequential Processes - ASP[citation]{.mind}). The unifying properties of all these calculi are that they avoid any kind of shared state and rely on message-passing for communication [citation]{.mind}. This already bears resemblence to the Microservice paradigm.
-
-In fact, some scientific approaches on modelling interacting processes, which were also found to be well suited for expressing Microservices, like Jolie[citation]{.mind} or CAOPLE[citation]{.mind}, have their theoretic foundation in a process calculus [citation]{.mind}. 
-
-~Todo
-In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der anderen abarbeiten. Ist das generell so? Weil MS können intern schon Concurrent sein. Dann müsste ich explizit darauf hinweißen, dass mit Process Calculi zwar MS Architecturen beschrieben werden können, aber nicht jeder Microservice deswegen einem Process Calculus entsprechen muss. Irgendwo sollte da Literatur bei diesem "MS: Language-based Approach" sein!
-~
 
 ### Dedicated Programming Languages
 
@@ -248,7 +212,7 @@ do not provide dedicated abstractions for service composition.
 ...
 
 * Jolie
-  : Jolie [@Mon14;@Gui17] ... In fact, Jolie is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06]
+  : Jolie [@Mon14;@Gui17] ... 
 
 * CAOPLE
   : CAOPLE [@Xu16] ...
