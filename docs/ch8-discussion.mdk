@@ -532,11 +532,6 @@ Availability:
 * Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
 * siehe <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
     * scheint weniger CSP, als CCS und pi-calculus zu sein
-* JOLIE basiert auf der theorie eines Process-calculie (steht in "Microservice: a language-based approach"). Dh es müsste zumindest bei denen etwas genauer beschreiben sein, wie man das Konzept von Service-oriented Programming zusammen mit Process calculi bringt. Da kann ich mir hoffentlich eine Seite aus den Fingern saugen
-* Es gibt zB auch calculi die "mobility" unterstützen
-    * *Robin Milner, Joachim Parrow and David Walker. A calculus of mobile processes Computer Science Dept. Edinburgh. Reports ECS-LFCS-89-85 and ECS-LFCS-89-86. June 1989. Revised Sept. 1990 and Oct. 1990 respectively.*
-    * *Cédric Fournet, Georges Gonthier, Jean-Jacques Lévy, Luc Maranget, and Didier Rémy. A Calculus of Mobile Agents CONCUR 1996.*
-    * *Tatsurou Sekiguchi and Akinori Yonezawa. A Calculus with Code Mobility FMOODS 1997.*
 * *Nancy Lynch and Michael Fischer. On describing the behavior of distributed systems in Semantics of Concurrent Computation. Springer-Verlag. 1979.*
 * *Nissim Francez, C.A.R. Hoare, Daniel Lehmann, and Willem de Roever. Semantics of nondetermiism, concurrency, and communication Journal of Computer and System Sciences. December 1979.*
 * Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
@@ -546,12 +541,9 @@ Availability:
     * conlmutrication management by means of input and output commands and the use of channels,
     * the exploitation of parallelism by means of the parallel command, and
     * nondeterminism management by guarded commands.
-* <http://alexandria.tue.nl/extra1/wskrap/publichtml/200402.pdf>
-    * kurze erklärungen zu CCS, CSP, ACP, Tooling, Verification, Mobility, etc.
-    * wohl sehr wichtig!!
 ~
 
-Among the theories of formulating concurrent computation is found a family called *process calculi* or *process algebra*. Such define formal models composed of so-called *processes* which are communicating within the laws and conditions layed out by their theory. Baeten [@Bae05] defines *process* as any kind of behavior of a *discrete event system*, such that it is observable through discrete actions. These actions can include interaction with other discrete event systems. Those then have to react to these interactions, and therefore he terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. Thus, an approach towards concurrency theory is the path of a process algebra.
+Among the theories of formulating concurrent computation is found a family called *process calculi* or *process algebra*. Such define formal models composed of so-called *processes* which are communicating within the laws and conditions layed out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interaction with other discrete event systems. Those then have to react to these interactions, and therefore he terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. Thus, an approach towards concurrency theory is the path of a process algebra.
 
 Some of these calculi gained considerable prominence, for example Milner's CCS (**C**alculus of **C**ommunicating **S**ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (**C**ommunicating **S**equential **P**rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05]. 
 
@@ -559,12 +551,22 @@ Some of these calculi gained considerable prominence, for example Milner's CCS (
 
 In fact, some more practical approaches to expressing interacting processes, which were also found to be well suited for expressing Microservices, have their theoretic foundation in a process calculus. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06]. This is especially interresting, for the Actor model and process calculi share a long history. Hewitt and Milner published their initial works on the Actor model and CCS in the same year, respectivly 1973. Since then...
 
+...
+
+A most basic argument towards the linkage is the definition of a process in the calculi context given above. It explicitly referes to a notion of behavior, respectively discrete actions. 
+
+... Actor have the intrinsic own notion of behavior together with the models Isolated Turn Principle suffices
+
+...For Microservices we explicitely distinquished between the *engine* and the *behavior*, where the later referes to the "service" an engine offers. Each offered is from a global viewpoint a discrete operation whenever consumed [komisch formuliert, und ka was ich dazu zitieren soll]{.mind}.
+
 
 ...
 
-It is important to always realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of [???]{.important}, all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
+It is important to realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of [???]{.important}, all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
 
 ... For example...We've found that especially ASP (**A**synchronous **S**equential **P**rocesses) have been discussed in the light of Active Objects [@Kos16;]
+
+... Especially the ASP (**A**synchronous **S**equential **P**rocesses) have many similarities with Active Objects as well as another special variant of Actors of the so-called *Communicating Event-Loop* model [@Kos16;@Car04, Car04 könnte ich mir sonst als REF generll ersparen!].
 
 
 ...
@@ -573,12 +575,9 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 ...
 
+...We refere to [XYZ]{.important} for a detailed introduction on process calculi in general.
 
 ...
-
-~Todo
-In [@Swa14] wird beschrieben, dass Process Calculi auch nur eine Msg nach der anderen abarbeiten. Ist das generell so? Weil MS können intern schon Concurrent sein. Dann müsste ich explizit darauf hinweißen, dass mit Process Calculi zwar MS Architecturen beschrieben werden können, aber nicht jeder Microservice deswegen einem Process Calculus entsprechen muss. Irgendwo sollte da Literatur bei diesem "MS: Language-based Approach" sein!
-~
 
 ~LitNote
 * <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi>

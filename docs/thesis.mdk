@@ -66,6 +66,24 @@ Bib style    : style/keynat.bst
 <!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
 Cite All     : False
 
+<!-- Tkiz -->
+<!--
+Package      : tikz
+Tex Header   : \usetikzlibrary{snakes,arrows,shapes}
+-->
+
+<!--
+Package      : pstricks
+Package      : pst-plot
+Package      : amsmath
+Math Latex Full: pdflatex
+-->
+
+<!-- define some unicode characters -->
+top: &#8868;
+Tex Header:
+  \mdDefineUnicode{8868}{\ensuremath{\top}}
+
 <!--  Blockquotes for chapter headers -->
 Package      : epigraph
 Tex Header   : 
@@ -128,11 +146,6 @@ Epigraph {
 }
 @if not (tex) {
   Bib Search Url: scholar.google.at
-}
-
-@if tex {
-  <!-- Do not show H1 numbers in PDF -->
-  h1 { label:"@h1"; before:"" } 
 }
 
 CSS Header      :

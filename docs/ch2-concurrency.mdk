@@ -157,10 +157,6 @@ Expressing concurrency on the programming language level has its perils due to t
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
 
-~Todo
-Weil es jetzt weiter oben ist, muss ich hier noch Pipes erklären! Und das UNIX system. Und POSIX!
-~
-
 Only with C11[^fn-c11] did the C programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 
 [^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
@@ -194,9 +190,7 @@ main(void)
 
 Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-[TODO: pipe erklären]{.important}
-
-A so-called *pipe* can be set up between any such two processes by utilizing additional Unix system calls, in order to have a means of communication between the memory boundries of these process. Pipes are a form of byte stream via a between [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, and therefore pipes are heavily employed in the C programming language.
+A so-called *pipe* can be set up between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, and therefore pipes are heavily employed in the C programming language.
 
 ...
 
