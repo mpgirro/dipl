@@ -188,7 +188,9 @@ As such, one of the major destinction from the Microservice paradigm compared to
 
 ## Service-oriented Programming
 
+Until now, we've regarded Microservices in the light of a software architectural style. Within, the  building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has has had a focus on the operation of the service engines, that is their *deployment* [@Gui17]. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
 
+Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Mon14] emerged. It emphazizes the *Service-Oriented Commputing* ...
 
 ### Dedicated Programming Languages
 
@@ -201,7 +203,21 @@ As such, one of the major destinction from the Microservice paradigm compared to
 * [@Xu16] "CAOPLE : A Programming Language for Microservices SaaS"
 ~
 
-The Microservice approach has gained much attention first in the industry and nowadays as well in the academic community. As such, many different research disciplines focus on incorporating the Microservice paradigm into their respective field [...]{.mind}.
+Microservices emerged from industry as a result of recollecting on principles of object-orientation and the Unix philosophy into SOA [schlecht formuliert]{.important}.
+In parallel, in the academic community a separate path towards scaling down SOA monoliths emerged. Dedicate programming languages facilitating the so-called *service-oriented programming* (SOP) paradigm. Such utilize the concept of *service* (in constrast to object or function) as basic building blocks. 
+
+... instead of a single executable artifact, they compiled into multiple executables, one for each of the service constructs in the source code. 
+
+...When the Microservices principles finally distilled, it was found that compilation of SOP languages essentially produced Microservice Architectures. Thus, instead of the total technology freedom of the MS paradigm, SOP languages are a separate approach towards the Microservice style.
+
+...have to ensure well-defined and open interfaces to be able to interoperate with non SOP components
+
+...
+
+...The Microservice approach has gained much attention first in the industry and nowadays as well in the academic community. As such, many different research disciplines focus on incorporating the Microservice paradigm into their respective field [...]{.mind}.
+
+
+
 
 
 

@@ -40,6 +40,109 @@ Podcasts = Decentralized media syndication
 Diese hier als Description Lists aufzählen
 ~
 
+
+<!--
+~ Center  {padding:1ex} 
+~~ Snippet
+% Start of code
+\begin{pspicture}[linewidth=1bp](0.0bp,0.0bp)(176.0bp,252.0bp)
+  \pstVerb{2 setlinejoin} % set line join style to 'mitre'
+%%
+\psset{linecolor=black}
+  % Edge: P -> D
+  \psbezier[arrows=->](57.049bp,35.992bp)(58.815bp,46.489bp)(61.065bp,59.989bp)(63.0bp,72.0bp)(66.348bp,92.783bp)(70.0bp,116.29bp)(74.268bp,144.06bp)
+  % Edge: G -> S
+  \psbezier[arrows=->](149.0bp,215.83bp)(149.0bp,208.13bp)(149.0bp,198.97bp)(149.0bp,180.41bp)
+  % Edge: G -> D
+  \psbezier[arrows=->](133.73bp,218.73bp)(123.8bp,208.8bp)(110.68bp,195.68bp)(92.247bp,177.25bp)
+  % Edge: D -> I
+  \psbezier[arrows=->](91.421bp,146.73bp)(100.8bp,136.8bp)(113.19bp,123.68bp)(130.6bp,105.25bp)
+  % Edge: U -> D
+  \psbezier[arrows=->](77.0bp,215.83bp)(77.0bp,208.13bp)(77.0bp,198.97bp)(77.0bp,180.41bp)
+  % Edge: S -> I
+  \psbezier[arrows=->](147.99bp,143.83bp)(147.56bp,136.13bp)(147.05bp,126.97bp)(146.02bp,108.41bp)
+  % Edge: D -> C
+  \psbezier[arrows=->](65.654bp,145.66bp)(59.414bp,136.68bp)(51.538bp,125.33bp)(38.648bp,106.77bp)
+  % Edge: C -> P
+  \psbezier[arrows=->](33.674bp,72.202bp)(36.748bp,64.006bp)(40.462bp,54.102bp)(47.403bp,35.593bp)
+  % Node: C
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](27.0bp,90.0bp)(27.0bp,18.0bp)
+  \rput(27.0bp,90.0bp){C}
+}%
+  % Node: D
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](77.0bp,162.0bp)(27.0bp,18.0bp)
+  \rput(77.0bp,162.0bp){D}
+}%
+  % Node: G
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](149.0bp,234.0bp)(27.0bp,18.0bp)
+  \rput(149.0bp,234.0bp){G}
+}%
+  % Node: I
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](145.0bp,90.0bp)(27.0bp,18.0bp)
+  \rput(145.0bp,90.0bp){I}
+}%
+  % Node: P
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](54.0bp,18.0bp)(27.0bp,18.0bp)
+  \rput(54.0bp,18.0bp){P}
+}%
+  % Node: S
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](149.0bp,162.0bp)(27.0bp,18.0bp)
+  \rput(149.0bp,162.0bp){S}
+}%
+  % Node: U
+{%
+  \psset{linecolor=[rgb]{0.0,0.0,0.0}}
+  \psellipse[](77.0bp,234.0bp)(27.0bp,18.0bp)
+  \rput(77.0bp,234.0bp){U}
+}%
+%
+\end{pspicture}
+% End of code
+~~
+~ 
+-->
+
+<!--
+~ Center  {padding:1ex} 
+~~ Snippet
+% Start of code
+\begin{tikzpicture}[>=latex',line join=bevel,]
+%%
+\node (C) at (27.0bp,90.0bp) [draw,ellipse] {C};
+  \node (D) at (77.0bp,162.0bp) [draw,ellipse] {D};
+  \node (G) at (149.0bp,234.0bp) [draw,ellipse] {G};
+  \node (I) at (145.0bp,90.0bp) [draw,ellipse] {I};
+  \node (P) at (54.0bp,18.0bp) [draw,ellipse] {P};
+  \node (S) at (149.0bp,162.0bp) [draw,ellipse] {S};
+  \node (U) at (77.0bp,234.0bp) [draw,ellipse] {U};
+  \draw [->] (P) ..controls (58.815bp,46.489bp) and (61.065bp,59.989bp)  .. (63.0bp,72.0bp) .. controls (66.348bp,92.783bp) and (70.0bp,116.29bp)  .. (D);
+  \draw [->] (G) ..controls (149.0bp,208.13bp) and (149.0bp,198.97bp)  .. (S);
+  \draw [->] (G) ..controls (123.8bp,208.8bp) and (110.68bp,195.68bp)  .. (D);
+  \draw [->] (D) ..controls (100.8bp,136.8bp) and (113.19bp,123.68bp)  .. (I);
+  \draw [->] (U) ..controls (77.0bp,208.13bp) and (77.0bp,198.97bp)  .. (D);
+  \draw [->] (S) ..controls (147.56bp,136.13bp) and (147.05bp,126.97bp)  .. (I);
+  \draw [->] (D) ..controls (59.414bp,136.68bp) and (51.538bp,125.33bp)  .. (C);
+  \draw [->] (C) ..controls (36.748bp,64.006bp) and (40.462bp,54.102bp)  .. (P);
+%
+\end{tikzpicture}
+% End of code
+~~
+~ 
+-->
+
+
 * Crawlers
   : are tasked with downloading data from feed's URLs, as well as gathering information to discover new feeds. They can achieve this e.g. by crawling existing directories. 
 
@@ -60,6 +163,10 @@ Diese hier als Description Lists aufzählen
 
 * Updater 
   : TODO
+
+...
+
+... such ending in `*Store` are stateful, the all others stateless.
 
 ...
 

@@ -68,7 +68,7 @@ Cite All     : False
 
 <!-- Tkiz -->
 <!--
-Package      : tikz
+Package*     : tikz
 Tex Header   : \usetikzlibrary{snakes,arrows,shapes}
 -->
 

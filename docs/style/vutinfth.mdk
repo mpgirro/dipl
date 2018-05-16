@@ -5,7 +5,7 @@ Logo          : False
 Package       : lmodern 
 <!-- Latin Modern Font, not CM, but avoids some of its problems -->
 Package       : [T1]fontenc
-<!--Package       : [utf8]inputenc-->
+Package       : [utf8]inputenc
 Package       : fixltx2e
 Package       : amsmath
 Package       : amssymb
@@ -23,7 +23,7 @@ Heading Endperiod   :
 <!-- IMPORTANT! make sure headings get mapped to \chapters -->
 Heading Base        : 1
 
-Math Mode       : static
+Math Mode       : dynamic
 
 @if tex {
   Maketitle     : True
@@ -44,6 +44,7 @@ Tex Header    :
         pdfkeywords     = {&keywords;} % The document's keywords in the document properties (optional).
     }
     %
+    \setpnumwidth{2.5em}        % Avoid overfull hboxes in the table of contents (see memoir manual).
     \setsecnumdepth{subsection} % Enumerate subsections.
     %
     %\nonzeroparskip             % Create space between paragraphs (optional).

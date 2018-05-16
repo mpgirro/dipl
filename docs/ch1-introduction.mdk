@@ -8,13 +8,11 @@ Introduction
 Begin at the beginning," the King said gravely, and go on till you come to the end: then stop.
 ~
 
-The world is concurrent. It just is.
+The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus der echten welt]{.important}.
 
-## Motivation
+... As such, the idea of simultaneous actions has not been absent from the domain of computer programming. In this thesis, we will therefore take a close look at two concepts both introducing notions of concurrency into programs and/or systems, respectivly the *Actor Model* of Computation and the *Microservice* Architectural Style.
 
 ## Scope of this Thesis
-
-In this thesis, we will take a close look at two concept, the Actor programming model, and the microservice style, and compare them to each other.
 
 ~LitNote
 - Clear separation between search engine and domain specific tasks (writing to index and search, fetching and parsing feeds, etc) and the communication and coordiantion specific parts (actors architecture and microservice architecture). Therefore a core library was developed for the first, and for the second "only" backends utilizing this lib was needed. It allows easy analysis/argumentation about the concurrent programming vs MSA aspect of the thesis, because all test scenario specific parts are part of core-lib, and could therefore be replaced by other domain specific code or non-search engine code
