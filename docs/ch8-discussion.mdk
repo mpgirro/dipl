@@ -549,7 +549,7 @@ Some of these calculi gained considerable prominence, for example Milner's CCS (
 
 ...
 
-In fact, some more practical approaches to expressing interacting processes, which were also found to be well suited for expressing Microservices, have their theoretic foundation in a process calculus. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06]. This is especially interresting, for the Actor model and process calculi share a long history. Hewitt and Milner published their initial works on the Actor model and CCS in the same year, respectivly 1973. Since then...
+In fact, some more practical approaches to expressing interacting processes, which were also found to be well suited for expressing Microservices, have their theoretic foundation in a process calculus. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06], which is in turn inspired by CCS and the &pi;-calculus. This is especially interresting, for the Actor model and process calculi share a long history. Hewitt and Milner published their initial works on the Actor model and CCS in the same year, respectivly 1973. Since then...
 
 ...
 
@@ -564,7 +564,7 @@ A most basic argument towards the linkage is the definition of a process in the 
 
 It is important to realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of [???]{.important}, all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
 
-... For example...We've found that especially ASP (**A**synchronous **S**equential **P**rocesses) have been discussed in the light of Active Objects [@Kos16;]
+... For example...We've found that especially ASP (**A**synchronous **S**equential **P**rocesses) have been discussed in the light of Active Objects [@Kos16].
 
 ... Especially the ASP (**A**synchronous **S**equential **P**rocesses) have many similarities with Active Objects as well as another special variant of Actors of the so-called *Communicating Event-Loop* model [@Kos16;@Car04, Car04 könnte ich mir sonst als REF generll ersparen!].
 
@@ -611,6 +611,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 * [@Siv99] "The specification of distributed objects: liveness and locality"
     * "The design-by-contract philosophy of software design partitions responsibility for correctness between the caller of a method and the callee. It is the obligation of the caller to establish the proconditions before the method is invoked and it is the obligation of the callee, given these preconditions, to ensure the postconditions when the method terminates"
     * ad pre/postconditions: "Certain subtleties, however, arise tin teir use in dtstributed systems. For example, sunce there may be many concurrent threads of execution, the caller of a method cannot unilaterally guarantee that the required preconditions hold when the method begins executing. Thus phenomenon, termed the precondition paradox, has been neglected by many specification methodologies."
+* [@Min17] Jolie has static type checking
 ~
 
 So far, we've covered concerns both Actors and Microservices provide respective approaches for [hä?]{.mind}. However, there are subjects with yet little to no support in either context. One such concern we've found is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}

@@ -167,14 +167,10 @@ An operating system allows a process to spawn new processes. The party refered t
 The expedient path is the alternative *fork* call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03; @Fel90]. The following example illustrates the control flow:
 
 ```{language:cpp}
-void 
-parentBehavior(int fd[]);
+void parentBehavior(int fd[]);
+void childBehavior(int fd[]);
 
-void 
-childBehavior(int fd[]);
-
-int 
-main(void) 
+int main(void) 
 {
     int fd[2];
     pipe(fd);

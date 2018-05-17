@@ -46,6 +46,9 @@ A *Microservice Architectures* (MSA) is a software architecture composed of Micr
 
 Any MSA is composed of so-called *Microservices* (MS), basic building blocks, each with their own functionality and connceted via lightweight, open communication protocols. 
 
+~LitNote
+* [@Dra17a]: "the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing"
+~
 
  In order to 
 
@@ -119,6 +122,12 @@ Open/well-defined Communication Interface, such that heterogenous components can
 
 SOA, OOP
 
+### Independence
+
+~LitNote
+* [@Dra17a;@Dra17c], high cohesion, loose coupling, independence
+~
+
 ### Concurrent and Distributed Building Blocks
 
 ~Todo
@@ -152,45 +161,21 @@ Though isolation is ensured and communication adequate, it is still difficult to
 
 ### Size, Scope and Granularity {#sec-ms-granularity}
 
-~LitNote
-* "micro should refere to the scope of responsibility, not the lines of code"
-* Size vs. Number of Services
-* [@Sha17a] "Microservices: Granularity vs. Performance"
-* "key difference between SOA and MS lies in granularity (in SOA, all services are parts of a monolith)" [@Mon16a]
-~
-
-...
-
-Bonér criticizes the term "micro" for it encourages debating the actual *size* of a service [@Bon17]. Any size definition requires a metric to be able to make comparisons and argue up two which limit an application may be called *Micro*service. Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
+Bonér [@Bon17] criticizes the term "micro" for it encourages debating the actual *size* of a service. Any size definition requires a metric to be able to make comparisons and argue up to which limit an application may be called *Micro*service. Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
-Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where Martin  [citation?!]{.mind} introduced the so-called *Single Responsibility Principle* (SRP) for objects.
+Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where Martin [citation?!]{.mind} introduced the so-called *Single Responsibility Principle* (SRP) for objects.
 
-
-...from [@Bon16] and more!
-
-~ important
-Robert C. Martin hat das in seinen SOLID design principien für OOP eingeführt (da brauche ich eine quelle), und es scheint auch teil der UNIX philosophie zu sein, aber finde keine literatur dazu?!.
-~
-
-be another of Raymond's 17 UNIX rules, respective the *Rule of ???* [@Ray03].
-
-...
+In the Microservice context however, authors do not refere to the SRP a lot. Instead, they tend to phrase it *bounded context* [@Dra17a;@Dra17c;@Maz16], by arguing that services should be an aggregation of functionality around a single business capability. This divergence of granularity is one of the major evolutionary changes from SOA to Microservices [@Mon16a;@Gui17].
 
 However, to fine a granularity can become an issues. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularitiy of Microservices [@Sha17a].
 
-...
-
-As such, one of the major destinction from the Microservice paradigm compared to its predecessor SOA is the granularity of service, where the former built upon the interaction of monoliths each offering a huge variety of functionalities, while the later constrains on much smaller, limited scope components [und dann noch irgendeine erkenntnis]{.important} ... [@Mon16a]
-
-
-
 ## Service-oriented Programming
 
-Until now, we've regarded Microservices in the light of a software architectural style. Within, the  building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has has had a focus on the operation of the service engines, that is their *deployment* [@Gui17]. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
+Until now, we've regarded Microservices in the light of a software architectural style. Within, the  building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has had a focus on the operation of the service engines, that is their *deployment* [@Gui17]. After all, the deployment context of MSA is the origin of its concurrent nature, that is independet processes of the OS or network. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
 
-Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Mon14] emerged. It emphazizes the *Service-Oriented Commputing* ...
+Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Mon14] emerged. It builds upon the *Service-Oriented Commputing* (SOC) approach emphasized by SOA and subsequently Microservices, and introduces it into programming language design. ["services are the smallest programmable constructs" -> irgendwo gelesen und finde ich nicht mehr]{.red}
 
 ### Dedicated Programming Languages
 
@@ -228,13 +213,13 @@ do not provide dedicated abstractions for service composition.
 ...
 
 * Jolie
-  : Jolie [@Mon14;@Gui17] ... 
+  : Currently the most advanced and scientifically best described service-oriented language is *Jolie* [@Mon14;@Gui17;@Min17;@Gui09]. It ... 
 
 * CAOPLE
-  : CAOPLE [@Xu16] ...
+  : Another attempt on a service-oriented programming language is *CAOPLE* [@Xu16]. It...
 
 ...
 
-For Microservices share many similarities with objects in general [citation?]{.mind}, such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16; @Sny93]. CAOPLE even supports polymorphism via an inheritance mechanism, and Jolie [...???]{.mind}.
+For Microservices share many similarities with objects in general [citation?]{.mind}, such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16; @Sny93]. For example, Jolie has static type checking for service interfaces [@Min17], and CAOPLE even supports polymorphism via an inheritance mechanism.
 
 

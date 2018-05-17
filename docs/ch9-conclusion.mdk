@@ -9,6 +9,8 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 ## The Case for Actors
 
 ~LitNote
+- von der WeAreDevs2018 inspiriert:
+  * When taking Part of the System (monolith) out of the System (into a MS), connectivity becomes more important -> Actors allow splitting monolith, without requiring more focus on connectivity because it has a standard unified abstraktion! ... and connectivity/communication interfaces are from my experience kind of the most work of any MS
 - easy to write from the ground up
 - has to be started as a small programm, and extended one by one (otherwise one gets totally lost in the messages)
 - less to do (the Actor framework/middleware does a lot for you), but has to live/work with the particula restrictions
@@ -29,6 +31,9 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 * good to break up large monoliths
 * literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
 * freedom to practically do whatever you want (if it works within a monolith, this particual function also works within a smaller program = MS)
+* Als Vorteil gegenüber Actors sollte ich herausheben, dass diese es erlauben "explicit" die communication ports zu beschreiben. entnommen aus:
+  * [@Gui17] "Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
+  * kann ich alternativ auch noch im outlook unten anbringen, wo ich den eh zitiere (die info fehlt jedenfalls noch!)
 ~
 
 ## Empirical Indications
@@ -90,8 +95,7 @@ For the scope of this thesis, we've found it rather difficult to narrow on the e
 
 In our opinion this is due to the fact that the Microservice style, although conceived as an aim towards minimalistic components, is on the other hand too allowing in general regarding the options for conceiving each single service of any system. The lack of a more coherent technological context among at least some or even all service components also hinders the introduction of enhancing concepts. Examples like behavioral types, choreographies or means of verification in general have already been discussed. Such would only be possible with greater difficulties and come with restrictions nevertheless. As was motivated, languages dedicated to the Service-Oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if these languages are based on a process calculus, such open up the potentials of their theoretical properties and possibilities. 
 
-Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. However, it's worth to ask why then not to employ Actors altogether in the first place? As Guidi et al. [@Gui17] point out, general purpose programming utilizing concurrency mechanism that are competing with the Microservice concerns [besseres wort?]{.important} (like Actors), do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. Neither does a very sophisticated Actor language as Erlang, nor an equally potent framework like Akka.
-
+Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. However, it's worth to ask why then not to employ Actors altogether in the first place? As Guidi et al. [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. Neither does a very sophisticated Actor language as Erlang, nor an equally potent framework like Akka. 
 
 It is our believe however, that SOP languages like Jolie are already fostering components that are following many of the conceptualities of Actors [like A, B, C]{.important}, yet keeping the openness of well-defined interfaces, such that interoperability with other technologically heterogenous components is still not restricted. [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
 
@@ -100,6 +104,11 @@ It is our believe however, that SOP languages like Jolie are already fostering c
 ... Promising protoypes as Jolie essentially produce constructs that are rather similar to Actors - except that the creation of new components is not an essential primitive. 
 
 ...
+
+
+... evolution of Actors like with Orleans auch möglich
+
+... we don't claim that service-oriented programming languages are the key towards the future, but it is our believe that Actors and Microservices *learning from* each other and *growing closer too* each other are a promising ... [1) unterhosen 2) ? 3) profit]{.important}
 
 ~LitNote
 Eigentlich Conclusions, aber eher Ausblick (weil sprachfokusiert):

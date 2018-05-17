@@ -131,6 +131,9 @@ Epigraph {
 .delete {
   color:red
 }
+.red {
+  color:red
+}
 
 <!-- TODO brauch ich das hier?
 @if html {

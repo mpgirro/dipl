@@ -219,9 +219,7 @@ Akka therefore supports a special timing mechanism. Actors, e.g. newly spawned d
 
 It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time [was zitieren? dieses buch von Boner?]{.mind}.
 
-To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Internally it is based on the so-called *Timing Wheels* by Varghese and Lauck [@Var87].
-
-Actors can register a message sending operation to be triggered after a certain period of time:
+To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Actors can register a message sending operation to be triggered after a certain period of time:
 
 ```{language:scala}
 val messenger: Cancellable = context.system.scheduler

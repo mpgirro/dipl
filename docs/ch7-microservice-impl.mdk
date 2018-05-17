@@ -32,6 +32,10 @@ Communication Channels and Service Interfaces
 
 ...
 
+...RabbitMQ known from [@Dra17c] (Dustdar/Dragoni paper!)
+
+...
+
 Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
 
 
@@ -42,7 +46,6 @@ howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async
 ~
 
 ~LitNote
-* Kafka benutzt ebenfalls die Hierarchical Timing Wheels von [@Var87], behauptet <https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/>
 * beschreiben das MS mehrere total verschiedene interfaces haben können (REST, AMQP)
 ~
 
@@ -83,7 +86,12 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ## Load balancing    
 
 ~LitNote
-to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
+* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
+~
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * see: load balancing
 ~
 
 ## Service discovery
@@ -91,6 +99,19 @@ to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server
 ~LitNote
 * Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
 * requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
+~
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * see: service discovery
+    * "This is typically done with a service discovery tool, either a separate service such as Consul [9],"
+~
+
+## Clustering
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * see: clustering 
 ~
 
 ## Fault Tolerance
@@ -102,6 +123,11 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 ## Resilience
 
 ## Scalability
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
+~
 
 ## Mobility
 
