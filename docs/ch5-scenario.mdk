@@ -154,13 +154,16 @@ Diese hier als Description Lists aufzählen
 ~ 
 -->
 
-A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
+A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
 
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend, e.g. the actual searching in the Lucene index or parsing RSS/Atom feed files. The library offers a Java interface, such that it is interoperable with most JVM based programming languages. 
+[^fn-anngular]: <https://angular.io>
 
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene[^fn-lucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. Also, parsing RSS/Atom feed files, especially using a custom written extensions to the ROME feed parsing libraries that allows to extract chapter marks.
+
+[^fn-lucene]: <https://lucene.apache.org>
 
 * Crawlers
-  : are tasked with downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. 
+  : are tasked with downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. Crawlers produce jobs for further processing of downloaded data by Parsers.
 
 * Parsers
   : analyze feed XML data, and extract relevant information - that is what the web interface will display or what should be included for searching - into internal system representation format.
@@ -171,50 +174,30 @@ In order to prevent any domain specific code from being implemented twice unnece
 * IndexStore 
   : hold the data structure that is used for searching, the so-called *reverse index*. This structure maps terms to so-called *documents*. These represent the entities that can be possible search results (podcast shows, episodes), and therefore one document is inserted for each entity from the Directory database. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple description tags (e.g. `<description>`, `<content:encoded`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
-* Gateway 
-  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. Data access for the 
-
 * Searcher 
-  : are tasked with performing a search operation. However they simply perform some basic query pre-processing and delegate to the IndexStore to retrieve relevant documents from the inverted index The respective results are returned
+  : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.
+
+* Gateway 
+  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged entity information, or performing searches. Therefore the Gateway communicates with either a DirectoryStore, or a Searcher. 
 
 * Updater 
-  : TODO
+  : [TODO]{.red}
+
+Such task units ending in *\*Store* are stateful, all others stateless.
 
 ...
-
-... such ending in `*Store` are stateful, the all others stateless.
-
-...
-
-... Lucene[^fn-lucene] for actual search index
-
-....
 
 ... means of generating globally unique IDs without requiring any kind of consensus mechanism
 
 ...
 
-[^fn-anngular]: <https://angular.io>
-[^fn-lucene]: <https://lucene.apache.org>
 
-### Crawler { -; toc:clear }
 
-- lädt neue (= bisher unbekannte) feeds und gibt sie an indexer
-- updated bereits bekannte feed (nach schlauen methoden sieht er nach ob sich was geändert hat, = content-seen test), und gibt die neuen info ggf an indexer
-- verschickt nachrichten über den status seiner feedlade-versuche
-- lädt die webseiten der podcasts/episoden
-- sucht nach neuen feeds (**wie tut er das?? der indexer verarbeitet erst die daten**), und gibt diese zum test auf bekanntheit **an welche komponente??** weiter (= url-seen test; entdeckte feeds werden aber vorerst als nicht-freigegeben markiert)
+~LitNote
+Crawler:
 
 - allg siehe https://cs.nyu.edu/courses/spring16/CSCI-GA.2580-001/crawler.html
 - allg siehe https://web.njit.edu/~alexg/courses/cs345/OLD/F15/solutions/f2345f15.pdf
-
-- bekommen URLs (entweder neue oder aus einem URL-repository) um diese herunterzuladen
-- URLs sind entweder RSS/Atom-Feed oder die Homepages von Podcasts (allgemein) oder von Episoden (diese können zusatzinfos enthalten die in den Feeds nicht enthalten sind)
-- Crawlers produzieren Arbeitspakete (für Parser) mit den Informationen die sie heruntergeladen haben
-- Brauchen eine Refresh-Strategie mit der sie die URLs erneut besuchen
-    - sollen sie diese selbst errechnen (ja, da sie sonst kaum Arbeit haben) oder in einen eigenen Actors/MS ausgelagert werden
-- halten sich an Robots Exclusion Standard (robots.txt) etc
-- normalisieren URLs 
 - haben "policies":
     - selection policy: "only a fraction of the web-pages on the Web will be accessed, retrieved and subsequently processed/parsed and indexed. That fraction would depend on file extensions, multimedia handling, languages and encoding, compression and other protocols supported" --> nur Podcast relevante sachen
     - visit policy: "are variants of the two fundamental graph search operations: Breadth-First Search (BFS) and Depth-First Search (DFS): the former uses a queue to maintain a list of to be visited sites, and the latter a stack. Between the two the latter (DFS) is more often used in crawling"
@@ -223,39 +206,13 @@ In order to prevent any domain specific code from being implemented twice unnece
     - parallelization/coordination policy: mehrere crawler, daher synchronisation welcher gerade welche web-page bearbeitet (synchronisierte queue/stack?)
 
 - siehe "Mercator: A scalable, extensible Web crawler" https://dl.acm.org/citation.cfm?id=598733
+~
 
-### Parser { -; toc:clear }
-
-### IndexStore { -; toc:clear }
-
-- verwaltet den zugriff auf den lucene index
-
-- Verarbeiten die Arbeitspakete die Crawler produzieren
-- nimmt die web-pages und erzeugt den index (= effiziente datenstruktur die schnelles suchen erlaubt)
-- in der literatur kommunizieren Crawler und Indexer durch ein gemeinsames Repository miteinander
-    - da MS keine gemeinsamen DBs teilen, und Actors das bei mir auch nicht sollen, wie löse ich das in beiden Fällen in der Architektur?
-- vorerst auszulassende Verbesserungen (da für meine Dipl nicht relevant)
-    - Case-folding
-    - Datums-homogenisierung
-    - Hyphenization
-    - Accents and punctuation marks
-    - Stemming
-    - Synonyms
-    - Acronyms
-    - etc.
-
-### DirectoryStore { -; toc:clear }
-
-### Searcher { -; toc:clear }
-
-
-### Gateway { -; toc:clear }
-
-
-### Updater { -; toc:clear }
+~LitNote
+Updater:
 
 - siehe "Effective page refresh policies for Web crawlers" https://dl.acm.org/citation.cfm?id=958945
-
+~
 
 ## Concurrent Tasks and Information Flow
 

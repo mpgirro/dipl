@@ -98,7 +98,11 @@ The term "service" is used in an overloaded manner in the literature. We can ide
 
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu et al. [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi and Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 
-### Service Communication {#sec-ms-communication}
+## Independence
+
+[TODO]{.red}
+
+## Service Communication {#sec-ms-communication}
 
 
 ~ Epigraph { caption: "Doug McIlroy"}
@@ -123,17 +127,18 @@ This satisfies the channel requirements given above. Therefore pipes are a valid
 Open/well-defined Communication Interface, such that heterogenous components can interact
 ~
 
-## Conceptual Roots
+~LitNote
+Conceptual Roots:
 
 SOA, OOP
+~
 
-### Independence
 
 ~LitNote
 * [@Dra17a;@Dra17c], high cohesion, loose coupling, independence
 ~
 
-### Concurrent and Distributed Building Blocks
+## Concurrent and Distributed Building Blocks
 
 ~Todo
 Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
@@ -164,7 +169,7 @@ Though isolation is ensured and communication adequate, it is still difficult to
 -->
 
 
-### Size, Scope and Granularity {#sec-ms-granularity}
+## Size, Scope and Granularity {#sec-ms-granularity}
 
 Bonér [@Bon17] criticizes the term "micro" for it encourages debating the actual *size* of a service. Any size definition requires a metric to be able to make comparisons and argue up to which limit an application may be called *Micro*service. Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
