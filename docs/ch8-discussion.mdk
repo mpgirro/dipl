@@ -4,8 +4,9 @@ Discussion
 
 <!-- of Actors and Microservices -->
 
-~ Epigraph { caption: "Pamela Zave"}
-The purpose of software engineering is to control complexity, not to create it.
+
+~ Epigraph { caption: "Jeannette M. Wing"}
+Thinking like a computer scientist means more than being able to program a computer. It requires thinking at multiple levels of abstraction.
 ~
 
 ~LitNote
@@ -481,6 +482,8 @@ Scalability:
 
 ~LitNote
 * "Scaling a microservice architecture does not imply a duplication of all its components" [@Mon16a]
+* [@Xu16]:
+    * "Among many dimensions of scalability, horizontal scaling plays a crucial role in cloud computing, which means replicating multiple identical copies of the processes of the application behind a load balancer"
 ~
 
 ~Todo
@@ -734,13 +737,17 @@ For a more detailed overview of behavioral contracts we refere the interrested r
 
 ## Evaluation
 
+~red
+delete this section, but maybe incorporate some of the stuff somewhere else?
+~
+
 ~LitNote
 * [@Gri17] "Performance Evaluation Of Massively Distributed Microservices Based Applications"
 * [@Ros16] "Profiling actor utilization and communication in Akka"
 ~
 
 
-### Software Quality Attributes
+Software Quality Attributes:
 
 ~LitNote
 SOA qual. attr.
@@ -754,15 +761,8 @@ SOA qual. attr.
 * Portability (Mobility?)
 ~
 
-### Quality Metrics
-
-#### Internal Quality Metrics
+Internal Quality Metrics:
 
 ~LitNote
 Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
 ~
-
-#### External Quality Metrics
-
-### Performance Measurement
-

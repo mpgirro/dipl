@@ -1,6 +1,18 @@
 
 A Concurrent System Scenario {#ch-problem-scenario}
-=======================================================
+============================
+
+
+
+~ Epigraph { caption: "Eric S. Raymond"}
+Every good work of software starts by scratching a developer's personal itch.
+~
+
+<!--
+~ Epigraph { caption: "Butler Lampson"}
+I think the computer is the world's greatest toy. You can invent wonderful things and actually make them happen.
+~
+-->
 
 
 ~LitNote
@@ -142,24 +154,28 @@ Diese hier als Description Lists aufzählen
 ~ 
 -->
 
+A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
+
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend, e.g. the actual searching in the Lucene index or parsing RSS/Atom feed files. The library offers a Java interface, such that it is interoperable with most JVM based programming languages. 
+
 
 * Crawlers
-  : are tasked with downloading data from feed's URLs, as well as gathering information to discover new feeds. They can achieve this e.g. by crawling existing directories. 
+  : are tasked with downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. 
 
 * Parsers
-  : analyze feed XML data, and extract Echo relevant data into internal system representation format.
-
-* IndexStore 
-  : TODO
+  : analyze feed XML data, and extract relevant information - that is what the web interface will display or what should be included for searching - into internal system representation format.
 
 * DirectoryStore 
-  : TODO
+  : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. DirectoryStores hold the complete amount of information about any cataloged entity
+
+* IndexStore 
+  : hold the data structure that is used for searching, the so-called *reverse index*. This structure maps terms to so-called *documents*. These represent the entities that can be possible search results (podcast shows, episodes), and therefore one document is inserted for each entity from the Directory database. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple description tags (e.g. `<description>`, `<content:encoded`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Gateway 
-  : TODO
+  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. Data access for the 
 
 * Searcher 
-  : TODO
+  : are tasked with performing a search operation. However they simply perform some basic query pre-processing and delegate to the IndexStore to retrieve relevant documents from the inverted index The respective results are returned
 
 * Updater 
   : TODO
@@ -174,9 +190,7 @@ Diese hier als Description Lists aufzählen
 
 ....
 
-A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [guini pig]{.important} for finding problems during development.
-
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend, e.g. the actual searching in the Lucene index or parsing RSS/Atom feed files. The library offers a Java interface, such that it is interoperable with most JVM based programming languages. 
+... means of generating globally unique IDs without requiring any kind of consensus mechanism
 
 ...
 

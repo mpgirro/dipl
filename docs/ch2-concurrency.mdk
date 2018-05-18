@@ -2,6 +2,12 @@
 Concurrency {#ch-concurrency}
 ===========
 
+
+~ Epigraph { caption: "Rick Hickey"}
+What matters for simplicity is that there's no interleaving.
+~
+
+
 ~LitNote
 * [@Agh85b] describes 3 "foundational issues" of concurrent systems
     * Shared resources

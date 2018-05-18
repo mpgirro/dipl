@@ -43,6 +43,7 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 * [@Has16] "Microservices and Their Design Trade-offs: A Self-Adaptive Roadmap"
   * "Among these problems is finalising the level of granularity of a microservice too early. “Splitting too soon can make things very difficult to reason about. It will likely happen that you (the software architect) will learn in the process. [1]."
   * [@Tai17] "Processes, Motivations, and Issues for Migrating to Microservices Architectures: An Empirical Investigation"
+* [@Dra17c] "Microservices: Migration of a Mission Critical System"
 ~
 
 ## Integrating Actors and Microservices
@@ -55,7 +56,7 @@ In our discussion, we've focused on Actors and Microservices as competing approa
 
 The Microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice, but e.g. the through an AMQP interface are possible as well. Actors on the other hand are more restricted, for the model semantic requires them to receive *message* constructs in a uniform way. However, by implication this means that different communication channels could be integrated as long as they comply to a homogenous message receiving abstraction.
 
-*Akka HTTP* is part of the Akka library collection. It provides a full client- and server-side HTTP stack ontop of the basic Actor abstraction. Thus, HTTP requests may be received as messages, just like from any other Actor: 
+*Akka HTTP*[citation]{.mind} is part of the Akka library collection. It provides a full client- and server-side HTTP stack ontop of the basic Actor abstraction. Thus, HTTP requests may be received as messages, just like from any other Actor: 
 
 ```{language:scala}
 override def receive = {
@@ -97,7 +98,7 @@ In our opinion this is due to the fact that the Microservice style, although con
 
 Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. However, it's worth to ask why then not to employ Actors altogether in the first place? As Guidi et al. [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. Neither does a very sophisticated Actor language as Erlang, nor an equally potent framework like Akka. 
 
-It is our believe however, that SOP languages like Jolie are already fostering components that are following many of the conceptualities of Actors [like A, B, C]{.important}, yet keeping the openness of well-defined interfaces, such that interoperability with other technologically heterogenous components is still not restricted. [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
+It is our believe however, that service oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for examples are already limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that interoperability with other technologically heterogenous components is still not restricted. [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
 
 ...As a result, it is our believe that an languages-based solution is worth a [???]{.mind}
 
