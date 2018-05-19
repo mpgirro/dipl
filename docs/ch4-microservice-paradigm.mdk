@@ -8,6 +8,10 @@ The Microservice Paradigm {#ch-microservice-paradigm}
 We build our computer (systems) the way we build our cities: over time, without a plan, on top of ruins.
 ~
 
+~ Epigraph { caption: "Groucho Marx"}
+These are my principles. If you don't like them, I have others.
+~
+
 
 ~LitNote
 * Unlike the Actor model, Microservices were not invented as a specific form of computation, but emerged as the result of an historical evolution. --> von mir gescgrieben, muss ich irgendwie in den kontext setzen
@@ -69,11 +73,9 @@ A monolith is a software application whose modules cannot be executed independen
 A microservice is a cohesive, independent process interacting via messages.
 ~   
 
-## Microservice Principles
+## Service Ambiguity
 
-~ Epigraph { caption: "Groucho Marx"}
-These are my principles. If you don't like them, I have others.
-~
+
 
 ~LitNote
 * [@Bro16]
@@ -101,6 +103,16 @@ In order to avoid confusion, some scholars propose a clear distinction. For exam
 ## Independence
 
 [TODO]{.red}
+
+~LitNote
+* [@Gui17] "Since microservices are independent, the interactions among them all happen by exchanging messages"
+* [@Fow14] "These services are independently deployable by fully automated deployment machinery"
+* [@Dra17a;@Dra17c] "Microservices: Migration of a Mission Critical System"
+    * independence
+* [@Bon16] "Reactive Microservices Architecture"
+    * isolation
+* 
+~
 
 ## Service Communication {#sec-ms-communication}
 

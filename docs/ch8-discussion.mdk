@@ -1,5 +1,5 @@
 
-Discussion
+Discussion {#ch-discussion}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -548,7 +548,7 @@ Availability:
 
 Among the theories of formulating concurrent computation is found a family called *process calculi* or *process algebra*. Such define formal models composed of so-called *processes* which are communicating within the laws and conditions layed out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interaction with other discrete event systems. Those then have to react to these interactions, and therefore he terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. Thus, an approach towards concurrency theory is the path of a process algebra.
 
-Some of these calculi gained considerable prominence, for example Milner's CCS (**C**alculus of **C**ommunicating **S**ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (**C**ommunicating **S**equential **P**rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05]. 
+Some of these calculi gained considerable prominence, for example Milner's CCS (**C**alculus of **C**ommunicating **S**ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (**C**ommunicating **S**equential **P**rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
 
 ...
 
@@ -571,6 +571,9 @@ It is important to realize that there is only one theoretical Actor model with m
 
 ... Especially the ASP (**A**synchronous **S**equential **P**rocesses) have many similarities with Active Objects as well as another special variant of Actors of the so-called *Communicating Event-Loop* model [@Kos16;@Car04, Car04 könnte ich mir sonst als REF generll ersparen!].
 
+...
+
+...Some calculi have been known to show such similarity to Actors that interoperability has been described in the literature. For example, Montanari and Talcott [@Mon97] demonstrate the coorporation of Actors and agents of the &pi;-calculus.
 
 ...
 
@@ -622,6 +625,10 @@ So far, we've covered concerns both Actors and Microservices provide respective 
 We've already discussed capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the [system will break...gscheiter formulieren und was zitieren]{.mind}. 
 
 An interface can be generally seens as a contract... [TODO: input, output, etc. pp...]{.important}
+
+~Todo
+[@Maz16] "A notable example is the Eiffel programming language [9], incorporating solid principles of OOP within a programming framework coordinated by the idea of design- by-contract, which aims at correctness-by-construction"
+~
 
 The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that S is a subtype of T if an incarnation of T can be safely replace by any incarnation of S, i.e. S respects the contract promised by T. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 

@@ -79,6 +79,8 @@ The example uses `pipeTo` to have the integration layer reroute any response as 
 
 We see, not all the basic Actor primitives are suitable to be used outside the Actor abstraction. However, well introduced abstractions like *Akka HTTP* allow Actors to provide Microservice-like *service behavior* to the outside, while simply handling its through its own *Actor behavior*. Thus, communication between Actors and Microservices is possible in principle. This allows to construct systems where tasks are distributed between Actors and Microservices.  
 
+This is not a novel idea however. Chapter [#ch-discussion] already mentioned the theoretical foundation from [@Mon97] for incorporating Actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of *Akka HTTP*.
+
 This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* Framework[^fn-lagom], a reactive microservice system framework built ontop of Akka.
 
 [^fn-lagom]: <https://www.lagomframework.com> 
