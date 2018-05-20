@@ -130,8 +130,7 @@ Und auf mehr will ich eigentlich gar nicht hinaus, oder?
 
 ...
 
-Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, an Jolie in particular, are having much in common with Actor Systems, as we've demonstrated in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]
-
+Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, an Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].
 
 ... It is our belief that...
 

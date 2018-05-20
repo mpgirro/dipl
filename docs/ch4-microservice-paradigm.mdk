@@ -116,11 +116,6 @@ In order to avoid confusion, some scholars propose a clear distinction. For exam
 
 ## Service Communication {#sec-ms-communication}
 
-
-~ Epigraph { caption: "Doug McIlroy"}
-One favorite pipeline was `bc | speak` — a talking desk calculator. It knew number names up to a vigintillion.
-~
-
 Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes.
 
 The microservice idiom specifies the following requirements on service IPC:
@@ -234,9 +229,11 @@ do not provide dedicated abstractions for service composition.
   : One attempt of a service-oriented programming language is *CAOPLE* [@Xu16]. It's basic programming constructs are services so-called *agents* (services), which provide a very strict notion of state encapsulation, autonomy and well-defined communication interfaces. They are executed on a dedicated virtual machine called *CAVM-2*, which is focusing on providing lightweight dynamic deployment of services compared to using container technology. Additionally, it is optimized for running large quantities of services in a lightweight manner, as well as abstracting network distribution.
 
 * Jolie
-  : Currently the most advanced and scientifically best described service-oriented language is *Jolie* [@Mon14;@Gui17;@Min17;@Gui09]. We will therefore use it as the primary linguistic example throughout the remainder of this thesis. It ... 
+  : Currently the most advanced and scientifically best described service-oriented language is *Jolie* [@Mon14;@Mon16b;@Gui17;@Min17;@Gui09]. We will therefore use it as the primary linguistic example throughout the remainder of this thesis. A Jolie program defines services which are described of two basic aspects. First, the *behavior* .....
+  
+  ...Second, the *deployment* ...
 
-
+  ...
 
 ...
 
