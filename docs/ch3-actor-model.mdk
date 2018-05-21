@@ -261,10 +261,6 @@ The Isolated Turn Principle of the Actor model already gives a strong boundry to
 
 ### Futures
 
-~ Epigraph { caption: "Prasad et al. [@Pra18]"}
-If you promise something to someone, you are responsible for keeping it, but if someone else makes a promise to you, you expect them to honor it in the future.
-~
-
 ~LitNote
 * [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
 * [@Fla99] "The semantics of future and an application"
@@ -290,7 +286,7 @@ There has been a long tradition of combining Actors with Futures. Agha describes
 
 For a complete formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
 
-### Software Transactional Memory (STM)
+### Software Transactional Memory
 
 ~LitNote
 * [@Sub11] demonstrates how Akka support STM together with Actors
@@ -302,7 +298,9 @@ For a complete formal definition of Future semantic we refere the interrested re
 
 As we've pointed out, the Actor model provides single-threaded semantic inside an Actor while processing one message. On the other hand however, the asynchronous messaging style tends to become a burden when it is required to have some sort of consensus between multiple Actors, for the model does not provide an adequat mechanism to abstract operations involving multiple messages [@Sub11]. Such is expected to be taken care of by the programmer.
 
-A well known concept to provide a single-threaded appearence on accessing some state or memory that is generally accesses concurrently, is called *transaction*. A transaction is a computation that does not have to be atomic by itself (e.g. larger code block), but still logically appreas to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If for some reason the transaction becomes invalid, usually for it can not be guaranteed to run in isolation due to a write collisions [@Sub11], all state modifications are rolled back accross the entire code segments involved in the transaction.
+A well known concept to provide a single-threaded appearence on accessing some state or memory that is generally accesses concurrently, is called *transaction*. A transaction is a computation that does not have to be atomic by itself (e.g. larger code block), but still logically appreas to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If for some reason the transaction becomes invalid, usually for it can not be guaranteed to run in isolation due to a write collisions [@Sub11], all state modifications are rolled back accross the entire code segments involved in the transaction. We generally consider transactional semantic realized in software[^fn-hardware-transaction] only, which is commonly refered to as *Software Transactional Memory* (STM).
+
+[^fn-hardware-transaction]: Originally, the concept was proposed for supporting transactions in functional languages, but in hardware. Hence the distinction.
 
 There are multiple ways how transactions are realized. For example, they can be done directly in hardware [citation!]{.mind}. This means on the other hand they are also possible to be modeled entirely within software. 
 

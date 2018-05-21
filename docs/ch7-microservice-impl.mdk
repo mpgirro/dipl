@@ -8,7 +8,7 @@ The main activity of programming is not the origination of new independent progr
 ~
 
 
-This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-problem-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
+This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
 
 ## Service Technology Stack
 
@@ -149,7 +149,7 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
     * problematisch bei stateful Actors, konkret bei den stores, weil der state (also DB/Index) auf den aktuellen stand gebracht werden muss --> wie? Event sourcing zB
 ~
 
-## Deployment
+## Deployment (!)
 
 ~LitNote
 depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage

@@ -1,5 +1,5 @@
 
-A Concurrent System Scenario {#ch-problem-scenario}
+A Concurrent System Scenario {#ch-scenario}
 ============================
 
 
@@ -172,7 +172,7 @@ In order to prevent any domain specific code from being implemented twice unnece
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. DirectoryStores hold the complete amount of information about any cataloged entity
 
 * IndexStore 
-  : hold the data structure that is used for searching, the so-called *reverse index*. This structure maps terms to so-called *documents*. These represent the entities that can be possible search results (podcast shows, episodes), and therefore one document is inserted for each entity from the Directory database. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple description tags (e.g. `<description>`, `<content:encoded`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
+  : hold the data structure that is used for searching, the so-called *reverse index*. This structure maps terms to so-called *documents*. These represent the entities that can be possible search results (podcast shows, episodes), and therefore one document is inserted for each entity from the Directory database. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Searcher 
   : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.

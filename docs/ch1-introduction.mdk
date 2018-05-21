@@ -5,14 +5,24 @@ Introduction
 
 
 ~ Epigraph { caption: "Lewis Carroll, Alice in Wonderland"}
-Begin at the beginning," the King said gravely, and go on till you come to the end: then stop.
+"Begin at the beginning," the King said gravely, "and go on till you come to the end: then stop."
 ~
 
 The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus der echten welt]{.important}.
 
 ... As such, the idea of simultaneous actions has not been absent from the domain of computer programming. In this thesis, we will therefore take a close look at two concepts both introducing notions of concurrency into programs and/or systems, respectivly the *Actor Model* of Computation and the *Microservice* Architectural Style.
 
-## Scope of this Thesis
+## Motivation (??)
+
+~ red
+Oder einfach als Kapitelanfangstext?
+~
+
+## Problem Statement
+
+## Aim of the Work
+
+## Scope of this Thesis (??)
 
 ~LitNote
 - Clear separation between search engine and domain specific tasks (writing to index and search, fetching and parsing feeds, etc) and the communication and coordiantion specific parts (actors architecture and microservice architecture). Therefore a core library was developed for the first, and for the second "only" backends utilizing this lib was needed. It allows easy analysis/argumentation about the concurrent programming vs MSA aspect of the thesis, because all test scenario specific parts are part of core-lib, and could therefore be replaced by other domain specific code or non-search engine code
@@ -28,12 +38,12 @@ Important that core-lib does not introduce any own concurrent aspect, all concur
 
 For we are conducting a *conceptual* analysis, we will refrain from giving formal definitions of all concepts (which would tend to become rather excessive), and confine on describing the concept semantics in an informal way sufficient for our discussions.
 
-## Methodology used
+## Methodological Approach
 
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
 * literature review for chapter: concurrency, Actor model, microservice paradigm, similarities and differences
 * practical work for Actor solution, microservice solution
 
-## Road Map
+## Structure of the Work
 
-The following thesis is ordered as follows: In chapter [#ch-concurrency] discusses Concurrency in general. Chapter 
+The following thesis is ordered as follows: chapter [#ch-concurrency] discusses *Concurrency* in general with a focus on the concerns relevant for our discussion. In chapter [#ch-actor-model] the *Actor Model of Computation* is introduced and subsequently the *Microservice Architecture Style* in chapter [#ch-microservice-paradigm]. An exemplary scenario for a concurrent system is outlined in chapter [#ch-scenario]. Building upon this, chapter [#ch-actor-impl] is concerned with the conceptualities of implementing it using an Actor approach, while chapter [#ch-microservice-impl] does the same for a Microservice Architecture. Chapter [#ch-discussion] uses the theoretical knowledge and practical findings to compare Actors and Microservices by discussing commonalities and differences, as well as advantages and disadvantages. Finally, chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view beyond them.

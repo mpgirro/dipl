@@ -53,6 +53,11 @@ Baeten [@Bae05] gives a general definition:
 
 > "*Concurrency theory is the theory of interacting, parallel and/or distributed systems*"
 
+
+~ red
+concurrent distributed processes [irgendwo gelesen]{.mind}
+~
+
 ## Execution Order and Nondeterminism
 
 
