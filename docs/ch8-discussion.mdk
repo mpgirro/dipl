@@ -127,6 +127,7 @@ Separation of Concerns:
 ~LitNote
 * [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
     * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
+* SoP between behavior and deployment part of Jolie programs, siehe [@Mon14;@Gui17]
 ~
 
 The strict encapsulation of state offers the opportunity to introduce multiple persistance strategies, without having an impact on the architectural layout. There is a more general concept to describe this form of modularization, called *Separation of Concerns* (SoC).
