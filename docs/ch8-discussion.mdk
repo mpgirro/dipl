@@ -611,7 +611,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 * [@Min17] Jolie has static type checking
 ~
 
-So far, we've covered concerns both Actors and Microservices in one way or another provide practical support for. From here on, we briefly endeavor subjects both concepts though having the theoretical potential for, yet lack practical solutions. Two such concerns we are briefly discussing is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
+So far, we've covered concerns both Actors and Microservices in one way or another provide profound practical support for. From here on, we briefly endeavor subjects both concepts offer rather basic capabilities at best yet, although there is potential for sophisticated solutions in theory. Two such concerns we are briefly discussing is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
 
 Already discussed have been capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the system will break. This raises the question for interface compatibility, and particularly an automated checking for it.
 
@@ -621,7 +621,7 @@ An interface can be generally seens as a contract... [TODO: input, output, etc. 
 [@Maz16] "A notable example is the Eiffel programming language [9], incorporating solid principles of OOP within a programming framework coordinated by the idea of design- by-contract, which aims at correctness-by-construction"
 ~
 
-The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that S is a subtype of T if an incarnation of T can be safely replace by any incarnation of S, i.e. S respects the contract promised by T. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
+The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e. `S` respects the contract promised by `T`. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 ### Contract Verification
 

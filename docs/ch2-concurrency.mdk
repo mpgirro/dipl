@@ -136,7 +136,7 @@ final State s = new State();
 final Runnable task = () -> {
     synchronized(s) {
         x.a += 1;
-        System.out.println(Thread.currentThread().getName() + " " + s.x);
+        println(Thread.currentThread().getName()+" "+s.x);
     }
 };
 
