@@ -117,6 +117,10 @@ Epigraph {
   background-color: LightGray;
   padding: 1ex;
 }
+.Lit { 
+  background-color: LightGray;
+  padding: 1ex;
+}
 .Mind {
   background-color: #cbffcb;
   before="[";

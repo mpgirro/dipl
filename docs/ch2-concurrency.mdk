@@ -58,34 +58,35 @@ Baeten [@Bae05] gives a general definition:
 concurrent distributed processes [irgendwo gelesen]{.mind}
 ~
 
-## Execution Order and Nondeterminism
+## Issues of Concurrent Programming Notions
 
+### Indicating Concurrent Execution
 
-## Synchronization and Coordination as Concurrency Control
+### (Process) Communication
 
+### (Process) Synchronization
 
-~LitNote
-* [@And83] "Concepts and Notations for Concurrent Programming"
-    * ch3 + ch4
-~
+controll access to shared state vs message passing (communication + synchronization)
 
-* Threads, Locks and Shared State
-* Message passing
-
-## Concurrent vs. Parallel Execution
-
-~LitNote
-* [@Roe15] "Whereas parallelization is all about executing processes simultaneously, concur-rency concerns itself with defining processes that can function simultaneously, or can overlap in time, but don’t necessarily need to run simultaneously. A concurrent system is not by definition a parallel system. Concurrent processes can, for example, be exe-cuted on one CPU through the use of time slicing, where every process gets a certain amount of time to run on the CPU, one after another."
-~
-
-## Implicit and explicit concurrency
-
-* siehe [@Bus90], ch 1.1.1
+critical region
 
 ## Distinguishing Concurrency, Parallelism and Distribution
 
-* siehe [@Bus90], ch 1.1.2
+~Lit
+* [@Ben90]
+    * "We distinguish between nodes and processes: A node is intended to represent a physically identifiable object like a computer, while the individual computers may be running multiple processes, either by sharing a single processor or on multiple processors. We assume that the internal synchronization among processes in a node is accomplished using shared-memory primitives, while processes in different nodes can communicate only by sending and receiving messages"
+~
 
+...
+
+~LitNote
+* [@Roe15] "Whereas parallelization is all about executing processes simultaneously, concur-rency concerns itself with defining processes that can function simultaneously, or can overlap in time, but don’t necessarily need to run simultaneously. A concurrent system is not by definition a parallel system. Concurrent processes can, for example, be exe-cuted on one CPU through the use of time slicing, where every process gets a certain amount of time to run on the CPU, one after another."
+*  A historically denotion has been *multiprogramming* when multiple tasks are multiplexed among the processor(s), and *multiprocessing* when tasks truely parallel on multiple CPUs [@And83].
+~
+
+...
+
+* siehe [@Bus90], ch 1.1.2
 
 Distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]:
 
@@ -104,7 +105,9 @@ define difference between process and node
 Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
 ~
 
-## Distinguishing concurrent programs and concurrent systems
+...
+
+**Distinguishing concurrent programs and concurrent systems**:
 
 * siehe [@Bus90], ch 1.1.3
 
@@ -114,7 +117,7 @@ Deadlock, Livelocks, Safety, Liveness, Races, etc...
 
 ## Realizations of Concurrent Execution
 
-
+...
 
 ### Language-Construct Approach to Concurrency {#sec-concurrency-language-level}
 
@@ -148,7 +151,7 @@ The offered `synchronized`{language:java} primitive is used to express mutual ex
 
 The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. 
 
-In contrast, the `synchronized`{language:java} keyword could also be used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
+Alternatively, the `synchronized`{language:java} keyword could also have been used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
 
 A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11;@Goe06].
 
@@ -175,7 +178,7 @@ Only with C11[^fn-c11] did the C programming language add native support for exp
 
 An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls alone are insufficient to compose concurrency [@Lov07]. 
 
-The expedient path is the alternative *fork* call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03; @Fel90]. The following example illustrates the control flow:
+The expedient path is the alternative `fork()` call. Such replicates the current processes address space into a spearate address space of a newly spawned child [@Bac03; @Fel90]. The following example illustrates the control flow:
 
 ```{language:cpp}
 void parentBehavior(int fd[]);
@@ -197,7 +200,7 @@ int main(void)
 
 Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-A so-called *pipe* can be set up between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}, and therefore pipes are heavily employed in the C programming language.
+A so-called *pipe* can be set up between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}.
 
 ...
 
@@ -219,13 +222,4 @@ Distributed is truely concurrent
   * shared-memory: inter-process comm. through memory (faster)
   * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
     * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
-~
-
-
-#### Case Study: Distributed Database Systems 
-
-~LitNote
-* <https://pdfs.semanticscholar.org/cd48/1697170f25b366dee904dcfca7988bb87645.pdf>
-* <http://www.ict.griffith.edu.au/~rwt/uoe/1.4.dcc.html>
-* <http://www.vldb.org/pvldb/vol10/p553-harding.pdf>
 ~

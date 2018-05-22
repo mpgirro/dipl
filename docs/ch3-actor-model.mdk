@@ -40,7 +40,7 @@ The Actor abstraction defines that the only possible form of communication betwe
 
 Processing messages is done in a serialized fashion. This provides the basis for *isolation* [@Les09]. All state modifications done while processing a single message appears *atomic*, i.e. it is not interrupted by other messages to the Actor [@Agh99], for they get buffered inside the mailbox.
 
-It is important to realize that requested state informations are always mere snapshots of any Actors state at a specific point in time (the point where this Actor processes the requesting message), and the information might therefore be already outdated once the requestor receives the snapshot answer [citation needed]{.mind}. This is the semantic of any form of asynchronous communication [citation needed]{.mind}. On the other hand, it frees Actors from the implications any form of shared state or resource handling, like the bottle-necks introduces by sequential locking, brings with it [@Agh90].  
+It is important to realize that requested state informations are always mere snapshots of any Actors state at a specific point in time (the point where this Actor processes the requesting message), and the information might therefore be already outdated once the requestor receives the snapshot answer [@And83]. On the other hand, it frees Actors from the implications any form of shared state or resource handling, like the bottle-necks introduces by sequential locking, brings with it [@Agh90].  
 
 To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be immutable, copied or proxied [@Kos16]. This allows save coordination at a distance [@Hel15]. 
 
@@ -52,7 +52,11 @@ Additionally, state can only be changed while processing a message. Therefore, a
 
 [^fn-isolated-turn-principle]: In this context, *turn* is used to refere to the processing of a single message. Various terminilogies have been used for this over the decades. [@Kos16] gives a good overview of Actor model taxonomy and the equivalence of various terms.
 
+## Unified Abstraction of Concurrency Notions
+
+<!--
 ## Unifying Concurrent, Parallel and Distributed Computation
+-->
 
 ~LitNote
 * Hier beschreiben dass die Actor semantic eine nebenläufige und sogar verteilte ausführung erlaubt
