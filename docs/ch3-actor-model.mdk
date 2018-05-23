@@ -52,7 +52,7 @@ Additionally, state can only be changed while processing a message. Therefore, a
 
 [^fn-isolated-turn-principle]: In this context, *turn* is used to refere to the processing of a single message. Various terminilogies have been used for this over the decades. [@Kos16] gives a good overview of Actor model taxonomy and the equivalence of various terms.
 
-## Unified Abstraction of Concurrency Notions
+## Unified Abstraction of Concurrency Notions (forms?)
 
 <!--
 ## Unifying Concurrent, Parallel and Distributed Computation
@@ -248,14 +248,7 @@ As such, mixing Actors with other concurrency models has always been common. The
 
 Therefore, in order to overcome these shortcommings, additonal concurrency models are interweaved. This raises the issue of the requirements for any two concurrency models being *composable* without any inconsistencies.
 
-Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. They define these two properties as follows: 
-
-* Safety
-  : Given correct inputs will result in correct outputs. Pitfalls for safety are e.g. race conditions. Actors are free of data races by design, and interweaved models must not introduce race-induced nondeterminism.
-* Liveness
-  : Given correct inputs are guaranteed correct outputs in finite time (termination). Cases where this might be prevented are called *deadlocks* (blocking operations which for some reason do not unblock) and *livelocks* (loops never meeting their termination condition).
-
-The Isolated Turn Principle of the Actor model already gives a strong boundry to ensure these properties [@Kos16]. Added concurrency concepts therefore must not weaken this.
+Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. The Isolated Turn Principle of the Actor model already gives a strong boundry to ensure these properties [@Kos16]. Added concurrency concepts therefore must not weaken this.
 
 ~LitNote
 * Drawbacks of breaking the Actor semantic [@Tas13]:

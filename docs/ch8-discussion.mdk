@@ -217,29 +217,13 @@ Programming with Microservices does not, unlike Actors, free one from the many h
 
 ### Fair scheduling
 
-~LitNote
-* [@Kan12]: Actor model defines fair scheduling that a message is eventually delivered to destination Actor except for its permanent “disability”, and no Actor can be permanently starved
-* MS werden vom OS garantiert das der process drankommt, aber die verteilung von messages (zB bei MQ broker) ist sache des verwendeten kanals, daher keine globale garantie
-* [@Kar09] beschreibt fair scheduling bei actors
-~
+Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems.
 
-Actors are entities inside an Actor System. As such, their scheduling is the responsibility of this system, viz. its execution strategy. As passiv components, Actors have no proactive sense, i.e. they only react to events (received messages). If an Actor's mailbox is empty, it is therefore not necessary for the system to invoke it, for there is nothing to do for it. This way, an Actor system can greatly reduce processing resource consumption [citation?]{.mind}.
+Actors are entities inside an Actor System. As such, their scheduling is the responsibility of this system, viz. its execution strategy. As passiv components, Actors have no proactive sense, i.e. they only react to events (received messages). Actor Systems assure that each message is delivered to and process by an Actor eventually. Therefore each Actor must be scheduled regularly by the system to guarantee that it cannot permanently starve [@Kan12;@Kar09].
 
-~Todo
-Dieses einsparen von rechenleistung bei Actors, dass geht bei Orleans so weit, dass die meisten actors sowieso nur virtuell sind, daher per default zwar offiziell existieren (virtuel), aber keinerlei resourcen brauchen.
-~
+This has one major benefit. If an Actor's mailbox is empty, it is therefore not necessary for the system to invoke it, for there is nothing to do for it. This way, an Actor system can greatly reduce processing resource consumption [citation?]{.mind}.
 
-~Todo
-es gibt eine gnaz allgemeine definition von [@Kan12]. ansonsten: Thread vs Event based Actors, VM scheduling wo es teil der sprache ist (Erlang), wie macht das zB Akka und Kilim?
-~
-
-For Microservices on the other hand, scheduling is a nonconcern. Any MSA is a composition of concurrent distributed processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. Operating systems tend to pursue a [???]{.mind} scheduling strategy [hab ich hier irgendwas das ich zitieren kann?].
-
-There is one drawback to the lack of scheduling concern in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any task unit will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are then simply a waste of energy [hab ich da was zu energy consumption?]{.mind}.
-
-~todo
-Scheduling von processen in chapter 4.6 von [@Bac03]
-~
+For Microservices on the other hand, scheduling itself is a nonconcern. Any MSA is a composition of concurrent distributed processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. The OS's *scheduling policy* is therefore what effects the liveness of any process [@Bac03]. There is one drawback to the lack of scheduling influence in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any task unit will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are then simply a waste of energy [hab ich da was zu energy consumption?]{.mind}.
 
 ## Distribution
 
@@ -649,7 +633,7 @@ können irgendwie Preconditions, postconditions, invariants spezifiziert werden?
 
 *Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}
 
-In the intrinsic context of distributed systems, concepts for verification build so far on post facto analysis approaches, e.g. via randomization testing or error log analysis. For example, Panda et al. [@Pan17] propose a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
+In the intrinsic context of distributed systems, concepts for verification build so far on post facto analysis approaches, e.g. via randomization testing or error log analysis. The later turned out to be promising for asserting liveness of services. For safety properties, Panda et al. [@Pan17] for example proposed a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
 
 ~ important
 Diese ganze Invariant Geschichte könnte ich einfach weglassen. Vor allem ist das eine Paper dazu auch nicht gut...
@@ -693,6 +677,10 @@ Due to the nature of Actors and Microservices, these concepts intrinsically allo
 
 Behavior type theory concepts seem to be not widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain applicability of services, which is undesired by programmers. 
 
+
+...
+
+... Behavior types have the potential to prevent safety and liveness issues regarding concurrent execution [@Hut16]
 
 ...
 
