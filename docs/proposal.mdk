@@ -37,6 +37,9 @@ CSS Header      :
 .Answer { 
   color:red;
 }
+.old {
+  color:gray;
+}
 
 @if not draft {
   LitNote { display: none }
@@ -71,7 +74,7 @@ required by the architecture, they are useable components [@Mon16a;@Dra17a].
 Interesting enough, this architecture style shares some similarities with long
 established programming concepts. Some examples are:
 
-* If we use the definition given in [@Dra17a] "*A microservice is a cohesive, 
+* If we use the definition given in [@Dra17a] "*a microservice is a cohesive, 
   independent process interacting via messages*", we can spot commonalities with 
   object-oriented design principles: objects should be loosely coupled 
   (= independent) and highly cohesive. 
@@ -281,6 +284,7 @@ model in their application architectures.
 
 # Methodology and Approach { #sec-methodology }
 
+~ old
 The methodology used to answer the given research questions outlined in &sect; 
 [#sec-motivation] comprises the following steps:
 
@@ -322,6 +326,11 @@ Both languages can be compared well to each other, for both run on the Java Virt
 Machine, and therefore have comparable properties regarding memory footprint, cost 
 of object creation, etc., allowing for an uncomplicated argumentation regarding 
 effects of the surrounding environment.
+~
+
+...
+
+The scenario system implementations act as objects of study regarding the improvement of efficiency through the utilization of concurrent execution of system components, and related matters. However, no attention will be payed to information retrieval aspects regarding effectivness, i.e. optimizing precision and recall.
 
 # State of the Art { #sec-sota }
 

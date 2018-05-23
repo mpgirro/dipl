@@ -44,8 +44,7 @@ For the scope of this thesis, it is important to gain a notion of concurrent com
 ...
 
 
-The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. To be able to discuss different concepts and notions, we will therefore denote such units of activity as *tasks* through the remainder of this thesis. In the Ada programming language, "task" referes to an activity associated with a concurrent unit. We employ this term for it is well known and will not intersect with any of the other concepts terminologies discussed in due course, thus offering us a neutral way of refering to any kind of concurrently executed computation within a logical unit.
-
+The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. Depending on context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed later on. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
 
 ...
 
@@ -58,7 +57,11 @@ Baeten [@Bae05] gives a general definition:
 concurrent distributed processes [irgendwo gelesen]{.mind}
 ~
 
-## Issues of all Concurrent Programming Notions
+## Foundational Issues
+
+~lit
+Foundational Issues of all Concurrent Programming Notions
+~
 
 Many different approaches and concepts exists to approach concurrent execution. 
 
@@ -66,15 +69,17 @@ When programming concurrency, there are
 
 ### Indicating Concurrent Execution
 
-### (Process) Communication
+### Communication
 
-### (Process) Synchronization
+Process/Task Communication
+
+### Synchronization
 
 controll access to shared state vs message passing (communication + synchronization)
 
 critical region
 
-## Distinguishing Concurrency, Parallelism and Distribution
+## Concurrency, Parallelism and Distribution
 
 Until now, concurrency has been discussed as a generic term denoting a simultanious execution of different program [parts]{.red}. Yet there are more diverse notions regarding how concurrent execution is implemented. 
 
@@ -125,11 +130,11 @@ Thus, parallel and distributed execution are forms of concurrent execution, and 
 
 ## Correctness Properties
 
-On a fundamental level, the basic porpose of any program is the computation of a result. However, a sequential program will always conclude the same result for the same input[^fn-sequential-side-effects], while this is not true for concurrent programs in general due to the intrinsic interleaving of computations [@Ben90].
+On a fundamental level, the basic porpose of any program is the computation of a result. A sequential program should always conclude the same results for the same inputs[^fn-sequential-side-effects], and thus it's correctness can be verified using theoretical methods, although these are not widely adoped in practice. For concurrent programs, this in not generally applicable anymore, due to the intrinsic interleaving of computations [@Ben90].
 
 [^fn-sequential-side-effects]: Any form of side effects, like IO, are of course also forms of input to a program, thus they have to be stable as well. 
 
-Many different issues regarding concurrent computation are well known and described in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we will not immerse into detailed discussions on these issues, as is often found in other literature concerned with concurrency concepts. Here, simply two types of properties will be of relevance, which have an effect on the correctness of concurrent programs. All the issues given above can be classified in terms of these two property types:
+Many different issues regarding concurrent computation are well known and described in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we will not immerse into detailed discussions on these, as is often found in other literature concerned with concurrency concepts. Here, simply two types of properties will be of relevance, which have an effect on the correctness of concurrent programs. All the issues given above can be classified in terms of these two property types:
 
 * Safety
   : asserts the operations that are allowed (safe) to be performed [@Bus90]. As a result, given correct inputs will result in correct outputs [@Swa14]. Examples of safety properties are race conditions, deadlock freedom and mutual exclusion.
@@ -230,7 +235,7 @@ int main(void)
 
 Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-A so-called *pipe* can be set up between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}.
+A so-called *pipe* can be set up as IPC between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}.
 
 ...
 

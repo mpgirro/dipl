@@ -113,35 +113,25 @@ Epigraph {
 
 <!-- # # # # # # # # # # # # # # # # # # # # # # -->
 
-.LitNote { 
+.litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
 }
-.Lit { 
-  background-color: LightGray;
-  padding: 1ex;
-}
-.Mind {
+.mind {
   background-color: #cbffcb;
   before="[";
   after="]"
 }
-.Quelle {
+.quelle {
   color: red;
   before="[";
   after="]"
 }
-.Todo { 
+.todo { 
   background-color: Aqua; 
   padding: 1ex;
 }
-.important {
-  color:red
-}
-.delete {
-  color:red
-}
-.red {
+.important, .delete, .red {
   color:red
 }
 

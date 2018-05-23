@@ -40,7 +40,19 @@ It offers us the opportunity to discuss commonalities, differences and general c
 
 Search Engines cause the illusion to be closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
 
-Search engine construction in science the field of *information retrieval*, that focuses on *precision* and *recall* [zitieren?]{.mind}, which we will not pay attention to in this work. We will merely use some simple scoring methods provided by the information retrieval library used and trust that its results will sufficient.
+...
+
+[@Man08]
+
+Constructing search engines is led by two basic requirements:
+
+* Effectiveness
+  : is about the quality of search results. Information retrieval is distinquishing between two aspect regarding effectiveness, which are *precision* and *recall*. We will not pay attention to optimizing effectiveness in this work, and merely use some simple scoring method provided by the information retrieval library used.
+
+* Efficiency
+  : is about response time and throughput, therefore highly related to the concurrent processing capabilities of the system.
+
+Before these requirements can be met, the information has to be gathered of course. This is another major aspect of the architecture, which is of more concern ...
 
 ## Domain Description
 
@@ -48,9 +60,7 @@ Podcasts = Decentralized media syndication
 
 ## System Components
 
-~ Important
-Diese hier als Description Lists aufzählen
-~
+The basic architectural components are based on the search engine architecture introduced by Brin and Page [@Brin98].
 
 
 <!--
@@ -163,16 +173,16 @@ In order to prevent any domain specific code from being implemented twice unnece
 [^fn-lucene]: <https://lucene.apache.org>
 
 * Crawlers
-  : are tasked with downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. Crawlers produce jobs for further processing of downloaded data by Parsers.
+  : are tasked with the aquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
 
 * Parsers
-  : analyze feed XML data, and extract relevant information - that is what the web interface will display or what should be included for searching - into internal system representation format.
+  : are tasked with the transformation of aquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, e.g. invalid XML.
 
 * DirectoryStore 
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. DirectoryStores hold the complete amount of information about any cataloged entity
 
 * IndexStore 
-  : hold the data structure that is used for searching, the so-called *reverse index*. This structure maps terms to so-called *documents*. These represent the entities that can be possible search results (podcast shows, episodes), and therefore one document is inserted for each entity from the Directory database. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
+  : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Searcher 
   : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.
