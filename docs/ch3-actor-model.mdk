@@ -52,7 +52,7 @@ Additionally, state can only be changed while processing a message. Therefore, a
 
 [^fn-isolated-turn-principle]: In this context, *turn* is used to refere to the processing of a single message. Various terminilogies have been used for this over the decades. [@Kos16] gives a good overview of Actor model taxonomy and the equivalence of various terms.
 
-## Unified Abstraction
+## Unifying Abstraction
 
 <!--
 ## Unifying Concurrent, Parallel and Distributed Computation

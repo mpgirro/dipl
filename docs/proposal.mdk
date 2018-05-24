@@ -1,7 +1,7 @@
 [INCLUDE=style/marticle]
 
-Title        : Master Thesis Proposal
-Subtitle     : Concurrent Programming with Actors and Microservice
+Title        : Proposal
+Subtitle     : Concurrent Programming with Actors and Microservices
 Title Note   : DRAFT, &date; (version 1.3)
 Author       : Maximilian Irro
 Email        : maximilian.irro@tuwien.ac.at
@@ -20,8 +20,14 @@ Draft        : True
 
 CSS Header      :
   @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
+  @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
   body.madoko {
-    font-family: "Crimson Text", Cambria, serif;
+    font-family: "Crimson Text", serif;
+    font-size: 16px;
+    max-width: 38em; /* reduce to: 34em */
+  }
+  .madoko code, .madoko pre {
+    font-family: "Source Code Pro", monospace;
   }
   .madoko .math-rendering {
     color: black;
@@ -32,14 +38,13 @@ CSS Header      :
   .toc a, .toc a:visited { 
     color: #0000EE;  
   }
+  .a, a:visited {
+    color: #0000EE;  
+  }
 
-.LitNote { background-color: yellow }
-.Answer { 
-  color:red;
-}
-.old {
-  color:gray;
-}
+.litnote { background-color: yellow }
+.answer  { color:red }
+.old     { color:gray }
 
 @if not draft {
   LitNote { display: none }
@@ -57,6 +62,29 @@ Nach einem Meeting mit Puntigam am 2017-12-13 habe ich zwar die Anweisung bekomm
 
 # Motivation & Problem Statement { #sec-motivation }
 
+Efficient software has long been built upon the concept of concurrent execution. Many different approaches and notions have been proposed and implemented in order to conceive it. One of these is the *Actor Model of Computation* [@Hew73]. In it, all computation is performed by entities called *Actors*. They encapusulate state exclusively, and communicate by message passing semantic. 
+
+ This allows them to be 
+
+...
+
+... abstraction allows many possibilities, e.g distribution, mobility, scalability
+
+...
+
+In recent time, a new software architectural style emerged called *Microservice Architecture* (MSA). Instead of relying on large-scale monolithic programs, which are usually highly structured in a concurrent fashion internally, the style instead is based on constructs called *Microservices*. Such are relatively small, independent programs refraining from utilizing shared memory sections among them and instead communicating via lightweight message passing channels, e.g. HTTP-based state transfer (REST) or message queues that do not employ complex logic on their own. 
+
+...
+
+On a conceptual basis, Actor and Microservices share many commonalities, and yet 
+
+...
+
+> **RQ**: How is the Actor Model comparing against the Microservice Paradigm with regard to the scenario of a concurrent search engine architecture?.
+
+...
+
+~ begin old
 Recently, a new software architecture style called *microservice architecture*
 (MSA) emerged for designing software applications as distributed systems of
 loosley coupled, independently deployable, single purpose services [@Fow14].
@@ -224,11 +252,15 @@ compilieren), polyglot programming (via VMs möglich, vgl. Mix aus
 Java/Scala/Groovy/Clojure auf der JVM), live upgrades, 
 ~
 
+~ end old
+
 <!--
 &pagebreak;
 -->
 
 # Expected Results { #expected-results }
+
+~ begin old
 
 The author expects that this work will result in an answer to the main research
 question of "*No: sufficiently concurrent programming languages do not need
@@ -280,11 +312,16 @@ plan the *separation of concernces* in more detail than the programming paradigm
 in most languages often do, resulting in an easier to understand concurrency 
 model in their application architectures.
 
+~ end old
+
 &pagebreak;
 
 # Methodology and Approach { #sec-methodology }
 
-~ old
+
+... MS are evolution from SOA
+
+~ begin old
 The methodology used to answer the given research questions outlined in &sect; 
 [#sec-motivation] comprises the following steps:
 
@@ -326,7 +363,7 @@ Both languages can be compared well to each other, for both run on the Java Virt
 Machine, and therefore have comparable properties regarding memory footprint, cost 
 of object creation, etc., allowing for an uncomplicated argumentation regarding 
 effects of the surrounding environment.
-~
+~ end old
 
 ...
 
@@ -334,6 +371,7 @@ The scenario system implementations act as objects of study regarding the improv
 
 # State of the Art { #sec-sota }
 
+~ begin old
 In a recent systemantic mapping study of research literature [@Als16], it was
 found that the microservice architectural style (MSA) research is currently at
 an early stage, for the style was born from industrial needs, and academia has
@@ -403,6 +441,7 @@ proof of concept that microservice principles can make their way into language
 primitives of future programming languages [@Maz16]. Subsequently Jolie has no
 more explicit concurrency considerations than a MSA per se (both in language
 constructs and accompaning scientic literature), because it is an inherent property. 
+~ end old
 
 <!--
 Therefore we think it does not make a suitable language candidate for our 

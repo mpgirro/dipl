@@ -135,7 +135,16 @@ Most importantly however, Futures can be misused to introduce nondeterminism int
 
 The Isolated Turn Principle states that it must be guaranteed that nothing may interfere with any internal state except the Actor itself, at the very least while processing a message. Yet as the example demonstrates, Futures have the potential to violate this constraint, thus breaking the Actor semantic. Once again, Akka can neither check nor prevent this, for the programming languages visibility concept simply allows passing mutable state into the Futures scope, while the saftety permits it to be actually mutated. It is up to the user to ensure that only *immutable* state in introduced from outside the scope of the Future into it [@Sub11; @AkkaJMM].
 
-There are other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
+[den untenstehenden Absatz weniger in Berichtform, mehr als konzeptioneller Darlegung]{.red}
+
+There are also other less expected issues Futures might introduce. All aggreation of remote resources by Crawlers are performed via HTTP. In principle, it is a synchronous communication protocol, such that there is always a response to any request[^fn-synchronous-http]. Most APIs are therefore blocking as they abstract remote procedure call semantic. However, some allow an asynchronous handling by providing a Future result. We've expected this to improve throughput of crawling jobs, for HTTP requests to remote and unknown servers definitively pose as potential bottlenecks. And so it did, yet by dispatching a great many Futures simultaniously. These all stressed the Crawler Actors thread pool, which could lead to temporary and unexpected starvations due to a simple lack of available threads on which free Crawlers could be scheduled by the Actor System. We've tried this with both the asynchronous client APIs of the *Akka HTTP* module and the *Apache HTTP Components*[^apache-http-components] library. Althought the former would also provide a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly, we've found that the underlying *super connection pool flow* used also introduces a limit to the amount of concurrent request to a single host [@AkkaHTTP]. As with many RSS feeds in general, publishers tend to choose distributing feeds via dedicated providers, thus a great amount of feeds is centralized on a small amount of host, rendering Akka's flow variant inapplicable.
+
+[^fn-synchronous-http]: The most basic form would be merely a so-called *HTTP status code*, of which 404 is undoubtably the most famous. 
+[^apache-http-components]: <https://hc.apache.org>
+ 
+As a result, it was found that, though simple RPC styled retrieval did limit throughput, on the other hand this can be of advantage. It puts a uniform and more predictable stress on the thread pool, and avoids problems like Actor starvation and . 
+
+There are however still other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
 
 ## Synchronous and Asynchronous Communication
 

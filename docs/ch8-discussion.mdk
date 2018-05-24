@@ -1,5 +1,5 @@
 
-Discussion {#ch-discussion}
+Discussion & Evaluation {#ch-discussion}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -664,9 +664,7 @@ Actor and Microservice Systems require its components to be interoperable in ord
 
 Active Objects primarily address the problem of contracts for Actors. Their object abstraction provides static inferfaces, such that a compiler can ensure message compatibility [citation?]{.mind}. The changing of behaviour is reflected as a change of the objects internal state. However, as we've seen, Actors may in general alter their behaviour such that they do not always accept the same kinds of messages, i.e. a only a certain sequence of messages is then valid. Intuitively this is somewhat contrary to the static notion of objects the AO abstraction facilitates, for it would mean that their offered methods are not a static set, but may change dynamically depending on their internal state. In theory, it is however possible to alter the type annotation, that is the proxy object, on the client side of an Active Object dynamically, such that method restrictions may occur while method compatibility can still be ensured through a compiler [@Pun01b]. In object-orientation, this characteristic in usually refered to as *nonuniform method availability* [@Hut16]. 
 
-
-
-There is a generalization of describing [???]{.important} for objects. Two kinds of notions have been established in the literature. One focusing on introducing process calculi like types into objects, thus sometimes refered to as *process types* [@Pun95a;@Hut16, REF3] ...[stimmt das?!]{.important}, and another based on *typestate*, which summarizes all kinds of typization depending on internal state. The nonuniform method availability that was just described is a special variant of typestate refered to as *session types* [@Anc16].
+There is a generalization of describing valid method invocation order for objects. Two kinds of notions have been established in the literature. One focusing on introducing very formally defined theoretical models, e.g. based on process calculi, into typization, as do for example *process types* [@Pun95a;@Hut16], and another based on less formally defined ideas summarized as *typestate*. The nonuniform method availability that was just described is a special variant of typestate refered to as *session types* [@Anc16].
 
 ...
 

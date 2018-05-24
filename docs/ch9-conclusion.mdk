@@ -56,7 +56,7 @@ In our discussion, we've focused on Actors and Microservices as competing approa
 
 The Microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice, but e.g. the through an AMQP interface are possible as well. Actors on the other hand are more restricted, for the model semantic requires them to receive *message* constructs in a uniform way. However, by implication this means that different communication channels could be integrated as long as they comply to a homogenous message receiving abstraction.
 
-*Akka HTTP*[citation]{.mind} is part of the Akka library collection. It provides a full client- and server-side HTTP stack ontop of the basic Actor abstraction. Thus, HTTP requests may be received as messages, just like from any other Actor: 
+*Akka HTTP*[@AkkaHTTP] is part of the Akka library collection. It provides a full client- and server-side HTTP stack ontop of the basic Actor abstraction. Thus, HTTP requests may be received as messages, just like from any other Actor: 
 
 ```{language:scala}
 override def receive = {
