@@ -4,7 +4,9 @@ Package       : [left=2.6cm,right=2.5cm,top=2.5cm,bottom=2.5cm] geometry
 
 <!--Package       : mathptmx-->
 <!--Package       : amsfonts-->
-Package       : [T1] fontenc
+Package       : lmodern 
+Package       : [T1]fontenc
+Package       : [utf8]inputenc
 
 Package       : setspace
 <!--Package       : fancyhdr-->

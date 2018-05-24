@@ -275,7 +275,7 @@ We've found that such kinds of message saftey restrictions, i.e. without the tig
 Point-to-point communication and Pub/Sub
 ~
 
-## Data Coupling
+## (Data Coupling)
 
 ~LitNote
 Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between Actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)

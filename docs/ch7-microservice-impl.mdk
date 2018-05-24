@@ -7,6 +7,10 @@ Microservice-based Implementation {#ch-microservice-impl}
 The main activity of programming is not the origination of new independent programs, but in the integration, modification, and explanation of existing ones.
 ~
 
+~ Epigraph { caption: "Ian Robinson"}
+Be of the web, not behind the web.
+~
+
 
 This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
 
@@ -28,7 +32,25 @@ Java + Spring Boot Stack for all Services
 
 ## Communication Channels
 
-REST, AMQP
+[hab ich diesen blabla nicht schon bei der theory]{.red}
+
+While communication for Actors happens in a uniform way, Microservices are faced with more challenges. The freedom in the design of services does not [vorgeben]{.red} any specific communication interface. The only restriction regarding interaction is the [davon absehen]{.red} of implementing any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and losse coupled.
+
+Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good [mechanism?]{.red} for synchronous reqirements, e.g. any direct user interaction through the Web interface. Thus, for all information flows between the CatalogStore and the Web interface, as well as the search query chain `Gateway` &rarr; `Searcher` &rarr; `IndexStore` [...satzschluss?]{.red}.
+
+As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS is a prominent example for such on the JVM. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of MS. 
+
+AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface definition [...TODO]{.red}
+
+Various compatible technologies, so-called *providers*, do exist. *Echo* is using RabbitMQ[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
+
+[^fn-rabbitmq]: <https://www.rabbitmq.com>
+
+As a result, service can have multiple different interfaces, based on heterogenous technologies. In fact, this also allows service to provide the *same* functionality on *different* interfaces. In fact, all the messages that services are consuming from the AMQP queue can also be sent directly to a specific via HTTP, for all services offer respective REST interfaces in order to accept and process these. This turned out especially useful for debugging purposes, and suggests that it could be a [guter ansatz/zielführend sein]{.red} to maintain different interfaces for production as well as maintenance operation. 
+
+
+
+...
 
 Synchronous and Asynchronous Communication
 
@@ -67,7 +89,7 @@ In any case, if using REST or some other mechanism, such RPC styled requests alw
 
 [TODO kann auch für async eingesetzt werden, google REST callbacks]{.mind}
 
-## Data Coupling
+### (Data Coupling)
 
 ~LitNote
 No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
@@ -87,18 +109,19 @@ The combination of no shared memory and well-defined serialized data exchange fr
 Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
 ~   
 
-## Load balancing    
+### Service discovery
 
-~LitNote
-* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
-~
+...
 
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * see: load balancing
-~
+... konkreter REST endpoint muss bekannt sein...
 
-## Service discovery
+... Consul, Netflix Eureka
+
+... We've found Consul to be a rather computation heavy mechanism, while Eureka tends to require extensive time for discovery and refresh, especially for initial contacts. In the call chain `Gateway` &rarr; `Searcher` &rarr; `IndexStore` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+
+...
+
+In contrast, message queue semantic has the major benefit that a sender can dispatch a message to the queue, without having to know the address (and even the existance) of the receiver. Therefore, no service discovery technology is required when message queue channels are utilized.
 
 ~LitNote
 * Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
@@ -109,6 +132,17 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 * [@Dra17c] Dustdar/Dragoni paper!
     * see: service discovery
     * "This is typically done with a service discovery tool, either a separate service such as Consul [9],"
+~
+
+### Load balancing    
+
+~LitNote
+* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
+~
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * see: load balancing
 ~
 
 ## Clustering
