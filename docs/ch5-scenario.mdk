@@ -47,7 +47,7 @@ Search Engines cause the illusion to be closed monolithic systems, but actually 
 Constructing search engines is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results. Information retrieval is distinquishing between two aspect regarding effectiveness, which are *precision* and *recall*. We will not pay attention to optimizing effectiveness in this work, and merely use some simple scoring method provided by the information retrieval library used.
+  : is about the quality of search results. Information retrieval is distinquishing between two aspect regarding effectiveness, which are *precision* and *recall*. Optimizing effectiveness is not within the scope of this thesis, and therefore merely a simple scoring method provided by the used information retrieval library is applied.
 
 * Efficiency
   : is about response time and throughput, therefore highly related to the concurrent processing capabilities of the system.
@@ -172,28 +172,28 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 [^fn-lucene]: <https://lucene.apache.org>
 
-* Crawlers
+* Crawlers (C)
   : are tasked with the aquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
 
-* Parsers
+* Parsers (P)
   : are tasked with the transformation of aquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, for all considered data is encoded in a markup language, viz. XML or HTML.
 
-* DirectoryStore 
+* DirectoryStore (D)
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. DirectoryStores hold the complete amount of information about any cataloged entity
 
-* IndexStore 
+* IndexStore (I)
   : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
-* Searcher 
+* Searcher (S)
   : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.
 
-* Gateway 
+* Gateway (G)
   : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged entity information, or performing searches. Therefore the Gateway communicates with either a DirectoryStore, or a Searcher. 
 
-* Updater 
+* Updater (U)
   : [TODO]{.red}
 
-Such task units ending in *\*Store* are stateful, all others stateless.
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an *asynchronous* message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* request to a DirectoryStore.
 
 ...
 

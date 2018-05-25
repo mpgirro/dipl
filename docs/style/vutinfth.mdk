@@ -19,6 +19,7 @@ Package       : [ruled,linesnumbered,algochapter]algorithm2e
 Package       : nag
 Package       : hyperref
 Package       : [acronym,toc]glossaries
+Package       : [hang,flushmargin]footmisc
 Heading Endperiod   :
 <!-- IMPORTANT! make sure headings get mapped to \chapters -->
 Heading Base        : 1

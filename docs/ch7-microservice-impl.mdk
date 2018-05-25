@@ -36,11 +36,11 @@ Java + Spring Boot Stack for all Services
 
 While communication for Actors happens in a uniform way, Microservices are faced with more challenges. The freedom in the design of services does not [vorgeben]{.red} any specific communication interface. The only restriction regarding interaction is the [davon absehen]{.red} of implementing any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and losse coupled.
 
-Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good [mechanism?]{.red} for synchronous reqirements, e.g. any direct user interaction through the Web interface. Thus, for all information flows between the CatalogStore and the Web interface, as well as the search query chain `Gateway` &rarr; `Searcher` &rarr; `IndexStore` [...satzschluss?]{.red}.
+Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good [mechanism?]{.red} for synchronous reqirements, e.g. any direct user interaction through the Web interface. Thus, for all information flows between the CatalogStore and the Web interface, as well as the search query chain `G` &rarr; `S` &rarr; `I` &rarr; `S` &rarr; `G` [...satzschluss?]{.red}.
 
 As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS is a prominent example for such on the JVM. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of MS. 
 
-AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface definition [...TODO]{.red}
+AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface standard [...TODO]{.red}
 
 Various compatible technologies, so-called *providers*, do exist. *Echo* is using RabbitMQ[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
 
@@ -75,6 +75,8 @@ howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async
 * beschreiben das MS mehrere total verschiedene interfaces haben können (REST, AMQP)
 ~
 
+~ begin red 
+
 Microservices in general do not face difficulties for realizing different communication styles. Synchronous or asynchronous dispatch has only to be supported by the communication channel used. As was discussed, such channels only have to suffice the ... [bedingingen]{.mind}
 
 ---
@@ -88,6 +90,8 @@ In any case, if using REST or some other mechanism, such RPC styled requests alw
 *Echo:MS* is relying n RabbitMQ [citation]{.mind}
 
 [TODO kann auch für async eingesetzt werden, google REST callbacks]{.mind}
+
+~ end red
 
 ### (Data Coupling)
 
@@ -152,6 +156,16 @@ In contrast, message queue semantic has the major benefit that a sender can disp
     * see: clustering 
 ~
 
+## Internal Service concurrency
+
+The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
+
+The *Echo* services are conceived on the Spring Framewor, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) [approahc?]{.red}. Spring provides a thread pool on which "services" are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
+
+... transactions are extended to database trans. in a transparent.
+
+...uses the default software transactions provided byy the Sprinng framework f
+
 ## Fault Tolerance
 
 ~LitNote
@@ -188,6 +202,14 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 ~LitNote
 depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
 ~
+
+As was already mentioned, approaching Microservices at the moment is focused on a deployment view. It is not important *how* services are being implemented, as long as they are composed correctly. Note that this is however not the theoretical notion of *correctness* such that it could be asserted by applying proof techniques, e.g. by showing safety and liveness properties, or interface type compatibility, but a mere practical understanding of "executing and interlinking services such that the system works" [andere bezeichnung?]{.red}.
+
+For microservices, *container* technology has been shown to be a promising approach for deployment. It builds upon....
+
+Docker [^fn-docker] is a prominent example of a container tool. It is especially convenient, for it facilitates 
+
+[^fn-docker]: <https://www.docker.com>
 
 ## Availability
 

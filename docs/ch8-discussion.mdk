@@ -1,5 +1,5 @@
 
-Discussion & Evaluation {#ch-discussion}
+Discussion {#ch-discussion}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -81,7 +81,7 @@ This restriction opens up another opportunity however. Monolithic applications t
 
 This approach on introducing specialized database systems based on respective persistance needs, at the risk of introducing potential redundancies, is sometimes refered to as *polyglott persistance* [citation?]{.mind}.
 
-## Communication
+## Communication and Message Routing
 
 ~LitNote
 * [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
@@ -96,7 +96,7 @@ Thus, message passing must occure through a so-called *communication channel*. S
 
 ---
 
-We've identified various forms of information flow in the literature [citation, multiple!]{.mind}
+We've identified various forms of information flow in the literature [@Mon14;@Gui09;@Spe90;UND WEITERE!] with varying terminologies. They can be distinguished along side two dimension: number of recipients and response style. The taxonomy given below will be used: 
 
 ~LitNote
 * [@Mon14] Jolie kennt: 
@@ -117,8 +117,37 @@ We've identified various forms of information flow in the literature [citation, 
 {  }
 ~
 
-The by far most prominent example in the literature [referenzen]{.mind} for viable Microservice communication is REST. However, it is merely a representative of the synchronouse one-to-one style. Other [TODO...]{.mind}
+By far the most prominent example in the literature [referenzen]{.mind} for viable Microservice communication is REST. Our major critique on this is that REST is merely a representative of synchronouse one-to-one communication, and does not cover the other [bereiche]{.red}.
 
+---
+
+MESSAGE ROUTING
+
+Akka:
+
+```{language:scala}
+val router: Router = {
+    val routees = List(actor1, actor2)
+    Router(BroadcastRoutingLogic(), routees)
+}
+router.route(message, sender())
+```
+
+Alternative routing logic's are available, for example `RoundRobinRoutingLogic`{language:scala}, which distributes messages [one after another]{.red}
+
+...
+
+Microservices:
+
+* REST: one-to-one
+* AMQP: notification or request/async response
+
+AMQP is not directly applicable for one-to-many communication
+
+
+
+
+* MQ hat den vorteil, dass ein Worker sich dann einen Job holt, sobald er wieder frei ist (pull). Actor routers hingenen teilen die Jobs via RoundRobin aus (push), weswegen es kein begrenzung der Last gibt, dh die Mailbox eines Workers kann überlaufen 
 
 ## Separation of Concerns and Single Responsibility
 
@@ -134,6 +163,10 @@ The strict encapsulation of state offers the opportunity to introduce multiple p
 
 Having state strictly encapsulated, up to  
 
+...
+
+... both Actors and Microservices provide a good basis to facilitate a clear separation of concerns due to their strict notions of high cohesion and loose coupling. However, as with many abstractions, SoC is merely [a best practice / a goal ... and cannot be enforced or demanded in any way]{.red}. Services can be enassigned as many concerns as wished, and Actors can also receive any kind of message, making them potential targets to all sorts of requests and jobs [FURCHTBAR FORMULIERT, aber richtige botschaft]{.red} 
+
 ---
 
 Single Responsibility:
@@ -145,6 +178,10 @@ Single Responsibility:
 * "functional separation" [@Sal16]
 * single responsibility ist ein gutes beispiel, wieso man exlusive datenbanken gut gebrauchen kann
 ~
+
+We've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
+
+Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 ## Cohesion, Coupling and Independence
 
@@ -337,7 +374,7 @@ However, other Actor systems have adopted this style, e.g. as was done in Scala.
 
 The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. Any asynchronous messaging is decoupled in time [cite Boner]{.mind}. It does not introduce the expectation of an immediate response as could be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods.
 
-Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging. Chaper [#ch-actor-solution] will discuss in detail the challenges and approaches in designing Actor interface to prevent problematic abstractions, on the example of a specific Actor System.
+Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
 
 In there principles however, we deem that Actors avoid the problematic abstraction of Distributed Objects. 
 

@@ -139,7 +139,7 @@ The Isolated Turn Principle states that it must be guaranteed that nothing may i
 
 There are also other less expected issues Futures might introduce. All aggreation of remote resources by Crawlers are performed via HTTP. In principle, it is a synchronous communication protocol, such that there is always a response to any request[^fn-synchronous-http]. Most APIs are therefore blocking as they abstract remote procedure call semantic. However, some allow an asynchronous handling by providing a Future result. We've expected this to improve throughput of crawling jobs, for HTTP requests to remote and unknown servers definitively pose as potential bottlenecks. And so it did, yet by dispatching a great many Futures simultaniously. These all stressed the Crawler Actors thread pool, which could lead to temporary and unexpected starvations due to a simple lack of available threads on which free Crawlers could be scheduled by the Actor System. We've tried this with both the asynchronous client APIs of the *Akka HTTP* module and the *Apache HTTP Components*[^apache-http-components] library. Althought the former would also provide a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly, we've found that the underlying *super connection pool flow* used also introduces a limit to the amount of concurrent request to a single host [@AkkaHTTP]. As with many RSS feeds in general, publishers tend to choose distributing feeds via dedicated providers, thus a great amount of feeds is centralized on a small amount of host, rendering Akka's flow variant inapplicable.
 
-[^fn-synchronous-http]: The most basic form would be merely a so-called *HTTP status code*, of which 404 is undoubtably the most famous. 
+[^fn-synchronous-http]: The most basic form would be merely an status code, of which 404 is undoubtably the most famous. 
 [^apache-http-components]: <https://hc.apache.org>
  
 As a result, it was found that, though simple RPC styled retrieval did limit throughput, on the other hand this can be of advantage. It puts a uniform and more predictable stress on the thread pool, and avoids problems like Actor starvation and . 
@@ -156,7 +156,16 @@ howto channel types (point-to-point, pub/sub), specialized channels (dead letter
 * den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
 ~
 
-The Actor model is soley built on the concept of message passing, therefore by definition asynchronous communication. As such, no synchronous communication is intended. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and not perform any processing inbetween.
+The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell` (alternatively `!` in Scala) on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e.:
+
+~ center
+`U` &rarr; `D` &rarr; `C` &rarr; `P` &rarr; `D` &rarr; `I`
+~
+
+
+...
+
+However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and not perform any processing inbetween.
 
 *Echo:Actor* faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
 

@@ -54,10 +54,6 @@ sect: &#167;
 
 [TITLE]
 
-~ Abstract {color:red}
-Nach einem Meeting mit Puntigam am 2017-12-13 habe ich zwar die Anweisung bekommen das Proposal hier vorerst einmal nicht anzupassen, aber über den neuen schwerpunkt haben wir dennoch geredet, den ich hier schlussendlich verankert haben will/brauche. Konkret wird der Schwerpunkt sein vom Actor Model zu sprechen (bzw von Distributed Actors), und von event-driven microservice architectures (reactive MSA). Wichtige neue Literatur hierfür wird sein [@Kar09], [@Hal12], [@Bon16] möglicherweise auch [@Hal09], [@Ber14], [@Hal10], [@Wal96], [@], [@], [@],
-~
-
 [TOC]
 
 # Motivation & Problem Statement { #sec-motivation }
