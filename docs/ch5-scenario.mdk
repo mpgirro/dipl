@@ -194,7 +194,13 @@ In order to prevent any domain specific code from being implemented twice unnece
 * Updater (U)
   : [TODO]{.red}
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an *asynchronous* message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* request to DirectoryStore.
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an arbitrary message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* call to DirectoryStore.
+
+...
+
+The overall component architecture with connections for information flow:
+
+[TODO: grafik hier einfügen, sobald ich sie in LaTeX hübsch zeichnen kann]{.red}
 
 ...
 
@@ -235,9 +241,9 @@ In general, all previously described components have to be executed concurrently
 
 
 * Searching
-  : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher, who is doing some basic query processing and then realizes a  concrete query to the IndexStore. Its found results are then propagated back via the Searcher and the Gateway to the web UI. This has to happen in a timely manner.
+  : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher (`G` &rarr; `S`), who is doing some basic query processing and then realizes a concrete query to the IndexStore (`S` &rarr; `I`). Its found results are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the web UI. This has to happen in a timely manner. The complete synchronous flow can be described as `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
 * Exploring the Directory
-  : The search engine provides besides searching index data records also a complete database of all known podcasts and episodes. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded to the DirectoryStore in a timely fashion.
+  : The search engine provides besides searching index data records also a complete database of all known podcasts and episodes. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded from the Gateway to the DirectoryStore (`G` &rightleftarrows; `D`) in a timely fashion.
 * Adding new Feeds
   : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
 * Processing Feeds
@@ -247,3 +253,13 @@ In general, all previously described components have to be executed concurrently
 
 
 For example the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interacton do, thus synchronization or transactions are generally an undesireable and less expidient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
+
+
+## Features and Limitations
+
+[Hier beschreiben was die Implementierungen leisten können sollen, und was nicht]{.red}
+
+* static configuration of components
+  * KEINE elasticity
+  * KEINE mobility at runtime 
+  * keine notwendigkeit von event sourcing

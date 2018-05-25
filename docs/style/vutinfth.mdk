@@ -32,17 +32,17 @@ Math Mode       : dynamic
 
 Tex Header    :
     % Define convenience functions to use the author name and the thesis title in the PDF document properties.
-    \newcommand{\authorname}{&Author;} % The author name without titles.
-    \newcommand{\thesistitle}{&Title;} % The title of the thesis. The English version should be used, if it exists.
+    \newcommand{\authorname}{&author;} % The author name without titles.
+    \newcommand{\thesistitle}{&title;} % The title of the thesis. The English version should be used, if it exists.
     %
     % Set PDF document properties
     \hypersetup{
-        pdfpagelayout   = TwoPageRight,           % How the document is shown in PDF viewers (optional).
-        %linkbordercolor = {Melon},                % The color of the borders of boxes around crosslinks (optional).
-        pdfauthor       = {\authorname},          % The author's name in the document properties (optional).
-        pdftitle        = {\thesistitle},         % The document's title in the document properties (optional).
-        pdfsubject      = {Subject},              % The document's subject in the document properties (optional).
-        pdfkeywords     = {&keywords;} % The document's keywords in the document properties (optional).
+        pdfpagelayout   = TwoPageRight,    % How the document is shown in PDF viewers (optional).
+        %linkbordercolor = {Melon},        % The color of the borders of boxes around crosslinks (optional).
+        pdfauthor       = {\authorname},   % The author's name in the document properties (optional).
+        pdftitle        = {\thesistitle},  % The document's title in the document properties (optional).
+        pdfsubject      = {&subject;},     % The document's subject in the document properties (optional).
+        pdfkeywords     = {&keywords;}     % The document's keywords in the document properties (optional).
     }
     %
     \setpnumwidth{2.5em}        % Avoid overfull hboxes in the table of contents (see memoir manual).
@@ -111,6 +111,12 @@ Tex Header    :
     \setsubsubsecheadstyle{\large\bfseries\sffamily}
     \setparaheadstyle{\large\bfseries\sffamily}
     \setsubparaheadstyle{\large\bfseries\sffamily}
+    %
+    \setlist[description]{%
+      font={\bfseries\sffamily} % set the label font
+    }
+
+
 
 Tex Doc Header  :
     \frontmatter % Switches to roman numbering.

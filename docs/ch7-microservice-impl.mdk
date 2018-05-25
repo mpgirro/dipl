@@ -42,6 +42,15 @@ As even Fowler and Lewis [@Fow14] in their original Microservice definition poin
 
 AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface standard [...TODO]{.red}
 
+...
+
+...need to introduce a new component to the architecture:
+
+* Message Queue (Q)
+  : [TODO acts as a routing channel]{.red}
+
+...
+
 Various compatible technologies, so-called *providers*, do exist. *Echo* is using RabbitMQ[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
 
 [^fn-rabbitmq]: <https://www.rabbitmq.com>
@@ -118,6 +127,15 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ...
 
 ... konkreter REST endpoint muss bekannt sein...
+
+...
+
+...need to introduce a new component to the architecture:
+
+* Registry (R)
+  : [TODO service registry]{.red}
+
+...
 
 ... Consul, Netflix Eureka
 
