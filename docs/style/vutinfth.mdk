@@ -104,6 +104,13 @@ Tex Header    :
     %
     % Define convenience macros.
     \newcommand{\todo}[1]{{\color{red}\textbf{TODO: {#1}}}} % Comment for the final version, to raise errors.
+    %
+    % set sans serif section font.
+    \setsecheadstyle{\Large\bfseries\sffamily}
+    \setsubsecheadstyle{\large\bfseries\sffamily}
+    \setsubsubsecheadstyle{\large\bfseries\sffamily}
+    \setparaheadstyle{\large\bfseries\sffamily}
+    \setsubparaheadstyle{\large\bfseries\sffamily}
 
 Tex Doc Header  :
     \frontmatter % Switches to roman numbering.
