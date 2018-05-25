@@ -156,12 +156,7 @@ howto channel types (point-to-point, pub/sub), specialized channels (dead letter
 * den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
 ~
 
-The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell` (alternatively `!` in Scala) on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e.:
-
-~ center
-`U` &rarr; `D` &rarr; `C` &rarr; `P` &rarr; `D` &rarr; `I`
-~
-
+The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell` (alternatively `!` in Scala) on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e. `U` &rarr; `D` &rarr; `C` &rarr; `P` &rarr; `D` &rarr; `I`.
 
 ...
 
@@ -175,7 +170,7 @@ Fortunatelly, any synchronous communication can be modeled with an asynchronous 
 
 ### Future-based Messaging
 
-Akka provides a primitive to abstract a synchronous information flow. In addition to the asynchronous `tell/!` command, it also offers the so-called *ask* pattern abstracted in the `?` method of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
+Akka provides a primitive to abstract a synchronous information flow. In addition to the asynchronous `tell`/`!` command, it also offers the `ask` method, also abstracted in the `?`, of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble the `!` in that they dispatch the method argument as a message to the Actor behind the reference. However it offers a result value, respectivly the expected result of a synchronous call wrapped in a `Future`{language:scala}. Thus, the caller may either proceed with some further processing, or go directly into blocking until the `Future`{language:scala} is resolved. This resembles the future type message passing of Active Objects.
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
