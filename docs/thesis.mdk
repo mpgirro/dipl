@@ -46,6 +46,7 @@ Advisor Gender    : male
 Advisor Pretitle  : Ao.Univ.Prof. Dipl.-Ing. Dr.
 Advisor Posttitle : 
 
+Subject           : Concurrent Programming
 Keywords          : concurrency, actor, microservices
 
 Thesis Type       : master <!-- bachelor / master / doctor / phd-school -->

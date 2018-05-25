@@ -168,9 +168,10 @@ A web interface is provided that both backends have to support. It is written wi
 
 [^fn-anngular]: <https://angular.io>
 
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene[^fn-lucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. Also, parsing RSS/Atom feed files, especially using a custom written extensions to the ROME feed parsing libraries that allows to extract chapter marks.
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene[^fn-lucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. Also, parsing RSS/Atom feed files, especially using a custom written extensions to the ROME[^fn-rome] feed parsing libraries that allows to extract chapter marks.
 
 [^fn-lucene]: <https://lucene.apache.org>
+[^fn-rome]: <https://rometools.github.io/rome/>
 
 * Crawlers (C)
   : are tasked with the aquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
@@ -193,7 +194,7 @@ In order to prevent any domain specific code from being implemented twice unnece
 * Updater (U)
   : [TODO]{.red}
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an *asynchronous* message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* request to a DirectoryStore.
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an *asynchronous* message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* request to DirectoryStore.
 
 ...
 
