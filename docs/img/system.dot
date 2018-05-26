@@ -1,14 +1,14 @@
 digraph G {
     rankdir=LR;
-    G -> S;
-    G -> D;
-    D -> C;
-    C -> P;
-    P -> D;
-    U -> D;
-    D -> I;
-    D -> G;
-    S -> G;
-    S -> I;
-    I -> S; 
+    node [shape = circle];
+    size="4,4"
+
+    G -> D -> G;
+    U -> D -> U;
+    G -> S -> I -> S -> G;
+    D -> C -> P -> D -> I;
+
+    { rank=same; G U }
+    { rank=same; D S I }
+    { rank=same; C P }
 }
