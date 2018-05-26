@@ -429,16 +429,6 @@ We see, in general Active Objects have the potential to be used in the same prob
 
 However, the one major benefit of Active as well as Distributed Objects compared to classic Actors and Microservices is their type safety. It is statically known weither a server will be able to understand a request, and respectivly a client may only dispatch messages which are guaranteed to be acceptable [kann ich da was zitieren?]{.mind}. 
 
-### Mobility and Dynamic Reconfiguration
-
-... Actors können erzeugt werden, referenzen können wie normale nachrichten verschickt werden (also dyn reconf.)
-
-.. MS können sich bei discovery service registrieren, die ihre ref. stabil halten, und ihnen selber erlaub sich zu bewegen. message broker tun auch was
-
-~important
-Die beiden ansätze vielleicht kurz in den jeweiligen Impl. kapiteln erklären, und hier nur zusammenfassen. Actors haben eh ch "Clustering and Mobility" und MS "Service discovery"
-~
-
 ### Components per Execution Environment
 
 ~LitNote
@@ -488,7 +478,7 @@ Autonomy:
 * MS: "components can be deployed separately" [@Mon16a]
 ~
 
-## Scalability and Elasticity
+## Scalability 
 
 Scalability:
 
@@ -500,6 +490,38 @@ Scalability:
 
 ~Todo
 Server and Client Side Load balancing
+~
+
+## Dynamic Reconfiguration
+
+[TODO: hier muss ich ein paar Referenzen einstreuen?!]{.red}
+
+Dynamic reconfiguration relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [kann ich hier etwas zitieren?]{.red}. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose couplying of Microservices too provide support for chaning topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues.
+
+A general Location transparency is a prerequisite for dynamic reconfiguration is localtion transparency. Both Actors as well as Microservices have sophisticaed solutions for it. Two additional properties, *mobility* and *elasticity*, are made possible as a result of location transparency. Mobility referes to the relocation of components between nodes at runtime [zitat?]{.red}. Elasticity is a form of scalability that summarizes the ability of a system to scale the amount of components dynamically depending on the current demand [zitat?]{.red}.
+
+The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach would be largely identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state to relocate. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated regarding all outstanding modifications to it. *Event sourcing* is a general concept that is convenient, that is all modifying commands to a store would be persisted in a so-called *event log*, such that a new or reactivated Store can request [die noch ausstehenden befehle]{.red}. This would require additional technology for the event log, e.g. Kafka[^fn-kafka] which is a widely adopted distributed publish/subscribe streaming system offering persistence. With it, Store units would have to persist a counter or reference to their last received event separately still. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
+
+* Message Broker (B)
+  : [TODO a (possibibly persistant) message distribution channel]{.red}
+
+For example, when the state of a Store needs to be modified, instead of performing the update operation directly, a Store instead sends a respective message to be brokered to all Stores of the respective kind, e.g pushed `D` &rarr; `B` from which it gets pulled $\{\textsf{D}_{1}\cdots\textsf{D}_{n}\}$ &larr; `B` by all DirectoryStores, even the sender, such that each performs the state update.
+
+[^fn-kafka]: <https://kafka.apache.org> 
+
+In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be discussed in &#167; [#sec-actor-ms-integration].
+
+
+---
+
+...
+
+... Actors können erzeugt werden, referenzen können wie normale nachrichten verschickt werden (also dyn reconf.)
+
+.. MS können sich bei discovery service registrieren, die ihre ref. stabil halten, und ihnen selber erlaub sich zu bewegen. message broker tun auch was
+
+~important
+Die beiden ansätze vielleicht kurz in den jeweiligen Impl. kapiteln erklären, und hier nur zusammenfassen. Actors haben eh ch "Clustering and Mobility" und MS "Service discovery"
 ~
 
 Elasticity:
@@ -515,6 +537,9 @@ Elasticity:
     * [@Agh85b] beschreibt, das CSP die dynamisch Actor Erzeugungs Semantik "violated", weil die "interconnetion topology of processes" statisch ist --> MS müssen das via Service Discovery Abstraction lösen (wo ebene die Discovery Services statisch sind und weiterleiten)
 * "elastic scaling"
 ~
+
+
+
 
 ## Fault tolerance, Resilience and Availability
 
@@ -560,7 +585,7 @@ Availability:
 
 Among the theories of formulating concurrent computation is found a family called *process calculi* or *process algebra*. Such define formal models composed of so-called *processes* which are communicating within the laws and conditions layed out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interaction with other discrete event systems. Those then have to react to these interactions, and therefore he terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. Thus, an approach towards concurrency theory is the path of a process algebra.
 
-Some of these calculi gained considerable prominence, for example Milner's CCS (**C**alculus of **C**ommunicating **S**ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (**C**ommunicating **S**equential **P**rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
+Some of these calculi gained considerable prominence, for example Milner's CCS (__C__alculus of __C__ommunicating __S__ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (__C__ommunicating __S__equential __P__rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
 
 ...
 
@@ -579,9 +604,9 @@ A most basic argument towards the linkage is the definition of a process in the 
 
 It is important to realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of [???]{.important}, all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
 
-... For example...We've found that especially ASP (**A**synchronous **S**equential **P**rocesses) have been discussed in the light of Active Objects [@Kos16].
+... For example...We've found that especially ASP (__A__synchronous __S__equential __P__rocesses) have been discussed in the light of Active Objects [@Kos16].
 
-... Especially the ASP (**A**synchronous **S**equential **P**rocesses) have many similarities with Active Objects as well as another special variant of Actors of the so-called *Communicating Event-Loop* model [@Kos16;@Car04, Car04 könnte ich mir sonst als REF generll ersparen!].
+... Especially the ASP (__A__synchronous __S__equential __P__rocesses) have many similarities with Active Objects as well as another special variant of Actors of the so-called *Communicating Event-Loop* model [@Kos16;@Car04, Car04 könnte ich mir sonst als REF generll ersparen!].
 
 ...
 
@@ -679,7 +704,7 @@ Diese ganze Invariant Geschichte könnte ich einfach weglassen. Vor allem ist da
 ...
 
 
-Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm. In SOA, web services publish(ed) their interface description in a standardized format and discoverable way. Most prominently used is the WSDL (**W**eb **S**ervices **D**escription **L**anguage) format [@Anc16]. However, Microservices tend to [dont do this because it is too complicated, and people like to write simple JSON interfaces instead -- irgendwo hab ich das mal so ähnlich gelesen]{.important}
+Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm. In SOA, web services publish(ed) their interface description in a standardized format and discoverable way. Most prominently used is the WSDL (__W__eb __S__ervices __D__escription __L__anguage) format [@Anc16]. However, Microservices tend to [dont do this because it is too complicated, and people like to write simple JSON interfaces instead -- irgendwo hab ich das mal so ähnlich gelesen]{.important}
 
 ...
 
@@ -750,13 +775,13 @@ Within the context of Actors, scientific exploration of static constraints on Ac
 
 ...
 
-WSDL was mentions as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behaviors contracts, e.g. WS-BPEL (**W**eb **S**ervice - **B**usiness **P**rocess **E**xecution **L**anguage) [@Anc16]. They build upon idea from formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same complexity and [workload? besseres wort]{.mind} reasons as for WSDL. Once again, we argue for programming language based solutions to overcome thus. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
+WSDL was mentions as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behaviors contracts, e.g. WS-BPEL (__W__eb __S__ervice - __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. They build upon idea from formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same complexity and [workload? besseres wort]{.mind} reasons as for WSDL. Once again, we argue for programming language based solutions to overcome thus. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
 
 For a more detailed overview of behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16] and Ancona et al. [@Anc16].
 
-## Evaluation
+## Performance Evaluation
 
 ~red
 delete this section, but maybe incorporate some of the stuff somewhere else?

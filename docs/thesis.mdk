@@ -47,7 +47,7 @@ Advisor Pretitle  : Ao.Univ.Prof. Dipl.-Ing. Dr.
 Advisor Posttitle : 
 
 Subject           : Concurrent Programming
-Keywords          : concurrency, actor, microservices
+Keywords          : concurrency, actor model, microservices
 
 Thesis Type       : master <!-- bachelor / master / doctor / phd-school -->
 Bachelor Thesis   : false
@@ -63,6 +63,8 @@ Bib style         : style/keynat.bst
 <!--Bib style : plainnat-->
 <!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
 Cite All          : False
+
+Script            : style/mathjax-font.js
 
 [INCLUDE=style/vutinfth]
 

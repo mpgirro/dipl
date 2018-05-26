@@ -202,18 +202,25 @@ However useful, this approach has two downsides. First it is a load on resources
 
 On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
 
-The result handling is delegated to a dedicated newly spawned child Actor. Its sole purpose is to pose as the original sender of a simple tell-style message dispatch and eventually receive an answer in a purely asynchronous fashion. Upon message receival, it passes on the result and deconstructs. Creating such a child and setting it as the reply destination is done in Akka via:
+The result handling is relocated to a dedicated child Actor, newly spawned for each request. Creating such a child and setting it as the reply destination is done in Akka via:
 
 ```{language:scala}
 val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell` (the Java API method) sets the response handler as the official sender of the message. Thus it will be able to receive the response. Altering the reply destination this way is a form of the *delegation* concept known from Object-orientation [@Yon86].
+This Actor now poses a dynamically created, temporary component in the architecture:
 
-This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like Future to be combined with are offered by the Actor System [brauche ich hier eine citation? hab ich mir selber ausgedacht]{.mind}
+* Response Handler (H)
+  : are tasked with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion. Upon message receival, it passes on the result and deconstructs. 
 
-In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO (**F**irst **I**n **F**irst **O**ut) order [citation needed]{.mind}. Large mailboxes (that is with many messages queued up) deplay eager message processing. 
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message, such that it will be able to receive the response. The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86].
+
+[^fn-2nd-tell-argument]: Note that its alias `!` does not allow for more than one parameter.
+
+This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach, if no handy concept like Future to be combined with are offered by the Actor System.
+
+In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order [citation needed]{.mind}. Large mailboxes (that is with many messages queued up) deplay eager message processing. 
 
 In order to prevent such fallities [ist das das wort das ich hier will?]{.mind}, Akka offers the concept of a *priority mailbox*. Basically it alters mailbox behaviour into a priority queue. 
 
@@ -363,7 +370,7 @@ Additionally, a `SupervisionStrategy`{language:scala} may also define some behav
 
 
 
-## Clustering and Mobility
+## Clustering
 
 ~LitNote
 * Cluster / Remoting of Akka, built in discovery system among nodes  
@@ -391,8 +398,7 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 
 ## Configuration, logging, etc
 
-## Performance measurement of Actors
-
+[weglassen?]{.red}
 
 ## Summary {#actor-solution-summary}
 

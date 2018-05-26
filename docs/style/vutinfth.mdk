@@ -24,7 +24,7 @@ Heading Endperiod   :
 <!-- IMPORTANT! make sure headings get mapped to \chapters -->
 Heading Base        : 1
 
-Math Mode       : dynamic
+Math Mode           : mathjax
 
 @if tex {
   Maketitle     : True

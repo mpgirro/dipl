@@ -16,11 +16,15 @@ This chapter covers a Microservice Architecture approach used to implement the c
 
 ## Service Technology Stack
 
-Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, such are as of yet still at an early stage. Among them, Jolie seems to be the most matured, but it also misses an ecosystem and tool support we are looking for compared to Akka. Therefore we refrained from used it to implement Echo. 
+Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore we refrained from used it to implement Echo. 
 
-Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language
+Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring*[^fn-spring] framework collection, most noteably its *Spring Boot* module for application fundamentals, and the *Spring Cloud Netflix* modules for Microservice related concerns. Such have been proven very effective for Microservice development in industrial applications [@Car17]. 
 
-Java + Spring Boot Stack for all Services
+[^fn-spring]: <https://spring.io>
+
+Spring is based on the concept of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic to the IoC container [erklären!]{.red}. This has conceptually a certain resemblance to Actor Systems in general.
+
+...
 
 ## Isolation and Persistence
 
@@ -49,9 +53,11 @@ AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message
 * Message Queue (Q)
   : [TODO acts as a routing channel]{.red}
 
+The queue becomes an intermediate for all asynchronous messages, where such are pushed to it by senders, and pulled from by receivers. For example, instead of directly sending a message `C` &rarr; `P`, it instead gets pushed `C` &rarr; `Q` and at some later point pulled `P` &larr; `Q`. The active components are thus `C` and `P`, while `Q` performs merely routing logic internally.
+
 ...
 
-Various compatible technologies, so-called *providers*, do exist. *Echo* is using RabbitMQ[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
+Various AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ*[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
 
 [^fn-rabbitmq]: <https://www.rabbitmq.com>
 
@@ -178,7 +184,7 @@ In contrast, message queue semantic has the major benefit that a sender can disp
 
 The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
 
-The *Echo* services are conceived on the Spring Framewor, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) [approahc?]{.red}. Spring provides a thread pool on which "services" are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
+The *Echo* services are conceived on the Spring Framewor, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) container. Spring provides a thread pool on which conterns called "services" - not to be confuses with the Microservice - are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
 
 ... transactions are extended to database trans. in a transparent.
 
@@ -199,22 +205,6 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
     * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
 ~
 
-## Mobility
-
-~LitNote
-* follows from isolation and location transparency
-~
-
-## Elasticity
-
-~LitNote
-* benötigt ein (oder in Kombination mehrere) sog. Cloud Management Framework(s)
-* Last muss gemessen werden
-* MS müssen damit umgehen können dynamisch dem system hinzugefügt oder entfernt zu werden
-    * problemlos bei stateless MS workern, insofern isolation + location transparency gegeben ist
-    * problematisch bei stateful Actors, konkret bei den stores, weil der state (also DB/Index) auf den aktuellen stand gebracht werden muss --> wie? Event sourcing zB
-~
-
 ## Deployment (!)
 
 ~LitNote
@@ -231,7 +221,7 @@ Docker [^fn-docker] is a prominent example of a container tool. It is especially
 
 ## Availability
 
-
+[weglassen?]{.red}
 
 ## Extensibility
 
@@ -241,4 +231,4 @@ Docker [^fn-docker] is a prominent example of a container tool. It is especially
 
 ## Configuration, logging, etc
 
-## Performance measurement of Microservices
+[weglassen?]{.red}

@@ -194,7 +194,9 @@ In order to prevent any domain specific code from being implemented twice unnece
 * Updater (U)
   : [TODO]{.red}
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given in due course, a simplistic notation based on the abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) will be used, such that `S` &rarr; `I` is expressing a Searcher sending an arbitrary message to an IndexStore, while `G` &rightleftarrows; `D` expresses the Gateway making a *synchronous* call to DirectoryStore.
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) in due course, the simplistic notation is as follow: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call).
+
+...
 
 ...
 

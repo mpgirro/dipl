@@ -36,6 +36,8 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
   * kann ich alternativ auch noch im outlook unten anbringen, wo ich den eh zitiere (die info fehlt jedenfalls noch!)
 ~
 
+...Provide more freedom regarding communication, but at the price of requiring additional components, e.g. a service registry and message queue are demonstrated in Echo.
+
 ## Empirical Indications
 
 ~LitNote
@@ -46,7 +48,7 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 * [@Dra17c] "Microservices: Migration of a Mission Critical System"
 ~
 
-## Integrating Actors and Microservices
+## Integrating Actors and Microservices {#sec-actor-ms-integration}
 
 ~important
 Das hier ist relativ frei aus der Hand geschrieben. Hier sollte ich Dinge zitieren, abseits von der Akka-HTTP Dokumentation!
@@ -65,7 +67,7 @@ override def receive = {
 }
 ```
 
-For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI (**U**niform **R**esource **I**dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
+For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI __U__niform __R__esource __I__dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
 
 Though such receiving is in principle conform to the Actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to Actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. An alternative interface is required:
 
@@ -79,7 +81,7 @@ The example uses `pipeTo` to have the integration layer reroute any response as 
 
 We see, not all the basic Actor primitives are suitable to be used outside the Actor abstraction. However, well introduced abstractions like *Akka HTTP* allow Actors to provide Microservice-like *service behavior* to the outside, while simply handling its through its own *Actor behavior*. Thus, communication between Actors and Microservices is possible in principle. This allows to construct systems where tasks are distributed between Actors and Microservices.  
 
-This is not a novel idea however. Chapter [#ch-discussion] already mentioned the theoretical foundation from [@Mon97] for incorporating Actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of *Akka HTTP*.
+This is not a novel idea however. Chapter [#ch-discussion] already mentioned the theoretical foundation from [@Mon97] for incorporating Actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of *Akka HTTP*. However, interoperability is merely a concern of static configuration, for processes have only a static notion of interconnection topology in general, which violates the dynamic reconfiguration inherent to Actors [@Akm90;@Agh85b]. In order to overcome this, bridge technologies like service discovery have to be utilized by Microservices, thus it would require Actors to integrate into this discovery mechanism, effectively rendering each Actor into a mere Microservices themselves.
 
 This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* Framework[^fn-lagom], a reactive microservice system framework built ontop of Akka.
 

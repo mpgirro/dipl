@@ -209,7 +209,7 @@ Expressing concurrency on the programming language level has its perils due to t
 Only with C11[^fn-c11] did the C programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 
 [^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
-[^fn-posix]: **P**ortable **O**perating **S**ystem **I**nterface, a collection of standardized programming interfaces for operating systems. The **X** is a remnant from the original draft name "IEEE-IX".
+[^fn-posix]: __P__ortable __O__perating __S__ystem __I__nterface, a collection of standardized programming interfaces for operating systems. The **X** is a remnant from the original draft name "IEEE-IX".
 
 An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls alone are insufficient to compose concurrency [@Lov07]. 
 
