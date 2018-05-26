@@ -196,6 +196,13 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) in due course, the simplistic notation is as follow: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call).
 
+
+~ Figure { #fig-system-architecture; caption: "High Level Architecture" }
+![img-echo-system]
+~
+
+[img-echo-system]: img/echo-system.[ps,svg,png] "Echo High Level Architecture" { width: 50% }
+
 ...
 
 ...
@@ -233,7 +240,7 @@ Updater:
 - siehe "Effective page refresh policies for Web crawlers" https://dl.acm.org/citation.cfm?id=958945
 ~
 
-## Concurrent Tasks and Information Flow
+## Concurrent Concerns and Information Flow
 
 ~Todo
 Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
@@ -245,7 +252,7 @@ In general, all previously described components have to be executed concurrently
 * Searching
   : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher (`G` &rarr; `S`), who is doing some basic query processing and then realizes a concrete query to the IndexStore (`S` &rarr; `I`). Its found results are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the web UI. This has to happen in a timely manner. The complete synchronous flow can be described as `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
 * Exploring the Directory
-  : The search engine provides besides searching index data records also a complete database of all known podcasts and episodes. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded from the Gateway to the DirectoryStore (`G` &rightleftarrows; `D`) in a timely fashion.
+  : The search engine provides besides searching index data records also a database of all known podcast and episode metadata. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded from the Gateway to the DirectoryStore (`G` &rightleftarrows; `D`) in a timely fashion.
 * Adding new Feeds
   : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
 * Processing Feeds

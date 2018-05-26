@@ -296,7 +296,7 @@ The Actor model intrinsically builds upon message passing to share state informa
 Microservices können auch message passing, aber auch synchrone. Die location transparency kommt entweder von der MOM, oder eben von einem lookup service für die REST endpoints.
 ~  
 
-### Location Transparency and Mobility
+### Location Transparency (and Mobility)
 
 
 ...

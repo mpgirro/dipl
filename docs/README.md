@@ -10,4 +10,8 @@
 
 ```
 dot -Txdot system.dot | dot2tex -f pst > system.tex
+dot -Tsvg system.dot > system.svg
+dot -Tpng system.dot > system.png
 ```
+
+Online editor: http://www.webgraphviz.com

@@ -40,9 +40,9 @@ Spring is based on the concept of *Inversion of Control* (IoC), such that progra
 
 While communication for Actors happens in a uniform way, Microservices are faced with more challenges. The freedom in the design of services does not [vorgeben]{.red} any specific communication interface. The only restriction regarding interaction is the [davon absehen]{.red} of implementing any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and losse coupled.
 
-Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good [mechanism?]{.red} for synchronous reqirements, e.g. any direct user interaction through the Web interface. Thus, for all information flows between the CatalogStore and the Web interface, as well as the search query chain `G` &rarr; `S` &rarr; `I` &rarr; `S` &rarr; `G` [...satzschluss?]{.red}.
+Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good solution for synchronous reqirements. Echo uses it for any direct user interaction issued through the Web interface, i.e. `G` &rightleftarrows; `D` and running search queries via `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
-As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS is a prominent example for such on the JVM. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of MS. 
+As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) is a prominent example for such on the JVM. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of Microservices. 
 
 AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface standard [...TODO]{.red}
 
@@ -108,6 +108,18 @@ In any case, if using REST or some other mechanism, such RPC styled requests alw
 
 ~ end red
 
+## Internal Service concurrency
+
+The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
+
+The *Echo* services are conceived on the Spring Framework, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) container. Spring provides a thread pool on which conterns called "services" - not to be confuses with the Microservice - are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
+
+... transactions are extended to database trans. in a transparent.
+
+... uses software transaction (STM)
+
+...uses the default software transactions provided byy the Sprinng framework f
+
 ### (Data Coupling)
 
 ~LitNote
@@ -128,7 +140,7 @@ The combination of no shared memory and well-defined serialized data exchange fr
 Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
 ~   
 
-### Service discovery
+### Service Discovery
 
 ...
 
@@ -138,14 +150,16 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 
 ...need to introduce a new component to the architecture:
 
-* Registry (R)
+* Service Registry (R)
   : [TODO service registry]{.red}
 
 ...
 
 ... Consul, Netflix Eureka
 
-... We've found Consul to be a rather computation heavy mechanism, while Eureka tends to require extensive time for discovery and refresh, especially for initial contacts. In the call chain `Gateway` &rarr; `Searcher` &rarr; `IndexStore` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+... We've found Consul to be a rather computation heavy mechanism, while Eureka tends to require extensive time for discovery and refresh, especially for initial contacts. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+
+...requires up to two registry lookups, viz. `G` &rightleftarrows; `R` and `S` &rightleftarrows; `R`. 
 
 ...
 
@@ -179,16 +193,6 @@ In contrast, message queue semantic has the major benefit that a sender can disp
 * [@Dra17c] Dustdar/Dragoni paper!
     * see: clustering 
 ~
-
-## Internal Service concurrency
-
-The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
-
-The *Echo* services are conceived on the Spring Framewor, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) container. Spring provides a thread pool on which conterns called "services" - not to be confuses with the Microservice - are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
-
-... transactions are extended to database trans. in a transparent.
-
-...uses the default software transactions provided byy the Sprinng framework f
 
 ## Fault Tolerance
 
@@ -232,3 +236,5 @@ Docker [^fn-docker] is a prominent example of a container tool. It is especially
 ## Configuration, logging, etc
 
 [weglassen?]{.red}
+
+## Summary {#microservice-impl-summary}

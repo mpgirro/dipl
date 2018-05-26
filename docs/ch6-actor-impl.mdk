@@ -200,21 +200,19 @@ However useful, this approach has two downsides. First it is a load on resources
 
 ### Delegation-based Messaging
 
-On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. 
-
-The result handling is relocated to a dedicated child Actor, newly spawned for each request. Creating such a child and setting it as the reply destination is done in Akka via:
+On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. The result handling is then relocated to a dedicated child Actor, newly spawned for each request. Creating such child and setting it as the reply destination is done in Akka by:
 
 ```{language:scala}
 val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-This Actor now poses a dynamically created, temporary component in the architecture:
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message, such that it will be able to receive the response. This dynamically created Actor poses as a temporary component in the architecture:
 
 * Response Handler (H)
-  : are tasked with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion. Upon message receival, it passes on the result and deconstructs. 
+  : are tasked with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion, or detect a timeout. Upon message receival, they pass on the result and deconstruct. 
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct decendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message, such that it will be able to receive the response. The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86].
+The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86].
 
 [^fn-2nd-tell-argument]: Note that its alias `!` does not allow for more than one parameter.
 
@@ -400,7 +398,7 @@ Mostly of no concern, bit of configutation for cluster setup (seed nodes for pee
 
 [weglassen?]{.red}
 
-## Summary {#actor-solution-summary}
+## Summary {#actor-impl-summary}
 
 In this chapter, we discussed the impact of implementational defails on the theoretical concept of Actors: 
 
