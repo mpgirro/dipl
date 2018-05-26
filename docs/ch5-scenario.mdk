@@ -197,11 +197,11 @@ In order to prevent any domain specific code from being implemented twice unnece
 Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `P`, `D`, `I`, `S`, `G`, `U`) in due course, the simplistic notation is as follow: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call).
 
 
-~ Figure { #fig-system-architecture; caption: "High Level Architecture" }
-![img-echo-system]
+~ Figure { #fig-system-architecture; caption: "Echo's High Level Component Architecture with Information Flow Routes" }
+![img-system-architecture]
 ~
 
-[img-echo-system]: img/echo-system.[ps,svg,png] "Echo High Level Architecture" { width: 50% }
+[img-system-architecture]: graphics/system-architecture.[ps,svg,png] "High Level Component Architecture Image" { width: 35% }
 
 ...
 
