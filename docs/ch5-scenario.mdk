@@ -21,33 +21,22 @@ I think the computer is the world's greatest toy. You can invent wonderful thing
 * [@Cho04] "Agent Space Architecture for Search Engines"
 ~
 
-
-In this chapter we will motivate a problem scenario that requires to be solves in a concurrent manner. It also opens up the opportunities to salvage the benefits that come with parallelization and distribution:  scalability, reliability, etc. To takle the tasks, chapters ? and ? will describe how it can be solved using the programming models of Actors and microservices in orther to satisfy the concurrent requirements.
-
-The proposed search engine is dubbed *Echo*[^fn-echo-name]. For easier destinction, the respective implementations will be referenced to as *Echo:Actors* and *Echo:Microservices*.
+ In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system, and provides a baseline for discussing relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
 [^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
 
----
-
-The next two chapters will cover implementations based on Actors and Microservices of this scenario for a concurrent system. These implementations together with the scope of the requirements of this scenario will act as the guidpost for our discussion on comparing Actors and Microservices at the end of this thesis.
-
-...
-
-It offers us the opportunity to discuss commonalities, differences and general conceptualities regarding Actors and Microservice when such are utilized to implement concurrent systems. 
-
-...
-
-Search Engines cause the illusion to be closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
+Search engines cause the illusion of being closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
 
 ...
 
 [@Man08]
 
-Constructing search engines is led by two basic requirements:
+Search engines cause the illusion of being monolithic system, but are actually a composition of rather loosely coupled subsystems [citation? -- Google?]{.red}
+
+Their constructing is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results. Information retrieval is distinquishing between two aspect regarding effectiveness, which are *precision* and *recall*. Optimizing effectiveness is not within the scope of this thesis, and therefore merely a simple scoring method provided by the used information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline of * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspect affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the used information retrieval library is applied.
 
 * Efficiency
   : is about response time and throughput, therefore highly related to the concurrent processing capabilities of the system.

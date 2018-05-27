@@ -153,40 +153,9 @@ Examples for service registry technologies are Consul[^fn-consul], a standalone 
 
 Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` to lookup `S`, and `S` &rightleftarrows; `R` to lookup `I`. [hat das einen einfluss auf Liveness?]{.red}
 
-In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
+In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
 
 To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
-
-~LitNote
-* Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
-* requires Discovery mechanism of clients, Consol (alternativ ZooKeeper, Eureka, etc) 
-~
-
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * see: service discovery
-    * "This is typically done with a service discovery tool, either a separate service such as Consul [9],"
-~
-
-## Load balancing    
-
-~ red
-EINFACH IN DIE DISCUSSION VERSCHIEBEN, DANN KANN ICH DIE NEUE COMPONENTE KURZ FÜR BEIDE ARCHITECTUREN AUF EINMAL BESCHREIBEN
-~
-
-~LitNote
-* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
-~
-
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * see: load balancing
-~
-
-...server side load balancing would require to introduce a new component to the architecture:
-
-* Load Balancer (L)
-  : [TODO]{.red} are centralized ...
 
 ## Clustering
 

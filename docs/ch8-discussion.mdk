@@ -81,7 +81,7 @@ This restriction opens up another opportunity however. Monolithic applications t
 
 This approach on introducing specialized database systems based on respective persistance needs, at the risk of introducing potential redundancies, is sometimes refered to as *polyglott persistance* [citation?]{.mind}.
 
-## Communication and Message Routing
+## Communication and Message Routing {#sec-communication-message-routing}
 
 ~LitNote
 * [@Bac03] beschreibt verschiedene dieser mechanismen, nennt sie aber teilweise anders; trotzdem als quelle verwenden
@@ -488,8 +488,38 @@ Scalability:
     * "Among many dimensions of scalability, horizontal scaling plays a crucial role in cloud computing, which means replicating multiple identical copies of the processes of the application behind a load balancer"
 ~
 
+### Load Balancing
+
 ~Todo
 Server and Client Side Load balancing
+~
+
+Load Balancing (LB) is the idea of...
+
+There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
+
+Echo:M uses *Ribbon* for client-side load balancing, which is part of the Spring Cloud Netflix module. The main reason for prefering Eureka for service discovery is that it integrates with Ribbon, such that Ribbon is able to discover not only one service of a given kind but all from Eureka, and than is able to distribute the work among all these equally. 
+
+Server side load balancing is not supported. In contrast, it would reqire a new balancing component to be added to the architecture:
+
+* Load Balancer (L)
+  : [TODO]{.red} are centralized services dedicated to distribute messages between a range of equally ...
+
+Spring Could Netflix offers a library tool for this as well, called Zuul [eh das richtige?]{.red}. 
+
+Actors use the same conceptual ideas. `Router`{language:scala}s has already been discussed in § [#sec-communication-message-routing]. They allow to distribute work in various routing logics, e.g. broadcast or round-robin. The later is the general concept behind all load balancing. Server- and client side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending Actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor..
+
+[KANN ICH HIERZU WAS ZUTIEREN? DIE ACTOR ARGUMENTATION HABE ICH MIR SELBER AUSGEDACHT]{.red}
+
+---
+
+~LitNote
+* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
+~
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * see: load balancing
 ~
 
 ## Dynamic Reconfiguration
