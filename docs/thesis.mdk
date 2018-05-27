@@ -206,6 +206,10 @@ CSS Header      :
   .epigraph-footer { 
     float:right; 
   }
+  .figure > p {
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+  }
   /* TODO do I want the paper style for paragraphs?
   p {
     margin-bottom: 0;

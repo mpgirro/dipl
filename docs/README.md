@@ -10,8 +10,15 @@
 
 ```
 dot -Txdot system.dot | dot2tex -f pst > system.tex
-dot -Tps system-architecture.dot > system-architecture.ps
-dot -Tsvg system-architecture.dot > system-architecture.svg
+dot -Tps task-units.dot > task-units.ps
+dot -Tsvg task-units.dot > task-units.svg
+dot -Tpdf task-units.dot > task-units.pdf
+```
+
+PDF/PostScript output of `dot` produces a lot of whitespace margin. Remove with `pdfcrop` CLI (produces a new file with `-crop` appended to filename):
+
+```
+pdfcrop task-units.pdf
 ```
 
 Online editor: http://www.webgraphviz.com
