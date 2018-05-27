@@ -142,28 +142,22 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 
 ### Service Discovery
 
-...
+Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures apply a concept known from SOA, the so-called *service registry*. A dedicated service (the registry) is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be *discovered* by others [@Mon16a].
 
-... konkreter REST endpoint muss bekannt sein...
-
-...
-
-...need to introduce a new component to the architecture:
+As a result, a new component is introduced into the architecture:
 
 * Service Registry (R)
-  : [TODO service registry]{.red}
+  : [TODO service registry]{.red} are ...
 
-...
+Examples for service registry technologies are Consul[^fn-consul], a standalone registry service solution, and Eureka, a library of the Spring Cloud Netflix collection for easy development of custom implementations. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
 
-... Consul, Netflix Eureka
+[^fn-consul]: <https://www.consul.io>
 
-... We've found Consul to be a rather computation heavy mechanism, while Eureka tends to require extensive time for discovery and refresh, especially for initial contacts. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` and `S` &rightleftarrows; `R` in the example. 
 
-...requires up to two registry lookups, viz. `G` &rightleftarrows; `R` and `S` &rightleftarrows; `R`. 
+In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
 
-...
-
-In contrast, message queue semantic has the major benefit that a sender can dispatch a message to the queue, without having to know the address (and even the existance) of the receiver. Therefore, no service discovery technology is required when message queue channels are utilized.
+To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [Dra17c]. 
 
 ~LitNote
 * Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
@@ -207,6 +201,7 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 ~LitNote
 * [@Dra17c] Dustdar/Dragoni paper!
     * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
+    * "Service discovery can make use of locality, resolving hostnames to the service instance that is closest to the requester, hereby achieving geographical scala-bility."
 ~
 
 ## Deployment (!)
