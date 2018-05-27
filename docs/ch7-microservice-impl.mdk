@@ -108,19 +108,17 @@ In any case, if using REST or some other mechanism, such RPC styled requests alw
 
 ~ end red
 
-## Internal Service concurrency
+## Internal Service Concurrency
 
 The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
 
-The *Echo* services are conceived on the Spring Framework, and as such utilize the concurrent programming structure that is provided through its *inversion of control* (IoC) container. Spring provides a thread pool on which conterns called "services" - not to be confuses with the Microservice - are scheduled. As synchronization mechanism software transactions are applied. These `or.spring...@Transactional`
+Echo's services are conceived through the Spring Framework, and as such utilize the concurrent programming structure that is provided through its *Inversion of Control* (IoC) container. Spring provides a thread pool on which concerns called "services" - not to be confuses with the Microservice - are scheduled. Software transactions are used as synchronization mechanism. These are marked with the `@Transactional` annotation on Spring service methods, and their STM extends to database transactions transparently.
 
-... transactions are extended to database trans. in a transparent.
+[TODO mehr? ...]{.red}
 
-... uses software transaction (STM)
+## (Data Coupling)
 
-...uses the default software transactions provided byy the Sprinng framework f
-
-### (Data Coupling)
+[DIESES UNTERKAPITEL EINFACH WEGLASSEN?]{.red}
 
 ~LitNote
 No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
@@ -140,7 +138,7 @@ The combination of no shared memory and well-defined serialized data exchange fr
 Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
 ~   
 
-### Service Discovery
+## Service Discovery
 
 Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures apply a concept known from SOA, the so-called *service registry*. A dedicated service (the registry) is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be *discovered* by others [@Mon16a].
 
@@ -153,11 +151,11 @@ Examples for service registry technologies are Consul[^fn-consul], a standalone 
 
 [^fn-consul]: <https://www.consul.io>
 
-Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` and `S` &rightleftarrows; `R` in the example. 
+Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` to lookup `S`, and `S` &rightleftarrows; `R` to lookup `I`. [hat das einen einfluss auf Liveness?]{.red}
 
 In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
 
-To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [Dra17c]. 
+To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
 
 ~LitNote
 * Was kann ich hier **allgemein** dazu sagen?; Entkopplung von fixen Adressen (Location Transparency)
@@ -170,7 +168,11 @@ To ensure that the information in the registry are correct and up to date, a com
     * "This is typically done with a service discovery tool, either a separate service such as Consul [9],"
 ~
 
-### Load balancing    
+## Load balancing    
+
+~ red
+EINFACH IN DIE DISCUSSION VERSCHIEBEN, DANN KANN ICH DIE NEUE COMPONENTE KURZ FÜR BEIDE ARCHITECTUREN AUF EINMAL BESCHREIBEN
+~
 
 ~LitNote
 * to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
@@ -180,6 +182,11 @@ To ensure that the information in the registry are correct and up to date, a com
 * [@Dra17c] Dustdar/Dragoni paper!
     * see: load balancing
 ~
+
+...server side load balancing would require to introduce a new component to the architecture:
+
+* Load Balancer (L)
+  : [TODO]{.red} are centralized ...
 
 ## Clustering
 
