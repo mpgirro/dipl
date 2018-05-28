@@ -9,10 +9,11 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(7.2 151.2)">
 <title>G</title>
 <polygon fill="#ffffff" stroke="transparent" points="-7.2,7.2 -7.2,-151.2 183.2,-151.2 183.2,7.2 -7.2,7.2"/>
-<!-- HTTP -->
+<!-- Web -->
 <g id="node1" class="node">
-<title>HTTP</title>
-<text text-anchor="middle" x="27" y="-112.8" font-family="Times,serif" font-size="14.00" fill="#000000">HTTP</text>
+<title>Web</title>
+<polygon fill="none" stroke="#000000" stroke-width=".75" points="54,-135 0,-135 0,-99 54,-99 54,-135"/>
+<text text-anchor="middle" x="27" y="-112.8" font-family="Times,serif" font-size="14.00" fill="#000000">Web</text>
 </g>
 <!-- G -->
 <g id="node2" class="node">
@@ -20,12 +21,13 @@
 <ellipse fill="none" stroke="#000000" stroke-width=".75" cx="27" cy="-45" rx="18" ry="18"/>
 <text text-anchor="middle" x="27" y="-40.8" font-family="Times,serif" font-size="14.00" fill="#000000">G</text>
 </g>
-<!-- HTTP&#45;&gt;G -->
+<!-- Web&#45;&gt;G -->
 <g id="edge14" class="edge">
-<title>HTTP&#45;&gt;G</title>
-<path fill="none" stroke="#000000" stroke-width=".75" d="M27,-93.5628C27,-85.0561 27,-76.5494 27,-68.0427"/>
-<polygon fill="#000000" stroke="#000000" stroke-width=".75" points="25.2501,-93.8593 27,-98.8594 28.7501,-93.8594 25.2501,-93.8593"/>
-<polygon fill="#000000" stroke="#000000" stroke-width=".75" points="28.7501,-68 27,-63 25.2501,-68 28.7501,-68"/>
+<title>Web&#45;&gt;G</title>
+<path fill="none" stroke="#000000" stroke-width=".75" d="M26,-91.3434C26,-84.417 26,-77.4905 26,-70.5641"/>
+<path fill="none" stroke="#000000" stroke-width=".75" d="M28,-91.3434C28,-84.417 28,-77.4905 28,-70.5641"/>
+<polygon fill="none" stroke="#000000" stroke-width=".75" points="24.3751,-91.3593 27,-98.8594 29.6251,-91.3594 24.3751,-91.3593"/>
+<polygon fill="none" stroke="#000000" stroke-width=".75" points="29.6251,-70.5 27,-63 24.3751,-70.5 29.6251,-70.5"/>
 </g>
 <!-- D -->
 <g id="node3" class="node">
