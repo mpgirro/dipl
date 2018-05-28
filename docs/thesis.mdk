@@ -25,8 +25,8 @@ Title        : Concurrent Programming
 Subtitle     : Hier könnte Ihre Werbung stehen!
 -->
 Author       : Maximilian Irro
-<!--mail        : max@irro.at-->
-Copyright    : Maximilian Irro, 2017
+<!--Email        : max@irro.at-->
+Copyright    : Maximilian Irro, 2018
 Title Footer : 2018
 <!-- TODO delete with new layout -->
 chead        : 
@@ -56,7 +56,7 @@ Doctor Thesis     : false
 Master Degree     : dipl. <!-- dipl. / rer.nat. / rer.soc.oec. / master -->
 Doctor Degree     : <!-- rer.nat. / techn. / rer.soc.oec. -->
 
-Toc depth         : 3 
+Toc depth         : 3
 Bibliography      : dipl
 Bib style         : style/keynat.bst
 <!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
@@ -230,8 +230,10 @@ TODO
 ~ End Abstract
 
 [TOC]
+<!--
 [TOC=figures]
 [TOC=tables]
+-->
 ~ End HtmlOnly
 
 <!--
@@ -388,7 +390,7 @@ These arconyms occur throughout the thesis.
 * IPC Inter-Process Communication
 * IoC Inversion of Control
 * JVM Java Virtual Machine
-* MOM Message-Oriented Middleware
+* LB Load Balancing
 * MS Microservice
 * MSA Microservice Architecture
 * OOP Object-Oriented Programming
@@ -399,11 +401,11 @@ These arconyms occur throughout the thesis.
 * SOA Service Oriented Architecture
 * SoC Separation of Concerns
 * SOC Service Oriented Computing
+* SOP Service-Oriented Programming
 * SRP Single Responsibility Principle
 * STM Software Transactional Memory
 * URI Uniform Resource Identifier
 * URL Uniform Resource Locator
-* WSDL Web Services Description Language
 
 # Glossary { - }
 

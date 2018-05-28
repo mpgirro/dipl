@@ -38,17 +38,18 @@ Spring is based on the concept of *Inversion of Control* (IoC), such that progra
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
-While communication for Actors happens in a uniform way, Microservices are faced with more challenges. The freedom in the design of services does not [vorgeben]{.red} any specific communication interface. The only restriction regarding interaction is the [davon absehen]{.red} of implementing any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and losse coupled.
+Any form of communication has to happen via an inter-process communication mechanism, with various kinds of interfaces. While communication for Actors happens in a uniform way, Microservices are thus faced with more challenges. The freedom in the design of services does not dictate any specific communication interface. The only restriction regarding interaction is omitting any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and losely coupled.
 
-Scholars tend to give REST as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good solution for synchronous reqirements. Echo uses it for any direct user interaction issued through the Web interface, i.e. `G` &rightleftarrows; `D` and running search queries via `G` &rightleftarrows; `S` &rightleftarrows; `I`.
+Scholars tend to give REST (__RE__presentational __S__tate __T__ransfer) as a prime (and often sole) example of a valid communicaton channels [quelle 1, 2, 3]{.mind}. We've found it to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good solution for synchronous reqirements. Echo uses it for any direct user interaction issued through the Web interface, i.e. `G` &rightleftarrows; `D` and running search queries via `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
-As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) is a prominent example for such on the JVM. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of Microservices. 
+As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) is a prominent example for JVM technologies. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of Microservices. 
 
-AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an independent message queue interface standard [...TODO]{.red}
+A technology heterogenous message queue standard is required. AMQP[^fn-amqp] (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an open specification for asynchronous messaging. It defines the message format in contrast to JMS, where only the interfaces are specified. This has the advantage that different implementations are possible that may be interchanged freely [quelle]{.red}. Various of such AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ*[^fn-rabbitmq], a messaging system that is complying to AMQP besides other standards, and has been shown to integrate well in Microservice Architectures [@Dra17c].
 
-...
+[^fn-amqp]: <https://www.amqp.org>
+[^fn-rabbitmq]: <https://www.rabbitmq.com>
 
-...need to introduce a new component to the architecture:
+Conceptually, the introduction of a new component into the architecture is required:
 
 * Message Queue (Q)
   : [TODO acts as a routing channel]{.red}
@@ -57,27 +58,13 @@ The queue becomes an intermediate for all asynchronous messages, where such are 
 
 ...
 
-Various AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ*[^fn-rabbitmq], a rather [slim?]{.red} yet performant implementation written in Erlang.
+~ Figure { #fig-ms-channels; caption: "Microservice communication channels"; width:50%; float:left; margin-right: 1ex; }
+![img-ms-channels]
+~
 
-[^fn-rabbitmq]: <https://www.rabbitmq.com>
+[img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
 As a result, service can have multiple different interfaces, based on heterogenous technologies. In fact, this also allows service to provide the *same* functionality on *different* interfaces. In fact, all the messages that services are consuming from the AMQP queue can also be sent directly to a specific via HTTP, for all services offer respective REST interfaces in order to accept and process these. This turned out especially useful for debugging purposes, and suggests that it could be a [guter ansatz/zielführend sein]{.red} to maintain different interfaces for production as well as maintenance operation. 
-
-
-
-...
-
-Synchronous and Asynchronous Communication
-
-Communication Channels and Service Interfaces
-
-...
-
-...RabbitMQ known from [@Dra17c] (Dustdar/Dragoni paper!)
-
-...
-
-Any form of communication has to happen via an inter-process communication mechanism. Some choices for such mechanism include messaging via a form of network interface like REST (__RE__presentational __S__tate __T__ransfer) or AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) 
 
 
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
@@ -85,28 +72,6 @@ Channels for distributed communication are more likely to provide options to app
 ~Todo
 howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
 ~
-
-~LitNote
-* beschreiben das MS mehrere total verschiedene interfaces haben können (REST, AMQP)
-~
-
-~ begin red 
-
-Microservices in general do not face difficulties for realizing different communication styles. Synchronous or asynchronous dispatch has only to be supported by the communication channel used. As was discussed, such channels only have to suffice the ... [bedingingen]{.mind}
-
----
-
-Synchronous communication is easily implemented using REST principles - that is state transportation between to endpoints using HTTP methods - which complies to the requirements on communication channels for the Microservice paradigm. It is relatively lightweight, immutable and completely open to be used by all kinds of endpoints, therefore as such technologically independent. Due to the nature of the HTTP protocol, REST calls favour a synchronous scenario. Although, it is up to the actual HTTP client technology (library, etc.) used to provide an interface to handle dispatched method calls. The most easy form is the abstraction of simple remote procedure calls, but also more asynchronous Future-based variants are possible (e.g. with the Apache HTTP client library [reference]{.mind})
-
-In general,the full span of an RPC never leaves the scope of a Microservice - unlike with Actors where it can be delegated to an on demand spawned child - and therefore it is completely handled by the initiating service. The dispatch of a new dedicated service is too expensive, and folding the result route is hard with HTTP [wie soll ich den absatz zitieren? oder anders formulieren?]{.mind}. Thus, a service needs to cope with the fact that it blocks internally for each REST call it dispatches. However, due to the freedom the MS paradigm offers, this is usually easy to handle. Using internal service concurrency, the service can be prevented by blocking as a whole, by instead dedicating one of its threads of control handle each RPC. Thus, a service should be able to handle multiple connections at the same time.
-
-In any case, if using REST or some other mechanism, such RPC styled requests always lead to a more tight coupling in contrast to an asynchronous messaging style. The later is also an option for service communication. For message delivery a so-called *message oriented middleware* (MOM) has to be applied. Many options for such are available. However, such messaging technologies often pose as whole middlewares, offering many features usually undesired by the Microservice principles [da muss ich irgendwas zitieren. umbedingt]{.mind}. Special care has to be applied when seleting a technology. 
-
-*Echo:MS* is relying n RabbitMQ [citation]{.mind}
-
-[TODO kann auch für async eingesetzt werden, google REST callbacks]{.mind}
-
-~ end red
 
 ## Internal Service Concurrency
 
@@ -116,6 +81,7 @@ Echo's services are conceived through the Spring Framework, and as such utilize 
 
 [TODO mehr? ...]{.red}
 
+<!-- TODO delete?
 ## (Data Coupling)
 
 [DIESES UNTERKAPITEL EINFACH WEGLASSEN?]{.red}
@@ -137,8 +103,9 @@ The combination of no shared memory and well-defined serialized data exchange fr
 ~Todo
 Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
 ~   
+-->
 
-## Service Discovery
+## Discovery
 
 Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures apply a concept known from SOA, the so-called *service registry*. A dedicated service (the registry) is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be *discovered* by others [@Mon16a].
 
@@ -164,13 +131,11 @@ To ensure that the information in the registry are correct and up to date, a com
     * see: clustering 
 ~
 
-## Fault Tolerance
+## Fault Tolerance and Resilience
 
 ~LitNote
 Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
 ~
-
-## Resilience
 
 ## Scalability
 
@@ -194,9 +159,6 @@ Docker [^fn-docker] is a prominent example of a container tool. It is especially
 
 [^fn-docker]: <https://www.docker.com>
 
-## Availability
-
-[weglassen?]{.red}
 
 ## Extensibility
 
@@ -204,8 +166,7 @@ Docker [^fn-docker] is a prominent example of a container tool. It is especially
 * [@Mon16a]: "New versions of components can be gradually intro- duced in a system, by deploying them side to side with previous versions. This advantage can be incorporated in Continuous Integration"
 ~
 
-## Configuration, logging, etc
-
-[weglassen?]{.red}
 
 ## Summary {#microservice-impl-summary}
+
+TODO

@@ -278,16 +278,10 @@ Though this concept provides static type safe messaging, it still has its limits
 
 We've found that such kinds of compile-time message saftey restrictions, i.e. without the tighter coupling Active Objects provide [tun sie das wirklich? schon oder? kann ich das einfach so behaupten?]{.mind}, are a rare capability among Actor Systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
 
-## Information Routing and Delivery Reliability
+## (Information Routing and Delivery Reliability)
 
 ~LitNote
 Point-to-point communication and Pub/Sub
-~
-
-## (Data Coupling)
-
-~LitNote
-Messages are always "state at a specific point in time", but when the receiver gets it, it might already be outdated --> just live with it, no ACID; messages are transported via Actor System (e.g. Akka) and therefore data is coupled via the access to the API (e.g. only Scala/Java and compatible languages  - Groovy - may join the system); avoid any pattern that needs to wait for consensus between Actors -> they should be able to make progress individually (vgl RegisterEpisodeIfNew, hier könnte auch der parser beim catalog nachfragen); message immutability (den ganzen aufwand den ich getrieben habe um die DTOs immutable zu kriegen, denn Akka macht pass by reference wen die nachricht innerhalb der selben JVM zugestellt wird --> und das macht probleme)
 ~
 
 ## Mailbox, Dispatcher and Backpressure (= Load balancing)
@@ -362,41 +356,12 @@ Additionally, a `SupervisionStrategy`{language:scala} may also define some behav
 * Circruit Breaker kurz anreißen und darauf hinweisen, dass die in Unterkapitel von MS genauer erklärt werden, da MS deutlich mehr darauf angewiesen sind (benötigen höhere Fault Tolerance einzelner Services, da Ausfall der Componente vergleichsweise teurer)
 ~
 
-## Scalability
-
-## Elasticity
-
-
-
 ## Clustering
 
 ~LitNote
 * Cluster / Remoting of Akka, built in discovery system among nodes  
 * Cluster Singleton, Cluster Sharding
 ~
-
-## Deployment
-
-~LitNote
-Mostly of no concern, bit of configutation for cluster setup (seed nodes for peer to peer discovery), cluster singleton and cluster sharding for complex deployment setups
-~
-
-## Availability
-
-~LitNote
-* siehe: [@Agh85b]
-~
-
-## Extensibility
-
-~LitNote
-* siehe: [@Agh85b]
-* hier allgemein zu Actor subtyping und substituion schreiben etc 
-~
-
-## Configuration, logging, etc
-
-[weglassen?]{.red}
 
 ## Summary {#actor-impl-summary}
 

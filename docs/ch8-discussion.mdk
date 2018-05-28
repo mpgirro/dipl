@@ -1,5 +1,5 @@
 
-Discussion {#ch-discussion}
+Discussion & Evaluation {#ch-discussion}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -127,7 +127,7 @@ Akka:
 
 ```{language:scala}
 val router: Router = {
-    val routees = List(actor1, actor2)
+    val routees = Seq(actor1, actor2)
     Router(BroadcastRoutingLogic(), routees)
 }
 router.route(message, sender())
@@ -490,26 +490,29 @@ Scalability:
 
 ### Load Balancing
 
-~Todo
-Server and Client Side Load balancing
+~lit
+* [@Dra17c] "Microservices: Migration of a Mission Critical System"
 ~
 
 Load Balancing (LB) is the idea of...
 
 There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
 
-Echo:M uses *Ribbon* for client-side load balancing, which is part of the Spring Cloud Netflix module. The main reason for prefering Eureka for service discovery is that it integrates with Ribbon, such that Ribbon is able to discover not only one service of a given kind but all from Eureka, and than is able to distribute the work among all these equally. 
-
-Server side load balancing is not supported. In contrast, it would reqire a new balancing component to be added to the architecture:
+Echo:M uses *Ribbon* for client-side load balancing, which is part of the Spring Cloud Netflix module. The main reason for prefering Eureka for service discovery is that it integrates with Ribbon, such that Ribbon is able to discover not only one service of a given kind but all from Eureka, such that it is then able to distribute the work among all these equally. In contrast, server-side load balancing reqires a new balancing component to be added to the architecture:
 
 * Load Balancer (L)
   : [TODO]{.red} are centralized services dedicated to distribute messages between a range of equally ...
 
 Spring Could Netflix offers a library tool for this as well, called Zuul [eh das richtige?]{.red}. 
 
-Actors use the same conceptual ideas. `Router`{language:scala}s has already been discussed in § [#sec-communication-message-routing]. They allow to distribute work in various routing logics, e.g. broadcast or round-robin. The later is the general concept behind all load balancing. Server- and client side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending Actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor..
+Actors utilize the same conceptual ideas. `Router`{language:scala}s has already been discussed in § [#sec-communication-message-routing]. They allow to distribute work in various routing logics, e.g. broadcast or round-robin, where the later is one example of a load distribution strategy. Server- and client-side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending Actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor. The former has the advantage that no additional task unit `L` is required, but all sending units require all `ActorRef`{language:scala}s of all potential receivers. The later requires the `L` unit at the benefit of only it requireing all `ActorRef`{language:scala}s. [KANN ICH HIERZU WAS ZUTIEREN? DIE ACTOR ARGUMENTATION HABE ICH MIR SELBER AUSGEDACHT]{.red}
 
-[KANN ICH HIERZU WAS ZUTIEREN? DIE ACTOR ARGUMENTATION HABE ICH MIR SELBER AUSGEDACHT]{.red}
+In one way or another, load balancing is a valueable concept for both Actors and Microservices, e.g. to avoid overflowing mailboxes and timely responses to requests. Some task units are naturally well suited to be equipped with load balancing capabilities [@Mon16a], e.g. the Echo's API Gateway. 
+
+Message queue channels are also a form of load balancing. As receiving components actively pull messages from the queue when they have computation capacity, e.g. `C` &larr; `Q`, they thus distribute load among themselves based on their demand [@Dra17c]. 
+
+...
+
 
 ---
 
@@ -580,6 +583,14 @@ Fault tolerance:
 * [@Myt17] "Handling partial failures in distributed reactive programming"
 ~
 
+Circuit breaker:
+
+~lit
+* [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
+    * "Akka provides a circuit breaker implementation that supports basic configuration parameters, such as call time- out, failure threshold and reset threshold"
+    * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
+~
+
 Resilience:
 
 ~LitNote
@@ -593,6 +604,10 @@ Availability:
 ~LitNote
 * Actors, siehe: [@Agh85b]
 ~
+
+## Testability
+
+[TODO]{.red}
 
 
 ## Actor Model and Process Calculi
@@ -689,7 +704,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 So far, we've covered concerns both Actors and Microservices in one way or another provide profound practical support for. From here on, we briefly endeavor subjects both concepts offer rather basic capabilities at best yet, although there is potential for sophisticated solutions in theory. Two such concerns we are briefly discussing is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
 
-Already discussed have been capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the system will break. This raises the question for interface compatibility, and particularly an automated checking for it.
+Already discussed have been capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). Fowler and Lewis even give independent replacement and upgradeability as key properties of Microservices [@Fow14]. However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the system will break. This raises the question for interface compatibility, and particularly an automated checking for it.
 
 An interface can be generally seens as a contract... [TODO: input, output, etc. pp...]{.important}
 
@@ -811,6 +826,7 @@ An alternative approach towards verifying composition is to migrate from the sin
 
 For a more detailed overview of behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16] and Ancona et al. [@Anc16].
 
+<!--
 ## Performance Evaluation
 
 ~red
@@ -842,3 +858,4 @@ Internal Quality Metrics:
 ~LitNote
 Coupling metrics, cohesion metrics, granularity metrics, complexity metrics, autonomy metrics, reusability metrics
 ~
+-->

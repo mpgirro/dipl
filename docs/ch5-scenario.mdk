@@ -36,16 +36,16 @@ Search engines cause the illusion of being monolithic system, but are actually a
 Their constructing is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results, and the sole concern of the scientific discipline of * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspect affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the used information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspect affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
 
 * Efficiency
-  : is about response time and throughput, therefore highly related to the concurrent processing capabilities of the system.
-
-Before these requirements can be met, the information has to be gathered of course. This is another major aspect of the architecture, which is of more concern ...
+  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation one, such that the up-to-dateness of search results increases with the efficiency of this phase. 
 
 ## Domain Description
 
-Podcasts = Decentralized media syndication
+~ red
+TODO kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds
+~
 
 ## System Components
 
@@ -96,29 +96,6 @@ Such task units ending in *\*Store* are stateful, all others stateless. When dat
 ... means of generating globally unique IDs without requiring any kind of consensus mechanism
 
 ...
-
-
-
-~LitNote
-Crawler:
-
-- allg siehe https://cs.nyu.edu/courses/spring16/CSCI-GA.2580-001/crawler.html
-- allg siehe https://web.njit.edu/~alexg/courses/cs345/OLD/F15/solutions/f2345f15.pdf
-- haben "policies":
-    - selection policy: "only a fraction of the web-pages on the Web will be accessed, retrieved and subsequently processed/parsed and indexed. That fraction would depend on file extensions, multimedia handling, languages and encoding, compression and other protocols supported" --> nur Podcast relevante sachen
-    - visit policy: "are variants of the two fundamental graph search operations: Breadth-First Search (BFS) and Depth-First Search (DFS): the former uses a queue to maintain a list of to be visited sites, and the latter a stack. Between the two the latter (DFS) is more often used in crawling"
-        - Hyperlinked Web-pages: sollen zB in shownotes verlinkte seiten auch besucht und indexiert werden? --> an sich interessante informationen
-    - observance policy: robots.txt beachten, nicht zu oft besuchen um dem server zu überlasten
-    - parallelization/coordination policy: mehrere crawler, daher synchronisation welcher gerade welche web-page bearbeitet (synchronisierte queue/stack?)
-
-- siehe "Mercator: A scalable, extensible Web crawler" https://dl.acm.org/citation.cfm?id=598733
-~
-
-~LitNote
-Updater:
-
-- siehe "Effective page refresh policies for Web crawlers" https://dl.acm.org/citation.cfm?id=958945
-~
 
 ## Concurrent Concerns and Information Flow
 
