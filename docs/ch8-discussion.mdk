@@ -1,5 +1,5 @@
 
-Discussion & Evaluation {#ch-discussion}
+Evaluation & Discussion {#ch-discussion}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -50,7 +50,7 @@ Actor and Microservice semantics rely on a strict separation of component states
 
 The conceptual need is known from Object Oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the concept of a *Microservice* - are what Meyer calls well-defined interfaces, or simply routines, and considers to be a necessity for encapsulation [@Mey97]. 
 
-Both Actors and Microservices define such well-defined interfaces in their own way. For Actors its the sum of messages it understands through its behavior. For Microservices its based on the facilitated communication channels, e.g. the REST interfaces it exposes, or the messages it consumes from a message broker (AMQP queue, Kafka, etc.). Only through these interfaces can the state of an Actor be accesses or modification to it be issued.
+Both Actors and Microservices define such well-defined interfaces in their own way. For Actors its the sum of messages it understands through its behavior. For Microservices its based on the facilitated communication channels, e.g. the REST interfaces it exposes, or the messages it consumes from a message broker (e.g. AMQP queue). Only through these interfaces can the state of an Actor be accesses or modification to it be issued.
 
 Ensuring that state is only accessible through the a components interface, i.e. that it is isolated from any illegal access from the components outside, is rather different for both styles due to their conceptual differences.
 
@@ -498,9 +498,9 @@ Load Balancing (LB) is the idea of distributing work (the *load*) between multip
 
 There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
 
-Echo's Microservices use *Ribbon*[@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
+Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
 
-In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul*[@NetflixZuul] [eh das richtige?]{.red}. Therefore this approach requires to add a new balancing component to the system architecture:
+In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul* [@NetflixZuul]. Therefore this approach requires to add a new balancing component to the system architecture:
 
 * Load Balancer (L)
   : [TODO]{.red} are centralized services dedicated to distribute messages between a set of equal instances...
@@ -519,7 +519,13 @@ Message queue channels are also a form of load balancing. As the receiving compo
 
 ## Dynamic Reconfiguration
 
-[TODO: hier muss ich ein paar Referenzen einstreuen?!]{.red}
+~ todo
+hier muss ich ein paar Referenzen einstreuen?!
+~
+
+~ todo
+Hier noch anmerken das es einen eigenen Pub/Sub Broker braucht, weil AMQP nur Queue verhalten von JMS hat, aber nicht Topic. 
+~
 
 Dynamic reconfiguration relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [kann ich hier etwas zitieren?]{.red}. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose couplying of Microservices too provide support for chaning topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues.
 
@@ -608,34 +614,33 @@ Availability:
 
 ## Testability
 
+~ todo
+Beide Konzepte behandeln von einander gut entkoppelte Komponenten. Allerdings lassen sie sich dennoch sehr unterschiedlich "gut" testen. Ein MS wird einfach selbstständig gestarte, und sein public interface zum Testen verwendet. Schwierig wird es, sobald ein MS weitere Services in anspruch nimmt, bzw ganz allgemeint die Existenz von anderen Komponenten annimmt (MQ, Discovery, etc). 
+Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leben" müssen. Akka bietet hierfür Ansätze und Lösungen, diese sind aber verglichen mit anderen "normalen" Test Frameworks schon kompliziert und eher konfus. 
+~
+
 [TODO]{.red}
 
 
 ## Actor Model and Process Calculi
 
-~LitNote
-* <https://en.wikipedia.org/wiki/Process_calculus>
-* Können MS mit CSP als theoretische Grundlage ihrer Concurrency modelliert werden. Denn später kann ich die Vorteile von Actors gegenüber MS besonders bezüglich Elasticity und Discovery mit anderer Literatur beschreiben. Ich muss die CSP Argumentation nur schon hier einführen. 
-* siehe <https://en.wikipedia.org/wiki/Actor_model_and_process_calculi_history>
-    * scheint weniger CSP, als CCS und pi-calculus zu sein
-* *Nancy Lynch and Michael Fischer. On describing the behavior of distributed systems in Semantics of Concurrent Computation. Springer-Verlag. 1979.*
-* *Nissim Francez, C.A.R. Hoare, Daniel Lehmann, and Willem de Roever. Semantics of nondetermiism, concurrency, and communication Journal of Computer and System Sciences. December 1979.*
-* Für ganz allgemeinen Blabla: *He Jifeng and C.A.R. Hoare. Linking Theories of Concurrency United Nations University International Institute for Software Technology UNU-IIST Report No. 328. July, 2005*
-* Asynchronous Sequential Processes (ASP) --> "D. Caromel, L. Henrio, and B. P. Serpette. Asynchronous sequential processes. Inf. Comput., 207(4):459–495, Apr. 2009"
-    * [@Kos16] vergleich diese mit Active Objects, nur mit gröberer Granularität
-* [@Spe90] The main features CSP are:
-    * conlmutrication management by means of input and output commands and the use of channels,
-    * the exploitation of parallelism by means of the parallel command, and
-    * nondeterminism management by guarded commands.
-~
-
 Among the theories of formulating concurrent computation is found a family called *process calculi* or *process algebra*. Such define formal models composed of so-called *processes* which are communicating within the laws and conditions layed out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interaction with other discrete event systems. Those then have to react to these interactions, and therefore he terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. Thus, an approach towards concurrency theory is the path of a process algebra.
 
 Some of these calculi gained considerable prominence, for example Milner's CCS (__C__alculus of __C__ommunicating __S__ystems) [@Mil80] for having been the initial work in this domain, while Hoare's CSP (__C__ommunicating __S__equential __P__rocesses) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the &pi;-calculus [@Mil92], also by Milner, merits special attention, for it has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
 
-...
+Much work has been done on this field, as they allow to express theoretical basis for arbitrary domains and requirements. In fact, some more practical approaches to expressing interacting processes, which were also found to be well suited for expressing Microservices, have their theoretic foundation in a process calculus. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06], which is in turn inspired by CCS and the &pi;-calculus. This is especially interresting, for the Actor model and process calculi share a long history. Hewitt and Milner published their initial works on the Actor model and CCS in the same year, respectivly 1973. Since then, these two approaches have mutually influenced and inspired the scientific development of each other. A fitting example is ASP (__A__synchronous __S__equential __P__rocesses) brearing close resemblance to Active Objects, yet with a more coarse granularity [@Kos16] (cf. AO/DO vs. MS).  
 
-In fact, some more practical approaches to expressing interacting processes, which were also found to be well suited for expressing Microservices, have their theoretic foundation in a process calculus. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* [@Gui06], which is in turn inspired by CCS and the &pi;-calculus. This is especially interresting, for the Actor model and process calculi share a long history. Hewitt and Milner published their initial works on the Actor model and CCS in the same year, respectivly 1973. Since then...
+As a result, scholars have long tried to formulate a theoretical link between Actors and various calculi, with mixed and limited success. To our knowledge, to most promising approaches in the literature so far have merely succeeded at describing interoperability between Actor and calculi that have been known to show string similarity. For example, Montanari and Talcott [@Mon97] demonstrate the coorporation of Actors and agents of the π-calculus. 
+
+As Agha et al. [@Agh97] discuss in an extensive work, a true equivalence theory among a formal *actor calculus* and some process calculus requires the formulation of a simulation relation among the primitives. This has been done among different process calculi, but is yet unfound regarding Actors. They state as the foundational challenges:
+
+> *Three points of contrast between the basic actor model and process calculi are: the choice of communication model, the choice of communicable values, and the issue of fairness.*
+
+Note that all these issues have been discussed as concerns in varying degrees throughout this thesis. For example, it has been pointed out that Actor assume fairness, while it is a non-concern for Microservices which simply delegate it to the OS scheduler. 
+
+Eventually, Agha et al. argue that instead of trying to find an analogy between an actor- and a &pi;-calculus it is expedient to engage in the definition of high level semantics for programming languages, and reason about program equivalence to Actors and &pi;-programs. 
+
+<!--
 
 ...
 
@@ -645,10 +650,9 @@ A most basic argument towards the linkage is the definition of a process in the 
 
 ...For Microservices we explicitely distinquished between the *engine* and the *behavior*, where the later referes to the "service" an engine offers. Each offered is from a global viewpoint a discrete operation whenever consumed [komisch formuliert, und ka was ich dazu zitieren soll]{.mind}.
 
-
 ...
 
-It is important to realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of [???]{.important}, all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
+It is important to realize that there is only one theoretical Actor model with many different implementations (Actor Systems) varying in terms of concrete features and capabilities, through all of which are still founding on one common theoretical model. On the other hand however, there is not one process calculus as a single foundational theory, but a large variaty of calculi instead. All are distinct in some way or another in terms of process traits and communication semantic. Thus, only a specific calculus can be compared to the Actor model at a time in general. Such has been done throughout the literature many times [hier gleich einen haufen zitate?]{.important}. 
 
 ... For example...We've found that especially ASP (__A__synchronous __S__equential __P__rocesses) have been discussed in the light of Active Objects [@Kos16].
 
@@ -685,6 +689,8 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
     * beste quelle? Punt: "State information in statically checked interfaces"    
     * Punt: "Types that reflect changes of object usability"                                             
 ~
+
+-->
 
 ## Design by Contract
 

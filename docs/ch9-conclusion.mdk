@@ -54,7 +54,7 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 Das hier ist relativ frei aus der Hand geschrieben. Hier sollte ich Dinge zitieren, abseits von der Akka-HTTP Dokumentation!
 ~
 
-In our discussion, we've focused on Actors and Microservices as competing approaches for constructing concurrent systems so far. However, it is worth to entertain the thought of *combining* both concepts instead. 
+In our discussion, we've focused on Actors and Microservices as competing approaches for constructing concurrent systems so far. However, it is worth to entertain the thought of *combining* both concepts instead. From a theoretical point of view, any two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
 
 The Microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice, but e.g. the through an AMQP interface are possible as well. Actors on the other hand are more restricted, for the model semantic requires them to receive *message* constructs in a uniform way. However, by implication this means that different communication channels could be integrated as long as they comply to a homogenous message receiving abstraction.
 
@@ -104,11 +104,15 @@ Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices fol
 
 It is our believe however, that service oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for examples are already limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that interoperability with other technologically heterogenous components is still not restricted. [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
 
+...We see ourselves affirmed in the literature, from a theoretical as well as a practical perspective. 
+
+As has been pointed out, Agha et al. [@Agh97] argument towards regarding high-level language semantics instead, and then reason about equivalence to Actor- and in their case &pi;-programs. We see constructs and conceptualities of the service-oriented programming paradigm exactly as such high-level language concepts and their semantics is convenient to be compared to Actor and Microservice programming, as we've aimed to point out throughout this thesis. 
+
 ...As a result, it is our believe that an languages-based solution is worth a [???]{.mind}
 
 ... Promising protoypes as Jolie essentially produce constructs that are rather similar to Actors - except that the creation of new components is not an essential primitive. 
 
-...
+... Critique that actors do not compose [@Agh97], but SOP languages do.
 
 
 ... evolution of Actors like with Orleans auch möglich

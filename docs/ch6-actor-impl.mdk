@@ -165,7 +165,7 @@ However, many real life scenarios expect communication to be synchronouse, i.e. 
 
 [grafik hier einfügen]{.mind}
 
-Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow.
+Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow [@Agh97].
 
 ### Future-based Messaging
 
