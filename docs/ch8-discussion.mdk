@@ -494,31 +494,23 @@ Scalability:
 * [@Dra17c] "Microservices: Migration of a Mission Critical System"
 ~
 
-Load Balancing (LB) is the idea of...
+Load Balancing (LB) is the idea of distributing work (the *load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to to maximize throughput and minimize response time of the overall system. [quelle? mehr oder minder aus der wikipedia umformuliert]{.red}
 
 There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
 
-Echo:M uses *Ribbon* for client-side load balancing, which is part of the Spring Cloud Netflix module. The main reason for prefering Eureka for service discovery is that it integrates with Ribbon, such that Ribbon is able to discover not only one service of a given kind but all from Eureka, such that it is then able to distribute the work among all these equally. In contrast, server-side load balancing reqires a new balancing component to be added to the architecture:
+Echo's Microservices use *Ribbon*[@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
+
+In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul*[@NetflixZuul] [eh das richtige?]{.red}. Therefore this approach requires to add a new balancing component to the system architecture:
 
 * Load Balancer (L)
-  : [TODO]{.red} are centralized services dedicated to distribute messages between a range of equally ...
-
-Spring Could Netflix offers a library tool for this as well, called Zuul [eh das richtige?]{.red}. 
+  : [TODO]{.red} are centralized services dedicated to distribute messages between a set of equal instances...
 
 Actors utilize the same conceptual ideas. `Router`{language:scala}s has already been discussed in § [#sec-communication-message-routing]. They allow to distribute work in various routing logics, e.g. broadcast or round-robin, where the later is one example of a load distribution strategy. Server- and client-side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending Actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor. The former has the advantage that no additional task unit `L` is required, but all sending units require all `ActorRef`{language:scala}s of all potential receivers. The later requires the `L` unit at the benefit of only it requireing all `ActorRef`{language:scala}s. [KANN ICH HIERZU WAS ZUTIEREN? DIE ACTOR ARGUMENTATION HABE ICH MIR SELBER AUSGEDACHT]{.red}
 
-In one way or another, load balancing is a valueable concept for both Actors and Microservices, e.g. to avoid overflowing mailboxes and timely responses to requests. Some task units are naturally well suited to be equipped with load balancing capabilities [@Mon16a], e.g. the Echo's API Gateway. 
+In one way or another, load balancing is a valueable concept for both Actors and Microservices, e.g. to avoid overflowing mailboxes and timely responses to requests. Some task units are naturally well suited to be equipped with load balancing capabilities [@Mon16a;@Car17], e.g. the Echo's API Gateway. 
 
-Message queue channels are also a form of load balancing. As receiving components actively pull messages from the queue when they have computation capacity, e.g. `C` &larr; `Q`, they thus distribute load among themselves based on their demand [@Dra17c]. 
-
-...
-
-
----
-
-~LitNote
-* to be done manually in API gateway, or via MQ, cliend side LB (Ribbon) or server side LB (zB Zuul - was ich (noch?) nicht habe)
-~
+A conceptual disadvantage is that by default load balancer do not know about the progress of potential recipients, such that work will be distributed only to receivers with corresponding capacity available. Such metric can be taken into account of course, e.g. with the `akka.routing.SmallestMailboxRoutingLogic`{language:scala} of Akka, but it requires additional communication *before* a message will be actually dispatched to aggregate  , increasing overall duration [irgendwo hab ich da ne quelle]{.red}. 
+Message queue channels are also a form of load balancing. As the receiving components actively pull messages from the queue when they have computation capacity, e.g. `C` &larr; `Q`, they thus distribute load among themselves based on their demand [@Dra17c]. 
 
 ~LitNote
 * [@Dra17c] Dustdar/Dragoni paper!
@@ -533,14 +525,12 @@ Dynamic reconfiguration relates to a change of system topology at runtime, such 
 
 A general Location transparency is a prerequisite for dynamic reconfiguration is localtion transparency. Both Actors as well as Microservices have sophisticaed solutions for it. Two additional properties, *mobility* and *elasticity*, are made possible as a result of location transparency. Mobility referes to the relocation of components between nodes at runtime [zitat?]{.red}. Elasticity is a form of scalability that summarizes the ability of a system to scale the amount of components dynamically depending on the current demand [zitat?]{.red}.
 
-The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach would be largely identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state to relocate. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated regarding all outstanding modifications to it. *Event sourcing* is a general concept that is convenient, that is all modifying commands to a store would be persisted in a so-called *event log*, such that a new or reactivated Store can request [die noch ausstehenden befehle]{.red}. This would require additional technology for the event log, e.g. Kafka[^fn-kafka] which is a widely adopted distributed publish/subscribe streaming system offering persistence. With it, Store units would have to persist a counter or reference to their last received event separately still. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
+The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach would be largely identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state to relocate. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated regarding all outstanding modifications to it. *Event sourcing* is a general concept that is convenient, that is all modifying commands to a store would be persisted in a so-called *event log*, such that a new or reactivated Store can request [die noch ausstehenden befehle]{.red}. This would require additional technology for the event log, e.g. Kafka [@ApacheKafka] which is a widely adopted distributed publish/subscribe streaming system offering persistence. With it, Store units would have to persist a counter or reference to their last received event separately still. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
 
 * Message Broker (B)
   : [TODO a (possibibly persistant) message distribution channel]{.red}
 
 For example, when the state of a Store needs to be modified, instead of performing the update operation directly, a Store instead sends a respective message to be brokered to all Stores of the respective kind, e.g pushed `D` &rarr; `B` from which it gets pulled $\{\textsf{D}_{1}\cdots\textsf{D}_{n}\}$ &larr; `B` by all DirectoryStores, even the sender, such that each performs the state update.
-
-[^fn-kafka]: <https://kafka.apache.org> 
 
 In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be discussed in &#167; [#sec-actor-ms-integration].
 
@@ -583,13 +573,24 @@ Fault tolerance:
 * [@Myt17] "Handling partial failures in distributed reactive programming"
 ~
 
+...
+
+The message passing communication style facilitated by both Actors and Microservices brings common 
+
+...
+
 Circuit breaker:
 
 ~lit
 * [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
     * "Akka provides a circuit breaker implementation that supports basic configuration parameters, such as call time- out, failure threshold and reset threshold"
     * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
+* [@Car17] "Spring Microservices in Action"
+* [@NetflixHysterix]
 ~
+
+
+...
 
 Resilience:
 

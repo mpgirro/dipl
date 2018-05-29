@@ -53,14 +53,11 @@ The basic architectural components are based on the search engine architecture i
 
 ...
 
-A web interface is provided that both backends have to support. It is written with Angular[^fn-anngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
+A web interface is provided that both backends have to support. It is written with Angular [@GoogleAngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
 
-[^fn-anngular]: <https://angular.io>
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
 
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene[^fn-lucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. Also, parsing RSS/Atom feed files, especially using a custom written extensions to the ROME[^fn-rome] feed parsing libraries that allows to extract chapter marks.
-
-[^fn-lucene]: <https://lucene.apache.org>
-[^fn-rome]: <https://rometools.github.io/rome/>
+...
 
 * DirectoryStore (D)
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. DirectoryStores hold the complete amount of information about any cataloged entity

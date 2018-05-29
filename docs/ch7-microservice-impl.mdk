@@ -18,9 +18,7 @@ This chapter covers a Microservice Architecture approach used to implement the c
 
 Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore we refrained from used it to implement Echo. 
 
-Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring*[^fn-spring] framework collection, most noteably its *Spring Boot* module for application fundamentals, and the *Spring Cloud Netflix* modules for Microservice related concerns. Such have been proven very effective for Microservice development in industrial applications [@Car17]. 
-
-[^fn-spring]: <https://spring.io>
+Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most noteably its *Spring Boot* module for application fundamentals, and the *Spring Cloud* modules, which integrate many Netflix open source projects, for Microservice related concerns. Such have been proven very effective for Microservice development in industrial applications [@Car17]. 
 
 Spring is based on the concept of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic to the IoC container [erklären!]{.red}. This has conceptually a certain resemblance to Actor Systems in general.
 
@@ -44,33 +42,27 @@ Scholars tend to give REST (__RE__presentational __S__tate __T__ransfer) as a pr
 
 As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to [wenn der eine dem nächsten was schickt]{.red}. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) is a prominent example for JVM technologies. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of Microservices. 
 
-A technology heterogenous message queue standard is required. AMQP[^fn-amqp] (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an open specification for asynchronous messaging. It defines the message format in contrast to JMS, where only the interfaces are specified. This has the advantage that different implementations are possible that may be interchanged freely [quelle]{.red}. Various of such AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ*[^fn-rabbitmq], a messaging system that is complying to AMQP besides other standards, and has been shown to integrate well in Microservice Architectures [@Dra17c].
-
-[^fn-amqp]: <https://www.amqp.org>
-[^fn-rabbitmq]: <https://www.rabbitmq.com>
+A technology heterogenous message queue standard is required. AMQP [@AMQP] (__A__dvanced __M__essage __Q__ueue __P__rotocol) is an open specification for asynchronous messaging. It defines the message format in contrast to JMS, where only the interfaces are specified. This has the advantage that different implementations are possible that may be interchanged freely [quelle]{.red}. Various of such AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ* [@PivotalRabbitMQ], a messaging system that is complying to AMQP besides other standards, and has been shown to integrate well in Microservice Architectures [@Dra17c].
 
 Conceptually, the introduction of a new component into the architecture is required:
 
 * Message Queue (Q)
   : [TODO acts as a routing channel]{.red}
 
-The queue becomes an intermediate for all asynchronous messages, where such are pushed to it by senders, and pulled from by receivers. For example, instead of directly sending a message `C` &rarr; `P`, it instead gets pushed `C` &rarr; `Q` and at some later point pulled `P` &larr; `Q`. The active components are thus `C` and `P`, while `Q` performs merely routing logic internally.
-
-...
-
+<!--
 ~ Figure { #fig-ms-channels; caption: "Microservice communication channels"; width:50%; float:left; margin-right: 1ex; }
 ![img-ms-channels]
 ~
 
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+-->
 
-As a result, service can have multiple different interfaces, based on heterogenous technologies. In fact, this also allows service to provide the *same* functionality on *different* interfaces. In fact, all the messages that services are consuming from the AMQP queue can also be sent directly to a specific via HTTP, for all services offer respective REST interfaces in order to accept and process these. This turned out especially useful for debugging purposes, and suggests that it could be a [guter ansatz/zielführend sein]{.red} to maintain different interfaces for production as well as maintenance operation. 
+The queue becomes an intermediate for all asynchronous messages, where such are pushed to it by senders, and pulled from by receivers. For example, instead of directly sending a message `C` &rarr; `P`, it instead gets pushed `C` &rarr; `Q` and at some later point pulled `P` &larr; `Q`. The active components are thus `C` and `P`, while `Q` performs merely routing logic internally.
 
+In general, service can have multiple different interfaces, based on heterogenous technologies. As a result, this allows them to also provide the *same* functionality on *different* interfaces. In fact, all the messages that Echo's services are consuming from the AMQP queue can also be sent directly to them via HTTP, for all services offer respective REST interfaces in order to accept and process these. This turned out especially useful for debugging purposes, and suggests that it could be a valuable to maintain different interfaces for production as well as maintenance operations. 
 
+~ red
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
-
-~Todo
-howto Point to Point, Publish/Subscribe, REST and other lightweight stuff, async kafka (but offers only pub/sub), the case for AMQP/RabbitMQ for async jobs (leightweight, open protocol = polyglot, not like JMS) --> use PubSub/Kafka for DataStores (all stores need to update the data records) and MQ/AMQP for Workers (each job needs to be done by one worker)
 ~
 
 ## Internal Service Concurrency
@@ -107,16 +99,14 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 
 ## Discovery
 
-Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures apply a concept known from SOA, the so-called *service registry*. A dedicated service (the registry) is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be *discovered* by others [@Mon16a].
+Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a].
 
 As a result, a new component is introduced into the architecture:
 
 * Service Registry (R)
   : [TODO service registry]{.red} are ...
 
-Examples for service registry technologies are Consul[^fn-consul], a standalone registry service solution, and Eureka, a library of the Spring Cloud Netflix collection for easy development of custom implementations. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
-
-[^fn-consul]: <https://www.consul.io>
+Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of the Spring Cloud Netflix collection for easy development of custom implementations. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
 
 Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` to lookup `S`, and `S` &rightleftarrows; `R` to lookup `I`. [hat das einen einfluss auf Liveness?]{.red}
 
@@ -155,10 +145,7 @@ As was already mentioned, approaching Microservices at the moment is focused on 
 
 For microservices, *container* technology has been shown to be a promising approach for deployment. It builds upon....
 
-Docker [^fn-docker] is a prominent example of a container tool. It is especially convenient, for it facilitates 
-
-[^fn-docker]: <https://www.docker.com>
-
+Docker [@Docker] is a prominent example of a container tool. It is especially convenient, for it facilitates 
 
 ## Extensibility
 

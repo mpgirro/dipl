@@ -134,8 +134,7 @@ Epigraph {
   after="]"
 }
 .todo { 
-  background-color: Aqua; 
-  padding: 1ex;
+  color: red; 
 }
 .important, .delete, .red {
   color:red

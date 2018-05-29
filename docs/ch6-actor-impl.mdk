@@ -18,7 +18,7 @@ When talking about the practical application of the Actor model, it is importent
 
 ## Akka {#sec-akka}
 
-Akka [@Akka17] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
+Akka [@Akka] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
 Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16]. An archetype has been Erlangs style of Actors. 
 
@@ -137,10 +137,9 @@ The Isolated Turn Principle states that it must be guaranteed that nothing may i
 
 [den untenstehenden Absatz weniger in Berichtform, mehr als konzeptioneller Darlegung]{.red}
 
-There are also other less expected issues Futures might introduce. All aggreation of remote resources by Crawlers are performed via HTTP. In principle, it is a synchronous communication protocol, such that there is always a response to any request[^fn-synchronous-http]. Most APIs are therefore blocking as they abstract remote procedure call semantic. However, some allow an asynchronous handling by providing a Future result. We've expected this to improve throughput of crawling jobs, for HTTP requests to remote and unknown servers definitively pose as potential bottlenecks. And so it did, yet by dispatching a great many Futures simultaniously. These all stressed the Crawler Actors thread pool, which could lead to temporary and unexpected starvations due to a simple lack of available threads on which free Crawlers could be scheduled by the Actor System. We've tried this with both the asynchronous client APIs of the *Akka HTTP* module and the *Apache HTTP Components*[^apache-http-components] library. Althought the former would also provide a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly, we've found that the underlying *super connection pool flow* used also introduces a limit to the amount of concurrent request to a single host [@AkkaHTTP]. As with many RSS feeds in general, publishers tend to choose distributing feeds via dedicated providers, thus a great amount of feeds is centralized on a small amount of host, rendering Akka's flow variant inapplicable.
+There are also other less expected issues Futures might introduce. All aggreation of remote resources by Crawlers are performed via HTTP. In principle, it is a synchronous communication protocol, such that there is always a response to any request[^fn-synchronous-http]. Most APIs are therefore blocking as they abstract remote procedure call semantic. However, some allow an asynchronous handling by providing a Future result. We've expected this to improve throughput of crawling jobs, for HTTP requests to remote and unknown servers definitively pose as potential bottlenecks. And so it did, yet by dispatching a great many Futures simultaniously. These all stressed the Crawler Actors thread pool, which could lead to temporary and unexpected starvations due to a simple lack of available threads on which free Crawlers could be scheduled by the Actor System. We've tried this with both the asynchronous client APIs of the *Akka HTTP* module and the *Apache HTTP Components* [@ApacheHttpComponents] library. Althought the former would also provide a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly, we've found that the underlying *super connection pool flow* used also introduces a limit to the amount of concurrent request to a single host [@AkkaHTTP]. As with many RSS feeds in general, publishers tend to choose distributing feeds via dedicated providers, thus a great amount of feeds is centralized on a small amount of host, rendering Akka's flow variant inapplicable.
 
 [^fn-synchronous-http]: The most basic form would be merely an status code, of which 404 is undoubtably the most famous. 
-[^apache-http-components]: <https://hc.apache.org>
  
 As a result, it was found that, though simple RPC styled retrieval did limit throughput, on the other hand this can be of advantage. It puts a uniform and more predictable stress on the thread pool, and avoids problems like Actor starvation and . 
 
@@ -340,10 +339,6 @@ Failure notifications are handled by a `SupervisionStrategy`{language:scala}. Su
 Note that a supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. 
 
 The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for this would have to have the knowledge to interprete the state in order to evaluate it in a meaningful way [hier muss ich was zitieren, nur was? irgendwie sowas hab ich mal auf StackOverflow gelesen]{.mind}. Therefore, in case of the child being resumed, the cleanup of the failure actually falls to the child itself. All other action discard the childs state in any case. 
-
-~Todo
-The supervision concept bears resemblence to the processes hierarchy as outlined in the C process case study of section [TODO]{.mind}. When the parent of a fork goes down, the child is terminated too.
-~ 
 
 ### Fault tolerance
 
