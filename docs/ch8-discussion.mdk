@@ -439,26 +439,6 @@ However, the one major benefit of Active as well as Distributed Objects compared
 ~
 
 
-## Interoperability and Technology Heterogeneity {#sec-technological-heterogeneity}
-
-Extensibility:
-
-~LitNote
-* Actors, siehe: [@Agh85b]
-* gradual/separate replacement of MS
-* substitution and subtyping für Actors
-* MS: "new versions can be gradually introduced into a system" [@Mon16a]
-* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
-    * describe the concept of Promise for "heterogeneous computing in which programs written in different programming languages, and running under different operating systems on different hardware, can use one another as components over a network"
-~
-
-Technology Heterogeneity:
-
-~LitNote
-* [@Sub11] demonstrates how Akka can be used not only by Scala/Java binding, but other JVM languages too
-* [@New15] Newmann calls it "Technology Heterogeneity"
-~
-
 ## Governance, Deployment and Autonomy
 
 ~Todo
@@ -567,7 +547,51 @@ Elasticity:
 * "elastic scaling"
 ~
 
+## Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
 
+~ todo
+Das hier muss ich ganz generell auf etwas Literatur fundieren. Habe ich hier etwas das zusammen passt?
+~
+
+A result of the dynamic reconfiguration property is that Actor or Microservice Architectures are also well open for extension. This characteristic of extensibility is especially often discussed for Microservices [ref1,ref2,ref3]. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, extensibility referes to the introduction of either new versions of existing images (update) or new units completely (addition). For updates of previous version, special care has to be taken, which will be discussed in due course. 
+
+There are two different kinds of extensibility [IRGENDWAS MUSS ICH HIER ZITIEREN, NUR HAB ICH DAS SELBER AUSGEDACHT!]{.red}:
+
+* static, such that the architecture is reconfigured and then (at least partially) redeployed
+* dynamic, whereat a new component is added to the architecture at runtime
+
+Independent deployment capability of each single service engine allows to simply add new components at runtime. This does not impact existing services, as these do not yet have a notion of the new component. The new services can simply consume existing services. Gradual updating old services then allows to integrate any new component deeper into the architecture, such that it will also be consumed [@Mon16a].
+
+Actors are faced with more challenges. An Actor requires an Actor System to exist within. As a result, any introduction of a new Actor requires the restart of the system, limiting Actor to static extension. However, it is not required to introduce a new component into all Actor System nodes of a cluster at once. Therefore, the cluster may retain its uptime, while its nodes get partially upgraded and then redeployed.    
+
+Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming language, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
+
+The strong memory boundries and open communication interfaces of Microservice provide a whole different level flexibility. Any service may be conceived using any programming language and technology desired, as long as such are able to interact with the communication channels.
+
+Echo facilitates Java and the Spring Framework for all task units, but each service could also have been written using distinct technology stacks. Even now, existing services could be replaces by new version using new technologies.   
+
+~ todo
+hier noch etwas mehr blabla
+~
+
+---
+
+Extensibility:
+
+~LitNote
+* Actors, siehe: [@Agh85b]
+* gradual/separate replacement of MS
+* substitution and subtyping für Actors
+* MS: "new versions can be gradually introduced into a system" [@Mon16a]
+* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
+    * describe the concept of Promise for "heterogeneous computing in which programs written in different programming languages, and running under different operating systems on different hardware, can use one another as components over a network"
+~
+
+Technology Heterogeneity:
+
+~LitNote
+* [@New15] Newmann calls it "Technology Heterogeneity"
+~
 
 
 ## Fault tolerance, Resilience and Availability
