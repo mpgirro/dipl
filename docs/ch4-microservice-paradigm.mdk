@@ -73,6 +73,8 @@ A monolith is a software application whose modules cannot be executed independen
 A microservice is a cohesive, independent process interacting via messages.
 ~   
 
+...Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm.
+
 ## Service Ambiguity
 
 

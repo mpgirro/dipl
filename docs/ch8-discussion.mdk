@@ -698,7 +698,6 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
 * [@Hoh06] "Programming Without a Call Stack--Event-driven Architectures" (bzgl async communication)
 * [@Agh99] describes RPC abstraction on top of actors; and broadcast/multicast/one-to-one-out-of-many communication styles for actors
-* [@Kar09] bzgl messaging: "An alternate proposal is to add a type system based on lin- ear types to enable safe, zero-copy messaging [18]. Such a type system is not part of currently available distributions"
 * "loose coupling" [@Sal16]
 * bzgl REST:
     * see [@Mon16b], section 7, "RESTful services"
@@ -709,70 +708,44 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 * [@Min17] Jolie has static type checking
 ~
 
-So far, we've covered concerns both Actors and Microservices in one way or another provide profound practical support for. From here on, we briefly endeavor subjects both concepts offer rather basic capabilities at best yet, although there is potential for sophisticated solutions in theory. Two such concerns we are briefly discussing is static contract analysis [anderes wort? enforcement, restriction] in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
+So far, we've covered concerns both Actors and Microservices in one way or another provide profound practical support for. From here on, we briefly endeavor into subjects both concepts offer rather basic capabilities at best yet, although there is potential for sophisticated solutions in theory. Two such concerns we are briefly discussing is static contract analysis [anderes wort? enforcement, restriction]{.red} in general, and behavioral types in particular [soll ich da was zitieren?]{.mind}
 
-Already discussed have been capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90, QUELLE FÜR MS BENÖTIGT!]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). Fowler and Lewis even give independent replacement and upgradeability as key properties of Microservices [@Fow14]. However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the system will break. This raises the question for interface compatibility, and particularly an automated checking for it.
+Already discussed have been capabilities and notions [regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment]{.red} in the respective contexts of Actors and Microservices. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90;@Dra17a]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted* by others (subtypes). Fowler and Lewis even give independent replacement and upgradeability as key properties of Microservices [@Fow14]. However, any evoltion within such systems must not break the interface compatibility between components, or otherwise the system will break. This raises the question for interface compatibility, and particularly an automated checking for it.
 
-An interface can be generally seens as a contract... [TODO: input, output, etc. pp...]{.important}
+An interface can be generally seens as a contract between a caller (client) and a callee (server). Besides respecting data type restrictions, the caller must comply to the *preconditions* of the callee when issuing its services, and in terms the called upon guarantees to fulfill its *postconditions* when returning a result. This prinicple is usually refered to as *Design by Contract*. It is a desired concept, for it increases the possibilities of components to protect themselves, generally refered to as *defensive programming*. A pioneer and prominent example is the *Eiffel* programming language, which was conceived to aim for a correctness-by-construction notion of objects, using the concept of design-by-contract [@Mey97;@Maz16].
 
-~Todo
-[@Maz16] "A notable example is the Eiffel programming language [9], incorporating solid principles of OOP within a programming framework coordinated by the idea of design- by-contract, which aims at correctness-by-construction"
-~
-
-The *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] states that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e. `S` respects the contract promised by `T`. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
+Any new component version or subtype is therefore not completely free regarding any changes. It must meet the *Liskov Substitution Principle* [@Hut16, ODER ORIG SRC?] stating that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e. `S` respects the contract promised by `T`. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 ### Contract Verification
 
-~LitNote
-* [@Pan17] "Verification in the Age of Microservices"
-~
-
 Component substitution in Actor Systems can take the most basic form of behavior replacement. As we've pointed out, this primitive does not affect an Actor's address, therefore the instance defined by the new behavior transparently replaces the old. As a result, a new Actor might receive the same kinds of messages as did its predecessor, but fail to provide an appropriate reaction to such through the new behavior. 
 
-In general, reasoning in Actor Systems is hard due to this intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren - stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}. [Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.]{.important}
+In general, reasoning in Actor Systems is already hard in theory, due to the intrinsic property of Actors to interprete any message at runtime through its behavior, i.e. acceptance and rejection, as well as the resulting effects are dynamic [sollte ich was zitieren - stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}. [Although we've seen approaches like *Akka Typed* to restrict the interfaces of Actors, such are still in an early stage of development and research.]{.important}
 
 ...
 
-The same requirement holds for Microservices. Replacing the engine of any service component requires that the service behavior must comply to the substitution principle. When it comes to verifing this, the freedom of the Microservice paradigm to allow heterogenous technologies among services becomes a hindrance.   
+
+Microservices in general may have static interfaces, but are free to implement dynamic changes if they choose to. Replacing the engine of any service component however still requires that the service behavior must comply to the substitution principle. When it comes to verifing this, the freedom of the  paradigm allowing heterogenous technologies among services becomes a hindrance.   
 
 Different technologies (programming languages and framework) and communication mechanisms (e.g. REST or AMQP) have different means of support for expressing contracts. There is no guarantee that any kind of compatibility checking tool is even available, yet compatible with a verification toolchain [@Dra17a]. 
 
 An attempt towards a solution can be the utilization of a neutral tool with regard to language and technologies. For example, Apache Thrift [@Sle07] provides an independent format to formulize data types and interface specifications, and then generate static code in various supported languages to be used for implementing communication ports. Such can subsequently serve for applying static type checking regarding well-defined interfaces, however without incorporating channel protocols [@Dra17a].
 
-Of course, this is not possible for dynamically typed languages. For MSAs are often implemented with a mixture of static and dynamic programming languages, the common denominator fallback is often basic informal documentaion in natural language [@Dra17a]. 
+Of course, this is not possible for dynamically typed languages. For MSAs are often implemented with a mixture of static and dynamic programming languages, the common denominator fallback is often basic informal documentaion in natural language [@Dra17a]. A solution would be to revert to general neutral specification formats.  In SOA, web services publish(ed) their interface description in a standardized format and discoverable way. Most prominent among these is WSDL (__W__eb __S__ervices __D__escription __L__anguage) [@Anc16].
 
-~Todo
-können irgendwie Preconditions, postconditions, invariants spezifiziert werden?
-~
+*Invariants* are another concern. In contrast to pre- and postconditions, these must always hold within a component, that is in each of its computation steps [@Mey97]. However, in the intrinsic context of distributed systems, concepts for verification so far build on post facto analysis approaches, e.g. via randomization testing or error log analysis. The later turned out to be promising for asserting liveness of services. For safety properties, Panda et al. [@Pan17] for example proposed a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
 
-*Invariants*, [dinge die immer halten müssen]{.mind}, are another concern. [TODO explored e.g. in Eiffel, etc]{.mind}
-
-In the intrinsic context of distributed systems, concepts for verification build so far on post facto analysis approaches, e.g. via randomization testing or error log analysis. The later turned out to be promising for asserting liveness of services. For safety properties, Panda et al. [@Pan17] for example proposed a Microservice-specific invariance model called `ucheck` that is capable of detecting violations at runtime, but at the cost of limiting the communication channels within the service architecture to request/reply-styled remote procedure calls.
-
-~ important
-Diese ganze Invariant Geschichte könnte ich einfach weglassen. Vor allem ist das eine Paper dazu auch nicht gut...
-~
 
 ...
 
+Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}. If such languages are based on process calculi, being already formal definitions, a foundation for even stronger reasoning is present, which minds the sequence of component activation. 
 
-Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm. In SOA, web services publish(ed) their interface description in a standardized format and discoverable way. Most prominently used is the WSDL (__W__eb __S__ervices __D__escription __L__anguage) format [@Anc16]. However, Microservices tend to [dont do this because it is too complicated, and people like to write simple JSON interfaces instead -- irgendwo hab ich das mal so ähnlich gelesen]{.important}
-
-...
-
-Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through their clear notion of ["service interfaces"]{.mind}. Thus static type checking, at least among the components written in Jolie, is applicable without breaking with the requirement of open and well defined interfaces [kann ich da was zitieren?]{.mind}.
-
-...
-
-...If such are based in process calculi, already formal definitions, a foundation for formal reasoning is present. Scholars already have endeavored [choreographic programming, blablablablabla etc pp.]{.important} 
-
-...
 
 ### Behavioral Types
 
 Guidi and Montesi [@Gui09] define three kinds of interfaces: functional (distinguished by a name, input and output types), work-flow (requireing a valid sequence of interaction) and semantic (offering semantic information about functionality through some onthology). The previous section discussed contracts of the functional kinds, which are rather simple for the only information used to check them is weither the input and output types are compatible. This can be done in general with respect to the substitution principle [citation?]{.mind}.
 
-Actor and Microservice Systems require its components to be interoperable in order to ensure reliability and correctness. The mere compatibility of formally defined interfaces in not incorporating sufficient information in general in order to be able to ensure this for communication-centered concurrent and distributed system components. Message exchange has an influence on internal task unit state, thus a precise message order can be required [@Anc16;@Dra17a]. This is not considered in functional types. However, the mentioned work-flow kind incorporates this into a notion of typization. Such types are generally subsumized as *behavioral types* [@Anc16]. 
+Actor and Microservice Systems require its components to be interoperable in order to ensure reliability and correctness. The mere compatibility of formally defined interfaces in not incorporating sufficient information in general in order to be able to ensure this for communication-centered concurrent and distributed system components. Message exchange has an influence on internal task unit state, thus a precise message order can be required [@Anc16;@Dra17a]. This is not considered in functional types. However, the mentioned work-flow kind incorporates this into a notion of typization. Such types are generally subsumized as *behavioral types* [@Anc16] and of high interrest regarding concurrent execution, for they have the potential to prevent safety and liveness issues [@Hut16].
 
 ...
 
@@ -787,14 +760,7 @@ Due to the nature of Actors and Microservices, these concepts intrinsically allo
 
 ...
 
-Behavior type theory concepts seem to be not widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain applicability of services, which is undesired by programmers. 
 
-
-...
-
-... Behavior types have the potential to prevent safety and liveness issues regarding concurrent execution [@Hut16]
-
-...
 
 
 ~LitNote
@@ -804,32 +770,21 @@ Behavior type theory concepts seem to be not widely applied in practice yet. Dra
 
 ...
 
-~Todo
-Eigentlich möchte ich hier auch was zu Actors schreiben. Denn zwar zeigt Akka Typed, dass man static type safe messaging (mit entsprechenden einschränkungen) haben kann, aber laut der Akka doku kann man das den state eines behaviour nicht zur compile time sicherstellen. dort schreibe ich "Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model". 
-
-Allerdings könnten das vll Active Objects? Denn da Franz hat dazu was geschrieben! Das könnte ich dann hier einbauen.
-~
-
-
-...
-
 However, all these approaches towards component contracts still take rather basic information into account. 
 
 ... only pre- and postconditions, and to a certain degree invariants.
 
 ...
 
-Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental approach towards this concept.
+Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability [hier will ich ein anderes wort, weil "method" nicht wirklich klar ist bzgl Actors]{.mind} has already been done [@Hut16]. The type-bounded behaviors of *Akka Typed* are an experimental implementation regarding this concern. It demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
 ...
 
-*Akka Typed* demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
-
-...
-
-WSDL was mentions as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behaviors contracts, e.g. WS-BPEL (__W__eb __S__ervice - __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. They build upon idea from formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same complexity and [workload? besseres wort]{.mind} reasons as for WSDL. Once again, we argue for programming language based solutions to overcome thus. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
+Regarding Microservices, WSDL was mentions as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behaviors contracts, e.g. WS-BPEL (__W__eb __S__ervice - __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. They build upon idea from formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same complexity and [workload? besseres wort]{.mind} reasons as for WSDL. Once again, we argue for programming language based solutions to overcome thus. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
+
+In general, behavior type theoretical concepts do not seem to be widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. 
 
 For a more detailed overview of behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16] and Ancona et al. [@Anc16].
 
