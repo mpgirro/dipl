@@ -254,7 +254,7 @@ Programming with Microservices does not, unlike Actors, free one from the many h
 
 ### Fair scheduling
 
-Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems.
+Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems [@Agh85a].
 
 Actors are entities inside an Actor System. As such, their scheduling is the responsibility of this system, viz. its execution strategy. As passiv components, Actors have no proactive sense, i.e. they only react to events (received messages). Actor Systems assure that each message is delivered to and process by an Actor eventually. Therefore each Actor must be scheduled regularly by the system to guarantee that it cannot permanently starve [@Kan12;@Kar09].
 
@@ -507,18 +507,18 @@ hier muss ich ein paar Referenzen einstreuen?!
 Hier noch anmerken das es einen eigenen Pub/Sub Broker braucht, weil AMQP nur Queue verhalten von JMS hat, aber nicht Topic. 
 ~
 
-Dynamic reconfiguration relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [kann ich hier etwas zitieren?]{.red}. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose couplying of Microservices too provide support for chaning topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues.
+Dynamic reconfiguration relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [kann ich hier etwas zitieren?]{.red}. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of Microservices too provide support for changing topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues.
 
-A general Location transparency is a prerequisite for dynamic reconfiguration is localtion transparency. Both Actors as well as Microservices have sophisticaed solutions for it. Two additional properties, *mobility* and *elasticity*, are made possible as a result of location transparency. Mobility referes to the relocation of components between nodes at runtime [zitat?]{.red}. Elasticity is a form of scalability that summarizes the ability of a system to scale the amount of components dynamically depending on the current demand [zitat?]{.red}.
+A general prerequisite for dynamic reconfiguration is localtion transparency. Both Actors as well as Microservices have sophisticated solutions for it. Two additional properties, *mobility* and *elasticity*, become possible as a result. Mobility referes to the relocation of components between nodes at runtime [zitat?]{.red}. Elasticity is a form of scalability that summarizes the ability of a system to scale the amount of components dynamically depending on the current demand [zitat?]{.red}.
 
-The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach would be largely identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state to relocate. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated regarding all outstanding modifications to it. *Event sourcing* is a general concept that is convenient, that is all modifying commands to a store would be persisted in a so-called *event log*, such that a new or reactivated Store can request [die noch ausstehenden befehle]{.red}. This would require additional technology for the event log, e.g. Kafka [@ApacheKafka] which is a widely adopted distributed publish/subscribe streaming system offering persistence. With it, Store units would have to persist a counter or reference to their last received event separately still. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
+The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach is conceptually identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state that requires relocation. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated with regard to all outstanding modifications to it. *Event sourcing* is a convenient concept which would persist all modifying commands to Stores in a so-called *event logs*, such that a new or reactivated Store can request a history of modifications prior to its existance. This would require additional technology for the event log. Kafka [@ApacheKafka] for example is a widely adopted distributed publish/subscribe streaming system offering persistence. In order to access a partial history, Store units would have to persist a counter or reference to their last received event separately. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
 
 * Message Broker (B)
   : [TODO a (possibibly persistant) message distribution channel]{.red}
 
-For example, when the state of a Store needs to be modified, instead of performing the update operation directly, a Store instead sends a respective message to be brokered to all Stores of the respective kind, e.g pushed `D` &rarr; `B` from which it gets pulled $\{\textsf{D}_{1}\cdots\textsf{D}_{n}\}$ &larr; `B` by all DirectoryStores, even the sender, such that each performs the state update.
+For example, when a Store needs to modify its state, instead of performing the update operation directly, instead it sends a respective message to be brokered to all Stores units of the same kind, e.g pushed `D` &rarr; `B` from which it gets pulled $\{\textsf{D}_{1}\cdots\textsf{D}_{n}\}$ &larr; `B` by all DirectoryStores, even the sender, such that each then performs the state update.
 
-In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be discussed in &#167; [#sec-actor-ms-integration].
+In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be briefly discussed in &#167; [#sec-actor-ms-integration].
 
 
 ---
@@ -553,16 +553,16 @@ Elasticity:
 Das hier muss ich ganz generell auf etwas Literatur fundieren. Habe ich hier etwas das zusammen passt?
 ~
 
-A result of the dynamic reconfiguration property is that Actor or Microservice Architectures are also well open for extension. This characteristic of extensibility is especially often discussed for Microservices [ref1,ref2,ref3]. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, extensibility referes to the introduction of either new versions of existing images (update) or new units completely (addition). For updates of previous version, special care has to be taken, which will be discussed in due course. 
+A result of the dynamic reconfiguration property is that Actor or Microservice Architectures are also open for extension. This characteristic of extensibility is especially often discussed for Microservices [ref1,ref2,ref3]. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, extensibility referes to the introduction of either new versions of existing task units (update) or new units completely (addition). For updates of previous version, special care has to be taken into account, which will be the concern of § [#sec-design-by-contract]. 
 
-There are two different kinds of extensibility [IRGENDWAS MUSS ICH HIER ZITIEREN, NUR HAB ICH DAS SELBER AUSGEDACHT!]{.red}:
+There are two different kinds of extensibility [@Agh85a]:
 
-* static, such that the architecture is reconfigured and then (at least partially) redeployed
+* static, such that the architecture's code is adapted and then (at least partially) redeployed
 * dynamic, whereat a new component is added to the architecture at runtime
 
-Independent deployment capability of each single service engine allows to simply add new components at runtime. This does not impact existing services, as these do not yet have a notion of the new component. The new services can simply consume existing services. Gradual updating old services then allows to integrate any new component deeper into the architecture, such that it will also be consumed [@Mon16a].
+Independent deployment capability of each single service engine allows to simply add new components at runtime. This does not impact existing services, as these do not yet have a notion of the new component. New services can simply consume existing services. Gradual updating old services then allows to integrate any new component deeper into the architecture, such that it will also be consumed [@Mon16a].
 
-Actors are faced with more challenges. An Actor requires an Actor System to exist within. As a result, any introduction of a new Actor requires the restart of the system, limiting Actor to static extension. However, it is not required to introduce a new component into all Actor System nodes of a cluster at once. Therefore, the cluster may retain its uptime, while its nodes get partially upgraded and then redeployed.    
+Actors are faced with more challenges. An Actor requires an Actor System to exist within. As a result, any introduction of a new Actor requires the restart of the system, as all Actors defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However in a clustered Akka setup, it is not required to introduce a new component into all Actor System nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed.    
 
 Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming language, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
 
@@ -643,6 +643,10 @@ Beide Konzepte behandeln von einander gut entkoppelte Komponenten. Allerdings la
 Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leben" müssen. Akka bietet hierfür Ansätze und Lösungen, diese sind aber verglichen mit anderen "normalen" Test Frameworks schon kompliziert und eher konfus. 
 ~
 
+~lit
+* MS können ein und die selbe Funktion über mehrere arten von interfaces anbieten (consume from AMQP, as well as REST), were REST makes testing easy, and AMQP better for production.
+~
+
 [TODO]{.red}
 
 
@@ -716,7 +720,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 -->
 
-## Design by Contract
+## Design by Contract {#sec-design-by-contract}
 
 ~LitNote
 * [@Kan12]: "Safe Messaging: Message passing should have call- by-value semantics to avoid sharing state between Actors"
@@ -808,7 +812,7 @@ Regarding Microservices, WSDL was mentions as an interface description format. H
 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
 
-In general, behavior type theoretical concepts do not seem to be widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. 
+In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni et al. [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. 
 
 For a more detailed overview of behavioral contracts we refere the interrested reader to Hüttel et al. [@Hut16] and Ancona et al. [@Anc16].
 

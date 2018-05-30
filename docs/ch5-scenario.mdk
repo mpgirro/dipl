@@ -124,7 +124,7 @@ In general, all previously described components have to be executed concurrently
 For example the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interacton do, thus synchronization or transactions are generally an undesireable and less expidient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
 
 
-## Features and Limitations
+## Concerns and Limitations
 
 [Hier beschreiben was die Implementierungen leisten können sollen, und was nicht]{.red}
 

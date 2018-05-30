@@ -3,6 +3,10 @@ Actor-based Implementation {#ch-actor-impl}
 ==========================
 
 
+~ Epigraph { caption: "Carl Hewitt"}
+One actor is no actor. Actors come in systems.
+~
+
 ~ Epigraph { caption: "Pamela Zave"}
 The purpose of software engineering is to control complexity, not to create it.
 ~
@@ -139,7 +143,7 @@ The Isolated Turn Principle states that it must be guaranteed that nothing may i
 
 There are also other less expected issues Futures might introduce. All aggreation of remote resources by Crawlers are performed via HTTP. In principle, it is a synchronous communication protocol, such that there is always a response to any request[^fn-synchronous-http]. Most APIs are therefore blocking as they abstract remote procedure call semantic. However, some allow an asynchronous handling by providing a Future result. We've expected this to improve throughput of crawling jobs, for HTTP requests to remote and unknown servers definitively pose as potential bottlenecks. And so it did, yet by dispatching a great many Futures simultaniously. These all stressed the Crawler Actors thread pool, which could lead to temporary and unexpected starvations due to a simple lack of available threads on which free Crawlers could be scheduled by the Actor System. We've tried this with both the asynchronous client APIs of the *Akka HTTP* module and the *Apache HTTP Components* [@ApacheHttpComponents] library. Althought the former would also provide a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly, we've found that the underlying *super connection pool flow* used also introduces a limit to the amount of concurrent request to a single host [@AkkaHTTP]. As with many RSS feeds in general, publishers tend to choose distributing feeds via dedicated providers, thus a great amount of feeds is centralized on a small amount of host, rendering Akka's flow variant inapplicable.
 
-[^fn-synchronous-http]: The most basic form would be merely an status code, of which 404 is undoubtably the most famous. 
+[^fn-synchronous-http]: The most basic form would be merely a status codes, e.g. the famous 404. 
  
 As a result, it was found that, though simple RPC styled retrieval did limit throughput, on the other hand this can be of advantage. It puts a uniform and more predictable stress on the thread pool, and avoids problems like Actor starvation and . 
 

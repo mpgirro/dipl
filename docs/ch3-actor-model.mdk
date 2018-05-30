@@ -2,10 +2,8 @@
 The Actor Model {#ch-actor-model}
 ===============
 
-
-
-~ Epigraph { caption: "Carl Hewitt"}
-One actor is no actor. Actors come in systems.
+~ Epigraph { caption: "C.A.R. Hoare"}
+Some problems are better evaded than solved.
 ~
 
 ## A Model of Computation {#sec-actor-primitives}

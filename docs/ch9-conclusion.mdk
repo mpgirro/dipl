@@ -6,9 +6,11 @@ Conclusion {#ch-conclusion}
 Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 ~
 
+This thesis has discussed the concepts of programming Actors and Microservices to conceive concurrent computation, and evaluated their common properties and capabilities. As a bottom line, we now want to argue for an application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
+
 ## The Case for Actors
 
-~LitNote
+~ red
 - von der WeAreDevs2018 inspiriert:
   * When taking Part of the System (monolith) out of the System (into a MS), connectivity becomes more important -> Actors allow splitting monolith, without requiring more focus on connectivity because it has a standard unified abstraktion! ... and connectivity/communication interfaces are from my experience kind of the most work of any MS
 - easy to write from the ground up
@@ -24,7 +26,7 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 
 ## The Case for Microservices
 
-~LitNote
+~ red
 * "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
 * MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
 * Jonas Boner beschreibt in einem Youtube Talk und im Podcast, dass MS in für große Unternehmen gut sein können, wo es wichtig ist die Code base aufzuspalten um produktiv zu bleiben

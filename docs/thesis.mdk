@@ -118,6 +118,13 @@ Epigraph {
   margin-bottom: 70px;
 }
 
+<!-- change some fonts used in latex, my personal preference -->
+@if tex {
+  h1, h2, h3, h4, dt {
+    font-family: "tex-cmd-sffamily"
+  }
+}
+
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
   background-color: LightGray;
