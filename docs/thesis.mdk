@@ -59,6 +59,7 @@ Doctor Degree     : <!-- rer.nat. / techn. / rer.soc.oec. -->
 Toc depth         : 3
 Bibliography      : dipl
 Bib style         : style/keynat.bst
+
 <!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
 <!--Bib style : plainnat-->
 <!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
@@ -120,8 +121,8 @@ Epigraph {
 
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
-  h1, h2, h3, h4, dt {
-    font-family: "tex-cmd-sffamily"
+  h1, h2, h3, h4, h5, h6, dt { 
+    font-family: "tex-cmd-sffamily" 
   }
 }
 
@@ -366,8 +367,10 @@ Maximilian Irro
 
 ~ TexOnly
 [TOC]
+<!--
 [TOC=figures]
 [TOC=tables]
+-->
 
 ~~ TexRaw
 % Switch to arabic numbering and start the enumeration of chapters in the table of content.

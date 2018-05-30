@@ -93,6 +93,10 @@ For any sort of information exchange between two concurrent task units, there ar
 
 Thus, message passing must occure through a so-called *communication channel*. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies a synchronizing the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state communication must explicitely define an order of accessing information [@And83].
 
+...
+
+... **all message rounting is provided by the actor system**
+
 
 ---
 
@@ -185,11 +189,17 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 
 ## Cohesion, Coupling and Independence
 
-~ important 
-TODO
+Truely isolated components combined through the communication style of asynchronous message passing results in a *decoupling* in two dimensions, as Boner [@Bon16] defines. On the one hand, they are decoupled in *time*, which allows for their concurrent execution. On the other hand, they are decoupled in *space*, such that they may be executed remotely and even be moved between locations.
 
-Literatur?
-~
+Regarding time, actors facilitate asynchronicity through the model design, but actor system still tend to offer synchronous abstractions ontop of the asynchronous style, in order to provide better abstractions for programmers, at the cost of increasing coupling. Microservices in general are free to choose the IPC style, as long as it is based on message passing rather than shared memory, with respective effects on coupling.
+
+Regarding space, though actors are conceptually fully isolated, it is hard to ensure true isolation in practice, especially for library-based actor implementations, as has been discussed in detail. In the end, it us up to the programmer to guarantee it by complying to programming conventions and avoid exposing or introducing state by violating the model abstraction, which would otherwise increase the coupling to the sharing component, both in time and in space. 
+
+Microservices have an inherent advantage regardless of their chosen programming model, for their only true requirement is the avoidance of shared memory sections with other processes. Then either the memory boundries enforced by the operating system, or the hardware separation comming from distribution guarantees separation and this spacial decoupling. The only other effect is based on any kind of shared code base, e.g. a common libary that is assumbed to be used by multiple services, also increasing the services coupling relative to it. Actor however suffer from this problem unequally more, for any actor within a system is instrinsically bound to it. Different interfaces to an actor system may exist, as Akka demonstrates for Java and Scala, yet actors cannot escape the coupling to the code base of their actor system [KANN ICH DA WAS ZITIEREN?]{.red}.
+
+A metric that is often stated to correlate with coupling is cohesion [@Woo93]. If coupling is low, then cohesion tends to be high. Cohesion is reflected in the single responsibility principle, such that aspects required to fulfilling the functionality is encapsulated within a single unit, respective an actor or microservice. Again, shared libraries pose a problem. Echo's commonly used `core` library, wrapping most domain specific logic, is generally a prime example. It increases coupling and decreased cohesion of all components using it (which almost all actors and microservices are), but the affect is accepted to gain a better separation between domain logic and communication and coordination logic. Apart from that, modularity in both actor and microservice systems is high, as functionality of components can be arbitrarily used and combined.
+
+This two notions, high cohesion and low coupling, allow to reason about the *independence* of task units. It is one of the primary concepts of the microservice paradigm, and is described as a direct concequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong form of indepence superior to the notion provided by the actor abstraction, as such are not necessarily contained within the strong boundries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic primitives. Message routing has already been discussed, and more will be evaluated in subsequent sections, for example the providance location transparency in addresses, and a guarantee of fairness.  
 
 ## Notions of Concurrency
 

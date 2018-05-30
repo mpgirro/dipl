@@ -7,10 +7,6 @@ Actor-based Implementation {#ch-actor-impl}
 One actor is no actor. Actors come in systems.
 ~
 
-~ Epigraph { caption: "Pamela Zave"}
-The purpose of software engineering is to control complexity, not to create it.
-~
-
 
 This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. We will focus our discussion on how specific techniques enable us the realize the requirements.
 
@@ -41,11 +37,9 @@ Akka replaces the default Actor implementation offered by Scala (we will refere 
 
 ## Ensuring Isolation {#sec-ensuring-actor-isolation}
 
-How the Isolated Turn Principle is ensured depends on the language paradigm used. Purely functional languages usually can only modify Actor state by changing the behaviour. The imperative paradigm however presents some challanges in order to guarantee isolation [@Kos16].
+While Actors encapsulate state conceptually, in practice their *full isolation*m that is no shared state at all, must be ensured. This is essential to guarantee safety properties [@Kos16]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
 
-Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
-
-Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modiied from within the Actor itself to preserve the model semantics.
+Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
 ### Data hiding
 

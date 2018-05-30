@@ -8,6 +8,28 @@ Introduction
 "Begin at the beginning," the King said gravely, "and go on till you come to the end: then stop."
 ~
 
+<!--
+~ Epigraph { caption: "Terry Winograd"}
+The main activity of programming is not the origination of new independent programs, but in the integration, modification, and explanation of existing ones.
+~
+
+~ Epigraph { caption: "Ellen Ullman"}
+We build our computer (systems) the way we build our cities: over time, without a plan, on top of ruins.
+~
+
+~ Epigraph { caption: "Butler Lampson"}
+I think the computer is the world's greatest toy. You can invent wonderful things and actually make them happen.
+~
+
+~ Epigraph { caption: "Pamela Zave"}
+The purpose of software engineering is to control complexity, not to create it.
+~
+
+~ Epigraph { caption: "Unknown"}
+Distributed is truely concurrent
+~
+-->
+
 The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus der echten welt]{.important}.
 
 ... As such, the idea of simultaneous actions has not been absent from the domain of computer programming. In this thesis, we will therefore take a close look at two concepts both introducing notions of concurrency into programs and/or systems, respectivly the *Actor Model* of Computation and the *Microservice* Architectural Style.

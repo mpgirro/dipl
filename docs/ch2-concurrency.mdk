@@ -242,9 +242,6 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
 
 ### Network Approach {#sec-concurrency-network-level}
 
-~ Epigraph { caption: "Unknown"}
-Distributed is truely concurrent
-~
 
 ~ LitNote
 * "implicit concurrency" [@Bus90]

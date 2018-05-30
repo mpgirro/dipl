@@ -3,10 +3,6 @@ Microservice-based Implementation {#ch-microservice-impl}
 =================================
 
 
-~ Epigraph { caption: "Terry Winograd"}
-The main activity of programming is not the origination of new independent programs, but in the integration, modification, and explanation of existing ones.
-~
-
 ~ Epigraph { caption: "Ian Robinson"}
 Be of the web, not behind the web.
 ~
@@ -102,7 +98,7 @@ Whenever direct communication is required however, the actual address of a recip
 * Service Registry (R)
   : [TODO service registry]{.red} are ...
 
-Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of the Spring Cloud Netflix collection for easy development of custom implementations. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
 
 Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `R` to lookup `S`, and `S` &rightleftarrows; `R` to lookup `I`. [hat das einen einfluss auf Liveness?]{.red}
 
