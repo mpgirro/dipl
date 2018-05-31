@@ -165,7 +165,7 @@ howto channel types (point-to-point, pub/sub), specialized channels (dead letter
 * den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
 ~
 
-The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e. `U` &rarr; `D` &rarr; `C` &rarr; `P` &rarr; `D` &rarr; `I`.
+The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e. `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`.
 
 ...
 
@@ -396,9 +396,7 @@ Conceptually, routing can be done directly inside the sending actor, such that t
 * Message Routers (R)
   : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees to ensure reliable [knowledge about which are dead and which are alive]{.red}.
 
-The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for a `P` $\in \{P_1\cdots P_n\}$ selected based on the routing logic.
-
-
+The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for a `P` $\in \{\textsf{P}_{1}\cdots\textsf{P}_{n}\}$ selected based on the routing logic.
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. For this, Akka provides a concept called *actor selection* as a mechanism to send a message to an addresses matching a certain pattern. This leads to the question of message delivery reliability. Actor selection does not guaranteed that a recipient conform to the pattern exists. Therefore the message might not be delivered at all, and become a *dead letter* instead. 
 
