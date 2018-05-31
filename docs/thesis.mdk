@@ -336,10 +336,15 @@ We test our findings on the implementations of the architecture of a domain spec
 ~~
 ~ 
 
+<!-- TODO enable in final version
 
 # Preface / Authors Note { -; toc:clear; }
 
-Back in early 2016, I came across a comment thread discussion[^fn-hackernews] on the famouse "HackerNews" board (*news.ycombinator.com*) where someone eventually claimed: "*You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter*". First I thought this was asking for a "`[citation needed]`"[^fn-xkcd], but it was followed by a second statement that instead started to intrigued me:
+Back in early 2016, I came across a comment thread discussion[^fn-hackernews] on the famouse "HackerNews" board (*news.ycombinator.com*) where someone eventually claimed:
+
+>"*You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter*". 
+
+First I thought this was asking for a "`[citation needed]`"[^fn-xkcd], but it was followed by a second statement that instead started to intrigued me:
 
 > "*The architecture of an idiomatic Erlang-based system is essentially a microservice architecture.*"
 
@@ -353,7 +358,7 @@ Over a year later, I've read an article[^fn-qcon] about a presentation given by 
 
 Now, these fine grained distributed systems Duffy is speaking about are what we have dubbed microservice architectures at the moment, and based on the previous claim, the "classic concurrent systems" they resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
 
-Now, from the first claim and the principles of microservice design, we can argue that microservice architectures qualify for such fine grained distributed systems Duffy is speaking about. And this would mean that the "classic concurrent systems" these distributed systems resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
+From the first claim and the principles of microservice design, we can argue that microservice architectures qualify for such fine grained distributed systems Duffy is speaking about. And this would mean that the "classic concurrent systems" these distributed systems resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
 
 And this, I thought, was worth some further investigation. The results of this investigation is this thesis. May it spark in you the idea that you might not want another microservice architecture for your next project so easily.
 
@@ -364,6 +369,8 @@ Maximilian Irro
 [^fn-hackernews]: <https://news.ycombinator.com/item?id=8665690>
 [^fn-xkcd]: <https://xkcd.com/285/>
 [^fn-qcon]: <https://www.infoq.com/news/2017/03/distributed-programming-qcon>
+
+-->
 
 ~ TexOnly
 [TOC]
@@ -387,6 +394,8 @@ Maximilian Irro
 [INCLUDE=ch7-microservice-impl]
 [INCLUDE=ch8-discussion]
 [INCLUDE=ch9-conclusion]
+
+<!--
 
 # Acronyms { - }
 
@@ -426,6 +435,8 @@ These arconyms occur throughout the thesis.
 
 * Message oriented middleware (MOM)
   : TODO
+
+-->
 
 [BIB]
 

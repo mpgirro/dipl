@@ -20,7 +20,7 @@ Some problems are better evaded than solved.
 In this thesis, we will focus on one particular abtraction for modelling concurrent computation. It is based on a formalism Hewitt, Bishop and Steiger [@Hew73] introduced in the 1970s. As the models name suggests, at its foundation it builds upon the abstraction of *Actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communication via asynchronous message passing [@Agh90]. 
 
 
-Agha reformulated the Actor model into three basic primitives and Actor can perform upon receiving a message [@Agh85a]:
+Agha reformulated the Actor model into three basic primitives Actors can perform upon receiving a message [@Agh85a]:
 
 1. Sending a finite number of messages to itself or other known actors.
 2. Creating a finite number of new actors.

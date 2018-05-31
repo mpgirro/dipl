@@ -113,7 +113,7 @@ To ensure that the information in the registry are correct and up to date, a com
     * see: clustering 
 ~
 
-## Fault Tolerance and Resilience
+## (Fault Tolerance and) Resilience
 
 ~LitNote
 Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
@@ -139,7 +139,7 @@ Load Balancing (LB) is the idea of distributing work (the *load*) between multip
 
 There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
 
-Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
+Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka over Consul for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
 
 In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul* [@NetflixZuul]. Therefore this approach requires to add a new balancing component to the system architecture:
 

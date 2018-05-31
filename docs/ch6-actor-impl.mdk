@@ -322,53 +322,34 @@ The second strategie is persued in *Echo:Actor*. It still involves blocking oper
 We see, efficient handling of IO persues the same strategies as the introduced abstractions of synchronouse Actor communication.
 
 
-## Supervision, Fault Tolerance and Resilience
+## Supervision (, Fault Tolerance and Resilience)
 
 
 In section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. 
-
+ 
 Another important reason for providing more expressive constructs is for such are required to model adequat encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequatly is key especially in a distributed context [citation]{.mind}.
 
-The key to handling faults in Akka is its concept of *supervision*. No Actor exists for itself, but is always subordinate to its supervisor. This build a dependency relationship, the so-called *supervision hierarchy*. The Actor System provides a default supervisor at the top-level [@AkkaSupervision].  
+The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself, but is always subordinate to its supervisor. This builds a dependency relationship, the so-called *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
 
-The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept of being notified of and reacting to subordinate's failures. A fault can be of arbitrary nature, i.e. an unhandled exception or invalid state. An Actor automatically suspends itself and all its subordinates upon the occurence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle the failure. 
-
-
-### Supervision Strategy
+The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept of being notified of and reacting to subordinate's failures. A fault can be of arbitrary nature, i.e. an unhandled exception or invalid state. An actor automatically suspends itself and all its subordinates upon the occurence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle respond to the failure. 
 
 
-The signaling of an occured failure is not communicated via a "normal" Actor message, but on a side channel [@AkkaSupervision]. The following example illustrates how such a notifcation is received and failure handling happens:
+<!--### Supervision Strategy-->
 
-```{language:scala}
-override val supervisorStrategy =
-  OneForOneStrategy(maxNrOfRetries = 3, withinTimeRange = 1.minute) {
-    case _: ArithmeticException      => Resume
-    case _: IllegalArgumentException => Restart
-    case _: TimeoutException         => Stop
-    case _                           => Escalate
-  }
-```
 
-Failure notifications are handled by a `SupervisionStrategy`{language:scala}. Such is able to define various behaviours. At its core, it defines one of four possible actions:
+The signaling of an occured failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. Failure notifications are handled by a so-called *supervision strategy*. Such is, at its core, able to show one of four possible actions:
 
 1. Resuming the suspended child, when the fault can be safely ignored.
 2. Restarting the suspended child, in case its internal state is in an invalid state.
 3. Stopping the child completely, refraining from continuing any of its execution.
 4. Escalating the failure, if the exception is not covered by this Actor. Thus the supervisor fails itself.
 
-Note that a supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. 
-
-The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for this would have to have the knowledge to interprete the state in order to evaluate it in a meaningful way [hier muss ich was zitieren, nur was? irgendwie sowas hab ich mal auf StackOverflow gelesen]{.mind}. Therefore, in case of the child being resumed, the cleanup of the failure actually falls to the child itself. All other action discard the childs state in any case. 
+A supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for such would require the knowledge to interprete the state in order to evaluate it in a meaningful way. The failure however remains isolated in the child. Therefore, in case it is being resumed, the cleanup actually falls to the child itself. The message on which the fault occured is not re-introduced into the mailbox, to avoid fault-reoccurence. All other actions discard the child'ss state in any case [@Roe15;@AkkaSupervision]. 
 
 
-### Fault tolerance
-
+FAULT TOLERANCE:
 
 Additionally, a `SupervisionStrategy`{language:scala} may also define some behavior besides local, single event handling. In case a child keeps failing repeatly withing a certain timeframe, it  
-
-
-## Supervision and Error Kernel (= Resilience)
-
 
 ~LitNote
 * Supervision and Error Kernel
@@ -396,7 +377,9 @@ Conceptually, routing can be done directly inside the sending actor, such that t
 * Message Routers (R)
   : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees to ensure reliable [knowledge about which are dead and which are alive]{.red}.
 
-The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for a `P` $\in \{\textsf{P}_{1}\cdots\textsf{P}_{n}\}$ selected based on the routing logic.
+The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for a `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected based on the routing logic.
+
+
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. For this, Akka provides a concept called *actor selection* as a mechanism to send a message to an addresses matching a certain pattern. This leads to the question of message delivery reliability. Actor selection does not guaranteed that a recipient conform to the pattern exists. Therefore the message might not be delivered at all, and become a *dead letter* instead. 
 

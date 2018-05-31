@@ -114,6 +114,7 @@ We've identified various forms of information flow in the literature [@Mon14;@Gu
     * (one-way), (request-response), (notification), (solicit-response) == async response?
 * [@Gui09] hat die von Jolie
 * [@Spe90] "point to point (rendez-vous) or diffusion (broadcast and multicast)""
+* [@Roe15] point-to-point, publish-subscribe
 ~
 
 ~ center
@@ -134,18 +135,6 @@ By far the most prominent example in the literature [referenzen]{.mind} for viab
 
 MESSAGE ROUTING
 
-Akka:
-
-```{language:scala}
-val router: Router = {
-    val routees = Seq(actor1, actor2)
-    Router(BroadcastRoutingLogic(), routees)
-}
-router.route(message, sender())
-```
-
-Alternative routing logic's are available, for example `RoundRobinRoutingLogic`{language:scala}, which distributes messages [one after another]{.red}
-
 ...
 
 Microservices:
@@ -159,43 +148,6 @@ AMQP is not directly applicable for one-to-many communication
 
 
 * MQ hat den vorteil, dass ein Worker sich dann einen Job holt, sobald er wieder frei ist (pull). Actor routers hingenen teilen die Jobs via RoundRobin aus (push), weswegen es kein begrenzung der Last gibt, dh die Mailbox eines Workers kann überlaufen 
-
-
-## Separation of Concerns and Single Responsibility
-
-
-Separation of Concerns:
-
-~LitNote
-* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
-    * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
-* SoP between behavior and deployment part of Jolie programs, siehe [@Mon14;@Gui17]
-~
-
-The strict encapsulation of state offers the opportunity to introduce multiple persistance strategies, without having an impact on the architectural layout. There is a more general concept to describe this form of modularization, called *Separation of Concerns* (SoC).
-
-Having state strictly encapsulated, up to  
-
-...
-
-... both Actors and Microservices provide a good basis to facilitate a clear separation of concerns due to their strict notions of high cohesion and loose coupling. However, as with many abstractions, SoC is merely [a best practice / a goal ... and cannot be enforced or demanded in any way]{.red}. Services can be enassigned as many concerns as wished, and Actors can also receive any kind of message, making them potential targets to all sorts of requests and jobs [FURCHTBAR FORMULIERT, aber richtige botschaft]{.red} 
-
----
-
-Single Responsibility:
-
-~LitNote
-* Unix philosophy
-* [@Bon16]
-* [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
-* "functional separation" [@Sal16]
-* single responsibility ist ein gutes beispiel, wieso man exlusive datenbanken gut gebrauchen kann
-* [@All13] actor "single responsibility principle"
-~
-
-We've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
-
-Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 
 ## Cohesion, Coupling and Independence
@@ -604,7 +556,7 @@ The requirements in chapter [#ch-scenario] explicitely state that neither mobili
 * Message Broker (B)
   : [TODO a (possibibly persistant) message distribution channel]{.red}
 
-For example, when a Store needs to modify its state, instead of performing the update operation directly, instead it sends a respective message to be brokered to all Stores units of the same kind, e.g pushed `C` &rarr; `B` from which it gets pulled $\{\textsf{C}_{1}\cdots\textsf{C}_{n}\}$ &larr; `B` by all CatalogStores, even the sender, such that each then performs the state update. While microservices explicitely require a separate broker unit for one-to-many communication, as AMQP only supports Queues but not Topics of the JMS semantic, actors in general have message broker capability in their message router constructs through the respective routing logic `BroadcastRoutingLogic`{language:scala}. However, router do not provide persistance of routed messages, therefore Kafka would also be required regarding event sourcing.
+For example, when a Store needs to modify its state, instead of performing the update operation directly, instead it sends a respective message to be brokered to all Stores units of the same kind, e.g pushed `C` &rarr; `B` from which it gets pulled $\{$`C`~1~$\cdots$`C`~n~$\}$  &larr; `B` by all CatalogStores, even the sender, such that each then performs the state update. While microservices explicitely require a separate broker unit for one-to-many communication, as AMQP only supports Queues but not Topics of the JMS semantic, actors in general have message broker capability in their message router constructs through the respective routing logic `BroadcastRoutingLogic`{language:scala}. However, router do not provide persistance of routed messages, therefore Kafka would also be required regarding event sourcing.
 
 In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be briefly discussed in &#167; [#sec-actor-ms-integration].
 
@@ -685,7 +637,7 @@ Technology Heterogeneity:
 ~
 
 
-## Fault tolerance, Resilience and Availability
+## Fault Tolerance(, Resilience) and Availability
 
 
 Fault tolerance:
@@ -727,6 +679,71 @@ Availability:
 ~LitNote
 * Actors, siehe: [@Agh85b]
 ~
+
+
+## Separation of Concerns and Single Responsibility
+
+
+~ todo
+Hier soll ich ganz allgemein zusammenfassen, dass verschieden concerns behandelt werden, und bewerten wie gut __getrennt__ dies voneinander geschieht!
+~
+
+*Separation of Concerns* (SoC) is ...
+
+
+The actor model as well as the microservice paradigm facilitate isolated and decoupled components.  
+
+...
+
+Hürsch and Lopes [@Hur95] define two levels regarding SoC: the *conceptual level* is concerned with the identification and differentiation of concerns, while the *implementational level* ensures their isolation.
+
+
+
+
+---
+
+Separation of Concerns:
+
+~LitNote
+* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
+    * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
+* SoP between behavior and deployment part of Jolie programs, siehe [@Mon14;@Gui17]
+* Supervision and fault isolation --> good SoC [@Roe15], for "normal" messaging and supervision orthogonal and can evolve separately
+    * failed children can be re-created from its `Props`{language:scala}, such that supervisor don't need special knowledge about their instantiation (argument, etc)
+* IoC generally facilitates SoC 
+    * actor systems ähneln IoC container
+    * Spring MS sind intern via IoC, dh intern gutes SoC 
+* [@Hur95] gibt als concerns an (all diese sind hier - unter anderem namen auch besprochen!):
+    * synchronization
+    * location control
+    * real-time constraints
+    * failure recovery
+~
+
+The strict encapsulation of state offers the opportunity to introduce multiple persistance strategies, without having an impact on the architectural layout. There is a more general concept to describe this form of modularization, called *Separation of Concerns* (SoC).
+
+Having state strictly encapsulated, up to  
+
+...
+
+... both Actors and Microservices provide a good basis to facilitate a clear separation of concerns due to their strict notions of high cohesion and loose coupling. However, as with many abstractions, SoC is merely [a best practice / a goal ... and cannot be enforced or demanded in any way]{.red}. Services can be enassigned as many concerns as wished, and Actors can also receive any kind of message, making them potential targets to all sorts of requests and jobs [FURCHTBAR FORMULIERT, aber richtige botschaft]{.red} 
+
+---
+
+Single Responsibility:
+
+~LitNote
+* Unix philosophy
+* [@Bon16]
+* [@Bon17] "This idea was later brought into the Object-Oriented Programming community by Robert C. Martin and named the Single Responsibil‐ ity Principle2 (SRP), which states that a class or component should “have only one reason to change"
+* "functional separation" [@Sal16]
+* single responsibility ist ein gutes beispiel, wieso man exlusive datenbanken gut gebrauchen kann
+* [@All13] actor "single responsibility principle"
+~
+
+We've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
+
+Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 
 ## Testability
