@@ -28,7 +28,7 @@ Agha reformulated the Actor model into three basic primitives and Actor can perf
 
 In order to send a message, the unique *address* of an Actor must be known. The unterlying system delivers the message. In general, the order of delivery is nondeterministic. Actor addresses can be announced to other Actors by sending the address as a message. This allows for *dynamic reconfiguration* [@Agh90].
 
-Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation [citation needed]{.mind}
+Messages are processed one at a time. Therefore, they have to be buffered in the so-called *mailbox* if an Actor is not able to process an incomming message immediately, because it is already engaged in a message handling operation. Accessing the mailbox is race-free, and therefore safe [@Hal09].
 
 
 ## Message Passing and Encapsulation {#sec-actor-messaging-encapsulation}
