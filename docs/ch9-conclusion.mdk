@@ -40,6 +40,10 @@ This thesis has discussed the concepts of programming Actors and Microservices t
 
 ...Provide more freedom regarding communication, but at the price of requiring additional components, e.g. a service registry and message queue are demonstrated in Echo.
 
+... In general, microservices are alway more heavy weighted constructs compared to actors, as they live inside their own OS process. Well proven development stacks for microservices like the Spring framework tend to produce rather large services (despite being still "micro"), for the Inversion of Control approach adds lots of additional ["da passiert dann im hintergrund deutlich mehr als man als programmier mitbekommt"]{.red}. This is reflected in the startup time. While an arbitrary OS process can be started rather quickly in general, considerable time (two digit amount of seconds) is required before any of Echo's microservices is up and ready to be used, depending on the current load of the executing host.
+
+
+
 ## Empirical Indications
 
 ~LitNote

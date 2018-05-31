@@ -127,7 +127,32 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
     * "Service discovery can make use of locality, resolving hostnames to the service instance that is closest to the requester, hereby achieving geographical scala-bility."
 ~
 
+
+## Load balancing {#sec-ms-load-balancing}
+
+
+~ todo
+hier teile aus der Eval/Diskus hinauf schieben, sodass unten kürzer wird. 
+~
+
+Load Balancing (LB) is the idea of distributing work (the *load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to maximize throughput and minimize response time of the overall system. [quelle? mehr oder minder aus der wikipedia umformuliert]{.red}
+
+There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
+
+Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka for service discovery is that it integrates automatically with Ribbon, such that a client does not dispatch a message directly to the address obtained from the registry, but sends it to an abstract (static) name through Ribbon, which transparently cooperates with Eureka to distribute the work among all these equally [@Car17]. This all happens inside the sending Microservice. 
+
+In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul* [@NetflixZuul]. Therefore this approach requires to add a new balancing component to the system architecture:
+
+* Load Balancer (L)
+  : [TODO]{.red} are centralized services dedicated to distribute messages between a set of equal instances...
+
+~ todo
+noch einen schönen Abschlusssatz
+~
+
+
 ## Deployment (!)
+
 
 ~LitNote
 depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
@@ -138,14 +163,3 @@ As was already mentioned, approaching Microservices at the moment is focused on 
 For microservices, *container* technology has been shown to be a promising approach for deployment. It builds upon....
 
 Docker [@Docker] is a prominent example of a container tool. It is especially convenient, for it facilitates 
-
-## Extensibility
-
-~LitNote
-* [@Mon16a]: "New versions of components can be gradually intro- duced in a system, by deploying them side to side with previous versions. This advantage can be incorporated in Continuous Integration"
-~
-
-
-## Summary {#microservice-impl-summary}
-
-TODO
