@@ -115,6 +115,7 @@ We've identified various forms of information flow in the literature [@Mon14;@Gu
 * [@Gui09] hat die von Jolie
 * [@Spe90] "point to point (rendez-vous) or diffusion (broadcast and multicast)""
 * [@Roe15] point-to-point, publish-subscribe
+* [@Agh99] point-to-point, RPC, broadcast, multicast, one-to-one-out-of-many
 ~
 
 ~ center
@@ -242,7 +243,7 @@ Programming with Microservices does not, unlike Actors, free one from the many h
 ### Fair scheduling
 
 
-Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems [@Agh85a].
+Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems, i.e. to avoid starvation [@Agh85a;@Agh99].
 
 Actors are entities inside an Actor System. As such, their scheduling is the responsibility of this system, viz. its execution strategy. As passiv components, Actors have no proactive sense, i.e. they only react to events (received messages). Actor Systems assure that each message is delivered to and process by an Actor eventually. Therefore each Actor must be scheduled regularly by the system to guarantee that it cannot permanently starve [@Kan12;@Kar09].
 
@@ -318,6 +319,8 @@ Mobility:
 * MS service discovery:
     * see [@Mon16a] for example solutions/implementations/technologies 
 * MS: "Location of MS may not be statically known at design time" [@Mon16a]
+* [@Agh99] "Actors: A unifying model for parallel and distributed computing"
+    * "the encapsulation and thread of control withion an actor facilitates both the management of concurrency and location transparent distribution"
 ~
 
 Mobility:
@@ -497,59 +500,26 @@ Autonomy:
 
 ## Scalability and Dynamic Reconfiguration
 
+Their ability to scale is arguably one the most relevant reasons given in the literature to utilize actor- or microservice-based architectures [@Tas13;@Hal09;@Mon16a;@Dra17c;@Sal16;@Che17;@Sal16;@Dra17b]. Based on the definition given by Bondi [@Bon00], *scalability* is an attribute influencing the performance of networks, systems, or processes in general. It is influenced by many different aspects. From a concurrent point of view, any influence hindering parallelism has a negative impact, for example synchronization (cf. Java case study) and (temporal) deadlocks. The strong isolation and message passing principles of actors and microservices (isolated turn principle, avoidance of shared state) reduce corrdination and cotention cost and therefore have a positive influence on their respective scalability capabilities by limiting safety and liveness issues [@Bon16].
 
-Scalability:
+There are many different forms and classification approaches. Two merit attention here. *Load scalability* referes to a steady performance if the load, that is the demand or work, increases. *Structural scalability* referes to the ability of the topology to change the amount of components, in this case concurrent task units [@Bon00].
 
-~LitNote
-* "Scaling a microservice architecture does not imply a duplication of all its components" [@Mon16a]
-* [@Xu16]:
-    * "Among many dimensions of scalability, horizontal scaling plays a crucial role in cloud computing, which means replicating multiple identical copies of the processes of the application behind a load balancer"
-* <https://doc.akka.io/docs/akka/2.5/general/message-delivery-reliability.html>
-    * zitat: make use of multiple processor cores in one machine (“scaling up”) or distributed across a computer network (“scaling out”).
-~
+Two notions of scaling a system are relevant. *Scaling up* referes to an increase of resource utilization, especially multiple cores on a single host. Avoiding blocking and synchronization, as well as asynchronous messaging are the influencing factors. Actors conceptually support this very well, as long as they refrain from blocking inside their turns. Microservices can do too, when backing asynchronous communication mechanism and while refraining from RPC. Their internal concurrency capability introduces the risk of facilitating the potential hindrances on scaling up in general. Besides this, the scheduling efforts of actor systems and operating systems aim of an optimal utilization of available resources [PASSENDES ZITAT OS BÜCHERN?]{.red}. *Scaling out*, also *distance scalability* or *geographical scalability*, referes to the utilization of additional hardware resources (hosts). Distribution capability is the prerequisite. The uniform abstraction of concurrent and distributed execution of actor as well as the process nature of microservices combined with network IPCs provide the foundation to scale out [@Bon00;@Dra17c;@Dra17b;@AkkaMDR;@Agh99].
 
----
-
-One approach to scalability is the concept of load balancing. It has already been discussed in detail regarding Echo's microservices in [#sec-ms-load-balancing]. 
-
-Akka actors build upon the same conceptual ideas using the router constructs. They allow to distribute work in various strategies, e.g. broadcast or round-robin, where the later is one example of a load distribution strategy. Server- and client-side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor. In the later case, a dedicated message routing task unit `R` has be introduced. When such use a load balancing routing logic, they are conceptually equal to the load balancing components `L` in microservice architectures.  
-
+One approach to achieve scaling out is the concept of load balancing. It has already been discussed in detail regarding Echo's microservices in [#sec-ms-load-balancing]. Akka actors build upon the same conceptual ideas using the router constructs. They allow to distribute work in various strategies, e.g. broadcast or round-robin, where the later is one example of a load distribution strategy. Server- and client-side LB is merely the destinction of such `Router`{language:scala} being utilized by the sending actor itself, or from an intermediate that is receiving the message initially from the sender and then applying the routing logic to decide the concrete receiving Actor. In the later case, a dedicated message routing task unit `R` has be introduced. When such use a load balancing routing logic, they are conceptually equal to the load balancing components `L` in microservice architectures.  
 In one way or another, load balancing is a valueable concept for both Actors and Microservices, e.g. to avoid overflowing mailboxes and timely responses to requests. Some task units are naturally well suited to be equipped with load balancing capabilities [@Mon16a;@Car17], e.g. the Echo's API Gateway. 
 
 A conceptual disadvantage is that by default load balancer do not know about the progress of potential recipients, such that work will be distributed only to receivers with corresponding capacity available. Such metric can be taken into account of course, e.g. with the `SmallestMailboxRoutingLogic`{language:scala} of Akka, which aggregates the mailbox capacities of all routees *before* a message will be actually dispatched, increasing overall processing duration [irgendwo hab ich da ne quelle]{.red}. 
 
 Message queue channels are also a form of load balancing. As the receiving components actively pull messages from the queue when they have computation capacity, e.g. `W` &larr; `Q`, they thus distribute load among themselves based on their demand [@Dra17c]. 
 
-~lit
-* [@Dra17c] "Microservices: Migration of a Mission Critical System"
-~
+*Dynamic reconfiguration* relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [@Agh85b]. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of Microservices too provide support for changing topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues. Reconfiguration greatly effects scalability, for it is the basis allowing the optimal utilization of hardware resources [HIER HAB ICH IRGENDWO EINE PASSENDE REF - GANZ SICHER!]{.red}.
+
+A general prerequisite is localtion transparency. Both Actors as well as Microservices have sophisticated solutions for it. Two additional properties, *mobility* and *elasticity*, become possible as a result. Mobility referes to the relocation of components between nodes [@Agh99]. Elasticity is a form of scalability summarizing the ability of a system to scale the amount of components dynamically depending on the current demand, thus improving its load scalability. Due to their component properties, actors and microservices can be scaled in a non-uniform way, such that individual component types can be instantiated many times without having to duplicate the residual as well [@Dra17b;@Dra17c].
 
 ~ todo
-Die Actor und MS spezifischen sachen nach oben verschieben, und hier nur mehr anmerken, dass ein Router die selben aufgaben wie ein load balancer haben kann, sodass eventuell gilt `R = L`
+Hier noch anmerken das es einen eigenen Pub/Sub Broker braucht, weil AMQP nur Queue verhalten von JMS hat, aber nicht Topic
 ~
-
-
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * see: load balancing
-~
-
----
-
-Dynamic Reconfiguration: 
-
-
-~ todo
-hier muss ich ein paar Referenzen einstreuen?!
-~
-
-~ todo
-Hier noch anmerken das es einen eigenen Pub/Sub Broker braucht, weil AMQP nur Queue verhalten von JMS hat, aber nicht Topic. 
-~
-
-Dynamic reconfiguration relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [kann ich hier etwas zitieren?]{.red}. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of Microservices too provide support for changing topologies in principle, e.g. by utilizing service registries and asynchronouse messages through intermediate message queues. Reconfiguration greatly effects scalability, for it is the basis allowing the optimal utilization of hardware resources [HIER HAB ICH IRGENDWO EINE PASSENDE REF - GANZ SICHER!]{.red}.
-
-A general prerequisite is localtion transparency. Both Actors as well as Microservices have sophisticated solutions for it. Two additional properties, *mobility* and *elasticity*, become possible as a result. Mobility referes to the relocation of components between nodes at runtime [zitat?]{.red}. Elasticity is a form of scalability that summarizes the ability of a system to scale the amount of components dynamically depending on the current demand [zitat?]{.red}.
 
 The requirements in chapter [#ch-scenario] explicitely state that neither mobility nor elasticity are concerns for Echo. However, the general approach is conceptually identical, therefore we present a short outline. Stateless task units can be easily created and terminated on demand (elasticity), which also doubles as mobility, for they do not have state that requires relocation. The stateful Stores are another concern. In general, when such units are (re-)created, it is not safe to assume that their persistent state (database, reverse index) is up to date, and therefore has to be updated with regard to all outstanding modifications to it. *Event sourcing* is a convenient concept which would persist all modifying commands to Stores in a so-called *event logs*, such that a new or reactivated Store can request a history of modifications prior to its existance. This would require additional technology for the event log. Kafka [@ApacheKafka] for example is a widely adopted distributed publish/subscribe streaming system offering persistence. In order to access a partial history, Store units would have to persist a counter or reference to their last received event separately. Conceptually, such system would be introduced as a new archiecture component for providing asynchronous one-to-many communication:
 
@@ -559,33 +529,6 @@ The requirements in chapter [#ch-scenario] explicitely state that neither mobili
 For example, when a Store needs to modify its state, instead of performing the update operation directly, instead it sends a respective message to be brokered to all Stores units of the same kind, e.g pushed `C` &rarr; `B` from which it gets pulled $\{$`C`~1~$\cdots$`C`~n~$\}$  &larr; `B` by all CatalogStores, even the sender, such that each then performs the state update. While microservices explicitely require a separate broker unit for one-to-many communication, as AMQP only supports Queues but not Topics of the JMS semantic, actors in general have message broker capability in their message router constructs through the respective routing logic `BroadcastRoutingLogic`{language:scala}. However, router do not provide persistance of routed messages, therefore Kafka would also be required regarding event sourcing.
 
 In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be briefly discussed in &#167; [#sec-actor-ms-integration].
-
-
----
-
-...
-
-... Actors können erzeugt werden, referenzen können wie normale nachrichten verschickt werden (also dyn reconf.)
-
-.. MS können sich bei discovery service registrieren, die ihre ref. stabil halten, und ihnen selber erlaub sich zu bewegen. message broker tun auch was
-
-~important
-Die beiden ansätze vielleicht kurz in den jeweiligen Impl. kapiteln erklären, und hier nur zusammenfassen. Actors haben eh ch "Clustering and Mobility" und MS "Service discovery"
-~
-
-Elasticity:
- 
-~LitNote
-* Done in MSA which Cloud Management Framework, all components must support dynamic adding and removing of components (requires Service Discovery, etc.)
-* Actors can easily be created and kill by messages. A system must support elastic mechanism itself. question is from which components is this command issues? also a management framework? or is the system this detected by itself. in case of cluster, are new Actors spawned on random node, or some metric for node with most free resources?
-    * interessesting are cases for Stores, because DB/Index resources need to be present, and how are they being brought up to current state --> Event sourcing
-* IDEE: Ich werde elasticity nur theoretisch unterstützen. 
-    * die MS sind an sich darauf vorbereitet, müsste nur eine neue abstraktionsebene hinzugefügt werden (management framework) die das regelt; event sourcing subsystem für stores fehlt
-    * Actors impl unterstützt prinzipiell beliebig viele componenten, nur müsste der mechanismus selbst gebaut werden; event sourcing subsystem für das neuaufbauen von directory/index fehlt
-* [@Akm90] vergleicht Actors mit CSP und erläutert, dass Actors "permits one to increase the distributivity of computation as it evolves" (= elastic) weil sie neue Actors erzeugen können. CSPs hingegen können nur andere Processe "aktiviere", und sind nicht natürlich elastisch. Wenn ich argumentieren kann das MS auf CSP logik basieren, dann ist das ein gutes Argument. Die Folge ist ja nämlich, dass MSA eine zsätzliche Abstraktion brauchen für Elastizität, nämlich Cloud Management Frameworks.
-    * [@Agh85b] beschreibt, das CSP die dynamisch Actor Erzeugungs Semantik "violated", weil die "interconnetion topology of processes" statisch ist --> MS müssen das via Service Discovery Abstraction lösen (wo ebene die Discovery Services statisch sind und weiterleiten)
-* "elastic scaling"
-~
 
 
 ## Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
