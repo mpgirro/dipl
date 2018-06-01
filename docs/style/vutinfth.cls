@@ -803,16 +803,15 @@
   \setlength{\parindent}{0pt}%
   \setlength{\baselineskip}{13.6pt}%
   \setlength{\parskip}{0pt plus 1pt}%
-  \begin{SFFont}{phv}%
-    \sffamily
-      \chapter*{\vutinfth@polylingual@StatementChapter}%
+  %\begin{SFFont}{phv}%
+      \chapter*{\sffamily\vutinfth@polylingual@StatementChapter}%
       \vutinfth@person@author@fullname\\
       \vutinfth@data@address\par
       \vspace{1.2cm}%
       {\normalfont\vutinfth@polylingual@Statement}\par
       \vspace{1.2cm}%
       \SignatureFields[y]{\vutinfth@person@author@name}{}%
-  \end{SFFont}%
+  %\end{SFFont}%
   \cleardoublepage
   \vutinfth@restorelayout
 }%
@@ -833,49 +832,49 @@
 }%
 \newenvironment{acknowledgements}{%
   \selectlanguage{english}%
-  \chapter{Acknowledgements}%
+  \chapter{\textsf{Acknowledgements}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{acknowledgements*}{%
   \selectlanguage{english}%
-  \chapter*{Acknowledgements}%
+  \chapter*{\textsf{Acknowledgements}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{danksagung}{%
   \selectlanguage{naustrian}%
-  \chapter{Danksagung}%
+  \chapter{\textsf{Danksagung}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{danksagung*}{%
   \selectlanguage{naustrian}%
-  \chapter*{Danksagung}%
+  \chapter*{\textsf{Danksagung}}%
 }{%
   \cleardoublepage
 }%
 \renewenvironment{abstract}{%
   \selectlanguage{english}%
-  \chapter{Abstract}%
+  \chapter{\textsf{Abstract}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{abstract*}{%
   \selectlanguage{english}%
-  \chapter*{Abstract}%
+  \chapter*{\textsf{Abstract}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{kurzfassung}{%
   \selectlanguage{naustrian}%
-  \chapter{Kurzfassung}%
+  \chapter{\textsf{Kurzfassung}}%
 }{%
   \cleardoublepage
 }%
 \newenvironment{kurzfassung*}{%
   \selectlanguage{naustrian}%
-  \chapter*{Kurzfassung}%
+  \chapter*{\textsf{Kurzfassung}}%
 }{%
   \cleardoublepage
 }%
