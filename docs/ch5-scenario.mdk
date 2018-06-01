@@ -69,10 +69,10 @@ In order to prevent any domain specific code from being implemented twice unnece
   : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.
 
 * Gateway (G)
-  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged entity information, or performing searches. Therefore the Gateway communicates with either a CatalogStore, or a Searcher. 
+  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged information, or performing searches. Therefore the Gateway communicates with either a CatalogStore, or a Searcher. 
 
 * Updater (U)
-  : determines on a regular basis which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories. To avoid multiple contradictory assumptions, it must exist as a singleton unit within the system. 
+  : determines which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories, on a regular basis. To ensure consistency, only ine unit must exist within the system (singleton). 
 
 ~ Figure { #fig-task-units; caption: "Task Units and Information Flow"; width:50%; float:left; margin-right: 1ex; }
 ![img-task-units]
@@ -80,7 +80,7 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 [img-task-units]: graphics/task-units.[ps,svg,png] "Image about Task Units and Information Flow" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call).
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
 ...
 
@@ -118,7 +118,7 @@ In general, all previously described components have to be executed concurrently
 For example the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interacton do, thus synchronization or transactions are generally an undesireable and less expidient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
 
 
-## Concerns and Limitations
+## Scope and Limitations
 
 [Hier beschreiben was die Implementierungen leisten können sollen, und was nicht]{.red}
 

@@ -146,7 +146,7 @@ Safety is *invariant*, such that a property `P` holds in *every* state of *every
 
 We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to partial correctness, while liveness is to total correctness [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
 
-## Programming Abstraction
+## Programming Abstractions
 
 AKA: Realizations of Concurrent Execution; Levels of realizing Concurrent Execution
 

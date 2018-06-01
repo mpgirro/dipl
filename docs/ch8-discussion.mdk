@@ -714,10 +714,11 @@ Separation of Concerns:
     * actor systems ähneln IoC container
     * Spring MS sind intern via IoC, dh intern gutes SoC 
 * [@Hur95] gibt als concerns an (all diese sind hier - unter anderem namen auch besprochen!):
-    * synchronization
-    * location control
-    * real-time constraints
-    * failure recovery
+    * synchronization &rarr; avoided in Actors; maybe required internally in MS, Echo uses STM
+    * location control 
+    * real-time constraints &rarr; easy RPC with MS by using adequat comm. channel, more challenging with Actors, though ask-pattern, e.g. new components like response handler can be required, which then separate the concern nicely
+    * failure recovery &rarr; there are ways, but how compare them?
+* Good SoC in Jolie of behavior and deployment [@Gui17 ]
 ~
 
 The strict encapsulation of state offers the opportunity to introduce multiple persistance strategies, without having an impact on the architectural layout. There is a more general concept to describe this form of modularization, called *Separation of Concerns* (SoC).
