@@ -2,21 +2,20 @@ digraph G {
     rankdir = LR;
     size="4,4";
     graph [pad = "0.1", ranksep = "0.35", nodesep = "0.25"];
-    node [shape = circle, penwidth = 0.75];
-    edge [arrowhead = normal, arrowsize = 0.5];
+    node [shape = circle, penwidth = 0.6];
+    edge [arrowhead = normal, arrowsize = 0.4];
 
     Web [shape = "box"];
 
-    G -> C -> G [penwidth=0.75];   // REST retrieval of DB
-    G -> S -> G [penwidth=0.75];   // REST retrieval from searcher
-    C -> U -> C [penwidth=0.75];   // test for update interval
-    U -> W [penwidth=0.75];        // download job
-    C -> I [penwidth=0.75];        // update index
-    S -> I -> S [penwidth=0.75];   // search index
-    W -> P -> C [penwidth=0.75];   // download-parse-update
-    P -> I [style="invis"];        // ensure desired node alignment 
-
-    Web -> G [minlen = "2.5", dir = "both", constraint = false, penwidth = 0.75, color = "black:black", arrowhead = empty, arrowtail = empty, arrowsize = 0.75];
+    G -> C -> G [penwidth = 0.6];   // REST retrieval of DB
+    G -> S -> G [penwidth = 0.6];   // REST retrieval from searcher
+    C -> U -> C [penwidth = 0.6];   // test for update interval
+    U -> W      [penwidth = 0.6];   // download job
+    C -> I      [penwidth = 0.6];   // update index
+    S -> I -> S [penwidth = 0.6];   // search index
+    W -> P -> C [penwidth = 0.6];   // download-parse-update
+    P -> I      [style="invis"];    // ensure desired node alignment 
+    Web -> G [minlen = "2.5", dir = "both", constraint = false, penwidth = 0.6, color = "black:black", arrowhead = empty, arrowtail = empty, arrowsize = 0.75];
 
     // constraints to style the graph
     { rank=same; G Web }
