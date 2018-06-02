@@ -10,7 +10,9 @@ Be of the web, not behind the web.
 
 This chapter covers a Microservice Architecture approach used to implement the concurrent system outlined in chapter [#ch-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
 
+
 ## Service Technology Stack
+
 
 Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore we refrained from used it to implement Echo. 
 
@@ -20,15 +22,19 @@ Spring is based on the concept of *Inversion of Control* (IoC), such that progra
 
 ...
 
+
 ## Isolation and Persistence
 
-~LitNote
-* State + Behaviour, Database (Postgres/Lucene) owning, Spring Thread Pool for DB access
-* One DB per MS (e.g. PostgreSQL for directory/catalog) and lucene for index
-* PostgreSQL accessed by multiple threads concurrently *within* the MS
-~
+
+Each Microservices is by definition instantiated as a system level process. As such, their isolation is founded on the strict memory boundries enforced by the operating system. By convention layed out by the paradigm, services refrain from implementing shared memory sections among them. Thus, there is no shared state to be synchronized between them.
+
+Databases are used for persisting state. By another convention, each service owns its databases exclisively [WO STEHT DAS IN DER LIT?]{.red}, for sharing databases conceptionally relates to sharing state, thus an implicit form of shared state communication [kann ich da was zitieren? irgendwo hab ich das doch her]{.red}
+
+Access to the database is usually supported in a concurrent way by the database management system. As with Actors, concurrent connections increase throughput significantly. Spring, more precisely *Spring Data*, offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way. Such interactions are, as is custom with the IoC approach of Spring, executed on a thread pool inside the services process. 
+
 
 ## Communication Channels
+
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
@@ -59,7 +65,9 @@ In general, service can have multiple different interfaces, based on heterogenou
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 ~
 
+
 ## Internal Service Concurrency
+
 
 The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
 
@@ -91,7 +99,9 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ~   
 -->
 
+
 ## Discovery
+
 
 Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
 
@@ -106,7 +116,9 @@ In contrast, message queue semantic has the major benefit of a sender being able
 
 To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
 
+
 ## Clustering
+
 
 ~LitNote
 * [@Dra17c] Dustdar/Dragoni paper!
@@ -119,7 +131,9 @@ To ensure that the information in the registry are correct and up to date, a com
 Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
 ~
 
+
 ## Scalability
+
 
 ~LitNote
 * [@Dra17c] Dustdar/Dragoni paper!
