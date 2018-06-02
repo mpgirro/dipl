@@ -44,7 +44,7 @@ For the scope of this thesis, it is important to gain a notion of concurrent com
 ...
 
 
-The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. Depending on context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed later on. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
+The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. Depending on context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed in due course. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
 
 ...
 
@@ -57,7 +57,9 @@ Baeten [@Bae05] gives a general definition:
 concurrent distributed processes [irgendwo gelesen]{.mind}
 ~
 
+
 ## Foundational Issues
+
 
 ~lit
 Foundational Issues of all Concurrent Programming Notions
@@ -67,19 +69,27 @@ Many different approaches and concepts exists to approach concurrent execution.
 
 When programming concurrency, there are 
 
+
 ### Indicating Concurrent Execution
+
 
 ### Communication
 
+
 Process/Task Communication
+
 
 ### Synchronization
 
+
 controll access to shared state vs message passing (communication + synchronization)
+
 
 critical region
 
+
 ## Concurrency, Parallelism and Distribution
+
 
 Until now, concurrency has been discussed as a generic term denoting a simultanious execution of different program [parts]{.red}. Yet there are more diverse notions regarding how concurrent execution is implemented. 
 
@@ -128,7 +138,9 @@ Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distrib
 
 Thus, parallel and distributed execution are forms of concurrent execution, and concurrency may or may not occur in a parallel or distributed manner. The concrete nature of the concurrent execution depends on the realization used. Different abstractions used to conceive concurrent computation may 
 
+
 ## Correctness Properties
+
 
 On a fundamental level, the basic porpose of any program is the computation of a result. A sequential program should always conclude the same results for the same inputs[^fn-sequential-side-effects], and thus it's correctness can be verified using theoretical methods, although these are not widely adoped in practice. For concurrent programs, this in not generally applicable anymore, due to the intrinsic interleaving of computations [@Ben90].
 
@@ -146,20 +158,26 @@ Safety is *invariant*, such that a property `P` holds in *every* state of *every
 
 We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to partial correctness, while liveness is to total correctness [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
 
+
 ## Programming Abstractions
+
 
 AKA: Realizations of Concurrent Execution; Levels of realizing Concurrent Execution
 
 ...
 
+
 ### Language-Construct Approach {#sec-concurrency-language-level}
+
 
 ~ LitNote
 * allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, Futures, STM, etc
 * "explicit concurrency" [@Bus90], because "specified by the program designer"
 ~
 
+
 #### Case Study: Concurrency in Java
+
 
 Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
 
@@ -194,17 +212,14 @@ Expressing concurrency on the programming language level has its perils due to t
 
 ### Operating System Approach {#sec-concurrency-os-level}
 
-~LitNote
-* The Process, Inter-process Communication, inherent concurrency
-* "implicit concurrency" [@Bus90]
-* C like fork-join pattern was always a basic a way of write concurrency (outsourcing the concurrency aspect to the OS) --> Literatur?!
-* Middlewares/Virtual machines can provide a transparent way to distribute threads to multiple cores --> Literatur?!
-* [@Fel90] "Language and System Support for Concurrent Programming"
-    * Kapitel 3: Concurrency at the Operating System Level
-~
+
+The *process* is a concept for the computational model used by operating systems. It describes the instantiated construct from a program image that has become associated *resources* such as memory. Processes are used to express dynamic execution. In the most basic form, for which they have been historically conceived, these computational units are alternately executed on a single processor. This activation and passivation is called *scheduling* and the responsibility of the operating system. It results in a quasi-parallel - or in the case of multiple processors available - truely parallel execution of active processes [@Bac03;@Fel90]. Thus, processes are inherently concurrent units due to their execution modality.
+
+*Threads* in contrast are tasks inside a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of communication subsumed as *inter-process communication* (IPC) [@Bac03;@Lov07].
 
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
+
 
 Only with C11[^fn-c11] did the C programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 

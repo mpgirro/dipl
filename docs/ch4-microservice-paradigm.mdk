@@ -144,6 +144,17 @@ SOA, OOP
 
 ## Concurrent and Distributed Building Blocks
 
+~lit
+WICHTIG:
+
+* [@Bac03]
+  * "Systems which must respond to, or manage, simultaneous activities in their external environment are inherently concurrent and may broadly be classified as: ..., __distributed, application-level services__"
+~
+
+
+
+---
+
 ~Todo
 Eigentlich gehört der inhalt dieses kapitels soweit er jetzt hier steht zur "Service Communication" section oben. Und das mit der inherent Concurrency ist auch schon erklärt. Ich sollte dann einfach abschließen und weiter die Distribution überführen?
 ~
