@@ -18,9 +18,49 @@ Dedicated languages for the Service Oriented Programming paradigm seem to be a g
 
 Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most noteably its *Spring Boot* module for application fundamentals, and the *Spring Cloud* that integrates the Netflix open source stack, which has proven very effective for Microservice development in industrial applications [@Car17]. 
 
-Spring is based on the concept of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic to the IoC container [erklären!]{.red}. This has a certain conceptual resemblence to Actor Systems [HAB ICH IRGENDWO EINE QUELLE WO ACTOR SYS. ALS IOC CONTAINER BESCHRIEBEN WERDEN?]{.red}.
+Spring is based on the special form of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic, i.e. the scheduling on a thread pool, to the IoC container. This is usually refered to as *Dependency Injection* [@Wal07]. Conceptually this has a certain resemblence to the execution of Actors by an Actor Systems [@Hal06].
 
-...
+~ todo
+mehr?
+~
+
+
+## Internal Service Concurrency
+
+
+The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
+
+Echo's services are conceived through the Spring framework, and as such utilize the concurrent programming structure that is provided through its IoC container. Spring provides a thread pool on which concerns, e.g. so-called *service*-objects (not to be confuses with the Microservice itself), are scheduled to execute invoked methods. This has resemblance to the event-based semantic of actor systems [@Hal06]. Software transactions are used as synchronization mechanism. They are expressed in a declarative programming style with the `@Transactional` annotation on service-object's methods, such that their STM  extend to database transactions transparently [@Wal07].
+
+
+~ todo
+mehr?
+~
+
+
+<!-- TODO delete?
+## (Data Coupling)
+
+[DIESES UNTERKAPITEL EINFACH WEGLASSEN?]{.red}
+
+~LitNote
+No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
+~    
+
+From the strict notion of isolation the Microservice paradigm provides follows a high form of cohesion. It is generally agreed upon that cohesion and coupling are contrary. By implications, high cohesion leads to lower coupling [zitieren, da gibts mehrere stellen bei den OOP sachen irgendwo]{.mind}. 
+
+The abstinence from mutable shared memory and the emphasise on open, well defined communication protocols adds to the loosening of coupling. Any open protocol offers good technological heterogenity, as we discussed in section [#sec-technological-heterogeneity]. This requires data to be transmitted in a serialized form, that is readyable by all endpoints [citation needed]{.mind}.
+
+REST-based communication is a good example. Data is transmitted using HTTP, therefore basically plain text. To formalize (de-)serialization, usually an open format is used ontop, e.g. XML, JSON or YAML [citation needed]{.mind}.
+
+Message passing through MOMs is also...
+
+The combination of no shared memory and well-defined serialized data exchange frees Microservice Architectures from the risk of accidentially sharing references to state that introduces the risk of 
+
+~Todo
+Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
+~   
+-->
 
 
 ## Isolation and Persistence
@@ -28,9 +68,11 @@ Spring is based on the concept of *Inversion of Control* (IoC), such that progra
 
 Each Microservices is by definition instantiated as a system level process. As such, their isolation is founded on the strict memory boundries enforced by the operating system. By convention layed out by the paradigm, services refrain from implementing shared memory sections among them. Thus, there is no shared state to be synchronized between them.
 
-Databases are used for persisting state. By another convention, each service owns its databases exclisively [WO STEHT DAS IN DER LIT?]{.red}, for sharing databases conceptionally relates to sharing state, thus an implicit form of shared state communication [kann ich da was zitieren? irgendwo hab ich das doch her]{.red}
+Databases are used for persisting state. By another convention, each service owns its databases exclisively [@Dra17a], for sharing databases conceptionally relates to sharing state, thus an implicit form of shared state communication [kann ich da was zitieren? irgendwo hab ich das doch her]{.red}
 
-Access to the database is usually supported in a concurrent way by the database management system. As with Actors, concurrent connections increase throughput significantly. Spring, more precisely *Spring Data*, offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way. Such interactions are, as is custom with the IoC approach of Spring, executed on a thread pool inside the services process. 
+Access to the database is usually supported in a concurrent way by the database management system. As with Actors, concurrent connections increase throughput significantly. Spring, more precisely *Spring Data*, offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
+
+Internally, the IoC container of Spring executes, as with most other concern, the database interactions on a thread-pool, thus in a concurrent way.
 
 
 ## Communication Channels
@@ -64,40 +106,6 @@ In general, service can have multiple different interfaces, based on heterogenou
 ~ red
 Channels for distributed communication are more likely to provide options to apply some data operation of their own, which would stress the third requirement on microservice communication channels. [citation needed - außer ich argumentiere hier mehr anstatt einfach zu behaupten, zB über spaces wie XVSM]{.mind} 
 ~
-
-
-## Internal Service Concurrency
-
-
-The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
-
-Echo's services are conceived through the Spring Framework, and as such utilize the concurrent programming structure that is provided through its IoC container. Spring provides a thread pool on which concerns, e.g. so-called *service*-objects (not to be confuses with the Microservice concept), are scheduled. Software transactions are used as synchronization mechanism. These are marked with the `@Transactional` annotation on service-object's methods, and their STMs extend to database transactions transparently.
-
-[TODO mehr? ...]{.red}
-
-<!-- TODO delete?
-## (Data Coupling)
-
-[DIESES UNTERKAPITEL EINFACH WEGLASSEN?]{.red}
-
-~LitNote
-No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
-~    
-
-From the strict notion of isolation the Microservice paradigm provides follows a high form of cohesion. It is generally agreed upon that cohesion and coupling are contrary. By implications, high cohesion leads to lower coupling [zitieren, da gibts mehrere stellen bei den OOP sachen irgendwo]{.mind}. 
-
-The abstinence from mutable shared memory and the emphasise on open, well defined communication protocols adds to the loosening of coupling. Any open protocol offers good technological heterogenity, as we discussed in section [#sec-technological-heterogeneity]. This requires data to be transmitted in a serialized form, that is readyable by all endpoints [citation needed]{.mind}.
-
-REST-based communication is a good example. Data is transmitted using HTTP, therefore basically plain text. To formalize (de-)serialization, usually an open format is used ontop, e.g. XML, JSON or YAML [citation needed]{.mind}.
-
-Message passing through MOMs is also...
-
-The combination of no shared memory and well-defined serialized data exchange frees Microservice Architectures from the risk of accidentially sharing references to state that introduces the risk of 
-
-~Todo
-Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
-~   
--->
 
 
 ## Discovery
@@ -144,10 +152,6 @@ Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in tim
 
 ## Load balancing {#sec-ms-load-balancing}
 
-
-~ todo
-hier teile aus der Eval/Diskus hinauf schieben, sodass unten kürzer wird. 
-~
 
 Load Balancing (LB) is the idea of distributing work (the *load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to maximize throughput and minimize response time of the overall system. [quelle? mehr oder minder aus der wikipedia umformuliert]{.red}
 
