@@ -78,7 +78,7 @@ The Actor model on the other hand provides a strict concept of isolated and deco
 The location transparent addresses allow for referencing Actors even outside the scope of a CPU, providing the foundation for distributed execution on different nodes [@Kar09]. Execution on the same CPU is therefore often refered to as *intra-node*, while distribution execution as *inter-node* parallelism [@Reh13]. Inter-node components are still physically close, and may assume that their communication channel is reliable. Inter-node components can make no safe assumption on the safety and reliability of their communication channel, except it to being more costly and volatile in any case [@Agh99].
 
 
-[...]{.mind} Boner describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
+[...]{.mind} Bonèr describes *decoupling in time* as the prerequisite for concurrency, and *isolation in space* as the prerequisite to distribution and mobility [citation needed]{.mind}
 
 ...
 

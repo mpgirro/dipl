@@ -154,7 +154,7 @@ AMQP is not directly applicable for one-to-many communication
 ## Cohesion, Coupling and Independence
 
 
-Truely isolated components combined through the communication style of asynchronous message passing results in a *decoupling* in two dimensions, as Boner [@Bon16] defines. On the one hand, they are decoupled in *time*, which allows for their concurrent execution. On the other hand, they are decoupled in *space*, such that they may be executed remotely and even be moved between locations.
+Truely isolated components combined through the communication style of asynchronous message passing results in a *decoupling* in two dimensions, as Bonèr [@Bon16] defines. On the one hand, they are decoupled in *time*, which allows for their concurrent execution. On the other hand, they are decoupled in *space*, such that they may be executed remotely and even be moved between locations.
 
 Regarding time, actors facilitate asynchronicity through the model design, but actor system still tend to offer synchronous abstractions ontop of the asynchronous style, in order to provide better abstractions for programmers, at the cost of increasing coupling. Microservices in general are free to choose the IPC style, as long as it is based on message passing rather than shared memory, with respective effects on coupling.
 
@@ -275,7 +275,7 @@ For Microservices on the other hand, scheduling itself is a nonconcern. Any MSA 
     * beschreibt das Message passing ganz prinzipiell nicht davon abhängig ist, wo die beteiligten componenten sind (im gegensatz zu shared variables/memory)
 ~
 
-Distribution is decoupled execution in space [citation - Boner]{.mind}. As we've already motivated, any space-decoupled concurrent execution is inherently parallel. In the same context it was stated that relatively local parallelism is called intra-node parallelism, while actually distributed parallelism is called inter-node.
+Distribution is decoupled execution in space [citation - Bonèr]{.mind}. As we've already motivated, any space-decoupled concurrent execution is inherently parallel. In the same context it was stated that relatively local parallelism is called intra-node parallelism, while actually distributed parallelism is called inter-node.
 
 ---
 
@@ -370,7 +370,7 @@ However, other Actor systems have adopted this style, e.g. as was done in Scala.
 
 [^fn-punctuation-free-call]: The expression `address ! message`{language:scala} is therefore merely syntactic sugar for `address.!(message)`{language:scala}.
 
-The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. Any asynchronous messaging is decoupled in time [cite Boner]{.mind}. It does not introduce the expectation of an immediate response as could be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods.
+The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. Any asynchronous messaging is decoupled in time [cite Bonèr]{.mind}. It does not introduce the expectation of an immediate response as could be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods.
 
 Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
 
@@ -641,6 +641,11 @@ The actor model as well as the microservice paradigm facilitate isolated and dec
 Hürsch and Lopes [@Hur95] define two levels regarding SoC: the *conceptual level* is concerned with the identification and differentiation of concerns, while the *implementational level* ensures their isolation.
 
 
+~ lit
+* routing concern is outsourced to router actors, MQ, broker
+* actors geben viele concerns an das actor system ab (scheduling, discovery), MS müssen sich im discovery selber kümmer (auch in eigenen single-responsible services) und scheduling an das OS
+* linguistically conceived Microservices can emphasise a good SoC between behavior and deployment, as the Jolie syntax structure demonstrates.
+~
 
 
 ---
@@ -674,6 +679,11 @@ Having state strictly encapsulated, up to
 
 ---
 
+Though both faciliate a good separation of concern, we've found that the scope of (single) responsibility is divergent. More precisely, the notion of scope variates. Actor systems free there constructs of minding many concerns. Examples are the discovery mechanism resulting from transparent addresses, or the supervision concept. The rather loosel principles of Microservices on the other hand burden them with minding many cross cutting concerns. Dedicated services solely concerned with providing discovery, and clients ensuring to facilitate these mechanism are required. Also, neither have they an intrinsic behavior nor an appropriate communication protocol of supervision in place. If such is desired, every service has to explicitely concern itself with supporting it with regard to its respective technology stack.
+
+
+...
+
 Single Responsibility:
 
 ~LitNote
@@ -685,7 +695,7 @@ Single Responsibility:
 * [@All13] actor "single responsibility principle"
 ~
 
-We've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
+Thus, in general we've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
 
 Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 

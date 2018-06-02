@@ -254,7 +254,7 @@ Any synchronous information flow should provide some sort of timeout, to prevent
 
 Akka therefore supports a special timing mechanism. Actors, e.g. newly spawned delegation-slaves, may register to receive a timeout message after a given time period and define an appropriate message handling behavior. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occures and a respective reaction is executed [@All13; @Roe15].
 
-It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time [was zitieren? dieses buch von Boner?]{.mind}.
+It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time [was zitieren? dieses buch von Bonèr?]{.mind}.
 
 To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Actors can register a message sending operation to be triggered after a certain period of time:
 
@@ -377,7 +377,7 @@ Conceptually, routing can be done directly inside the sending actor, such that t
 * Message Routers (R)
   : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees to ensure reliable [knowledge about which are dead and which are alive]{.red}.
 
-The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for a `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected based on the routing logic.
+The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected based on the routing logic.
 
 
 

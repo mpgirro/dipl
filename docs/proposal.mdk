@@ -45,6 +45,14 @@ CSS Header      :
 .litnote { background-color: yellow }
 .answer  { color:red }
 .old     { color:gray }
+<!-- arbitrary helper classes, while work in progress -->
+.lit { 
+  background-color: LightGray;
+  padding: 1ex;
+}
+.todo, .red {
+  color:red
+}
 
 @if not draft {
   LitNote { display: none }
@@ -58,9 +66,32 @@ sect: &#167;
 
 # Motivation & Problem Statement { #sec-motivation }
 
-Efficient software has long been built upon the concept of concurrent execution. Many different approaches and notions have been proposed and implemented in order to conceive it. One of these is the *Actor Model of Computation* [@Hew73]. In it, all computation is performed by entities called *Actors*. They encapusulate state exclusively, and communicate by message passing semantic. 
+
+~ lit
+* [@Fow14] "Microservices: a definition of this new architectural term"
+* [@Agh85a] "ACTORS: A Model of Concurrent Computation in Distributed Systems"
+* [@And83] "Concepts and Notations for Concurrent Programming"
+* [@] ""
+* [@] ""
+* [@] ""
+~
+
+
+
+
+Efficient software has long been built upon the concept of concurrent execution. Many different approaches and notions have been proposed and implemented in order to conceive it. Generally they can be classified into two groups [CITATION]{.red}. The first is based on mutually shared state between concurrent activities. *Threads* are a prominent example. To ensure exclusive modification of the shared state at a time, a kind of access control has to be respected which is refered to as *synchronization*. This kind of access controll is subsumed as *synchronization*. The other group refrains from utilizing such mutual shared state, and instead depends on *message passing* to exchange information, thus omitting the need for synchronization. 
+
+The special appeal of the Actor abstraction is that they are qualified to conceive fine-grained parallel execution as well as distributed processing, which is more coarse grained in general [@Kos16]. As these concerns become more and more relevant due to the steady rise of multicore processors, as well as the inherently distributed context of cloud computing, they share increased popularity [CITATION?]{.red}.
+
+One approach to message passing concurrency is the *Actor Model of Computation* [@Hew73]. In it, all computation is performed by entities called *Actors*. They encapusulate state exclusively, and communicate by exchanging messages. 
 
  This allows them to be 
+
+ ...
+
+
+
+
 
 ...
 
@@ -68,7 +99,7 @@ Efficient software has long been built upon the concept of concurrent execution.
 
 ...
 
-In recent time, a new software architectural style emerged called *Microservice Architecture* (MSA). Instead of relying on large-scale monolithic programs, which are usually highly structured in a concurrent fashion internally, the style instead is based on constructs called *Microservices*. Such are relatively small, independent programs refraining from utilizing shared memory sections among them and instead communicating via lightweight message passing channels, e.g. HTTP-based state transfer (REST) or message queues that do not employ complex logic on their own. 
+On the other hand, in recent time a new software architectural style emerged called *Microservice Architecture* (MSA). Instead of relying on large-scale monolithic programs, which are usually highly structured in a concurrent fashion internally, the style instead is based on constructs called *Microservices*. Such are relatively small, independent programs refraining from utilizing shared memory sections among them and instead communicating via lightweight message passing channels, e.g. HTTP-based state transfer (REST) or message queues that do not employ complex logic on their own. They are an evolutionary phenomenon emerging from the so-called *Service-Oriented Architecture* (SOA) trend of the last decade, to better meet the same requirements that Actors can inherently meet, i.e. utilize the benefits of parallel hardware and distributed deployment setups to improve scalability [REF?]{.red}, that is the re. As such, the Microservice approach introduces a notion of concurrency into their system architecture
 
 ...
 
@@ -76,7 +107,7 @@ On a conceptual basis, Actor and Microservices share many commonalities, and yet
 
 ...
 
-> **RQ**: How is the Actor Model comparing against the Microservice Paradigm with regard to the scenario of a concurrent search engine architecture?.
+> **RQ**: How is the Actor model comparing against the Microservice paradigm with regard to the scenario of a concurrent search engine?.
 
 ...
 
@@ -256,6 +287,25 @@ Java/Scala/Groovy/Clojure auf der JVM), live upgrades,
 
 # Expected Results { #expected-results }
 
+
+The author expects that Actors and Microservices will be found to address the same concerns regarding concurrent issues in general. Thought the two concepts appear rather divergent at first glance due to the different levels of conception (light-weight programming constructs vs. heavy-weight system processes), they are applying rather similar concepts respectively.
+
+
+
+
+, while applying rather similar conceptualities, thought the two concepts appear rather divergent at first glance due to the different levels of conception (light-weight programming constructs vs. heavy-weight system processes).  
+
+
+
+... Microservice are merely a semi-ideal Form to conceive constructs Meeting XYZ concern
+
+... Actors are theoetically well euqiped to Meet The same concerns, nur Strugle with implementational hassles and pitfalls (true Isolation etc)
+
+... There appeal however is undoubtstly their Integration Intro Programming languages ist Library constructs such that Actors Based Computation can be introduced with relative ease compared to MSA
+
+... Therefore we expext that a Shift in the Notion of Microservices from a deployment focus towards a Linguistik AUFFASSUNG is in Order
+
+
 ~ begin old
 
 The author expects that this work will result in an answer to the main research
@@ -366,6 +416,53 @@ effects of the surrounding environment.
 The scenario system implementations act as objects of study regarding the improvement of efficiency through the utilization of concurrent execution of system components, and related matters. However, no attention will be payed to information retrieval aspects regarding effectivness, i.e. optimizing precision and recall.
 
 # State of the Art { #sec-sota }
+
+Over the decades, many concepts have been proposed to express concurrent computation utilizing isolated components interacting via message passing [REF]{.red}. The Actor model is undoubtedly among the oldest and best know, as it has gained academic attention as well as industrial application. As a result, it has since been integrated into many mainstream technologies. Most notably is the Erlang programming language [RED]{.red}, which was the first to provide an industrial 
+
+
+
+Another trend towards utilizing the benefits of parallel hardware and distributed deployment setups 
+
+~ lit
+* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
+* [@Vin07] "Concurrency with Erlang"
+* [@Che17] "Evaluating Scalable Distributed Erlang for Scalability and Reliability"
+* [@Bon16] "Reactive Microservices Architecture"
+* [@Hal12] "On the integration of the actor model in mainstream technologies"
+* [@Ber14] "Orleans: Distributed Virtual Actors for Programmability and Scalability"
+* [@Kar09] "Actor frameworks for the JVM platform: A Comparative Analysis"
+* [@Mon14] "Service-oriented programming with Jolie"
+* [@Gui17] "Microservices: a Language-based Approach"
+* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
+~
+
+Many different concepts to express concurrent and distributed systems composed of small components do exists
+
+concepts of introducing concurrency via small and independent constructs
+
+MS are merely relatively recent trend in this ???
+
+the theoretical framework of actors has a long history of inspirating and intigrating mainstream technologies 
+
+among them arguably the most notable representative is the Erlang programming language that facilitates a ??? variant of the actor model
+
+akka is a framework available on the JVM with binding for java and scala binding that was heaviliy inspired by Erlang
+
+it also offers advanced features such as clustering, remoting, fault tolerance, resilience, etc ??? which address many of the concern of MS
+
+MS facilitate many of the conceptualities of actors such as strong isolation and message passing communication
+
+they are concurrent executed in their runtime environment (OS instead of actor runtime system)
+
+a clear advantage of MS is their ability to be deployed independently
+
+this comes at the price of reduced reliablity when it comes to compatibility regarding their communication protocol, as actor system tend to provide a homogenous communication interface
+
+while MS have to employ separate comm. channel between endpoints
+
+the idea to conceive concurrency with processes is novel
+
+in fact MS facilitate many of the old unix principles on composing small service programs to conceive larger (possibly concurrent), complex functionality
 
 ~ begin old
 In a recent systemantic mapping study of research literature [@Als16], it was

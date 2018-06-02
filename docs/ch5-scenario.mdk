@@ -30,15 +30,15 @@ Search engines cause the illusion of being monolithic system, but are actually a
 Their constructing is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results, and the sole concern of the scientific discipline * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspect affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
 
 * Efficiency
-  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation one, such that the up-to-dateness of search results increases with the efficiency of this phase. 
+  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-dateness of search results increases with the efficiency of this phase. 
 
 ## Domain Description
 
-~ red
-TODO kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds
+~ todo
+kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds
 ~
 
 ## System Components

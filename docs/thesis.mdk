@@ -119,12 +119,24 @@ Epigraph {
   margin-bottom: 70px;
 }
 
+<!--
+Bibl { 
+  before: "# &name-references; { -; .heading-references; font-family: tex-cmd-sffamily }&nl;";
+}
+-->
+
+<!-- DOES NOT WORK -->
+.heading-references {
+  font-family: tex-cmd-sffamily
+}
+
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
   h1, h2, h3, h4, h5, h6, dt { 
     font-family: "tex-cmd-sffamily" 
   }
 }
+<!--Bibl { font-size: small }-->
 
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
@@ -141,10 +153,7 @@ Epigraph {
   before="[";
   after="]"
 }
-.todo { 
-  color: red; 
-}
-.important, .delete, .red {
+.todo, .important, .delete, .red {
   color:red
 }
 
