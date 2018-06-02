@@ -8,6 +8,9 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 
 This thesis has discussed the concepts of programming Actors and Microservices to conceive concurrent computation, and evaluated their common properties and capabilities. As a bottom line, we now want to argue for an application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
 
+As we've illustrated, both Actors and Microservices are qualified to express concurrent computation for both parallel execution on multicore processor as well as distributed computation as are for example cloud deployments. It has been suggested that programing models regarding parallel and distributed contexts should be evaluated based on their emphasize on two objectives: efficiency of
+execution, and expressiveness for programmers [@Kan12].
+
 ## The Case for Actors
 
 ~ red
@@ -21,6 +24,8 @@ This thesis has discussed the concepts of programming Actors and Microservices t
   * hier gibts es sicherlich neue Probleme. In den Publikationen vom Franz dürfte dazu einiges stehen! Der hat doch eh ein CORBA Paper zB geschrieben. Und welche das so Act. Obj. Typen teilweise statisch/teilweise dynamisch evaluiert werden.
 * [@Tas13] "Why do scala developers mix the actor model with other concurrency models?"
   * "This implies that developers tend to use other ways than remote actors for implementing distributed computations."
+* actors facilitate a good expressiveness for programmers in general. interface designs as with Akka ... sind super
+  * while still being able to achieve efficiency of execution
 ~
 
 
@@ -36,6 +41,8 @@ This thesis has discussed the concepts of programming Actors and Microservices t
 * Als Vorteil gegenüber Actors sollte ich herausheben, dass diese es erlauben "explicit" die communication ports zu beschreiben. entnommen aus:
   * [@Gui17] "Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
   * kann ich alternativ auch noch im outlook unten anbringen, wo ich den eh zitiere (die info fehlt jedenfalls noch!)
+* current approach to writing MS are bas in terms of expressiveness for programmers (too lose principles). A liguistic notion of Microservices definitely change this
+  * no clear connection between efficiency of execution and expressiveness
 ~
 
 ...Provide more freedom regarding communication, but at the price of requiring additional components, e.g. a service registry and message queue are demonstrated in Echo.

@@ -20,13 +20,15 @@ When talking about the practical application of the Actor model, it is importent
 ## Akka {#sec-akka}
 
 
-Akka [@Akka] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to the .NET ecosystem [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
+Akka [@Akka] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to other ecosystems such as .NET and JavaScript runtimes (through Scala.JS) [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
 Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16]. An archetype has been Erlangs style of Actors. 
 
 Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. 
 
-Akka replaces the default Actor implementation offered by Scala (we will refere to them as *Scala Actors* in contrast to *Akka Actors*) from version 2.10 upwards [citation needed]{.mind}. Among the reasons were their better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
+The Actor System offered by Akka is a lightweight execution environment based on workstealing thread-pools with local task queues which schedule the Actor execution [@Hal12].
+
+Akka replaces the default Actor implementation offered by Scala (we will refere to them as *Scala Actors* in contrast to *Akka Actors*) from version 2.10 upwards [@Hal12]. Among the reasons were their better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
 
 ~LitNote
 * Beschreiben, dass viele Actors existieren können, und diese ab und zu auf einem Thread innerhalb eines viel kleineren Thread Pools laufen. Threads sind teurer als Actors, daher viel weniger
@@ -41,7 +43,7 @@ Akka replaces the default Actor implementation offered by Scala (we will refere 
 ## Ensuring Isolation {#sec-ensuring-actor-isolation}
 
 
-While Actors encapsulate state conceptually, in practice their *full isolation*m that is no shared state at all, must be ensured. This is essential to guarantee safety properties [@Kos16]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
+While Actors encapsulate state conceptually, in practice their *full isolation* that is no shared state at all, must be ensured. This is essential to guarantee safety properties, respectively prevent data races and state modifications [@Hal12;@Kan12]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
 
 Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
@@ -73,7 +75,7 @@ public class Foo extends UntypedActor {
 
 Field `bar` in class `Foo`{language:java} has been given *external visibility* by declaring it to be `public`{language:java}. Thus it is part of any object of type `Foo`{language:java}s external interface and therefore influencing the objects encapsulation [@Kni96]. Because visibility and accessibility are orthogonal, `bar` is also accessible from outside the scope of `Foo`{language:java}, and - for it is not delared `final`{language:java} - may be modified the same way too. This violates Actor semantic requirements. 
 
-Any Java-based Actor implementation therefore faces the potential problem where custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like:
+Any Java-based Actor implementation therefore faces the potential problem where custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like [@Hal12]:
 
 ``` {language:java}
 final ActorRef foo = system.actorOf(Foo.props());
