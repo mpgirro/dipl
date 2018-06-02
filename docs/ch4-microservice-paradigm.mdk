@@ -190,7 +190,7 @@ Bonér [@Bon17] criticizes the term "micro" for it encourages debating the actua
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
-Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where Martin [citation?!]{.mind} introduced the so-called *Single Responsibility Principle* (SRP) for objects.
+Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where it is known as the *Single Responsibility Principle* (SRP) of objects [@Gui17].
 
 In the Microservice context however, authors do not refere to the SRP a lot. Instead, they tend to phrase it *bounded context* [@Dra17a;@Dra17c;@Maz16], by arguing that services should be an aggregation of functionality around a single business capability. This divergence of granularity is one of the major evolutionary changes from SOA to Microservices [@Mon16a;@Gui17].
 
@@ -198,40 +198,13 @@ However, to fine a granularity can become an issues. In a distributed setting, i
 
 ## Service-oriented Programming
 
-Until now, we've regarded Microservices in the light of a software architectural style. Within, the  building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has had a focus on the operation of the service engines, that is their *deployment* [@Gui17;@Xu16]. After all, the deployment context of MSA is the origin of its concurrent nature, that is independet processes of the OS or network. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
+Until now, Microservices have been regarded in the light of a software architectural style. Within, the building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has had a focus on the operation of the service engines, that is their *deployment* [@Gui17;@Xu16]. After all, the deployment context of MSA is the origin of its concurrent nature, that is independet processes of the OS or network. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
 
-Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Gui09;@Mon14] emerged. It builds upon the *Service-Oriented Commputing* (SOC) approach emphasized by SOA and subsequently Microservices, and introduces it into programming language design. ["services are the smallest programmable constructs" -> irgendwo gelesen und finde ich nicht mehr]{.red}
+Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Gui09;@Mon14] emerged. It builds upon the *Service-Oriented Commputing* (SOC) approach emphasized by SOA and subsequently Microservices, and introduces it into programming language design. 
 
-~LitNote
-* hier die basis für die spätere Diskussion zu Behavioural Types legen (die ich schon in der diskussion bei design by conract bringen will, ansatt erst in der Conclusion anteaser)
-* [@Gui17] "Microservices: a Language-based Approach"
-* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
-* [@Xu16] "CAOPLE : A Programming Language for Microservices SaaS"
-~
+Services become first-class entities of the language and are the smallest programmable constructs. Instead of a single executable artifact, such service-oriented programs compile into multiple executables, one for each of the service constructs in the source code. Initially the conception of SOP was an aiming for an evolutionary step from combining the object-oriented paradigm with SOA ideas to program distributed systems. When the Microservices principles finally distilled, it was found that compilation of SOP languages essentially produced Microservice Architectures. Thus, instead of the total technology freedom of the MS paradigm, SOP languages are a separate approach towards the Microservice style [@Mon14;@Gui17].
 
-
-...service as first-class entities [@Gui17]
-
-... instead of a single executable artifact, they compiled into multiple executables, one for each of the service constructs in the source code. 
-
-...When the Microservices principles finally distilled, it was found that compilation of SOP languages essentially produced Microservice Architectures. Thus, instead of the total technology freedom of the MS paradigm, SOP languages are a separate approach towards the Microservice style.
-
-...have to ensure well-defined and open interfaces to be able to interoperate with non SOP components
-
-...
-
-...The Microservice approach has gained much attention first in the industry and nowadays as well in the academic community. As such, many different research disciplines focus on incorporating the Microservice paradigm into their respective field [...]{.mind}.
-
-
-
-
-
-
-... for service composition is not [vorgegeben]{.mind} by dedicated abstractions [@Gui17].
-
-do not provide dedicated abstractions for service composition.
-
-...
+Multiple prototype languages facilitating the service-oriented programming concept exists. Two will merit attention here:
 
 * CAOPLE
   : One attempt of a service-oriented programming language is *CAOPLE* [@Xu16]. It's basic programming constructs are so-called *agents* (services), which provide a very strict notion of state encapsulation, autonomy and well-defined communication interfaces. Unlike traditional Microservices, these agents are directly executed by the host operating system, but are running on a dedicated virtual machine called *CAVM-2* instead, which is focusing on providing lightweight dynamic deployment of services compared to using container technology. Additionally, it is optimized for running large quantities of services in a lightweight manner, as well as abstracting network distribution.
@@ -243,6 +216,6 @@ do not provide dedicated abstractions for service composition.
     ~
   : The languages syntactic rules prevent any deployment expression (`D`{.pretty}) from being introduced into behavioral expressions (`B`{.pretty}) and vice versa. The only connection between behavior and deployment are the communication ports. They are abstractly used by the behavior, and concretely defined by the deployment. As such, behavior and deployment are complemental. As a scientific prototype language, it incorporates many interresting concepts. There is no notion of concurrency beyond the implicit from executing services as OS processes, and the `concurrent`{color:blue} primitve as one option for the so-called *execution modality*. In this case, upon receiving a message on a communication port, a Jolie service will spawn a dedicated process such that the behavior is executed in a separate local memory space (cf. the fork approach in the C processes case study), thus allowing concurrent message processing. Among other concepts, there is complex message routing supported through *correlation sets* and the facilitation of transparent delegation by the so-called *aggregation* primitive which extends a service's interface with the interfaces of other services.
 
-For Microservices share many similarities with objects in general [@Dra17a, 2ND?], such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16;@Sny93]. However, these mark also the most important difference to objects. The former facilitate information hiding and encapsulation in a *shared memory* scenario [anderes wort?!]{.red}, while the later solely rely on *message passing* [@Dra17a]. Besides this, advanced object-oriented concepts are also possible. For example, Jolie has static type checking for service interfaces [@Min17], and CAOPLE even supports polymorphism via an inheritance mechanism.
+For Microservices share many similarities with objects in general [@Dra17a], such service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16;@Sny93]. However, these mark also the most important difference to objects. The former facilitate information hiding and encapsulation in a *shared memory* scenario [anderes wort?!]{.red}, while the later solely rely on *message passing* [@Dra17a]. Besides this, advanced object-oriented concepts are also possible. For example, Jolie has static type checking for service interfaces [@Min17], and CAOPLE even supports polymorphism via an inheritance mechanism.
 
 
