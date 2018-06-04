@@ -6,7 +6,9 @@ The Actor Model {#ch-actor-model}
 Some problems are better evaded than solved.
 ~
 
+
 ## A Model of Computation {#sec-actor-primitives}
+
 
 ~LitNote
 * [@Agh85a] "ACTORS: A Model of Concurrent Computation in Distributed Systems"
@@ -46,11 +48,13 @@ Changing internal state within an Actor is realized through the third of the bas
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [@Agh14]. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
 
-Additionally, state can only be changed while processing a message. Therefore, as De Koster et al. illustrate in detail, the processing of a single message can be viewed as an isolated operation. This is important when reasoning about Actors, as it is done with respect to the single-threaded semantic which is providing the granularity of a turn[^fn-isolated-turn-principle] [@Kos16;@Ber14]. They call this *Isolated Turn Principle*. It guarantees that Actors are free of low-level data races (for only one message is processed at a time, and each message belongs to a single Actor), but high-level races (depending on the interleaving of messages within the mailbox) can still occure. It also guarantees computation progress with each turn [@Agh97], and thus liveness. 
+Additionally, state can only be changed while processing a message. Therefore, as De Koster et al. illustrate in detail, the processing of a single message can be viewed as an isolated operation. This is important when reasoning about Actors, as it is done with respect to the single-threaded semantic which is providing the granularity of a turn[^fn-isolated-turn-principle] [@Kos16;@Ber14]. They call this *Isolated Turn Principle*. It guarantees the safety of Actors, as they are free of low-level data races (for only one message is processed at a time, and each message belongs to a single Actor), but high-level races (depending on the interleaving of messages within the mailbox) can still occure. It also guarantees computation progress with each turn [@Agh97], and thus liveness. 
 
 [^fn-isolated-turn-principle]: In this context, *turn* is used to refere to the processing of a single message. Various terminilogies have been used for this over the decades. A good overview of Actor model taxonomy and the equivalence of various terms is given in [@Kos16].
 
+
 ## Unifying Abstraction
+
 
 <!--
 ## Unifying Concurrent, Parallel and Distributed Computation
@@ -84,7 +88,9 @@ The location transparent addresses allow for referencing Actors even outside the
 
 Thus, a particular characteristic of the Actor Model is its facilitation of one and the same primitive for task unit communication in concurrent, parallel and distributed execution contexts.
 
+
 ## Actor Systems {#sec-actor-systems}
+
 
 ~Todo
 Hier kann ich ein paar Systeme anteasern. zB die Erlang, die alten Scala Actors, (kurz Akka?), und Kilim
@@ -150,7 +156,38 @@ Some basic properties can be obererves across system implementations.
 * As already outlined, when multiple Actor sends messages to the same recipient, no order of messages in the mailbox is guaranteed. This is the reason for nondeterminism in the Actor model. Some Actor systems however tend to narrow down this property, by ensuring that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched [@AkkaMDR].
 * ..  
 
+---
+
+...
+
+Many different implementations of the Actor model, so-called *Actor Systems* have been ....
+
+...
+
+Properties of the Actor model that systems have to concern themselves with are:
+
+* State encapsulation, that is the conceptual model of state changes
+* Safe messaging, message processing + message reception
+* Fair scheduling
+* Location transparency
+* mobility
+* Distribution
+* 
+
+
+...
+
+Some notable variants of Actors are:
+
+*Erlang* [@Arm93;@Vin07] is a programming language dedicated to Actor-based programming, and is well-known for introducing the concept to industrial application [REF]{.red}. In contrast to most programming languages, an Erlang program has the main focus on the *processes* constructs (Actors), rather than e.g. objects or functions. It was designed to meet challenges like high concurrency, availability, fault-tolerance and live-upgrades [@Vin07;@Kos16].
+
+*Akka* [@Akka] is an Actor framework for the JVM, offering binding for the Java and Scala programming languages. It was highly inspired by Erlang and facilitates many of its conceptualities as well as meeting similar concerns like scalability, fault tolerance and remoting/distribution. As a library, it is faced with conceptual difficulties endangering the model semantic, which are typically avoided with dedicated ecosystems, as does for example Erlang and its virtual machine called BEAM. Chapter [#ch-actor-impl] will evaluate Akka in more detail. 
+
+*Orleans* [@Ber14] is a modern variant of *Active Objects*, an object-oriented interpretation of Actors. It has been constructed to meet the requirements of highly distributed deployment setups, currently refered to as *cloud computing*. Unlike Erlang, Akka and most other systems, its Actors are *virtual*, i.e. they are merely instantiated when addressed.
+
+
 ## Active Objects {#sec-active-objects}
+
 
 ~LitNote
 * [@Lav95] "Active Object -- An Object Behavioral Pattern for Concurrent Programming"
@@ -231,7 +268,9 @@ The Active Objects method signatures do not only provide a certain degree of sta
 
 The example above illustrates two of these behaviours of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 
 
+
 ## Combination with other Concurrency Abstractions {#sec-actor-concurrency-combination}
+
 
 ~LitNote
 * [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
@@ -254,7 +293,9 @@ Swalens et a. regard two concurrency models composable if their integration does
     * reduce readability, maintainability
 ~
 
+
 ### Futures
+
 
 ~LitNote
 * [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
@@ -263,11 +304,11 @@ Swalens et a. regard two concurrency models composable if their integration does
 
 The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of execution may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated. [irgendwas sollte ich hier zitieren]{.mind}
 
-However, in many cases the respective result is not required immediatelly by the subsequent computation. The control flow might continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13]. 
+In many cases the respective result is not required immediatelly by the subsequent computation. The control flow may continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13]. 
 
 The concept of such eventually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18]. The kind of evaluation order expressed by these concepts is sometimes refered to as *call-by-future* [@Bak77] or *call-by-need* [@Agh85a].
 
-Java and Scala, among others like C#, Dart, etc., have a special view on such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
+Some programing languages, among them Java and Scala, have a special view on such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
 
 [^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java} as is in Scala.
 
@@ -277,11 +318,13 @@ Though today all designations tend to be used interchangeably, and refere to rou
 used for async (remote) procedure calls; may be type safe as in Java/Scala (but was originally dynamically typed)
 ~
 
-There has been a long tradition of combining Actors with Futures. Agha describes that Actors are often used to model call-by-need computation [@Agh85a], which is essentially a Future. It can also be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. It will be demonstrated in subsequent examples.
+There has been a long tradition of combining Actors with Futures. Agha describes that Actors are often used to model call-by-need computation [@Agh85a], which is essentially a Future. It can also be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. Orleans uses Promise/Futures as the only form of method call for all Active Objects [@Ber14].  
 
 For a complete formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
 
+
 ### Software Transactional Memory
+
 
 ~LitNote
 * [@Sub11] demonstrates how Akka support STM together with Actors
