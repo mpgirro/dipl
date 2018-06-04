@@ -37,12 +37,6 @@ CSS Header   :
     color: #0000EE;  
   }
 
-.old     { color:gray }
-@if tex {
-  Old { .hidden }
-}
-
-
 .lit         { background-color: LightGray; padding: 1ex; }
 .todo, .red  { color:red }
 title        { font-weight: bold }
@@ -57,66 +51,204 @@ sect: &#167;
 # Motivation & Problem Statement { #ch-motivation }
 
 
-Efficient software has long been built upon the concept of concurrent execution. Many different approaches and notions have been proposed and implemented in order to conceive it. Generally, they can be classified into two groups [@And83]. The first is based on mutually shared state between concurrent activities. *Threads* are a prominent example. To ensure exclusive modification of the shared state at a time, a kind of access control has to be respected which is referred to as *synchronization*.
+Efficient software has long been built upon the concept of concurrent execution.
+Many different approaches and notions have been proposed and implemented in
+order to conceive it. Generally, they can be classified into two groups
+[@And83]. The first is based on mutually shared state between concurrent
+activities. *Threads* are a prominent example. To ensure exclusive modification
+of the shared state at a time, a kind of access control has to be respected
+which is referred to as *synchronization*.
 
-The other group refrains from utilizing such mutual shared state, and instead depends on *message passing* to exchange information, thus omitting the need for synchronization. One representative of the second approach is the *Actor Model of Computation* [@Hew73]. The special appeal of its *Actor* abstraction is that such are qualified to conceive fine-grained parallel execution as well as distributed processing, which is coarser grained in general [@Kos16]. As these concerns become more and more relevant due to the steady rise of multicore processors, as well as the inherently distributed context of cloud computing, they merit increased attention [@Kan12].
+The other group refrains from utilizing such mutual shared state, and instead
+depends on *message passing* to exchange information, thus omitting the need for
+synchronization. One representative of the second approach is the 
+*Actor Model of Computation* [@Hew73]. The special appeal of its *Actor* 
+abstraction is that such are qualified to conceive fine-grained parallel execution 
+as well as distributed processing, which is coarser grained in general [@Kos16]. 
+As these concerns become more and more relevant due to the steady rise of multicore
+processors, as well as the inherently distributed context of cloud computing, they 
+merit increased attention [@Kan12].
 
-Another recent trend to meet these concerns has emerged a new software architectural style called *Microservice Architecture* (MSA) [@Fow14]. Instead of relying on large-scale monolithic programs, which are usually highly structured in a concurrent fashion internally but limit certain aspects of scalability, the new style instead is based on constructs called *Microservices*. Such are relatively small, independent programs refraining from utilizing shared memory sections among them and instead communicating via lightweight message passing channels, e.g. HTTP-based state transfer (REST) or message queues that do not employ complex logic on their own. They are an evolutionary phenomenon emerging from the so-called *Service-Oriented Architecture* (SOA) trend of the last decade, to better meet the same requirements that Actors can inherently meet, i.e. utilize the benefits of parallel hardware and distributed deployment setups to improve scalability [@Dra17a]. 
+Another recent trend to meet these concerns has emerged a new software
+architectural style called *Microservice Architecture* (MSA) [@Fow14]. Instead
+of relying on large-scale monolithic programs, which are usually highly
+structured in a concurrent fashion internally but limit certain aspects of
+scalability, the new style instead is based on constructs called
+*Microservices*. Such are relatively small, independent programs refraining from
+utilizing shared memory sections among them and instead communicating via
+lightweight message passing channels, e.g. HTTP-based state transfer (REST) or
+message queues that do not employ complex logic on their own. They are an
+evolutionary phenomenon emerging from the so-called *Service-Oriented
+Architecture* (SOA) trend of the last decade, to better meet the same
+requirements that Actors can inherently meet, i.e. utilize the benefits of
+parallel hardware and distributed deployment setups to improve scalability
+[@Dra17a]. 
 
-Conceptually, Microservices introduce a notion of concurrency into their system architectures, as their basic abstractions are processes getting concurrently executed through the operating system scheduler. Little has been written about the interrelations of Microservice design principles to conceptually related such as object-orientation, though is has been pointed out that such exists [@Dra17a]. To our knowledge, no structured comparison to Actors, which can be seen as an interpretation of objects in their most original notion [@Kos16], has been done yet.  
+Conceptually, Microservices introduce a notion of concurrency into their system
+architectures, as their basic abstractions are processes getting concurrently
+executed through the operating system scheduler. Little has been written about
+the interrelations of Microservice design principles to conceptually related
+such as object-orientation, though is has been pointed out that such exists
+[@Dra17a]. To our knowledge, no structured comparison to Actors, which can be
+seen as an interpretation of objects in their most original notion [@Kos16], has
+been done yet.  
 
-As Actors and Microservices seem to follow mutual concepts as well as meet similar concerns, we formulate the following research question, which we deem worthy of dedicating the thesis to:
+As Actors and Microservices seem to follow mutual concepts as well as meet
+similar concerns, we formulate the following research question, which we deem
+worthy of dedicating the thesis to:
 
-> **RQ**: How is the Actor model comparing against the Microservice paradigm with regard to the scenario of a concurrent search engine?
+> **RQ**: How is the Actor model comparing against the Microservice paradigm
+with regard to the scenario of a concurrent search engine?
 
-A search engine as the scenario application offers many opportunities to evaluate the conception of concurrent execution, as such engines are expected to perform in an efficient way, thus concurrent considerations are indispensable.
+A search engine as the scenario application offers many opportunities to
+evaluate the conception of concurrent execution, as such engines are expected to
+perform in an efficient way, thus concurrent considerations are indispensable.
 
 
 # Expected Results { #ch-results }
 
 
-The expected result of this thesis will be a conceptual evaluation between Actors and Microservices, relative to an exemplary concurrent system, a domain specific search engine respectively, as is stated in the given research question.  
+The expected result of this thesis will be a conceptual evaluation between
+Actors and Microservices, relative to an exemplary concurrent system, a domain
+specific search engine respectively, as is stated in the given research
+question.  
 
-The author expects that Actors and Microservices will be found to address the same concerns regarding concurrent issues in general. Thought the two approaches appear rather divergent at first glance due to the different levels of conception (light-weight programming constructs vs. heavy-weight system processes), they are perusing rather similar ideas.
+The author expects that Actors and Microservices will be found to address the
+same concerns regarding concurrent issues in general. Thought the two approaches
+appear rather divergent at first glance due to the different levels of
+conception (light-weight programming constructs vs. heavy-weight system
+processes), they are perusing rather similar ideas.
 
-While Actors are theoretically well-founded, and implementations unfold on decades of related research, Microservices are a new approach which build upon many rather old and also well known principles (object-orientation, SOA, Unix principles). Thus, Microservices are a result of evolutionary necessity due to the emergent requirements of manycore and cloud deployments, while they are expected to be found to suffer from a lack of a theoretical framework. 
+While Actors are theoretically well-founded, and implementations unfold on
+decades of related research, Microservices are a new approach which build upon
+many rather old and also well known principles (object-orientation, SOA, Unix
+principles). Thus, Microservices are a result of evolutionary necessity due to
+the emergent requirements of manycore and cloud deployments, while they are
+expected to be found to suffer from a lack of a theoretical framework. 
 
-The Actor model on the other hand provides such a framework, while still being able to incorporate additional concepts and concerns into their abstraction as long as they do not break the model semantic. Additionally, they have been integrated into programming languages and library constructs, such that Actor-based computation can be introduced with relative ease compared to MSA, which makes them an attractive option. 
+The Actor model on the other hand provides such a framework, while still being
+able to incorporate additional concepts and concerns into their abstraction as
+long as they do not break the model semantic. Additionally, they have been
+integrated into programming languages and library constructs, such that
+Actor-based computation can be introduced with relative ease compared to MSA,
+which makes them an attractive option. 
 
-This raises the question why the Microservice approach has become such popular both academic and industrial. The author suspects that developers grasp for easier to understand concurrency in their architectures and MSA inherently provide them with as well as force them to a good and strong *separation of concerns*, as Actor solutions still tend to demand attention on and compliance to conventions regarding the respective programming paradigm in order to ensure a valid model semantic (e.g. ensuring isolation, avoid data races, etc.). Thus, Microservices result in an easier to understand conception of concurrent execution by a stronger isolation of components in their application architectures.
+This raises the question why the Microservice approach has become such popular
+both academic and industrial. The author suspects that developers grasp for
+easier to understand concurrency in their architectures and MSA inherently
+provide them with as well as force them to a good and strong *separation of
+concerns*, as Actor solutions still tend to demand attention on and compliance
+to conventions regarding the respective programming paradigm in order to ensure
+a valid model semantic (e.g. ensuring isolation, avoid data races, etc.). Thus,
+Microservices result in an easier to understand conception of concurrent
+execution by a stronger isolation of components in their application
+architectures.
 
-Therefore, the author expects that a general shift in the notion of Microservices from a deployment focus towards a linguistic conception is in order, as is a current subject of scientific exploration, such that this structuring becomes widely available on the programming language level too.
+Therefore, the author expects that a general shift in the notion of
+Microservices from a deployment focus towards a linguistic conception is in
+order, as is a current subject of scientific exploration, such that this
+structuring becomes widely available on the programming language level too.
 
 &pagebreak;
 
 # Methodology and Approach { #ch-methodology }
 
 
-The methodology used to answer the given research questions outlined in &sect; 
+The methodology used to answer the given research questions outlined in &sect;
 [#ch-motivation] comprises the following steps:
 
-1. Literature review is used to identify conceptual connections between Actors and Microservices.
-2. The definition of the concurrent system scenario, i.e. outlines of the solutions to the search engine example based on Actor and Microservice architectures. Only concerns regarding the improvement of efficiency through concurrent execution are relevant. Effectiveness (quality of search results) considerations do not merit attention.
-3. Implementation of the scenario, once with an Actor-based approach, and once with a Microservice-based approach.
-4. Evaluation of both approaches from a conceptual perspective, such that the RQ can be adequately answered.
+1. Literature review is used to identify conceptual connections between Actors 
+   and Microservices.
+2. The definition of the concurrent system scenario, i.e. outlines of the 
+   solutions to the search engine example based on Actor and Microservice 
+   architectures. Only concerns regarding the improvement of efficiency through 
+   concurrent execution are relevant. Effectiveness (quality of search results) 
+   considerations do not merit attention.
+3. Implementation of the scenario, once with an Actor-based approach, and once
+   with a Microservice-based approach.
+4. Evaluation of both approaches from a conceptual perspective, such that the 
+   RQ can be adequately answered.
 
-For the implementations, two technologies have to be chosen. For the Actor-based implementation, we propose Akka [@Akka], as it is based on well-founded theoretical concepts, as well as being a matured framework, as is proven by the fact that Akka provides the current standard Actor library for Scala. For the Microservice-based implementation, the Spring framework family provides a good application foundation as well as the Spring Cloud modules, which have been proven to be well-suited for Microservice conception [@Car17]. Thus, both implementations will have the JVM as their target platform, such that evaluation can merit special attention to ecosystem-related conceptual complications.
+For the implementations, two technologies have to be chosen. For the Actor-based
+implementation, we propose Akka [@Akka], as it is based on well-founded
+theoretical concepts, as well as being a matured framework, as is proven by the
+fact that Akka provides the current standard Actor library for Scala. For the
+Microservice-based implementation, the Spring framework family provides a good
+application foundation as well as the Spring Cloud modules, which have been
+proven to be well-suited for Microservice conception [@Car17]. Thus, both
+implementations will have the JVM as their target platform, such that evaluation
+can merit special attention to ecosystem-related conceptual complications.
 
 
 # State of the Art { #ch-sota }
 
 
-Over the decades, many concepts have been proposed to express concurrent computation utilizing isolated components interacting via message passing. The Actor model is undoubtedly among the oldest and well know, as it has a long history of academic attention as well as having been integrated into industrial technologies. Most notably is probably the *Erlang* programming language, which was the first to bring the Actor model to wider industrial application. In contrast to most programming languages, an Erlang program has the main focus on the *processes* (Actors), rather than e.g. objects or functions. It was designed for key challenges like high concurrency and availability, fault-tolerance and live-upgrades [@Vin07;@Kos16], similar to the needs that lead to the microservice architecture style [@Dra17a]. Therefore, an idiomatic Erlang program has remarkable similarities with a MSA.
+Over the decades, many concepts have been proposed to express concurrent
+computation utilizing isolated components interacting via message passing. The
+Actor model is undoubtedly among the oldest and well know, as it has a long
+history of academic attention as well as having been integrated into industrial
+technologies. Most notably is probably the *Erlang* programming language, which
+was the first to bring the Actor model to wider industrial application. In
+contrast to most programming languages, an Erlang program has the main focus on
+the *processes* (Actors), rather than e.g. objects or functions. It was designed
+for key challenges like high concurrency and availability, fault-tolerance and
+live-upgrades [@Vin07;@Kos16], similar to the needs that lead to the
+microservice architecture style [@Dra17a]. Therefore, an idiomatic Erlang
+program has remarkable similarities with a MSA.
 
-*Akka* [@Akka] is an Actor framework for the JVM, offering binding for the Java and Scala programming languages. It was highly inspired by Erlang and facilitates many of its conceptualities as well as meeting similar concerns like scalability, fault tolerance and remoting/distribution. Due to the effectiveness of the offered Actor runtime, as well as the conceptual design in order to avoid many of the pitfalls of the JVM endangering the model requirements (encapsulation, avoidance of shared state, single-threaded semantic inside Actors), it has replaced the standard Scala Actor library in Scala version 2.10 [@Hal12].
+*Akka* [@Akka] is an Actor framework for the JVM, offering binding for the Java
+and Scala programming languages. It was highly inspired by Erlang and
+facilitates many of its conceptualities as well as meeting similar concerns like
+scalability, fault tolerance and remoting/distribution. Due to the effectiveness
+of the offered Actor runtime, as well as the conceptual design in order to avoid
+many of the pitfalls of the JVM endangering the model requirements
+(encapsulation, avoidance of shared state, single-threaded semantic inside
+Actors), it has replaced the standard Scala Actor library in Scala version 2.10
+[@Hal12].
 
-*Orleans* [@Ber14] is a modern variant of *Active Objects*, an object-oriented interpretation of Actors. It is specially designed to embrace the application in a cloud scenario, that is highly distributed deployment setups. Unlike Erlang and Akka, it does not rely on the concept of *supervision* for fault tolerance, e.g. exception handling, as an Orleans Actor is merely virtual and re-instantiated only when invocated.
+*Orleans* [@Ber14] is a modern variant of *Active Objects*, an object-oriented
+interpretation of Actors. It is specially designed to embrace the application in
+a cloud scenario, that is highly distributed deployment setups. Unlike Erlang
+and Akka, it does not rely on the concept of *supervision* for fault tolerance,
+e.g. exception handling, as an Orleans Actor is merely virtual and
+re-instantiated only when invocated.
 
-On the other hand, there is not only progress in concurrency evolution. Another trend towards utilizing the benefits of parallel hardware and distributed deployment setups is the Microservice approach to system conception that was motivated in &sect; [#ch-motivation]. It has many conceptual roots in Service-Oriented Architectures (SOA) in general but integrates ideas closer to more fine grained programming concepts like object-orientation and many of the Unix design principles in fact [@Fow14]. SOA can be considered the "first generation" of services, providing benefits like dynamism, modularity, distributed development and the integration of heterogenous and legacy systems. Microservices can be considered "second generation" services, and therefore an evolution of SOA, where each service is being developed with the focus on one single functionality of business logic, and all unnecessary levels of complexity are being consequently removed and outsources to other dedicated services [@Dra17a].
+On the other hand, there is not only progress in concurrency evolution. Another
+trend towards utilizing the benefits of parallel hardware and distributed
+deployment setups is the Microservice approach to system conception that was
+motivated in &sect; [#ch-motivation]. It has many conceptual roots in
+Service-Oriented Architectures (SOA) in general but integrates ideas closer to
+more fine grained programming concepts like object-orientation and many of the
+Unix design principles in fact [@Fow14]. SOA can be considered the "first
+generation" of services, providing benefits like dynamism, modularity,
+distributed development and the integration of heterogenous and legacy systems.
+Microservices can be considered "second generation" services, and therefore an
+evolution of SOA, where each service is being developed with the focus on one
+single functionality of business logic, and all unnecessary levels of complexity
+are being consequently removed and outsources to other dedicated services
+[@Dra17a].
 
-While the popular approach to Microservices at the moment is led by a deployment centered perspective, i.e. the services are conceived in arbitrary matter merely lead by rather loose design principles, and the focus is on their integration at runtime, more theoretically well-founded approaches are topic of current research as well. The *Jolie* programming language calls itself the first of the kind of *Service-Oriented Programming* paradigm [@Mon14]. Originating in the pre-Mircoservice era, it builds upon the SOA concept of service *orchestration*, meaning the behavioral composition of services. Jolie's primary focus is the concept of the *service* as the basic building blocks, therefore each idiomatic Jolie program defines at least one such. A service is a composition of a *behavior* and a *deployment*. The behavior implements the functionality of the service. However, no communication with the service is defined inside the behavior. This is part of the deployment, where so-called *communication ports* regulate the access functionality the service offers.
+While the popular approach to Microservices at the moment is led by a deployment
+centered perspective, i.e. the services are conceived in arbitrary matter merely
+lead by rather loose design principles, and the focus is on their integration at
+runtime, more theoretically well-founded approaches are topic of current
+research as well. The *Jolie* programming language calls itself the first of the
+kind of *Service-Oriented Programming* paradigm [@Mon14]. Originating in the
+pre-Mircoservice era, it builds upon the SOA concept of service *orchestration*,
+meaning the behavioral composition of services. Jolie's primary focus is the
+concept of the *service* as the basic building blocks, therefore each idiomatic
+Jolie program defines at least one such. A service is a composition of a
+*behavior* and a *deployment*. The behavior implements the functionality of the
+service. However, no communication with the service is defined inside the
+behavior. This is part of the deployment, where so-called *communication ports*
+regulate the access functionality the service offers.
 
-Jolie is a prototype language where each component is essentially a Microservice. Therefore, from a theoretical point of view, Jolie is a valuable proof of concept that the Microservice concept can make its way into fundamental language constructs of programming languages [@Gui17], in the same way Actors have. Subsequently, Jolie has no more explicit concurrency notion than Actors have, as it is an inherent property. 
+Jolie is a prototype language where each component is essentially a
+Microservice. Therefore, from a theoretical point of view, Jolie is a valuable
+proof of concept that the Microservice concept can make its way into fundamental
+language constructs of programming languages [@Gui17], in the same way Actors
+have. Subsequently, Jolie has no more explicit concurrency notion than Actors
+have, as it is an inherent property. 
 
 
 # Relevance to the Curriculum { #ch-relevance }
@@ -136,9 +268,9 @@ make the intended connections of this work between microservices architectures
 and concurrent programming paradigms.
 
 Additionally, in the authors seminar works he already discussed related topics
-(multicore programming in JVM languages, e.g. Actors, as well as cloud management frameworks
-- often used to manage Microservice applications), providing valuable
-precognition for this work.
+(multicore programming in JVM languages, e.g. Actors, as well as cloud
+management frameworks - often used to manage Microservice applications),
+providing valuable precognition for this work.
 
 Finally, a complete list of all relevant courses, from the authors bachelors
 curricula and the master curricula, is given in alphabetical order:
