@@ -89,7 +89,7 @@ The location transparent addresses allow for referencing Actors even outside the
 Thus, a particular characteristic of the Actor Model is its facilitation of one and the same primitive for task unit communication in concurrent, parallel and distributed execution contexts.
 
 
-## Actor Systems {#sec-actor-systems}
+## Actor Systems and Variations {#sec-actor-systems}
 
 
 ~Todo

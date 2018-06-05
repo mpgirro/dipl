@@ -241,7 +241,7 @@ Microservices on the other hand are concurrent distributed processes. There noti
 Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, locking and synchronization as demonstrated in the concurrency in Java case study might have to be dealt with. However, the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. As a result, linguistic approaches to SOC migth try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatch dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
 
 
-### Fair scheduling
+### Fairness
 
 
 Actors and Microservices represent concurrent building blocks of equal status in their respective architectiures. Due to our uniform view on concurrent execution, that is regardless of quasi-simultanious on a single processor, truely parallel on multiple CPUs and distributed among host machines, it is important to reason about the chances to make even progress [@Bus90]. This property is called *fairness* and is closely related to the liveness of concurrent programs and systems, i.e. to avoid starvation [@Agh85a;@Agh99].
@@ -250,7 +250,9 @@ Actors are entities inside an Actor System. As such, their scheduling is the res
 
 This has one major benefit. If an Actor's mailbox is empty, it is therefore not necessary for the system to invoke it, for there is nothing to do for it. This way, an Actor system can greatly reduce processing resource consumption [citation?]{.mind}.
 
-For Microservices on the other hand, scheduling itself is a nonconcern. Any MSA is a composition of concurrent distributed processes, and as such their scheduling is delegated to the operating system(s) these processes are running on. The OS's *scheduling policy* is therefore what effects the liveness of any process [@Bac03]. There is one drawback to the lack of scheduling influence in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any task unit will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are then simply a waste of energy [hab ich da was zu energy consumption?]{.mind}.
+For Microservices on the other hand, scheduling itself is a nonconcern. Any MSA is a composition of concurrent distributed processes, and as such their scheduling is delegated to the operating system(s) these processes are running on, respectively it's *scheduling policy* [@Bac03]. Thus we cannot make any specific assumption on execution rates, but require them to be positive. This *finite progress assumption* [@And83] is the foundation of liveness for any Microservice.
+
+There is one drawback to the lack of scheduling influence in MSA's however. The architecture cannot influence the resource consumption based on a services actual demand. An operating system will always allocate resources towards a process, and thus any task unit will always stress its hosts processing power on a regular basis, at least to a small amount. This is true even when the service is neither requested nor has active behavior of its own to execute. Such process activations are then simply a waste of energy [hab ich da was zu energy consumption?]{.mind}.
 
 
 ## Distribution
@@ -539,16 +541,16 @@ In general, we deem the concerns related to dynamic reconfiguration more easily 
 Das hier muss ich ganz generell auf etwas Literatur fundieren. Habe ich hier etwas das zusammen passt?
 ~
 
-A result of the dynamic reconfiguration property is that Actor or Microservice Architectures are also open for extension. This characteristic of extensibility is especially often discussed for Microservices [ref1,ref2,ref3]. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, extensibility referes to the introduction of either new versions of existing task units (update) or new units completely (addition). For updates of previous version, special care has to be taken into account, which will be the concern of § [#sec-design-by-contract]. 
+A result of the dynamic reconfiguration property is that Actor or Microservice Architectures are also open for extension. This characteristic of extensibility is especially often discussed for Microservices [REF1,REF2,REF3]{.red}. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* in order to refere to the introduction of either new versions of existing task units (update) or new units completely (addition). For updates of previous version, special care has to be taken into account, which will be the concern of § [#sec-design-by-contract]. 
 
-There are two different kinds of extensibility [@Agh85a]:
+There are two different kinds of extensibility [@Agh85a;@Bac03]:
 
-* static, such that the architecture's code is adapted and then (at least partially) redeployed
+* static, such that the architecture's code is adapted, recompiled and then (at least partially) redeployed
 * dynamic, whereat a new component is added to the architecture at runtime
 
 Independent deployment capability of each single service engine allows to simply add new components at runtime. This does not impact existing services, as these do not yet have a notion of the new component. New services can simply consume existing services. Gradual updating old services then allows to integrate any new component deeper into the architecture, such that it will also be consumed [@Mon16a].
 
-Actors are faced with more challenges. An Actor requires an Actor System to exist within. As a result, any introduction of a new Actor requires the restart of the system, as all Actors defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However in a clustered Akka setup, it is not required to introduce a new component into all Actor System nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed.    
+Actors are faced with more challenges. An Actor requires an Actor System to exist within. Erlang and its runtime system were tailored to support Actors, thus the *BEAM* virtual machine supports code loading and replacement for live upgrades [@Vin07]. The JVM does not support similar features, and therefore Akka requires the restart of the system to introduce a new Actor, as all Actors are defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However, in a clustered Akka setup it is not required to introduce a new component into all Actor System nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed.    
 
 Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming language, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
 
@@ -699,6 +701,15 @@ Single Responsibility:
 Thus, in general we've found Actors to provide an easier abstraction to facilitate single responsibility, for the model primitive allowing to spawn new Actors on demand encourages the outsourcing of responsibility into dedicated Actors. A good example are the dynamically created response handler Actors for each search request that wait on an asynchronous response substituting for a `Searcher`.
 
 Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
+
+
+## Eventual Consistency
+
+
+~ lit 
+* <https://martinfowler.com/articles/microservice-trade-offs.html>
+    * "Maintaining strong consistency is extremely difficult for a distributed system, which means everyone has to manage eventual consistency."
+~
 
 
 ## Testability
