@@ -35,7 +35,7 @@ Baeten [@Bae05] gives a general definition:
 ~ end red
 
 
-## Foundational Issues
+## Foundational Issues {#sec-foundational-issues}
 
 
 ~lit
@@ -46,7 +46,7 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
 
 ---
 
-First of all, concurrent execution has to be *indicated*. Various abstractions have been proposed, and some of them will be discussed in due course. All of them are required to provide the possibility to express as well as manage task units [@Bac03]. [FÄLLT MIR HIER NOCH EIN SATZ EIN? ODER ZWEI?]{.red}
+First of all, concurrent execution has to be *indicated*. Various abstractions have been proposed, and some of them will be discussed in due course. All of them are required to provide the possibility to define as well as manage task units [@Bac03]. Examples are channels, coroutines, fork and joins, futures and threads. [FÄLLT MIR HIER NOCH EIN SATZ EIN? ODER ZWEI?]{.red}
 
 ---
 
@@ -145,7 +145,7 @@ We've found the role of *deadlocks* (blocking operations which for some reason d
 ### Language-Construct Approach {#sec-concurrency-language-level}
 
 
-Many different approaches to explicitely express concurrent computation on a programming language level have been proposed and used over the decades. Among them are channels, coroutines, fork and joins, futures and threads, as well as many more, which may generally be added to a particular language via libraries or frameworks [@Ben90]. As the remainder of this thesis will rely on Java and its virtual machine, a brief discussion of its basic approach towards concurrency is in order.   
+Many different approaches to explicitely express concurrent computation on a programming language level have been proposed and used over the decades. Such are regarded with the indication issue of concurrency and therefore relate to the examples given in [#sec-foundational-issues]. If not part of a language by design, they may generally be utilized via libraries or frameworks [@Ben90], such that in some way or another most concurrent task abstractions are available in most programming languages. As the remainder of this thesis will be in the context of Java and its virtual machine, a brief discussion of its basic approach towards concurrency is in order.   
 
 
 #### Case Study: Concurrency in Java
@@ -185,7 +185,7 @@ Expressing concurrency on the programming language level has its perils due to t
 
 The *process* is a concept for the computational model used by operating systems. It describes the instantiation of a program image, which has associated *resources* such as memory. Processes are used to express dynamic execution. In the most basic case, for which they have been historically conceived, these computational units are alternately executed on a single processor. This activation and passivation is called *scheduling* and the responsibility of the operating system. It results in a quasi-parallel execution of active processes. If multiple processors are utilized, it is truely parallel [@Bac03;@Fel90]. Thus, processes are inherently concurrent units due to their execution modality.
 
-In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07].
+In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of message passing communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. As operating system conceived concurrent tasks relying on IPC will be regarded with extended focus in due course, a consolidating example for future reference is in order.
 
 [^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as was mentioned. Thus, often the communication between concurrent units is called *inter-process communication* in the literature. To avoid confusion, this thesis uses *IPC* only for message passing communication mechanisms between OS processes.
 
