@@ -80,7 +80,7 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 [img-task-units]: graphics/task-units.[ps,svg,png] "Image about Task Units and Information Flow" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are given involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are discussed involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
 ...
 

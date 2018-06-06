@@ -414,3 +414,11 @@ Hierzu die Akka-Doku zitieren? Oder hab ich das in einem buch schon stehen? <htt
 * Cluster / Remoting of Akka, built in discovery system among nodes  
 * Cluster Singleton required by Updater, Cluster Sharding
 ~
+
+The capabilities of the Actor model to support distribution was first described by Agha [REF-diss]{.red}, and since it was introduced in many variants of Actors [REF1, REF2, REF3]{.red}. 
+
+...Erlang auch sehr wichtig
+
+...die Erlang deutung auch sehr viel in Akka drinnen
+
+...wichtig das die mechanismen die lokal für actos gehen auch verteil gelten 

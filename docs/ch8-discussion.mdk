@@ -552,7 +552,7 @@ Independent deployment capability of each single service engine allows to simply
 
 Actors are faced with more challenges. An Actor requires an Actor System to exist within. Erlang and its runtime system were tailored to support Actors, thus the *BEAM* virtual machine supports code loading and replacement for live upgrades [@Vin07]. The JVM does not support similar features, and therefore Akka requires the restart of the system to introduce a new Actor, as all Actors are defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However, in a clustered Akka setup it is not required to introduce a new component into all Actor System nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed.    
 
-Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming language, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
+Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming languages, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
 
 The strong memory boundries and open communication interfaces of Microservice provide a whole different level flexibility. Any service may be conceived using any programming language and technology desired, as long as such are able to interact with the communication channels.
 
@@ -709,6 +709,10 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 ~ lit 
 * <https://martinfowler.com/articles/microservice-trade-offs.html>
     * "Maintaining strong consistency is extremely difficult for a distributed system, which means everyone has to manage eventual consistency."
+~
+
+~ todo
+Hier ist noch nicht entschieden ob dieses Unterkapitel vorhanden bleibt. Sowohl Actors als auch Microservices unterliegen Evential Consistency inherent. Wie ausführlich ist es wert dies zu besprechen?
 ~
 
 
