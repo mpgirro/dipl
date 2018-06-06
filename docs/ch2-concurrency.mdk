@@ -58,57 +58,33 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
 ## Concurrency, Parallelism and Distribution
 
 
-So far, concurrency has been discussed as a generic term denoting a simultanious execution of activities. Yet there are more diverse notions regarding how concurrent execution is implemented. 
+So far, concurrency has been discussed as a generic term denoting a simultanious execution of activities. Yet there are more diverse notions regarding how concurrent execution is implemented. Strict distinction in terminology is therefore in order. *Concurrency* referes to the multiplexing of multiple tasks among one or more processors. No more specific assumptions can be made in general. On a single CPU, such interleaving of computation is merely pseudo-simultanious achieved via time slicing, as all computation is still sequential [@Roe15].
+
+
+*Parallelism* referes to truely simultaneous execution on different CPUs. If such parallel execution is possible depends on the used concurrency abstraction and its implementation [@Bac03]. On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code, e.g. when using shared state communication. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join* framework, can be painful and requires to explicitly prepare code segments that are ment to be and data that can be proccessed in parallel [@Lea00].
 
 ...
-
-
-On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
-
----
-
-~Lit
-* [@Ben90]
-    * "We distinguish between nodes and processes: A node is intended to represent a physically identifiable object like a computer, while the individual computers may be running multiple processes, either by sharing a single processor or on multiple processors. We assume that the internal synchronization among processes in a node is accomplished using shared-memory primitives, while processes in different nodes can communicate only by sending and receiving messages"
-~
-
-...
-
-~LitNote
-* [@Roe15] "Whereas parallelization is all about executing processes simultaneously, concur-rency concerns itself with defining processes that can function simultaneously, or can overlap in time, but don’t necessarily need to run simultaneously. A concurrent system is not by definition a parallel system. Concurrent processes can, for example, be exe-cuted on one CPU through the use of time slicing, where every process gets a certain amount of time to run on the CPU, one after another."
-*  A historically denotion has been *multiprogramming* when multiple tasks are multiplexed among the processor(s), and *multiprocessing* when tasks truely parallel on multiple CPUs [@And83].
-~
-
-...
-
-* siehe [@Bus90], ch 1.1.2
 
 Distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]:
 
 > "In a parallel computation some actions overlap in time; by implication these events must be distributed in space."
 
-The major differences to parallel execution is that the task units cannot not share main memory [@Bus90] and ...
+This suggest that parallel tasks are also distributed tasks. The major distinction is that distributed task units cannot not share main memory [@Bus90] and therefore always have to rely on message passing communication over the network. Of course, this can be used to create network abstractions for shared memory, so-called *spaces*, e.g. by using the *Linda* model [@Ben90].
 
-
-~Todo
-define difference between process and node
-~
+Due to this physical separation, different locations, that is host machines, do exist where tasks are being executed. In general, these will be refered to as *nodes* [@Ben90]. A single node may have one or more processors, and which one or more tasks are being executed concurrently in general, and in the case of multiple CPUs possibly also parallel.
 
 ...
+
+The fundamental observations are:
+
+* A concurrent system is not a parallel system in general, but it can be.
+* A distributed system with two or more nodes is a parallel system. 
+* Parallel and distributed systems are always concurrent.
+
 
 ~Todo
 Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
 ~
-
-...
-
-**Distinguishing concurrent programs and concurrent systems**:
-
-* siehe [@Bus90], ch 1.1.3
-
----
-
-Thus, parallel and distributed execution are forms of concurrent execution, and concurrency may or may not occur in a parallel or distributed manner. The concrete nature of the concurrent execution depends on the realization used. Different abstractions used to conceive concurrent computation may 
 
 
 ## Correctness Properties
@@ -226,6 +202,8 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
 
 
 ~ LitNote
+* [@Bac03] "Operating Systems: concurrent and distributed software design"
+    * 1.3.7 Network-based systems
 * "implicit concurrency" [@Bus90]
 * "Distributed is truely concurrent"
     * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
