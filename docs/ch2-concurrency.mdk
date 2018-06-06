@@ -18,44 +18,21 @@ What matters for simplicity is that there's no interleaving.
 * [@Fel90] "Language and System Support for Concurrent Programming"
 * [@Bac03] "Operating Systems: concurrent and distributed software design"
 * [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
-* siehe [@But14] zu den 4 Teilen:
-  * Bit-Level Parallelism
-  * Instruction-Level Parallelism
-  * Data Parallelism
-  * Task_level Parallelism (das ist das für mich wichtige)
-    * hier wird zwischen Shared-memory und Distributed-memory unterschieden, mit guter Erklärung
 * [@And83] "Concepts and Notations for Concurrent Programming"
+* [@Ben90] "Principles of concurrent and distributed programming"
 ~
 
-Computation can be viewed and expressed in a most basic form as the sequential execution of instructions. Such activities are called *sequential*. Under certain conditions [welche wären das? will ich das nicht lieber anders schreiben?]{.mind}, given two or more sequential activities can be executed either pseudo simultaniously (in alternation on one single processing unit) or truely simultaneously (on multiple processing units). We call this characteristic *concurrency*. 
+Computation is conceived through the execution of instructions. Such activities are called *sequential*, if their list of atomic statements are executed in a sequential manner. Given two or more sequential activities are executed either pseudo-simultaniously (in alternation on one single processing unit) or truely simultaneously (on multiple processing units), they are interleaving and thus called *concurrent*. This interleaving weakens the total ordering from sequential actions to a merely partial ordering, thus concurrency is *nondeterministic*. Multiple invocations on the same input may result in different outputs in general [@Ben90;@Bus90].
 
-[@Ben90; @And83; @Bus90; @Fel90]
-
-In a most basic form, computation is by executing statements in a sequential form as a sequence of statements   
+The overall requisite for any kind of concurrency is therefore the simultaneous presence of multiple active computational units. Depending on the context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed in due course. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
 
 ...
 
-Concurrent computation, or simply concurrency, is a characteristic of a program or software system [citation]{.mind}. It describes...
-
-...
-
-For the scope of this thesis, it is important to gain a notion of concurrent computation, especially *where* it is happening. We will focus on three levels, namly the 
-
-...
-
-
-The overall requisite for any kind of concurrency is the simultaneous presence of multiple active computational units. Depending on context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed in due course. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
-
-...
-
+~ begin red
 Baeten [@Bae05] gives a general definition:
 
 > "*Concurrency theory is the theory of interacting, parallel and/or distributed systems*"
-
-
-~ red
-concurrent distributed processes [irgendwo gelesen]{.mind}
-~
+~ end red
 
 
 ## Foundational Issues
@@ -65,27 +42,25 @@ concurrent distributed processes [irgendwo gelesen]{.mind}
 Foundational Issues of all Concurrent Programming Notions
 ~
 
-Many different approaches and concepts exists to approach concurrent execution. 
+Many different approaches to concurrency exist. Regardless of the chosen notion, there are always three basic issues that have to be paid attention to [@And83]:
 
-When programming concurrency, there are 
+---
 
+First of all, concurrent execution has to be *indicated*. Various abstractions have been proposed, and some of them will be discussed in due course. All of them are required to provide the possibility to express as well as manage task units [@Bac03]. [FÄLLT MIR HIER NOCH EIN SATZ EIN? ODER ZWEI?]{.red}
 
-### Indicating Concurrent Execution
+---
 
-
-### Communication
-
-
-Process/Task Communication
+Next, interaction and coorporation among tasks has to be possible. *Communication* allows them to influence each other [@And83]. The *shared state* communication style is founded on memory (e.g. variables, objects, etc.) being accessible by multiple tasks, such that they interact by reading and writing to this state. In contrast, *message passing* communication forgos any access to shared data, and instead is based on the exchange of messages (fixed, immutable data) sent through communication *links*, which are additionally required. Shared memory is only possible among tasks who can gain access to a common memory sections, thus is limited to the same physical machine. Message passing on the other hand surmounts this limitation, as messages can transit multiple links between sender and recipient, such that the machine boundries are bypassed [@Fel90].
 
 
-### Synchronization
+---
 
 
-controll access to shared state vs message passing (communication + synchronization)
+Last, although ordering in concurrent execution is merely partial, communication still requires some order constraints, i.e. an action must be performed before it can be detected. *Synchronization* referes to mechanisms used to ensure such constraints [@And83]. Semaphores, lock and transactional memory are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task may modify state at a time to avoid unexpected behavior due to low level data races. The modification or evaluation of shared state is thus called the *critical section*, and synchronizatuin mechanisms realize *mutual exclusion*, such that no task can access the shared state while another is within it's critical section [@Ben90].
 
+Message passing on the other hand provides an implicit form of synchronization, as any message intrinsically has to be written and sent before it can be received, thus the order is constraint [@And83]. 
 
-critical region
+There are two kinds of synchroniztion mechanisms. *Enforced primitives* guarantee no access to the state outside the primitive, thus ensuring order. *Unenfored primitives*, on the other hand, provide a certain degree of freedom in their usage and therefore provide no guarantee of mutual exlcusion. Semaphores are a prominent example [@Fel90]. 
 
 
 ## Concurrency, Parallelism and Distribution
@@ -162,24 +137,21 @@ We've found the role of *deadlocks* (blocking operations which for some reason d
 ## Programming Abstractions
 
 
-AKA: Realizations of Concurrent Execution; Levels of realizing Concurrent Execution
-
-...
+~ Todo
+1-2 kurze Sätze wieso es hier 3 Unterkapitel gibt. 
+~
 
 
 ### Language-Construct Approach {#sec-concurrency-language-level}
 
 
-~ LitNote
-* allgemeines über die Abstraktionen von Nebenläufigkeit, zB Threads and Locks, Futures, STM, etc
-* "explicit concurrency" [@Bus90], because "specified by the program designer"
-~
+Many different approaches to explicitely express concurrent computation on a programming language level have been proposed and used over the decades. Among them are channels, coroutines, fork and joins, futures and threads, as well as many more, which may generally be added to a particular language via libraries or frameworks [@Ben90]. As the remainder of this thesis will rely on Java and its virtual machine, a brief discussion of its basic approach towards concurrency is in order.   
 
 
 #### Case Study: Concurrency in Java
 
 
-Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic  concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
+Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
 
 ```{language:java}
 class State {
@@ -201,11 +173,9 @@ new Thread(task).start();
 
 The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, some state denoted by `s` has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. Note that though `s` is declared `final`{language:java}, its publicly visible member `x` remains mutable.
 
-The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. 
+The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. Alternatively, the `synchronized`{language:java} keyword could also have been used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
 
-Alternatively, the `synchronized`{language:java} keyword could also have been used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
-
-A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, where locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11;@Goe06].
+A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, which is an enforced synchronization primitive, i.e. locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} may be unenforced, such that they may offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11;@Goe06]. To provide this degree of freedom, Java neither detects shared state nor requires its synchronization per se, thus programmers may easily introduce data races due to omitted access control. Any alternative concurrency abstraction for Java, e.g. through a library or framework, has to take this into account.
 
 Expressing concurrency on the programming language level has its perils due to the overlapings of  languages concepts, e.g. the introduction of mutable state due to scopes or via visibility. Many concepts might have an influence on concurrency considerations. Shared mutability and synchronization especially require utmost care by the programmer for handling access to any data.
 
@@ -215,7 +185,9 @@ Expressing concurrency on the programming language level has its perils due to t
 
 The *process* is a concept for the computational model used by operating systems. It describes the instantiation of a program image, which has associated *resources* such as memory. Processes are used to express dynamic execution. In the most basic case, for which they have been historically conceived, these computational units are alternately executed on a single processor. This activation and passivation is called *scheduling* and the responsibility of the operating system. It results in a quasi-parallel execution of active processes. If multiple processors are utilized, it is truely parallel [@Bac03;@Fel90]. Thus, processes are inherently concurrent units due to their execution modality.
 
-In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of communication subsumed as *inter-process communication* (IPC) [@Bac03;@Lov07].
+In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07].
+
+[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as was mentioned. Thus, often the communication between concurrent units is called *inter-process communication* in the literature. To avoid confusion, this thesis uses *IPC* only for message passing communication mechanisms between OS processes.
 
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
