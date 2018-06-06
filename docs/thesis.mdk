@@ -138,6 +138,9 @@ Bibl {
 }
 <!--Bibl { font-size: small }-->
 
+dt { margin-top:1ex }
+dd { margin-bottom:1ex }
+
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
   background-color: LightGray;

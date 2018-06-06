@@ -534,7 +534,7 @@ For example, when a Store needs to modify its state, instead of performing the u
 In general, we deem the concerns related to dynamic reconfiguration more easily met with Actors, for it is a core concept through one of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction, thus it requires an additional layer to manage changeing topologies. Such tools are subsumed in the category of *could management frameworks*. This fundamental difference in the inherent notion of static versus dynamic changes in topology are a major concern when it comes to integrating Actors and Microservice task units, which will be briefly discussed in &#167; [#sec-actor-ms-integration].
 
 
-## Extensibility and Technology Heterogeneity {#sec-technological-heterogeneity}
+## Extensibility and Technology Diversity {#sec-technological-heterogeneity}
 
 
 ~ todo
@@ -591,6 +591,9 @@ Fault tolerance:
 ~LitNote
 * "failure isolation"
 * [@Myt17] "Handling partial failures in distributed reactive programming"
+* [@Tan07] "Distributed Systems: Principles and Paradigms, 2/E"
+    * 8.1 INTRODUCTION TO FAULT TOLERANCE
+    * 8.2 PROCESS RESILIENCE
 ~
 
 ...

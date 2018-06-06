@@ -38,37 +38,34 @@ Baeten [@Bae05] gives a general definition:
 ## Foundational Issues {#sec-foundational-issues}
 
 
-~lit
-Foundational Issues of all Concurrent Programming Notions
-~
+Many different approaches to concurrency exist. Regardless of the chosen notion, there are always three basic concerns that have to be paid attention to [@And83]:
 
-Many different approaches to concurrency exist. Regardless of the chosen notion, there are always three basic issues that have to be paid attention to [@And83]:
+* Expression of concurrent execution
 
----
+  : Concurrent computation has to be *indicated*. Various abstractions have been proposed, and some of them will be discussed in due course. All of them are required to provide the possibility to define as well as manage task units [@Bac03]. Examples are channels, coroutines, fork and joins, futures and threads. [FÄLLT MIR HIER NOCH EIN SATZ EIN? ODER ZWEI?]{.red}
 
-First of all, concurrent execution has to be *indicated*. Various abstractions have been proposed, and some of them will be discussed in due course. All of them are required to provide the possibility to define as well as manage task units [@Bac03]. Examples are channels, coroutines, fork and joins, futures and threads. [FÄLLT MIR HIER NOCH EIN SATZ EIN? ODER ZWEI?]{.red}
+* Communication
+  : Interaction and coorporation among tasks has to be possible. *Communication* allows them to influence each other [@And83]. The *shared state* communication style is founded on memory (e.g. variables, objects, etc.) being accessible by multiple tasks, such that they interact by reading and writing to this state. In contrast, *message passing* communication forgos any access to shared data, and instead is based on the exchange of messages (fixed, immutable data) sent through communication *links*, which are additionally required. Shared memory is only possible among tasks who can gain access to a common memory sections, thus is limited to the same physical machine. Message passing on the other hand surmounts this limitation, as messages can transit multiple links between sender and recipient, such that the machine boundries are bypassed [@Fel90]. It can happen in either *synchronous* (messages are sent and execution is delayed until a response has been received) or *asynchronous* (execution is resumed immediately after sending a message) fashion [@And83].
 
----
+* Synchronization
+  : Although ordering in concurrent execution is merely partial, communication still requires some order constraints, i.e. an action must be performed before its effect can be detected. *Synchronization* referes to mechanisms used to ensure such constraints [@And83]. Semaphores, locks and transactional memory are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task may modify state at a time to avoid unexpected behavior due to low level data races. The modification or evaluation of shared state is thus called the *critical section*, and synchronization mechanisms realize *mutual exclusion*, such that no task can access the shared state while another is within it's critical section [@Ben90;@Bus90].
 
-Next, interaction and coorporation among tasks has to be possible. *Communication* allows them to influence each other [@And83]. The *shared state* communication style is founded on memory (e.g. variables, objects, etc.) being accessible by multiple tasks, such that they interact by reading and writing to this state. In contrast, *message passing* communication forgos any access to shared data, and instead is based on the exchange of messages (fixed, immutable data) sent through communication *links*, which are additionally required. Shared memory is only possible among tasks who can gain access to a common memory sections, thus is limited to the same physical machine. Message passing on the other hand surmounts this limitation, as messages can transit multiple links between sender and recipient, such that the machine boundries are bypassed [@Fel90].
+  : Message passing on the other hand provides an implicit form of synchronization, as any message intrinsically has to be written and sent before it can be received, thus the order is constraint by design [@And83]. Synchronous passing additionally constraints the sender from resuming computation until the message has been answered.  
 
-
----
-
-
-Last, although ordering in concurrent execution is merely partial, communication still requires some order constraints, i.e. an action must be performed before it can be detected. *Synchronization* referes to mechanisms used to ensure such constraints [@And83]. Semaphores, lock and transactional memory are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task may modify state at a time to avoid unexpected behavior due to low level data races. The modification or evaluation of shared state is thus called the *critical section*, and synchronizatuin mechanisms realize *mutual exclusion*, such that no task can access the shared state while another is within it's critical section [@Ben90].
-
-Message passing on the other hand provides an implicit form of synchronization, as any message intrinsically has to be written and sent before it can be received, thus the order is constraint [@And83]. 
-
-There are two kinds of synchroniztion mechanisms. *Enforced primitives* guarantee no access to the state outside the primitive, thus ensuring order. *Unenfored primitives*, on the other hand, provide a certain degree of freedom in their usage and therefore provide no guarantee of mutual exlcusion. Semaphores are a prominent example [@Fel90]. 
+  : There are two kinds of synchronization mechanisms. *Enforced primitives* guarantee no access to the state outside the primitive, thus ensuring order. *Unenfored primitives*, on the other hand, grant a certain degree of freedom in their usage and therefore provide no guarantee of mutual exlcusion, as do e.g. semaphores [@Fel90]. 
 
 
 ## Concurrency, Parallelism and Distribution
 
 
-Until now, concurrency has been discussed as a generic term denoting a simultanious execution of different program [parts]{.red}. Yet there are more diverse notions regarding how concurrent execution is implemented. 
+So far, concurrency has been discussed as a generic term denoting a simultanious execution of activities. Yet there are more diverse notions regarding how concurrent execution is implemented. 
 
 ...
+
+
+On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join Framework*, can be painful and requires to explicitly prepare code segments that are ment to and data that can be proccessed in parallel [@Lea00].
+
+---
 
 ~Lit
 * [@Ben90]
@@ -145,7 +142,7 @@ We've found the role of *deadlocks* (blocking operations which for some reason d
 ### Language-Construct Approach {#sec-concurrency-language-level}
 
 
-Many different approaches to explicitely express concurrent computation on a programming language level have been proposed and used over the decades. Such are regarded with the indication issue of concurrency and therefore relate to the examples given in [#sec-foundational-issues]. If not part of a language by design, they may generally be utilized via libraries or frameworks [@Ben90], such that in some way or another most concurrent task abstractions are available in most programming languages. As the remainder of this thesis will be in the context of Java and its virtual machine, a brief discussion of its basic approach towards concurrency is in order.   
+Many different approaches to explicitely express concurrent computation on a programming language level have been proposed and used over the decades. Such are regarded with the indication issue of concurrency and therefore relate to the examples given in [#sec-foundational-issues]. If not part of a language by design, they may generally be utilized via libraries or frameworks [@Ben90;@Fel90], such that in some way or another most concurrent task abstractions are available in most programming languages. As the remainder of this thesis will be in the context of Java and its virtual machine, a brief discussion of its basic approach towards concurrency is in order, as alternative abstractions have to build on it.   
 
 
 #### Case Study: Concurrency in Java
@@ -162,8 +159,8 @@ final State s = new State();
 
 final Runnable task = () -> {
     synchronized(s) {
-        x.a += 1;
-        println(Thread.currentThread().getName()+" "+s.x);
+        s.x += 1;
+        out.println(Thread.currentThread().getName() + " " + s.x);
     }
 };
 
@@ -187,7 +184,7 @@ The *process* is a concept for the computational model used by operating systems
 
 In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of message passing communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. As operating system conceived concurrent tasks relying on IPC will be regarded with extended focus in due course, a consolidating example for future reference is in order.
 
-[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as was mentioned. Thus, often the communication between concurrent units is called *inter-process communication* in the literature. To avoid confusion, this thesis uses *IPC* only for message passing communication mechanisms between OS processes.
+[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as has been mentioned. Thus, often all communication between concurrent units is subsumed as *inter-process communication* in the literature. To avoid confusion, we will use this designation only for message passing communication mechanisms between OS processes.
 
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
@@ -222,9 +219,7 @@ int main(void)
 
 Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-A so-called *pipe* can be set up as IPC between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Be using this mechanism, tasks generally avoid the critical region problem [muss in dem kapitel vorher mal drauf hingewiesen werden]{.important}.
-
-...
+A so-called *pipe* can be set up as IPC between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Pipes are a communication link for message passing, and therefore tasks can utilize it to avoid the critical region problem.
 
 
 ### Network Approach {#sec-concurrency-network-level}
