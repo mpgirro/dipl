@@ -8,31 +8,9 @@ What matters for simplicity is that there's no interleaving.
 ~
 
 
-~LitNote
-* [@Agh85b] describes 3 "foundational issues" of concurrent systems
-    * Shared resources
-    * Dynamic Reconfiguration
-    * Inherent Parallelism
-* [@Agh93] "Abstraction and Modularity Mechanisms for Concurrent Computing"
-    * Allgemeine Argumente für Concurrency und Parallel Exec.
-* [@Fel90] "Language and System Support for Concurrent Programming"
-* [@Bac03] "Operating Systems: concurrent and distributed software design"
-* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
-* [@And83] "Concepts and Notations for Concurrent Programming"
-* [@Ben90] "Principles of concurrent and distributed programming"
-~
-
-Computation is conceived through the execution of instructions. Such activities are called *sequential*, if their list of atomic statements are executed in a sequential manner. Given two or more sequential activities are executed either pseudo-simultaniously (in alternation on one single processing unit) or truely simultaneously (on multiple processing units), they are interleaving and thus called *concurrent*. This interleaving weakens the total ordering from sequential actions to a merely partial ordering, thus concurrency is *nondeterministic*. Multiple invocations on the same input may result in different outputs in general [@Ben90;@Bus90].
+Computation is conceived through the execution of instructions. Such activities are called *sequential*, if their list of atomic statements are executed in a sequential manner. Given two or more sequential activities are executed either pseudo-simultaniously (in alternation on one single processing unit) or truely simultaneously (on multiple processing units), they are interleaving and thus called *concurrent*. This interleaving weakens the total ordering from sequential actions to a merely partial ordering, thus concurrency is *nondeterministic*, such that multiple invocations on the same input may result in different outputs in general [@Ben90;@Bus90;@Agh93].
 
 The overall requisite for any kind of concurrency is therefore the simultaneous presence of multiple active computational units. Depending on the context in which concurrency is being discussed, different terminologies are established. On a programming language level, usually *thread* is used for a concurrent unit, while in concurrency theory the *process* construct is used. However, the later will interfere with other notions of executional units discussed in due course. In order to be able to refere to different concepts without any aliasing among the terminologies, we will follow the suggestion of Ben-Ari [@Ben90] and denote abstract units of activity as *tasks* through the remainder of this thesis, as a homage to the Ada programming language where "task" referes to an activity associated with a concurrent unit. The term is well known and offers a neutral way to refere to any kind of concurrently executed computation within a logical unit.
-
-...
-
-~ begin red
-Baeten [@Bae05] gives a general definition:
-
-> "*Concurrency theory is the theory of interacting, parallel and/or distributed systems*"
-~ end red
 
 
 ## Foundational Issues {#sec-foundational-issues}
@@ -65,22 +43,31 @@ So far, concurrency has been discussed as a generic term denoting a simultanious
 
 ...
 
-Distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]:
+Distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]: 
 
 > "In a parallel computation some actions overlap in time; by implication these events must be distributed in space."
 
-This suggest that parallel tasks are also distributed tasks. The major distinction is that distributed task units cannot not share main memory [@Bus90] and therefore always have to rely on message passing communication over the network. Of course, this can be used to create network abstractions for shared memory, so-called *spaces*, e.g. by using the *Linda* model [@Ben90].
+This suggest that parallel tasks are also distributed tasks in a certain sense. The major distinction is that distributed task units cannot share main memory [@Bus90] and therefore always have to rely on message passing communication over the network. Of course, this can be used to create network abstractions for shared memory, so-called *spaces*, e.g. by using the *Linda* model [@Ben90].
 
-Due to this physical separation, different locations, that is host machines, do exist where tasks are being executed. In general, these will be refered to as *nodes* [@Ben90]. A single node may have one or more processors, and which one or more tasks are being executed concurrently in general, and in the case of multiple CPUs possibly also parallel.
+Due to this physical separation, different locations, that is host machines, do exist where tasks are being executed. In general, these will be refered to as *nodes* [@Ben90]. A single node may have one or more processors on which one or more tasks are being executed concurrently in general, and, in the case of multiple CPUs, possibly also parallel.
+
+~ todo
+distribution hat jede menge probleme mehr als parallelism -> Bsp!
+~
 
 ...
 
-The fundamental observations are:
+As a result, there are three fundamental observations to be made here:
 
-* A concurrent system is not a parallel system in general, but it can be.
-* A distributed system with two or more nodes is a parallel system. 
+* Concurrent systems are neither parallel nor distributed in general, but they can be.
 * Parallel and distributed systems are always concurrent.
+* Distributed systems with two or more nodes are parallel. 
 
+Due to these interrelations, Baeten [@Bae05] gives a general definition: 
+
+> "Concurrency theory is the theory of interacting, parallel and/or distributed systems."
+
+Subsequent chapters will merit attention to abstractions not only able of the conception of concurrent execution in general, but also providing parallel as well as distributed capabilities in a transparent way. 
 
 ~Todo
 Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.

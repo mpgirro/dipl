@@ -138,8 +138,9 @@ Bibl {
 }
 <!--Bibl { font-size: small }-->
 
-dt { margin-top:1ex }
-dd { margin-bottom:1ex }
+dt         { margin-top:1ex }
+dd         { margin-bottom:1ex }
+blockquote { font-style: italic; }
 
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
@@ -261,6 +262,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~
 -->
 
+<!-- TODO Widmung einblenden
 &pagebreak;
 ~ Begin TexOnly
 ~ Begin TexRaw
@@ -278,6 +280,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~ End TexRaw
 ~ End TexOnly
 &pagebreak;
+-->
 
 <!-- TeX -->
 ~ Begin TexOnly

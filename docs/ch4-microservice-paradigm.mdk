@@ -123,7 +123,7 @@ The microservice idiom specifies the following requirements on service IPC:
 
 From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication channel. If data is in the form of text strings, it represents serialized data (= state information) of one service that is transported in an immutable way between the opposite endpoint of the pipe. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
 
-> "*Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools.*" 
+> "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools." 
 
 This satisfies the channel requirements given above. Therefore pipes are a valid communication mechanism. However they do not offer any specific structuring of the byte stream. An application-level protocol therefore has to be defined ontop of the pipe mechanism [@Bac03]. Shared memory on the other hand faces multiple conceptional problems regarding a microservice communication mechanism. First, messages between services are being send by modifying memory both services have access to. It is not guaranteed in general that these messages are being receiving by the indented recipient unmodified, for a third party entity also having access to the memory could get a lock and make modifications to the data beforehand. Additionally, shared memory validates the no shared resources between services principle already defined.
 

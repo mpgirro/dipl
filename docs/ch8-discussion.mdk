@@ -747,7 +747,7 @@ As a result, scholars have long tried to formulate a theoretical link between Ac
 
 As Agha et al. [@Agh97] discuss in an extensive work, a true equivalence theory among a formal *actor calculus* and some process calculus requires the formulation of a simulation relation among the primitives. This has been done among different process calculi, but is yet unfound regarding Actors. They state as the foundational challenges:
 
-> *Three points of contrast between the basic actor model and process calculi are: the choice of communication model, the choice of communicable values, and the issue of fairness.*
+> "Three points of contrast between the basic actor model and process calculi are: the choice of communication model, the choice of communicable values, and the issue of fairness."
 
 Note that all these issues have been discussed as concerns in varying degrees throughout this thesis. For example, it has been pointed out that Actor assume fairness, while it is a non-concern for Microservices which simply delegate it to the OS scheduler. 
 
