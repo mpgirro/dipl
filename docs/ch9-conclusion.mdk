@@ -1,25 +1,27 @@
 
-Conclusion {#ch-conclusion}
+Discussion & Conclusion {#ch-conclusion}
 ==========
+
 
 ~ Epigraph { caption: "Theodor W. Adorno"}
 Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 ~
+
 
 This thesis has discussed the concepts of programming Actors and Microservices to conceive concurrent computation, and evaluated their common properties and capabilities. As a bottom line, we now want to argue for an application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
 
 As we've illustrated, both Actors and Microservices are qualified to express concurrent computation for both parallel execution on multicore processor as well as distributed computation as are for example cloud deployments. Kang suggested that programing models regarding parallel and distributed contexts should be evaluated based on their emphasize on two objectives: *efficiency* of
 execution and *expressiveness* for programmers [@Kan12]. Agha and Kim extend the concerns on such universal programming models by *portability* and *performance predictability* [@Agh99].
 
+
 ## The Case for Actors
 
-The construction of Echo utilizing Actors has been [???]{.red}. 
 
 The Actor model provides an abstraction for writing task units mostly focused on concerns related to their responsibility. The Actor system centralies many additional concerns not directly related to the scope of responsibility of each individual Actor, such that they are met by one managing entity per system node. Many are abstracted away completely, e.g. discovery is transparenly hidden within the Actor addresses. Others, like fault tolerance, are provided with sane default behaviors, and beyond these influenceable through well-defined, coherent interfaces (e.g. `SupervisionStrategy`{language:scala}). Theoretical limitations, like asynchronous message passing, may be loosened up by introducing additional abstraction, e.g. Future-based computation and synchronous-styled `ask` pattern, at the risk of introducing the potential for model semantic violations. Akka, due to its library conception, specifically suffers from risks provided by the Java ecosystem. However, if used with care, we deem the Actor abstraction very expressive, once a certain learning curve regarding a reactive programming style has been mastered.
 
 ...
 
-Actor are very slim computational units. Erlang is best known for its lightweight Actor variant, and Akka through its behavior closures too is able to provide a very efficient Actor implementation compared to Scala's original variant. 
+Actor are conceptually very slim computational units. Erlang is best known for its lightweight Actor variant, and Akka through its behavior closures too is able to provide a very efficient Actor implementation compared to Scala's original variant. 
 
 Essentially, it is our obersavtion that each Actor system aims to keep their units more lightweighted than a program thread, such that the Actors are being scheduled on a thread-pool if they are required. This allows to greatly improve performance by preventing idle Actors to consume computational resources. The runtime of Orleans even holds its Actors merely virtual, such that they are instantiated just on demand.   
 
@@ -82,12 +84,13 @@ This also affects the services portability. As services are also independently r
 
 ...
 
-General performance is well predictable, when the number of service instances can be fixed, as is with Echo. No elasticity mechanism is supported, thus the required operating system processes is foreseeable. Of course, third party components, e.g. RabbitMQ for asynchronous messaging, may spawn additional processes themselves. However, such are also expected to do this in a foreseeable way. 
+General performance is well predictable, when the number of service instances can be fixed, as is with Echo. No elasticity mechanism is supported, thus the required operating system processes is foreseeable. Of course, third party components, e.g. RabbitMQ for asynchronous messaging, may spawn additional processes themselves. However, such are also expected to do this in a foreseeable way. In general, we deem it less likely to create new services as flexible as is done with Actors, for process creation comes with a relatively high price, e.g. due to the memory address space.  
 
 ...
 
 
 ## Empirical Indications
+
 
 ~LitNote
   Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refActorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)
@@ -119,7 +122,7 @@ override def receive = {
 }
 ```
 
-For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI __U__niform __R__esource __I__dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
+For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI (__U__niform __R__esource __I__dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
 
 Though such receiving is in principle conform to the Actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to Actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. An alternative interface is required:
 
@@ -139,12 +142,14 @@ This unified approach isn't quite common yet, but technologies are starting to e
 
 [^fn-lagom]: <https://www.lagomframework.com> 
 
+
 ## Outlook
 
 
 ~ Epigraph { caption: "Niels Bohr" }
 Predicition is very difficult, especially about the future.
 ~
+
 
 In this thesis, we've discussed the conceptualities of Actors and Microservices, formulated an argumentation favouring each, and even demonstrated one possibility of integrating both. In this final section, we want to argue a conceptual evolution towards a unification.
 

@@ -132,7 +132,7 @@ Expressing concurrency on the programming language level has its perils due to t
 
 The *process* is a concept for the computational model used by operating systems. It describes the instantiation of a program image, which has associated *resources* such as memory. Processes are used to express dynamic execution. In the most basic case, for which they have been historically conceived, these computational units are alternately executed on a single processor. This activation and passivation is called *scheduling* and the responsibility of the operating system. It results in a quasi-parallel execution of active processes. If multiple processors are utilized, it is truely parallel [@Bac03;@Fel90]. Thus, processes are inherently concurrent units due to their execution modality.
 
-In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of message passing communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. As operating system conceived concurrent tasks relying on IPC will be regarded with extended focus in due course, a consolidating example for future reference is in order.
+In contrast, *threads* are tasks *inside* a processes, such that one process can have multiple threads which share its memory space [@Tan07]. Therefore, threads can easily access the same memory location (shared state), which requires synchronization, as has been demonstrated in the Java case study. The memory boundries between processes however are strict and enforced by the OS. Communication between any two processes therefore requires either an explicit arrangement of so-called *shared memory* between them, or another means of message passing communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. As operating system conceived concurrent tasks relying on IPC will be regarded with extended focus in due course, a consolidating example for future reference is in order.
 
 [^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as has been mentioned. Thus, often all communication between concurrent units is subsumed as *inter-process communication* in the literature. To avoid confusion, we will use this designation only for message passing communication mechanisms between OS processes.
 
@@ -185,36 +185,24 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
 * **this chapter should explain why distribution is just another form of concurrency within a system**
 * [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
     * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
-* [@But14]
-  * shared-memory: inter-process comm. through memory (faster)
-  * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
-    * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
 ~
 
 
-As has been outlined, distribution is another approach to the conception of concurrent execution within a system. The communication of distributed tasks has to happen via networked message passing mechanisms. 
+As has been outlined, distribution is another approach to the conception of concurrent execution within a system. Generally, besides the lack of shared memory, the distinguishing characteristic between parallel and distributed computing is the geographical distance between tasks. Therefore, the communication between distributed tasks has to happen via networked message passing mechanisms. Such introduce a wide range of perils, as the communication links can neither be assumed reliable nor static, and messages are more costly in terms of time (latency) and effort (e.g. due to data serialization) [@Agh99]. The famous *Fallacies of Distributed Computing* by Deutsch subsume many of the problematic aspects [@Tan07]:
 
+1. The network is reliable.
+2. Latency is zero.
+3. Bandwidth is infinite.
+4. The network is secure.
+5. Topology doesn't change.
+6. There is one administrator.
+7. Transport cost is zero.
+8. The network is homogeneous[^fn-8th-fallacy].
 
+Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will be relevant to some concepts already or soon to be discussed. For example, fallacy 2. is relevant regarding the synchrony of communication. While asynchronous messaging is not concerned with any latencies delaying travel time of messages, synchronous communication is by definition constraining time and thus affected by network induced latencies.
 
-1. programming interfaces
-2. reliability of nework links
+[^fn-8th-fallacy]: The eighth fallacy was not part of Deutsch's original proposal, but later added by Gosling. Hence, the literature sometimes merely referes to seven fallacies. 
 
----
+Another concern of distribution conceived concurrency is programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low level.
 
-... the major destinction is the avoidance of  
-
-
-
-... programming interfaces for network communication are diverse, and heavily relying on the applied mechanism. 
-
-... A most basic for is undoubtably the *Socket*, as is provided by most operating system to ...  
-
-
-... network links are less reliable and therefore not as trustworthy as parallel tasks can expect their communication to be [@Agh99].
-
-
-In the context of this thesis, we deem all task units communicating via network links as distributed, regardless of the location on the same or distinct hosts.
-
-~Todo
-Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
-~
+More high level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dann ist schluss mit dem kapitel]{.red}
