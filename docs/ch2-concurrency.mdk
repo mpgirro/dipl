@@ -38,46 +38,33 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
 
 So far, concurrency has been discussed as a generic term denoting a simultanious execution of activities. Yet there are more diverse notions regarding how concurrent execution is implemented. Strict distinction in terminology is therefore in order. *Concurrency* referes to the multiplexing of multiple tasks among one or more processors. No more specific assumptions can be made in general. On a single CPU, such interleaving of computation is merely pseudo-simultanious achieved via time slicing, as all computation is still sequential [@Roe15].
 
-
 *Parallelism* referes to truely simultaneous execution on different CPUs. If such parallel execution is possible depends on the used concurrency abstraction and its implementation [@Bac03]. On a programming language level, referencing components is usually subject to physical limitations regarding the programs memory, i.e. objects can only reference objects inside the same programs memory space [citation needed]{.mind}. Though this does not affect providing decent approaches for writing concurrent code in general, it certainly hinders providing decent constructs for writing parallel code, e.g. when using shared state communication. Parallel execution requires code execution on different CPU cores *at the same time*, which usually means distinct process memory boundries. Inter-component communication has to happen across these boundries. It can be charged to the virtual machine used for executing the code if such is part of the language concept, as is done in Java where the JVM maps threads to system proccesses for parallelization [@Hal09]. But writing explicit parallel code, e.g. with a *Fork/Join* framework, can be painful and requires to explicitly prepare code segments that are ment to be and data that can be proccessed in parallel [@Lea00].
-
-...
 
 Distributed computation is regarded its own research discipline separate from parallel computation. However, both concepts are based on the same fundamental idea: Truely concurrent execution (as in *at the same time*) of physically distributed processes [@Agh99]. Agha, Frølund and Kim formulated a simple and sound argumentation [@Agh93]: 
 
 > "In a parallel computation some actions overlap in time; by implication these events must be distributed in space."
 
-This suggest that parallel tasks are also distributed tasks in a certain sense. The major distinction is that distributed task units cannot share main memory [@Bus90] and therefore always have to rely on message passing communication over the network. Of course, this can be used to create network abstractions for shared memory, so-called *spaces*, e.g. by using the *Linda* model [@Ben90].
+This suggest that parallel tasks are also distributed tasks in a certain sense. The major distinction is that parallel tasks are expected to be "closer" to each other (same CPU) than distributed tasks are (distinct CPUs), which cannot share main memory due to this distance [@Bus90;@Agh99]. Distribution therefore has to rely on message passing communication over the network. Of course, such can be used to create network abstractions for shared memory, so-called *spaces*, e.g. by using the *Linda* model [@Ben90].
 
 Due to this physical separation, different locations, that is host machines, do exist where tasks are being executed. In general, these will be refered to as *nodes* [@Ben90]. A single node may have one or more processors on which one or more tasks are being executed concurrently in general, and, in the case of multiple CPUs, possibly also parallel.
 
-~ todo
-distribution hat jede menge probleme mehr als parallelism -> Bsp!
-~
+As a result, there are three fundamental observations to be made:
 
-...
+1. Concurrent systems in general can neither be assumed parallel nor distributed, but may be in concrete situations.
+2. Parallel and distributed systems are always concurrent.
+3. Distributed systems with two or more nodes are parallel. 
 
-As a result, there are three fundamental observations to be made here:
-
-* Concurrent systems are neither parallel nor distributed in general, but they can be.
-* Parallel and distributed systems are always concurrent.
-* Distributed systems with two or more nodes are parallel. 
-
-Due to these interrelations, Baeten [@Bae05] gives a general definition: 
+A general definition incorporating these interrelations is given by Baeten [@Bae05]:
 
 > "Concurrency theory is the theory of interacting, parallel and/or distributed systems."
 
 Subsequent chapters will merit attention to abstractions not only able of the conception of concurrent execution in general, but also providing parallel as well as distributed capabilities in a transparent way. 
 
-~Todo
-Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
-~
-
 
 ## Correctness Properties
 
 
-On a fundamental level, the basic porpose of any program is the computation of a result. A sequential program should always conclude the same results for the same inputs[^fn-sequential-side-effects], and thus it's correctness can be verified using theoretical methods, although these are not widely adoped in practice. For concurrent programs, this in not generally applicable anymore, due to the intrinsic interleaving of computations [@Ben90].
+On a fundamental level, the basic purpose of any program is the computation of a result. A sequential program should always conclude the same results for the same inputs[^fn-sequential-side-effects], and thus it's correctness can be verified using theoretical methods, although these are not widely adoped in practice. For concurrent programs, this in not generally applicable anymore, due to the intrinsic interleaving of computations [@Ben90].
 
 [^fn-sequential-side-effects]: Any form of side effects, like IO, are of course also forms of input to a program, thus they have to be stable as well. 
 
@@ -202,4 +189,32 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
   * shared-memory: inter-process comm. through memory (faster)
   * distributed memory: each own local memory, inter-process comm. through network (slow, latency, all network errors)
     * hier passen die "Fallaties of distributed systems" gut rein! siehe [@RGO06]
+~
+
+
+As has been outlined, distribution is another approach to the conception of concurrent execution within a system. The communication of distributed tasks has to happen via networked message passing mechanisms. 
+
+
+
+1. programming interfaces
+2. reliability of nework links
+
+---
+
+... the major destinction is the avoidance of  
+
+
+
+... programming interfaces for network communication are diverse, and heavily relying on the applied mechanism. 
+
+... A most basic for is undoubtably the *Socket*, as is provided by most operating system to ...  
+
+
+... network links are less reliable and therefore not as trustworthy as parallel tasks can expect their communication to be [@Agh99].
+
+
+In the context of this thesis, we deem all task units communicating via network links as distributed, regardless of the location on the same or distinct hosts.
+
+~Todo
+Irgendwo bei Actors schreibe ich, dass unterschied zwischen Parallel und Distributed ist, dass 1) die Componenten weiter auseinander sind, und 2) man bei Distr. nicht annehmen darf, dass der Kanal "sicher" ist. Hier kann ich gleich die ganzen Fallities of Distibuted sytems aufzählen.
 ~

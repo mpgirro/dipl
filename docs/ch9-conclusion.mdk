@@ -8,10 +8,46 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 
 This thesis has discussed the concepts of programming Actors and Microservices to conceive concurrent computation, and evaluated their common properties and capabilities. As a bottom line, we now want to argue for an application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
 
-As we've illustrated, both Actors and Microservices are qualified to express concurrent computation for both parallel execution on multicore processor as well as distributed computation as are for example cloud deployments. It has been suggested that programing models regarding parallel and distributed contexts should be evaluated based on their emphasize on two objectives: efficiency of
-execution, and expressiveness for programmers [@Kan12].
+As we've illustrated, both Actors and Microservices are qualified to express concurrent computation for both parallel execution on multicore processor as well as distributed computation as are for example cloud deployments. Kang suggested that programing models regarding parallel and distributed contexts should be evaluated based on their emphasize on two objectives: *efficiency* of
+execution and *expressiveness* for programmers [@Kan12]. Agha and Kim extend the concerns on such universal programming models by *portability* and *performance predictability* [@Agh99].
 
 ## The Case for Actors
+
+The construction of Echo utilizing Actors has been [???]{.red}. 
+
+The Actor model provides an abstraction for writing task units mostly focused on concerns related to their responsibility. The Actor system centralies many additional concerns not directly related to the scope of responsibility of each individual Actor, such that they are met by one managing entity per system node. Many are abstracted away completely, e.g. discovery is transparenly hidden within the Actor addresses. Others, like fault tolerance, are provided with sane default behaviors, and beyond these influenceable through well-defined, coherent interfaces (e.g. `SupervisionStrategy`{language:scala}). Theoretical limitations, like asynchronous message passing, may be loosened up by introducing additional abstraction, e.g. Future-based computation and synchronous-styled `ask` pattern, at the risk of introducing the potential for model semantic violations. Akka, due to its library conception, specifically suffers from risks provided by the Java ecosystem. However, if used with care, we deem the Actor abstraction very expressive, once a certain learning curve regarding a reactive programming style has been mastered.
+
+...
+
+Actor are very slim computational units. Erlang is best known for its lightweight Actor variant, and Akka through its behavior closures too is able to provide a very efficient Actor implementation compared to Scala's original variant. 
+
+Essentially, it is our obersavtion that each Actor system aims to keep their units more lightweighted than a program thread, such that the Actors are being scheduled on a thread-pool if they are required. This allows to greatly improve performance by preventing idle Actors to consume computational resources. The runtime of Orleans even holds its Actors merely virtual, such that they are instantiated just on demand.   
+
+~ todo
+irgendwo hab ich gelesen: Scala actors mehrere 10k, bei Erlang sogar mehrere Mio. [QUELLE?!]{.red}
+~
+
+...
+
+However, the Actor runtime makes prediction about the performance difficult. Akka's dispatcher's provide besides a fixed thread-pool size also a dynamic pool size configuration. This will elastically scale the amount of threads based on the current demand. Consequently, long turns, e.g. due to blocking operations, will lead to an increase of threads in the pool. Yet Java thread efficiency is related to the amount of cores available on the host machine, such that a high thread-to-core ratio will have a negative impact on the overall performance. This has been experienced with Echo's web crawlers, which rely on blocking HTTP calls to retrieve remote content. Thus, deployment configuration specific to each individual nodes host machine, whith a focus on the different options regarding thread-pool management, is recommendable in general.
+
+Thus, portability of Actor system nodes is relative to the machine configurations of the old and new deployment locations, at least regarding a predictable performance behavior. Additionally, the ecosystem is also limited by the Actor system technology. As all involved tasks have to be interoperable, thus conceived through the Actor system variant, all components are limited by it. As Akka is a JVM based library, with dedicated binding for Java and Scala, portability is still good, as the JVM is available for most potential host machines. Other Actor system face essentially the same limitations. Erlang was specifically designed for Actor utilization, thus they are deeply founded in the languages concepts. Its Actors are thus at most interoperable with other BEAM-based constructs, e.g. such constructed using the Elexir language.
+
+
+
+~ red
+* the uniform messaging interface regardless of local or remote communication is ... nice
+* efficiency: 
+  * The Actor system centralies many additional concerns not directly related to the scope of responsibility of each individual Actor, such that they are met by one managing entity per system node.
+  * sehr performant, da Actors sehr lightweight constructs sind. IRGENDWO gelesen: Scala actors mehrere 10k, bei Erlang sogar mehrere Mio. [QUELLE?!]{.red}
+  * 
+* predictability: 
+  * dynamic thread pool can be UNVORHERSEHBAR wann sie wie viele threads spawnen
+* portability: 
+  * geknüpft an das Actor system. im fall von Akka zwar JVM technologien, aber dennoch beschränkt auf die JVM. ordentliche interfaces nur direkt für Java/Scala. Andere Actor sys. selbes problem. Bei anderen system sieht es gleich aus, zB Erlang Actor direkt in die Sprache inkludiert, daher schwer außerhalb zu exportieren. Elexier bietet diese ebenfalls an, ist aber auch eine BEAM sprache, daher kann es der VM nicht entfliehen
+~
+
+---
 
 ~ red
 - von der WeAreDevs2018 inspiriert:
@@ -31,24 +67,24 @@ execution, and expressiveness for programmers [@Kan12].
 
 ## The Case for Microservices
 
-~ red
-* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
-* MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
-* Jonas Boner beschreibt in einem Youtube Talk und im Podcast, dass MS in für große Unternehmen gut sein können, wo es wichtig ist die Code base aufzuspalten um produktiv zu bleiben
-* good to break up large monoliths
-* literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
-* freedom to practically do whatever you want (if it works within a monolith, this particual function also works within a smaller program = MS)
-* Als Vorteil gegenüber Actors sollte ich herausheben, dass diese es erlauben "explicit" die communication ports zu beschreiben. entnommen aus:
-  * [@Gui17] "Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
-  * kann ich alternativ auch noch im outlook unten anbringen, wo ich den eh zitiere (die info fehlt jedenfalls noch!)
-* current approach to writing MS are bas in terms of expressiveness for programmers (too lose principles). A liguistic notion of Microservices definitely change this
-  * no clear connection between efficiency of execution and expressiveness
-~
 
-...Provide more freedom regarding communication, but at the price of requiring additional components, e.g. a service registry and message queue are demonstrated in Echo.
+Microservice architectures also facilitate constructs aiming for a clear and easy separation of concerns [vll etwas anders formulieren?]{.red} in dedicated computation units. However, as all these services are individual processes spawned from distinct program images, each Microservice in general has to pay attention to many more concerns additionally to its primary responsibility. Most importantly, all communication channel technologies it requires in order to achieve its desired interactions, but also resilience mechanisms down to more trivial matters like logging concerns have to be supported individually. Regarding communication, this can be a benefit. The paradigm allows to explicitely define communication ports, whereas Actors have to comply to the abstraction provided by the system.
 
-... In general, microservices are always more heavy weighted constructs compared to actors, as they live inside their own OS process. Well proven development stacks for microservices like the Spring framework tend to produce rather large services (despite being "micro"), for the Inversion of Control approach adds lots of additional ["da passiert dann im hintergrund deutlich mehr als man als programmier mitbekommt"]{.red}. This is reflected in the startup time. While an arbitrary OS process can be started rather quickly in general, considerable time (two digit amount of seconds) is required before any of Echo's microservices is up and ready to be used, depending on the current load of the executing host.
+However, due to the increased complexity in any case, we deem the programming model of Microservices therefore less expressive from a programmer's perspective than Actors in general. Technology stacks like Spring Cloud can greatly help in easing the effort, but cannot erase the fact that each service has to merit these concerns separately, resulting in an increased accumulated performance demand. Additionally, such technologies tend to produce rather large application skeletons (despite being "micro"), as their dependency injection approach provide frameworks requiring merely sparse custom code focused to the respective service concern, but at the cost of injecting the remaining implementation code regarding the additional concerns transparently at compile time. As a result, each Microservice's (custom written) code base compared to its Actor counterpart is larger, but not significantly. However, the compiled executables of each service is merely slightly below the compiled size of the whole monolithic Actor executable. This is also reflected in the startup time. While an arbitrary OS process can be started rather quickly in general, considerable time (two digit amount of seconds) is required before any of Echo's microservices is up and ready to be used, depending on the current load of the executing host.
 
+...
+
+Microservice generally affect the efficiency of an architecture in a positive way, as has been one of the primary goals for the paradigms conception. Individual replication and scaling of each individual service is possible on as many diverse hosts as desired, provided that the a service is deployable on a respective host (technology compatibility). However, each service process stresses the nodes performance capacity, even if it is unused.
+
+...
+
+This also affects the services portability. As services are also independently replaceable, they can also be addapted to support new target evosystems. Their basic process abstractions does not demand any specifics regarding parallelization, as it is merely optionally achievable, if multiple CPUs per hist are available. Network topology is principally a bigger concern, as such is not automatically abstractable. Dedicated discovery services are additionally required.
+
+...
+
+General performance is well predictable, when the number of service instances can be fixed, as is with Echo. No elasticity mechanism is supported, thus the required operating system processes is foreseeable. Of course, third party components, e.g. RabbitMQ for asynchronous messaging, may spawn additional processes themselves. However, such are also expected to do this in a foreseeable way. 
+
+...
 
 
 ## Empirical Indications
@@ -59,6 +95,9 @@ execution, and expressiveness for programmers [@Kan12].
   * "Among these problems is finalising the level of granularity of a microservice too early. “Splitting too soon can make things very difficult to reason about. It will likely happen that you (the software architect) will learn in the process. [1]."
   * [@Tai17] "Processes, Motivations, and Issues for Migrating to Microservices Architectures: An Empirical Investigation"
 * [@Dra17c] "Microservices: Migration of a Mission Critical System"
+* "One reasonable argument we've heard is that you shouldn't start with a microservices architecture. Instead begin with a monolith, keep it modular, and split it into microservices once the monolith becomes a problem. (Although this advice isn't ideal, since a good in-process interface is usually not a good service interface.)" [@Fow14]
+* MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
+* literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
 ~
 
 ## Integrating Actors and Microservices {#sec-actor-ms-integration}

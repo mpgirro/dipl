@@ -49,7 +49,7 @@ The basic architectural components are based on the search engine architecture i
 
 A web interface is provided that both backends have to support. It is written with Angular [@GoogleAngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
 
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done in a special data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such a structure. It offers a Java interface, such that it is interoperable with most JVM based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
+In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such structures. It offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
 
 ...
 
@@ -66,7 +66,7 @@ In order to prevent any domain specific code from being implemented twice unnece
   : are tasked with the transformation of aquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, for all considered data is encoded in a markup language, viz. XML or HTML.
 
 * Searcher (S)
-  : are tasked with performing search operations. However, they simply perform some basic query pre-processing and delegate an IndexStore to retrieve relevant documents from the inverted index. The respective revelant results are communicated back via the Searcher to the Gateway.
+  : are tasked with performing search operations. However, they merely apply some basic query pre-processing themselves and delegate the retrieval of relevant document to an IndexStore using its inverted index. The respective results are communicated back via the Searcher to the Gateway.
 
 * Gateway (G)
   : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged information, or performing searches. Therefore the Gateway communicates with either a CatalogStore, or a Searcher. 
