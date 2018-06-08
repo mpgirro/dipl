@@ -125,14 +125,6 @@ In contrast, message queue semantic has the major benefit of a sender being able
 To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
 
 
-## Clustering
-
-
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * see: clustering 
-~
-
 ## (Fault Tolerance and) Resilience
 
 ~LitNote

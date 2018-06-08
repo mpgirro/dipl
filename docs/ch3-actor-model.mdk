@@ -59,92 +59,14 @@ Additionally, location transparent addresses enable referencing Actors even outs
 ## Actor Systems and Variations {#sec-actor-systems}
 
 
-~Todo
-Hier kann ich ein paar Systeme anteasern. zB die Erlang, die alten Scala Actors, (kurz Akka?), und Kilim
-~
+Actor are computational entities, but not individually deployable on operating systems in general. They require a runtime environment to exist within, the so-called *Actor system*. Such have two general concerns: providing the linguistic support for utilizing its Actors (programming interface and model semantic) and achieving their efficient execution [@Kar09]. 
 
-~LitNote
-* [@Kar09] "Actor frameworks for the JVM platform: A Comparative Analysis"
-* [@Che17] "Evaluating Scalable Distributed Erlang for Scalability and Reliability"
-* [@Hal09] "Scala Actors : Unifying thread-based and event-based programming"
-* [@Hal12] "On the integration of the actor model in mainstream technologies"
-* [@Ber14] "Orleans: Distributed Virtual Actors for Programmability and Scalability"
-* [@Kar09] "Actor frameworks for the JVM platform: A Comparative Analysis"
-* [@Cha13] "Native actors- a scalable software platform for distributed, heterogeneous environments"
-* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
-    * beschreibt mehrere Actor Systems
-    * beschreibt Actor System Properties
-* dieses Paper zu Kilim
-~
+Depending on the underlying programming model, the Actor abstraction and primitives can pose a challenge for programmers, as the model primitives provide a very low-level abstraction to model computation via an (almost) pure communication paradigm. Thus, Actor systems tend to provide more high-level primitives [@Agh90, @Weg90], e.g. for expressing various communication patterns.
 
-~Todo
-Hier sollte ich erklären das die Actors keinen ganzen Thread benötigen, stattdessen viel leichtgewichtiger (und daher billiger sind - im betrieb und da ein thread von der JVM auf einen OS process gemapped werden würde). besonders in Erlang sind sie "lightweight process". In Scala sind sie entweder mit einem Thread Pool umgesetzt (siehe Paper "Unifying thread-based and event-based concurrency"), oder event-based (also kein thread, sondern callbacks?)
-~
+Regarding efficiency can pose a challenge, as the idioms of the underlying system must be used to map concurrency to the Actor abstraction. In thread-based environments like the *Java Virtial Machine* (JVM), the relatively heavy JVM threads provide the foundation for the execution of relatively light-weighted Actor constructs. The JVM maps its threads to OS processes, thus each Actor would be executed as a system process in general. Haller & Odersky [@Hal09] call this an "impedance mismatch" between message passing (event-based) and thread-based programming. In this concrete example, the negative impact could be mitigated by not assigning one thread per Actor, but using a scheduling strategy such that many Actors may share the resources provided by fewer threads [@Kar09]. 
 
-~LitNote
-* [@Hal09] "Scala Actors : Unifying thread-based and event-based programming"
-~
+Many Actor system implementations do exist. We've identified three that merit special attention, as they are to out knowledge those with the most significant application in industrial applications:
 
-~Todo
-We do not provide a comprehensive review on actor systems here
-~
-
-The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge to be used by programmers, depending on the underlying programming model. Programming languages or libraries providing Actor-based concurrency usually aim towards providing more high-level primitives [@Agh90; @Weg90]. Such can be different kinds of message sending, or in terms of expressing behavior replacement operations. In functional programming, replacement behavior is usually expressed by a different function that handles the message processing [irgendwo hab ich sowas mal gelesen. war das das noch mal?!]{.mind}. The imperative paradigm realizes this through all flavours of assignment variants [will ich das so sagen??]{.mind}.
-
-
-
-
-
-[will ich diese bezeichnung hier verwenden?]{.mind}. The idioms provided must be used to map concurrency to the Actor abstraction. In thread-based environments like the *Java Virtial Machine* (JVM), the relatively heavy JVM threads must be used to implement relatively light-weighted Actor abstration. The JVM maps its threads to OS processes, which leads to...
-
-
-
- a This is to a certain degree contrary. Haller & Odersky [@Hal09] call this an "impedance mismatch" between message passing (event-based) and thread-based programming.  
-
-Additionally, the basic Actor primitives introduced in section [#sec-actor-primitives] provide a very low-level abstraction to model computation via an (almost) pure communication paradigm [@Weg90]. Thus they are not too programmer friendly and [es braucht höhere abstraktionen? hab ich da eine quelle?]{.mind} 
-
----
-
-~Todo
-Das ganze Blabla hier hab ich mir mal so aus der Nase gezogen. Gefällt mir noch gar nicht.
-~
-
-On the other hand, if the message passing style is incorporated into the underlying fabric[^fn-computing-fabric], then it can be implemented in an even more efficient way. Erlang is a most famous representative of programming languages representing the Actor model [citation needed]{.mind}. It was initially developed to use for phone stuff in the ??? years, a domain where high concurrency was of the essence [blabla zitieren und so]{.mind}...
-
-Erlang is backed by the Actor model by design. While Scala also was conceived with Actor-based concurrency in mind (though other concurrency form - like thread may be easily used), it depends on JVM threads for under the hood execution [ACHTUNG, wie Hal09 beschreibt gab es bei den alten Scala actors ja auch rein event-based actors]{.mind}. Erlang is also a language design for a virtual machine, the BEAM. However, this VM has been desigend to leverage message-passing communication style. Therefore, the Erlang Actors - called processes -  do not 
-
-[^fn-computing-fabric]: In case of directly to machine code compiled languages, the *fabric*  
-
-...
-
-Some basic properties can be obererves across system implementations.
-
-* TODO: At most once delivery, siehe zB [@AkkaMDR]
-* As already outlined, when multiple Actor sends messages to the same recipient, no order of messages in the mailbox is guaranteed. This is the reason for nondeterminism in the Actor model. Some Actor systems however tend to narrow down this property, by ensuring that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched [@AkkaMDR].
-* ..  
-
----
-
-...
-
-Many different implementations of the Actor model, so-called *Actor Systems* have been ....
-
-...
-
-Properties of the Actor model that systems have to concern themselves with are:
-
-* State encapsulation, that is the conceptual model of state changes
-* Safe messaging, message processing + message reception
-* Fair scheduling
-* Location transparency
-* mobility
-* Distribution
-* 
-
-
-...
-
-Some notable variants of Actors are:
 
 *Erlang* [@Arm93;@Vin07] is a programming language dedicated to Actor-based programming, and is well-known for introducing the concept to a broader industrial application. In contrast to most programming languages, an Erlang program has the main focus on the *processes* constructs (Actors), rather than e.g. objects or functions. It was designed to meet challenges like high concurrency, availability, fault-tolerance and live-upgrades [@Vin07;@Kos16].
 
