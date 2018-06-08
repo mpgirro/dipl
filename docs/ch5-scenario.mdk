@@ -9,13 +9,7 @@ Every good work of software starts by scratching a developer's personal itch.
 ~
 
 
-~LitNote
-* [@Bes10] "Podcast search: user goals and retrieval technologies"
-* [@Brin98] "The Anatomy of a Large-Scale Hypertextual Web Search Engine"
-* [@Cho04] "Agent Space Architecture for Search Engines"
-~
-
- In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system, and provides a baseline for discussing relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
+In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system, and provides a baseline for discussing relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
 [^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
 
@@ -43,7 +37,8 @@ kurze Beschreibung der technischen Realisation von Podcasts = Decentralized medi
 
 ## System Components
 
-The basic architectural components are based on the search engine architecture introduced by Brin and Page [@Brin98].
+
+At the core, the basic architecture and components are inspired by the work of Brin and Page [@Brin98] on large scale web search engines.  
 
 ...
 

@@ -753,7 +753,7 @@ As Agha et al. [@Agh97] discuss in an extensive work, a true equivalence theory 
 
 Note that all these issues have been discussed as concerns in varying degrees throughout this thesis. For example, it has been pointed out that Actor assume fairness, while it is a non-concern for Microservices which simply delegate it to the OS scheduler. 
 
-Eventually, Agha et al. argue that instead of trying to find an analogy between an actor- and a &pi;-calculus it is expedient to engage in the definition of high level semantics for programming languages, and reason about program equivalence to Actors and &pi;-programs. 
+Eventually, Agha et al. argue that instead of trying to find an analogy between an actor- and a &pi;-calculus it is expedient to engage in the definition of high-level semantics for programming languages, and reason about program equivalence to Actors and &pi;-programs. 
 
 <!--
 

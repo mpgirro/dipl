@@ -2,28 +2,6 @@
 
 Title        : Concurrent Programming with Actors and Microservices
 Subtitle     :
-<!--
-Title        : Concurrent Programming
-Subtitle     : Actors versus Microservices
--->
-<!--
-Title        : Actors versus Microservices
-Subtitle     : Concurrent Programming with the Actor Model of Computation and the Microservice Architecture Style
--->
-<!--
-Subtitle     : A conceptual analysis comparing the Actor Model of Computation and the Microservice Architecture Style regarding the construction of concurrent system
--->
-<!--
-Subtitle     : A conceptual analysis comparing the Actor Model and the Microservice Architecture Style regarding the composition of concurrent computation
--->
-<!--
-Subtitle     : A conceptual analysis comparing the Actor Model of Computation against the Microservice Architecture Style regarding their capabilities for concurrent system construction
--->
-<!--
-Title        : Concurrent Programming
-               and the Microservice Architecture Style
-Subtitle     : Hier könnte Ihre Werbung stehen!
--->
 Author       : Maximilian Irro
 <!--Email        : max@irro.at-->
 Copyright    : Maximilian Irro, 2018

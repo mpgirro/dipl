@@ -179,9 +179,6 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
 * [@Bac03] "Operating Systems: concurrent and distributed software design"
     * 1.3.7 Network-based systems
 * "implicit concurrency" [@Bus90]
-* "Distributed is truely concurrent"
-    * Networked programs are always concurrent due to the isolation and completely independent execution of their resources
-    * networked can also mean a network communication of programs on the same machine / same OS, so concurrency is OS level, abstracted to the network level
 * **this chapter should explain why distribution is just another form of concurrency within a system**
 * [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
     * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
@@ -199,10 +196,10 @@ As has been outlined, distribution is another approach to the conception of conc
 7. Transport cost is zero.
 8. The network is homogeneous[^fn-8th-fallacy].
 
-Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will be relevant to some concepts already or soon to be discussed. For example, fallacy 2. is relevant regarding the synchrony of communication. While asynchronous messaging is not concerned with any latencies delaying travel time of messages, synchronous communication is by definition constraining time and thus affected by network induced latencies.
+Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will be relevant to some concepts already or soon to be discussed. For example, fallacy 2. is regarding the synchrony of communication. While asynchronous messaging is not concerned with any latencies delaying travel time of messages, synchronous communication is by definition constraining time and thus affected by network induced latencies.
 
 [^fn-8th-fallacy]: The eighth fallacy was not part of Deutsch's original proposal, but later added by Gosling. Hence, the literature sometimes merely referes to seven fallacies. 
 
-Another concern of distribution conceived concurrency is programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low level.
+Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low-level.
 
-More high level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dann ist schluss mit dem kapitel]{.red}
+More high-level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dann ist schluss mit dem kapitel]{.red}
