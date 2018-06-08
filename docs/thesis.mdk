@@ -177,7 +177,7 @@ CSS Header      :
   body.madoko {
     font-family: "Crimson Text", serif;
     font-size: 16px;
-    max-width: 38em; /* reduce to: 34em */
+    max-width: 34em; /* reduce to: 34em */
   }
   .madoko code, .madoko pre {
     font-family: "Source Code Pro", monospace;
@@ -376,7 +376,7 @@ Maximilian Irro
 [INCLUDE=ch5-scenario]
 [INCLUDE=ch6-actor-impl]
 [INCLUDE=ch7-microservice-impl]
-[INCLUDE=ch8-discussion]
+[INCLUDE=ch8-evaluation]
 [INCLUDE=ch9-conclusion]
 
 <!--
