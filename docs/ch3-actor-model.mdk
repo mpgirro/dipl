@@ -146,11 +146,11 @@ Properties of the Actor model that systems have to concern themselves with are:
 
 Some notable variants of Actors are:
 
-*Erlang* [@Arm93;@Vin07] is a programming language dedicated to Actor-based programming, and is well-known for introducing the concept to industrial application [REF]{.red}. In contrast to most programming languages, an Erlang program has the main focus on the *processes* constructs (Actors), rather than e.g. objects or functions. It was designed to meet challenges like high concurrency, availability, fault-tolerance and live-upgrades [@Vin07;@Kos16].
+*Erlang* [@Arm93;@Vin07] is a programming language dedicated to Actor-based programming, and is well-known for introducing the concept to a broader industrial application. In contrast to most programming languages, an Erlang program has the main focus on the *processes* constructs (Actors), rather than e.g. objects or functions. It was designed to meet challenges like high concurrency, availability, fault-tolerance and live-upgrades [@Vin07;@Kos16].
 
 *Akka* [@Akka] is an Actor framework for the JVM, offering binding for the Java and Scala programming languages. It was highly inspired by Erlang and facilitates many of its conceptualities as well as meeting similar concerns like scalability, fault tolerance and remoting/distribution. As a library, it is faced with conceptual difficulties endangering the model semantic, which are typically avoided with dedicated ecosystems, as does for example Erlang and its virtual machine called BEAM. Chapter [#ch-actor-impl] will evaluate Akka in more detail. 
 
-*Orleans* [@Ber14] is a modern variant of *Active Objects*, an object-oriented interpretation of Actors. It has been constructed to meet the requirements of highly distributed deployment setups, currently refered to as *cloud computing*. Unlike Erlang, Akka and most other systems, its Actors are *virtual*, i.e. they are merely instantiated when addressed.
+*Orleans* [@Ber14] is a recent variant of an object-oriented interpretation of Actors called *Active Objects*. It has been constructed to meet the requirements of highly distributed deployment setups, currently refered to as *cloud computing*. A rather unique approach compared to Erlang, Akka and most other systems is the *virtuality* of its Actors, i.e. they are merely instantiated when addressed and thus required.
 
 
 ## Active Objects {#sec-active-objects}

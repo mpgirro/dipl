@@ -8,31 +8,25 @@ One actor is no actor. Actors come in systems.
 ~
 
 
-This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. We will focus our discussion on how specific techniques enable us the realize the requirements.
+This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. The utilized Actor system is called *Akka*. We will focus the evaluation on the linguistic support the framework provides to realize the requirements, that is its support for the properties of the Actor model and the provided programming abstractions for succient expression of communication and synchronization between Actors, as is suggested by Karmani et al. [@Kar09].
 
-When talking about the practical application of the Actor model, it is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through variouse forms of interfaces, either integrated into the programming language (Erlang), as a library (Scala Actors, JetLang), a framework or platform (Akka, ???) [@Kos16]. In chapter [#ch-actor-model] we discussed the theoretical concept of Actors proposed by Hewitt [citation needed]{.mind} as well as the possibilities the Actor semantics opens up. The actual Actor systems available are based upon this semantics and resulting possibilities, but vary in terms of features, sophistication and [???]{.mind}. Therefore it is important to mind the specific Actor system variant used when discussing any Actor based system. Our scenario solution is conceived through the Akka Actor flavour. 
-
-~LitNote
-* [@Kar09] Actor Frameworks for the JVM Platform: A Comparative Analysis
-~
+It is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language (Erlang) or as a library (Scala Actors, Akka) [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations will be relevant to evaluate the linguistic support offered by Akka.
 
 
 ## Akka {#sec-akka}
 
 
-Akka [@Akka] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to other ecosystems such as .NET and JavaScript runtimes (through Scala.JS) [citation needed]{.mind}. The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
+Akka [@Akka] is an Actor implementation available for the *Java Virtual Machine* (JVM) that was later ported to other ecosystems such as .NET and JavaScript runtimes (through Scala.JS). The .NET variant (called *Akka.NET*) is at the moment not able to interweave with the original JVM version [citation required?]{.mind}. Because our solution solely relies on the JVM, therefore all following discussions will refere to the capabilities of Akka's original JVM variant.
 
 Akka is based on Aghas vision of the Actor model, where is harnesses the potential for distributed problem solving [@Kos16]. An archetype has been Erlangs style of Actors. 
 
-Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language [citation needed]{.mind}. Currently it offers bindings for Scala and Java. 
+Akka is designed as a toolkit collection consisting of several libraries, able to be used in arbitrary combination based on actual need of them. In its core it implements the Actor model with the intent to be close to Armstrongs Actor implementation that is found in the Erlang language. Currently it offers bindings for Scala and Java. 
 
 The Actor System offered by Akka is a lightweight execution environment based on workstealing thread-pools with local task queues which schedule the Actor execution [@Hal12].
 
 Akka replaces the default Actor implementation offered by Scala (we will refere to them as *Scala Actors* in contrast to *Akka Actors*) from version 2.10 upwards [@Hal12]. Among the reasons were their better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
 
 ~LitNote
-* Beschreiben, dass viele Actors existieren können, und diese ab und zu auf einem Thread innerhalb eines viel kleineren Thread Pools laufen. Threads sind teurer als Actors, daher viel weniger
-* Die originalen Scala Actors hatten 2 verschiedene Arten von Actors, jene die auf theads ausgeführt werden (receive) und jene die nur als Callback durch einen closure ausgeführt werden (react). Letztere sind viel leichtgewichtiger, können aber nicht mehr auf den state zugreifen [@Kos16; @Hal09] --> vll sollte ich dies in einem allgemeineren Kapitel weiter oben beschreiben? Dort wo ich dann auch was zu Erlang schreibe? Vll in den Commonalities, bzgl was die schwergewichtung von Prozessen/Threads bzw dann nur callback-clojures betrifft.
 * Akkas Erweiterungen des Actor models kurz anteasern? Oder das erst in den kapiteln tun, in denen diese gebraucht werden (die anderen einfach unterschlagen)
 * [@AkkaJMM] beschreibt das Akka garantiertieren muss, wie sich das abarbeiten von nachrichten verhält, weil die actors ja auf threads laufen, aber nicht zwingend 2 nachrichten hintereinander auf dem selben thread ausgeführt werden
     * "The actor send rule: the send of the message to an actor happens before the receive of that message by the same actor."
@@ -119,7 +113,7 @@ Hier vll noch was schreiben das Erlang die sache strikt sieht -- tut sie das den
 ~
 
 
-## Integration of other Concurrency Constructs {#sec-actor-solution-concurrency}
+## Utilizing other Concurrency Constructs {#sec-actor-solution-concurrency}
 
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.

@@ -708,17 +708,16 @@ Thus, in general we've found Actors to provide an easier abstraction to facilita
 Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 
-## Eventual Consistency
+## Eventual Consistency and Availability
 
 
-~ lit 
-* <https://martinfowler.com/articles/microservice-trade-offs.html>
-    * "Maintaining strong consistency is extremely difficult for a distributed system, which means everyone has to manage eventual consistency."
-~
+Due to the asynchronity and distribution of Actors and Microservices, both approaches are bound to a weak notion of data consistency which is refered to as *eventual consistency*, as has been pointed out frequently in the literature [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. It describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Concequently, until this point in time, the data state across tasks is in flux and may therefore produce varying results. 
 
-~ todo
-Hier ist noch nicht entschieden ob dieses Unterkapitel vorhanden bleibt. Sowohl Actors als auch Microservices unterliegen Evential Consistency inherent. Wie ausführlich ist es wert dies zu besprechen?
-~
+Echo suffers from this regarding its data store units. Indizes inevitably hold states which are behind of the Catalogs, as these receive feed data from Parsers and only distribute it to the Indizes after they've update their state (broadcast). This is of course only true for the original recipient of the Parser data, as any update to one Catalog subsequently also has to be broadcast to the residual instances. Thus, eventual consistency reduces the guarantee for consistent data to a guarantee that all data updates will be propagated to all data replicas [@Tan07]. 
+
+In contrast, requiring consistency would be extremly difficult. Consistency essentially constraints the order of read and write operations on data [@Mah11], in this case from a global point of view. Software transactional memory would be a prominent mechanism to achieve this. However, as we've pointed out, Akka did drop its transaction support for the performance impact in a local context alone, as it never did achieve to extend transactions to remote Actors. Microservices are faced with even more challenges, as there is no inherent base system available to provide such mechanism, and the complience to such therefore would have to be integrated on an individual per service basis.
+
+The constraints required for maintaining strong consistency relate to safety [@Mah11]. A weakening of these constraints thus reduce safety. In return, eventual consistency within a system has a positive effect on a specific liveness property, that is *availability*. Basically it relates to a systems responsiveness when requesting functionality. A consistency mechanism potentially restrains this responsiveness, as it would have to await the accomplishment of the consistent state, that is all data has been successfully written across all involved tasks. Informally, availability demands that all read and write operations complete. The sooner they do, the more available the system is.
 
 
 ## Testability

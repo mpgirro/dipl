@@ -24,7 +24,7 @@ Search engines cause the illusion of being monolithic system, but are actually a
 Their constructing is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results, and the sole concern of the scientific discipline * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline called * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
 
 * Efficiency
   : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-dateness of search results increases with the efficiency of this phase. 
@@ -69,11 +69,11 @@ In order to prevent any domain specific code from being implemented twice unnece
 * Updater (U)
   : determines which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories, on a regular basis. To ensure consistency, only ine unit must exist within the system (singleton). 
 
-~ Figure { #fig-task-units; caption: "Task Units and Information Flow"; width:50%; float:left; margin-right: 1ex; }
+~ Figure { #fig-task-units; caption: "Task Units and Message Flow"; width:50%; float:left; margin-right: 1ex; }
 ![img-task-units]
 ~
 
-[img-task-units]: graphics/task-units.[ps,svg,png] "Image about Task Units and Information Flow" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-task-units]: graphics/task-units.[ps,svg,png] "Image about Task Units and Message Flow" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
 Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are discussed involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
@@ -83,7 +83,7 @@ Such task units ending in *\*Store* are stateful, all others stateless. When dat
 
 ...
 
-## Concurrent Concerns and Information Flow
+## Concurrent Concerns and Message Flow
 
 ~Todo
 Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
