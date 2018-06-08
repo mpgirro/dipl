@@ -138,6 +138,11 @@ blockquote { font-style: italic; }
 .todo, .important, .delete, .red {
   color:red
 }
+<!-- TODO do I want to have the same color in PDF and HTML?
+.cite-number {
+  color:navy;
+}
+-->
 
 <!-- TODO brauch ich das hier?
 @if html {

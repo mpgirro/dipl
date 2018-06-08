@@ -50,7 +50,7 @@ Due to this physical separation, different locations, that is host machines, do 
 
 As a result, there are three fundamental observations to be made:
 
-1. Concurrent systems in general can neither be assumed parallel nor distributed, but may be in concrete situations.
+1. Concurrent systems can be neither assumed parallel nor distributed in general, but may be so their individual case.
 2. Parallel and distributed systems are always concurrent.
 3. Distributed systems with two or more nodes are parallel. 
 
@@ -175,16 +175,6 @@ A so-called *pipe* can be set up as IPC between any such two processes by utiliz
 ### Network Approach {#sec-concurrency-network-level}
 
 
-~ LitNote
-* [@Bac03] "Operating Systems: concurrent and distributed software design"
-    * 1.3.7 Network-based systems
-* "implicit concurrency" [@Bus90]
-* **this chapter should explain why distribution is just another form of concurrency within a system**
-* [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
-    * "Partitioning the state into disjoint, encapsulated chunks is the defining feature of the distributed paradigm."
-~
-
-
 As has been outlined, distribution is another approach to the conception of concurrent execution within a system. Generally, besides the lack of shared memory, the distinguishing characteristic between parallel and distributed computing is the geographical distance between tasks. Therefore, the communication between distributed tasks has to happen via networked message passing mechanisms. Such introduce a wide range of perils, as the communication links can neither be assumed reliable nor static, and messages are more costly in terms of time (latency) and effort (e.g. due to data serialization) [@Agh99]. The famous *Fallacies of Distributed Computing* by Deutsch subsume many of the problematic aspects [@Tan07]:
 
 1. The network is reliable.
@@ -202,4 +192,4 @@ Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will
 
 Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low-level.
 
-More high-level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dann ist schluss mit dem kapitel]{.red}
+More high-level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dass HTTP weniger bare metal ist, weil structural text --> dann ist schluss mit dem kapitel]{.red}

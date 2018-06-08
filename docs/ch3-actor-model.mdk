@@ -14,7 +14,7 @@ In this thesis, we will focus on one particular abtraction for modelling concurr
 
 1. Sending a finite number of messages to itself or other known actors.
 2. Creating a finite number of new actors.
-3. Changing its internal behaviour for the next message that it receives with the so-called *replacement behaviour*.
+3. Changing its internal behavior for the next message that it receives with the so-called *replacement behavior*.
 
 In order to send a message, the unique *address* of an Actor must be known. The unterlying system delivers the message. In general, the order of delivery is nondeterministic. Actor addresses can be announced to other Actors by sending the address as a message. This allows for *dynamic reconfiguration* [@Agh90].
 
@@ -24,7 +24,7 @@ Messages are processed one at a time. Therefore, they have to be buffered in the
 ## Message Passing and Encapsulation {#sec-actor-messaging-encapsulation}
 
 
-The Actor abstraction defines that the only possible form of communication between Actors is by exchanging messages. This implies that there is no directly shared state between them [citation needed]{.mind}. Actor semantic means state is *encapsulated* within an Actor exclusively. To access the state, it must be requested by sending an appropriate message. 
+The Actor abstraction defines that the only possible form of communication between Actors is by exchanging messages. This implies that there is no directly shared state between them. Actor semantic means state is *encapsulated* within an Actor exclusively. To access the state, it must be requested by sending an appropriate message. 
 
 Processing messages is done in a serialized fashion. This provides the basis for *isolation* [@Les09]. All state modifications done while processing a single message appears *atomic*, i.e. it is not interrupted by other messages to the Actor [@Agh99], for they get buffered inside the mailbox.
 
@@ -32,7 +32,7 @@ It is important to realize that requested state informations are always mere sna
 
 To ensure snapshots do not violate encapsulation semantic and prevent accidentally exposing direct access to any internal state or resource, passed messages must be guaranteed to be immutable, copied or proxied [@Kos16]. This allows save coordination at a distance [@Hel15]. 
 
-Changing internal state within an Actor is realized through the third of the basic primitives: behaviour replacement. In general, this primitive can be used to change the behaviour of the Actor entirely - in the Actor taxonomy also called to *become* different operations for all following messages. However, it can also become the same operations, but for a different state [@Weg90]. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has not effect on its reachability for other Actors. The Actor logically stays the same, but will behave differently when processing the next message.
+Changing internal state within an Actor is realized through the third of the basic primitives: behavior replacement. In general, this primitive can be used to change the behavior of the Actor entirely - in the Actor taxonomy also called to *become* different operations for all following messages. However, it can also become the same operations, but for a different state [@Weg90]. It is important that this action though does not break the *referential transparency* of the Actors intentifiers used to send messages to it [@Agh90]. Therefore, changing Actor internals has no effect on its reachability for other Actors. The Actor logically stays the same, but will behave differently when processing the next message.
 
 This strict encapsulation of state and decoupling via immutable, asynchronous message passing leads to a strong form of *isolation* between Actors [@Agh14]. State within an Actor is mutable, but isolated from the outside and only available through immutable snapshots.
 
@@ -45,7 +45,7 @@ Additionally, state can only be changed while processing a message. Therefore, a
 <!--## Unifying Concurrent, Parallel and Distributed Computation-->
 
 
-Up until now, the Actor model was described as a general model of computation. The abstraction of Actors provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. As such, Actors encapsulate not only data and functionality, but also their own *thread of control*, making Actors autonomous [@Agh99]. Hewit and [??]{.mind} later showed that this allows for a concurrent execution of such components [citation? war das wirklich erst später?]{.mind}, effectivly making the Actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
+Until now, the Actor model has been described as a general model of computation. The abstraction of Actors provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. As such, Actors encapsulate not only data and functionality, but also their own *thread of control*, making Actors autonomous [@Agh99]. This allows for a concurrent execution of such components, effectivly making the Actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
 
 There are numerous models that are able to provide inherent concurrency, such as logic programming or  functional programming. The benefit of the Actor abstraction however is, that it allows for a direct expression of state [@Agh91], as such can only be manipulation within an Actor and while its processing a message - an operation that is, as was pointed out, guaranteed to be atomic. Omitting to share state and only communicate it via asynchronous message passing greatly improves the safety of Actors, as it eliminates a whole class of errors, the *race conditions* [@Cha13]. 
 
@@ -89,7 +89,7 @@ Hier sollte ich erklären das die Actors keinen ganzen Thread benötigen, stattd
 We do not provide a comprehensive review on actor systems here
 ~
 
-The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge to be used by programmers, depending on the underlying programming model. Programming languages or libraries providing Actor-based concurrency usually aim towards providing more high-level primitives [@Agh90; @Weg90]. Such can be different kinds of message sending, or in terms of expressing behaviour replacement operations. In functional programming, replacement behaviour is usually expressed by a different function that handles the message processing [irgendwo hab ich sowas mal gelesen. war das das noch mal?!]{.mind}. The imperative paradigm realizes this through all flavours of assignment variants [will ich das so sagen??]{.mind}.
+The Actor model provides a good, easy to understand abstraction. However, though it is theoretically quite easy to understand, the abstraction can pose as a challenge to be used by programmers, depending on the underlying programming model. Programming languages or libraries providing Actor-based concurrency usually aim towards providing more high-level primitives [@Agh90; @Weg90]. Such can be different kinds of message sending, or in terms of expressing behavior replacement operations. In functional programming, replacement behavior is usually expressed by a different function that handles the message processing [irgendwo hab ich sowas mal gelesen. war das das noch mal?!]{.mind}. The imperative paradigm realizes this through all flavours of assignment variants [will ich das so sagen??]{.mind}.
 
 
 
@@ -156,9 +156,9 @@ Some notable variants of Actors are:
 ## Active Objects {#sec-active-objects}
 
 
-As was pointed out, Actor systems traimy to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *objects* as were introduced in the *Object-oriented Programming* (OOP) paradigm. These objects encapsulate state and offer operations on this data [@Agh90; @Weg90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called *message* to an object [@Bla13], breaing resemblence to the Actor concepts and terminology.
+As was pointed out, Actor systems aim to provide a more high-level interface than the basic primitives to express concurrency. One specific way to realize this is through the concept of *objects* as were introduced in the *Object-oriented Programming* (OOP) paradigm. These objects encapsulate state and offer operations on this data [@Agh90; @Weg90]. In the terminology of the Smalltalk programming language, these operations are invoked by sending a so-called *message* to an object [@Bla13], bearing resemblence to the Actor concepts and terminology.
 
-Yonezawa et al. [@Yon86] were the first to introduce classic "passiv" objects extended by their own *thread of control* in a programming language called ABCL/1[^fn-abcl1]. These object's state is only accessible from within themselves. Access or modification to any state is achieved by invoking their public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread [citation?]{.mind}. Thus comes their name: *Active Objects* (AO). When such an Active Object's method is invoked, the actual method execution is decoupled and performed concurrently. This is usually realized through a *proxy object* on the client side (invoker), which merely mirrors the AO's public interface and handles the message dispatch, while the actual computation is done on a server object (the invoked Active Object) running on a separate thread in general [@Lav95].   
+Yonezawa et al. [@Yon86] were the first to introduce classic "passiv" objects extended by their own *thread of control* in a programming language called ABCL/1[^fn-abcl1]. These object's state is only accessible from within themselves. Access or modification to any state is achieved by invoking their public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread. Thus comes their name: *Active Objects* (AO). When such an Active Object's method is invoked, the actual method execution is decoupled and performed concurrently. This is usually realized through a *proxy object* on the client side (invoker), which merely mirrors the AO's public interface and handles the message dispatch, while the actual computation is done on a server object (the invoked Active Object) running on a separate thread in general [@Lav95].   
 
 [^fn-abcl1]: __A__ctor__B__ased __C__oncurrent __L__anguage. The */1* indicates that it is merely the first of a whole family of languages. Thus it's often omitted in the literature. Consecutive versions do not follow a sequential numbering though, e.g. *ABCL/R*, *ABCL/f* or *ABCL/c+*.
 
@@ -166,7 +166,7 @@ Though AOs aim to provide a purely object-oriented abstraction of Actors, it has
 
 Its worth pointing out that due to this conformity of the Actor construct with the object essence, scholars do not use the terminologies consistently. In this thesis, we use *Actors* to refere to the concept formulated by Hewitt and refined by Agha, and *Active Objects* for the pattern introduced by Yonezawa to abstract the Actor semantic into a classic object API. However, in the literature, "Active Object" can also be found to be used interchangably with the term "Actor".
 
-The following example illustrates the subtle difference in the behavioor of classic versus active objects:
+The following example illustrates the subtle difference in the behavior of classic versus active objects:
 
 ``` {language:java}
 class Fnord {
@@ -197,10 +197,10 @@ The major benefit of the Active Object abstraction compared to classic Actors *t
 
 Active Objects on the other hand provide ordinary object-like interfaces. Sending a message to an AO means calling a method with a fixed signature of the object (the proxy respectivly). Thus, only the methods available in the objects public interface are valid to be called, and a compiler is able to statically ensure this during compile time. This is true for the messages dispatched, as well as for state passed by a messages via any method arguments. On the other hand, due to the nature of AO interfaces, they only provide message passing in a point-to-point communication style. Broadcasting messages would require one method call to address multiple objects, which isn't intended by the object abstraction [@Yon86].
 
-The Active Objects method signatures do not only define communication with a certain degree of static type safety, but also influence the behavior of the objects thread of control, that is they constrain synchronization [@Lav95]. In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
+The Active Objects method signatures do not only define communication with a certain degree of static type safety, but also influence the behavior of the object's thread of control, that is they constrain synchronization [@Lav95]. In the original work of Yonezawa et al. they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
 
 * Past Type
-  : The message is dispatched and the sending objects thread of control immediatelly continues. It does not wait until the message has been processed by the receiver. This is equal to message passing in the Actor model.
+  : The message is dispatched and the sending object's thread of control immediatelly continues. It does not wait until the message has been processed by the receiver. This is equal to message passing in the Actor model.
 
 * Now Type
   : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replied the result. This is equal to a procedure call with a return value.
@@ -208,59 +208,35 @@ The Active Objects method signatures do not only define communication with a cer
 * Future Type
   : The senders thread of control immediatelly returns, but receives a reference to the result that will be available at some point in the future, once the receiving object has processed the message and replied.
 
-The example above illustrates two of these behaviours of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 
+The example above illustrates two of these behaviors of method invocation of Active Objects. While `void add(int)`{language:java} only dispatches a message and immediately returns (past type), `int get()`{language:java} actually waits for a result (now type). Using the future type requires to include an additional abstraction of concurrency, the *Future*. 
 
 
-## Combination with other Concurrency Abstractions {#sec-actor-concurrency-combination}
+## Integration of other Concurrency Abstractions {#sec-actor-concurrency-combination}
 
 
-~LitNote
-* [@Tas13] "Why Do Scala Developers Mix the Actor Model with other Concurrency Models?"
-    * "that many of the programs mix actors with other kinds of concurrent entities such as Java threads."
-* [@Les09] "Concurrent Programming Paradigms, A Comparison in Scala"
-* [@Swa14] "Towards Composable Concurrency Abstractions"
-~
+The Actor model is a mature, general purpose model for expressing concurrent computation. It has some clear principles which must be upheld in order to ensure the intended semantic. Besides these, the model does not make additional assumptions and restrictions. This makes Actors flexible and applicable for general purpose computation. Concurrency, or the suitability for it, is basically merely an inherited side-effect. As a result, it allows the model to be combined with additional arbitrary approaches to express computation (even concurrent ones), as long as such do not jeopardize the Actor semantic.
 
-The actor model is a mature, general purpose model for expressing concurrent computation. It has some clear principles which must be upheld in order to ensure the intended semantic. Besides these, the model does not make additional assumptions on the environment it is used in [schlecht formuliert]{.mind}. This make the Actor model flexible and applicable for general purpose computation. Concurrency is basically a mere side-effect from its principles [citation?]{.mind}. As a result, it allows the model to be combined with additional arbitrary approaches to express computation, as long as such do not jeopardize the Actor semantic. Even other concurrency abstractions are not excluded from this.
+As such, mixing Actors with other concurrency models has been common. The reasons for introducing additional abstractions are manyfold. Tasharofi et al. empirically found that the major inadequacies of Actor systems are thought by programmers to be in their lack of efficiently supporting blocking operations (especially IO) and that many communication protocols hard to express in an asynchronous messaging style [@Tas13].  
 
-As such, mixing Actors with other concurrency models has always been common. The reasons for introducing additional abstractions are manyfold. Tasharofi et al. empirically found that the major inadequacies of Actor Systems are found in there lack of efficiently supporting blocking operations (especially IO) and that developers find many communication protocols hard to express in an asynchronous messaging style [@Tas13].  
-
-Therefore, in order to overcome these shortcommings, additonal concurrency models are interweaved. This raises the issue of the requirements for any two concurrency models being *composable* without any inconsistencies.
-
-Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. The Isolated Turn Principle of the Actor model already gives a strong boundry to ensure these properties [@Kos16]. Added concurrency concepts therefore must not weaken this.
-
-~LitNote
-* Drawbacks of breaking the Actor semantic [@Tas13]:
-    * potential of fine-grained (low level?) data races (also in [@Swa14], see "safety")
-    * reduce readability, maintainability
-~
+Therefore, in order to overcome these shortcommings, additonal concurrency models are interweaved. This raises the issue of the requirements for any two concurrency models being *composable* without any inconsistencies. Swalens et a. regard two concurrency models composable if their integration does not result in any new effects regarding *safety* and *liveness* that have not been there before [@Swa14]. The Isolated Turn Principle of the Actor model already gives a strong boundry to ensure these properties [@Kos16]. Added concurrency concepts therefore must not weaken these. Especially, the introduction of low-level data races is very easy by new abstractions, and must be carefully avoided [@Tas13]
 
 
 ### Futures
 
 
-~LitNote
-* [@Lis88] "Promises: linguistic support for efficient asynchronous procedure calls in distributed systems"
-* [@Fla99] "The semantics of future and an application"
-~
+The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of execution may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated [@Tan07].
 
-The traditional notion of a procedure call is that the execution flow only continues once the computation performed by the called procedure has finished. Of course, given procedure could dispatch a concurrent execution and return without a result, thus the flow of execution may actually resume before said computation is finished in general. However, if given procedure provides a return value, the control flow is expected to *block* until respective value has been calculated. [irgendwas sollte ich hier zitieren]{.mind}
+In many cases the respective result is not required immediatelly by the subsequent computation. The control flow may continue without accessing given value for some time. Thus it is possible to resume the caller's activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion. Their calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13]. 
 
-In many cases the respective result is not required immediatelly by the subsequent computation. The control flow may continue without accessing given value for some time. Thus it is possible to resume the callers activity, while the called procedure is executed concurrently in a separate thread of control. The procedure initially simply returns a placeholder that will contain the actual result value at some point in the future [@Wel05; @Fla99]. Such values are therefore used in a *semi-synchronous* fashion [TODO wo stand das nochmal?!]{.mind}. There calculation is performed *asynchronously* in general. The calling and the called thread are again *synchronized* once the placeholder is issued for the actual result. This is sometimes dubbed to *touch* or *claim* the value, and may expand to blocking the current control flow if the result is not yet available [@Wel05; @Tas13]. 
-
-The concept of such eventually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* that "delivers the value of an expression at some later time". Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18]. The kind of evaluation order expressed by these concepts is sometimes refered to as *call-by-future* [@Bak77] or *call-by-need* [@Agh85a].
+The concept of such eventually retrievable values is not uniformly named in the literature. Baker and Hewitt [@Bak77] describe the concept of a *Future* which deliver the result of an expression eventually. Liskov and Shrira [@Lis88] extended this idea by introducing a data type called *Promise* for result values that may be single-assigned at some point in the future. More seldomly used terms are *Eventual*, *Delay* or *Deferred* [@Pra18]. The kind of evaluation order expressed by these concepts is sometimes refered to as *call-by-future* [@Bak77] or *call-by-need* [@Agh85a].
 
 Some programing languages, among them Java and Scala, have a special view on such eventual values, for they support both `Future`{language:java}s as well as `Promise`{language:java}s. There, a `Future`{language:java} represents a read-only container used as the placeholder for an eventually computed value, while a `Promise`{language:java} is a single-assignment variable used explicitely to set a value at *some* point in time, i.e. to complete a `Future`{language:java}[^fn-java-promise]. In other words, a `Future`{language:java} referes to a `Promise`{language:java} that will be kept eventually [@Hal18; @Pra18].
 
 [^fn-java-promise]: Therefore it is called `CompletableFuture`{language:java} in Java, instead of `Promise`{language:java} as it is in Scala.
 
-Though today all designations tend to be used interchangeably, and refere to roughly the same idea [@Swa14], we will confine to the term "Future" as it is used in Java and Scala, and to its semantic as is provided by these languages.
+Though today all designations tend to be used interchangeably, and refere to roughly the same idea [@Swa14], we will confine to the term "Future" as it is used in Java and Scala, and to the semantic as is provided by these languages.
 
-~Todo
-used for async (remote) procedure calls; may be type safe as in Java/Scala (but was originally dynamically typed)
-~
-
-There has been a long tradition of combining Actors with Futures. Agha describes that Actors are often used to model call-by-need computation [@Agh85a], which is essentially a Future. It can also be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example back then only demonstrated two of them though (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. Orleans uses Promise/Futures as the only form of method call for all Active Objects [@Ber14].  
+There has been a long tradition of combining Actors with Futures. Agha describes that Actors are often used to model call-by-need computation [@Agh85a], which is essentially a Future. It can also be traced back to ABCL/1 and its Active Object notion [@Yon86]. Three kinds of message passing for AOs have already been discussed. The example then merely demonstrated two (past type and now type). The third, coincidentially called *future type*, is actually the result of combining Actor concurrency semantic with the Future concurrency abstraction [@Tas13]. Orleans uses Promise/Futures as the only form of method call for all Active Objects [@Ber14].  
 
 For a complete formal definition of Future semantic we refere the interrested reader to Flanagan and Felleisen [@Fla99].
 
@@ -268,25 +244,10 @@ For a complete formal definition of Future semantic we refere the interrested re
 ### Software Transactional Memory
 
 
-~LitNote
-* [@Sub11] demonstrates how Akka support STM together with Actors
-* [@Kos16] "43 Years of Actors: a Taxonomy of Actor Models and Their Key Properties"
-    * "...when an operation spans several messages the programmer must provide a custom synchronisation mechanism to pre- vent potential bad interleavings and ensure correct execu- tion"
-* [@Sha17c]:
-    "control the isolation level across concurrent computations"
-~
+The asynchronous messaging style of Actors tends to become a burden when it is required to have some sort of consensus between multiple Actors, for the model does not provide an adequat mechanism to abstract operations involving multiple messages [@Sub11]. Such is expected to be taken care of by the programmer.
 
-As we've pointed out, the Actor model provides single-threaded semantic inside an Actor while processing one message. On the other hand however, the asynchronous messaging style tends to become a burden when it is required to have some sort of consensus between multiple Actors, for the model does not provide an adequat mechanism to abstract operations involving multiple messages [@Sub11]. Such is expected to be taken care of by the programmer.
-
-A well known concept to provide a single-threaded appearence on accessing some state or memory that is generally accesses concurrently, is called *transaction*. A transaction is a computation that does not have to be atomic by itself (e.g. larger code block), but still logically appreas to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If for some reason the transaction becomes invalid, usually for it can not be guaranteed to run in isolation due to a write collisions [@Sub11], all state modifications are rolled back accross the entire code segments involved in the transaction. We generally consider transactional semantic realized in software[^fn-hardware-transaction] only, which is commonly refered to as *Software Transactional Memory* (STM).
+A well known concept to provide a single-threaded appearence on accessing some state or memory that is generally accesses concurrently, is called *transaction*. Such is a computation that does not have to be atomic by itself (e.g. code block), but still logically appreas to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If for some reason the transaction becomes invalid, usually for it can not be guaranteed to run in isolation due to a write collisions [@Sub11], all state modifications are rolled back accross the entire code segments involved in the transaction. In the scope of this thesis, merely transactional semantic realized in software[^fn-hardware-transaction] is considered, which is commonly refered to as *Software Transactional Memory* (STM).
 
 [^fn-hardware-transaction]: Originally, the concept was proposed for supporting transactions in functional languages, but in hardware. Hence the distinction.
 
-There are multiple ways how transactions are realized. For example, they can be done directly in hardware [citation!]{.mind}. This means on the other hand they are also possible to be modeled entirely within software. 
-
-~Todo
-Hier etwas erklären wie STM intern funktioniert, siehe [@Les09]
-~  
-
-Combining transactions with Actors can have a huge impact on performance. Especially write collisions raise the amount of coordination required. Though this can be done transparently by abstractions provided by an Actor system, it always means additional message processing of the Actors involved, potentially turning into a bottleneck [@Sub11]. This is especially crucial e.g. for proposed database concepts leveraging the Actor model, for transactions are an essential functionality in database systems [@Sha17c].
-
+Combining transactions with Actors can have a huge impact on performance. Especially write collisions raise the amount of coordination required. Though this can be done transparently by abstractions provided by an Actor system, it always means additional message processing of the Actors involved, potentially turning into a bottleneck [@Sub11].
