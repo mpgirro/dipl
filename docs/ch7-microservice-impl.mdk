@@ -108,6 +108,76 @@ Channels for distributed communication are more likely to provide options to app
 ~
 
 
+### Communication Abstractions
+
+
+Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced by building upon annotation XXX [WIE NENNT MAN DAS NOCHMAL?! wenn annotationen eine funktion bekommen]{.red}. 
+
+`S` &rarr; `I`
+
+REST receive:
+
+```{language:java}
+@RestController
+public class SearchResource {
+  @GetMapping("/search")
+  public ResponseEntity<?> search(@RequestParam("q") String q) {
+    // search for query
+  }
+}
+```
+
+...
+
+REST send:
+
+```{language:java}
+@FeignClient(name = "echo-index", configuration = FeignConfig.class)
+public interface IndexClient {
+  @GetMapping(value = "/index/query")
+  Results getResults(@RequestParam("query") String q;
+}
+```
+
+---
+
+TODO: das Bsp auf crawler send und parser receive umbauen!
+
+`W` &rarr; `Q` &rarr; `P`
+
+AMQP receive:
+
+```{language:java}
+@RabbitListener(bindings = @QueueBinding(
+  value     = @Queue(value = "crawler-queue", durable = "true"),
+  exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+  key      = "${echo.amqp.crawler-routingkey}")
+)
+public void receive(Message msg) { /* handle msg */ }
+```
+
+laut stackoverflow einfacher <https://stackoverflow.com/questions/42504883/how-to-deal-with-json-message-with-spring-rabbit-in-spring-boot-application>
+
+```{language:java}
+@RabbitListener(queues = "crawler")
+public class Receiver {
+    @RabbitHandler
+    public void receive(Message msg){ /* handle msg */ }
+}
+```
+
+...
+
+AMQP send:
+
+```{language:java}
+final AmqpTemplate amqpTemplate = ... // init
+queue.convertAndSend(EX, RK, msg);
+```
+
+where `EX` and `RK` refere to static values for *exchange* and *routing key* required by the queue protocol.
+
+
 ## Discovery
 
 
