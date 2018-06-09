@@ -1,9 +1,9 @@
 
-Concurrency {#ch-concurrency}
+Concurrent Computation {#ch-concurrency}
 ===========
 
 
-~ Epigraph { caption: "Rick Hickey"}
+~ Epigraph { caption: "Rich Hickey"}
 What matters for simplicity is that there's no interleaving.
 ~
 
@@ -58,7 +58,7 @@ A general definition incorporating these interrelations is given by Baeten [@Bae
 
 > "Concurrency theory is the theory of interacting, parallel and/or distributed systems."
 
-Subsequent chapters will merit attention to abstractions not only able of the conception of concurrent execution in general, but also providing parallel as well as distributed capabilities in a transparent way. 
+Subsequent chapters will merit attention to abstractions not only able of the conception of concurrent computation in general, but also providing parallel as well as distributed capabilities in a transparent way. 
 
 
 ## Correctness Properties
@@ -98,7 +98,7 @@ Many different approaches to explicitely express concurrent computation on a pro
 #### Case Study: Concurrency in Java
 
 
-Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06]. The following example illustrates the usage for the subsequent discussion:
+Java is an object-oriented programming language with a C-inspired syntax for the so-called *Java Virtual Machine* (JVM). It offers support for expressing concurrency via threads and basic concepts for handling access to any shared resources between such. Concurrent computation is to be defined through the so-called `Runnable`{language:java} interface. Its default implementation is available as the `Thread`{language:java} class [@Goe06;@Gos15]. The following example illustrates the usage for the subsequent discussion:
 
 ```{language:java}
 class State {
@@ -106,7 +106,6 @@ class State {
 }
 
 final State s = new State();
-
 final Runnable task = () -> {
     synchronized(s) {
         s.x += 1;
@@ -120,7 +119,7 @@ new Thread(task).start();
 
 The offered `synchronized`{language:java} primitive is used to express mutual exlusion to a shared resource when concurrent modification to it is possible. In this case, some state denoted by `s` has to be managed between two threads having both access to it through the scope of the defined `Runnable`{language:java}. Note that though `s` is declared `final`{language:java}, its publicly visible member `x` remains mutable.
 
-The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. Alternatively, the `synchronized`{language:java} keyword could also have been used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
+The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06;@Gos15]. When using `synchronized`{language:java} as a block construct, this monitor has to be provided as an argument. In this case, the state variable can simply double as the monitor in addition to being the shared resource. Alternatively, the `synchronized`{language:java} keyword could also have been used as part of the signature of a method in `State`{language:java} holding the logic. Such signature usage is equal to defining `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} would then refere the object `s`. Thus the method's object reference acts as the monitor, just like in the example.
 
 A more modern alternative towards synchronization is offered by the `Lock`{language:java} interface. In contrast to `synchronized`{language:java}, which is an enforced synchronization primitive, i.e. locks are always exclusive to one thread at a time, the various implementations of `Lock`{language:java} may be unenforced, such that they may offer options of control on locking, e.g. simultanious access for multiple readers [@Sub11;@Goe06]. To provide this degree of freedom, Java neither detects shared state nor requires its synchronization per se, thus programmers may easily introduce data races due to omitted access control. Any alternative concurrency abstraction for Java, e.g. through a library or framework, has to take this into account.
 

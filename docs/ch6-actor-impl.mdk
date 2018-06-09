@@ -10,7 +10,7 @@ One actor is no actor. Actors come in systems.
 
 This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. The utilized Actor system is called *Akka*. We will focus the evaluation on the linguistic support the framework provides to realize the requirements, that is its support for the properties of the Actor model and the provided programming abstractions for succient expression of communication and synchronization between Actors, as is suggested by Karmani et al. [@Kar09].
 
-It is importent to realize that though there is *the* conceptual model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language (Erlang) or as a library (Scala Actors, Akka) [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations will be relevant to evaluate the linguistic support offered by Akka.
+It is importent to realize that although there is *the* conceptual model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language (Erlang) or as a library (Scala Actors, Akka) [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations will be relevant to evaluate the linguistic support offered by Akka.
 
 
 ## Akka {#sec-akka}
