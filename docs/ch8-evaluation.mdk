@@ -92,7 +92,7 @@ This approach on introducing specialized database systems based on respective pe
 
 According to the general concerns of concurrent computation, tasks refraining from utilizing mutuable shared memory require other kinds of communication links which facilitate message passing instead. As both the Actor model and Microservice principles strictly omit any form of shared state, they too require what will be refered to as *communication channels* for messaging. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies an implicit synchroniztion of the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state would must explicitely require to define an order of accessing information [@And83].
 
-Throughout the literature we've identified various forms of information flows offered by channel concepts [@Mon14;@Gui09;@Spe90;@Roe15;@Agh99;@Tan07;@Bac03]. Generally they can be distinguished alongside two dimension: number of recipients and response style. Authors declare varying taxonomies for the resulting combinations. The following will be used in the remainder of this work:
+Throughout the literature we've identified various forms of information flows offered by channel concepts [@Mon14;@Gui09;@Spe90;@Roe15;@Agh99;@Tan07;@Bac03]. Generally they can be distinguished alongside two dimensions: number of recipients and response coupling. Authors declare varying taxonomies for the resulting combinations. The following table provides an overview of the terminology used in the remainder of this work:
 
 ~ center
 |------------------|------------------------|-------------------------|
@@ -108,7 +108,7 @@ Throughout the literature we've identified various forms of information flows of
 
 Asynchronous one-to-one messaging is inherent to the Actor model. The message sending primitive realizes notification style communication. An asynchronous response is possible in the same way, yet requires the address of the requestor. Therefore Akka provides the `sender()` method within Actors, which produces in each turn the `ActorRef`{language:scala} of the message's originator. Microservices achieve asynchrony via message queues. Responding depends on the channel protocol. AMQP does not transmit the senders location, thus if such is required it has to be included into messages individually. 
 
-Synchronous one-to-one messaging can be abstracted ontop of Actor messaging primitive, as in general any synchronous communication can be modeled using asynchronous constructs, and vice versa [@Agh97]. Akka provides linguistic support for request/response styled messaging through its `ask`{language:java} method and the `?` alias thereof on `ActorRef`{language:scala}. Microservices can utilize network mechanism dedicated to this interaction pattern. In their context, REST is the most prominent example. 
+Synchronous one-to-one messaging can be abstracted ontop of Actor messaging primitive, as in general any synchronous communication can be modeled using asynchronous constructs, and vice versa [@Agh97]. Akka provides linguistic support for request/response styled messaging through its `ask`{language:java} method as well as the `?` alias thereof on `ActorRef`{language:scala}. Microservices can utilize network mechanism dedicated to this interaction pattern. In their context, REST is the most prominent example. 
 
 One-to-many communication is neither inherent as a primitive to Actors nor Microservices, thus requires additional effort. Conceptually it can be modeled as sending a message to all intended recipients in a one-to-one fashion each. As this is a generic functionality involving merely a communication mechanism, messages and recipients without any domain specific functionality, it is convenient to be modeled as a separate task unit:
 
@@ -140,76 +140,31 @@ This two notions, high cohesion and low coupling, allow to reason about the *ind
 
 
 Both Actors and Microservices are the components that are being executed concurrently within their system architectures. However, both constructs have different notions of concurrency, which is a direct result of the underlying concepts.
-...
-
-~LitNote
-Je nachdem ob ich es oben schon erwähnen will, aber [@And83] definiert 3 "main issues of concurrency" (ACHTUNG wörtliches zitat):
-
-1. "how to indicate concurrent execution"
-2. "which mode of interprocess communication to use"
-3. "which synchronization mechanism to use"
-
-...
-
-Andrews and Schneider argue that there are three main issues regarding the "design of a notation for expressing a concurrent computation" [@And83]: indication of execution, interprocess-communication and synchronization mechanism.
-
-* Any concurrent execution has to be *indicated* in some form (And83). This can be explicit (Threads, etc.) or implicit (bezug nehmend auf Ch2)
-* The kind of interprocess communication, i.e. the characteristics of the mechanism
-* The approach towards synchronization
-
-Actors as we
-~
 
 
-### Threads, Processes and Tasks
+### Concurrency through Threads and Processes
 
 
-~ todo
-Beinhaltet diese Section wirklich so bahnbrechende Erkentnisse? Oder hab ich das ohnehin schon zur Genüge angedeutet?
-~
+Actors and Microservices are fundamentally differently executed. Scala's standard Actors have provided two different execution semantics with their Actor abstraction [@Hal09]. One is based on threads on which Actors are scheduled to be executed. Such Actors are executed in an Inversion of Control manner [@Hal06], similarly to the strategy of the Spring framework. The other is purely event-based and therefore without IoC. Thread-based Actors are invoked by their current thread to execute a turn and upon completion return to their calling thread. Event-based Actors on the other hand do not have (and need) a thread, thus cannot return to one. Instead, they facilitate a much cheaper concept called *continuation-passing style* known from functional programming, where a function refrains from returning a computed result by calling a subsequent function, the so-called *continutation closure*. Akka extends this approach by defining as single closure to be used by for all messages, which has shown to be much more effective [@Hal12]. `Dispatcher`{language:scala}s can be used to influence the thread assignment strategy used for concurrently running the behavior closures [@Hal12]. Threads are conceptually similar to processes, except that multiple of them can exist within a single process [@Bac03]. There the Actor thread-pools live in one or few processes, such that many Actors share the same memory boundries of the respective process. 
 
-Actors and Microservices are fundamentally differently executed. The standard Scala actors have provided two different execution semantics with their actor abstraction [@Hal09]. One is based on threads on which actors are scheduled to be executed. Such actors are executed in an Inversion of Control manner [@Hal06], similarly to the strategy of the Spring framework. The other is purely event-based and therefore without IoC. Thread-based actors are invoked by their current thread to execute a turn and upon completion return to their calling thread. Event-based actors on the other hand do not have (and need) a thread, thus cannot return to one. Instead, they facilitate a much cheaper concept called *continuation-passing style* known from functional programming, where a function refrains from returning a computed result by calling a subsequent function, the so-called *continutation closure*. Akka extends this approach by defining as single closure to be used by for all messages, which has shown to be much more effective [@Hal12]. `Dispatcher`{language:scala}s can be used to influence the thread assignment strategy used for concurrently running the behavior closures [@Hal12]. Threads are conceptually similar to processes, except that multiple threads can exist with a single process [@Bac03]. There the actor thread-pools live in one or few processes, such that many actors share the same memory boundries of the respective process. 
+Although executed ontop of threads, the Isolated Turn Principle essentially define Actors as single-threaded entities. Only in combination with asynchronous message passing as dictated by the model allows for a concurrent execution of the components. As such, an Actor has no notion of any concurrency at all in general. As was demonstrated, additional concurrency abstractions may be introduced into Actors, as long as those do not break model semantic. Futures were given as one option, with the potential pitfalls discussed in chapter [#ch-actor-impl]. 
 
-Microservices on the other hand are ...
+<!-- TODO delete?
+Such abstract a value which will be available at some point in time eventually. Basically they introduce a notion of semi-blocking behaviour [irgendwo hab ich hierfür ein zitat!]{.mind}. Either the value is available when trying to access it, or blocking is the consequence until it is. A third way of handling Futures is possible, which directly defines consecutive computation on the value without blocking, but once it becomes available. In any case however, they pose the risk of accidentially introducing data races. As a safer alternative, Actors can use delegation to child Actors to provide concurrent processing, without jeopardising safe encapsulation as do Futures.
+-->
 
+Microservices, on the other hand, are concurrent distributed processes. Their notion of concurrency may deviate from Actor, for they internally do not have a counterpart to the Isolated Turn Principle to respect. Though a service also receives messages via its public API and reacts to them, the flexibility in the design allows them to be task units which are concurrent internally. Thus they may utilize multiple threads to perform blocking operations without blocking their entire process, as is a widespread strategy in the domain of distributed systems in general [@Tan07]. This also enables them to react to multiple messages simultaniously. 
+ 
+The drawback of this degree of freedom is the set of issues any internal concurrency might introduce. Accessing state cannot in general be assumed a safe operation if it is accessible across threads, and thus synchronization as it has been demonstrated in the Java case study has to be applied. Thus, programming with Microservices does not free one from the many hassles of low-level concurrency concerns per se. However, the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems. As a result, linguistic approaches to SOC migth try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatch dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
 
-~LitNote
-* [@Tan07] "Distributed Systems: Principles and Paradigms, 2/E"
-    * Threads in DS: "An important property of threads is that they can provide a convenient means of allowing blocking system calls without blocking the entire process in which the thread is running. This property makes threads particularly attractive to use in dis- tributed systems as it makes it much easier to express communication in the form of maintaining multiple logical connections at the same time"
-* [@Hal09] Scala Actors: Unifying thread-based and event-based programming
-    * "There is an impedance mismatch between message-passing concurrency and virtual machines, such as the JVM. VMs usually map their threads to heavyweight OS processes. Without a lightweight process abstraction, users are often forced to write parts of concurrent applications in an event-driven style which obscures control flow, and increases the burden on the programmer"
-    * --> Event Driven Programming Style (also so Callbacks in Java zB) sind Mist, 
-* [@Agh91] "Actors as Processes: The representation that we are implementing models actors as light-weight processes and requires the presence of a kernel run-time system on each node."
-* Hier kann ich die gesamte Erlang Literatur einbauen, denn die nennen ihre lightweight constructs ja auch *process*
-* [@Kar09] beschreibt location transparency bei actors
-* [@Swa14] "Towards composable concurrency abstractions"
-    * "We classify concurrencymodels that use structured communication in terms of messages, instead of relying on shared memory, as communicating threads."
-    * "Often, each thread has only private memory, ensuring that all communication is done via messages."
-~
-
-~todo
-Processe sind immer "fett", durch das OS; Actors hängen davon ab wie sie umgesetzt sind: Als event-based mit callbacks, mit einem threadpool anstatt jedem Actor seinen eigenen, weil threads ebenfalls fett sind (bei der JVM jeder thread ein process); in Erlang auch "process", was aber light-weight thread speziell durch die BEAM VM
-~
-
-Akka Actors are executed on threads, sharing such from 
-
-This is not a requirement. Originally, Scala Actors supported two distinct kinds of defining Actors: the thread-based Actors, similar to the Akka variant, and event-based Actors, a more light-weight but also more limited implementation based on the idea of method callbacks [@Hal09].
-
-Microservices run in their own process. Such are relatively heavyweight
+Alternatively, the design freedom of services in general also allows them to apply Actor-based concurrency internally, such that the benefits of synchronization-free programming can be harvested by services too. 
 
 
-
-
-### Concurrency of Components
-
-
-The Isolated Turn Principle essentially define Actors as single-threaded entities. Only in combination with asynchronous message passing as dictated by the model allows for a concurrent execution of the components. As such, an Actor has no notion of any concurrency at all in general.
-
-As was demonstrated, additional concurrency abstractions may be introduced into Actors, as long as those do not break model semantic. Futures were given as one option. Such abstract a value which will be available at some point in time eventually. Basically they introduce a notion of semi-blocking behaviour [irgendwo hab ich hierfür ein zitat!]{.mind}. Either the value is available when trying to access it, or blocking is the consequence until it is. A third way of handling Futures is possible, which directly defines consecutive computation on the value without blocking, but once it becomes available. In any case however, they pose the risk of accidentially introducing data races. As a safer alternative, Actors can use delegation to child Actors to provide concurrent processing, without jeopardising safe encapsulation as do Futures.
-
-Microservices on the other hand are concurrent distributed processes. There notion of concurrency may therefore deviate from Actor, for they internally do not have to respect something like the Isolated Turn Principle. Though a service also receives messages via its public API and reacts to them, the flexibility in the design allows to create task units that react to multiple messages concurrently, e.g. to make a synchronouse call and blocking wait for a reply within the routines code, without blocking the whole task unit. The drawback of this degree of freedom is the set of issues any internal concurrent resource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locks and can savely assume its state as up to date. When a Microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
+<!-- TODO delete?
+...rresource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locks and can savely assume its state as up to date. When a Microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
 
 Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, locking and synchronization as demonstrated in the concurrency in Java case study might have to be dealt with. However, the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. As a result, linguistic approaches to SOC migth try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatch dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
+-->
 
 
 ### Fairness

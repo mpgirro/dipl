@@ -75,7 +75,7 @@ Access to the database is usually supported in a concurrent way by the database 
 Internally, the IoC container of Spring executes, as with most other concern, the database interactions on a thread-pool, thus in a concurrent way.
 
 
-## Communication Channels
+## Communication Mechanisms
 
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}

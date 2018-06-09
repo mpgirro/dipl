@@ -167,7 +167,7 @@ The Actor model is soley built on the concept of *asynchronous* message passing.
 
 However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and not perform any processing inbetween.
 
-*Echo:Actor* faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
+Echo faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
 
 [grafik hier einfügen]{.mind}
 
@@ -237,7 +237,7 @@ Any synchronous information flow should provide some sort of timeout, to prevent
 
 Akka therefore supports a special timing mechanism. Actors, e.g. newly spawned delegation-slaves, may register to receive a timeout message after a given time period and define an appropriate message handling behavior. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occures and a respective reaction is executed [@All13; @Roe15].
 
-It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions [habe ich allgemeine literatur wie timer gehen? hat akka da ein paper verlinkt?]{.mind}. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time [was zitieren? dieses buch von Bonèr?]{.mind}. Therefore, offering solutions for timer mechanism are a concern of many Actor Systems, e.g also in Erlang [@Arm93] and Orleans [@Ber14].
+It is of interrest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time. Therefore, offering solutions for timer mechanism are a concern of many Actor Systems, e.g also in Erlang [@Arm93] and Orleans [@Ber14].
 
 To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Actors can register a message sending operation to be triggered after a certain period of time:
 
@@ -276,13 +276,13 @@ Here, the typization `msg:U`{language:scala} is guaranteed. The behavior is cons
 
 Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. 
 
-We've found that such kinds of compile-time message saftey restrictions, i.e. without the tighter coupling Active Objects provide [tun sie das wirklich? schon oder? kann ich das einfach so behaupten?]{.mind}, are a rare capability among Actor Systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
+We've found that such kinds of compile-time message saftey restrictions, apart from Active Objects, are a rare capability among Actor Systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
 
 
 ## Persistence and IO
 
 
-In order to be able to persist their internal states, Actors must utilize some kind of data persistance mechanism, e.g. a database [citation?]{.mind}. Due to their single threaded semantic, only a single interaction with the database is possible at the same time. This is inefficient, for database access is input/output (IO), and such is a performance limiting factor in general [@Sub11]. Theoretically, the single threaded semantic of Actors would make database transactions obsolete, but we've found that common APIs require active transaction in any case, e.g. with JPA.
+In order to be able to persist their internal states, Actors must utilize some kind of data persistance mechanism, e.g. a database. Due to their single threaded semantic, only a single interaction with the database is possible at the same time. This is inefficient, for database access is input/output (IO), and such is a performance limiting factor in general [@Sub11]. Theoretically, the single threaded semantic of Actors would make database transactions obsolete, but we've found that common APIs require active transaction in any case, e.g. with JPA.
 
 One approach to overcome the single threaded limitation is by utilizing a non-blocking API for database connections. Such provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the Actors thread pool. Monadic methods once again allow to define further computation on this result once it becomes available, introducing the immanent risk of accidential data races by passing mutable state into the `Future`{language:scala}'s scope.  
 
@@ -290,7 +290,7 @@ If non-blocking APIs are not available, then the efficient strategy to handle mu
 
 Isolation must not be broken though, therefore these children do not share the same database connection interface object, or any other immutable data. Simply the restriction on encapsulation the persistant part of state inside one single Actor is loosened up to allow a narrow group of Actors to manage it instead. These must utilize the database systems transaction system, as is required by any concurrent database interaction [für diesen absatz muss ich irgendwas zutieren. fragt sich nur woher ich das nehme. hab ich mir ja theoretisch wie praktisch selber ausgedacht...]{.important}. 
 
-The second strategie is persued in *Echo:Actor*. It still involves blocking operations inside Actors. In fact, it increases it by the factor equal to the number of used child Actors. Therefore, a shared dispatcher should be used for all Actors involved in the logical encapsulation of the persistant state. The underlying thread pool can use a fixed number of threads equal to the number of involved Actors. This provides a predictable impact on performance, in contrast to Akkas default dynamically sized thread pools, where threads are added when high demand (i.e. due to many blocking operations) is being detected. Such can consume a lot of system resources [@All13].
+The second strategie is persued in Echo. It still involves blocking operations inside Actors. In fact, it increases it by the factor equal to the number of used child Actors. Therefore, a shared dispatcher should be used for all Actors involved in the logical encapsulation of the persistant state. The underlying thread pool can use a fixed number of threads equal to the number of involved Actors. This provides a predictable impact on performance, in contrast to Akkas default dynamically sized thread pools, where threads are added when high demand (i.e. due to many blocking operations) is being detected. Such can consume a lot of system resources [@All13].
 
 We see, efficient handling of IO persues the same strategies as the introduced abstractions of synchronouse Actor communication.
 
