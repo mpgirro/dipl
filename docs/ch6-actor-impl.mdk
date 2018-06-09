@@ -153,12 +153,8 @@ There are however still other cases where Futures may come into play. The follow
 ## Synchronous and Asynchronous Communication
 
 
-~LitNote
-howto channel types (point-to-point, pub/sub), specialized channels (dead letters, guaranteed delivery --> siehe "Akka in Action"); easy to get pub/sub or MQ routing behaviour via Routers (mostly same Actor as Supervisor); why not use JMS (it would offer both MQ/PubSub behaviour, but is not open and not lightweight)
-~
-
 ~Todo
-* den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
+den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
 ~
 
 The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e. `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`.
