@@ -20,6 +20,9 @@ Instead, Microservices are composed using a more traditional technology stack. J
 
 Spring is based on the special form of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic, i.e. the scheduling on a thread pool, to the IoC container. This is usually refered to as *Dependency Injection* [@Wal07]. Conceptually this has a certain resemblence to the execution of Actors by an Actor Systems [@Hal06].
 
+As was done with the Actor implementation, attention will be paid to the linguistic support provided by the framework regarding an easy expression of service requirements.
+
+
 ~ todo
 mehr?
 ~
@@ -31,7 +34,6 @@ mehr?
 The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
 
 Echo's services are conceived through the Spring framework, and as such utilize the concurrent programming structure that is provided through its IoC container. Spring provides a thread pool on which concerns, e.g. so-called *service*-objects (not to be confuses with the Microservice itself), are scheduled to execute invoked methods. This has resemblance to the event-based semantic of actor systems [@Hal06]. Software transactions are used as synchronization mechanism. They are expressed in a declarative programming style with the `@Transactional` annotation on service-object's methods, such that their STM  extend to database transactions transparently [@Wal07].
-
 
 ~ todo
 mehr?
@@ -111,78 +113,38 @@ Channels for distributed communication are more likely to provide options to app
 ### Programming Abstractions
 
 
-Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, such that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler in influence the compilation process (e.g. generate class implementations), Spring uses *reflection* at runtime, such that deployment configuration may still be applied at the cost of runtime overhead and the lack of static compatibility checking. 
+Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, such that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g. to generate class implementations), Spring uses *reflection* at runtime, such that deployment configuration may still be applied without requireing recompilation, but at the cost of runtime overhead and the lack of static compatibility checking. 
 
-...
-
-~ todo
-Bsp auf searcher send und index receive umbauen
-~
-
-REST send:
-
-`S` &rarr; `I`
+For example, the information flow `S` &rightleftarrows; `I` is required to be synchronous, thus Echo applies REST communication. Spring provides a library called *Feign* [@OpenFeign] dedicated to providing annotation-based decorations for Java interfaces, such that clients can consume RESTful endpoints using a dynamic interface implementation. In the examples, such is expressed by in `S`:
 
 ```{language:java}
 @FeignClient(name = "index")
-public interface Client {
-    @GetMapping(value = "/query")
-    List<Result> getResults(@RequestParam("q") String q;
+public interface IndexClient {
+    @GetMapping("/query")
+    List<Result> query(@RequestParam("q") String q;
 }
 ```
 
-REST receive:
+Calling the `query(q)`{language:java} method on an implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion, and returns with the call result. Mapping HTTP body content of the response to domain objects is done transparently (given appropriate XML or JSON serializer are configured with the IoC container), thus any domain object may be used for the method result type  
 
+The request is received by `I` which declares an appropriate endpoint using a similar annotation driven implementation approach: 
 
 ```{language:java}
 @RestController
-public class Resource {
+public class IndexResource {
     @GetMapping("/query")
-    public ResponseEntity<?> search(@RequestParam("q") String q) {
-      // query index for q
+    public List<Result> query(@RequestParam("q") String q) {
+        // query index for phrase q
     }
 }
 ```
 
-...
+This approach models a remote procedure call between the two components. Calling `query("test")`{language:java} of an `IndexClient`{language:java} in `I` is received by `IndexResource`{language:java} in `S` as a call to its `query(String)`{language:java} method with argument `"test"`{language:java}. The method invocation on the client-side is given through the service's programmer, while on the server-side it is done by the service's inversion of control container when a respective request on its exposed REST interface is registered.
+
+Message queue interaction can be expressed in a similar fashion through dedicated annotations for AMQP access and consumption. 
 
 
-
----
-
-~ todo
-Bsp auf crawler send und parser receive umbauen!
-~
-
-`W` &rarr; `Q` &rarr; `P`
-
-AMQP receive:
-
-`W` &rarr; `Q`
-
-```{language:java}
-@RabbitListener(queues = "crawler")
-public class Receiver {
-    @RabbitHandler
-    public void receive(Message msg){ /* handle msg */ }
-}
-```
-
-...
-
-AMQP send:
-
-`Q` &rarr; `P`
-
-```{language:java}
-final AmqpTemplate amqpTemplate = ... // init
-queue.convertAndSend(EX, RK, msg);
-```
-
-where `EX` and `RK` refere to static values for *exchange* and *routing key* required by the queue protocol.
-
-
-## Discovery
+### Discovery
 
 
 Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the connection to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
@@ -199,24 +161,34 @@ In contrast, message queue semantic has the major benefit of a sender being able
 To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
 
 
-## (Fault Tolerance and) Resilience
+### Circuit Breaker
 
-~LitNote
-Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
+
+~ todo
+Annotation Bsp für Hysterix
 ~
 
 
-## Scalability
-
-
 ~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
-    * "Service discovery can make use of locality, resolving hostnames to the service instance that is closest to the requester, hereby achieving geographical scala-bility."
+* Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
+* [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
+    * "Akka provides a circuit breaker implementation that supports basic configuration parameters, such as call time- out, failure threshold and reset threshold"
+    * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
+* [@Car17] "Spring Microservices in Action"
+* [@NetflixHysterix]
+~
+
+~ todo
+Circuit breaker sind die am öftesten in der Literatur beschriebene Fault tolerance / Resilience Methode for Microservices. Daher dient eine kurze Illustration an dieser Stelle als Grundlage für die spätere Evaluierung im Vergleich zur Actor fault tolerance. Vor allem bietet Spring auch eine gute linguistische Abstraktionen an, welche auf dem REST Beispiel von oben aufbaut und dieses erweitert.
 ~
 
 
-## Load balancing {#sec-ms-load-balancing}
+### Load Balancing {#sec-ms-load-balancing}
+
+
+~ todo
+Annotation Beispiel für LB
+~
 
 
 Load Balancing (LB) is the idea of distributing work (the *load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to maximize throughput and minimize response time of the overall system. [quelle? mehr oder minder aus der wikipedia umformuliert]{.red}
@@ -232,6 +204,16 @@ In contrast, with server-side load balancing, the recipient selection is not don
 
 ~ todo
 noch einen schönen Abschluss(ab)satz
+~
+
+
+## Scalability
+
+
+~LitNote
+* [@Dra17c] Dustdar/Dragoni paper!
+    * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
+    * "Service discovery can make use of locality, resolving hostnames to the service instance that is closest to the requester, hereby achieving geographical scala-bility."
 ~
 
 

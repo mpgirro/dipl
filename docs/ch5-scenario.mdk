@@ -32,7 +32,7 @@ Their constructing is led by two basic requirements:
 ## Domain Description
 
 ~ todo
-kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds
+kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds, sodass daraus ersichtlich wird welche Aufgaben eine entsprechende Suchmaschine (= Datenaggregierungs- und Abruf-System) erfüllen muss um ihre Dienstleistung anbieten zu können.
 ~
 
 ## System Components

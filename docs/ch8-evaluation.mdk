@@ -505,8 +505,11 @@ Technology Heterogeneity:
 ~
 
 
-## Fault Tolerance
+## Fault Tolerance and Resilience
 
+~ todo
+__WAS IST DER UNTERSCHIED ZWISCHEN FAULT TOLERANCE UND RESILIENCE?!__
+~
 
 Fault tolerance:
 
@@ -521,19 +524,6 @@ Fault tolerance:
 ...
 
 The message passing communication style facilitated by both Actors and Microservices brings common 
-
-...
-
-Circuit breaker:
-
-~lit
-* [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
-    * "Akka provides a circuit breaker implementation that supports basic configuration parameters, such as call time- out, failure threshold and reset threshold"
-    * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
-* [@Car17] "Spring Microservices in Action"
-* [@NetflixHysterix]
-~
-
 
 ...
 

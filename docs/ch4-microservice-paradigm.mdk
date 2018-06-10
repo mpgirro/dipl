@@ -94,7 +94,9 @@ The term "service" is used in an overloaded manner in the literature. We can ide
 
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu et al. [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi and Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 
+
 ## Independence
+
 
 [TODO]{.red}
 
@@ -108,7 +110,9 @@ In order to avoid confusion, some scholars propose a clear distinction. For exam
 * 
 ~
 
+
 ## Service Communication (Interaction?) {#sec-ms-communication}
+
 
 Any communication between microservices has to happen accross the boundries of the service processes. This is called *inter-process communication* (IPC) [citation needed]{.mind}. Variouse forms of IPC channels exists. Examples of simple IPC mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes.
 
@@ -139,7 +143,9 @@ SOA, OOP
 * [@Dra17a;@Dra17c], high cohesion, loose coupling, independence
 ~
 
+
 ## Concurrent and Distributed Building Blocks
+
 
 ~lit
 WICHTIG:
@@ -183,6 +189,7 @@ Though isolation is ensured and communication adequate, it is still difficult to
 
 ## Size, Scope and Granularity {#sec-ms-granularity}
 
+
 Bonér [@Bon17] criticizes the term "micro" for it encourages debating the actual *size* of a service. Any size definition requires a metric to be able to make comparisons and argue up to which limit an application may be called *Micro*service. Therefore, developers focus on metrics like *Lines of Code* up to more obscure ones, e.g. the reported *Two Pizza Team* size, where a service is written and maintained by a team that can be fed by two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are missleading.
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
@@ -193,7 +200,9 @@ In the Microservice context however, authors do not refere to the SRP a lot. Ins
 
 However, to fine a granularity can become an issues. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularitiy of Microservices [@Sha17a].
 
-## Service-oriented Programming
+
+## Service-Oriented Programming
+
 
 Until now, Microservices have been regarded in the light of a software architectural style. Within, the building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has had a focus on the operation of the service engines, that is their *deployment* [@Gui17;@Xu16]. After all, the deployment context of MSA is the origin of its concurrent nature, that is independet processes of the OS or network. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
 
