@@ -108,55 +108,57 @@ Channels for distributed communication are more likely to provide options to app
 ~
 
 
-### Communication Abstractions
+### Programming Abstractions
 
 
-Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced by building upon annotation XXX [WIE NENNT MAN DAS NOCHMAL?! wenn annotationen eine funktion bekommen]{.red}. 
+Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, such that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler in influence the compilation process (e.g. generate class implementations), Spring uses *reflection* at runtime, such that deployment configuration may still be applied at the cost of runtime overhead and the lack of static compatibility checking. 
+
+...
+
+~ todo
+Bsp auf searcher send und index receive umbauen
+~
+
+REST send:
 
 `S` &rarr; `I`
 
+```{language:java}
+@FeignClient(name = "index")
+public interface Client {
+    @GetMapping(value = "/query")
+    List<Result> getResults(@RequestParam("q") String q;
+}
+```
+
 REST receive:
+
 
 ```{language:java}
 @RestController
-public class SearchResource {
-  @GetMapping("/search")
-  public ResponseEntity<?> search(@RequestParam("q") String q) {
-    // search for query
-  }
+public class Resource {
+    @GetMapping("/query")
+    public ResponseEntity<?> search(@RequestParam("q") String q) {
+      // query index for q
+    }
 }
 ```
 
 ...
 
-REST send:
 
-```{language:java}
-@FeignClient(name = "echo-index", configuration = FeignConfig.class)
-public interface IndexClient {
-  @GetMapping(value = "/index/query")
-  Results getResults(@RequestParam("query") String q;
-}
-```
 
 ---
 
-TODO: das Bsp auf crawler send und parser receive umbauen!
+~ todo
+Bsp auf crawler send und parser receive umbauen!
+~
 
 `W` &rarr; `Q` &rarr; `P`
 
 AMQP receive:
 
-```{language:java}
-@RabbitListener(bindings = @QueueBinding(
-  value     = @Queue(value = "crawler-queue", durable = "true"),
-  exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-  key      = "${echo.amqp.crawler-routingkey}")
-)
-public void receive(Message msg) { /* handle msg */ }
-```
-
-laut stackoverflow einfacher <https://stackoverflow.com/questions/42504883/how-to-deal-with-json-message-with-spring-rabbit-in-spring-boot-application>
+`W` &rarr; `Q`
 
 ```{language:java}
 @RabbitListener(queues = "crawler")
@@ -170,6 +172,8 @@ public class Receiver {
 
 AMQP send:
 
+`Q` &rarr; `P`
+
 ```{language:java}
 final AmqpTemplate amqpTemplate = ... // init
 queue.convertAndSend(EX, RK, msg);
@@ -181,12 +185,12 @@ where `EX` and `RK` refere to static values for *exchange* and *routing key* req
 ## Discovery
 
 
-Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the conncetion to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
+Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the connection to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
 
 * Discovery Registry (D)
   : [TODO service registry]{.red} are ...
 
-Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+The `name` argument of the `@FeignClient`{language:java} annotation in the example given before relates to the designation that the required units will have registered as. Thus REST through Feign automatically integrates discovery mechanisms. Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
 
 Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. [hat das einen einfluss auf Liveness?]{.red}
 

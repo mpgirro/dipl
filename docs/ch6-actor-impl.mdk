@@ -8,7 +8,7 @@ One actor is no actor. Actors come in systems.
 ~
 
 
-This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. The utilized Actor system is called *Akka*. We will focus the evaluation on the linguistic support the framework provides to realize the requirements, that is its support for the properties of the Actor model and the provided programming abstractions for succient expression of communication and synchronization between Actors, as is suggested by Karmani et al. [@Kar09].
+This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an Actor-based programming approach. The focus will be on the linguistic support provided by the used framework (called *Akka*) to realize the requirements, that is its support for the properties of the Actor model and the provided programming abstractions for succient expression of communication and synchronization between Actors, as is suggested by Karmani et al. [@Kar09]. Efficiency considerations will be part of chapter [#ch-evaluation].
 
 It is importent to realize that although there is *the* conceptual model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language (Erlang) or as a library (Scala Actors, Akka) [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations will be relevant to evaluate the linguistic support offered by Akka.
 
@@ -49,33 +49,28 @@ As was pointed out, Akkas Actor system is capable of providing a transparent int
 
 Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
 
-*Visibility* is a property of variables and methods of objects [if]{.important} they are part of the objects interface [@Kni96]. It is a non-trivial concern for encapsulation and subsequently shared mutability [@Sub11; @Goe06]. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
+*Visibility* is a property of an object's variables and methods given they are part of the object's interface [@Kni96]. It is a concern for encapsulation and subsequently shared mutability [@Sub11; @Goe06]. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
 
 ``` {language:java}
 public class Foo extends UntypedActor { 
-
-    public String bar; // visible outside actor scope!
-
+    public String bar; 
     public static Props props() {
         return Props.create(Foo.class, () -> new Foo());
     }
-
     @Override
-    public void onReceive(Object message) {  
-        // handle message
-    } 
+    public void onReceive(Object message) { /* handle message */ }
 }
 ```
 
-Field `bar` in class `Foo`{language:java} has been given *external visibility* by declaring it to be `public`{language:java}. Thus it is part of any object of type `Foo`{language:java}s external interface and therefore influencing the objects encapsulation [@Kni96]. Because visibility and accessibility are orthogonal, `bar` is also accessible from outside the scope of `Foo`{language:java}, and - for it is not delared `final`{language:java} - may be modified the same way too. This violates Actor semantic requirements. 
+Field `bar` in class `Foo`{language:java} has been given *external visibility* by declaring it to be `public`{language:java}. Thus it is part of any object of type `Foo`{language:java}s external interface and therefore influencing the objects encapsulation [@Kni96]. From visibility follows accessibility, such that `bar` is also accessible from outside the scope of `Foo`{language:java}, and for it is not delared `final`{language:java} it may be modified the same way too. This violates Actor semantic requirements. 
 
-Any Java-based Actor implementation therefore faces the potential problem where custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like [@Hal12]:
+Any Java-based Actor implementation therefore faces the potential problem that custom written Actor classes might easily break the required model semantic. In order to cope with this, object-oriented implementations often offer APIs where interaction with an Actor instance is not issued directly through the instances method interfaces, but instead via constructs like [@Hal12]:
 
 ``` {language:java}
 final ActorRef foo = system.actorOf(Foo.props());
 ```
 
-An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the creating Java 8 lambda. For Java lambdas are basically functional closures[^fn-clojure], they only allow to access effectively `final`{language:java} fields inside the lambda scope, preventing the exposure of mutable state to any constructor.
+An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. Using `props()` is common to wrap the creating Java 8 lambda. For Java lambdas are basically functional closures[^fn-clojure], they only allow to access effectively `final`{language:java} fields inside the lambda scope, preventing the exposure of mutable state to any constructor. Of course, this is only true for the `final`{language:java} field itself, but not its members (cf. Java case study in § [#sec-concurrency-language-level]).
 
 [^fn-clojure]: Not to be confused with *Clojure*, a dialect of the programming language Lisp for the JVM.
 
