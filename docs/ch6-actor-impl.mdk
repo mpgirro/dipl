@@ -148,21 +148,7 @@ There are however still other cases where Futures may come into play. The follow
 ## Synchronous and Asynchronous Communication
 
 
-~Todo
-den einfachen tell befehlt erklären, also `!` ; zitieren [@AkkaActor]
-~
-
-The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. Such communication is well suited for the information aggregation workflow that fills the Stores, i.e. `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`.
-
-...
-
-However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed processing once an answer has been received and not perform any processing inbetween.
-
-Echo faces this problem whenever a user is requesting information. This cannot be postponed to an asynchronous information flow, with unknown traveling time of messages [schlechte bezeichnung]{.mind}. 
-
-[grafik hier einfügen]{.mind}
-
-Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow [@Agh97].
+The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed once an answer has been received and not perform any processing inbetween. Echo faces this problem whenever a user is requesting information. Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow [@Agh97].
 
 
 ### Future-based Messaging
@@ -200,7 +186,7 @@ However useful, this approach has two downsides. First it is a load on resources
 ### Delegation-based Messaging
 
 
-On of the basic Actor primities allows any Actor to spawn new Actors. This operation should be cheap, for it is expected to be used intensively [citation needed]{.mind}. One instance where spawing new Actors just for temporary usage would be such synchronous request handling. The result handling is then relocated to a dedicated child Actor, newly spawned for each request. Creating such child and setting it as the reply destination is done in Akka by:
+On of the basic Actor primities allows any Actor to spawn new Actors. This can be used to model synchronous request handling by utilizing newly created Actors merely for temporary usage. The result handling is then relocated to a dedicated child Actor, individually spawned for each request. Creating such child and setting it as the reply destination is done in Akka by:
 
 ```{language:scala}
 val handler = context.actorOf(ReponseHandler.props())
@@ -251,7 +237,7 @@ The Active Object concept aims to provide a higher-level abstraction that fixes 
 
 One part of Akkas strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e. `ActorRef[U]`{language:scala}, such that the range of acceptable message may be limited to `A`{language:scala}-typed ones. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
-It is worth pointing out that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with `Object`{language:java} as &top; and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their unified &top;. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive type's wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received [sollte ich für den absatz was zitieren? zumindest die Java Spec?]{.mind}.
+It is worth pointing out that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with `Object`{language:java} as &top; and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their unified &top;. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive type's wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received.
 
 In any case, type parameters for Actor addressed are not without their drawbacks however. The third basic model primitive states that Actors may change their behaviour. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes transparently, any new behavior is constrained to also process messages of type `U`{language:scala} exclusively. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would break the semantic and thus become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, such Actors must be defined through a behavior function, which has to be typed too:
 

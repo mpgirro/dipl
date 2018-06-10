@@ -68,17 +68,19 @@ On a fundamental level, the basic purpose of any program is the computation of a
 
 [^fn-sequential-side-effects]: Any form of side effects, like IO, are of course also forms of input to a program, thus they have to be stable as well. 
 
-Many different issues regarding concurrent computation are well known and described in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we will not immerse into detailed discussions on these, as is often found in other literature concerned with concurrency concepts. Here, simply two types of properties will be of relevance, which have an effect on the correctness of concurrent programs. All the issues given above can be classified in terms of these two property types:
+Many different issues regarding concurrent computation are well known and described in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we will not immerse into detailed discussions on these, as is often found in other literature concerned with concurrency concepts. Here, simply two types of properties will be of relevance, which have an effect on the correctness of concurrent programs. All the issues given above can be classified in terms of these two property types [@Bus90;@Swa14;@Sin09]:
 
 * Safety
-  : asserts the operations that are allowed (safe) to be performed [@Bus90]. As a result, given correct inputs will result in correct outputs [@Swa14]. Examples of safety properties are race conditions, deadlock freedom and mutual exclusion.
+  : asserts the operations that are allowed (safe) to be performed. As a result, given correct inputs will result in correct outputs, while never entering an undesired state. Examples of safety properties are race conditions, deadlock freedom and mutual exclusion.
 
 * Liveness
-  : asserts the operations that have to be performed, such that a certain state will be reached eventually (progress) [@Bus90]. In other words, given correct inputs are guaranteed correct outputs in finite time (cf. termination in sequential programs) [@Swa14]. Examples of liveness properties are fairness, starvation and reliable communication.
+  : asserts the operations that have to be performed, such that a certain state will be reached eventually (progress). In other words, given correct inputs are guaranteed correct outputs in finite time (cf. termination in sequential programs). Examples of liveness properties are fairness, starvation and reliable communication.
 
 Safety is *invariant*, such that a property `P` holds in *every* state of *every* execution. In contrast, liveness of `P` demands it to hold in *some* state of *every* execution. As a result, there is a so-called *duality* between safety and liveness, such that the negation of a member of one type is a member of the other [@Ben90].
 
 We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to partial correctness, while liveness is to total correctness [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
+
+The consideration of correctness properties among general concurrent is especially relevant
 
 
 ## Programming Abstractions
