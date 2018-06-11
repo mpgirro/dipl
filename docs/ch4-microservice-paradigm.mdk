@@ -162,12 +162,12 @@ In the Microservice context however, authors do not refere to the SRP a lot. Ins
 However, to fine a granularity can become an issues. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularitiy of Microservices [@Sha17a].
 
 
-## Service-Oriented Programming
+## Service-oriented Programming
 
 
 Until now, Microservices have been regarded in the light of a software architectural style. Within, the building blocks are all truely isolated components instantiated from independently executable artifacts, merely linked by rather loosely coupled message passing communication channels. It has been argued that due to these characteristics the perspective in the literatur (both academic as well as industrial) has had a focus on the operation of the service engines, that is their *deployment* [@Gui17;@Xu16]. After all, the deployment context of MSA is the origin of its concurrent nature, that is independet processes of the OS or network. In this section however, we want to favour an argumentation towards a linguistic viewpoint on Microservices instead.
 
-Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-Oriented Programming* (SOP) [@Gui09;@Mon14] emerged. It builds upon the *Service-Oriented Commputing* (SOC) approach emphasized by SOA and subsequently Microservices, and introduces it into programming language design. 
+Programming paradigms build upon respective conceptual constructs, e.g. objects in OOP or functions in Functional Programming. In more reject time, a now paradigm called *Service-oriented Programming* (SOP) [@Gui09;@Mon14] emerged. It builds upon the Service-oriented Computing approach emphasized by SOA and subsequently Microservices, and introduces it into programming language design. 
 
 Services become first-class entities of the language and are the smallest programmable constructs. Instead of a single executable artifact, such service-oriented programs compile into multiple executables, one for each of the service constructs in the source code. Initially the conception of SOP was an aiming for an evolutionary step from combining the object-oriented paradigm with SOA ideas to program distributed systems. When the Microservices principles finally distilled, it was found that compilation of SOP languages essentially produced Microservice Architectures. Thus, instead of the total technology freedom of the MS paradigm, SOP languages are a separate approach towards the Microservice style [@Mon14;@Gui17].
 
