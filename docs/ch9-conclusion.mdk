@@ -115,15 +115,19 @@ Predicition is very difficult, especially about the future.
 -->
 
 
-In this thesis, we've discussed the conceptualities of Actors and Microservices, formulated an argumentation favouring each, and even demonstrated one possibility of integrating both. In this final section, we want to argue a conceptual evolution towards a unification.
+In this thesis, we've evaluated the conceptualities of Actors and Microservices, formulated arguments favouring each, and motivated their potential integration. In this final section, we want to argue a conceptual evolution towards a unification.
 
 For the scope of this thesis, we've found it rather difficult to narrow on the essential characteristics that constitute the Microservice paradigm. We believe this observation to be also reflected in the literature, where we've frequently found authors to tend to fairly short, unilateral or superficial definitions for the sake of an easier and more focused argumentation. For example, REST is by far the most popularly pointed out mechanism of sole communication, without entertaining neither the possibility nor implications of other and especially non request/response channels.
 
-In our opinion this is due to the fact that the Microservice style, although conceived as an aim towards minimalistic components, is on the other hand too allowing in general regarding the options for conceiving each single service of any system. The lack of a more coherent technological context among at least some or even all service components also hinders the introduction of enhancing concepts. Examples like behavioral types, choreographies or means of verification in general have already been discussed. Such would only be possible with greater difficulties and come with restrictions nevertheless. As was motivated, languages dedicated to the Service-Oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if these languages are based on a process calculus, such open up the potentials of their theoretical properties and possibilities. 
+In our opinion this is due to the fact that the Microservice style, although conceived as an aim towards minimalistic components, is on the other hand too allowing in general regarding the options for conceiving each single service of any system. The lack of a more coherent technological context among at least some or even all service components also hinders the introduction of enhancing concepts. Challenges regarding behavioral types, choreographies or means of verification have already been outlined. Such would only be possible with greater difficulties and come with restrictions nevertheless. As was motivated, languages dedicated to the Service-Oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if these languages are based on a process calculus, such open up the potentials of their theoretical properties and possibilities. 
 
-Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. However, it's worth to ask why then not to employ Actors altogether in the first place? As Guidi *et al.* [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. Neither does a very sophisticated Actor language as Erlang, nor an equally potent framework like Akka. 
+Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. 
 
-It is our believe however, that service oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for examples are already limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that interoperability with other technologically heterogenous components is still not restricted. [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
+However, this raises the question why an Actor approach should not be pursued in the first place? As Guidi *et al.* [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. This is true even for very sophisticated Actor language like Erlang and Orleans, as well as equally potent frameworks like Akka. 
+
+It is our believe however, that service oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for examples are already limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that the interoperability of diverse technologies is ensured.  [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
+
+
 
 ...We see ourselves affirmed in the literature, from a theoretical as well as a practical perspective. 
 
@@ -136,28 +140,11 @@ As has been pointed out, Agha *et al.* [@Agh97] argument towards regarding high-
 ... Critique that actors do not compose [@Agh97], but SOP languages do.
 
 
-... evolution of Actors like with Orleans auch möglich
-
-... we don't claim that service-oriented programming languages are the key towards the future, but it is our believe that Actors and Microservices *learning from* each other and *growing closer too* each other are a promising ... [1) unterhosen 2) ? 3) profit]{.important}
-
-~LitNote
-Eigentlich Conclusions, aber eher Ausblick (weil sprachfokusiert):
-
-~~ important
-* MS paradigm is too allowing in general, too much options to allow the introducation of more sophisticated concepts - e.g. behavioral types, choreographies or verification in general - without great difficulties and some restrictions nevertheless. As we've motivated, dedicated languages to the Service-Oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if such language is based on a process calculus, it opens up the potentials of the theoretical properties and implications; ... especially if such are based on a process calculus "erschließen weiterer möglichen basierend auf dessen theoretischen eigenschaften"
-~~
-
-* SOP languages are focusing/fixing many problems that Actor Systems have (conceptually?), while basically providing the same features (essentially they provide constructs that are rather similar to Actors - except that the creation of new components is not an essential primitive). Major plus is that they allow aim towards open and well-interfaces in general, thus they do not restrict the interoperability with other technology heterogenous components. 
-  * [@Gui17]: "However, Erlang and Go do not separate behavior from deployment, and more concretely do not come with explicitly defined ports describing the dependencies and requirements of services"
-* Are therefore SOP-languages merely better Actor-based languages? That it are they an evoltion? (sollte ich vielleicht nicht als frage formulieren, sonst muss ich das noch diskutieren; alternativ kann ich ja schlicht andeuten, dass diese oder ein entsprächend ähnliche ansätze das potential haben die actos zu evolutionieren)
-  * Bonér schlägt ja das umgekehrte vor, nämlich das MS mehr wie Actors werden sollen. Ich kann ja schreiben das SOP-langs, im princip genau ein schritt in diese richtung sind.
-
-Und auf mehr will ich eigentlich gar nicht hinaus, oder?
-~
+... we don't claim that service-oriented programming languages are the key towards the future, but it is our believe that Actors and Microservices *learning from* each other and *growing closer too* each other are promising ... [1) unterhosen 2) ? 3) profit]{.important}
 
 ...
 
-Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, an Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].
+Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, and Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].
 
 ... It is our belief that...
 

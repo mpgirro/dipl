@@ -20,18 +20,15 @@ These are my principles. If you don't like them, I have others.
 * [@Fow14] "Microservices: a definition of this new architectural term"
 ~
 
-Recently, a new software architecture style called *Microservice Architecture* (MSA) emerged for designing software applications as distributed systems of loosley coupled, independently deployable, single purpose services [@Fow14]. Instead of developing monolythic applications, the application logic is split up into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs posing as the applications components are called *Microservices*.
+Recently, a new software architecture style called *Microservice Architecture* (MSA) emerged for designing software applications as systems of loosley coupled, independently deployable, single purpose services [@Fow14]. Instead of developing monolythic applications, the application logic is split up into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs posing as the applications components are called *Microservices*.
 
 Their style is open for any programming language or paradigm. For services are communication with message passing semantic on the OS or network level (e.g. sockets, REST etc.), the services themselfs may be written in different programming languages. As long as they expose the interface required by the architecture, they are useable components [@Dra17a;@Mon16a].
 
-
----
-
-At the beginning of our current decade, a new architectural term called *Microservice Architecture* emerged. This concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler[^fn-microservice-term] and Lewis [@Fow14] gave the first overall review to the microservice concept, and is the original source most scholars refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni *et al.* [@Dra17a] tried to give a general, conceptual description, and therefore we will be founding our discussion of this paradigm on the definitions they provide.
+The concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler[^fn-microservice-term] and Lewis [@Fow14] gave the first overall review to the microservice concept, and is the original source most scholars refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni *et al.* [@Dra17a] later gave an extensive conceptual description, thus we refere them for further reading.
 
 [^fn-microservice-term]: Fowler points out that he heard the term first in 2011, where it has been conceived at a workshop to summarize the participants ideas. 
 
-## Historical Evolution
+## Limits of the Monolith (of Centralization)
 
 Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns, yet their transformation from program code to machine code leads to a result where all such modules are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
 
@@ -39,11 +36,7 @@ Historically, software systems often have always been implemented in a so-called
 Raymond (UNIX buch) hat angeblich den begriff "monolith" geprägt
 ~
 
-These naturally introduces a relative strong form of coupling, for each module tends to expect the presence of any other module [citation needed]{.mind}. *Coupling* is a **metric that describes the amount of dependencies between components** [so irgendwie ?]{.mind}. It is usually effected by the kind of interaction between the components. Any form of in-memory call communication eases the tightening of coupling, for it is a relatively easy and direct way of addressing components [frei erfunden, hat das mal jemand so argumentiert?]{.mind}.
-
-...
-
-Any application subject to tight coupling of its modules suffers from certain issues. With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a]. Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
+These naturally introduces a relative strong form of coupling, as in-memory call communication is a cheap and direct way of addressing components, and thus heavily applied in monoliths. Yet any application subject to tight coupling of its modules suffers from certain issues. With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a]. Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
 
 ...
 
@@ -67,30 +60,17 @@ For an in depth review on how Microservices historically evolved from a distribu
 
 ...Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm.
 
-
-## Service Ambiguity (Term Ambiguity?)
-
-
-~LitNote
-* [@Bro16]
-    * "larger grained APIs"
-    * "deployment: serveral small applications implementing part of the whole"
-    * "strictly limit types of network connectivity that a service can implement to achieve maximum simplicity"
-    * "more choices via polyglot programming / polyglot persistence"
-    * "avoid thight coupling via implicit communication through databas"
-    * "all communication from service to service must be through the service API"
-    * "different services evolve at different rates; allows that evolution to proceed at is own natural pace"
-    * "horizontal scaling of single services"
+~ lit 
+* [@Fow14] "Microservices: a definition of this new architectural term"
+  * Decentralized Governance
+  * Decentralized Data Management
 ~
 
-No shared state, etc
 
-...
+## Term Ambiguity
 
----
 
-The term "service" is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it referes to a computational task unit, e.g. a process, as part of a service-oriented architecture. That's what's [am öftensten mit der bezeichnung gemeint]{.mind} when refering to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
-
+The term "service" is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it referes to a computational task unit, e.g. a process, as part of a service-oriented architecture. This is the predominant intention when it is being refered to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
 
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu *et al.* [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi and Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 

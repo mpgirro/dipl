@@ -176,6 +176,8 @@ Annotation Bsp für Hysterix
     * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
 * [@Car17] "Spring Microservices in Action"
 * [@NetflixHysterix]
+* [@Fow14, p.12] "Microservices: a definition of this new architectural term"
+  * "Synchronous calls considered harmful: ...."
 ~
 
 ~ todo
