@@ -130,7 +130,7 @@ As a result, it was found that, though simple RPC styled retrieval did limit thr
 There are however still other cases where Futures may come into play. The following section will continue discussing Future usage in the light of communication.
 
 
-## Synchronous and Asynchronous Communication
+## Communication Abstractions
 
 
 The Actor model is soley built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!` for Scala, on `ActorRef`{language:scala} that can be used to dispatch a message object to an Actor. However, many real life scenarios expect communication to be synchronouse, i.e. to only proceed once an answer has been received and not perform any processing inbetween. Echo faces this problem whenever a user is requesting information. Fortunatelly, any synchronous communication can be modeled with an asynchronous information flow [@Agh97].

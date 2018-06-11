@@ -513,6 +513,7 @@ Fault tolerance:
 * [@Tan07] "Distributed Systems: Principles and Paradigms, 2/E"
     * 8.1 INTRODUCTION TO FAULT TOLERANCE
     * 8.2 PROCESS RESILIENCE
+* Actor Supervision kann A. leicht neu starten wenn Fault, MS i.A. nicht. Andere MS müssen gegen einen Ausfall eines benötigten Services __resilient__ sein. Aber keine automatische tolerance das der MS ersetzt wird. Benötigt wenn dann cloud management framework support dafür
 ~
 
 ...
@@ -635,6 +636,7 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 ~lit
 * MS können ein und die selbe Funktion über mehrere arten von interfaces anbieten (consume from AMQP, as well as REST), were REST makes testing easy, and AMQP better for production.
 * [@New15] "Building Microservices"
+* [@Dra17a] kurz vor ch4
 ~
 
 [TODO]{.red}
