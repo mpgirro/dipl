@@ -22,21 +22,28 @@ These are my principles. If you don't like them, I have others.
 
 Recently, a new software architecture style called *Microservice Architecture* (MSA) emerged for designing software applications as systems of loosley coupled, independently deployable, single purpose services [@Fow14]. Instead of developing monolythic applications, the application logic is split up into a suite of small parts, each implemented as a dedicated program designed to provide a single task of the business logic. Theses programs posing as the applications components are called *Microservices*.
 
-Their style is open for any programming language or paradigm. For services are communication with message passing semantic on the OS or network level (e.g. sockets, REST etc.), the services themselfs may be written in different programming languages. As long as they expose the interface required by the architecture, they are useable components [@Dra17a;@Mon16a].
+Their style is open for any programming language or paradigm. For services are communication with message passing semantic on the OS or network level, the services themselves may be conceived in different programming languages and technologies. As long as they expose the interface required by the architecture, they are useable components [@Dra17a;@Mon16a].
 
-The concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the overall concept(s) determining the microservice paradigm [@Has16]. Fowler[^fn-microservice-term] and Lewis [@Fow14] gave the first overall review to the microservice concept, and is the original source most scholars refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni *et al.* [@Dra17a] later gave an extensive conceptual description, thus we refere them for further reading.
-
-[^fn-microservice-term]: Fowler points out that he heard the term first in 2011, where it has been conceived at a workshop to summarize the participants ideas. 
+The concept was originally born from the industrial need to break the scalability barrier that monolithic applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the essential concept(s) determining the paradigm [@Has16]. Fowler & Lewis [@Fow14] gave the first overall review to the Microservice concept, thus they are the original source most scholars refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni *et al.* [@Dra17a] later gave an extensive conceptual description, thus we refere to them for further reading.
 
 ## Limits of the Monolith (of Centralization)
 
-Historically, software systems often have always been implemented in a so-called *monolithic* setup, where all the source code is compiled into one single artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns, yet their transformation from program code to machine code leads to a result where all such modules are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
+Historically, software systems often have always been implemented in a so-called *monolithic* way, where all the source code is compiled into one single, central artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns, yet their transformation from program code to machine code leads to a result where all such modules are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
 
 ~ todo
 Raymond (UNIX buch) hat angeblich den begriff "monolith" geprägt
 ~
 
-These naturally introduces a relative strong form of coupling, as in-memory call communication is a cheap and direct way of addressing components, and thus heavily applied in monoliths. Yet any application subject to tight coupling of its modules suffers from certain issues. With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a]. Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
+These naturally introduces a relative strong form of coupling, as in-memory call communication is a cheap and direct way of addressing components, and thus heavily applied in monoliths [@Bon17]. Yet any application subject to tight coupling of its modules suffers from certain issues. Its components are less reusable [@Sal16], increased interleaving becomes hard to maintain, all modules need to be upgraded simultaniously, and evolution is generally hindered due to growing complexity [@Dra17a].
+
+Most importantly, the main issue given for monoliths is scalability [@Dra17a]. As single executables are intrinsically running on a single machine, there is a natural bound of the applications performance based on hardware limtations.
+
+<!--
+...
+
+With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a], and all modules of a monolith need to be upgraded simultaniously. 
+
+Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
 
 ...
 
@@ -47,10 +54,18 @@ This does not hold exactly true anymore[^fn-moores-law] since the 2000s, for spe
 [^fn-moores-law]: In fact, Moores original empirical observation about *doubling of components per chip* never held true very long. But over the decades various trends in semiconductor manufacturing still resulted in a rough doubling of processing power. Mack [@Mac11] gives an interresting analysis on this being simply the result of an economic will to make the law come true.
 
 Even though the processing power increases all the time, any monolith inevidently reaches a limit when it comes to scalability. This limit is influenced by many factors, e.g. [wie gut man es eben monolith. scalieren kann??]{.mind}, but eventually reaches an upper bound based on hardware limitations of the host machine [citation]{.mind}.
+-->
 
-Many approaches to overcome this limit have been proposed over the years. Previously, the *Service Oriented Architecture* (SOA) approach gained popularity. It is based on the idea of combining the capabilities of multiple monolithic applications by integrating them through a uniform communication channel like an *Enterprise-service Buses* (ESB). However [...sind auch nicht gut]{.mind}
+Many approaches to overcome this limit(s) have been proposed over the years. Previously, the *Service Oriented Architecture* (SOA) approach gained popularity. It is based on the idea of combining the capabilities of multiple monoliths, either based on the same or different program images, by integrating them through a uniform communication channel like an *Enterprise-service Buses* (ESB) [@Sal16]. This approch allows to link heterogenous technologies and independent deployment, as it does not require in-memory call between these services anymore. 
 
-SOA still builds upon the idea of large monolithic applications, and all their fallities [?]{.mind}. In order to overcome these limitations, the idea of dividing up these monoliths based on their functionalities ["bruchlinie anhand der funktionalität"?]{.mind} came up. Such was borne the idea of *Microservices* (MS).
+However SOA still facilitates large monolithic applications, thus such have to be scaled by duplicating entire application instances [@Dra17b]. 
+
+In order to overcome these limitations, the Microservice paradigm 
+
+  aim to provide strict separations of  
+
+
+the idea of dividing up these monoliths based on their functionalities ["bruchlinie anhand der funktionalität"?]{.mind} came up. Such was borne the idea of *Microservices* (MS).
 
 For an in depth review on how Microservices historically evolved from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and Service Oriented Architectures, we refere the interrested reader to Salah *et al.* [@Sal16].
 
@@ -58,7 +73,7 @@ For an in depth review on how Microservices historically evolved from a distribu
 * [@Dra17a]: "the evolution of objects into services, and the relative comparisons, has to be treated carefully since the first focus on encapsulation and information is hidden in a shared-memory scenario, while the second is built on the idea of independent deployment and message-passing"
 ~
 
-...Microservices evolved from *Service Oriented Architectures* (SOA), and are thus part of the general *Service Oriented Computing* (SOC) paradigm.
+...Microservices evolved from SOA, and are thus part of the general *Service Oriented Computing* (SOC) paradigm.
 
 ~ lit 
 * [@Fow14] "Microservices: a definition of this new architectural term"
@@ -75,7 +90,7 @@ The term "service" is used in an overloaded manner in the literature. We can ide
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu *et al.* [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi and Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 
 
-## Independence
+## Independence and Interaction
 
 
 [TODO]{.red}

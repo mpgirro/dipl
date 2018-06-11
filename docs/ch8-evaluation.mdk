@@ -369,6 +369,12 @@ Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren k�
 vielleicht diese Section etwas weiter nach unten verschieben? Direkt vor die Process Calculi? Oder verweise ich auf Wissen hieraus bei der dyn. reconf.?
 ~
 
+~ lit
+* [@New15] "Building Microservices"
+* [@Dra17b] "Microservices: How To Make Your Application Scale"
+    * "Portability. Microservices are typically packaged in containers, as provided, e.g., by Docker [10] or similar technologies. A container includes the microser- vice and all its environment (libraries, databases, . . . ) in a unique entity which can be easily deployed on any platform supporting the chosen container tech- nology, ensuring uniform behavior over heterogeneous platforms (hosts, data- centers and cloud providers) and isolation w.r.t. other containers (e.g., different microservices can use different versions of the same library without conflicts)"
+~
+
 
 "*Actors come in systems*". Such is the famous quote by Carl Hewitt on his conceptions. These system provide many [???]{.red} for their actors. They deliver messages, ensure fairness, [and supervise...]{.red}. In a way, actor systems *govern* their actors in a homogenous way [KANN ICH DA WAS ZITIEREN?]{.red} ...
 
@@ -460,7 +466,7 @@ There are two different kinds of extensibility [@Agh85a;@Bac03]:
 
 Independent deployment capability of each single service engine allows to simply add new components at runtime. This does not impact existing services, as these do not yet have a notion of the new component. New services can simply consume existing services. Gradual updating old services then allows to integrate any new component deeper into the architecture, such that it will also be consumed [@Mon16a].
 
-Actors are faced with more challenges. An Actor requires an Actor System to exist within. Erlang and its runtime system were tailored to support Actors, thus the *BEAM* virtual machine supports code loading and replacement for live upgrades [@Vin07]. The JVM does not support similar features, and therefore Akka requires the restart of the system to introduce a new Actor, as all Actors are defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However, in a clustered Akka setup it is not required to introduce a new component into all Actor System nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed.    
+Actors are faced with more challenges. An Actor requires an Actor System to exist within. Erlang and its runtime system were tailored to support Actors, thus the *BEAM* virtual machine supports code loading and replacement for live upgrades [@Vin07;@New15]. The JVM does not support similar features, and therefore Akka requires the restart of the system to introduce a new Actor, as all Actors are defined in the same program structure and subsequently compiled to a monolithic executable, limiting Actors to static extensibility. However, in a clustered Akka setup it is not required to introduce a new component into all Actor system nodes at once. Therefore, the cluster may retain its uptime, while its nodes get individual upgraded and redeployed. Besides differences in the VM optimization, this is conceptually similar to Erlangs upgrade strategy, as it too does not support the replacement of a single Actor, but merely of entire code modules [@New15]. 
 
 Another interresting concern is the technology limitations regarding the conception of new components. Any Actor is bound to its Actor System. Such may provide interface bindings for multiple programming languages, e.g. as Akka does for Java and Scala. Though the Java binding can be used from other JVM languages as well, as is demonstrated by [@Sub11] for Groovy and JRuby, it does not overcome the JVM as the target platform. Interoperability with Akka.NET would broaden the possibilites, but such has to our knowledge never been available yet.
 
@@ -628,6 +634,7 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 
 ~lit
 * MS können ein und die selbe Funktion über mehrere arten von interfaces anbieten (consume from AMQP, as well as REST), were REST makes testing easy, and AMQP better for production.
+* [@New15] "Building Microservices"
 ~
 
 [TODO]{.red}

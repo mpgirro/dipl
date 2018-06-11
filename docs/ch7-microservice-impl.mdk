@@ -223,7 +223,8 @@ noch einen schönen Abschluss(ab)satz
 
 
 ~LitNote
-depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
+* depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
+* [@New15] "Building Microservices"
 ~
 
 As was already mentioned, approaching Microservices at the moment is focused on a deployment view. It is not important *how* services are being implemented, as long as they are composed correctly. Note that this is however not the theoretical notion of *correctness* such that it could be asserted by applying proof techniques, e.g. by showing safety and liveness properties, or interface type compatibility, but a mere practical understanding of "executing and interlinking services such that the system works" [andere bezeichnung?]{.red}.
