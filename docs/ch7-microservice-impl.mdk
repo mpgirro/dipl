@@ -115,7 +115,7 @@ Channels for distributed communication are more likely to provide options to app
 
 Spring Cloud provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting as it is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, such that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g. to generate class implementations), Spring uses *reflection* at runtime, such that deployment configuration may still be applied without requireing recompilation, but at the cost of runtime overhead and the lack of static compatibility checking. 
 
-For example, the information flow `S` &rightleftarrows; `I` is required to be synchronous, thus Echo applies REST communication. Spring provides a library called *Feign* [@OpenFeign] dedicated to providing annotation-based decorations for Java interfaces, such that clients can consume RESTful endpoints using a dynamic interface implementation. In the examples, such is in `S` expressed by:
+For example, the information flow `S` &rightleftarrows; `I` is required to be synchronous, thus Echo applies REST communication. Spring provides a binding for *Feign* [@OpenFeign], a library dedicated to annotation-based decorations for Java interfaces, such that clients can consume RESTful endpoints using a dynamic interface implementation. In the examples, such is expressed in `S`  by:
 
 ```{language:java}
 @FeignClient(name = "index")
@@ -125,7 +125,7 @@ public interface IndexClient {
 }
 ```
 
-Calling the `query(q)`{language:java} method on an implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion, and returns with the call result. Mapping HTTP body content of the response to domain objects is done transparently (given appropriate XML or JSON serializer are configured with the IoC container), thus any domain object may be used for the method result type.
+Calling the `query`{language:java} method on an implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion, and only then returns with the result. Mapping HTTP body content of the response to domain objects is done transparently (given appropriate XML or JSON serializer are configured with the IoC container), thus any domain object may be used for the method result type.
 
 The request is received by `I` which declares an appropriate endpoint using a similar annotation driven implementation approach: 
 
