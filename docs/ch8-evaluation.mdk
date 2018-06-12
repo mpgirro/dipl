@@ -208,51 +208,11 @@ Microservices können auch message passing, aber auch synchrone. Die location tr
 ### Location Transparency (and Mobility)
 
 
-Location transparency...allgemeiner blabla
-
-
 Akka's `ActorRef`{language:scala}s, as with all Actor addresses in general, are abstracting the location of the underlying Actor. The runtime system is handling the actual message delivery transparently, be it on the same local node or a remote node. A uniform interface regardless of any location considerations is thus provided.
-
-...
 
 Microservices, on the other hand, allow for arbitrary communication channels, as long as these are conform to the paradigm requirements. As such, there is no guarantee for a unified channel interface for all services and mechanisms. Unix pipes have been given as an illustrative mechanism. These facilitate a file descriptor interfaces, as is promoted by Unix in general. Yet this interface is intrinsically limited to local node interaction, that is the memory boundries of a single host OS. 
 
-Channels operating on the network level intrinsically distributed communication mechanisms, which facilitate message passing and provide a uniform interface for remote as well as local communication [@Spe90]. Sockets are the most basic example. Yet though their interface is homogenous regarding weither a socket is on the same local or a remote node, the *concrete* address is still required [@Bac03]. In order to abstract thus address, i.e. to have the recipients location transparent, the Microservice paradigm requires additional effort in the form of discovery mechanisms. It has been demonstrated how such  can be provided in an
-
-...
-
-Microservices allow for arbitrary communication channels, as long as those conform to the paradigm. Pipes have been stated a a viable example. However, as we've pointed out, such are limited to the memory boundries of a single OS [soll ich da was zitieren? hab ich eh schon 1000 erklärt]{.mind}. Channels operating on network level intrinsically distributed communication mechanisms, which facilitate message passing [@Bar97] and provide a uniform interface for remote as well as local communication [@Spe90].
-
-...
-
----
-
-Mobility:
-
-~LitNote
-* Laut jones Bonér folgt mobility aus location transparency
-* [@Kan12] (über distributed erlang Actors)
-    * Mobility is defined as the ability of processes moving from one node to another. It is classified into two types. Strong Mobility means supporting movement of both code and execution state, while weak mobility only allows movement of code
-    * At the system level, mobility is important for load balancing, fault-tolerance and reconfiguration. 
-    * [25] = [@Pan94] has shown that mobility is essential for achieving scalable performance.
-* [@Fug98] "Understanding Code Mobility"
-* [@Agh14] "Actors Programming for the Mobile Cloud"
-* [@Car97] "Designing Distributed Applications with Mobile Code Paradigms"
-* [@Kar09] beschreibt mobility bei actors
-* [@Sal16] "The Evolution of Distributed Systems Towards Microservices Architecture"
-    * Keywords: Distributed Systems; Microservices; Mobile Agents; Service Oriented Architecture
-    * ad *Mobile Agent*: "An agent is composed of three parts which also take place in travelling: Data, State and Code."
-* MS service discovery:
-    * see [@Mon16a] for example solutions/implementations/technologies 
-* MS: "Location of MS may not be statically known at design time" [@Mon16a]
-~
-
-Mobility:
-
-~LitNote
-* [@Gui09] "Reasoning About a Service-oriented Programming Paradigm
-    * Slave service mobility andMaster service mobility
-~
+Channels operating on the network level intrinsically distributed communication mechanisms, which facilitate message passing and provide a uniform interface for remote as well as local communication [@Spe90]. Sockets are the most basic example. Yet though their interface is homogenous regarding weither a socket is on the same local or a remote node, the *concrete* address is still required [@Bac03]. In order to abstract this address, i.e. to have the recipients location transparent, the Microservice paradigm requires additional effort in the form of discovery mechanisms. It has been demonstrated how their utilization can be directly integrated into the communication interface on the client side, on the example of Feign and Eureka.
 
 
 ### Distinction to Distributed Objects {#sec-distributed-objects}
