@@ -482,6 +482,11 @@ Technology Heterogeneity:
 ## Fault Tolerance and Resilience
 
 ~ todo
+Hier werden die unterschiedlichen Asnätze und Möglichkeiten für Fault tolerance (zB durch Supervision) und der Resilienz einzelner Komponente (Circuit Breaker, etc.) evaluiert.
+~
+
+
+~ todo
 __WAS IST DER UNTERSCHIED ZWISCHEN FAULT TOLERANCE UND RESILIENCE?!__
 ~
 
@@ -518,6 +523,11 @@ Availability:
 
 
 ## Separation of Concerns and Single Responsibility
+
+~ todo
+Hier soll evaluiert werden, wie weit Actors und Microservices wirklich Concerns separieren und entsprechend nur eine Responsibility habe (MS müssen sich zB um deutlich mehr Nebensächlichkeiten selber kümmern; bei Akka sind Dinge wie Supervision inherent gefordert aber relativ gut abgetrennt von der Message-Verarbeitung)
+~
+
 
 
 ~ todo

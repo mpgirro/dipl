@@ -204,18 +204,12 @@ noch einen schönen Abschluss(ab)satz
 ~
 
 
-## Scalability
+## Deployment
 
 
-~LitNote
-* [@Dra17c] Dustdar/Dragoni paper!
-    * "to enable full scalability. i.e., automation, orchestration, service discovery, load balancing, and clustering"
-    * "Service discovery can make use of locality, resolving hostnames to the service instance that is closest to the requester, hereby achieving geographical scala-bility."
+~ todo
+Hier soll dargelegt werden, wie Microservices eigentlich in die Welt gebracht werden, und welche Herausforderungen dies mit sich bringt.
 ~
-
-
-## Deployment (!)
-
 
 ~LitNote
 * depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g. Docker), but no guarantee for singleton usage
