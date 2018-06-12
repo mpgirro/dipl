@@ -43,7 +43,7 @@ public class Foo extends UntypedActor {
         return Props.create(Foo.class, () -> new Foo());
     }
     @Override
-    public void onReceive(Object message) { /* handle message */ }
+    public void onReceive(Object msg) { /* handle msg */ }
 }
 ```
 
@@ -86,15 +86,13 @@ It is worth pointing out that though the Actor model is Scalas standard concurre
 
 * It does not require special support by the compiler, JVM or extra syntax.
 * It can be easily extended, adapted, and even replaced. This has already happend, when the standard Scala Actors have been replaced under the hood by Akka Actors.
-* It can break the Actor semantic *intentionally*, e.g. to introduce an additional concurrency abstraction. The next section will demonstrate this. 
+* It can break the Actor semantic *intentionally*, e.g. to introduce an additional concurrency abstraction, as the next section will demonstrate. 
 
 
 ## Utilizing other Concurrency Constructs {#sec-actor-solution-concurrency}
 
 
-Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic.
-
-Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, for STM requires shared memory which is hard across JVMs [@Swa14], and thus it has been removed eventually.
+Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic. Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, for STM requires shared memory which is hard across JVMs [@Swa14], and thus it has been removed eventually.
 
 Besides STM, much more prominetly used is the Future concept. It allows to define concurrent computation *inside* an Actor [@AkkaFuture]. However, Futures are not without perils of their own. The following example illulstrates such:
 
@@ -139,7 +137,7 @@ Akka provides a primitive to abstract a synchronous information flow. In additio
 
 Resolving any `Future`{language:scala} inside an Actor could either be done in a waiting fashion, which would cause the Actor to block and prevent it from processing any other request until an answer from an Index was received. Such should be avoided if the instance is expected to process messages in reasonable time, like the Searcher.
 
-To prevent unnecessary blocking, monadic methods of Scalas `Future`{language:scala} trait can be used to define subsequent computation once the result becomes available. This can also be utilized when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
+To prevent unnecessary blocking, monadic methods of Scala's `Future`{language:scala} trait can be used to define subsequent computation once the result becomes available. This can also be utilized when dispatching multiple synchronous messages in Actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
 ```{language:scala}
 val f1: Future[Int] = actor1 ? msg1
@@ -159,7 +157,7 @@ It is important however, that the messages are dispatched prior to the `for`{lan
 val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 ```
 
-It is clear to see that if the ask-calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first `Future`{language:scala} has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
+It is clear to see that if the `ask`-calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first `Future`{language:scala} has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
 
 However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitely. Secondly, there is always the risk of accidentially passing the Actors internal, mutable state into the `Future`{language:scala}s scope, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
 
@@ -214,9 +212,9 @@ The provided `Chancellable`{language:scala} reference allows to prevent the trig
 
 One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general this does not define any restrictions on the types of messages that are being sent, for messages are untyped in the theoretical model. Receiving Actors only decide upon actually processing a message at runtime if they can handle it.
 
-The Active Object concept aims to provide a higher-level abstraction that fixes this flaw and provides static guarantees. However, this abstraction can become somewhat problematic under certain conditions, as will be discussed in detail in section [#sec-distributed-objects]. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its `TypedActor`{language:java} abstraction for Active Objects. The APIs for this are summarized under the name *Akka Typed* [@AkkaTyped].
+The Active Object concept aims to provide a higher-level abstraction that fixes this flaw and provides static guarantees. However, this abstraction can become somewhat problematic under certain conditions, as will be discussed in detail in &sect; [#sec-distributed-objects]. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its `TypedActor`{language:java} abstraction for Active Objects. The APIs for this are summarized under the name *Akka Typed* [@AkkaTyped].
 
-One part of Akkas strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e. `ActorRef[U]`{language:scala}, such that the range of acceptable message may be limited to `A`{language:scala}-typed ones. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
+One part of Akka's strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e. `ActorRef[U]`{language:scala}, such that the range of acceptable message may be limited to `A`{language:scala}-typed ones. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
 It is worth pointing out that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However Scala's type system deviates from Java. The later destinguishes between reference types with `Object`{language:java} as &top; and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their unified &top;. Its direct decendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive type's wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received.
 
@@ -262,9 +260,11 @@ The signaling of an occured failure is not communicated via a "normal" actor mes
 A supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for such would require the knowledge to interprete the state in order to evaluate it in a meaningful way. The failure however remains isolated in the child. Therefore, in case it is being resumed, the cleanup actually falls to the child itself. The message on which the fault occured is not re-introduced into the mailbox, to avoid fault-reoccurence. All other actions discard the child'ss state in any case [@Roe15;@AkkaSupervision]. 
 
 
+~ red
 FAULT TOLERANCE:
 
 Additionally, a `SupervisionStrategy`{language:scala} may also define some behavior besides local, single event handling. In case a child keeps failing repeatly withing a certain timeframe, it  
+~
 
 ~LitNote
 * Supervision and Error Kernel

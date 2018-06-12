@@ -121,3 +121,7 @@ For example the initial fetching or updating of a feed, and subsequent processin
   * KEINE elasticity
   * KEINE mobility at runtime 
   * keine notwendigkeit von event sourcing
+
+~ todo
+Hier könnte eine hübsche +/- Tabelle stehen
+~

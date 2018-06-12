@@ -86,9 +86,7 @@ The consideration of correctness properties among general concurrent is especial
 ## Programming Abstractions
 
 
-~ Todo
-1-2 kurze einleitende Sätze wieso es hier 3 Unterkapitel gibt. 
-~
+As was pointed out, any concurrent execution has to be indicated, thus appropriate programming abstractions are required. In general, such are desired to be powerful and expressive models, fit harmoniously into the programing language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
 
 
 ### Language-Construct Approach {#sec-concurrency-language-level}
@@ -170,7 +168,7 @@ int main(void)
 
 Both processes are based on the same program image. The parent receives the *Process Identifier* (PID) of the newly spawned process as a result of `fork()` while a child gets no information. This can be used to destinct the further program flow of both processes, effectivly allowing two separate behaviors. Consecutive forks are of course possible. 
 
-A so-called *pipe* can be set up as IPC between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, the first `fd[0]`{language:cpp} opened in read mode, and the second `fd[1]`{language:cpp} in write mode. For example, the `parentBehavior` could write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, thus the data crosses memory boundries. Pipes are a communication link for message passing, and therefore tasks can utilize it to avoid the critical region problem.
+A so-called *pipe* can be set up as IPC between any such two processes by utilizing additional Unix system calls. They are a form of byte stream across the memory boundries of the respective processes [@Bac03]. It's endpoints are symbolized by two file descriptors, as Unix is following an *everything is a file* design principle, such that interfaces are simple and consistent [@Shi97]. The first descriptor `fd[0]`{language:cpp} is opened in read mode, and the second `fd[1]`{language:cpp} in write mode. Thus, the `parentBehavior` could for example write data to `fd[1]`{language:cpp}, and `childBehavior` would then be able to it from `fd[0]`{language:cpp}, such that the data crosses memory boundries. Pipes are a communication link for message passing, and therefore tasks can utilize it to avoid the critical region problem.
 
 
 ### Network Approach {#sec-concurrency-network-level}
@@ -191,6 +189,6 @@ Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will
 
 [^fn-8th-fallacy]: The eighth fallacy was not part of Deutsch's original proposal, but later added by Gosling. Hence, the literature sometimes merely referes to seven fallacies. 
 
-Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low-level.
+Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07;@Bac03]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low-level.
 
 More high-level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dass HTTP weniger bare metal ist, weil structural text --> dann ist schluss mit dem kapitel]{.red}
