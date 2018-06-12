@@ -34,17 +34,8 @@ The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus d
 
 ... As such, the idea of simultaneous actions has not been absent from the domain of computer programming. In this thesis, we will therefore take a close look at two concepts both introducing notions of concurrency into programs and/or systems, respectivly the *Actor Model* of Computation and the *Microservice* Architectural Style.
 
-## Motivation (??)
-
-~ red
-Oder einfach als Kapitelanfangstext?
-~
 
 ## Problem Statement
-
-
-
-## Aim of the Work (Aim and Scope of this Thesis)
 
 ...
 
@@ -52,7 +43,9 @@ We want to address the research question:
 
 > How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for constructing concurrent systems?
 
-## Scope of this Thesis (??)
+## Aim and Scope of the Work
+
+...
 
 ~LitNote
 - Clear separation between search engine and domain specific tasks (writing to index and search, fetching and parsing feeds, etc) and the communication and coordiantion specific parts (actors architecture and microservice architecture). Therefore a core library was developed for the first, and for the second "only" backends utilizing this lib was needed. It allows easy analysis/argumentation about the concurrent programming vs MSA aspect of the thesis, because all test scenario specific parts are part of core-lib, and could therefore be replaced by other domain specific code or non-search engine code
@@ -74,6 +67,6 @@ For we are conducting a *conceptual* analysis, we will refrain from giving forma
 * literature review for chapter: concurrency, Actor model, microservice paradigm, similarities and differences
 * practical work for Actor solution, microservice solution
 
-## Structure of the Work
+## Structure of the Thesis
 
 The following thesis is ordered as follows: chapter [#ch-concurrency] discusses *Concurrency* in general with a focus on the concerns relevant for our discussion. In chapter [#ch-actor-model] the *Actor Model of Computation* is introduced and subsequently the *Microservice Architecture Style* in chapter [#ch-microservice-paradigm]. An exemplary scenario for a concurrent system is outlined in chapter [#ch-scenario]. Building upon this, chapter [#ch-actor-impl] is concerned with the conceptualities of implementing it using an Actor approach, while chapter [#ch-microservice-impl] does the same for a Microservice Architecture. Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.

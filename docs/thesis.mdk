@@ -48,6 +48,14 @@ Script            : style/mathjax-font.js
 [INCLUDE=style/vutinfth]
 
 
+<!-- Experimental MiniTOC support -->
+Package        : minitoc
+Tex Doc Header :
+    \dominitoc % MiniTOC initialization
+    \faketableofcontents
+H1 { tex-cmd-outer-after: "\minitoc" }
+
+
 <!-- Tkiz -->
 <!--
 Package*     : tikz
@@ -113,12 +121,15 @@ Bibl {
   h1, h2, h3, h4, h5, h6, dt { 
     font-family: "tex-cmd-sffamily" 
   }
+  .tocitem { color:black }
 }
 <!--Bibl { font-size: small }-->
 
 dt         { margin-top:1ex }
 dd         { margin-bottom:1ex }
 blockquote { font-style: italic; }
+
+.tocblock2 { margin-bottom:1em }
 
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
