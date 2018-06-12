@@ -111,7 +111,7 @@ Actors have message broker capability in their message router constructs through
 ## Cohesion, Coupling and Independence
 
 
-Truely isolated components combined through the communication style of asynchronous message passing results in a *decoupling* in two dimensions, as Bonèr [@Bon16] defines. On the one hand, they are decoupled in *time*, which allows for their concurrent execution. On the other hand, they are decoupled in *space*, such that they may be executed remotely and even be moved between locations.
+Truely isolated components combined through the communication style of asynchronous message passing results in a *decoupling* in two dimensions, as Bonér [@Bon16] defines. On the one hand, they are decoupled in *time*, which allows for their concurrent execution. On the other hand, they are decoupled in *space*, such that they may be executed remotely and even be moved between locations.
 
 Regarding time, actors facilitate asynchronicity through the model design, but actor system still tend to offer synchronous abstractions ontop of the asynchronous style, in order to provide better abstractions for programmers, at the cost of increasing coupling. Microservices in general are free to choose the IPC style, as long as it is based on message passing rather than shared memory, with respective effects on coupling.
 

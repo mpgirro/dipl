@@ -81,10 +81,10 @@ NO SHARED RESOURCES!
 Any communication between Microservices has to happen accross the boundries of the service engine processes. This is called *inter-process communication* (IPC) [@Bac03]. Variouse forms of IPC channels exists. Examples of general mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes. The Microservice idiom specifies the following requirements on service IPC [@Fow14]:
 
 1. Communication channels should be open and provide well-defined interfaces, such that heterogenous technologies are able to employ them. 
-2. Communication channels should be light-weighted, such that they are cheap mechanisms without additional functionality besides basic message delivery.
+2. Communication channels should be light-weighted, such that they are cheap mechanisms without much additional functionality besides basic message transportation.
 3. Communication channels should only act as message routers, such that they transport immutable messages and do not apply data processing logic on their own. 
 
-From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid Microservice communication channel. If data is in the form of text strings, it represents serialized state information of one service that is transported in an immutable way between the endpoints of the pipe. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
+From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid Microservice communication mechanisms. If data is in the form of text strings, it represents serialized state information of one service that is transported in an immutable way between the endpoints of the pipe. Raymond describes this in his Unix *Rule of Composition* as [@Ray03]:
 
 > "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools." 
 
@@ -146,7 +146,7 @@ Bonér [@Bon17] criticizes the term "micro" for it encourages debating the actua
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggest very small teams, or really big pizzas.
 
-Instead, Bonèr argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where it is known as the *Single Responsibility Principle* (SRP) of objects [@Gui17].
+Instead, Bonér argues, a notion of size should refere to the "scope of responsibility". A guidline towards this can once again be the already refered to UNIX philisophy [@Ray03]. It suggests that programs should have a well-defined, limited scope, such that more complex functionality can be realized by composing multiple of these simple programs. This concept is also found in object-oriented design, where it is known as the *Single Responsibility Principle* (SRP) of objects [@Gui17].
 
 In the Microservice context however, authors do not refere to the SRP a lot. Instead, they tend to phrase it *bounded context* [@Dra17a;@Dra17c;@Maz16], by arguing that services should be an aggregation of functionality around a single business capability. This divergence of granularity is one of the major evolutionary changes from SOA to Microservices [@Mon16a;@Gui17].
 
