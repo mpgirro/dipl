@@ -20,7 +20,7 @@ Hier die Sachen von unten als Einführung beschreiben (ohnehin nicht mehr all zu
 ~
 
 ~LitNote
-* "promise behaviour via API/protocol" --> design by contract
+* "promise behavior via API/protocol" --> design by contract
 * [@Kan12] 4 four important semantic properties of our
 extension based on Actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
 * [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
@@ -56,7 +56,7 @@ On the other hand, such reasoning cannot be done for Microservices in general. T
 
 However, the Microservice paradigm dictates that shared memory *between* services is to be avoided, as are all kinds of shared resources in general. For every service runs within its own system process, avoiding shared memory implies no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in &#167; [#sec-ms-independence-interaction] also prevent any form of reference sharing to joined mutable data. Such channels tend to provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
-Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behaviour is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
+Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behavior is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
 
 
 ### Persistance {#sec-commonalities-persistance}
@@ -138,7 +138,7 @@ Actors and Microservices are fundamentally differently executed. Scala's standar
 Although executed ontop of threads, the Isolated Turn Principle essentially define Actors as single-threaded entities. Only in combination with asynchronous message passing as dictated by the model allows for a concurrent execution of the components. As such, an Actor has no notion of any concurrency at all in general. As was demonstrated, additional concurrency abstractions may be introduced into Actors, as long as those do not break model semantic. Futures were given as one option, with the potential pitfalls discussed in chapter [#ch-actor-impl]. In combination with the continuation abstraction, Akka Actors are powerful but still extremely light-weight constructs.  
 
 <!-- TODO delete?
-Such abstract a value which will be available at some point in time eventually. Basically they introduce a notion of semi-blocking behaviour [irgendwo hab ich hierfür ein zitat!]{.mind}. Either the value is available when trying to access it, or blocking is the consequence until it is. A third way of handling Futures is possible, which directly defines consecutive computation on the value without blocking, but once it becomes available. In any case however, they pose the risk of accidentially introducing data races. As a safer alternative, Actors can use delegation to child Actors to provide concurrent processing, without jeopardising safe encapsulation as do Futures.
+Such abstract a value which will be available at some point in time eventually. Basically they introduce a notion of semi-blocking behavior [irgendwo hab ich hierfür ein zitat!]{.mind}. Either the value is available when trying to access it, or blocking is the consequence until it is. A third way of handling Futures is possible, which directly defines consecutive computation on the value without blocking, but once it becomes available. In any case however, they pose the risk of accidentially introducing data races. As a safer alternative, Actors can use delegation to child Actors to provide concurrent processing, without jeopardising safe encapsulation as do Futures.
 -->
 
 Microservices, on the other hand, are concurrent distributed processes. Their notion of concurrency may deviate from Actor, for they internally do not have a counterpart to the Isolated Turn Principle to respect. Though a service also receives messages via its public API and reacts to them, the flexibility in the design allows them to be task units which are concurrent internally. Thus they may utilize multiple threads to perform blocking operations without blocking their entire process, as is a widespread strategy in the domain of distributed systems in general [@Tan07]. This also enables them to react to multiple messages simultaniously. 
@@ -171,6 +171,10 @@ There is one drawback to the lack of scheduling influence in MSA's however. The 
 
 ## Distribution
 
+~ todo
+HIER EIN PAAR EINFÜHRENDE WORTE ZUR EVALUIERUNG DER DISTRIBUTION CAPABILITIES OF ACTOR UND MICROSERVICES. DH AUCH WIE "GUT" SIE DISTRIBUTION UNTERSTÜTZEN etc. UND DANN ÜBERFÜHREN ZU DEN UNTERKAPITELN. 
+~
+
 
 ~LitNote
 * Actors und MS ist es an sich egal ob sie lokal oder verteilt ausgeführt werden, beide können dies gut abstrahieren
@@ -183,13 +187,6 @@ There is one drawback to the lack of scheduling influence in MSA's however. The 
 * [@Kan15] (über distributed/cloud Actors)
     * "There (Actor) distinctive features make it suitable to support distributed memory parallelism, and it has been widely used in many industrial languages such as Erlang[2], Scala [3], Akka [4]"
     * "However, most related works focus on multi-core environment. Neither inter-parallelism or task parallelism can be easy applied in dynamic distributed environment, because Actors distributing over cluster may be- have indeterminable interrelationship, such as uncertain com- munication, dependency and failure"
-* [@Kan12] (über distributed Actors)
-    * Computers connect by network, which makes the environment distributed, disparate, mutable and unreliable
-    * According to classifications of parallel programming models in process interaction, mechanisms of which make the parallel processes able to communication with each other, the most common forms of interaction are shared memory, message passing, and implicit [4]
-    * In Actor model, location transparency means the actual location of an Actor does not affect its name. That is to say, if one Actor knows another, they can communicate only by names instead of specific address --> kommunikating via ActorRef instead of pointer; bei MS muss das zB für REST extra ein Service Discovery übernehmen, der dies abstrahiert; 
-    * Obviously, State encapsulation is a desirable consequence of location transparency. Location transparency facilitates runtime migration of our computing elements to different nodes, which brings good mobility. Moreover, migration enables runtime optimizations for load-balance and fault-tolerance
-* [@Fel90] "Language and System Support for Concurrent Programming"
-    * beschreibt das Message passing ganz prinzipiell nicht davon abhängig ist, wo die beteiligten componenten sind (im gegensatz zu shared variables/memory)
 ~
 
 Distribution is decoupled execution in space [citation - Bonèr]{.mind}. As has been motivated, any space-decoupled concurrent execution is inherently parallel. In the same context it was stated that relatively local parallelism is called intra-node parallelism, while actually distributed parallelism is called inter-node.
@@ -205,7 +202,7 @@ Microservices können auch message passing, aber auch synchrone. Die location tr
 ~  
 
 
-### Location Transparency (and Mobility)
+### Location Transparency
 
 
 Akka's `ActorRef`{language:scala}s, as with all Actor addresses in general, are abstracting the location of the underlying Actor. The runtime system is handling the actual message delivery transparently, be it on the same local node or a remote node. A uniform interface regardless of any location considerations is thus provided.
@@ -218,19 +215,13 @@ Channels operating on the network level intrinsically distributed communication 
 ### Distinction to Distributed Objects {#sec-distributed-objects}
 
 
-~LitNote
-* Lokation transparency ist super und alles, wenn es richtig gemacht wird. die Verteilten Objekte machen das auch, und führen zu massiven Probleme --> hier hab ich diesen einen Artikel "A Note on Distributed Computing" oder so. An dieser stelle sollte ich diskutieren wieso Actors und MS diese Probleme nicht haben, bzw was zu beachten ist um es zu vermeiden
-* [@Siv99] "The specification of distributed objects: liveness and locality"
-* [@Wal96] "A Note on Distributed Computing"
-* chapter 2.8 in [@Bac03]
-~
+In object-oriented programming, the overall programs state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, from a logical point of view, the state is as such distributed [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. Yet, both architecture styles can be integrated such that objects support pyhsical distribution. The notion is called *Distributed Objects* (DO). There, objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. As such, DO's can be viewed from a process-oriented perspective. We refere to Barrio & Fuente [@Bar97] for a formal definition on modelling objects as processes.  
 
-In object-oriented programming, the overall programs state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, from a logical point of view, the state is as such distributed [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. And yet, both architecture styles can be integrated such that objects support pyhsical distribution. The result is called *Distributed Objects* (DO). 
+In terms of programming interface, for every DO a proxy object is created on the client side, which wraps the method calls to the actual distributed object, such that it does not has to exist within the same address space [@Wal96]. Therefore, local and distributed method calls look alike (location transparency). However, in example variants like Java RMI or CORBA, the object reference still has to be bound explicitely to a registry by the programmer [@Ber14], thus Distributed Object instantiation is not uniform to local object creation.  
 
-The concept that has been popularized in the 1990s [citation needed]{.mind}. Objects do not have to exists within the same program boundary, but can be distributed across multiple programs and therefore host machines. As such, DO's can be viewed from a process-oriented perspective. We refere to Barrio and Fuente [@Bar97] for a formal definition on modelling objects as processes.  
+The Distributed Object concept shares many conceptual similarities that have been discussed already. On the one hand, the design goals of Microservices seem to aim towards an object-like single-purpose computational unit skeleton alike to Distributed Objects within a monolithic object-oriented application. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or Active Objects do. Therefore it is worth to evaluate weither these abstractions qualify for Distributed Objects, as it would also imply known conceptul problems thereof.
 
-In terms of programming interface, for every DO a proxy object is created on the client side, which wrappes the method calls to the actual distributed object, which then does not necessarily has to be located within the same program boundry [quelle für den absatz, wiederholung von "program boundry"]{.mind}. This allows for location transparent method calls. Examples of such DOs are Java RMI or CORBA [quelle, richtig?]{.mind}. They seem to share many conceptual similarities that we are discussing here. On the one hand, the design goals of Microservices seem to aim towards the single-purpose, minimal and slim skeleton that distributed objects have compared to full-fletched monolithic applications. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or active objects do. 
-
+<!--
 However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
 ~LitNote
@@ -243,42 +234,48 @@ hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
 ~
 
 We already discussed the analogies of Actors and microservices to the notion of objects. Now, with these similarities and the fact that Actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
+-->
 
 
 #### Actors as Distributed Objects
 
 
-As with Distributed Object, the Actor model has the potential to address distributed components transparently. Actors use the concept of addresses, which substitute for local interfaces, just like DO proxies. As such, they might allow for different interfaces however. The Erlang programming language famously introduced the style `address ! message` to send a message of arbitrary form to an Actor itentified by a known address [vll was zitieren]{.mind}. Of course, Erlang does not implement object-orientation, and thus accessing state and message passing are strictly separate constructs by design.
+The Actor model has the potential to address distribution transparently. It uses its notion of addresses to abstract local interfaces, as do DO proxies. However, these addresses do not check message compatibility (method name and argument types). Erlang famously introduced the syntax `address ! message` to send a message of arbitrary form to an Actor itentified by a known address [@Arm93]. Of course, Erlang does not facilitate object-orientation, and thus accessing state and message passing are strictly separate constructs by design.
 
-However, other Actor systems have adopted this style, e.g. as was done in Scala. There the type system opens up the opportunity to use a punctuation-free syntax to invoke methodson object which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, this allows to use different syntactic constructs for referencing ordinary objects, and addressing Actors, if merely by convention. 
+Other Actor systems have adopted this style, e.g. as was done in Scala. There the type system opens up the opportunity to use a punctuation-free syntax to invoke methods on objects which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, this allows to use different syntactic constructs for referencing ordinary objects, and addressing Actors, if merely by convention. 
 
 [^fn-punctuation-free-call]: The expression `address ! message`{language:scala} is therefore merely syntactic sugar for `address.!(message)`{language:scala}.
 
-The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. Any asynchronous messaging is decoupled in time [cite Bonèr]{.mind}. It does not introduce the expectation of an immediate response as could be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods.
+The truely fundamental difference now between addressing an Actor and a Distributed Object is within the dispatch semantic. Actors rely on asynchronous message passing as defined by the basic model primitives. As such, any asynchronous message is decoupled in time. It does not introduce the expectation of an immediate response (blocking call) as would be with a synchronous-styled dispatch, which is essentially what method calls with a return value abstract. Thus, message passing is more loosely coupled than request/reply methods. As Distributed Objects are to be expected of facilitating many return type methods as is natural with object-oriented applications, we deem Actors not to abstract Distributed Objects.
 
+<!--
 Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
 
+
 In there principles however, we deem that Actors avoid the problematic abstraction of Distributed Objects. 
+-->
+
+~ todo
+Hier ist der Kern worum es mir geht noch nicht gut herausgearbeitet
+~
 
 
 #### Microservices as Distributed Objects
 
 
-The method call on a DO proxy object makes it transparent for clients weither a locally available or remote server object is addressed. Within the Microservice paradigm, there is no such abstraction in general. Service-internal interaction within its modules use the standard paradigms of the technology used to implement the service, e.g. calling an object's method, or referencing a function. To issue any external request (despite expecting a reply or not) a respective communication interface has to be issued. Such is dedicated to the communication channel, e.g. a HTTP library or message queue API. Thus, any external interaction should be recognisable to the programmer in general. 
+The method call on a DO proxy object makes it transparent for clients weither a locally available or remote server object is addressed. Within the Microservice paradigm, there is no such abstraction in general. Service-internal interaction within its modules use the standard paradigms of the technology used to implement the service, e.g. calling an object's method, or referencing a function. To issue any external request, regardless weither a result is expected or not, a respective interface has to be issued. Such is dedicated to the communication channel, e.g. a HTTP library or message queue API. Thus, any external interaction should be recognisable to the programmer in general. 
 
-Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. It is in the responsibility of the programmer to select [???-adjektiv]{.mind} frameworks and issue appropriate design desicions. 
+Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. This has been shown for using Feign to provide a Java object interface using dynamic runtime implementations for querying REST interfaces. To cope with distribution related matters, additional precautions like circuit breakers have been added in an linguistic form that is natural with the chosen declarative approach. It is therefore the responsibility of the programmer to incorporate auxiliary frameworks and issue appropriate design desicions, while Distributed Objects in general aim towards abstracting distribution and its issues as transparently as possible [@Wal96]. 
 
-An additional argument is the granularity of service interfaces. While objects may provide very fine grained interfaces in general, e.g. to access each of its state variables separately, service tend to have more course grained interfaces. In a Microservices context it is more likely that messages between services do not issue very fine grained operations on the receiving service in general, but instead aggregate more course grained operations relative to the interface granularity. Thus, [???]{.mind}
-
-Therefore, we deem it unlikely for Microservices to suffer from the leaking Distributed Object abstraction.
+Another argument is the granularity of service interfaces. While objects may provide very fine grained interfaces in general, e.g. to access each of its state variables separately, service tend to have more course grained interfaces. In a Microservices context it is more likely that messages between services do not issue too fine grained operations among services in general, to avoid the issues of external communication mechanisms [@Sha17a], e.g. most fallacies of distributed systems (&sect; [#sec-concurrency-network-level]). Therefore, we deem it not too likely for Microservices to be subject to conceptual issues of Distributed Objects.
 
 
 #### Active Objects as Distributed Objects
 
 
-We have discussed now weither Actors or Microservices qualify as abstractions of the Distributed Object concept, and came to the conclusion that the risk of being misused as DO's is moderate for both. However, &#167; [#sec-active-objects] introduced another variant of the Actor model that is worth discussing here, for it explicitely capitalises an object-oriented abstraction, just like DO's do: Active Objects.
+Although the similarity to Actors has already been discussed, &#167; [#sec-active-objects] introduced another variant of the Actor model that is especially relevant here, for it explicitely capitalises an object-oriented abstraction: Active Objects.
 
-Section [#sec-active-objects] gave an example of the concurrent semantic the API of Active Objects provide. The method call is separated from the message execution. We demonstrated the behaviour in case of method interfaces with and without return values. Building on the previous example, we define this program:
+An example of the concurrency semantic of Active Object interfaces has been given. The method call is separated from the message execution. We demonstrated the behavior in case of method interfaces with and without return values. Building on this previous example, we give:
 
 ``` {language:scala}
 val fs: List[Fnord] = ... // list of 100 references
@@ -294,9 +291,13 @@ The code snippet iterates over all elements and makes a blocking call to retriev
 1. The programs will block sequentially 100 times, once for each element.
 2. If some, or in the worst case all, of the elements are not within the same local boundries but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
 
-The first issue is a result of bad coding practice. The second issue is based on the same leaky abstraction distributed objects suffer from. The `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block (though with this particular method name and usage it hopefully is unlikely). Additionally it is not clear weither the dispatched method will execute locally or remotely. The abstraction simply hides too much.
+The first issue is a result of bad coding practice. The seconds issue is related to a problem in the abstraction that Distributed Objects suffer from too. Programming non-distribution is fundamentally not the same as programming distribution, and a uniform communication approach cannot surmount the conceptual differences [@Wal96]. It is not clear weither the dispatched `get()` method will execute locally or remotely, as the object abstraction is hiding too much context.
 
-Both issues could be fixed by using the *future type* of message passing for Active Objects that has been introduced. This is done by changing the declaration of `get()` to return a `Future[Int]`{language:scala} instead. In functional languages, handling Futures can be done elegantly if they offer monadic behaviour that fits natural with functional programming styles, e.g. in Scala:
+Additionally, the `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block[^fn-get-method], as now-typed methods can be used the same way past-typed methods are, due to the syntaxt definition. Thus now-typed method dispatches have the potential to introduce unintentional and unexpected additional remote procedure calls. 
+
+[^fn-get-method]: Though with this particular method name and usage it is hopefully unlikely.
+
+Both issues could be fixed by using the *future type* of message passing for Active Objects. This is done by changing the declaration of `get()` to return a `Future[Int]`{language:scala} instead. In functional languages, handling Futures can be done elegantly if they offer monadic behavior that fits natural with functional programming styles, e.g. in Scala:
 
 ``` {language:scala}
 1  Future.sequence(fs.map(_.get))
@@ -309,11 +310,15 @@ Both issues could be fixed by using the *future type* of message passing for Act
 
 This is an example where it is efficient to combine other abstractions of concurrent computation that integrate well with the Actor semantic. Line 1 transforms `fs:List[Fnord]`{language:scala} first into a `List[Future[Int]]`{language:scala} and then into a `Future[List[Int]]`{language:scala}. The Actor system's dispatcher can now wait until this `Future`{language:scala} completes without having to block the underlying thread. The call stack starting in line 2 is only applied upon completion, finalizing the intended result. 
 
-However, this argumentation only holds under certain assumptions. As we already mentioned, different Actor Systems have different capabilities. In &#167; [#sec-active-objects] we've stated that class `Fnord`{language:scala} extends some arbitrary `ActiveObject`{language:scala} class, but did not discuss the implications the used implementation would have on the correct behaviour. Assuming `Fnord`{language:scala} is changed to use the concrete Active Object abstraction Akka provides (called `TypedActor`{language:java} for it offers type safty for message passing), the desired non-blocking behaviour actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behaviour is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behaviour [@AkkaFuture].
+However, this argumentation only holds under certain assumptions. As we already mentioned, different Actor Systems have different capabilities. In &#167; [#sec-active-objects] we've stated that class `Fnord`{language:scala} extends some arbitrary `ActiveObject`{language:scala} class, but did not discuss the implications the used implementation would have on the correct behavior. Assuming `Fnord`{language:scala} is changed to use the concrete Active Object abstraction Akka provides (called `TypedActor`{language:java} for it offers type safty for message passing), the desired non-blocking behavior actually depends on the `Future`{language:java} used for wrapping the `Int`{language:java} result. Akka supports asynchronous dispatch only for the `scala.concurrent.Future`{language:java} trait. If class `Fnord`{language:java} uses its Java friendly `akka.dispatch.Futures`{language:java} interface, the intended behavior is guaranteed. However, the standard `java.util.concurrent.Future`{language:java} interface would result in undesired blocking behavior [@AkkaFuture].
 
-We see, in general Active Objects have the potential to be used in the same problematic way Distributed Objects are. The methods interface defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause bottlenecks, deadlocks, timeouts due to stacked network latencies, [...]{.mind} and having negative impacts on scalability, [...]{.mind} 
+We see, in general Active Objects and Distributed Objects share the same potential for problematic abstraction of distributed programming. Method interfaces defines the method dispatch semantics. If not used with utmost care, method calls can easily become simple remote procedure calls in a transparent way. This can cause e.g. bottlenecks, deadlocks, timeouts due to stacked network, thus endangering safety and liveness of a system [DAS MUSS ICH WENN DANN WOHER ZITIEREN!]{.red} 
 
-However, the one major benefit of Active as well as Distributed Objects compared to classic Actors and Microservices is their type safety. It is statically known weither a server will be able to understand a request, and respectivly a client may only dispatch messages which are guaranteed to be acceptable [kann ich da was zitieren?]{.mind}. 
+However, the one major benefit of Active as well as Distributed Objects compared to classic Actors and Microservices is their type safety. It is statically known weither a server will be able to understand a request, and respectivly a client may only dispatch messages which are guaranteed to be acceptable [hier schon was zitieren?]{.mind}. 
+
+~ todo
+Noch ein paar genauere Argumente aus [@Wal96]?
+~
 
 
 ### Components per Execution Environment
@@ -333,6 +338,12 @@ Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren k�
 
 
 ## Governance, Deployment and Autonomy
+
+~ todo
+Hier soll evaluiert werden, wie Actors/Microservices verwaltet werden (Actor.Sys. vs. Selbstverwaltung, bzw. Notwendigkeit eines extra Management Layers - cloud management framework). Dies hat Implikationen auf das Deployment, da durch die mangelnde Oberverwaltung von MS diese viel unabhängiger sind, und daher auch separat gestartet/gestoppt werden können (-> Auswirkungen). Actors haben durch die starke Bindung an ihr System weniger Freiraum. Alles in Allem ist dadurch die Autonomie der beiden Komponenten-Abstraktionen starkt unterschiedlich.   
+~
+
+---
 
 ~ todo
 vielleicht diese Section etwas weiter nach unten verschieben? Direkt vor die Process Calculi? Oder verweise ich auf Wissen hieraus bei der dyn. reconf.?
@@ -742,7 +753,7 @@ Due to the nature of Actors and Microservices, these concepts intrinsically allo
 
 
 ~LitNote
-* distributed objects as processes, define a behaviour 
+* distributed objects as processes, define a behavior 
     * see [@Bar97]
 ~
 
