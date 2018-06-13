@@ -11,7 +11,7 @@ Every good work of software starts by scratching a developer's personal itch.
 
 In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system, and provides a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
-[^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and its analogy to *recalling spoken words*.  
+[^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and the analogy to *recalling spoken words*.  
 
 Search engines cause the illusion of being closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
 

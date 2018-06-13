@@ -14,17 +14,13 @@ Their style is open for any programming language or paradigm. For services are c
 
 Unlike the Actor model, Microservices were not invented as a specific form of computation, but emerged from the industrial need to break the scalability barrier that monolithic[^fn-monolith] applications inevidently reach [citation needed]{.mind}. Only later the scientific community gained interrest in this paradigm, which lead to an explosion of contributions on this concept. Yet, academia still has some trouble to settle on a common basic definition on the essential concept(s) determining the paradigm [@Has16]. Fowler & Lewis [@Fow14] gave the first overall review to the Microservice concept, thus they are the original source most scholars refere to. But they focus on describing the common characteristics from a more practical engineering perspective. Dragoni *et al.* [@Dra17a] later gave an extensive conceptual description, thus we refere to them for further reading.
 
-[^fn-monolith]: The term originates from the *monolithic kernel* of operating system architectures. This is a sole binary running in kernel mode and providing the process management, memory management, file system, etc.
+[^fn-monolith]: The term originates from the *monolithic kernel* of operating system architectures. Such is a sole binary running in kernel mode and providing the process management, memory management, file system, etc.
 
 
 ## Limits of Centralization
 
 
 Historically, software systems often have always been implemented in a so-called *monolithic* way, where all the source code is compiled into one single, central artifact that can be executed on a machine. This is based on the level of abstraction mainstream programming languages provide to break down complexity of the programming task: *modules*. They allow to logically separate concerns, yet their transformation from program code to machine code leads to a result where all such modules are merged into one unified construct: the (monolithic) *executable*. By inversion of argument, a monolith is an application of modules that cannot be executed independently [@Dra17a].
-
-~ todo
-Raymond (UNIX buch) hat angeblich den begriff "monolith" geprägt
-~
 
 These naturally introduces a relative strong form of coupling, as in-memory call communication is a cheap and direct way of addressing components, and thus heavily applied in monoliths [@Bon17]. Yet any application subject to tight coupling of its modules suffers from certain issues. Its components are less reusable [@Sal16], increased interleaving becomes hard to maintain, all modules need to be upgraded simultaniously and are limited in the technologies they can use [@Dra17c], and evolution is generally hindered due to growing complexity [@Dra17a].
 

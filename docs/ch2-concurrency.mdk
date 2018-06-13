@@ -26,7 +26,7 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
   : Interaction and coorporation among tasks has to be possible. *Communication* allows them to influence each other [@And83]. The *shared state* communication style is founded on memory (e.g. variables, objects, etc.) being accessible by multiple tasks, such that they interact by reading and writing to this state. In contrast, *message passing* communication forgos any access to shared data, and instead is based on the exchange of messages (fixed, immutable data) sent through communication *links*, which are additionally required. Shared memory is only possible among tasks who can gain access to a common memory sections, thus is limited to the same physical machine. Message passing on the other hand surmounts this limitation, as messages can transit multiple links between sender and recipient, such that the machine boundries are bypassed [@Fel90]. It can happen in either *synchronous* (messages are sent and execution is delayed until a response has been received) or *asynchronous* (execution is resumed immediately after sending a message) fashion [@And83].
 
 * Synchronization
-  : Although ordering in concurrent execution is merely partial, communication still requires some order constraints, i.e. an action must be performed before its effect can be detected. *Synchronization* referes to mechanisms used to ensure such constraints [@And83]. Semaphores, locks and transactional memory are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task may modify state at a time to avoid unexpected behavior due to low level data races. The modification or evaluation of shared state is thus called the *critical section*, and synchronization mechanisms realize *mutual exclusion*, such that no task can access the shared state while another is within it's critical section [@Ben90;@Bus90].
+  : Although ordering in concurrent execution is merely partial, communication still requires some order constraints, i.e. an action must be performed before its effect can be detected. *Synchronization* referes to mechanisms used to ensure such constraints [@And83;@Mey97]. Semaphores, locks and transactional memory are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task may modify state at a time to avoid unexpected behavior due to low level data races. The modification or evaluation of shared state is thus called the *critical section*, and synchronization mechanisms realize *mutual exclusion*, such that no task can access the shared state while another is within it's critical section [@Ben90;@Bus90].
 
   : Message passing on the other hand provides an implicit form of synchronization, as any message intrinsically has to be written and sent before it can be received, thus the order is constraint by design [@And83]. Synchronous passing additionally constraints the sender from resuming computation until the message has been answered.  
 
@@ -80,10 +80,11 @@ Safety is *invariant*, such that a property `P` holds in *every* state of *every
 
 We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to partial correctness, while liveness is to total correctness [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
 
+~ red
 The consideration of correctness properties among general concurrent is especially relevant
+~
 
-
-## Programming Abstractions
+## Programming Abstractions {#sec-concurrency-programming-abstractions}
 
 
 As was pointed out, any concurrent execution has to be indicated, thus appropriate programming abstractions are required. In general, such are desired to be powerful and expressive models, fit harmoniously into the programing language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
@@ -139,9 +140,9 @@ In contrast, *threads* are tasks *inside* a processes, such that one process can
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
 
 
-Only with C11[^fn-c11] did the C programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
+Only with C11[^fn-c11] did the programming language add native support for expressing concurrency via threads. Prior to this, more operating system depending approaches like the POSIX[^fn-posix] threads binding `pthreads` had to be utilized. An additional strategy was to compose concurrent computation in an ad hoc way be relying on the operating systems scheduler to assign proccesses to processors in a concurrent way [@Bac03; @Fel90]. 
 
-[^fn-c11]: The C standard revision of 2011, more specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
+[^fn-c11]: The C standard revision of 2011, specifically *ISO/IEC 9899:2011*. It succeeds C99, the 1999 revision.
 [^fn-posix]: __P__ortable __O__perating __S__ystem __I__nterface, a collection of standardized programming interfaces for operating systems. The **X** is a remnant from the original draft name "IEEE-IX".
 
 An operating system allows a process to spawn new processes. The party refered to as the *parent* uses system calls provided by the OS to spawn a new process called the *child*. For example, the `exec` family of Unix calls allows to instantiate arbitrary proccesses from executables referenced by a filesystem path. However the spawned child replaces the parent process, thus such calls alone are insufficient to compose concurrency [@Lov07]. 

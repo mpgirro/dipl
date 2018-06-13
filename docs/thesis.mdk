@@ -48,12 +48,13 @@ Script            : style/mathjax-font.js
 [INCLUDE=style/vutinfth]
 
 
-<!-- Experimental MiniTOC support -->
+<!-- Experimental MiniTOC support 
 Package        : minitoc
 Tex Doc Header :
     \dominitoc % MiniTOC initialization
     \faketableofcontents
 H1 { tex-cmd-outer-after: "\minitoc" }
+-->
 
 
 <!-- Tkiz -->
@@ -148,6 +149,9 @@ blockquote { font-style: italic; }
 }
 .todo, .important, .delete, .red {
   color:red
+}
+.green {
+  color: green
 }
 <!-- TODO do I want to have the same color in PDF and HTML?
 .cite-number {
