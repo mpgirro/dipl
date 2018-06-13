@@ -144,29 +144,7 @@ This approach models a remote procedure call between the two components. Calling
 Message queue interaction can be expressed in a similar fashion through dedicated annotations for AMQP insertion and consumption. 
 
 
-### Discovery
-
-
-Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the connection to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
-
-* Discovery Registry (D)
-  : [TODO service registry]{.red} are ...
-
-The `name` argument of the `@FeignClient` annotation in the example given before relates to the designation that the required units will have registered as. Thus REST through Feign automatically integrates discovery mechanisms. Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
-
-Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. 
-
-In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
-
-To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
-
-
 ### Circuit Breaker
-
-
-~ todo
-Annotation Bsp für Hysterix
-~
 
 
 ~LitNote
@@ -184,15 +162,36 @@ Annotation Bsp für Hysterix
 Circuit breaker sind die am öftesten in der Literatur beschriebene Fault tolerance / Resilience Methode for Microservices. Daher dient eine kurze Illustration an dieser Stelle als Grundlage für die spätere Evaluierung im Vergleich zur Actor fault tolerance. Vor allem bietet Spring auch eine gute linguistische Abstraktionen an, welche auf dem REST Beispiel von oben aufbaut und dieses erweitert.
 ~
 
+~ todo
+Bsp bzgl. Hysterix
+~
+
+
+### Discovery
+
+
+Whenever direct communication is required however, the actual address of a recipient has to be known. However, depending on the deployment scenario, this may not be statically available information. Thus, Microservice Architectures applies the concept of *service discovery* known from SOA. A dedicated service component, the so-called *registry*, is tasked with providing binding information about other services. Only the connection to a registry has to be predefined statically, and must be ensured at runtime. Microservices need to register with the registry service, such that they may be discovered by others [@Mon16a]. This service is introduced as a new component into the architecture:
+
+* Discovery Registry (D)
+  : [TODO service registry]{.red} are ...
+
+The `name` argument of the `@FeignClient` annotation in the example given before relates to the designation that the required units will have registered as. Thus REST through Feign automatically integrates discovery mechanisms. Examples for service registry technologies are Consul [@HashicorpConsul], a standalone registry service solution, and Eureka [@NetflixEureka], a library of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default, for Concul was found to be a rather computation extensive mechanis. Eureka however tends to require extensive time for initial discovery, and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` this can trigger the circuit breaker [wird erst unten beschrieben!]{.red} before discovery is finished, and lead to long response times for the web interface in any case 
+
+Using discovery mechanism can impact response times of services. If a called services requires to make a request itself before being able to provide an answer (e.g. when performing a search query), it can become necessary to lookup the address of the requires service instead. Thus, an additional RPC for registry lookup could be required up to the amount of involded services, i.e. `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. 
+
+In contrast, message queue semantic has the major benefit of a sender being able to dispatch a message to the queue without having to know the address of a receiver. This provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when message queue channels are utilized, if the queue address is known statically. Otherwise the discovery mechanism could be used too, in order to retrieve it dynamically. 
+
+To ensure that the information in the registry are correct and up to date, a common feature of such services is the conduction of *health checks*, i.e. checking if their registrees are actually up and alive [@Dra17c]. 
+
 
 ### Load Balancing {#sec-ms-load-balancing}
 
 
-The idea of distributing work (the *load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to maximize throughput and minimize response time of the overall systemis called *Load Balancing* (LB).. [quelle? mehr oder minder aus der wikipedia umformuliert]{.red}
+The idea of distributing work (*load*) between multiple instances of the same task unit, such that the resources of all instances are optimally utilized and no single unit is overloaded, in order to maximize throughput and minimize response time of the overall system is called *Load Balancing* (LB) [@Ben90].
 
 There are two directions towards load balancing: server-side and client-side. The former approach requires a supervising entity to distribute work between receiving services, while the later has the sending services distribute the work among its known receivers themselves [CITATION]{.red}. 
 
-Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka over Consul for service discovery is that Ribbon is able integrate with it, such that a client does not dispatch a message directly to an address obtained from the registry, but instead to a static name that recipients use to register with the discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument to the `@FeignClient`{language:java} annotation of the declarative REST interface, as Ribbon is transparently integrating into Feign.
+Echo's Microservices use *Ribbon* [@NetflixRibbon] for client-side load balancing, which is supported by Spring Cloud. The main reason for prefering Eureka over Consul for service discovery is that Ribbon is able integrate with it, such that a client does not dispatch a message directly to an address obtained from the registry, but instead to a static name that recipients use to register with the discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument to the `@FeignClient` annotation of the declarative REST interface, as Ribbon is transparently integrating into Feign.
 
 In contrast, with server-side load balancing, the recipient selection is not done on the client-side, but by a dedicated balancing server. Spring Could also offers a library tool for conceiving such as well, called *Zuul* [@NetflixZuul]. Therefore this approach requires to add a new balancing component to the system architecture:
 
@@ -204,7 +203,7 @@ noch einen schönen Abschluss(ab)satz
 ~
 
 
-## Deployment
+## Deployment {#sec-ms-deployment}
 
 
 ~ todo

@@ -19,7 +19,7 @@ Akka is theoretically based on Agha's vision of the Actor model, and harnesses i
 As of Scala version 2.10, Akka replaces the default Actor implementation offered by Scala [@Hal12]. We will therefore refere to the former as *Scala Actors* in contrast to *Akka Actors*. Among the reasons were the better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
 
 
-## Ensuring Isolation {#sec-ensuring-actor-isolation}
+## Ensuring Isolation
 
 
 While Actors encapsulate state conceptually, in practice their *full isolation* must be ensured, such that there is no shared state at all. This is essential to guarantee safety properties, respectively prevent data races and state modifications [@Hal12;@Kan12]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
@@ -89,7 +89,7 @@ It is worth pointing out that though the Actor model is Scalas standard concurre
 * It can break the Actor semantic *intentionally*, e.g. to introduce an additional concurrency abstraction, as the next section will demonstrate. 
 
 
-## Utilizing other Concurrency Constructs {#sec-actor-solution-concurrency}
+## Utilizing other Concurrency Constructs
 
 
 Section [#sec-actor-concurrency-combination] motivated why the Actor model may be combined with other abstractions of concurrency, as long as these do not break Actor semantic. Akka offered support for multiple of such constructs, although with version 2.3 combining Actors with Software Transactional Memory into so-called *Transactors* was dropped. In principle, they've been useful for coordinating computations which span over the scope of multiple Actors and require consensus between all of them [@Sub11]. However, transactional memory usage has never been able to abstract distribution transparently in Akka, for STM requires shared memory which is hard across JVMs [@Swa14], and thus it has been removed eventually.
@@ -173,7 +173,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 * Response Handler (H)
   : are tasked with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion, or detect a timeout. Upon message receival, they pass on the result and deconstruct. 
 
-The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86].
+The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes refered to as *cameo pattern* as it is used for brief and simple interactions between Actors [@All13].
 
 [^fn-2nd-tell-argument]: Note that its alias `!` does not allow for more than one parameter.
 
@@ -182,7 +182,7 @@ This allows for an asynchronous composition style to handle synchronous communic
 In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The models mailbox construct however buffers all incomming message to an Actor, and has it process each message in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order. Large mailboxes with many messages queued up prevent timely message processing. Influencing the order of message reception is therefore a common property for Actor systems [@Kos16]. Akka provides the concept of a `PriorityMailbox`{language:scala}, which is utilizing the pattern matching syntax of Scala to assign priority levels to messages based on their type, such that those involved in synchronously styled flows may always be processes first, regardless of the actual mailbox size.  
 
 
-### Modelling Timeouts {#sec-actor-timeouts}
+### Modelling Timeouts
 
 
 Any synchronous information flow should provide some sort of timeout, to prevent starvation. When using futures, this has to be done explicitly using language specific constructs. The already demonstrated for-comprehension syntax of Scala for examples makes it difficult however to introduces timeouts.
@@ -200,7 +200,7 @@ val messenger: Cancellable = context.system.scheduler
     }
 ```
 
-The provided `Chancellable`{language:scala} reference allows to prevent the trigger from fireing by calling `messenger.cancel`{language:scala}. This introduces a notion of time into the Actor semantic that is natural to the model [@AkkaScheduler]. In combination with the [cameo pattern]{.important}, it is possible to abstract synchronous information flow semantic including timeout boundries by using purely asynchronous message passing operations. 
+The provided `Chancellable`{language:scala} reference allows to prevent the trigger from fireing by calling `messenger.cancel`{language:scala}. This introduces a notion of time into the Actor semantic that is natural to the model [@AkkaScheduler]. In combination with the cameo pattern it is possible to abstract synchronous information flow semantic including timeout boundries by using purely asynchronous message passing operations. 
 
 
 ### Type-safe Messaging and Compatibility
@@ -231,7 +231,7 @@ Though this concept provides static type safe messaging, it still has its limits
 We've found that such kinds of compile-time message saftey restrictions, apart from Active Objects, are a rare capability among Actor Systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
 
 
-## Supervision (, Fault Tolerance and Resilience)
+## Supervision
 
 
 In section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. 
@@ -255,23 +255,15 @@ The signaling of an occured failure is not communicated via a "normal" actor mes
 
 A supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. The reason for this is that state should only belong to, and be processed by one Actor exclusivly. If a failure would result in the propagation of state to the supervisor, than part of the childs implementation logic would leak into its supervisor, for such would require the knowledge to interprete the state in order to evaluate it in a meaningful way. The failure however remains isolated in the child. Therefore, in case it is being resumed, the cleanup actually falls to the child itself. The message on which the fault occured is not re-introduced into the mailbox, to avoid fault-reoccurence. All other actions discard the child'ss state in any case [@Roe15;@AkkaSupervision]. 
 
-
-~ red
-FAULT TOLERANCE:
-
-Additionally, a `SupervisionStrategy`{language:scala} may also define some behavior besides local, single event handling. In case a child keeps failing repeatly withing a certain timeframe, it  
-~
-
-~LitNote
-* Supervision and Error Kernel
-* Circruit Breaker kurz anreißen und darauf hinweisen, dass die in Unterkapitel von MS genauer erklärt werden, da MS deutlich mehr darauf angewiesen sind (benötigen höhere Fault Tolerance einzelner Services, da Ausfall der Componente vergleichsweise teurer)
+~ todo
+Hier ein kurzes Code-Bsp?
 ~
 
 
 ## Information Routing and Delivery Reliability
 
 
-In some cases it can be necessary to send a message not to one Actor specifically, but to have it distributed among a set of equivalent instances. Akka provides the concept of *routers* in order to achieve this:
+It can be necessary to send a message not to one Actor specifically, but to have it distributed among a set of equivalent instances. Akka provides the concept of *routers* in order to achieve this:
 
 ```{language:scala}
 val router: Router = {
@@ -286,41 +278,17 @@ Routing to potential recipients can follow various strategies, depending on the 
 Conceptually, routing can be done directly inside the sending actor, such that the call `router.route(m,s)` replaces the `tell(m,s)` call. Alternatively an intermediate Actor can be employed. The decision is based on the burden of managing the routees. For actors can fail, the set of routees has to be kept up to date, in order to avoid message routing to terminated actors. Therefore, the routees should be children of the router, such that the router will be informed through its supervision obligation in the case of their demise. A set of such routees is refered to as a *pool* [@Roe15]. Therefore it can become be useful to use a separate component for routing, if actors are to be part of multiple routers, or parent-child relationship is otherwise logically inadequate:
 
 * Message Routers (R)
-  : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees to ensure reliable [knowledge about which are dead and which are alive]{.red}.
+  : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees and are thus responsible for forwarding the messages only to those alive. 
 
 The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected based on the routing logic.
 
-
-
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. For this, Akka provides a concept called *Actor selection* as a mechanism to send a message to an addresses matching a certain pattern. This leads to the question of message delivery reliability. Actor selection does not guaranteed that a recipient conform to the pattern exists. Therefore the message might not be delivered at all, and become a *dead letter* instead. 
 
-~ todo
-Hier noch ein paar Worte zur MDR
-~
+Delivery reliability is a general concern of sending messages to Actors, besides the context of routing. In the theoretical model, all messages are guaranteed to be delivered [@Agh85b]. Conceptually this ensurance is important as it implies no permanent starvation with any Actor [@Kar09]. In practice however, this cannot be safely assumed to hold. As we assume Actors in a potentially distributed context, message delivery may be subject to a network link. Recalling fallacy 1: *the network is reliable* warns that the network cannot be trusted to guarantee the transport of data in general, thus neither can Actor message delivery be assumed.
 
-Deliver reliability is a general concern of sending messages to actors, besides using routers. 
+Akka therefore weaker ensurances regarding message delivery reliability than the theoretical Actor model. Particularly, all messages are merely guaranteed to be delivered *at-most-once*. Thus, they are to be assumed of potentially getting lost. Additionally, when multiple Actor send messages to the same recipient, no order of messages in the mailbox is guaranteed, which is the reason for nondeterminism in the Actor model. Yet Akka also ensures that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched (FIFO order) [@AkkaMDR].
 
-... [@AkkaMDR] ([KANN ICH MIR VIELLEICHT GÄNZLICH SPAREN!]{.red})
-
-~ lit
-* has impact on time takes for distributed.
-* difference between local (inside JVM) and remote (fallicies of DS!)
-* only two rules:
-  * "at-most-once delivery, i.e. no guaranteed delivery"
-  * "message ordering per sender–receiver pair"
-~ 
-
-~ todo
-Hierzu die Akka-Doku zitieren? Oder hab ich das in einem buch schon stehen? <https://doc.akka.io/docs/akka/2.5/routing.html> und <https://doc.akka.io/docs/akka/2.5/general/message-delivery-reliability.html> [@AkkaMDR]
-~
-
----
-
-~ red
-* TODO: At most once delivery, siehe zB [@AkkaMDR]
-* As already outlined, when multiple Actor sends messages to the same recipient, no order of messages in the mailbox is guaranteed. This is the reason for nondeterminism in the Actor model. Some Actor systems however tend to narrow down this property, by ensuring that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched [@AkkaMDR].
-* ...
-~
+In contrast, other Actor systems like Orleans choose to provide *at-least-once* delivery by resending messages that have not been acknowledged within a certain timeframe [@Ber14]. Thus, no message is ever lost but can emerge duplicated instead. As a consequence, any application logic with such Actors has to be able to cope with the fact that one and the same message may be received multiple times. 
 
 
 ## Persistence and IO

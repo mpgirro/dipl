@@ -12,39 +12,14 @@ Thinking like a computer scientist means more than being able to program a compu
 Chapter [#ch-actor-model] and [#ch-microservice-paradigm] introduced Actors and Microservices separately and focused on their individual concepts. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by Actors and Microservices involved such that both approaches can achieve concurrent computation within their respective architectures. 
 
 
-## Encapsulation and Isolation {#sec-commonalities-isolation}
+## Encapsulation and Isolation
 
 
-~todo
-Hier die Sachen von unten als Einführung beschreiben (ohnehin nicht mehr all zu viel übrig)
-~
+Actor and Microservice semantics rely on a strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
 
-~LitNote
-* "promise behavior via API/protocol" --> design by contract
-* [@Kan12] 4 four important semantic properties of our
-extension based on Actor systems: encapsulation, fairness, location transparency and mobility [16 --> Actor Frameworks for the JVM Platform: A Comparative Analysis]
-* [@Bon17] "This simple fact has huge implications. It means that data can be strongly consistent only within each service but never between serv‐ ices, for which we need to rely on eventual consistency and abandon transactional semantics"
-* [@Bon17] "Isolation makes it easier to scale each service, as well as allowing them to be monitored, debugged, and tested independently"
-* [@Kni96] "Encapsulation is probably the only feature that is generally agreed to be an indispensable (sine qua non) characteristic of object-oriented languages. Some researchers even consider encapsulation to be the fundamental object-oriented concept and that all other object-oriented mechanisms and approaches exploit encapsulation to various ends ([9]). There also seems to be general agreement on the fact that encapsulation and sharing are incompatible: sharing tends to violate encapsulation while encapsulation tends to prevent sharing."
-    * hier muss ich auch noch was zu visibility schreiben, weil ich im actor-solution kapitel schreibe das es hier schon vorgekommen ist!
-* MS sind per definition, insofern sie auf shared memory konzepte verzichten, immer perfekt isoliert, durch das OS. Bei Actor müssen die verschiedenen "notions of state" beachtet werden, um eine strong state notion einzuhalten, also preserve local state and transient state, wie es in [@Kni96] beschrieben ist
-* [@Kar09] Encapsulation = State Encpasulation + Safe Messaging
-    * nach meiner auffassung ist das genau isolation; das sollte ich vll hier anbringen
-~
+The conceptual need is known from Object-oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the concept of a *Microservice* - are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
 
-Actor and Microservice semantics rely on a strict separation of component states. This arises the need to ensure that state is conceptually encapsulated within a component and practically isolated from the outside. 
-
-The conceptual need is known from Object Oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the concept of a *Microservice* - are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
-
-Both Actors and Microservices define such well-defined interfaces in their own way. For Actors its the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g. the REST interfaces it exposes, or the messages it consumes from a message broker (e.g. AMQP queue). Only through these can the state be accesses or modification made.
-
-~ todo
-HIER SCHON SCHLUSS? ABSATZ UNTEN WEG?!
-~
-
-Ensuring that state is only accessible through the a components interface, i.e. that it is isolated from any illegal access from the components outside, is rather different for both styles due to their conceptual differences.
-
-...
+Both Actors and Microservices define such well-defined interfaces in their own way. For Actors its the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g. the REST interfaces it exposes, or the messages it consumes from a message broker (e.g. AMQP queue). Only through these can the state be accesses or modifications made.
 
 
 ### Shared and Mutable State
@@ -56,10 +31,10 @@ On the other hand, such reasoning cannot be done for Microservices in general. T
 
 However, the Microservice paradigm dictates that shared memory *between* services is to be avoided, as are all kinds of shared resources in general. For every service runs within its own system process, avoiding shared memory implies no direct intersection between service process boundries. Typical communication channels satisfying the requirements given in &#167; [#sec-ms-independence-interaction] also prevent any form of reference sharing to joined mutable data. Such channels tend to provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
-Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries. This theoretically allows access to the same memory locations [citation needed, irgendwo bei der OS literatur wird schon was stehen]{.mind}. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behavior is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
+Actors are generally faced with more challenges when it comes to truely ensuring state separation, because the components can exist within the same process boundries, thus they can access the same memory locations. Depending on the programming paradigm used for implementing the Actors, exposing shared state to others might be very simple and not apparent to the programmer. Especially the imperative style leans on mutable state, thus suffering from the need of applying extra care to preserve the model semantic. The functional paradigm tends to avoid such problems inherently, for behavior is modeled as a function, and this function is the only mutable state, which may be modified exclusively by the Actor itself. If the Actor model is integrated into the programming language itself, such problems can be avoided by designing appropriate restrictions enforced by the language directly. However, library based Actor implementations in general cannot ensure full isolation by themselves [@Kos16]. Section [#sec-ensuring-actor-isolation] will discuss in detail the specific demands such libraries can pose to the programmer for a given Actor library.
 
 
-### Persistance {#sec-commonalities-persistance}
+### Persistance
 
 
 The encapsulation and isolation principle of Actors or Microservices has one more important implication for both concepts. For state is exclusive to a single component, each must also take exclusive care if given state is expected to be durable accross the components livetime. This property is usually refered to as *persistence* [kann ich da was zitieren?]{.mind}.
@@ -75,7 +50,7 @@ This restriction opens up another opportunity however. Monolithic applications t
 This approach on introducing specialized database systems based on respective persistance needs, at the risk of introducing potential redundancies, is sometimes refered to as *polyglott persistance* [citation?]{.mind}.
 
 
-## Communication and Message Routing {#sec-communication-message-routing}
+## Communication and Message Routing
 
 
 According to the general concerns of concurrent computation, tasks refraining from utilizing mutuable shared memory require other kinds of communication links which facilitate message passing instead. As both the Actor model and Microservice principles strictly omit any form of shared state, they too require what will be refered to as *communication channels* for messaging. Such channels transport information from a source to a destination, i.e. a *sender* is writing data to the channel, upon which a *receiver* may read it. Independent of the concrete channel technology, this implies an implicit synchroniztion of the information, for the event of reading a message can intrinsically only occur *after* it has been sent. In contrast, shared state would must explicitely require to define an order of accessing information [@And83].
@@ -608,7 +583,7 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 
 Due to the asynchronity and distribution of Actors and Microservices, both approaches are bound to a weak notion of data consistency which is refered to as *eventual consistency*, as has been pointed out frequently in the literature [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. It describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Concequently, until this point in time, the data state across tasks is in flux and may therefore produce varying results. 
 
-Echo suffers from this regarding its data store units. Indizes inevitably hold states which are behind of the Catalogs, as these receive feed data from Parsers and only distribute it to the Indizes after they've update their state (broadcast). This is of course only true for the original recipient of the Parser data, as any update to one Catalog subsequently also has to be broadcast to the residual instances. Thus, eventual consistency reduces the guarantee for consistent data to a guarantee that all data updates will be propagated to all data replicas [@Tan07]. 
+Echo suffers from this regarding its data store units. Indizes inevitably hold states which are behind of the Catalogs, as these receive feed data from Parsers and only distribute it to the Indizes after they've update their state (broadcast). This is of course only true for the original recipient of the Parser data, as any update to one Catalog subsequently also has to be broadcast to the residual instances. Thus, eventual consistency reduces the guarantee for consistent data to a guarantee that all data updates will be propagated to all data replicas [@Tan07]. Informally, we can observe that any form of exclusive state ownership combined with an asynchronous communication model without a transaction abstraction ontop will introduce some form of eventual consistency into a system [@Bon17]. Thus, it is inherent to Actor architectures, and due to the *at-least-once* delivery guarantee given by RabbitMQ it is also part of Echo's Microservice architecture.
 
 In contrast, requiring consistency would be extremly difficult. Consistency essentially constraints the order of read and write operations on data [@Mah11], in this case from a global point of view. Software transactional memory would be a prominent mechanism to achieve this. However, as we've pointed out, Akka did drop its transaction support for the performance impact in a local context alone, as it never did achieve to extend transactions to remote Actors. Microservices are faced with even more challenges, as there is no inherent base system available to provide such mechanism, and the complience to such therefore would have to be integrated on an individual per service basis.
 
@@ -741,7 +716,7 @@ Dedicated programming languages for service-oriented programming like Jolie open
 
 Guidi and Montesi [@Gui09] define three kinds of interfaces: functional (distinguished by a name, input and output), work-flow (requireing a valid sequence of interactions) and semantic (offering semantic information about functionality through some onthology). The previous section discussed contracts of the functional kinds, which can address safety properties with pre- and postconditions. Yet this Design by Contract notion is fundamentally limited in their capabilities regarding liveness. Such requires specifications based on *temporal logic*, which is concerning the behavior (sequence of action with respect to time) [@Siv99].  
 
-Actor and Microservice systems require its components to be interoperable in order to ensure reliability and correctness. The mere compatibility of formally defined functional interfaces in not incorporating sufficient information in general to be able to ensure this for communication-centered concurrent and distributed system components, as these do not incorporate interaction protocol information [@Sin09]. Message exchange has an influence on internal task unit states, thus a precise message order can be required [@Anc16;@Dra17a]. This is not considered in functional types. However, the mentioned work-flow kind incorporates this into a notion of typization. Such are generally subsumized as *behavioral types* [@Anc16] and of high interrest regarding concurrent execution, for they have the potential to prevent safety and liveness issues [@Hut16].
+Actor and Microservice systems require its components to be interoperable in order to ensure reliability and correctness. The mere compatibility of formally defined functional interfaces in not incorporating sufficient information in general to be able to ensure this for communication-centered concurrent and distributed system components, as these do not incorporate interaction protocol information [@Sin09]. Message exchange has an influence on internal task unit states, thus a precise message order can be required [@Anc16;@Dra17a]. This is not considered in functional types. However, the mentioned work-flow kind incorporates this into a notion of typization. Such are generally subsumized as *behavioral types* [@Anc16] and of high interrest regarding concurrent execution, for they have the potential to prevent safety and liveness issues [@Hut16]. This is especially relevant, as liveness properties cannot be tested for at runtime, as has been discussed.
 
 Within the context of Actors, scientific exploration of static constraints on Actor behaviors replacements regarding method availability (message acceptability) has already been done [@Hut16]. The type-bounded behaviors of Akka Typed are an experimental implementation regarding this concern. It demonstrates how a certain degree of static type safety can be introduced through the Actor addresses. However, it takes a rather rigid approach, by simply defining a most basic supertype of all messages through a type parameter, and forbidding the behavior to change such that messages of this type could not be understood anymore.
 
@@ -749,9 +724,6 @@ Active Objects primarily address the problem of contracts for Actors. Their obje
 
 There is a generalization of describing valid method invocation order for objects. Two kinds of notions have been established in the literature. One focusing on introducing very formally defined theoretical models, e.g. based on process calculi, into typization, as do for example *process types* [@Pun95a;@Hut16], and another based on less formally defined ideas summarized as *typestate*. The nonuniform method availability that has been just described is a special variant of typestate refered to as *session types* [@Anc16]. Modern AO variants as Orleans however do not endeavor into any such capabilities.
 
-~ green
-safety properties sind testbar zur runtime, liveness aber nicht. Daher behavioral types wünschenswert, um hier das fehlen von ordentlichen testmögichkeiten zu kompensieren
-~
 
 <!-- TODO delete?
 ... 

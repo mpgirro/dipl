@@ -50,8 +50,8 @@ Due to this physical separation, different locations, that is host machines, do 
 
 As a result, there are three fundamental observations to be made:
 
-1. Concurrent systems can be neither assumed parallel nor distributed in general, but may be so their individual case.
-2. Parallel and distributed systems are always concurrent.
+1. Concurrent systems can be neither assumed parallel nor distributed in general, but may be so in their individual case.
+2. Parallel and distributed systems are inherently concurrent.
 3. Distributed systems with two or more nodes are parallel. 
 
 A general definition incorporating these interrelations is given by Baeten [@Bae05]:
