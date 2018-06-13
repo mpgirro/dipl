@@ -78,11 +78,8 @@ Many different issues regarding concurrent computation are well known and descri
 
 Safety is *invariant*, such that a property `P` holds in *every* state of *every* execution. In contrast, liveness of `P` demands it to hold in *some* state of *every* execution. As a result, there is a so-called *duality* between safety and liveness, such that the negation of a member of one type is a member of the other [@Ben90].
 
-We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to partial correctness, while liveness is to total correctness [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
+We've found the role of *deadlocks* (blocking operations which for some reason do not unblock) to be controversial. One the one hand, an execution path must not lead into a deadlock (safety), while they also threaten the progression of a program, thus its liveness. This is also somewhat reflected in safety being related to *partial correctness* (the result is correct if the program terminates), while liveness is to *total correctness* (the programs terminates with a correct result) [@Bus90]. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly related to liveness, for their operations are safe while the program does not progress.
 
-~ red
-The consideration of correctness properties among general concurrent is especially relevant
-~
 
 ## Programming Abstractions {#sec-concurrency-programming-abstractions}
 
@@ -190,6 +187,4 @@ Fallacies 4. and 6. are outside the scope of this thesis, but the remaining will
 
 [^fn-8th-fallacy]: The eighth fallacy was not part of Deutsch's original proposal, but later added by Gosling. Hence, the literature sometimes merely referes to seven fallacies. 
 
-Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07;@Bac03]. Socket bindings exist for practically every programming language, such that they are a technology heterogenous mechanism, although rather low-level.
-
-More high-level is HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), which provides [...TODO 1-2 sätze erklärung, dass HTTP weniger bare metal ist, weil structural text --> dann ist schluss mit dem kapitel]{.red}
+Any distribution conceived concurrency has to concern itself with them when dealing with the network programming interfaces. These are depending on the used network mechanism, and can take arbitrary form in general. A very basic example is the concept of *Sockets* as they have been introduced in Unix. Their standard interface provides a means to write data that will be sent through the network, and from which received data from the network can be read [@Tan07;@Bac03]. Socket are provided by practically every operating system and bindings exist for almost all programming language, such that they are a technology heterogenous mechanism, although rather low-level (transport layer). More high-level is for example HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), a generic, originally stateless and text-based communication protocol providing platform-neutral data transfer on the application-level.

@@ -41,11 +41,17 @@ The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus d
 
 We want to address the research question:
 
-> How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for constructing concurrent systems?
+> __RQ__: *How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for constructing concurrent systems?*
 
 ## Aim and Scope of the Work
 
+~ todo
+Hier soll kurz Erklärt werden worum es mir bei der Erarbeitung der Antwort auf die Forschungsfrage geht. Vor allem soll auch abgegrenzt werden wieso es praktische Implementierungen gibt und welchen Zweck diese erfüllen, d.h. dass diese nicht auf ihre Leistung bzgl. der Domäne evaluiert werden.
+~
+
 ...
+
+The goal of this work is to provide an
 
 ~LitNote
 - Clear separation between search engine and domain specific tasks (writing to index and search, fetching and parsing feeds, etc) and the communication and coordiantion specific parts (actors architecture and microservice architecture). Therefore a core library was developed for the first, and for the second "only" backends utilizing this lib was needed. It allows easy analysis/argumentation about the concurrent programming vs MSA aspect of the thesis, because all test scenario specific parts are part of core-lib, and could therefore be replaced by other domain specific code or non-search engine code
@@ -59,13 +65,19 @@ Important that core-lib does not introduce any own concurrent aspect, all concur
 
 ...
 
-For we are conducting a *conceptual* analysis, we will refrain from giving formal definitions of all concepts (which would tend to become rather excessive), and confine on describing the concept semantics in an informal way sufficient for our discussions.
+For we are conducting a *conceptual* analysis, we will refrain from giving formal definitions of all concepts (which would tend to become rather excessive), and confine on describing the concept semantics in an informal way sufficient for comparative evaluation.
 
 ## Methodological Approach
 
+~ todo
+Hier einen kurzen Überblick über die Arbeitsweise, ähnlich der Darlegung die bereits im Expose gegeben wurde.
+~
+
+~ green
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
 * literature review for chapter: concurrency, Actor model, microservice paradigm, similarities and differences
 * practical work for Actor solution, microservice solution
+~
 
 ## Structure of the Thesis
 

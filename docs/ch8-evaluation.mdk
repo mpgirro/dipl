@@ -619,7 +619,7 @@ The constraints required for maintaining strong consistency relate to safety [@M
 
 
 ~ todo
-Beide Konzepte behandeln von einander gut entkoppelte Komponenten. Allerdings lassen sie sich dennoch sehr unterschiedlich "gut" testen. Ein MS wird einfach selbstständig gestarte, und sein public interface zum Testen verwendet. Schwierig wird es, sobald ein MS weitere Services in anspruch nimmt, bzw ganz allgemeint die Existenz von anderen Komponenten annimmt (MQ, Discovery, etc). 
+Hier eine kurze Übersicht über die Testmöglichkeiten von Actors/MS. Beide Konzepte behandeln von einander gut entkoppelte Komponenten. Allerdings lassen sie sich dennoch unterschiedlich "gut" testen. Ein MS wird einfach selbstständig gestarte, und sein public interface zum Testen verwendet. Schwierig wird es, sobald ein MS weitere Services in anspruch nimmt, bzw ganz allgemeint die Existenz von anderen Komponenten annimmt (MQ, Discovery, etc). 
 Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leben" müssen. Akka bietet hierfür Ansätze und Lösungen, diese sind aber verglichen mit anderen "normalen" Test Frameworks schon kompliziert und eher konfus. 
 ~
 
@@ -627,13 +627,11 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 * MS können ein und die selbe Funktion über mehrere arten von interfaces anbieten (consume from AMQP, as well as REST), were REST makes testing easy, and AMQP better for production.
 * [@New15] "Building Microservices"
 * [@Dra17a] kurz vor ch4
-* [@Siv99] beschreibt "Testing and Debugging Liveness"
-    * "One implication of the definition of safety properties is that they can be violated by a finite execution"
-    * "Safety properties can therefore be testet at runtime"
-    * "Liveness properties, on the other hand, cannot be violated by any finite execution. Informally, even if a liveness property does not hold for some finite execution, there is a continuation of that execution for which it does hold"
 ~
 
-[TODO]{.red}
+...
+
+From a theoretical point of view, any safety property can be violated by a finite execution, thus they can be tested for at runtime. On the other hand, liveness properties can not be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks.
 
 
 ## Actor Model and Process Calculi
