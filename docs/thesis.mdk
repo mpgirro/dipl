@@ -153,6 +153,8 @@ blockquote { font-style: italic; }
 .green {
   color: green
 }
+
+.green, .red, .litnote, .lit, .literature, .mind { .hidden }
 <!-- TODO do I want to have the same color in PDF and HTML?
 .cite-number {
   color:navy;
