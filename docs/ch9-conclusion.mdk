@@ -22,12 +22,6 @@ Actor are conceptually very slim computational units. Erlang is best known for i
 
 Essentially, it is our observation that each Actor system aims to keep their units more lightweighted than a program thread, such that the Actors are being scheduled on a thread-pool if they are required. This allows to greatly improve performance by preventing idle Actors to consume computational resources. The runtime of Orleans even holds its Actors merely virtual, such that they are instantiated just on demand.   
 
-~ todo
-irgendwo hab ich gelesen: Scala actors mehrere 10k, bei Erlang sogar mehrere Mio. [QUELLE?!]{.red}
-~
-
-...
-
 However, the Actor runtime makes prediction about the performance difficult. Akka's dispatchers provide besides a fixed thread-pool size also a dynamic pool size configuration. This will elastically scale the amount of threads based on the current demand. Consequently, long turns, e.g. due to blocking operations, will lead to an increase of threads in the pool. Yet Java thread efficiency is related to the number of cores available on the host machine, such that a high thread-to-core ratio will have a negative impact on the overall performance. This has been experienced with Echo's web crawlers, which rely on blocking HTTP calls to retrieve remote content. Thus, deployment configuration specific to each individual node host machine, with a focus on the different options regarding thread-pool management, is recommendable in general.
 
 Therefore, we observe that the portability of Actor system nodes is relative to the machine configurations of the old and new deployment locations, at least regarding a predictable performance behavior. Additionally, the ecosystem is also limited by the Actor system technology. As all involved tasks have to be interoperable, thus conceived through the Actor system variant, all components are limited by it. As Akka is a JVM based library, with dedicated binding for Java and Scala, portability is still good, as the JVM is available for most potential host machines. Other Actor system face essentially the same limitations. Erlang was specifically designed for Actor utilization, thus they are deeply founded in the languages concepts. Its Actors are thus at most interoperable with other BEAM-based constructs, e.g. such constructed using the *Elixir* language.
@@ -36,7 +30,7 @@ Therefore, we observe that the portability of Actor system nodes is relative to 
 ## The Case for Microservices
 
 
-Microservice architectures also facilitate constructs aiming for a clear and easy separation of concerns [(vll etwas anders formulieren?)]{.red} in dedicated computation units. However, as all these services are individual processes spawned from distinct program images, each Microservice in general has to pay attention to many more aspects than its primary responsibility. 
+Microservice architectures also facilitate constructs aiming for a clear and easy separation of concerns into dedicated computation units. However, as all these services are individual processes spawned from distinct program images, each Microservice in general has to pay attention to many more aspects than its primary responsibility. 
 
 Most importantly, as services cannot facilitate in-memory calls like monolithic system architectures do, their connectivity becomes an essential concern essential. All communication channel technologies required to achieve a desired interaction, but also resilience mechanisms down to more trivial matters like logging concerns have to be supported individually. Regarding communication, this can be a benefit. The paradigm allows to explicitly define communication ports, whereas Actors have to comply to the abstraction provided by the system.
 

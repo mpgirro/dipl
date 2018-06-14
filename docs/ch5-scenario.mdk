@@ -13,15 +13,10 @@ In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is
 
 [^fn-echo-name]: The name "Echo" was chosen for its wonderful characteristics of providing a short namespace and the analogy to *recalling spoken words*.  
 
-Search engines cause the illusion of being closed monolithic systems, but actually are traditionally composed of many components that act in a decoupled and asynchronous manner, such that they can perform...
 
-...
+Search engines cause the illusion of being monolithic system, but are actually a composition of rather loosely coupled subsystems [@Cou05].
 
-[@Man08]
-
-Search engines cause the illusion of being monolithic system, but are actually a composition of rather loosely coupled subsystems [citation? -- Google?]{.red}
-
-Their constructing is led by two basic requirements:
+Their constructing is led by two basic requirements [@Man08]:
 
 * Effectiveness
   : is about the quality of search results, and the sole concern of the scientific discipline called * Information Retrieval*, which is distinguishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
@@ -38,7 +33,7 @@ kurze Beschreibung der technischen Realisation von Podcasts = Decentralized medi
 ## System Components
 
 
-At the core, the basic architecture and components are inspired by the work of Brin and Page [@Brin98] on large scale web search engines.  
+At the core, the basic architecture and components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy" and a more modern interpretation of associated design principles given by Coulouris *et al.* [@Cou05].  
 
 ...
 
@@ -79,15 +74,16 @@ Such task units ending in *\*Store* are stateful, all others stateless. When dat
 
 ...
 
+~ green
+
 ... means of generating globally unique IDs without requiring any kind of consensus mechanism
 
 ...
 
+~
+
 ## Concurrent Concerns and Message Flow
 
-~Todo
-Fetching data (feeds/websites), parsing data (feeds,websites), registering new entities (podcast/feeds, episodes), extending stores directory/index, serving search requests
-~
 
 In general, all previously described components have to be executed concurrently. However, from a more general perspective, there are certain concerns that have to be met in a concurrent fashion, in order to ensure a "running" search engine. These involve multiple task units, and therefore these have to corporate in terms of an information flow between them.
 
@@ -98,29 +94,30 @@ In general, all previously described components have to be executed concurrently
 * Exploring the Catalog
   : The search engine provides besides searching index data records also a database of all known podcast and episode metadata. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus, REST requests have to be forwarded from the Gateway to the CatalogStore (`G` &rightleftarrows; `C`) in a timely fashion.
 
-* Adding new Feeds
-  : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories. [TODO: diesen Task einfach weglassen?]{.red}
+* Adding and updating feeds
+  : Feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
 
-* Updating Feeds
-  : [TODO]{.red}
-
-* Processing Feeds
-  : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. [updater finds this out by regularly asking a CatalogStore for the feeds that have not been updated the longest]{.mind}. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all CatalogStores. Each episode metadata record is used to check whether an episode is yet known, or if the feed contained a new entry. This can only be detected by a CatalogStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index data structures. The overall flow is thus; `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
+* Processing feeds
+  : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. Such find new updating candidates by regularly consolidating the data of Catalogs. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all CatalogStores. Each episode metadata record is used to check whether an episode is yet known, or if the feed contained a new entry. This can only be detected by a CatalogStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index data structures. The overall flow is thus; `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
 
 ...
 
 
-For example, the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interaction do, thus synchronization or transactions are generally an undesirable and less expedient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
+For example, the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interaction do, thus synchronization or transactions are generally an undesirable and less expedient path [@Cou05].
 
 
 ## Scope and Limitations
 
-[Hier beschreiben was die Implementierungen leisten können sollen, und was nicht]{.red}
+~ todo
+Hier beschreiben was die Implementierungen leisten können sollen, und was nicht
+~
 
+~ green
 * static configuration of components
   * KEINE elasticity
   * KEINE mobility at runtime 
   * keine notwendigkeit von event sourcing
+~
 
 ~ todo
 Hier könnte eine hübsche +/- Tabelle stehen

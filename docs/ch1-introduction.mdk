@@ -30,16 +30,26 @@ Distributed is truely concurrent
 ~
 -->
 
+~ todo
+Hier ein paar ganz allgemein einführende Worte
+~
+
+~ begin green
+
 The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus der echten welt]{.important}.
 
 ... As such, the idea of simultaneous actions has not been absent from the domain of computer programming. In this thesis, we will therefore take a close look at two concepts both introducing notions of concurrency into programs and/or systems, respectively the *Actor Model* of Computation and the *Microservice* Architectural Style.
+
+~ end green
 
 
 ## Problem Statement
 
 Draoni *et al.* [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the domains of Actor model and Microservices. This work is aiming to fill this gap, regarding a focus on the specific arc of concurrent programming through these concepts.
 
-...
+~ todo
+Hier noch 1-2 verbindende Sätze.
+~
 
 Therefore, we want to address the following research question:
 
@@ -50,6 +60,8 @@ Therefore, we want to address the following research question:
 ~ todo
 Hier soll kurz Erklärt werden worum es mir bei der Erarbeitung der Antwort auf die Forschungsfrage geht. Vor allem soll auch abgegrenzt werden wieso es praktische Implementierungen gibt und welchen Zweck diese erfüllen, d.h. dass diese nicht auf ihre Leistung bzgl. der Domäne evaluiert werden.
 ~
+
+~ begin green
 
 ...
 
@@ -64,6 +76,8 @@ Important that core-lib does not introduce any own concurrent aspect, all concur
 * actor-backend and microservice-backend are for scientific work
 * will not focus on any specific search engine improvement
 ~
+
+~ end green
 
 ...
 

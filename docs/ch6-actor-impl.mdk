@@ -19,7 +19,7 @@ Akka is theoretically based on Agha's vision of the Actor model, and harnesses i
 As of Scala version 2.10, Akka replaces the default Actor implementation offered by Scala [@Hal12]. We will therefore refer to the former as *Scala Actors* in contrast to *Akka Actors*. Among the reasons were the better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in contrast to 0.2 seconds to Scala Actors. 
 
 
-## Strive for Isolation {#sec-actor-isolation}
+## Striving for Isolation {#sec-actor-isolation}
 
 
 While Actors encapsulate state conceptually, in practice their *full isolation* must be ensured, such that there is no shared state at all. This is essential to guarantee safety properties, respectively prevent data races and state modifications [@Hal12;@Kan12]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
@@ -234,7 +234,7 @@ We've found that such kinds of compile-time message safety restrictions, apart f
 ## Supervision and Monitoring
 
 
-In &sect; [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is for such are required to model adequate encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequately is key especially in a distributed context [citation]{.mind}.
+In &sect; [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is for such are required to model adequate encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequately is key especially in a distributed context [@Cou05].
 
 The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself but is always subordinate to its supervisor. This builds a dependency relationship, the so-called *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
 
