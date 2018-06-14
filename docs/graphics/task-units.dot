@@ -5,7 +5,7 @@ digraph G {
     node [shape = circle, penwidth = 0.6];
     edge [arrowhead = normal, arrowsize = 0.4];
 
-    Web [shape = "box"];
+    UI [shape = "box"];
 
     G -> C -> G [penwidth = 0.6];   // REST retrieval of DB
     G -> S -> G [penwidth = 0.6];   // REST retrieval from searcher
@@ -15,10 +15,10 @@ digraph G {
     S -> I -> S [penwidth = 0.6];   // search index
     W -> P -> C [penwidth = 0.6];   // download-parse-update
     P -> I      [style="invis"];    // ensure desired node alignment 
-    Web -> G [minlen = "2.5", dir = "both", constraint = false, penwidth = 0.6, color = "black:black", arrowhead = empty, arrowtail = empty, arrowsize = 0.75];
+    UI -> G [minlen = "2.5", dir = "both", constraint = false, penwidth = 0.6, color = "black:black", arrowhead = empty, arrowtail = empty, arrowsize = 0.75];
 
     // constraints to style the graph
-    { rank=same; G Web }
+    { rank=same; G UI }
     { rank=same; U C S }
     { rank=same; W P I }
 }

@@ -37,11 +37,15 @@ The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus d
 
 ## Problem Statement
 
+Draoni *et al.* [@Dra17a] point out that there is yet a gap in the literature emphasising the connections the domains of Actor model and Microservices. 
+
+... This work is aiming to fill this gap, with a special focus on the specific arc of concurrent programming through these concepts.
+
 ...
 
-We want to address the research question:
+Therefore, we want to address the following research question:
 
-> __RQ__: *How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for constructing concurrent systems?*
+> __RQ__: *How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for prorgamming concurrent systems?*
 
 ## Aim and Scope of the Work
 

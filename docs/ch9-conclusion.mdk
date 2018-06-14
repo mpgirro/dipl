@@ -65,11 +65,9 @@ General performance is well predictable, when the number of service instances ca
 * literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
 ~
 
+
 ## Integrating Actors and Microservices {#sec-actor-ms-integration}
 
-~important
-Das hier ist relativ frei aus der Hand geschrieben. Hier sollte ich Dinge zitieren, abseits von der Akka-HTTP Dokumentation!
-~
 
 In our discussion, we've focused on Actors and Microservices as competing approaches for constructing concurrent systems so far. However, it is worth to entertain the thought of *combining* both concepts instead. From a theoretical point of view, any two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
 
@@ -84,7 +82,7 @@ override def receive = {
 }
 ```
 
-For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI (__U__niform __R__esource __I__dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [steht irgendwo am einführungs blabla zu AkkaHTTP]{.mind}. 
+For Actors are identified by their unique address, which is specific to a concrete Actor System and not conform to a URI (__U__niform __R__esource __I__dentifier) as is required by HTTP in general, a integration layer between an HTTP-addressable unit and the actual Actor has to be utilized [@AkkaHTTP]. 
 
 Though such receiving is in principle conform to the Actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to Actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. An alternative interface is required:
 
@@ -115,99 +113,25 @@ Predicition is very difficult, especially about the future.
 -->
 
 
-In this thesis, we've evaluated the conceptualities of Actors and Microservices, formulated arguments favouring each, and motivated their potential integration. In this final section, we want to argue a conceptual evolution towards a unification.
+We've evaluated the conceptualities of Actors and Microservices, formulated arguments favouring each, and motivated their potential integration. In this final section, we want to argue a conceptual evolution towards a unification.
 
 For the scope of this thesis, we've found it rather difficult to narrow on the essential characteristics that constitute the Microservice paradigm. We believe this observation to be also reflected in the literature, where we've frequently found authors to tend to fairly short, unilateral or superficial definitions for the sake of an easier and more focused argumentation. For example, REST is by far the most popularly pointed out mechanism of sole communication, without entertaining neither the possibility nor implications of other and especially non request/response channels.
 
-In our opinion this is due to the fact that the Microservice style, although conceived as an aim towards minimalistic components, is on the other hand too allowing in general regarding the options for conceiving each single service of any system. The lack of a more coherent technological context among at least some or even all service components also hinders the introduction of enhancing concepts. Challenges regarding behavioral types, choreographies or means of verification have already been outlined. Such would only be possible with greater difficulties and come with restrictions nevertheless. As was motivated, languages dedicated to the service-oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if these languages are based on a process calculus, such open up the potentials of their theoretical properties and possibilities. 
+In our opinion this is due to the fact that the Microservice style, although conceived as an aim towards minimalistic components, is on the other hand too allowing in general regarding the conception options for each single service of any system. The lack of a more coherent technological context among at least some or even all service components also hinders the introduction of enhancing concepts. Challenges regarding behavioral types, choreographies or means of verification have already been outlined. Such would only be possible with greater difficulties and come with restrictions nevertheless. As was motivated, languages dedicated to the service-oriented Programming paradigm offer the potential towards overcomming this limitation. Even more, if these languages are based on a process calculus, such open up the potentials of their profound theoretical properties and resulting possibilities. 
 
-Other authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. 
+Some authors, like Bonér [@Bon16;@Bon17], are advocating for Microservices following the conceptualities as are outlined by the Actor model. However, this raises the legitimate question of why an Actor approach should not be pursued in the first place? As Guidi *et al.* [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual distinction between the behavior of a task and the deployment thereof. This is true even for very sophisticated Actor language like Erlang and Orleans, as well as equally potent frameworks like Akka. 
 
-However, this raises the question why an Actor approach should not be pursued in the first place? As Guidi *et al.* [@Gui17] point out, general purpose languages utilizing mechanisms that are competing with Microservice concerns, like concurrency and scalability, do not provide a conceptual difference between the behavior of a task unit and the deployment thereof. This is true even for very sophisticated Actor language like Erlang and Orleans, as well as equally potent frameworks like Akka. 
-
-It is our believe however, that service oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for examples are already limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that the interoperability of diverse technologies is ensured.  [hier noch dazuschreiben, dass somit die gradual evolution and replacement of components weiterhin erhalten bleibt ("future proof")]{.important}
+It is our believe however, that service-oriented programming languages are already fostering components that are following many of the conceptualities of Actors. CAOPLE services for example are limited to asynchronous communication [@Xu16]. Yet SOP languages keep the openness of well-defined interfaces, such that the interoperability of heterogenous technologies is ensured, while their preservation of independent deployment capabilities allows for gradual replacement and evolution. This decouplings of technological dependencies are a valuable for future proof system development and maintenance.
 
 
+We see ourselves affirmed in the literature, from a theoretical as well as a practical perspective. As has been pointed out, Agha *et al.* [@Agh97] argument towards regarding high-level language semantics instead, and then reason about equivalence to Actor- and in their case &pi;-programs. We see constructs and conceptualities of the service-oriented programming paradigm exactly as such high-level language concepts and their semantics is convenient to be compared to Actor and Microservice programming, as we've aimed to point out throughout this thesis. On the other hand, Bonér is arguing for an evolution of the Microservice principles towards reactive systems which are more closer to Actor systems in general [@Bon16]. We've found his arguments to have resemblance to the fundamentals of process algebra theory.
 
-...We see ourselves affirmed in the literature, from a theoretical as well as a practical perspective. 
+As a result, it is our believe that language-based solutions are worth future endeavours. Promising protoypes as Jolie essentially produce constructs that are rather similar to Actors - except that the creation of new components is not an essential primitive. The profound foundation on process algebra and other theoretical concepts provide the basis for applying formal methods to introduce advanced mechanisms. For example, a Curry-Howard isomorphism has been show between session types and the &pi;-calculus process model which resuled further work, e.g. how multiparty sessions (multiple services interactions) relate to certain techniques of logical reasoning, or a support for parametric polymorphism in behavioral types by reconstruction in classical linear logic. Such findings provide a strong indication that correct Microservice system conception can also be improved through such techniques [@Dra17a]. 
 
-As has been pointed out, Agha *et al.* [@Agh97] argument towards regarding high-level language semantics instead, and then reason about equivalence to Actor- and in their case &pi;-programs. We see constructs and conceptualities of the service-oriented programming paradigm exactly as such high-level language concepts and their semantics is convenient to be compared to Actor and Microservice programming, as we've aimed to point out throughout this thesis. 
+The utilization of such formalisms is of course possible for the enhancement of the Actor model too, e.g. as was done by introducing the *Join* calculus into Erlang Actors to allow internal parallelization and deterministic concurrency [@Kan15].
 
-...As a result, it is our believe that an languages-based solution is worth a [???]{.mind}
+In any case, Actor and Microservice technologies can greatly influence their mutual evolution by *learning from* and *growing closer too* each other. For example, Akka cluster nodes (in the version Echo is using) require static configuration for initial discovery. Just recently, automatic discovery capability using the Consul service registry has been merged into the Akka codebase for a future release.   
 
-... Promising protoypes as Jolie essentially produce constructs that are rather similar to Actors - except that the creation of new components is not an essential primitive. 
-
-... Critique that actors do not compose [@Agh97], but SOP languages do.
-
-
-... we don't claim that service-oriented programming languages are the key towards the future, but it is our believe that Actors and Microservices *learning from* each other and *growing closer too* each other are promising ... [1) unterhosen 2) ? 3) profit]{.important}
-
-...
-
+<!--
 Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, and Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].
-
-... It is our belief that...
-
-... Bonér is arguing for an evolution of the Microservice principles towards reactive systems [...die mehr actors ensprechen]{.important}. We've found his arguments to have resemblance to the fundamentals of process algebra theory [...dh er will das die MS sich mehr an so eine theory halten (?) --> Jolie macht ja genau das]{.mind}. ...Languages dedicated to the service-oriented programming paradigm can be an promising approach towards this ...
-
-... Boner schlägt zB vor das Microservices gechrieben werden sollen nach den Actor Prinzipien; schlägt dafür sogar einen komischen Namen vor
-
-... dafür einfach dedizierte sprachen erfinden die beides vereinen
-
-...außerdem sollen sie behavioral types unterstützen...
-
----
-
-Service oriented programming languages machen erzeugen im prinzip constructe, die eh sehr nahe an actors sind. ich sehe die zukunft daher in einer vermischen aus actors abstraktion und SOP 
-
----
-
-It is our utmost belief that Actor and Microservice technologies can greatly influence their mutual evolution. For example, Akka cluster nodes (in the version Echo is using) require static configuration for initial discovery. But recently automatic discovery capability using the Consul service registry has been merged into the Akka codebase for a future release.   
-
----
-
-~LitNote
-* Services as First-Class Citizens
-* [@Kan15] beschreibt eine distributed Actors in Erlang, mit Erweiterungen:
-    * "This new model is designed for representing Cloud applications based on Actors in a deterministic, expressive and scalable way. It can also solve certain categories of problems more productively than original Actor model, and more advantageously in multi-computer ar- chitecture than other deterministic concurrency models such as task parallelism"
-    * By introducing distask model, a number of constructs can now be supported. It provides a flexible set of primitives and runtime support to easily write various of distributed applications scaling over a dynamic changeable environment. New capabilities can be summed up for three main points, introduced below:
-        * Deterministic Expression: The key powerful expressivity of deterministic concurrency allows programmers to encapsulate complicated communica- tion and synchronization protocols as first-class abstractions
-        * Advanced Concurrency in Actors Internal: Internal parallelization, Join Calculus --> **internal parallelization ist genau das was MS mit ihrer internal concurrency auch haben -> das habe ich in einem unterkapitel auch angemerkt. sollte ich auf jeden falls hier zusammenbringen!**
-        * Scalability & Fault Tolerance
-* [@Gho12] "Programming language impact on the development of distributed systems"
-* [@Gui17] "Microservices: A Language-Based Approach"
-* [@Cha13]
-  * "It applies to concurrency as well as distribution, but has not yet entered the native programming domain. This paper contributes the design of a native actor extension for C++, and the report on a software platform that implements our design for (a) concurrent, (b) distributed, and (c) heterogeneous hardware environments"
-  * "Our design includes a lightweight, lock-free, and network-transparent message passing system that is implemented without context switching"
-* [@Ber14] "Orleans: Distributed Virtual Actors for Programmability and Scalability"
-* [@Dra17a] "Microservices: yesterday, today, and tomorrow"
-  * "First and foremost, languages that embrace the service-oriented paradigm are needed (instead, for the most part, microservice architectures still use OO lan-guages like Java and Javascript or functional ones)."
-* [@Aue94] "High-level language support for programming distributed systems"
-  * Beschreibt auch schon wie man auf Language ebene Processe programmiert, mit Ports und Communication und allem, was dann Jolie auch macht.
-~
-
-...
-
-~ important
-In this thesis, we discussed the new microservices style and quite old principles of concurrent and distributed programming as if they were two competing approaches, and one will eventually emerge victorios. In this chapter, instead of rivalry, want to entertain the though of a unification of both towards a new style of programming. 
-One the one hand, we analyzed microservices for their core concepts and found that their natural characteristics implied a high form of isolation. Combined with an asynchronouse communication mechanism, they become highly decoupled and the resulting architecture enjoys the principles of Actor based concurrency combined with the feature of distribution and mobility that agent based systems defined long ago. Yet programming a microservice architecture results in a significant overhead in terms of complexity, maintainability, etc. 
-On the other hand, we discussed the classic concurrency model through Actors, and found that if it gets extended by additional concepts, such as it is done in existing implementations today, the resulting artifacts yield similar benefits as the microservice approach to. For these implementations are integrated into many mainstream programming languages, they are naturally available to developers to use without increasing complexity and related software development concerns as microservices architectures do. It seems programming concurrency is still unnatural or at least not loved by programmers. The microservice apporach seems to let them better think and plan the separation of concerns inside their software architecture in a divide an conquer way that concurrency primitives of programming languages do.
-
-On this observaton we want to motivate that it seems to be a good idea to integrate the concepts of the service as a principle component into programming languages (like objects) is a good approach. In fact, this is done in some projects already. As the most promising one, we see Jolie. This approach allows developers to write microservice styled programm architectures in a single codebase, while in principle they write software with and Actor-based concurrency and distribution approach as we discussed in this thesis.
-
-**Und dann noch weiteren blabla, aber das ist doch schon mal ein guter Ansatz das anzugehen, und den Outlook mit diesem Thema doch drinnen zu haben!**   
-~
-
-...
-
-~LitNote
-* in [@Dra17a] wir im Kapitel "Tomorrow" ein weiter Blick in zukünftige Möglichkeiten gegeben:
-  * connecting behavioural types and choreographies to well-known logical models
-  * a logical reconstruc- tion of behavioural types in classical linear logic that supports parametric polymorphism [83];
-  * type theories for integrating higher-order process models with functional computation [79];
-  * initial ideas for algorithms for extracting choreographies from separate service programs [18];
-  * a logical characterisation of choreography-based behavioural types [19]; 
-  * explanations of how interactions among multiple services (multiparty sessions) are related to well-known techniques for logical reasoning [16,13];
-  * formal methods based on well-known techniques seem to be a promising starting point for tackling the issue of writing correct microservice systems;
-  * these patterns will benefit from the rich set of features that formal languages and process models have to offer, such as expressive type theories and logics;
-~
+-->
