@@ -9,11 +9,11 @@ Every good work of software starts by scratching a developer's personal itch.
 ~
 
 
-In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system, and provides a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
+In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system and provides a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using Actors and Microservices. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
-[^fn-echo-name]: The name "Echo" was choosen for its wonderful characteristics of providing a short namespace and the analogy to *recalling spoken words*.  
+[^fn-echo-name]: The name "Echo" was chosen for its wonderful characteristics of providing a short namespace and the analogy to *recalling spoken words*.  
 
-Search engines cause the illusion of being closed monolithic systems, but actually are traditionally composed of many components that act in an decoupled and asynchronouse manner, such that they can perform...
+Search engines cause the illusion of being closed monolithic systems, but actually are traditionally composed of many components that act in a decoupled and asynchronous manner, such that they can perform...
 
 ...
 
@@ -24,10 +24,10 @@ Search engines cause the illusion of being monolithic system, but are actually a
 Their constructing is led by two basic requirements:
 
 * Effectiveness
-  : is about the quality of search results, and the sole concern of the scientific discipline called * Information Retrieval*, which is distinquishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline called * Information Retrieval*, which is distinguishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
 
 * Efficiency
-  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-dateness of search results increases with the efficiency of this phase. 
+  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-datedness of search results increases with the efficiency of this phase. 
 
 ## Domain Description
 
@@ -52,22 +52,22 @@ In order to prevent any domain specific code from being implemented twice unnece
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. CatalogStores hold the complete amount of information about any cataloged entity
 
 * IndexStore (I)
-  : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have revelant information that are needed to match the documents to search queries. Useful textual informations are e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
+  : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have relevant information that are needed to match the documents to search queries. Useful textual information is e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Web Crawlers (W)
-  : are tasked with the aquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
+  : are tasked with the acquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
 
 * Parsers (P)
-  : are tasked with the transformation of aquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, for all considered data is encoded in a markup language, viz. XML or HTML.
+  : are tasked with the transformation of acquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, for all considered data is encoded in a markup language, viz. XML or HTML.
 
 * Searcher (S)
   : are tasked with performing search operations. However, they merely apply some basic query pre-processing themselves and delegate the retrieval of relevant document to an IndexStore using its inverted index. The respective results are communicated back via the Searcher to the Gateway.
 
 * Gateway (G)
-  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside, and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged information, or performing searches. Therefore the Gateway communicates with either a CatalogStore, or a Searcher. 
+  : provides the link for the web interface to the system internal capabilities. It exposes a REST interface to the outside and uses respective mechanisms to interact with other internal system components. The REST interface allows requesting cataloged information or performing searches. Therefore, the Gateway communicates with either a CatalogStore, or a Searcher. 
 
 * Updater (U)
-  : determines which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories, on a regular basis. To ensure consistency, only ine unit must exist within the system (singleton). 
+  : determines which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories, on a regular basis. To ensure consistency, only one unit must exist within the system (singleton). 
 
 ~ Figure { #fig-task-units; caption: "Task Units and Message Flow"; width:50%; float:left; margin-right: 1ex; }
 ![img-task-units]
@@ -75,7 +75,7 @@ In order to prevent any domain specific code from being implemented twice unnece
 
 [img-task-units]: graphics/task-units.[ps,svg,png] "Image about Task Units and Message Flow" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are discussed involving arbitrary components `X` and `Y`, that will be substituted with the component abbrevations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
+Such task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are discussed involving arbitrary components `X` and `Y`, that will be substituted with the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
 ...
 
@@ -93,10 +93,10 @@ In general, all previously described components have to be executed concurrently
 
 
 * Searching
-  : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface, and forwarded to a Searcher (`G` &rarr; `S`), who is doing some basic query processing and then realizes a concrete query to the IndexStore (`S` &rarr; `I`). Its found results are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the web UI. This has to happen in a timely manner. The complete synchronous flow can be described as `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
+  : The essential purpose of the engine in search. The web UI offers an interface similar to well-known search providers on the world wide web. Search requests are registered on the REST interface and forwarded to a Searcher (`G` &rarr; `S`), who is doing some basic query processing and then realizes a concrete query to the IndexStore (`S` &rarr; `I`). Its found results are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the web UI. This has to happen in a timely manner. The complete synchronous flow can be described as `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
 
 * Exploring the Catalog
-  : The search engine provides besides searching index data records also a database of all known podcast and episode metadata. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus REST requests have to be forwarded from the Gateway to the CatalogStore (`G` &rightleftarrows; `C`) in a timely fashion.
+  : The search engine provides besides searching index data records also a database of all known podcast and episode metadata. The web UI offers basic support for exploring such data, e.g. by viewing info pages for podcasts or episodes. Thus, REST requests have to be forwarded from the Gateway to the CatalogStore (`G` &rightleftarrows; `C`) in a timely fashion.
 
 * Adding new Feeds
   : New feeds can be proposed so that the engine will check weither it is already known and issue an indexation if not. Proposing can be done by either a user manually, or are crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories. [TODO: diesen Task einfach weglassen?]{.red}
@@ -105,12 +105,12 @@ In general, all previously described components have to be executed concurrently
   : [TODO]{.red}
 
 * Processing Feeds
-  : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. [updater finds this out by regularly asking a CatalogStore for the feeds that have not been updated the longest]{.mind}. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all CatalogStores. Each episode metadata record is used to check weiter an episode is yet known, or if the feed contained a new entry. This can only be detected by a CatalogStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index datastructures. The overall flow is thus; `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
+  : Feeds are either processed when they are initially indexed, or updated to check for new episodes (and updated metadata). Thus processing can be triggered by adding a yet unknown feed, or on demand by the Updater. [updater finds this out by regularly asking a CatalogStore for the feeds that have not been updated the longest]{.mind}. Feeds are then fetched by the Crawlers, and the received data is passed on to Parsers. Those extract podcast and episode data from the XML. The podcast data can be used to update (or first time set) the metadata in all CatalogStores. Each episode metadata record is used to check whether an episode is yet known, or if the feed contained a new entry. This can only be detected by a CatalogStore (and its record of all metadata). New episodes metadata is sent to the IndexStores, where it added to the Lucene index data structures. The overall flow is thus; `U` &rarr; `C` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
 
 ...
 
 
-For example the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interacton do, thus synchronization or transactions are generally an undesireable and less expidient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
+For example, the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. This is a regular task and to be expected that nearly all the time there is some updating process happening in an a relevantly big enough database. These should however not interfere or limit other regular tasks, especially those with time constraints as all involving user interaction do, thus synchronization or transactions are generally an undesirable and less expedient path. [stimmt schon, aber soll ich da was zitieren? oder das vll überhaupt gar nicht erwähnen?]{.important}
 
 
 ## Scope and Limitations
