@@ -19,15 +19,15 @@ Akka is theoretically based on Agha's vision of the Actor model, and harnesses i
 As of Scala version 2.10, Akka replaces the default Actor implementation offered by Scala [@Hal12]. We will therefore refere to the former as *Scala Actors* in contrast to *Akka Actors*. Among the reasons were the better performance, transparent Actor addresses, expressing resilience as well as fault tolerance [@Tas13]. In fact, [@Reh13] found that Akka Actors have up to 10 times higher message throughput and a network latency under 1ms, in constrast to 0.2 seconds to Scala Actors. 
 
 
-## Ensuring Isolation
+## Aim for State Isolation
 
 
 While Actors encapsulate state conceptually, in practice their *full isolation* must be ensured, such that there is no shared state at all. This is essential to guarantee safety properties, respectively prevent data races and state modifications [@Hal12;@Kan12]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
 
-Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
+Therefore it is especially interresting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in &sect; [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
 
-### Data hiding
+### Issue of Data Hiding
 
 
 As was pointed out, Akkas Actor system is capable of providing a transparent interface for component communication that might exist within the same local scope (same JVM) or remote scope (distinct JVMs). In the first case, different notions of state have to be taken into account. Kniesel [@Kni96] defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables). 
