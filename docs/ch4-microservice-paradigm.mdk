@@ -55,30 +55,14 @@ The *service* term service is used in an overloaded manner in the literature. We
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu *et al.* [@Xu16] are using the term "service" exclusively for the functionality part, and refere to the component as *agent*. We will follow the example of Guidi & Montesi [@Gui09] by destinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblence between an Actors behavior and a Microservices behavior. 
 
 
-## Independence and Interaction {#sec-ms-independence-interaction}
+## Independence and Interaction
 
-
-[TODO]{.red}
-
-~LitNote
-* [@Gui17] "Since microservices are independent, the interactions among them all happen by exchanging messages"
-* [@Fow14] "These services are independently deployable by fully automated deployment machinery"
-* [@Dra17a;@Dra17c] "Microservices: Migration of a Mission Critical System"
-    * independence
-* [@Bon16] "Reactive Microservices Architecture"
-    * isolation
-* No shared resources!
-* 
-~
 
 From the separation of modules into dedicated service applications comes such a high cohesion of the modules as well as a loose coupling among them that the services are highly independent [@Dra17a;@Dra17b;@Gui17]. The inherent fact that each service engine is a separate application implies that the engines are independently deployable [@Fow14].   
 
-~ todo
-NO SHARED RESOURCES!
-~
+The decoupling of services also affect their state as it is conceptually isolated. Thus, services are required to refrain from sharing any resources related to memory persistance as for example databases would introduce a notion of implicite communication among services having access to it. An essential principle of the architectural style is thus the commitment to provide any service engine with its own exclusive database instances [@Fow14;@Dra17a;@New15].
 
-
-Any communication between Microservices has to happen accross the boundries of the service engine processes. This is called *inter-process communication* (IPC) [@Bac03]. Variouse forms of IPC channels exists. Examples of general mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes. The Microservice idiom specifies the following requirements on service IPC [@Fow14]:
+Any communication between Microservices therefore has to happen accross the boundries of the service engine processes. This is called *inter-process communication* (IPC) [@Bac03]. Variouse forms of IPC channels exists. Examples of general mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes. The Microservice idiom specifies the following requirements on service IPC [@Fow14]:
 
 1. Communication channels should be open and provide well-defined interfaces, such that heterogenous technologies are able to employ them. 
 2. Communication channels should be light-weighted, such that they are cheap mechanisms without much additional functionality besides basic message transportation.

@@ -37,9 +37,7 @@ The world is concurrent. [etwas sehr allgemeiner blabla und 1, 2 beispiele aus d
 
 ## Problem Statement
 
-Draoni *et al.* [@Dra17a] point out that there is yet a gap in the literature emphasising the connections the domains of Actor model and Microservices. 
-
-... This work is aiming to fill this gap, with a special focus on the specific arc of concurrent programming through these concepts.
+Draoni *et al.* [@Dra17a] point out that there is yet a gap in the literature emphasising the connections of the domains of Actor model and Microservices. This work is aiming to fill this gap, regarding a focus on the specific arc of concurrent programming through these concepts.
 
 ...
 

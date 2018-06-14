@@ -53,6 +53,10 @@ General performance is well predictable, when the number of service instances ca
 
 ## Empirical Indications
 
+~ todo
+Hier kurz beschreiben welche Erkenntnisse es aus empirischer Forschung und Überlegungen es gibt, welche den einen oder anderen Ansatz befürworten. Zentral wird hier die Erkenntnis, dass sich der Microservice Ansatz dazu eignet ein bestehendes System zu refaktorisieren, um somit die concurrency (und scalability, extensibility, etc.) zu verbebssern. Hingegen denke ich nicht das ein bestehendes (monolytisches) System in eine Actor Architectur refaktorisiert werden kann. Umgekehrt gibt es Daten die belegen, dass MSA Projekte eine hohe Erfolgsaussicht haben, wenn sie refaktorisieren, aber eine hohe Schweiterwahrscheinlichkeit für Projekte "from the ground" nahelegen, dass das Concept initial zu überfordernd ist. Actors hingegen eignen sich sehr gut für eine schnelle Entwicklung von Anfang an, da das Actor system bereits sehr viele Concerns bedient  
+~
+
 
 ~LitNote
   Es zeigt sich, dass MS Projekte eine hohe Chance haben zu funktionieren, wenn ein bestehender Monolith in eine MSA refActorisiert wird, hingegen hohe Chance zu scheitern, wenn sie von Anfang an als MSA geplant sind (--> zeigt sich auch in meiner Suchmaschine, viel viel viel Aufwändiger und komplexer, "added complexity"); Actor systeme hingegen müssen explorativ schritt für schritt erweitert werden (dafür gibt es ein fach-konzept, wo man kleine evolutionen durchführt), daher eignen sich Actors gut um ein neues Projekt damit zu beginnen, allerdings werden sie nur schwer in einen großen bestehenden Monolithen eingebaut werden können, und so einer schon gar nicht in ein Actor-System refaktorisiert werden (hier brauche ich Literatur dazu!)

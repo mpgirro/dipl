@@ -32,7 +32,7 @@ Therefore it is especially interresting how the Isolated Turn Principle has to b
 
 As was pointed out, Akkas Actor system is capable of providing a transparent interface for component communication that might exist within the same local scope (same JVM) or remote scope (distinct JVMs). In the first case, different notions of state have to be taken into account. Kniesel [@Kni96] defines *weak state* as the state given through an objects instance variables. *Strong state* is the combination of *local state* (the objects instance variables) and *transient state* (the state of objects referenced by instance variables). 
 
-Actor semantics implies the need for a strict concept of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model [citation needed? sund besser formulieren]{.mind}.
+Actor semantics implies the need for a strict conception of encapsulation where the strong state is exclusive to the Actor, i.e. no mutable local state must be exposed outside nor mutable transient state imported into the scope of the Actor. Violation of this requirement leads to overlaping (shared) mutable state, which is in contrast to the message passing semantic of the model.
 
 *Visibility* is a property of an object's variables and methods given they are part of the object's interface [@Kni96]. It is a concern for encapsulation and subsequently shared mutability [@Sub11; @Goe06]. Java for example offers multiple granularities for visibility of class fields. The following code snippet illustrates the resulting problem:
 
@@ -307,12 +307,16 @@ We see, efficient handling of IO persues the same strategies as the introduced a
 
 ## Clustering
 
+~ todo
+Hier kurz die Unterschiede und benötigten Erweiterung zwischen Actors in einem rein lokalen system (single-node) und einem verteilten Setup (distributed nodes) beschreiben. Akka hat hierfür sehr gute Konzepte, welche allerdings Verlangen auf ein paar Dinge zu achten.
+~
 
 ~LitNote
 * Cluster / Remoting of Akka, built in discovery system among nodes  
 * Cluster Singleton required by Updater, Cluster Sharding
 ~
 
+~ green
 The capabilities of the Actor model to support distribution was first described by Agha [REF-diss]{.red}, and since it was introduced in many variants of Actors [REF1, REF2, REF3]{.red}. 
 
 ...Erlang auch sehr wichtig
@@ -320,3 +324,4 @@ The capabilities of the Actor model to support distribution was first described 
 ...die Erlang deutung auch sehr viel in Akka drinnen
 
 ...wichtig das die mechanismen die lokal für actos gehen auch verteil gelten 
+~
