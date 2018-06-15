@@ -81,7 +81,7 @@ As was pointed out, Actor systems aim to provide a more high-level interface tha
 
 Yonezawa *et al.* [@Yon86] were the first to introduce classic "passive" objects extended by their own *thread of control* in a programming language called ABCL/1[^fn-abcl1]. These object's state is only accessible from within themselves. Access or modification to any state is achieved by invoking their public interface methods. Such objects are not idle by default and only perform operations when called upon, but may be *active* on their own, for they live in their own thread. Thus comes their name: *Active Objects* (AO). When such an Active Object's method is invoked, the actual method execution is decoupled and performed concurrently. This is usually realized through a *proxy object* on the client side (invoker), which merely mirrors the AO's public interface and handles the message dispatch, while the actual computation is done on a server object (the invoked Active Object) running on a separate thread in general [@Lav95]. Meyer [@Mey97] points out one general notion of Active Objects emphasizing a viewpoint with a focus on conceptualities that will merit special attention in due course:
 
-> *Each object is a single, identifiable process-like entity (not unlike a Unix process) with state and behavior.*
+> "Each object is a single, identifiable process-like entity (not unlike a Unix process) with state and behavior."
 
 [^fn-abcl1]: __A__ctor__B__ased __C__oncurrent __L__anguage. The */1* indicates that it is merely the first of a whole family of languages. Thus, it's often omitted in the literature. Consecutive versions do not follow a sequential numbering though, e.g. *ABCL/R*, *ABCL/f* or *ABCL/c+*.
 

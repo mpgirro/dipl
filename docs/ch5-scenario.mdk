@@ -16,6 +16,10 @@ In this chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is
 
 Search engines cause the illusion of being monolithic system, but are actually a composition of rather loosely coupled subsystems [@Cou05].
 
+~ todo
+Hier fehlen noch ein paar verbindende Sätze
+~
+
 Their constructing is led by two basic requirements [@Man08]:
 
 * Effectiveness
