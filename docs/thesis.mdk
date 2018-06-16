@@ -88,12 +88,12 @@ Tex Header   :
 Epigraph {
   replace:"~ Begin TexOnly&nl;\
            ~ Begin TexRaw&nl;\
-             \epigraph{&source;}{--- &caption;}&nl;\
+             \epigraph{\textit{\guillemotright{&source;}\guillemotleft}}{--- &caption;}&nl;\
            ~ End TexRaw&nl;\
            ~ End TexOnly&nl;\
            ~ Begin HtmlOnly&nl;\
             <blockquote>&nl;\
-              <p class='epigraph-body'>&source;</p>&nl;\
+              <p class='epigraph-body'>&raquo;&source;&laquo;</p>&nl;\
               <footer class='epigraph-footer'>— &caption;</footer>&nl;\
             </blockquote>&nl;\
            ~ End HtmlOnly"
@@ -105,6 +105,7 @@ Epigraph {
   margin-top: 30px;
   margin-bottom: 70px;
 }
+
 
 <!--
 Bibl { 
@@ -224,6 +225,7 @@ CSS Header      :
   }
   .epigraph-footer { 
     float:right; 
+    font-style:normal;
   }
   .figure > p {
     -webkit-margin-before: 0;
@@ -410,6 +412,7 @@ These arconyms occur throughout the thesis.
 
 * AMQP Advanced Message Queue Protocol
 * AO Active Object
+* CMF Cloud Management Framework
 * DO Distributed Object
 * FIFO First In First Out
 * IPC Inter-Process Communication
@@ -418,15 +421,15 @@ These arconyms occur throughout the thesis.
 * LB Load Balancing
 * MS Microservice
 * MSA Microservice Architecture
-* OOP Object-Oriented Programming
+* OOP Object-oriented Programming
 * OS Operating System
 * PID Process Identifier
 * REST Representational State Transfer
 * RPC Remote Procedure Call
-* SOA Service Oriented Architecture
+* SOA Service-oriented Architecture
 * SoC Separation of Concerns
-* SOC Service Oriented Computing
-* SOP Service-Oriented Programming
+* SOC Service-oriented Computing
+* SOP Service-oriented Programming
 * SRP Single Responsibility Principle
 * STM Software Transactional Memory
 * URI Uniform Resource Identifier
