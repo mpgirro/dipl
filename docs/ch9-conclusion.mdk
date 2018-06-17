@@ -8,7 +8,7 @@ Weil das was ist sich ändern kann, ist das, was ist, nicht alles.
 ~
 
 
-This thesis has discussed the concepts of programming Actors and Microservices to conceive concurrent computation and evaluated their common properties and capabilities. As a bottom line, we now want to argue for an application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
+This thesis discussed the concepts of programming Actors and Microservices to conceive concurrent computation and evaluated their common properties and capabilities. As a bottom line, we now want to argue for the application of each of them, and outline towards their integration as well as our concluding vision regarding future development. 
 
 As we've illustrated, both Actors and Microservices are qualified to express concurrent computation for both parallel execution on multicore processor as well as distributed computation as are for example cloud deployments. Kang & Cao [@Kan12] as well as Karmani *et al.* [@Kar09] suggest that programing models regarding parallel and distributed contexts should be evaluated based on their emphasize on two objectives: *efficiency* of execution and *expressiveness* for programmers. Agha & Kim extend the concerns on universal programming models by *portability* and *performance predictability* [@Agh99], thus we will merit them attention as well in this concluding discussion.
 

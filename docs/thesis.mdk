@@ -1,14 +1,9 @@
-<!--[INCLUDE=style/marticle]-->
-
-Title        : Concurrent Programming with Actors and Microservices
-Subtitle     :
-Author       : Maximilian Irro
-<!--Email        : max@irro.at-->
-Copyright    : Maximilian Irro, 2018
-Title Footer : 2018
-<!-- TODO delete with new layout -->
-chead        : 
-
+Title             : Concurrent Programming with Actors and Microservices
+Subtitle          :
+Author            : Maximilian Irro
+<!--Email             : max@irro.at-->
+Copyright         : Maximilian Irro, 2018
+Title Footer      : 2018
 Subtitle EN       : &subtitle;
 Subtitle DE       : &subtitle;
 Author Gender     : male
@@ -18,32 +13,30 @@ Author Address    : Pfalzstraße 10, 5282 Ranshofen
 Regnumber         : 1026859
 Curriculum EN     : Software Engineering \& Internet Computing
 Curriculum DE     : Software Engineering \& Internet Computing
-
 Advisor           : Franz Puntigam
 Advisor Gender    : male
 Advisor Pretitle  : Ao.Univ.Prof. Dipl.-Ing. Dr.
 Advisor Posttitle : 
-
 Subject           : Concurrent Programming
 Keywords          : concurrency, actor model, microservices
-
 Thesis Type       : master <!-- bachelor / master / doctor / phd-school -->
 Bachelor Thesis   : false
 Master Thesis     : true
 Doctor Thesis     : false
 Master Degree     : dipl. <!-- dipl. / rer.nat. / rer.soc.oec. / master -->
 Doctor Degree     : <!-- rer.nat. / techn. / rer.soc.oec. -->
-
+Script            : style/mathjax-font.js
 Toc depth         : 3
+Cite All          : False
 Bibliography      : dipl
 Bib style         : style/keynat.bst
 
 <!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
 <!--Bib style : plainnat-->
 <!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
-Cite All          : False
 
-Script            : style/mathjax-font.js
+
+
 
 [INCLUDE=style/vutinfth]
 
@@ -54,20 +47,6 @@ Tex Doc Header :
     \dominitoc % MiniTOC initialization
     \faketableofcontents
 H1 { tex-cmd-outer-after: "\minitoc" }
--->
-
-
-<!-- Tkiz -->
-<!--
-Package*     : tikz
-Tex Header   : \usetikzlibrary{snakes,arrows,shapes}
--->
-
-<!--
-Package      : pstricks
-Package      : pst-plot
-Package      : amsmath
-Math Latex Full: pdflatex
 -->
 
 <!-- define some unicode characters -->
@@ -88,12 +67,12 @@ Tex Header   :
 Epigraph {
   replace:"~ Begin TexOnly&nl;\
            ~ Begin TexRaw&nl;\
-             \epigraph{\textit{\guillemotright{&source;}\guillemotleft}}{--- &caption;}&nl;\
+             \epigraph{\textit{&source;}}{--- &caption;}&nl;\
            ~ End TexRaw&nl;\
            ~ End TexOnly&nl;\
            ~ Begin HtmlOnly&nl;\
             <blockquote>&nl;\
-              <p class='epigraph-body'>&raquo;&source;&laquo;</p>&nl;\
+              <p class='epigraph-body'>&source;</p>&nl;\
               <footer class='epigraph-footer'>— &caption;</footer>&nl;\
             </blockquote>&nl;\
            ~ End HtmlOnly"
@@ -265,7 +244,6 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~
 -->
 
-<!-- TODO Widmung einblenden
 &pagebreak;
 ~ Begin TexOnly
 ~ Begin TexRaw
@@ -283,7 +261,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~ End TexRaw
 ~ End TexOnly
 &pagebreak;
--->
+
 
 <!-- TeX -->
 ~ Begin TexOnly
@@ -299,13 +277,13 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 
 [TODO]{.important}
 
-<!--
+
 Es gilt einigen wenigen meinen Dank auszusprechen:
 
 * Meinen Eltern, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
 * Meinem Betreuer, Franz Puntigam, für die guten Ratschläge im Zuge dieser Arbeit, die sich alle bewährt, und für all das, was er gelehrt und ich gelernt habe.
 * Theresa und Alex, für das Korrekturlesen. Ich weiß, es war nicht leicht.
--->
+
 
 <!-- TeX -->
 ~ Begin TexOnly
@@ -345,17 +323,15 @@ Common problems require applications to manage multiple concerns simultaneously.
 ~~
 ~ 
 
-<!-- TODO enable in final version
-
 # Preface / Authors Note { -; toc:clear; }
 
 Back in early 2016, I came across a comment thread discussion[^fn-hackernews] on the famouse "HackerNews" board (*news.ycombinator.com*) where someone eventually claimed:
 
->"*You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter*". 
+> "You'll never hear an Erlang programmer even talk about microservices because they are a solution to a problem that doesn't exist in Erlang, or any sufficiently concurrent language for that matter". 
 
 First I thought this was asking for a "`[citation needed]`"[^fn-xkcd], but it was followed by a second statement that instead started to intrigued me:
 
-> "*The architecture of an idiomatic Erlang-based system is essentially a microservice architecture.*"
+> "The architecture of an idiomatic Erlang-based system is essentially a microservice architecture."
 
 But is it really? I was wondering. It would have some fundamental implications. Erlang is an interresting language (and we will motivate some of the reasons why), and one of its basic building blocks are what it defines as *processes*. They are Erlangs version of the Actor model for concurrent programming. If the claim that any Erlang system is a microservice architecture, than these processes would mirror the microservices. And the name "process" already motivates why this might be the case. Any microservices most essential property is that it is contained within a single, dedicated (operating-system) process, and these are by nature concurrently executed on the OS level. One thing that I thought was odd though (back then at least), was that Erlangs processes are Actors, and Actors are for concurrency (like threads), while a microservice by its nature is really a component of a distributed system. And if concurrency primitives can meet the concerns a distributed system architecture style can, then why bother with all the hassles that usually come with distributed programming anyway?
 
@@ -363,7 +339,7 @@ Having been passionate about microservice architectures as an alternative to eve
 
 Over a year later, I've read an article[^fn-qcon] about a presentation given by Joe Duffy, former Director of Engineering for languages and compilers at Microsoft, that stated:
 
-> "*Duffy expects to see a return of distributed programming with increasingly fine-grained distributed systems that will make systems look more and more like classic concurrent systems.*"
+> "Duffy expects to see a return of distributed programming with increasingly fine-grained distributed systems that will make systems look more and more like classic concurrent systems."
 
 Now, these fine grained distributed systems Duffy is speaking about are what we have dubbed microservice architectures at the moment, and based on the previous claim, the "classic concurrent systems" they resemble would look like idiomatic Erlang systems, that is Actor-based concurrent systems in general.
 
@@ -379,7 +355,6 @@ Maximilian Irro
 [^fn-xkcd]: <https://xkcd.com/285/>
 [^fn-qcon]: <https://www.infoq.com/news/2017/03/distributed-programming-qcon>
 
--->
 
 ~ TexOnly
 [TOC]

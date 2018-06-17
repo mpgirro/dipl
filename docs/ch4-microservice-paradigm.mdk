@@ -26,7 +26,7 @@ These naturally introduces a relative strong form of coupling, as in-memory call
 
 Most importantly, the main issue given against monoliths is scalability [@Dra17a]. As any single instantiation of a program executable can intrinsically merely be running on a single machine, there is a natural bound of the applications performance based on hardware limitations. Many approaches to overcome this limit(s) have been proposed over the years. Previously, the *Service-oriented Architecture* (SOA) approach gained popularity. It is based on the idea of combining the capabilities of multiple monoliths, either based on the same or different program images, by integrating them through a uniform communication channel like an *Enterprise-service Buses* (ESB) [@Fow14;@Sal16]. This approach allows to link heterogenous technologies and independent deployment, as it does not require in-memory call between these services anymore. However SOA still facilitates large monolithic applications, thus such have to be scaled by duplicating entire application instances [@Dra17b]. 
 
-In order to overcome these limitations, the Microservice paradigm aims for separating the modules into small services in the form of dedicated applications. Therefore, SOA have been called "first generation" services, while Microservices are subsequently the "second generation" of services. As these evolved from SOA, they are thus also part of the general *Service-oriented Computing* (SOC) paradigm [@Maz16;@Dra17a]. For an in depth review on how Microservices historically evolved from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and Service Oriented Architectures, we refer the interested reader to Salah *et al.* [@Sal16].
+In order to overcome these limitations, the Microservice paradigm aims for separating the modules into small services in the form of dedicated applications. Therefore, SOA have been called "first generation" services, while Microservices are subsequently the "second generation" of services. As these evolved from SOA, they are thus also part of the general *Service-oriented Computing* (SOC) paradigm [@Maz16;@Dra17a]. For an in depth review on how Microservices historically evolved from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and service-oriented architectures, we refer the interested reader to Salah *et al.* [@Sal16].
 
 <!--
 ...
@@ -50,7 +50,7 @@ Even though the processing power increases all the time, any monolith inevidentl
 ## Term Ambiguity
 
 
-The *service* term service is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it refers to a computational task unit, i.e. a process, as part of a service-oriented architecture. This is the predominant intention when it is being referred to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
+The *service* term is used in an overloaded manner in the literature. We can identify two general meanings attributed to it. On the one hand, it refers to a computational task unit, i.e. a process, as part of a service-oriented architecture. This is the predominant intention when it is being referred to a "Microservice". On the other hand, a service also describes a specific functionality that can be utilized through an interface. This notion is known from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
 
 In order to avoid confusion, some scholars propose a clear distinction. For example, Xu *et al.* [@Xu16] are using the term "service" exclusively for the functionality part, and refer to the component as *agent*. We will follow the example of Guidi & Montesi [@Gui09] by distinguishing between the *service engine*, that is the component deployed as a process, and the *service behavior* for the functionality a given deployed service engine offers. This terminology suits us, for it highlights the resemblance between an Actors behavior and a Microservices behavior. 
 
@@ -58,7 +58,7 @@ In order to avoid confusion, some scholars propose a clear distinction. For exam
 ## Independence and Interaction
 
 
-From the separation of modules into dedicated service applications comes such a high cohesion of the modules as well as a loose coupling among them that the services are highly independent [@Dra17a;@Dra17b;@Gui17]. The inherent fact that each service engine is a separate application implies that the engines are independently deployable [@Fow14].   
+From the separation of modules into dedicated service engines comes such a high cohesion of the modules as well as a loose coupling among them that the Microservices are highly independent [@Dra17a;@Dra17b;@Gui17]. The inherent fact that each service engine is a separate application implies that the engines are independently deployable [@Fow14].   
 
 The decoupling of services also affects their state as it is conceptually isolated. Thus, services are required to refrain from sharing any resources related to memory persistence as for example databases would introduce a notion of implicit communication among services having access to it. An essential principle of the architectural style is thus the commitment to provide any service engine with its own exclusive database instances [@Fow14;@Dra17a;@New15].
 
@@ -134,7 +134,7 @@ Instead, Bonér argues, a notion of size should refer to the "scope of responsib
 
 In the Microservice context however, authors do not refer to the SRP a lot. Instead, they tend to phrase it *bounded context* [@Dra17a;@Dra17c;@Maz16], by arguing that services should be an aggregation of functionality around a single business capability. This divergence of granularity is one of the major evolutionary changes from SOA to Microservices [@Mon16a;@Gui17].
 
-However, to fine a granularity can become an issue. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularity of Microservices [@Sha17a].
+However, a granularity too fine can become an issue. In a distributed setting, it is always a balance between the number of messages to be sent versus the performance implications to be expected thereof. Latencies of network channels, processing time of addressed services and delay penalties resulting from unavailability have to be considered when designing the granularity of Microservices [@Sha17a].
 
 
 ## Service-oriented Programming

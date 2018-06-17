@@ -171,7 +171,7 @@ Therefore, it is important to evaluate the distribution notions and capabilities
 ### Location Transparency
 
 
-Akka's `ActorRef`{language:scala}s, as with Actor addresses in theory, are abstracting the location of the underlying Actor. The runtime system is handling the actual message delivery transparently, be it on the same local node or a remote node. A uniform interface regardless of any location considerations is thus provided.
+Akka's `ActorRef`{language:scala}s, as with all Actor addresses in theory, are abstracting the location of the underlying Actor. The runtime system is handling the actual message delivery transparently, be it on the same local node or a remote node. A uniform interface regardless of any location considerations is thus provided.
 
 Microservices, on the other hand, allow for arbitrary communication channels, as long as these are conform to the paradigm requirements. As such, there is no guarantee for a unified channel interface for all services and mechanisms. Unix pipes have been given as an illustrative mechanism. These facilitate a file descriptor interfaces, as is promoted by Unix in general. Yet this interface is intrinsically limited to local node interaction, that is the memory boundaries of a single host OS. 
 
