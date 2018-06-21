@@ -96,9 +96,7 @@ We see, not all the basic Actor primitives are suitable to be used outside the A
 
 This is not a novel idea however. Chapter [#ch-evaluation] already mentioned the theoretical foundation from [@Mon97] for incorporating Actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of Akka HTTP. However, interoperability is merely a concern of static configuration, for processes have only a static notion of interconnection topology in general, which violates the dynamic reconfiguration inherent to Actors [@Akm90;@Agh85b]. In order to overcome this, bridge technologies like service discovery have to be utilized by Microservices, thus it would require Actors to integrate into this discovery mechanism, effectively rendering each Actor into a mere Microservices themselves.
 
-This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* [^fn-lagom] framework, a reactive microservice system framework built on top of Akka.
-
-[^fn-lagom]: <https://www.lagomframework.com> 
+This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* [@LightbendLagom] framework, a reactive microservice system framework built on top of Akka.
 
 
 ## Outlook and Future Work
