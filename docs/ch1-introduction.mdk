@@ -4,8 +4,8 @@ Introduction
 
 
 
-~ Epigraph { caption: "Lewis Carroll, Alice in Wonderland"}
-"Begin at the beginning," the King said gravely, "and go on till you come to the end: then stop."
+~ Epigraph { caption: "Peter Landin"}
+Most papers in computer science describe how their author learned what someone else already knew.
 ~
 
 <!--
@@ -97,4 +97,4 @@ Hier einen kurzen Überblick über die Arbeitsweise, ähnlich der Darlegung die 
 
 ## Structure of the Thesis
 
-The following thesis is ordered as follows: chapter [#ch-concurrency] discusses *Concurrency* in general with a focus on the concerns relevant for our discussion. In chapter [#ch-actor-model] the *Actor Model of Computation* is introduced and subsequently the *Microservice Architecture Style* in chapter [#ch-microservice-paradigm]. An exemplary scenario for a concurrent system is outlined in chapter [#ch-scenario]. Building upon this, chapter [#ch-actor-impl] is concerned with the conceptualities of implementing it using an Actor approach, while chapter [#ch-microservice-impl] does the same for a Microservice Architecture. Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.
+The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *Concurrency* in general with a focus on the concerns relevant for our discussion. In Chapter [#ch-actor-model] the *Actor Model of Computation* is introduced and subsequently the *Microservice Architecture Style* in Chapter [#ch-microservice-paradigm]. An exemplary scenario for a concurrent system is outlined in Chapter [#ch-scenario]. Building upon this, Chapter [#ch-actor-impl] is concerned with the conceptualities of implementing it using an Actor approach, while Chapter [#ch-microservice-impl] does the same for a Microservice Architecture. Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, Chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.
