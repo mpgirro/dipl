@@ -82,6 +82,33 @@ For example, when a Store needs to modify its state, instead of performing the u
 
 Actors have message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. In the MSA, the RabbitMQ service does not suffice, as AMQP only supports what the JMS terminology calls *Queue*-semantic (one-to-one) but not its *Topics* (one-to-many). Another messaging technology has to be applied. Kafka [@ApacheKafka] for example is a widely adopted publish/subscribe streaming system with very lightweight message constructs, thus appropriate for the Microservice paradigm. 
 
+---
+
+The following table summarizes the communication capabilities of Echo's implementations:
+
+~ center
+|-------------------------|---------------------------------------------|---------------------------|
+| Communication Style     | Echo with Akka                              | Echo with Spring MS       |
++-------------------------+---------------------------------------------+---------------------------+
+| Request/response        | `ask` method of `ActorRef`{language:scala}, | remote procedure call     |
+|                         | cameo pattern                               | with REST                 |
+| ------------------------|---------------------------------------------|---------------------------|
+| Notification            | `tell` method of `ActorRef`{language:scala} | message queue service     |
+|                         |                                             | like RabbitMQ             |
+| ------------------------|---------------------------------------------|---------------------------|
+| Request/async response  | request and response with                   | request and response      |
+|                         | `tell` method of `ActorRef`{language:scala} | through message queue     |
+| ------------------------|---------------------------------------------|---------------------------|
+| Publish/subscribe       | message broker actor with                   | message broker service    |
+|                         | `BroadcastRoutingLogic`{language:scala}     | like Kafka                |
+| ------------------------|---------------------------------------------|---------------------------|
+| Publish/async responses | message broker actor with                   | request through message   |
+|                         | `BroadcastRoutingLogic`{language:scala}     | broker, responses through |
+|                         | for request, responses with                 | message queue             |
+|                         | `tell` method of `ActorRef`{language:scala} |                           |
+| ------------------------|---------------------------------------------|---------------------------|
+~
+
 
 ## Cohesion, Coupling and Independence
 
@@ -307,6 +334,10 @@ Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren k�
 
 ~ todo
 Hier soll evaluiert werden, wie Actors/Microservices verwaltet werden (Actor.Sys. vs. Selbstverwaltung, bzw. Notwendigkeit eines extra Management Layers - cloud management framework). Dies hat Implikationen auf das Deployment, da durch die mangelnde Oberverwaltung von MS diese viel unabhängiger sind, und daher auch separat gestartet/gestoppt werden können (-> Auswirkungen). Actors haben durch die starke Bindung an ihr System weniger Freiraum. Alles in Allem ist dadurch die Autonomie der beiden Komponenten-Abstraktionen starkt unterschiedlich.   
+~
+
+~ todo
+Grafik zum Unterschied von Akka deployment (also JAR direct, mit allen Actors), vs den Spring MS innerhalb von Docker
 ~
 
 
@@ -729,3 +760,50 @@ Regarding Microservices, WSDL was mentioned as an interface description format. 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.* [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.* [@Hut16] and Ancona *et al.* [@Anc16].
+
+## Metrics
+
+~ todo
+Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
+~
+
+Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
+
+### Startup Time
+
+~ todo
+Tabelle: Startup time des Akka monolithen vs Startup time eines jeden Microservices
+~
+
+### Byte Code Size
+
+~ todo
+Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
+~
+
+... JAR = __Java__ __Ar__chive
+
+...Fat JAR = self-sufficient archive, contains classes and dependencies, executable
+
+~ center
+|--------------------|--------------|---------|
+| Implementation     | "Normal" JAR | Far JAR |
++--------------------+--------------+---------+
+| Echo engine (Akka) |?             | ?       |
+| -------------------|--------------|---------|
+| CatalogStore (MS)  | ?            | ?       |
+| -------------------|--------------|---------|
+| IndexStore (MS)    | ?            | ?       |
+| -------------------|--------------|---------|
+| Searcher (MS)      | ?            | ?       |
+| -------------------|--------------|---------|
+| Web Crawler (MS)   | ?            | ?       |
+| -------------------|--------------|---------|
+| Parser (MS)        | ?            | ?       |
+| -------------------|--------------|---------|
+| Updater (MS)       | ?            | ?       |
+| -------------------|--------------|---------|
+{  }
+~
+
+### Lines of Code
