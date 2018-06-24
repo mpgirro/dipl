@@ -81,7 +81,7 @@ Important that core-lib does not introduce any own concurrent aspect, all concur
 
 ...
 
-For we are conducting a *conceptual* analysis, we will refrain from giving formal definitions of all concepts (which would tend to become rather excessive), and confine on describing the concept semantics in an informal way sufficient for comparative evaluation.
+We are conducting a *conceptual* analysis and will therefore refrain from giving formal definitions of all concepts, which would tend to become rather excessive. Instead, we confine on describing the concept semantics in an informal way sufficient for comparative evaluation.
 
 ## Methodological Approach
 

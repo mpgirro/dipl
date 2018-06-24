@@ -84,7 +84,9 @@ We've found the role of *deadlocks* (blocking operations which for some reason d
 ## Programming Abstractions {#sec-concurrency-programming-abstractions}
 
 
-As was pointed out, any concurrent execution has to be indicated, thus appropriate programming abstractions are required. In general, such are desired to be powerful and expressive models, fit harmoniously into the programing language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
+Most programs are concurrent in some way. 
+
+An example of *implicit concurrency* is *input/output* (IO), where devices are triggered to perform operations simultanious to the executing program [@Bus90]. Also, compilers and interpreters can exploit the concurrency inherent to a language's constructs. On the other hand, *explicit concurrency* has to be indicated, therefore appropriate programming abstractions are required. In general, such abstractions are desired to be powerful and expressive models, fit harmoniously into the programming language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
 
 
 ### Language-Construct Approach {#sec-concurrency-language-level}
