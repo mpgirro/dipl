@@ -24,7 +24,7 @@ As of Scala version 2.10, Akka replaces the default Actor implementation offered
 
 While Actors encapsulate state conceptually, in practice their *full isolation* must be ensured, such that there is no shared state at all. This is essential to guarantee safety properties, respectively prevent data races and state modifications [@Hal12;@Kan12]. However, Akka offers interfaces for Scala and Java. Both languages support object-orientation in an imperative programming style - even though Scala is intended to be a functional programming language. Thus, as is with most library-based Actor systems running on execution environments supporting shared-memory multithreading like the JVM, Akka cannot ensure isolation by itself [@Kos16].
 
-Therefore it is especially interesting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in &sect; [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
+Therefore it is especially interesting how the Isolated Turn Principle has to be handled with Akka, because, as was outlined in Section [#sec-actor-messaging-encapsulation], internal state of an Actor must only be allowed to be modified from within the Actor itself to preserve the model semantics.
 
 
 ### Issue of Data Hiding
@@ -210,7 +210,7 @@ The provided `Chancellable`{language:scala} reference allows to prevent the trig
 
 One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general this does not define any restrictions on the types of messages that are being sent, for messages are untyped in the theoretical model. Receiving Actors only decide upon actually processing a message at runtime if they can handle it.
 
-The Active Object concept aims to provide a higher-level abstraction that fixes this flaw and provides static guarantees. However, this abstraction can become somewhat problematic under certain conditions, as will be discussed in detail in &sect; [#sec-distributed-objects]. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its `TypedActor`{language:java} abstraction for Active Objects. The APIs for this are summarized under the name *Akka Typed* [@AkkaTyped].
+The Active Object concept aims to provide a higher-level abstraction that fixes this flaw and provides static guarantees. However, this abstraction can become somewhat problematic under certain conditions, as will be discussed in detail in Section [#sec-distributed-objects]. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its `TypedActor`{language:java} abstraction for Active Objects. The APIs for this are summarized under the name *Akka Typed* [@AkkaTyped].
 
 One part of Akka's strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e. `ActorRef[U]`{language:scala}, such that the range of acceptable message may be limited to `U`{language:scala}-typed ones. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
@@ -236,7 +236,7 @@ We've found that such kinds of compile-time message safety restrictions, apart f
 ## Supervision and Monitoring
 
 
-In &sect; [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is for such are required to model adequate encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequately is key especially in a distributed context [@Cou05].
+In Section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is for such are required to model adequate encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequately is key especially in a distributed context [@Cou05].
 
 The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself but is always subordinate to its supervisor. This builds a dependency relationship, the so-called *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
 
