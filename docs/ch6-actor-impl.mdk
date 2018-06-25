@@ -135,9 +135,13 @@ The Actor model is solely built on the concept of *asynchronous* message passing
 ### Future-based Messaging
 
 
-Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell`/`!`\ command, it also offers the `ask` method, with alias `?`\ in Scala, of `ActorRef`{language:scala} [@AkkaActor]. It can be used to model request/reply-style communication [@Hal09]. Such method calls resemble `tell` in that they dispatch the method argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` may either proceed with further computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
+Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell`/`!`\ command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. `ask` can be used to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` may either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
 Resolving a `Future`{language:scala} inside an actor can be done in a waiting fashion, which causes the actor to block and prevent it from processing any other request until an answer from e.g.\ an Index was received. However, we should avoid blocking if we expect an actor to process messages in reasonable time, e.g.\ the Searchers.
+
+~ todo
+Oben hier mehr Beispiel mit information flow?
+~
 
 To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that can be used to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
@@ -159,45 +163,43 @@ It is important however, that the messages are dispatched prior to the `for`{lan
 val r = f1.flatMap(r1 => f2.flatMap(r2 => f3.map(r3 => r1 + r2 + r3)))
 ```
 
-It is clear to see that if the `ask`-calls would be inlined into the `for`{language:scala}-block, then the second message would only get dispatched once the first `Future`{language:scala} has been resolved. Yet if used correctly, Futures can be harnessed to preserve the single-threaded semantics of Actors and still leveraged parallel computation inside an Actor.
+It is clear to see that if the `ask`-calls is inlined into the `for`{language:scala}-block, then the second message will only get dispatched once the first `Future`{language:scala} has been resolved. Yet if used correctly, futures can be harnessed to preserve the single-threaded semantics of actors and still leverage parallel computation inside an actor.
 
-However useful, this approach has two downsides. First it is a load on resources, for any `Future`{language:scala} also stresses the Actor's thread pool - or another if such was specified explicitly. Secondly, there is always the risk of accidentally passing the Actors internal, mutable state into the `Future`{language:scala}s scope, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
+However useful, this approach has two downsides. First it is a load on resources, since any `Future`{language:scala} also stresses the actor's thread pool -- or another if one has been been specified explicitly. Secondly, there is always the risk of accidentally passing the Actors internal, mutable state into the `Future`{language:scala}s scope, thus introducing race conditions [@Sub11]. The ask pattern per se is therefore not ideal in any case, but using Futures with Actors still have a long tradition [@Tas13]. 
 
 
 ### Delegation-based Messaging
 
 
-On of the basic Actor primitives allows any Actor to spawn new Actors. This can be used to model synchronous request handling by utilizing newly created Actors merely for temporary usage. The result handling is then relocated to a dedicated child Actor, individually spawned for each request. Creating such child and setting it as the reply destination is done in Akka by:
+One of the basic actor primitives allows an actor to spawn new actors. This can be used to model synchronous request handling by utilizing newly created actors merely for temporary usage. The result handling is then relocated to a dedicated child actor, individually spawned for each request. Creating a child is done in Akka by:
 
 ```{language:scala}
 val handler = context.actorOf(ReponseHandler.props())
 index.tell(msg, handler)
 ```
 
-Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct descendent of the current Actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message, such that it will be able to receive the response. This dynamically created Actor poses as a temporary component in the architecture:
+Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct descendent of the current actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message, such that it will be able to receive the response. This dynamically created Actor poses as a temporary component in the architecture:
 
-* Response Handler (H)
+* Response Handlers (H)
   : are tasked with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion or detect a timeout. Upon message receival, they pass on the result and deconstruct. 
 
-The actual information flow thus turns from conceptually being defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` to the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination this way is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* as it is used for brief and simple interactions between Actors [@All13].
+The actual information flow turns from being conceptually defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13].
 
-[^fn-2nd-tell-argument]: Note that its alias `!` does not allow for more than one parameter.
+[^fn-2nd-tell-argument]: Note that its alias `!`\ does not allow for more than one parameter.
 
-This allows for an asynchronous composition style to handle synchronous communication requirements. It is also a more implementation independent approach if no handy concept like Future to be combined with are offered by the Actor System.
+The cameo pattern allows for an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor system.
 
-In any case, it is important that the messages in a synchronous information flow scenario are processes swiftly. The model's mailbox construct however buffers all incoming message to an Actor, and has it process each message in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order. Large mailboxes with many messages queued up prevent timely message processing. Influencing the order of message reception is therefore a common property for Actor systems [@Kos16]. Akka provides the concept of a `PriorityMailbox`{language:scala}, which is utilizing the pattern matching syntax of Scala to assign priority levels to messages based on their type, such that those involved in synchronously styled flows may always be processes first, regardless of the actual mailbox size.  
+As synchronous communication is constraint by time in general, it is important that the messages for a cameo delegation are processed swiftly. The actor model's mailbox construct however buffers all incoming messages to an actor in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order. Large mailboxes with many messages queued up prevent timely message processing. Influencing the order of message reception is therefore a common property for actor systems [@Kos16]. Akka provides the concept of a `PriorityMailbox`{language:scala}, which is utilizing the pattern matching syntax of Scala to assign priority levels to messages based on their type. IndexStores and CatalogStores are facilitating priority mailboxes to process all messages involved in synchronous flows first, regardless of the current mailbox size.  
 
 
 ### Modelling Timeouts
 
 
-Any synchronous information flow should provide some sort of timeout, to prevent starvation. When using futures, this has to be done explicitly using language specific constructs. The already demonstrated for-comprehension syntax of Scala for examples makes it difficult however to introduces timeouts.
+Synchronous information flow requires a mechanism to implement timeouts in order to prevent starvation. Akka therefore supports a special timing mechanism. Actors, e.g.\ newly spawned delegation-slaves, can register to receive a timeout message after a given time period. The actor then simply needs to define an appropriate message behavior to handle the timeout occurence. When the expected message of the synchronous flow is received before the timeout message, the actor simply cancels the timeout dispatch of the timeout message. However, if the timeout message is received prior to the response message, then the timeout occured and a respective reaction is executed [@All13; @Roe15].
 
-Akka therefore supports a special timing mechanism. Actors, e.g. newly spawned delegation-slaves, may register to receive a timeout message after a given time period and define an appropriate message handling behavior. When they receive the expected response message of the synchronous information flow, they simply chancel the timeout message. If however this timeout message is received prior to the response message, then the timeout occurs and a respective reaction is executed [@All13; @Roe15].
+It is interesting how such timed messages can be introduced into the actor system. Timers require some sort of concurrent thread that constantly checks the current time and performs registered trigger actions. Dedicated thread-based concurrency is somewhat opposed to the actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time. Therefore, offering solutions for timer mechanism are a concern of many actor systems, e.g.\ also in Erlang [@Arm93] and Orleans [@Ber14].
 
-It is of interest how such timed messages can be introduced into the Actor abstraction. Timers require some sort of concurrent timer thread that constantly checks the current time and perform registered trigger actions. This is somewhat opposed to the Actor model and message passing in general, where any action happens as a reaction to a received message, decoupled from any notion of time. Therefore, offering solutions for timer mechanism are a concern of many Actor Systems, e.g. also in Erlang [@Arm93] and Orleans [@Ber14].
-
-To avoid interference of any outside threads with Actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Actors can register a message sending operation to be triggered after a certain period of time:
+To avoid interference of any outside threads with actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each system. Actors can register a message sending operation that triggers after a certain period of time:
 
 ```{language:scala}
 val messenger: Cancellable = context.system.scheduler
@@ -206,21 +208,21 @@ val messenger: Cancellable = context.system.scheduler
     }
 ```
 
-The provided `Chancellable`{language:scala} reference allows to prevent the trigger from firing by calling `messenger.cancel`{language:scala}. This introduces a notion of time into the Actor semantic that is natural to the model [@AkkaScheduler]. In combination with the cameo pattern it is possible to abstract synchronous information flow semantic including timeout boundaries by using purely asynchronous message passing operations. 
+The provided `Cancellable`{language:scala} reference allows us to prevent the trigger from firing by calling `messenger.cancel`{language:scala}. This scheduling mechanism introduces a notion of time into the actor semantics that feels natural to the model [@AkkaScheduler]. In combination with the cameo pattern it is possible to implement synchronous information flow semantics including time constraints by using purely asynchronous message passing operations. 
 
 
 ### Type-restricted Messages and Compatibility {#sec-type-restricted-messages-and-compatibility}
 
 
-One of the basic Actor primitives allows Actors to send messages to any other Actors it knows about. However, in general this does not define any restrictions on the types of messages that are being sent, for messages are untyped in the theoretical model. Receiving Actors only decide upon actually processing a message at runtime if they can handle it.
+One of the basic actor primitives allows actors to send messages to other actors it knows about. However, in general this does not define restrictions on the types of messages that are being sent. Messages are untyped in the theoretical model. An actor decides at runtime when processing a message if it can actually handle the message.
 
-The Active Object concept aims to provide a higher-level abstraction that fixes this flaw and provides static guarantees. However, this abstraction can become somewhat problematic under certain conditions, as will be discussed in detail in Section [#sec-distributed-objects]. Therefore, current developments in Akka try to address the challenge of offering some level of type safety for Actor messaging without using its `TypedActor`{language:java} abstraction for Active Objects. The APIs for this are summarized under the name *Akka Typed* [@AkkaTyped].
+The active object concept aims to provide a higher-level abstraction and provides static guarantees for message types. However, AOs can become problematic under certain conditions, as will be discussed in detail in Section [#sec-distributed-objects]. Therefore, current developments in Akka address the challenge of offering some level of type safety for messaging without using Akka's `TypedActor`{language:java}s for active objects. The APIs are summarized under the name *Akka Typed* [@AkkaTyped].
 
-One part of Akka's strategy to harden the isolation of Actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of `ActorRef`{language:scala} address proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e. `ActorRef[U]`{language:scala}, such that the range of acceptable message may be limited to `U`{language:scala}-typed ones. Thus, the signatures of the messaging methods change from e.g. `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
+One part of Akka's strategy to harden the isolation of actors is to never expose a reference to an actual Actor instance directly. Instead, all communication happens via the messaging interfaces of the `ActorRef`{language:scala} proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e.\ `ActorRef[U]`{language:scala}, such that the range of acceptable messages is limited to `U`{language:scala}-typed ones. The signatures of the messaging methods then change from e.g.\ `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
-It is worth pointing out that in Scala general messages may be of type `Any`{language:scala}, while in Java received messages are of type `Object`{language:java}. This is somewhat counterintuitive for Akka offers compatible bindings for both languages. However, Scala's type system deviates from Java. The later distinguishes between reference types with `Object`{language:java} as &top; in the type hierarchy and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus, primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their unified &top;. Its direct descendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java Actor, the corresponding primitive type's wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received.
+It is worth pointing out that in Scala messages are of type `Any`{language:scala} in general, while in Java received messages are of type `Object`{language:java}. This discrepancy of the most general type is somewhat counterintuitive, since Akka offers compatible bindings for both languages. However, the type systems of Java and Scala deviate. Java distinguishes between reference types with `Object`{language:java} as &top; in the type hierarchy and primitive types (`int`{language:java}, `char`{language:java}, etc.) which are not subtypes of `Object`{language:java}. Thus, primitive types cannot be used as messages. In Scala on the other hand, all variables have `Any`{language:scala} as their unified &top;. The direct descendent `AnyVal`{language:scala} is the supertype of all value types (`Int`{language:scala}, `Char`{language:scala}, etc.), while `AnyRef`{language:scala} corresponds to Java's `Object`{language:java} and is therefore also supertype to all non-value types. If an `AnyVal`{language:scala} is sent from a Scala to a Java actor, the corresponding primitive type's wrapper class (`Integer`{language:java}, `Character`{language:java}, etc.) will be received.
 
-In any case, type parameters for Actor addressed are not without their drawbacks however. The third basic model primitive states that Actors may change their behavior. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding such changes transparently, any new behavior is constrained to also process messages of type `U`{language:scala} exclusively. Otherwise the address of the Actor represented by the `ActorRef[U]`{language:scala} would break the semantic and thus become invalid [@AkkaTyped]. In order to be able to ensure this at compile time, such Actors must be defined through a behavior function, which has to be typed too:
+In any case, type restricted actor addresses are not without drawbacks. The third basic model primitive states that actors can change their behavior. When accepted messages are restricted by an `ActorRef[U]`{language:scala} that is hiding changes transparently, a new behavior has to be constrained to also process messages of type `U`{language:scala} exclusively. Otherwise the address of the actor represented by the `ActorRef[U]`{language:scala} would break the semantics and become invalid [@AkkaTyped]. To ensure address and behavior compatibility at compile time, these actors must be defined through a behavior function that is restricted by a type parameter too:
 
 ```{language:scala}
 val behavior: Behavior[U] = 
@@ -230,77 +232,78 @@ val behavior: Behavior[U] =
     }
 ```
 
-Here, the typization `msg:U`{language:scala} is guaranteed. The behavior is constructed with the `immutable`{language:scala} factory, therefore may not hold nor pass over mutable state [@AkkaTyped]. It always has to explicitly specify the replacement behavior for the next message, in this case the same, as is declared by `Actor.same`{language:scala}.
+In this example, the typization `msg:U`{language:scala} is guaranteed. The `Actor.immutable`{language:scala} factory prevents the constructed behavior from holding and passing over mutable state [@AkkaTyped]. Every behavior has to explicitly specify the replacement behavior for the next message. In this case, the replacement behavior stays the same, as is declared by `Actor.same`{language:scala}.
 
-Though this concept provides static type safe messaging, it still has its limits. For example, it is not able to ensure at compile time that a behavior is in a certain state. Actor addresses and behaviors are associated at runtime. This is a fundamentally dynamic property of the theoretical Actor model [@AkkaTyped]. 
+Though Akka Typed provides static type safe messaging, it still has its limits. For example, it is not able to statically ensure that a behavior is in a certain state. The association of an actor's address and behavior is a fundamentally dynamic property of the actor model [@AkkaTyped]. 
 
-We've found that such kinds of compile-time message safety restrictions, apart from Active Objects, are a rare capability among Actor Systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
+We've found that compile-time message safety restrictions, apart from active objects, are a rare capability among actor systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
 
 
 ## Supervision and Monitoring
 
 
-In Section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for such higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is for such are required to model adequate encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling these adequately is key especially in a distributed context [@Cou05].
+In Section [#sec-actor-systems] we've pointed out that Actor Systems try to provide higher-level constructs than the low-level basic model primitives. One example for higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is the encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling them adequately is key especially in a distributed context [@Cou05].
 
-The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself but is always subordinate to its supervisor. This builds a dependency relationship, the so-called *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
+The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself, but is always subordinate to its supervisor. This dependency relationship is called *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
 
-The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept of being notified of and reacting to subordinate's failures. A fault can be of arbitrary nature, i.e. an unhandled exception or invalid state. An actor automatically suspends itself and all its subordinates upon the occurrence of any failure, and its superior is getting notified. The supervisor then has to choose how to handle respond to the failure. 
+The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but in return is bound to *monitor* them. Monitoring is the concept of being notified of and reacting to subordinate's failures. A fault can be of arbitrary nature, i.e.\ an unhandled exception or invalid state. An actor automatically suspends itself and all its subordinates upon the occurrence of a failure, and its superior is getting notified. The supervisor then has to choose how to respond to the failure. 
 
-
-<!--### Supervision Strategy-->
-
-
-The signaling of an occurred failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. Failure notifications are handled by a so-called *supervision strategy*. Such is, at its core, able to show one of four possible actions:
+The signaling of an occurred failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. Failure notifications are handled by a so-called *supervision strategy*. One of four possible actions can be shown by a supervision strategy:
 
 1. Resuming the suspended child, when the fault can be safely ignored.
 2. Restarting the suspended child, in case its internal state is in an invalid state.
-3. Stopping the child completely, refraining from continuing any of its execution.
-4. Escalating the failure, if the exception is not covered by this Actor. Thus the supervisor fails itself.
+3. Stopping the child completely by refraining from continuing its execution.
+4. Escalating the failure, if the exception is not covered by this actor. The supervisor then fails itself.
 
-A supervisor is notified solely in form of an exception that has been propagated to it from the failed child. However, no state information that puts it into context is being offered. The reason for this is that state should only belong to and be processed by one Actor exclusively. If a failure would result in the propagation of state to the supervisor, then part of the child's implementation logic would leak into its supervisor, for such would require the knowledge to interpret the state in order to evaluate it in a meaningful way. The failure however remains isolated in the child. Therefore, in case it is being resumed, the cleanup actually falls to the child itself. The message on which the fault occurred is not re-introduced into the mailbox, to avoid fault-reoccurrence. All other actions discard the child's state in any case [@Roe15;@AkkaSupervision]. 
+A supervisor is notified solely in form of an exception that is propagated to it from the failed child. However, no state information that puts the exception into context is being offered. The reason is that state should only belong to and be processed by one actor exclusively. Assuming a failure results in the propagation of state to the supervisor, then part of the child's implementation logic leaks into its supervisor, because the supervisor requires the knowledge to interpret the state in order to evaluate it in a meaningful way. However, Akka isolates the failure in the child. In case it is being resumed, the cleanup therefore falls to the child itself. The message on which the fault occurred is not re-introduced into the mailbox, to avoid fault-reoccurrence. All other actions discard the child's state in any case [@Roe15;@AkkaSupervision]. 
 
 ~ todo
-Hier ein kurzes Code-Bsp?
+Hier ein kurzes Code-Bsp? Aus der Crawler oder Catalog supervision?
 ~
 
+~ green
+Supervision strategies are expecially relevant in Echo's Crawler. ... 
+~
 
 ## Information Routing and Delivery Reliability
 
 
-It can be necessary to send a message not to one Actor specifically, but to have it distributed among a set of equivalent instances. Akka provides the concept of *routers* in order to achieve this:
+We are frequently required to send a message not to one actor specifically, but to have it distributed among a set of equivalent instances. Akka provides the concept of *routers* to achieve this:
 
 ```{language:scala}
 val router: Router = {
-    val routees = Seq(actor1, actor2)
+    val routees = Seq(searcher1, searcher2, searcher3)
     Router(RoundRobinRoutingLogic(), routees)
 }
-router.route(message, sender())
+router.route(queryMsg, sender())
 ```
 
-Routing to potential recipients can follow various strategies, depending on the used `RoutingLogic`{language:scala}. The examples uses `RoundRobinRoutingLogic`{language:scala}, which will redirect the message to one of the routees, the next in a cyclic order respectively. Many different routing strategies are available, e.g. `RandomRoutingLogic`{language:scala} for a random recipient, and `BroadcastRoutingLogic`{language:scala} to distribute the message to all routees [@All13].
+Routing to potential recipients can follow various strategies, depending on the used `RoutingLogic`{language:scala}. The `RoundRobinRoutingLogic`{language:scala} used in the example redirects the message to the next routee in a cyclic order. Many alternative routing strategies are available, e.g.\ `RandomRoutingLogic`{language:scala} for a random recipient, and `BroadcastRoutingLogic`{language:scala} to distribute the message to all routees [@All13].
 
-Conceptually, routing can be done directly inside the sending actor, such that the call `router.route(m,s)` replaces the `tell(m,s)` call. Alternatively an intermediate Actor can be employed. The decision is based on the burden of managing the routees. For actors can fail, the set of routees has to be kept up to date, in order to avoid message routing to terminated actors. Therefore, the routees should be children of the router, such that the router will be informed through its supervision obligation in the case of their demise. A set of such routees is referred to as a *pool* [@Roe15]. Therefore, it can become be useful to use a separate component for routing, if actors are to be part of multiple routers, or parent-child relationship is otherwise logically inadequate:
+Conceptually, we can do the routing directly inside the sending actor by replacing the `tell(m,s)` call with `router.route(m,s)`. Alternatively an intermediate actor can be employed. The decision is based on the burden of managing the routees. 
+
+The set of routees has to be kept up to date, since actors can fail and no message must be sent to a terminated actor. If the routees are children of the routing actor, then the router will be informed through its supervision obligation in the case of a subordinates demise. A supervision-managed set of routees is called a *pool* [@Roe15]. Since supervision is the foundation of a pool, it can be useful to use a separate component for routing, especially if actors are part of several router pools, or parent-child relationship is otherwise logically inadequate:
 
 * Message Routers (R)
-  : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees and are thus responsible for forwarding the messages only to those alive. 
+  : are intermediate units tasked with distributing received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers supervise their routees and therefore only forward messages to living children. 
 
-The information flow of a message thus becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected based on the routing logic.
+The information flow of a message becomes for example `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic.
 
-Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. For this, Akka provides a concept called *Actor selection* as a mechanism to send a message to an address matching a certain pattern. This leads to the question of message delivery reliability. Actor selection does not guarantee that a recipient conform to the pattern exists. Therefore, the message might not be delivered at all, and become a *dead letter* instead. 
+Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. Akka provides a concept called *actor selection* as a mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when it is undeliverable. 
 
-Delivery reliability is a general concern of sending messages to Actors, besides the context of routing. In the theoretical model, all messages are guaranteed to be delivered [@Agh85b]. Conceptually this insurance is important as it implies no permanent starvation with any Actor [@Kar09]. In practice however, this cannot be safely assumed to hold. As we assume Actors in a potentially distributed context, message delivery may be subject to a network link. Recalling fallacy 1: *the network is reliable* warns that the network cannot be trusted to guarantee the transport of data in general, thus neither can Actor message delivery be assumed.
+Delivery reliability is also a general concern of sending messages to actors, besides the context of routing. In the theoretical model, all messages are guaranteed to be delivered [@Agh85b]. Conceptually this insurance is important as it implies that no actor can permanently starve [@Kar09]. In practice however, we cannot safely assume perfect delivery reliability to hold. As we consider actors in a potentially distributed context, message delivery can be subject to a network link. Recalling Fallacy 1: *the network is reliable* warns us that the network cannot be trusted to guarantee the transport of data in general. As a result, neither can we assume actor message delivery.
 
-Akka therefore provides a weaker insurances regarding message delivery reliability than the theoretical Actor model. Particularly, all messages are merely guaranteed to be delivered *at-most-once*. Thus, they have to be assumed of potentially getting lost. Additionally, when multiple Actor send messages to the same recipient, no order of messages in the mailbox is guaranteed, which is the reason for nondeterminism in the Actor model. Yet Akka also ensures that the messages of one sender are enqueued into the receivers mailbox in the same order as they have been dispatched (FIFO order) [@AkkaMDR].
+Akka therefore provides a weaker insurances regarding message delivery reliability than the theoretical actor model. Particularly, all messages are merely guaranteed to be delivered *at-most-once*. Additionally, when several actors send messages to the same recipient, no order of messages in the mailbox is guaranteed except that the messages of each particular sender are enqueued into the receivers mailbox in the same order as they have been dispatched by the respective sender (FIFO order) [@AkkaMDR].
 
-In contrast, other Actor systems like Orleans choose to provide *at-least-once* delivery by resending messages that have not been acknowledged within a certain timeframe [@Ber14]. Thus, no message is ever lost but can emerge duplicated instead. As a consequence, any application logic with such Actors has to be able to cope with the fact that one and the same message may be received multiple times. 
+In contrast, other actor systems like Orleans choose to provide *at-least-once* delivery by resending messages that have not been acknowledged within a certain timeframe [@Ber14]. No message is ever lost but can emerge duplicated instead. As a consequence, the application logic of actors with at-least-once delivery has to be able to cope with the fact that one and the same message can be received several times. 
 
 
 ## Persistence and IO
 
 
-In order to be able to persist their internal states, Actors must utilize some kind of data persistence mechanism, e.g. a database. Due to their single threaded semantic, only a single interaction with the database is possible at the same time. This is inefficient, for database access is input/output (IO), and such is a performance limiting factor in general [@Sub11]. Theoretically, the single threaded semantic of Actors would make database transactions obsolete, but we've found that common APIs require active transaction in any case, e.g. with JPA.
+We must employ some kind of data persistence mechanism, e.g.\ a database, in order to persist the internal states of actors. Due to the actors single-threaded semantics, only a single interaction with the database is possible at the same time. This is inefficient, since database access is input/output and therefore a performance limiting factor in general [@Sub11]. Theoretically, the single-threaded semantics of actors makes database transactions obsolete, but the author has found that common APIs demand active transaction in any case, e.g.\ with providers of the __J__ava __P__ersistence __A__PI (JPA).
 
-One approach to overcome the single threaded limitation is by utilizing a non-blocking API for database connections. Such provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the Actors thread pool. Monadic methods once again allow to define further computation on this result once it becomes available, introducing the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
+One approach to overcome the single-threaded limitation is by utilizing a non-blocking API for database connections. Such APIs provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the actors thread-pool. Monadic methods once again allow to define further computation on this result once it becomes available, introducing the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
 
 If non-blocking APIs are not available, then the efficient strategy to handle multiple requests requires to intentionally weaken the encapsulation principle. Thus, multiple child Actors maintain connections to a shared database representing the persistent state. The original Actor then delegates database interaction to these children.
 
