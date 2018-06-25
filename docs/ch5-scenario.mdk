@@ -51,13 +51,13 @@ In order to prevent any domain specific code from being implemented twice unnece
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. CatalogStores hold the complete amount of information about any cataloged entity
 
 * IndexStores (I)
-  : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have relevant information that are needed to match the documents to search queries. Useful textual information is e.g. title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
+  : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have relevant information that are needed to match the documents to search queries. Useful textual information is e.g.\ title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Web Crawlers (W)
   : are tasked with the acquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
 
 * Parsers (P)
-  : are tasked with the transformation of acquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, because all considered data is encoded in a markup language, viz. XML or HTML.
+  : are tasked with the transformation of acquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, because all considered data is encoded in a markup language, viz.\ XML or HTML.
 
 * Searchers (S)
   : are tasked with performing search operations. However, they merely apply some basic query pre-processing themselves and delegate the retrieval of relevant documents to an IndexStore using its inverted index. The respective results are communicated back via the Searcher to the Gateway.
