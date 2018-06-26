@@ -17,7 +17,7 @@ Chapter [#ch-actor-model] and [#ch-microservice-paradigm] introduced Actors and 
 
 Actor and Microservice semantics rely on a strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
 
-The conceptual need is known from Object-oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" - not to be confused with the concept of a *Microservice* - are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
+The conceptual need is known from Object-oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" -- not to be confused with the concept of a *Microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
 
 Both Actors and Microservices define such well-defined interfaces in their own way. For Actors it is the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes, or the messages it consumes from a message broker (e.g.\ AMQP queue). Only through these can the state be accesses or modifications made.
 
@@ -61,7 +61,7 @@ Throughout the literature we've identified various forms of information flows of
 |------------------|------------------------|-------------------------|
 |                  | One-to-One             | One-to-Many             |
 +------------------+------------------------+-------------------------+
-| **Synchronous**  | Request/response       | -                       |
+| **Synchronous**  | Request/response       | --                       |
 | -----------------|------------------------|-------------------------|
 | **Asynchronous** | Notification           | Publish/subscribe       |
 |                  | Request/async response | Publish/async responses |
@@ -145,7 +145,7 @@ Such abstract a value which will be available at some point in time eventually. 
 
 Microservices, on the other hand, are concurrent distributed processes. Their notion of concurrency may deviate from Actors, for they internally do not have a counterpart to the Isolated Turn Principle to respect. Though a service also receives messages via its public API and reacts to them, the flexibility in the design allows them to be task units which are concurrent internally. Thus they may utilize multiple threads to perform blocking operations without blocking their entire process, as is a widespread strategy in the domain of distributed systems in general [@Tan07]. This also enables them to react to multiple messages simultaneously. 
  
-The drawback of this degree of freedom is the set of issues any internal concurrency might introduce. Accessing state cannot in general be assumed a safe operation if it is accessible across threads, and thus synchronization as it has been demonstrated in the Java case study has to be applied. Thus, programming with Microservices does not free one from the many hassles of low-level concurrency concerns per se. However, the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems. As a result, linguistic approaches to SOC might try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatches dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
+The drawback of this degree of freedom is the set of issues any internal concurrency might introduce. Accessing state cannot in general be assumed a safe operation if it is accessible across threads, and thus synchronization as it has been demonstrated in the Java case study has to be applied. Thus, programming with Microservices does not free one from the many hassles of low-level concurrency concerns per se. However, the services size -- based on its scope of responsibility -- is limiting the complexity of the services internal concurrency considerations relative to the overall systems. As a result, linguistic approaches to SOC might try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatches dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
 
 Alternatively, the design freedom of services in general also allows them to apply Actor-based concurrency internally, such that the benefits of synchronization-free programming can be harvested by services too. 
 
@@ -153,7 +153,7 @@ Alternatively, the design freedom of services in general also allows them to app
 <!-- TODO delete?
 ...rresource access inherently has. A basic example is locking. When an Actor processes a message, it is guaranteed to have unqiue access to its internal state, therefore must no handle any locks and can savely assume its state as up to date. When a Microservice accesses any kind of internal resource (state), this resource might currently be locked by an internal transaction mechanism, granting read access, but not guaranteeing that the state is actually up to date. [dirty read? irgendwas allgemeines zu locking und read zitieren]{.mind} 
 
-Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, locking and synchronization as demonstrated in the concurrency in Java case study might have to be dealt with. However, the services size - based on its scope of responsibility - is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. As a result, linguistic approaches to SOC migth try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatch dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
+Programming with Microservices does not, unlike Actors, free one from the many hassles of low-level concurrency concerns per se. Depending on the model used, locking and synchronization as demonstrated in the concurrency in Java case study might have to be dealt with. However, the services size -- based on its scope of responsibility -- is limiting the complexity of the services internal concurrency considerations relative to the overall systems [citation needed? hab ich da eine? ist ja eigentlich mein eigener beitrag]{.mind}. As a result, linguistic approaches to SOC migth try to avoid this completely by applying an idea resembling the C processes case study. The `concurrent`{color:blue} primitive for Jolie services execution modality for example dispatch dedicated processes for concurrently executing the service behavior in response to messages [@Mon16b]. This has close resemblance to the delegation messaging pattern used by Actors.
 -->
 
 
@@ -215,7 +215,7 @@ In terms of programming interface, for every DO a proxy object is created on the
 The Distributed Object concept shares many conceptual similarities that have been discussed already. On the one hand, the design goals of Microservices seem to aim towards an object-like single-purpose computational unit skeleton alike to Distributed Objects within a monolithic object-oriented application. On the other hand, their distributed nature inherently leads toward the possibilities of transparent concurrent/parallel execution, like Actors or Active Objects do. Therefore, it is worth to evaluate whether these abstractions qualify for Distributed Objects, as it would also imply known conceptual problems thereof.
 
 <!--
-However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed - note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
+However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed -- note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
 
 ~LitNote
 * [@Ber14]
@@ -326,14 +326,14 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 
 
 ~ todo
-Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren können, was wiederum ausdrückt wie viel Nebenläufigkeit innerhalb eines Hosts ausgedrückt werden kann. JVM Actors: im Bereich von maximal einigen 10k (im Gegensatz zu Millionen in Erlang - da sehr viel schlankere Konstrukte); Microservices: theoretisch so viele wie das OS an Prozessen verträgt (habe ich hier Literatur bezüglich begrenzender Faktoren?), praktisch aber nicht all zu viele im Fall von Echo, da deren Stack doch relativ unschlanke Service forciert. 
+Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren können, was wiederum ausdrückt wie viel Nebenläufigkeit innerhalb eines Hosts ausgedrückt werden kann. JVM Actors: im Bereich von maximal einigen 10k (im Gegensatz zu Millionen in Erlang -- da sehr viel schlankere Konstrukte); Microservices: theoretisch so viele wie das OS an Prozessen verträgt (habe ich hier Literatur bezüglich begrenzender Faktoren?), praktisch aber nicht all zu viele im Fall von Echo, da deren Stack doch relativ unschlanke Service forciert. 
 ~
 
 
 ## Governance, Deployment and Autonomy
 
 ~ todo
-Hier soll evaluiert werden, wie Actors/Microservices verwaltet werden (Actor.Sys. vs. Selbstverwaltung, bzw. Notwendigkeit eines extra Management Layers - cloud management framework). Dies hat Implikationen auf das Deployment, da durch die mangelnde Oberverwaltung von MS diese viel unabhängiger sind, und daher auch separat gestartet/gestoppt werden können (-> Auswirkungen). Actors haben durch die starke Bindung an ihr System weniger Freiraum. Alles in Allem ist dadurch die Autonomie der beiden Komponenten-Abstraktionen starkt unterschiedlich.   
+Hier soll evaluiert werden, wie Actors/Microservices verwaltet werden (Actor.Sys. vs. Selbstverwaltung, bzw. Notwendigkeit eines extra Management Layers -- cloud management framework). Dies hat Implikationen auf das Deployment, da durch die mangelnde Oberverwaltung von MS diese viel unabhängiger sind, und daher auch separat gestartet/gestoppt werden können (-> Auswirkungen). Actors haben durch die starke Bindung an ihr System weniger Freiraum. Alles in Allem ist dadurch die Autonomie der beiden Komponenten-Abstraktionen starkt unterschiedlich.   
 ~
 
 ~ todo
@@ -349,7 +349,7 @@ Hier sollte ich noch die Doku genauer lesen, ob ich hier noch mehr dazu sagen mu
 
 Microservices do not have such guarantee mechanisms inherently. In general, any service engine can be deployed independently and thus unrestricted in the number of instances.
 
-Controlling instantiation is left to the programmer or operator [DevOps HINWEIS?!]{.red} of the MSA system manually upon deployment. To ease the deploment modality, so-called *cloud management frameworks* (CMF) [CITATION REQUIRED -  auch für noch mehr text]{.red} can be employed ...
+Controlling instantiation is left to the programmer or operator [DevOps HINWEIS?!]{.red} of the MSA system manually upon deployment. To ease the deploment modality, so-called *cloud management frameworks* (CMF) [CITATION REQUIRED --  auch für noch mehr text]{.red} can be employed ...
 
 
 ~ begin green
@@ -427,7 +427,7 @@ A conceptual disadvantage is that by default load balancer do not know about the
 
 Message queue channels are also a form of load balancing. As the receiving components actively pull messages from the queue when they have computation capacity, e.g.\ `W` &larr; `Q`, they thus distribute load among themselves based on their demand [@Cou05;@Dra17c]. 
 
-*Dynamic reconfiguration* relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [@Agh85b]. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of Microservices too provide support for changing topologies in principle, e.g.\ by utilizing service registries and asynchronous messages through intermediate message queues. Reconfiguration greatly effects scalability, for it is the basis allowing the optimal utilization of hardware resources [HIER HAB ICH IRGENDWO EINE PASSENDE REF - GANZ SICHER!]{.red}.
+*Dynamic reconfiguration* relates to a change of system topology at runtime, such that task units may be added, removed or relocated divergent from the static initialization configuration [@Agh85b]. Actor support this inherently through the primitive allowing Actors to spawn new Actors. It was demonstrated with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of Microservices too provide support for changing topologies in principle, e.g.\ by utilizing service registries and asynchronous messages through intermediate message queues. Reconfiguration greatly effects scalability, for it is the basis allowing the optimal utilization of hardware resources [HIER HAB ICH IRGENDWO EINE PASSENDE REF -- GANZ SICHER!]{.red}.
 
 A general prerequisite is location transparency. Both Actors as well as Microservices have sophisticated solutions for it. Two additional properties, *mobility* and *elasticity*, become possible as a result. Mobility refers to the relocation of components between nodes [@Agh99;@Kan12;@Tan07]. Elasticity is a form of scalability summarizing the ability of a system to scale the number of components dynamically depending on the current demand, thus improving its load scalability. Due to their component properties, actors and microservices can be scaled in a non-uniform way, such that individual component types can be instantiated many times without having to duplicate the residual as well [@Dra17b;@Dra17c].
 
@@ -491,7 +491,7 @@ The message passing communication style facilitated by both Actors and Microserv
 Resilience:
 
 ~LitNote
-* "ability to heal from failure" - break free from strong coupling of synchron comm.; circuit breakers
+* "ability to heal from failure" -- break free from strong coupling of synchron comm.; circuit breakers
 * Location transparency, elasticity = "move around in isolation"
 * independent failure of components
 ~
@@ -544,7 +544,7 @@ Separation of Concerns:
 * IoC generally facilitates SoC 
     * actor systems ähneln IoC container
     * Spring MS sind intern via IoC, dh intern gutes SoC 
-* [@Hur95] gibt als concerns an (all diese sind hier - unter anderem namen auch besprochen!):
+* [@Hur95] gibt als concerns an (all diese sind hier -- unter anderem namen auch besprochen!):
     * synchronization &rarr; avoided in Actors; maybe required internally in MS, Echo uses STM
     * location control 
     * real-time constraints &rarr; easy RPC with MS by using adequat comm. channel, more challenging with Actors, though ask-pattern, e.g.\ new components like response handler can be required, which then separate the concern nicely
@@ -705,7 +705,7 @@ Nevertheless, interface compatibility, regardless of how strict such notion is p
 ### Contract Verification
 
 
-Component substitution in Actor systems can take the most basic form of behavior replacement. This primitive does not affect an Actor's address, therefore the instance defined by the new behavior transparently replaces the old. As a result, a new Actor might receive the same kinds of messages as did its predecessor but fail to provide an appropriate reaction to such through the new behavior. Thus, reasoning about Actor systems is hard in general, due to the intrinsic property of Actors to interpret any message at runtime through its behavior, i.e.\ acceptance and rejection, as well as the resulting effects are dynamic. [sollte ich was zitieren - stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}
+Component substitution in Actor systems can take the most basic form of behavior replacement. This primitive does not affect an Actor's address, therefore the instance defined by the new behavior transparently replaces the old. As a result, a new Actor might receive the same kinds of messages as did its predecessor but fail to provide an appropriate reaction to such through the new behavior. Thus, reasoning about Actor systems is hard in general, due to the intrinsic property of Actors to interpret any message at runtime through its behavior, i.e.\ acceptance and rejection, as well as the resulting effects are dynamic. [sollte ich was zitieren -- stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}
 
 Microservices too are free to implement dynamic changes if they choose to. Replacing the engine of any service component however still requires that the service behavior must comply to the substitution principle. When it comes to verifying this, the freedom of the paradigm allowing heterogenous technologies among services becomes a hindrance. Different technologies (programming languages and framework) and communication mechanisms (e.g.\ REST or AMQP) have different means of support for expressing contracts. There is no guarantee that any kind of compatibility checking tool is even available, yet compatible with a verification toolchain [@Dra17a]. 
 
@@ -755,7 +755,7 @@ However, all these approaches towards component contracts still take rather basi
 ... only pre- and postconditions, and to a certain degree invariants.
 -->
 
-Regarding Microservices, WSDL was mentioned as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behavior contracts, e.g.\ WS-BPEL (__W__eb __S__ervice - __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. They build upon the ideas of formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same reasons regarding too much complexity that is hindering easy service development. Once again, we thus argue for programming language-based solutions to overcome this. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
+Regarding Microservices, WSDL was mentioned as an interface description format. However, it merely expresses static information, and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behavior contracts, e.g.\ WS-BPEL (__W__eb __S__ervice -- __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. They build upon the ideas of formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, such have been utilized in the SOA context, but seem to be yet rather neglected in the Microservice domain. We presume this is due to the same reasons regarding too much complexity that is hindering easy service development. Once again, we thus argue for programming language-based solutions to overcome this. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
 
 An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
 

@@ -14,11 +14,11 @@ This chapter covers a microservice architecture approach used to implement the c
 ## Service Technology Stack
 
 
-Dedicated languages for the Service Oriented Programming paradigm seem to be a good choice. However, though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from used it to implement Echo. 
+Service-oriented programming languages seem to be a good choice. Though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using it to implement Echo. 
 
-Instead, Microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals, and the *Spring Cloud* module collection that integrates the Netflix open source stack, which has proven very effective for Microservice development in industrial applications [@Car17]. 
+Instead, microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection integrates the Netflix open source stack, which has proven very effective for microservice development in industrial applications [@Car17]. 
 
-Spring is based on the special form of *Inversion of Control* (IoC), such that programmers may focus on implementing certain *concerns* of arbitrary nature regarding the application, and leave their actual execution logic, i.e.\ the scheduling on a thread pool, to the IoC container. This is usually referred to as *Dependency Injection* [@Wal07]. Conceptually this has a certain resemblance to the execution of Actors by an Actor Systems [@Hal06].
+Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor system runtime [@Hal06].
 
 As was done with the Actor implementation, attention will be paid to the linguistic support provided by the framework regarding an easy expression of service requirements.
 
@@ -31,9 +31,9 @@ mehr?
 ## Internal Service Concurrency
 
 
-The Paradigm does not dictate any restriction on internal service structure. As such, a service may be a concurrent unit internally, and is free to utilize any mechanism it sees fit, for example also Actors. 
+The Paradigm does not dictate any restriction on internal service structure. A service is free to be a concurrent unit internally, and to utilize any concurrency mechanism it sees fit (including actos). 
 
-Echo's services are conceived through the Spring framework, and as such utilize the concurrent programming structure that is provided through its IoC container. Spring provides a thread pool on which concerns, e.g.\ so-called *service*-objects (not to be confuses with the Microservice itself), are scheduled to execute invoked methods. This has resemblance to the event-based semantic of actor systems [@Hal06]. Software transactions are used as synchronization mechanism. They are expressed in a declarative programming style with the `@Transactional` annotation on service-object's methods, such that their STM  extend to database transactions transparently [@Wal07].
+Echo's services are conceived through the Spring framework and utilize the concurrent programming structure that is provided through its IoC container. Spring uses thread-pools on which concerns, e.g.\ so-called *service*-objects (not to be confused with the microservice itself), are scheduled when an object's method is invoked. This kind of scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. Additionally, software transactions provide synchronization. The programming style used to express transactions is declarative. The `@Transactional` annotation on service-object's methods encloses the method into a transaction. Additionally, the STM is extend to database transactions transparently [@Wal07].
 
 ~ todo
 mehr?
@@ -68,13 +68,15 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ## Isolation and Persistence
 
 
-Each Microservices is by definition instantiated as a system level process. As such, their isolation is founded on the strict memory boundaries enforced by the operating system. By convention laid out by the paradigm, services refrain from implementing shared memory sections among them. Thus, there is no shared state to be synchronized between them.
+Each microservices is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention laid out by the paradigm, services refrain from implementing shared memory sections among them. Synchronization is therefore never required among components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
 
-Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a], for sharing databases conceptionally relates to sharing state, thus an implicit form of shared state communication.
+Access to the database is usually supported by the database management systems in a concurrent way. As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
-Access to the database is usually supported in a concurrent way by the database management system. As with Actors, concurrent connections increase throughput significantly. Spring, more precisely *Spring Data*, offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
+Internally, the IoC container of Spring executes the database interactions on a thread-pool as well, as with most other concerns.
 
-Internally, the IoC container of Spring executes, as with most other concern, the database interactions on a thread-pool, thus in a concurrent way.
+~ todo
+Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" hervorheben?
+~
 
 
 ## Communication Mechanisms
@@ -82,13 +84,13 @@ Internally, the IoC container of Spring executes, as with most other concern, th
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
-Any form of communication has to happen via an inter-process communication mechanism, with various kinds of interfaces. While communication for Actors happens in a uniform way, Microservices are thus faced with more challenges. The freedom in the design of services does not dictate any specific communication interface. The only restriction regarding interaction is omitting any shared memory between services, thus solely relying on message passing mechanism, as services should aim to be cohesive and loosely coupled.
+Communication has to happen via an inter-process communication mechanism. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate any specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
 
-We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as a prime (and often sole) example of a valid communication channels throughout the literature. However, it has proven to be practical only in certain situations. As it builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo uses it for any direct user interaction issued through the Web interface, i.e.\ `G` &rightleftarrows; `D` and running search queries via `G` &rightleftarrows; `S` &rightleftarrows; `I`.
+We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as prime (and often sole) example of valid communication channels throughout the literature. However, the author has experienced it to be practical only in certain situations. As REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo uses it for all direct user interaction issued through the Web interface, i.e.\ Catalog exploration (`G` &rightleftarrows; `D`) and running search queries on the index (`G` &rightleftarrows; `S` &rightleftarrows; `I`).
 
-As even Fowler and Lewis [@Fow14] in their original Microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, for no immediate reaction has to occur as a result to any accepted message. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example for JVM technologies. However, it is also limited *to* the JVM, which contradicts the open and well-defined interface principle of Microservices. 
+As even Fowler & Lewis [@Fow14] in their original microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, since no immediate reaction has to occur as a result to accepted message. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
 
-A technology heterogenous message queue standard is required. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. It defines the message format in contrast to JMS, where only the interfaces are specified. This has the advantage that different implementations are possible that may be interchanged freely. Various of such AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ* [@PivotalRabbitMQ], a messaging system that is complying to AMQP besides other standards, and has been shown to integrate well in Microservice Architectures [@Dra17c]. Such message queue conceptually introduces a new component into the architecture:
+A technology heterogenous message queue standard is required. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. The advantage is that different implementations are possible and these may be interchanged freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ* [@PivotalRabbitMQ], a messaging system has been shown to integrate well in MSAs [@Dra17c]. Message queues conceptually introduce new components into the architecture:
 
 * Message Queues (Q)
   : are (distributed) point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space [@Cou05]. 
@@ -101,9 +103,9 @@ A technology heterogenous message queue standard is required. AMQP (__A__dvanced
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 -->
 
-The queue becomes an intermediate for all asynchronous messages, where such are pushed to it by senders, and pulled from by receivers. For example, instead of directly sending a message `C` &rarr; `P`, it instead gets pushed `C` &rarr; `Q` and at some later point pulled `P` &larr; `Q`. The active components are thus `C` and `P`, while `Q` performs merely routing logic internally.
+The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For example, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, we push it `W` &rarr; `Q` and at some later point the Parser pulls it `P` &larr; `Q`. The active components are therefore `W` and `P`. The queue is merely invoked by other components and performs routing logic internally.
 
-In general, a service can have multiple different interfaces, based on heterogenous technologies. As a result, this allows them to also provide the *same* functionality on *different* interfaces. In fact, all the messages that Echo's services are consuming from the AMQP queue can also be sent directly to them via HTTP, for all services offer respective REST interfaces in order to accept and process these. This turned out especially useful for testing and debugging purposes and suggests that it could be a valuable to maintain different interfaces for production as well as maintenance operations. 
+In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. In fact, all the messages that Echo's services are consuming from the AMQP queue can also be sent directly to the services via HTTP. All services offer respective REST interfaces. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for production as well as maintenance operations. 
 
 
 ### Programming Abstractions {#src-ms-programming-abstractions}
