@@ -9,25 +9,25 @@ Comparative Evaluation {#ch-evaluation}
 Thinking like a computer scientist means more than being able to program a computer. It requires thinking at multiple levels of abstraction.
 ~
 
-Chapter [#ch-actor-model] and [#ch-microservice-paradigm] introduced Actors and Microservices separately and focused on their individual concepts. Subsequent chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by Actors and Microservices involved such that both approaches can achieve concurrent computation within their respective architectures. 
+Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by actors and microservices to achieve concurrent computation within their respective architectures. 
 
 
 ## Encapsulation and Isolation
 
 
-Actor and Microservice semantics rely on a strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
+Actor and microservice semantics relies on the strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
 
-The conceptual need is known from Object-oriented Programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an objects state by requiring clients to issue requests for the services an object offers in order to get access to or modify the objects state [@Sny93]. These "services" -- not to be confused with the concept of a *Microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
+Encapsulation is known from object-oriented programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an object's state. Clients are required to issue requests for the services an object offers in order to get access to or modify the object's state [@Sny93]. These "services" -- not to be confused with the concept of a *microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
 
-Both Actors and Microservices define such well-defined interfaces in their own way. For Actors it is the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes, or the messages it consumes from a message broker (e.g.\ AMQP queue). Only through these can the state be accesses or modifications made.
+Both actors and microservices offer well-defined interfaces in their own way. For an actor it is the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes, or the messages it consumes from a message broker. Only through the interfaces can the state be accessed and modified.
 
 
 ### Shared and Mutable State
 
 
-One fundamental characteristic of both Actors and Microservices is their notion of shared state. Summarizing chapter [#ch-actor-model], the Actor model encapsulates state exclusively within an Actor. Therefore, it can only be accessed and modified by the Actor itself. Additionally, Actors provide single-threaded semantic while processing messages, i.e.\ only one message is processed at a time. This eliminates any need for synchronization, for a message has exclusive access to the Actors current state, and thus is free of low-level data races. The Actors state is fully isolated.
+One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages, i.e.\ only one message is processed at a time. This eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
 
-On the other hand, such reasoning cannot be done for Microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm used to implement the service, i.e.\ multiple objects could have access the same memory location. Furthermore, these state accesses could be executed concurrently, e.g.\ as a reaction to multiple invocations of the services interface within a short time span. Microservices do not ensure any kind of single-threaded semantic. This requires synchronization to internal service's state.
+On the other hand, such reasoning cannot be applied for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm used to implement the service, state is necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure any kind of single-threaded semantics. In general, we can therefore assume that synchronization is required to the service's internal state.
 
 However, the Microservice paradigm dictates that shared memory *between* services is to be avoided, as are all kinds of shared resources in general. For every service runs within its own system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent any form of reference sharing to joined mutable data. Such channels tend to provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
@@ -57,7 +57,8 @@ According to the general concerns of concurrent computation, tasks refraining fr
 
 Throughout the literature we've identified various forms of information flows offered by channel concepts [@Cou05;@Mon14;@Gui09;@Spe90;@Roe15;@Agh99;@Tan07;@Bac03]. Generally, they can be distinguished alongside two dimensions: number of recipients and response coupling. Authors declare varying taxonomies for the resulting combinations. The following table provides an overview of the terminology used in the remainder of this work:
 
-~ center
+~ Begin Center
+~ Begin TableFigure { #tab-communication-styles-overview; caption: "Communication Styles";}
 |------------------|------------------------|-------------------------|
 |                  | One-to-One             | One-to-Many             |
 +------------------+------------------------+-------------------------+
@@ -67,7 +68,8 @@ Throughout the literature we've identified various forms of information flows of
 |                  | Request/async response | Publish/async responses |
 |------------------|------------------------|-------------------------|
 {  }
-~
+~ End TableFigure
+~ End Center
 
 Asynchronous one-to-one messaging is inherent to the Actor model. The message sending primitive realizes notification style communication. An asynchronous response is possible in the same way yet requires the address of the requestor. Therefore Akka provides the `sender()` method within Actors, which produces in each turn the `ActorRef`{language:scala} of the message's originator. Microservices achieve asynchrony via message queues. Responding depends on the channel protocol. AMQP does not transmit the sender's location, thus if such is required it has to be included into messages individually. 
 
@@ -86,7 +88,8 @@ Actors have message broker capability in their message router constructs through
 
 The following table summarizes the communication capabilities of Echo's implementations:
 
-~ center
+~ Begin Center
+~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of Communication Capabilities";}
 |-------------------------|---------------------------------------------|---------------------------|
 | Communication Style     | Echo with Akka                              | Echo with Spring MS       |
 +-------------------------+---------------------------------------------+---------------------------+
@@ -107,7 +110,9 @@ The following table summarizes the communication capabilities of Echo's implemen
 |                         | for request, responses with                 | message queue             |
 |                         | `tell` method of `ActorRef`{language:scala} |                           |
 | ------------------------|---------------------------------------------|---------------------------|
-~
+{  }
+~ End TableFigure
+~ End Center
 
 
 ## Cohesion, Coupling and Independence
@@ -761,21 +766,24 @@ An alternative approach towards verifying composition is to migrate from the sin
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.* [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.* [@Hut16] and Ancona *et al.* [@Anc16].
 
-## Metrics
+## Metrics and Experiments
 
 ~ todo
 Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
-Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
 
-### Startup Time
+### Quality Metrics
 
 ~ todo
-Tabelle: Startup time des Akka monolithen vs Startup time eines jeden Microservices
+LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
 ~
 
-### Byte Code Size
+Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
+
+
+
+#### Byte Code Size
 
 ~ todo
 Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
@@ -806,4 +814,20 @@ Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normale
 {  }
 ~
 
-### Lines of Code
+#### Lines of Code
+
+
+
+#### Startup Time
+
+~ todo
+Tabelle: Startup time des Akka monolithen vs Startup time eines jeden Microservices
+~
+
+### Experimental System Evaluation
+
+
+#### Experiment 1: Feed Processing
+
+
+#### Experiment 2: Search Result Retrieval

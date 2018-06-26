@@ -174,14 +174,14 @@ A so-called *pipe* can be set up as IPC between each two processes by utilizing 
 
 As has been outlined, distribution is another approach to the conception of concurrent execution within a system. Generally, besides the lack of shared memory, the distinguishing characteristic between parallel and distributed computing is the geographical distance between tasks. Therefore, the communication between distributed tasks has to happen via networked message passing mechanisms. They introduce a wide range of perils, as the communication links can neither be assumed reliable nor static, and messages are more costly in terms of time (latency) and effort (e.g.\ due to data serialization) [@Agh99]. The famous *Fallacies of Distributed Computing* by Deutsch subsume many of the problematic aspects [@Tan07]:
 
-* Fallacy 1: The network is reliable.
-* Fallacy 2: Latency is zero.
-* Fallacy 3: Bandwidth is infinite.
-* Fallacy 4: The network is secure.
-* Fallacy 5: Topology doesn't change.
-* Fallacy 6: There is one administrator.
-* Fallacy 7: Transport cost is zero.
-* Fallacy 8: The network is homogeneous[^fn-8th-fallacy].
+* Fallacy 1: *The network is reliable*.
+* Fallacy 2: *Latency is zero*.
+* Fallacy 3: *Bandwidth is infinite*.
+* Fallacy 4: *The network is secure*.
+* Fallacy 5: *Topology doesn't change*.
+* Fallacy 6: *There is one administrator*.
+* Fallacy 7: *Transport cost is zero*.
+* Fallacy 8: *The network is homogeneous*[^fn-8th-fallacy].
 { list-style-type:none }
 
 Fallacies 4.\ and 6.\ are outside the scope of this thesis, but the remaining aspects will be relevant to some concepts already or soon to be discussed. For example, Fallacy 2.\ is regarding the synchrony of communication. Asynchronous messaging is not concerned with any latencies delaying travel time of messages. Synchronous communication is constrained by time and therefore affected by network induced latencies.
