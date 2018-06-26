@@ -97,6 +97,12 @@ Bibl {
   font-family: tex-cmd-sffamily
 }
 
+Bibliography { 
+  tex-env: "thebibliography{&caption;}"; 
+  tex-cmd-after: "\par"; 
+  tex-cmd-outer-before: "\mdsetrefname{\textsf{&name-references;}}%mdk&nl;"  
+  }
+
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
   h1, h2, h3, h4, h5, h6, dt { 
@@ -111,6 +117,8 @@ dd         { margin-bottom:1ex }
 blockquote { font-style: italic; }
 
 .tocblock2 { margin-bottom:1em }
+
+.figureline { display: none }
 
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
@@ -210,7 +218,7 @@ CSS Header      :
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
   }
-  /* TODO do I want the paper style for paragraphs?
+  /* TODO do I want the paper style for paragraphs? 
   p {
     margin-bottom: 0;
   }
@@ -232,10 +240,9 @@ TODO
 -->
 
 [TOC]
-<!--
+
 [TOC=figures]
 [TOC=tables]
--->
 ~ End HtmlOnly
 
 <!--
