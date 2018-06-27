@@ -67,7 +67,7 @@ Tex Header   :
 Epigraph {
   replace:"~ Begin TexOnly&nl;\
            ~ Begin TexRaw&nl;\
-             \epigraph{\textit{&source;}}{--- &caption;}&nl;\
+             \epigraph{\textit{&source;}}{--- &caption;}%mdk&nl;\
            ~ End TexRaw&nl;\
            ~ End TexOnly&nl;\
            ~ Begin HtmlOnly&nl;\
@@ -92,33 +92,24 @@ Bibl {
 }
 -->
 
-<!-- DOES NOT WORK -->
-.heading-references {
-  font-family: tex-cmd-sffamily
-}
 
-Bibliography { 
-  tex-env: "thebibliography{&caption;}"; 
-  tex-cmd-after: "\par"; 
-  tex-cmd-outer-before: "\mdsetrefname{\textsf{&name-references;}}%mdk&nl;"  
-  }
 
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
   h1, h2, h3, h4, h5, h6, dt { 
-    font-family: "tex-cmd-sffamily" 
+    font-family: sans-serif
   }
   .tocitem { color:black }
 }
+
+<!-- applying sffamily to the references is a bit more complicated -->
+Bibliography { tex-cmd-outer-before: "\mdsetrefname{\textsf{&name-references;}}%mdk&nl;" }
 <!--Bibl { font-size: small }-->
-
-dt         { margin-top:1ex }
-dd         { margin-bottom:1ex }
-blockquote { font-style: italic; }
-
-.tocblock2 { margin-bottom:1em }
-
-.figureline { display: none }
+dt           { margin-top:1ex }
+dd           { margin-bottom:1ex }
+blockquote   { font-style: italic; }
+.tocblock2   { margin-bottom:1em }
+.figureline  { display: none }
 
 <!-- arbitrary helper classes, while work in progress -->
 .litnote, .lit, .literature { 
@@ -138,9 +129,7 @@ blockquote { font-style: italic; }
 .todo, .important, .delete, .red {
   color:red
 }
-.green {
-  color: green
-}
+.green { color: green }
 
 <!-- TODO do I want to have the same color in PDF and HTML?
 .cite-number {

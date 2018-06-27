@@ -125,7 +125,7 @@ public interface IndexClient {
 
 Calling the `query`{language:java} method on a dynamically generated implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion, and only returns once the result was received. Mapping the HTTP body content of the response to domain objects is done transparently, provided that appropriate XML or JSON serializers are configured with the IoC container. As a result, every domain object may be used for the method result type.
 
-The IndexStore can receive the request by declaring an appropriate REST-endpoint using a similar annotation driven implementation approach: 
+The IndexStore is able to receive the request by declaring an appropriate REST-endpoint using a similar annotation driven implementation approach: 
 
 ```{language:java}
 @RestController
@@ -137,7 +137,7 @@ public class IndexResource {
 }
 ```
 
-This approach models a remote procedure call between the two components. Calling `query("test")`{language:java} of an `IndexClient`{language:java} in `I` is received by `IndexResource`{language:java} in `S` as a call to its `query(String)`{language:java} method with argument `"test"`{language:java}. The method invocation on the client-side is given through the service's programmer. On the server-side, the method is called by the service's inversion of control container when a respective request on the transparently exposed REST interface is registered.
+This approach models a remote procedure call between the two components. Calling `query("TU Wien")`{language:java} of an `IndexClient`{language:java} in `I` is received by `IndexResource`{language:java} in `S` as a call to its `query(String)`{language:java} method with argument `"TU Wien"`{language:java}. The method invocation on the client-side is given through the service's programmer. On the server-side, the method is called by the service's inversion of control container when a respective request on the transparently exposed REST interface is registered.
 
 We can express message queue interaction in a similar fashion through annotations dedicated to AMQP insertion and consumption. 
 

@@ -9,7 +9,7 @@ Every good work of software starts by scratching a developer's personal itch.
 ~
 
 
-In this Chapter, a domain specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system and provides a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using actors and microservices. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
+In this Chapter, a domain-specific search engine dubbed *Echo*[^fn-echo-name] is presented. It serves as an illustration of a concurrent system and provides a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using actors and microservices. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
 [^fn-echo-name]: The name "Echo" was chosen for its wonderful characteristics of providing a short package name and the analogy to *recalling spoken words*.  
 
@@ -43,7 +43,7 @@ At the core, the basic architecture and components are inspired by the work of B
 
 A web interface is provided that both backends have to support. It is written with Angular [@GoogleAngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
 
-In order to prevent any domain specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such structures. It offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
+In order to prevent any domain-specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such structures. It offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
 
 ...
 

@@ -298,7 +298,7 @@ Akka therefore provides a weaker insurances regarding message delivery reliabili
 In contrast, other actor systems like Orleans choose to provide *at-least-once* delivery by resending messages that have not been acknowledged within a certain timeframe [@Ber14]. No message is ever lost but can emerge duplicated instead. As a consequence, the application logic of actors with at-least-once delivery has to be able to cope with the fact that one and the same message can be received several times. 
 
 
-## Persistence and IO
+## Persistence and IO {#sec-actor-persistence}
 
 
 We must employ some kind of data persistence mechanism, e.g.\ a database, in order to persist the internal states of actors. Echo's CatalogStores are a prime example. Due to the actors single-threaded semantics, only a single interaction with the database is possible at the same time. This is inefficient, since database access is input/output and therefore a performance limiting factor in general [@Sub11]. Theoretically, the single-threaded semantics of actors makes database transactions obsolete, but the author has found that common APIs demand active transaction in any case, e.g.\ with providers of the __J__ava __P__ersistence __A__PI (JPA).
