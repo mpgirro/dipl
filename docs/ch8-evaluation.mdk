@@ -128,7 +128,7 @@ Regarding time, actors facilitate asynchrony intrinsically through the model des
 
 Regarding space, actors are conceptually fully isolated. However, in practice ensuring true isolation is difficult, especially for library-based actor implementations. We've discussed the conceptional problems for Akka in detail in Chapter [#ch-actor-impl]. In the end, the programmer have to guarantee the isolation by complying to programming conventions. Infringing these conventions introduces and exposes shared mutable state, which is a violation of the actor model. Also, shared mutability increases the coupling to the sharing component, both in time and in space. 
 
-Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. The only other coupling effect originates from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) into the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
+Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. The only other coupling effect originates from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) within the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
 
 ~ green
 
@@ -232,24 +232,25 @@ The distributed object approach has many similarities to concepts we've already 
 Table [#tab-dispatch-semantics-capabilities] gives an overview of the available dispatch semantics capabilities that we will evaluate in more detail for every concept. The semantics are based on Akka's `UntypedActor`{language:java} for actors and `TypedActor`{language:java} for active objects, Java RMI for distributed objects and Java/Spring-based mechanisms for microservices.
 
 ~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (Actors/Active Objects), Java RMI (Distributed Objects) and Spring (Microservices)";}
-|---------------------|-------------------------------------|---------------------------------------|--------------------------------------|
-|                     | Past Typed                          | Now Typed                             | Future Typed                         |
-+---------------------+-------------------------------------+---------------------------------------+--------------------------------------+
-| __Actor__           | `tell` method                       | not available                         | `ask` method                         |
-| --------------------|-------------------------------------|---------------------------------------|--------------------------------------|
-| __Active Obj__.     | method with no                      | method with                           | method with                          |
-|                     | return type (`void`{language:java}) | `Object`{language:java} return type   | `Future`{language:java}  return type |
-|---------------------|-------------------------------------|---------------------------------------|--------------------------------------|
-| __Distr__. __Obj__. | not available                       | every method                          | several proposals,                   |
-|                     |                                     | regardless of `Object`{language:java} | but no official                      |
-|                     |                                     | or `void`{language:java} return type  | support [REF]{.red}                  |
-| --------------------|-------------------------------------|---------------------------------------|--------------------------------------|
-| __Microservice__    | asynchronous                        | synchronous                           | IPC with semi-sync.                  |
-|                     | IPC, e.g.\ AMQP                     | IPC, e.g.\ REST                       | API, e.g.\ Apache                    |
-|                     |                                     |                                       | HTTP Components                      |
-|---------------------|-------------------------------------|---------------------------------------|--------------------------------------|
+|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+|                      | Past Type                           | Now Type                            | Future Type                          |
++----------------------+-------------------------------------+-------------------------------------+--------------------------------------+
+| __Actors__           | `tell` method                       | not available                       | `ask` method                         |
+| ---------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+| __Active Objects__   | method with no                      | method with any                     | method with                          |
+|                      | return type (`void`{language:java}) | `Object`{language:java} return type | `Future`{language:java}  return type |
+|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+|                      |                                     | every method,                       | several proposals,                   |
+| __Distributed Obj__. | not available                       | regardless of                       | e.g.\ [REF]{.red}, but no            |
+|                      |                                     | return type                         | official support                     |
+| ---------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+|                      | asynchronous                        | synchronous                         | IPC with semi-sync.                  |
+| __Microservices__    | IPC, e.g.\ AMQP                     | IPC, e.g.\ REST                     | API, e.g.\ Apache                    |
+|                      |                                     |                                     | HTTP Components                      |
+|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 {  }
 ~ End TableFigure
+
 
 <!--
 However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed -- note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
@@ -270,21 +271,13 @@ We already discussed the analogies of Actors and microservices to the notion of 
 #### Actors as Distributed Objects
 
 
-The actor model deals with distribution transparently. Just like distributed object proxies, actor addresses pose as local interfaces. However, these addresses do not check message compatibility (method name and argument types). Erlang famously introduced the syntax `address ! message` to send a message of arbitrary form to an Actor identified by a known address [@Arm93]. Since Erlang does not facilitate object-orientation, accessing state and message passing are strictly separate constructs by design.
-
-Other actor variants adopted this style, e.g.\ Scala's original actors and Akka. Scala's type system opens allows a punctuation-free syntax to invoke methods on objects which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, we can apply different syntactic constructs to reference ordinary objects and actors. The distinction is merely by convention only. 
+The actor model deals with distribution transparently. Just like distributed object proxies, actor addresses pose as local interfaces. However, these addresses do not check message compatibility (method name and argument types). Erlang famously introduced the syntax `address ! message` to send a message of arbitrary form to an actor identified by a known address [@Arm93]. Since Erlang does not facilitate object-orientation, accessing state and message passing are strictly separate constructs by design. Other actor variants adopted this style, e.g.\ Scala's original actors and Akka. Scala's type system provides a punctuation-free syntax to invoke methods on objects which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, we can apply different syntactic constructs to reference ordinary objects and actors. The distinction is merely by convention only. 
 
 [^fn-punctuation-free-call]: The expression `address ! message`{language:scala} is therefore merely syntactic sugar for `address.!(message)`{language:scala}.
 
-The truly fundamental difference between addressing an actor and a distributed object is within the dispatch semantics. Actors rely on asynchronous message passing as defined by the basic model primitives.
+The truly fundamental difference between addressing an actor and a distributed object is within the dispatch semantics. Actors rely on asynchronous message passing as defined by the basic model primitives. Asynchronous messages are decoupled in time and do not introduce the expectation of an immediate response (blocking call). In general, method calls with a (non-future) return value are synchronously dispatched and create the expectation of an immediate response. Message passing (past type) is therefore more loosely coupled than the request/reply calls (now type). In general, we expect distributed objects to facilitate many now-typed methods, as this result type variant is natural within OOP. 
 
-
-Asynchronous messages are decoupled in time and do not introduce the expectation of an immediate response (blocking call). 
-
-Method calls with a (non-future) return value are synchronously dispatched and create the expectation of an immediate response. Message passing is therefore more loosely coupled than request/reply methods. In general, we expect distributed objects to facilitate many return-typed methods, as is natural with object-orientation.
-
-
- applications, we deem Actors not to abstract Distributed Objects.
+Even worse, distributed objects with Java RMI only facilitate blocking method invocations. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [REF]{.red}. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
 
 <!--
 Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
@@ -293,15 +286,21 @@ Therefore, especially in object-oriented contexts where Actors are implemented a
 In there principles however, we deem that Actors avoid the problematic abstraction of Distributed Objects. 
 -->
 
-~ todo
-Hier ist der Kern worum es mir geht noch nicht gut herausgearbeitet
-~
-
 
 #### Microservices as Distributed Objects
 
 
-The method call on a DO proxy object makes it transparent for clients whether a locally available or remote server object is addressed. Within the Microservice paradigm, there is no such abstraction in general. Service-internal interaction within its modules use the standard paradigms of the technology used to implement the service, e.g.\ calling an object's method, or referencing a function. To issue any external request, regardless whether a result is expected or not, a respective interface has to be issued. Such is dedicated to the communication channel, e.g.\ a HTTP library or message queue API. Thus, any external interaction should be recognizable to the programmer in general. 
+The method call on a DO proxy object makes it transparent for clients whether a locally available or remote server object is addressed. Within the microservice paradigm, there is transparent communication abstraction for local and remote invocation in general. For service-internal interaction, we use the standard mechanisms of the service's technology paradigm, e.g.\ calling an object's method, or referencing a function. To issue an external request we must issue a respective interface, regardless whether we expect a result or not. 
+
+This interface is dedicated to the communication channel, e.g.\ a HTTP library or message queue API. Therefore, an external interaction should be recognizable to the programmer in general. For Echo's services we use Spring and its IoC container. We demonstrated the definition of the `IndexClient`{language:java} interface for consuming a REST resource with Feign. Spring generates an implementation at runtime, but we must decorated the interface in a declarative programming style appropriatly.
+
+Although we utilize the result in a purely Java-like, object-oriented manner, method calls on `IndexClient`{language:java} result in neither local nor JVM-internal communication. It took us additional effort to declare the desired effect with annotations. These decorations make it apparent to a certain degree that `IndexClient`{language:java} is not an ordinary interface, but an API for external communication.
+
+HIER DAS BZGL DER CIRCUIT BREAKER SCHREIBEN --> DAS ES __NOCH__ OFFENSICHTLICHER WIRD, WEIL MAN ZU DEM INTERFACE AUCH NOCH EINEN CIRCUIT BREAKER DEFINIERT
+
+...
+
+Of course, the Spring approach is to provide programmers with a uniform way to implement the concerns (that is *the* concerns of IoC).
 
 Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. This has been shown for using Feign to provide a Java object interface using dynamic runtime implementations for querying REST interfaces. To cope with distribution related matters, additional precautions like circuit breakers have been added in an linguistic form that is natural with the chosen declarative approach. It is therefore the responsibility of the programmer to incorporate auxiliary frameworks and issue appropriate design decisions, while Distributed Objects in general aim towards abstracting distribution and its issues as transparently as possible [@Wal96]. 
 
