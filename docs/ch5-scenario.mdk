@@ -68,7 +68,7 @@ In order to prevent any domain-specific code from being implemented twice unnece
 * Updater (U)
   : determines which feeds to re-download next in order to register new episodes, and update existing metadata, and discovery new feed from existing directories, on a regular basis. To ensure consistency, only one unit must exist within the system (singleton). 
 
-~ Figure { #fig-task-units; caption: "Task Units and Message Flow"; width:50%; float:left; margin-right: 1ex; }
+~ Figure { #fig-task-units; caption: "Task Unit Interaction Model"; width:50%; float:left; margin-right: 1ex; }
 ![img-task-units]
 ~
 

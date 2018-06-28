@@ -161,3 +161,27 @@ Several prototype languages facilitating the service-oriented programming concep
 Microservices share many similarities with objects in general [@Dra17a]. Therefore, service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16;@Sny93]. However, these mark also the most important difference to objects. In general, objects facilitate information hiding and encapsulation in a *shared memory* setup, while microservices solely rely on *message passing* [@Dra17a]. Besides this difference, advanced object-oriented concepts can also be introduced into a language's service constructs. For example, Jolie has static type checking for service interfaces [@Min17], and CAOPLE even supports polymorphism via an inheritance mechanism.
 
 
+## Summary {#sec-ms-summary}
+
+
+~ todo
+Die Tabelle hier __sinnvoll__ befüllen!
+~
+
+|-------------------|-------------------------|---------------------------|
+| Category          | Monolithic Architecture | Microservice Architecture |
++-------------------+-------------------------+---------------------------+
+| Code              |?                        | ?                         |
+| ------------------|-------------------------|---------------------------|
+| Understandability | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
+| Deployment        | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
+| Language          | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
+| Scaling           | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
+| ?                 | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
+| ?                 | ?                       | ?                         |
+| ------------------|-------------------------|---------------------------|
