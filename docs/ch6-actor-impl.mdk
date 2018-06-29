@@ -57,7 +57,7 @@ final ActorRef foo = system.actorOf(Foo.props());
 
 An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. 
 
-The `create` method of `Props`{language:java} takes a Java 8 lambda as an actor object factory. The lambda and the `create` call are commonly wrapped in a `props` method of the actor class. Java lambdas are basically functional closures[^fn-clojure] and only allow us to access effectively `final`{language:java} fields inside the lambda's scope. This restriction prevents us from exposing mutable state to the constructor of an actor class. Of course, this is only true for the `final`{language:java} fields themselves, but not their members (cf. Java case study in Section [#sec-concurrency-language-level]).
+The `create` method of `Props`{language:java} takes a Java 8 lambda as an actor object factory. The lambda and the `create` call are commonly wrapped in a `props` method of the actor class. Java lambdas are basically functional closures[^fn-clojure] and only allow us to access effectively `final`{language:java} fields inside the lambda's scope. This restriction prevents us from exposing mutable state to the constructor of an actor class. Of course, this is only true for the `final`{language:java} fields themselves, but not their members (cf.\ Java case study in Section [#sec-concurrency-language-level]).
 
 [^fn-clojure]: Not to be confused with *Clojure*, a dialect of the programming language Lisp for the JVM.
 

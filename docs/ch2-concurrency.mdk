@@ -74,7 +74,7 @@ Many different issues regarding concurrent computation are well-åknown and desc
   : asserts the operations that are allowed (safe) to be performed. As a result, given correct inputs will result in correct outputs, while never entering an undesired state. Examples of safety properties are race conditions, deadlock freedom and mutual exclusion.
 
 * Liveness
-  : asserts the operations that have to be performed, such that a certain state will be reached eventually (progress). In other words, given correct inputs are guaranteed correct outputs in finite time (cf. termination in sequential programs). Examples of liveness properties are fairness, starvation and reliable communication.
+  : asserts the operations that have to be performed, such that a certain state will be reached eventually (progress). In other words, given correct inputs are guaranteed correct outputs in finite time (cf.\ termination in sequential programs). Examples of liveness properties are fairness, starvation and reliable communication.
 
 Safety is *invariant*, such that a property `P` holds in *every* state of *every* execution. In contrast, liveness of `P` demands it to hold in *some* state of *every* execution. As a result, there is a so-called *duality* between safety and liveness, such that the negation of a member of one type is a member of the other [@Ben90].
 
