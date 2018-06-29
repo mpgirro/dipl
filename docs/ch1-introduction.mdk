@@ -55,6 +55,14 @@ Therefore, we want to address the following research question:
 
 > __RQ__: *How is the Actor Model comparing against the Microservice Paradigm regarding their properties and capabilities for programming concurrent systems?*
 
+---
+
+> __RQ1__: *What are the component idioms of Actors and Microservices?*
+
+> __RQ2__: *What are the concurrent capabilities of Actors and Microservices?*
+
+> __RQ3__: *How do Actors compare against Microservices?*
+
 ## Aim and Scope of the Work
 
 ~ todo

@@ -203,6 +203,10 @@ CSS Header      :
     float:right; 
     font-style:normal;
   }
+  .figure {
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+  }
   .figure > p {
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;

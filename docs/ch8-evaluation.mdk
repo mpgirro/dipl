@@ -151,6 +151,27 @@ Dieses Einleitungsabsatz geht mehr oder minder genau gleich los wie das Unterkap
 
 Actors and microservices are both concurrently executed components within their system architectures. However, both constructs have different *notions* of concurrency. Each notion is a direct result of the underlying concepts.
 
+...
+
+Table [#tab-fundamental-concurrency-issues] gives an overview how actors and microservices are meeting the fundamental issues of concurrent programming we've given in Section [#sec-foundational-issues].
+
+~ Begin TableFigure { #tab-fundamental-concurrency-issues; caption: "Actors and microservices meeting fundamental issues of concurrent execution"; width:100%}
+|---------------------|-------------------------------|---------------------------------|
+|                     | Actors                        | Microservices                   |
++---------------------+-------------------------------+---------------------------------+
+| __Expression__      | actor creation, concurrent    | service program execution,      |
+|                     | execution by runtime          | concurrent scheduling by OS     |
+| --------------------|-------------------------------|---------------------------------|
+| __Communication__   | message passing primitives    | message passing IPC mechanisms, |
+|                     | (e.g.\ `tell`, `ask`)         | no shared memory                |
+| --------------------|-------------------------------|---------------------------------|
+|                     | implicit among actors due to  | implicit among services due to  |
+| __Synchronization__ | message passing, single-      | message passing, potentially    |
+|                     | threaded semantics internally | required internally             |
+| --------------------|-------------------------------|---------------------------------|
+{ width:100%  }                               
+~ End TableFigure
+
 
 ### Continuations, Threads and Processes
 
@@ -225,13 +246,13 @@ Channels operating on the network level are distributed communication mechanisms
 
 In object-oriented programming, the overall program state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, the state is distributed from a logical point of view [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. Yet, both architecture styles can be integrated to support physical distribution of objects. The notion is called *Distributed Objects* (DO). There, objects do not have to exists within the same program boundary, but can be distributed across numerous programs and therefore host machines. We can therefore view DOs from a process-oriented perspective. Barrio & Fuente [@Bar97] give a formal definition of modelling objects as processes.  
 
-In terms of programming interfaces, every DO requires a proxy object on the client side, which wraps the method calls to the actual distributed object. Due to this separation of interface and implementation, the calling object and the called DO do not have to exist within the same address space [@Wal96]. Therefore, local and distributed method calls look alike (location transparency). However, often the object reference still has to be bound explicitly to a registry by the programmer, e.g.\ in *Java RMI* and *CORBA* [@Ber14]. Then, distributed object instantiation is not uniform to local object creation.  
+In terms of programming interfaces, every DO requires a proxy object on the client side, which wraps the method calls to the actual distributed object. Due to this separation of interface and implementation, the calling object and the called DO do not have to exist within the same address space [@Wal96]. Therefore, local and distributed method calls look alike (location transparency). However, often the object reference still has to be bound explicitly to a registry by the programmer, e.g.\ in *Java RMI* and *CORBA* [@Ber14;@Fal99]. Then, distributed object instantiation is not uniform to local object creation.  
 
 The distributed object approach has many similarities to concepts we've already discussed. On the one hand, the design goals of microservices aim towards an object-like single-purpose computational unit skeleton. This skeleton resembles distributed objects within an object-oriented application. On the other hand, the distributed nature inherently leads toward transparent concurrent/parallel execution, as actors and active objects do. Therefore, it is worth to evaluate whether these abstractions qualify for distributed objects, as it would imply known conceptual problems.
 
-Table [#tab-dispatch-semantics-capabilities] gives an overview of the available dispatch semantics capabilities that we will evaluate in more detail for every concept. The semantics are based on Akka's `UntypedActor`{language:java} for actors and `TypedActor`{language:java} for active objects, Java RMI for distributed objects and Java/Spring-based mechanisms for microservices.
+Table [#tab-dispatch-semantics-capabilities] gives an overview of the available dispatch semantics capabilities that we will evaluate in more detail for every concept. The semantics are based on Akka's `UntypedActor`{language:java} for actors and `TypedActor`{language:java} [ACHTUNG: typed actors wird erst etwas weiter unten erklärt!]{.red} for active objects, Java RMI [@OracleJavaRMI] for distributed objects and Java/Spring-based mechanisms for microservices.
 
-~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (Actors/Active Objects), Java RMI (Distributed Objects) and Spring (Microservices)";}
+~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (Actors/Active Objects), Java RMI (Distributed Objects) and Spring (Microservices)"; width:100%}
 |----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 |                      | Past Type                           | Now Type                            | Future Type                          |
 +----------------------+-------------------------------------+-------------------------------------+--------------------------------------+
@@ -241,14 +262,14 @@ Table [#tab-dispatch-semantics-capabilities] gives an overview of the available 
 |                      | return type (`void`{language:java}) | `Object`{language:java} return type | `Future`{language:java}  return type |
 |----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 |                      |                                     | every method,                       | several proposals,                   |
-| __Distributed Obj__. | not available                       | regardless of                       | e.g.\ [REF]{.red}, but no            |
+| __Distributed Obj__. | not available                       | regardless of                       | e.g.\ [@Fal99], but no            |
 |                      |                                     | return type                         | official support                     |
 | ---------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 |                      | asynchronous                        | synchronous                         | IPC with semi-sync.                  |
 | __Microservices__    | IPC, e.g.\ AMQP                     | IPC, e.g.\ REST                     | API, e.g.\ Apache                    |
 |                      |                                     |                                     | HTTP Components                      |
 |----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
-{  }
+{ width:100%  }
 ~ End TableFigure
 
 
@@ -277,7 +298,7 @@ The actor model deals with distribution transparently. Just like distributed obj
 
 The truly fundamental difference between addressing an actor and a distributed object is within the dispatch semantics. Actors rely on asynchronous message passing as defined by the basic model primitives. Asynchronous messages are decoupled in time and do not introduce the expectation of an immediate response (blocking call). In general, method calls with a (non-future) return value are synchronously dispatched and create the expectation of an immediate response. Message passing (past type) is therefore more loosely coupled than the request/reply calls (now type). In general, we expect distributed objects to facilitate many now-typed methods, as this result type variant is natural within OOP. 
 
-Even worse, distributed objects with Java RMI only facilitate blocking method invocations. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [REF]{.red}. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
+Even worse, distributed objects with Java RMI only facilitate blocking method invocations [@OracleJavaRMI]. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [@@Fal99]. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
 
 <!--
 Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
@@ -290,29 +311,17 @@ In there principles however, we deem that Actors avoid the problematic abstracti
 #### Microservices as Distributed Objects
 
 
-The method call on a DO proxy object makes it transparent for clients whether a locally available or remote server object is addressed. Within the microservice paradigm, there is transparent communication abstraction for local and remote invocation in general. For service-internal interaction, we use the standard mechanisms of the service's technology paradigm, e.g.\ calling an object's method, or referencing a function. To issue an external request we must issue a respective interface, regardless whether we expect a result or not. 
+The method call on a DO proxy object makes it transparent for clients whether a locally available or remote server object is addressed. Though there is also location transparency in the microservice idiom, we generally can assume a distinction in the programming interface of local (within a service) and remote (between services) interaction. For service-internal interaction, we use the standard mechanisms of the service's technology paradigm, e.g.\ calling an object's method, or referencing a function. To issue an external request, we must issue a respective interface, regardless whether we expect a result or not. This interface is dedicated to the communication channel, e.g.\ a HTTP library or message queue API. Therefore, an external interaction should be recognizable to the programmer in general. For Echo's services, we use Spring and its IoC container. We demonstrated the definition of the `IndexClient`{language:java} interface for consuming a REST resource with Feign. Spring generates an implementation at runtime, but we must decorated the interface in a declarative programming style accordingly.
 
-This interface is dedicated to the communication channel, e.g.\ a HTTP library or message queue API. Therefore, an external interaction should be recognizable to the programmer in general. For Echo's services we use Spring and its IoC container. We demonstrated the definition of the `IndexClient`{language:java} interface for consuming a REST resource with Feign. Spring generates an implementation at runtime, but we must decorated the interface in a declarative programming style appropriatly.
+Although we utilize the resulting implementation in a purely Java-like, object-oriented manner, method calls on `IndexClient`{language:java} do not result in JVM-internal communication. It took us additional effort to declare the desired external effect with annotations. These decorations make it apparent (to a certain degree) that `IndexClient`{language:java} is not an ordinary interface, but an API for external communication. To cope with distribution related matters, we even added additional precautions like circuit breakers in linguistic form (annotations) that is natural with the chosen declarative approach. It is therefore the responsibility of the programmer to incorporate auxiliary frameworks and issue appropriate design decisions when handling service-external communication. In contrast, distributed objects in general aim towards abstracting distribution and the resulting issues as transparently as possible [@Wal96]. 
 
-Although we utilize the result in a purely Java-like, object-oriented manner, method calls on `IndexClient`{language:java} result in neither local nor JVM-internal communication. It took us additional effort to declare the desired effect with annotations. These decorations make it apparent to a certain degree that `IndexClient`{language:java} is not an ordinary interface, but an API for external communication.
-
-HIER DAS BZGL DER CIRCUIT BREAKER SCHREIBEN --> DAS ES __NOCH__ OFFENSICHTLICHER WIRD, WEIL MAN ZU DEM INTERFACE AUCH NOCH EINEN CIRCUIT BREAKER DEFINIERT
-
-...
-
-Of course, the Spring approach is to provide programmers with a uniform way to implement the concerns (that is *the* concerns of IoC).
-
-Of course, due to the freedom of the Microservice paradigm, it is possible for any service to utilize a technology that is again abstracting the difference between internal and external interactions transparently. This has been shown for using Feign to provide a Java object interface using dynamic runtime implementations for querying REST interfaces. To cope with distribution related matters, additional precautions like circuit breakers have been added in an linguistic form that is natural with the chosen declarative approach. It is therefore the responsibility of the programmer to incorporate auxiliary frameworks and issue appropriate design decisions, while Distributed Objects in general aim towards abstracting distribution and its issues as transparently as possible [@Wal96]. 
-
-Another argument is the granularity of service interfaces. While objects may provide very fine-grained interfaces in general, e.g.\ to access each of its state variables separately, service tend to have more course grained interfaces. In a Microservices context it is more likely that messages between services do not issue too fine grained operations among services in general, to avoid the issues of external communication mechanisms [@Sha17a], e.g.\ most fallacies of distributed systems (Section [#sec-concurrency-network-level]). Therefore, we deem it not too likely for Microservices to be subject to conceptual issues of Distributed Objects.
+Another argument is the granularity of service interfaces. Objects are prone to provide very fine-grained interfaces in general, e.g.\ to access each state variables separately. Microservices tend to have more course grained interfaces. In the SOP context, it is more likely that messages between services do not issue too fine-grained operations. Every message is at risk of the external communication mechanism's issues [@Sha17a], e.g.\ most Fallacies of distributed systems (Section [#sec-concurrency-network-level]). The microservice paradigm takes the problems of remote messages and procedure calls explicitely into account. Therefore, we do not deem microservices likely to be subject to the same conceptual issues as are distributed objects.
 
 
 #### Active Objects as Distributed Objects
 
 
-Although the similarity to Actors has already been discussed, Section [#sec-active-objects] introduced another variant of the Actor model that is especially relevant here, for it explicitly capitalizes an object-oriented abstraction: Active Objects.
-
-An example of the concurrency semantic of Active Object interfaces has been given. The method call is separated from the message execution. We demonstrated the behavior in case of method interfaces with and without return values. Building on this previous example, we give:
+Although we already discussed the similarity to actors, Section [#sec-active-objects] introduced another variant of the actor model. Active objects explicitly capitalize an object-oriented abstraction and therefore they are especially relevant here. We gave an example of the concurrency semantics of active object interfaces. The method call is separated from the message execution. We demonstrated the behavior in case of method interfaces with and without return values. Building on this previous example, we formulate:
 
 ``` {language:scala}
 val fs: List[Fnord] = ... // list of 100 references
@@ -326,11 +335,11 @@ print(sum)
 The code snippet iterates over all elements and makes a blocking call to retrieve the value. This has two fundamental issues:
 
 1. The programs will block sequentially 100 times, once for each element.
-2. If some, or in the worst case all, of the elements are not within the same local boundaries but transparently distributed, this will cause up to 100 separate remote procedure calls with as many opportunities of any fault a synchronous network call can result in.
+2. If some, or in the worst case all, of the elements are not within the same local boundaries but transparently distributed, each `get()` call will cause up to 100 separate remote procedure calls with as many opportunities of a synchronous network call fault.
 
-The first issue is a result of bad coding practice. The seconds issue is related to a problem in the abstraction that Distributed Objects suffer from too. Programming non-distribution is fundamentally not the same as programming distribution, and a uniform communication approach cannot surmount the conceptual differences [@Wal96]. It is not clear whether the dispatched `get()` method will execute locally or remotely, as the object abstraction is hiding too much context.
+The first issue is a result of bad coding practice. The seconds issue is related to a problem that the abstraction distributed objects provide also suffers from. Programming non-distribution is fundamentally not the same as programming distribution, and a uniform communication approach cannot surmount the conceptual differences [@Wal96]. It is not clear whether the dispatched `get()` method will execute locally or remotely, as the object abstraction is hiding too much context.
 
-Additionally, the `get()` method could be called without the programmer being aware that it actually offers a result value and therefore will block[^fn-get-method], as now-typed methods can be used the same way past-typed methods are, due to the syntax definition. Thus, now-typed method dispatches have the potential to introduce unintentional and unexpected additional remote procedure calls. 
+Additionally, the programmer can call the `get()` method without being aware that it actually offers a result value and therefore will block[^fn-get-method]. Now-typed methods can be used the same way past-typed methods are, due to the syntax definition. Thus, now-typed method dispatches have the potential to introduce unintentional and unexpected additional remote procedure calls. 
 
 [^fn-get-method]: Though with this particular method name and usage it is hopefully unlikely.
 
