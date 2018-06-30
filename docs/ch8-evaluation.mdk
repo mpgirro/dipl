@@ -469,6 +469,37 @@ Autonomy:
 
 Their ability to *scale* is arguably one of the most relevant reasons given in the literature to utilize actor- or microservice-based architectures [@Tas13;@Hal09;@Mon16a;@Dra17c;@Sal16;@Che17;@Sal16;@Dra17b]. Based on the definition given by Bondi [@Bon00], *scalability* is an attribute influencing the performance of networks, systems and processes in general. From the cognition of industrial Erlang applications it has been suggested that scalability is more important than raw system performance [@Hal12]. Many different aspects influence scalability. From a concurrent point of view, any influence hindering parallelism has a negative impact. Examples are synchronization (cf.\ Java case study) and (temporal) deadlocks. The strong isolation and message passing principles of actors and microservices (isolated turn principle, avoidance of shared state) reduce coordination and contention cost. Therefore, message passing and isolation have a positive influence on scalability capabilities by limiting safety and liveness issues [@Bon16].
 
+Table [#tab-scalability-compatibility-matrix] summarizes scalability aspects provided by Echo. The subsequent sections will discuss the aspects in detail. 
+
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Scalability compatibility matrix"; width:100%}
+|-----------------------------|--------------------------------|------------------------------|
+| Scalability Concern         | Echo/Akka                      | Echo/MSA                     |
++-----------------------------+--------------------------------+------------------------------+
+| load scalability            | ?                              | ?                            |
+| ----------------------------|--------------------------------|------------------------------|
+| structural scalability      | via location transparency      | requires discovery mechanism |
+|                             | inherent in actor addresses    | for location transparency    |
+| ----------------------------|--------------------------------|------------------------------|
+|                             | very efficient resource        | hindered if internal         |
+| scaling up (multiple CPUs)  | utilization if refraining      | concurrency model of service |
+|                             | from blocking inside actor     | requires synchronization     |
+| ----------------------------|--------------------------------|------------------------------|
+| scaling out  (geographical) | Akka cluster                   | requires network IPC         |
+| ----------------------------|--------------------------------|------------------------------|
+| load balancing              | server-side with routing logic | client-side with Ribbon      |
+| ----------------------------|--------------------------------|------------------------------|
+| dynamic reconfiguration     | inherent through basic model   | requires service registry    |
+|                             | primitive                      | for integration              |
+| ----------------------------|--------------------------------|------------------------------|
+| mobility                    | weak mobility (no relocation of stateful Stores)             ||
+| ----------------------------|--------------------------------|------------------------------|
+| elasticity                  | requires resource control of   | requires appropriate cloud   |
+|                             | cluster (see [ref]{.red}), not | management framework,        |
+|                             | supported by Echo              | not supported by Echo        |
+| ----------------------------|--------------------------------|------------------------------|
+{ width:100%  }                               
+~ End TableFigure
+
 
 ### Kinds of Scalability
 
@@ -756,23 +787,29 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 ## Design by Contract {#sec-design-by-contract}
 
 
-So far, concerns both Actors and Microservices in one way or another provide profound practical support for have been covered. From here on, we briefly endeavor into subjects both concepts offer rather basic capabilities at best as of yet, although there is theoretical potential for sophisticated solutions. Two such concerns that will merit attention here are static contracts between task units in general, and behavioral types in particular.
+So far, we've covered concerns both actors and microservices provide profound practical support for. Yet from a theoretical point of view, there is the potential for more sophisticated solutions. From here on, we briefly endeavor into these subjects, for which actors and microservices offer rather basic capabilities at best. Two concerns that we will merit attention here are static contracts between task units in general, and behavioral types in particular.
 
-Capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and independent deployment in the respective contexts of Actors and Microservices have been given. All of these facilitate dynamic change in system topology, that is *dynamic reconfiguration* [@Agh90;@Dra17a]. One the one hand, new components can simply be added and announced via respective contextual mechanisms. On the other hand, existing components can be replaced, that is *substituted*, by others (subtypes). Fowler and Lewis even give independent replacement and upgradeability as key properties of Microservices [@Fow14]. However, any evolution within such systems must not break the interface compatibility between components, or otherwise the system will inevitably break. This raises the question for interface compatibility, and particularly an automated checking of it.
+We've evaluated the capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and [independent deployment (-> weggefallen?)]{.red}. All of these concerns facilitate dynamic change in the system topology (dynamic reconfiguration) [@Agh90;@Dra17a]. On the one hand, we can simply add new components and announce them via respective contextual mechanisms. On the other hand, we can *substitute* existing components by others (subtypes). Fowler & Lewis even give independent replacement and upgradeability as key properties of microservice architectures [@Fow14]. However, evolution within a system must not break the interface compatibility between the components. Otherwise the system inevitably breaks. This constraint raises the question of interface compatibility, and particularly the validation of it.
 
-An interface can be generally seen as a contract between a caller (client) and a callee (server) which regulates their interaction regardless of their implementation [@Sin09]. Besides respecting data type restrictions, the caller must comply to the *preconditions* of the callee when issuing its services, and in terms the called-upon guarantees to fulfill its *postconditions* when returning a result. This principle is usually referred to as *Design by Contract* [@Siv99]. It is a desired concept, for it increases the possibilities of components to protect themselves, generally referred to as *defensive programming*. A pioneer and prominent example is the *Eiffel* programming language, which was conceived to aim for a correctness-by-construction notion of objects, and thus built upon the concept of Design by Contract to achieve it [@Mey97;@Maz16].
+We can generally see an interface as a contract between a client (caller) and a server (callee). The contract regulates the client-server interaction regardless of their implementation [@Sin09]. Besides respecting data type restrictions, the caller must comply to the *preconditions* of the callee when issuing its services. In terms, the server guarantees to fulfill its *postconditions* when returning a result. This principle is usually referred to as *design by contract* (DbC) [@Siv99]. It is a foundation of *defensive programming*, since it increases the possibilities of components to protect themselves. A pioneer and prominent example is the *Eiffel* programming language. Eiffel was built aroumd the idea of design by contract to aim for a correctness-by-construction notion of objects [@Mey97;@Maz16].
 
-However, Design by Contract is generally more difficult in concurrent and distributed contexts. As client cannot known when a server will actually start the execution upon receiving a message, they cannot unilaterally guarantee that the preconditions are holding in this particular moment. This is called the *concurrent precondition paradox* [@Siv99;@Mey97]. An equal phenomenon exists for postconditions, as these merely hold in the moment a result is returned from an interface, yet the respective recipient may receive this at a later point in time in general.
+However, design by contract is generally more difficult in concurrent and distributed contexts. Clients cannot know when a server will actually start the execution upon receiving a message. Therefore, clients cannot unilaterally guarantee that the preconditions are holding in this particular moment. This issue is called the *concurrent precondition paradox* [@Siv99;@Mey97]. For postconditions exists an equal phenomenon. Postconditions merely hold in the moment a result is returned from an interface, but the respective recipient can receive the result at a later point in time in general.
 
-Nevertheless, interface compatibility, regardless of how strict such notion is perceived, is required for any new components and versions thereof. Thus, new subtypes are not completely free regarding any changes. It must meet the *Liskov Substitution Principle* [@Hut16] stating that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e.\ `S` respects the contract promised by `T`. Thus a component, that is an Actor or Microservice, can be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
-
-
-### Contract Verification
+Nevertheless, interface compatibility -- regardless of how strict the notion is perceived -- is required for new components and versions thereof. New subtypes are not completely free regarding changes. Subtypes must meet the *substitution principle* by Liskov & Wing [@Lis94;@Hut16]. The principle states that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e.\ `S` respects the contract promised by `T`. An actor or microservice can consequently be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 
-Component substitution in Actor systems can take the most basic form of behavior replacement. This primitive does not affect an Actor's address, therefore the instance defined by the new behavior transparently replaces the old. As a result, a new Actor might receive the same kinds of messages as did its predecessor but fail to provide an appropriate reaction to such through the new behavior. Thus, reasoning about Actor systems is hard in general, due to the intrinsic property of Actors to interpret any message at runtime through its behavior, i.e.\ acceptance and rejection, as well as the resulting effects are dynamic. [sollte ich was zitieren -- stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}
+### Contract Verification Mechanisms
 
-Microservices too are free to implement dynamic changes if they choose to. Replacing the engine of any service component however still requires that the service behavior must comply to the substitution principle. When it comes to verifying this, the freedom of the paradigm allowing heterogenous technologies among services becomes a hindrance. Different technologies (programming languages and framework) and communication mechanisms (e.g.\ REST or AMQP) have different means of support for expressing contracts. There is no guarantee that any kind of compatibility checking tool is even available, yet compatible with a verification toolchain [@Dra17a]. 
+
+Component substitution in actor systems can take the most basic form of behavior replacement. This primitive does not affect an actor's address. The instance defined by the new behavior transparently replaces the old. As a result, the new actor can receive the same kinds of messages as did its predecessor but fail to provide an appropriate reaction because of the new behavior. Thus, reasoning about actor systems is hard in general. The characteristic of actors to interpret every message at runtime through its behavior makes message acceptance and rejection an intrinsically dynamic effect. [sollte ich was zitieren -- stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}
+
+Microservices too are free to implement dynamic changes if they choose to. We also require the service behavior to comply to the substitution principle when we replace the service engine.
+
+
+When it comes to verify compatibility, we are hindered by the 
+
+....
+When it comes to verifying this, the freedom of the paradigm allowing heterogenous technologies among services becomes a hindrance. Different technologies (programming languages and framework) and communication mechanisms (e.g.\ REST or AMQP) have different means of support for expressing contracts. There is no guarantee that any kind of compatibility checking tool is even available, yet compatible with a verification toolchain [@Dra17a]. 
 
 An attempt towards a solution can be the utilization of a neutral tool with regard to language and technologies. For example, *Apache Thrift* [@Sle07] provides an independent format to formulize data types and interface specifications, and then generate static code in various supported languages to be used for implementing communication ports. Such can subsequently serve for applying static type checking regarding well-defined interfaces, however without incorporating channel protocols [@Dra17a].
 
