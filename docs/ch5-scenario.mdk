@@ -37,7 +37,7 @@ kurze Beschreibung der technischen Realisation von Podcasts = Decentralized medi
 ## System Components
 
 
-At the core, the basic architecture and components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy" and a more modern interpretation of associated design principles given by Coulouris *et al.* [@Cou05].  
+At the core, the basic architecture and components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy" and a more modern interpretation of associated design principles given by Coulouris *et al.*\ [@Cou05].  
 
 ...
 
