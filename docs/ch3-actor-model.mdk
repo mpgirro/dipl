@@ -115,8 +115,6 @@ In a single threaded program, once line 4 is reached, we can safely assume that 
 
 Now we alter the definition to `class Fnord extends ActiveObject`{language:java} with some arbitrary base class `ActiveObject`{language:java} that will turn `Fnord`{language:java} into an active object implementation. Then, the previous observation does not hold anymore. When line 3 is reached, we have no guarantee that the addition was already executed. Line 2 only dispatched the message and returned to leave the activity to its own flow of execution. Line 4 blocks (because `get` has a return value) and waits until the message was dispatched and an answer arrived. But we cannot assume that we receive the value `2` anymore. The active object can receive other messages and process them between our `add(1)` and `get` messages. The nondeterminism introduced by the concurrent behavior hinders us to safely reason about our result value.
 
-We see, active objects do not provide the same degree of safety compared to passiv objects. 
-
 We see, although active and passive objects offer the same interface, they do not provide the same degree of safety. The author believes this safety mismatch to be dangerous for programmers in general. The non-AO actor variants regared by the author do not provide interfaces that can be mistaken for non-concurrent entities. Therefore, these actors do not risk offering programmers a false sense of safety. However, there is one major benefit of active objects compared to classic actors. The object interface enables *type safety*. Messages to AOs are strongly typed [@Lav95]. An actor in general can receive any type of message. Only when the message is processed, an actor decides whether it is actually able to understand the message's type. Actors therefore perform *dynamic type checking* at runtime -- even in statically typed programming languages.
 
 On the other hand, active objects provide ordinary object-like interfaces. Sending a message to an AO means calling a method with a fixed signature of the object (the proxy respectively). We are only allowed to call the methods available in the object's public interface. A compiler is able to statically ensure message validity at compile time. This is true for the messages dispatched, as well as for state passed by a messages via any method arguments. Due to the nature of AO interfaces, they only provide message passing in a point-to-point communication style. Broadcasting messages  hypothetical requires one method call to address multiple objects. This behavior isn't intended by the object abstraction [@Yon86].
@@ -133,6 +131,21 @@ The active object method signatures do not only define communication with a cert
   : The sender's thread of control immediately returns, but receives a reference to the result that will be available at some point in the future. The actual result becomes available once the receiving object has processed the message and replied.
 
 The example above illustrates two of these behaviors of method invocation of active objects. `void add(int)`{language:java} only dispatches a message and immediately returns (past type). In contrast, `int get()`{language:java} actually waits for a result (now type). Using the future type requires us to include an additional model of concurrency, the *future*. 
+
+Table [#tab-actor-ao-comparison] gives an overview of the major differences relevant to our considerations between actors and active objects.
+
+~ Begin TableFigure { #tab-actor-ao-comparison; caption: "Major differences between Actors and Active Objects"; page-align:here}
+|-------------------------|-------------------|----------------------------------|
+| Characteristic          | Actors            | Active Objects                   |
++-------------------------+-------------------+----------------------------------+
+| Basic construct         | arbitrary "actor" | object                           |
+| ------------------------|-------------------|----------------------------------|
+| Message typization      | dynamic           | static                           |
+| ------------------------|-------------------|----------------------------------|
+| Message synchronization | asynchronous      | synchronous/asynchronous/future, |
+|                         |                   | depends on method signature      |
+| ------------------------|-------------------|----------------------------------|
+~ End TableFigure
 
 
 ## Integration of other Concurrency Abstractions {#sec-actor-concurrency-combination}

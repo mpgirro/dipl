@@ -43,7 +43,7 @@ So far, we've discussed concurrency as a generic term denoting a simultaneous ex
 
 > "In a parallel computation some actions overlap in time; by implication these events must be distributed in space."
 
-The argument suggests that parallel tasks are also distributed tasks in a certain sense. The major distinction is that parallel tasks are expected to be "closer" to each other (same CPU) than distributed tasks are (distinct CPUs). Due to this distance, tasks cannot share share main memory directly [@Bus90;@Agh99]. Distribution therefore has to rely on message passing communication over the network. Of course, we can use the network to create abstractions for shared memory, so-called *spaces*. One example is the *Linda* model [@Ben90;@Sco06].
+The argument suggests that parallel tasks are also distributed tasks in a certain sense. The major distinction is that we expect parallel tasks to be physically closer to each other (same CPU) than distributed tasks (distinct CPUs and machines). Due to this distance, distributed tasks cannot share share main memory directly [@Bus90;@Agh99]. Distribution therefore has to rely on message passing communication over the network. Of course, we can use the network to create abstractions for shared memory, so-called *spaces*. One example is the *Linda* model [@Ben90;@Sco06].
 
 Due to this physical separation, tasks are executed on different locations (host machines). We will also refer to these hosts as *nodes* [@Ben90]. A single node can have one or more processors on which one or more tasks are being executed concurrently. In the case of multiple CPUs, tasks can possibly be also executed in parallel.
 
