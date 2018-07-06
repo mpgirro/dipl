@@ -106,15 +106,31 @@ Tex Header    :
     \newcommand{\todo}[1]{{\color{red}\textbf{TODO: {#1}}}} % Comment for the final version, to raise errors.
     %
     % set sans serif section font.
-    %\setsecheadstyle{\Large\bfseries\sffamily}
-    %\setsubsecheadstyle{\large\bfseries\sffamily}
-    %\setsubsubsecheadstyle{\large\bfseries\sffamily}
-    %\setparaheadstyle{\large\bfseries\sffamily}
-    %\setsubparaheadstyle{\large\bfseries\sffamily}
+    \renewcommand*{\chaptitlefont}{\normalfont\sffamily\Huge\bfseries}
+    \setsecheadstyle{\Large\bfseries\sffamily}
+    \setsubsecheadstyle{\large\bfseries\sffamily}
+    \setsubsubsecheadstyle{\large\bfseries\sffamily}
+    \setparaheadstyle{\large\bfseries\sffamily}
+    \setsubparaheadstyle{\large\bfseries\sffamily}
     %
     %\setlist[description]{%
     %  font={\bfseries\sffamily} % set the label font
     %}
+    %
+    % Adapt the header to avoid conflicts with Madoko
+    \makepagestyle{mystyle}% 
+    \makerunningwidth{mystyle}{\headwidth}%
+    \makeheadrule {mystyle}{\textwidth}{\normalrulethickness}% TODO
+    \makeevenhead{mystyle}{\scshape\leftmark}{}{}%
+    \makeoddhead{mystyle}{}{}{\rmfamily\rightmark}%
+    %\makefootrule{vutinfth@pagestyle@titlepage}{}{}{}%
+    \makeevenfoot{mystyle}{\thepage}{}{}%
+    \makeoddfoot{mystyle}{}{}{\thepage}%
+    \addto\mainmatter{\pagestyle{mystyle}}%
+    %
+    % remove the numbers so they wont appear in \leftmark and \rightmark
+    \renewcommand{\sectionmark}[1]{\markright{#1}}
+    \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 
 
 

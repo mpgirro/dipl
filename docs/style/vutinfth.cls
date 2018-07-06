@@ -884,7 +884,7 @@
 \aliaspagestyle{chapter}{vutinfth@pagestyle@default}%
 \aliaspagestyle{part}{vutinfth@pagestyle@default}%
 \addto\frontmatter{\pagestyle{vutinfth@pagestyle@default}}%
-\addto\mainmatter{\pagestyle{Ruled}}%
+%\addto\mainmatter{\pagestyle{Ruled}}%
 \addto\backmatter{\pagestyle{vutinfth@pagestyle@default}}%
 \endinput
 %%
