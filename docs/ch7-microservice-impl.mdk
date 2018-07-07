@@ -90,10 +90,10 @@ We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) 
 
 As even Fowler & Lewis [@Fow14] in their original microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, since no immediate reaction has to occur as a result to accepted message. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
 
-A technology heterogenous message queue standard is required. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. The advantage is that different implementations are possible and these may be interchanged freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo is utilizing *RabbitMQ* [@PivotalRabbitMQ], a messaging system that has proven to integrate well in MSAs [@Dra17c]. Message queues conceptually introduce new components into the architecture:
+A technology heterogenous message queue standard is required. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. The has the advantage that different implementations are possible and we can interchange them freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that has proven to integrate well in MSAs [@Dra17c]. Message queues conceptually introduce new components into the architecture:
 
 * Message Queues (Q)
-  : are (distributed) point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space [@Cou05]. 
+  : are distributed point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space [@Cou05]. 
 
 <!--
 ~ Figure { #fig-ms-channels; caption: "Microservice communication channels"; width:50%; float:left; margin-right: 1ex; }
@@ -113,7 +113,7 @@ In general, a service can have several different interfaces, based on heterogeno
 
 Linguistic support is provided by Spring in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting as this style is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, so that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. Therefore, we can still apply deployment configuration without the need to recompile. The downside is additional runtime overhead and the lack of static compatibility checking. 
 
-For example, a Search queries an IndexStore using synchronous REST communication (`S` &rightleftarrows; `I`). We use the Spring binding for *Feign* [@OpenFeign], a library dedicated to annotation-based decorations for Java interfaces. Clients can consume RESTful endpoints using a dynamic interface implementation. We express the example in `S` by:
+For example, a Searcher queries an IndexStore using synchronous REST communication (`S` &rightleftarrows; `I`). We use the Spring binding for *Feign* [@OpenFeign], a library dedicated to annotation-based decorations for Java interfaces. Clients can consume RESTful endpoints using a dynamic interface implementation. We express the example in `S` by:
 
 ```{language:java}
 @FeignClient(name = "index")
