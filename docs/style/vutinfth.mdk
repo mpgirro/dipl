@@ -120,7 +120,8 @@ Tex Header    :
     % Adapt the header to avoid conflicts with Madoko
     \makepagestyle{mystyle}% 
     \makerunningwidth{mystyle}{\textwidth}%
-    \makeheadrule {mystyle}{\textwidth}{\normalrulethickness}% TODO
+    %\makeheadrule {mystyle}{\textwidth}{\normalrulethickness}% TODO
+    \makeheadrule {mystyle}{\textwidth}{0pt}% TODO
     \makeevenhead{mystyle}{\scshape\leftmark}{}{}%
     \makeoddhead{mystyle}{}{}{\rmfamily\rightmark}%
     %\makefootrule{vutinfth@pagestyle@titlepage}{}{}{}%
@@ -129,8 +130,8 @@ Tex Header    :
     \addto\mainmatter{\pagestyle{mystyle}}%
     %
     % remove the numbers so they wont appear in \leftmark and \rightmark
-    \renewcommand{\sectionmark}[1]{\markright{#1}}
-    \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+    \renewcommand{\sectionmark}[1]{\markright{#1}}%
+    \renewcommand{\chaptermark}[1]{\markboth{#1}{}}%
 
 
 
