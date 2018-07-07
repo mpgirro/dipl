@@ -119,7 +119,7 @@ Tex Header    :
     %
     % Adapt the header to avoid conflicts with Madoko
     \makepagestyle{mystyle}% 
-    \makerunningwidth{mystyle}{\headwidth}%
+    \makerunningwidth{mystyle}{\textwidth}%
     \makeheadrule {mystyle}{\textwidth}{\normalrulethickness}% TODO
     \makeevenhead{mystyle}{\scshape\leftmark}{}{}%
     \makeoddhead{mystyle}{}{}{\rmfamily\rightmark}%
