@@ -54,6 +54,28 @@ Concurrent database interaction is conceptually easier for microservices. Severa
 This restriction opens up another opportunity however. Monolithic applications tend to rely on as few database systems as possible. A multitier architecture traditionally has the data access layer at the bottom, and consecutive layers are build relative to the bottom layer. A new database system brings the risk of fundamentally impacting a program's architecture. It is therefore unusual for program modules to have their own persistence layer exclusive to them. Due to their respective natures, modules based on the actor and microservice concepts make it easy to add additional persistence layers to accommodate architecture requirements. The approach of introducing specialized database systems based on respective persistence needs, at the risk of introducing potential redundancies, is referred to as *polyglot persistence* [@Bon16;@Fow14].
 
 
+### Cohesion, Coupling and Independence
+
+
+Bonér [@Bon16] defines truly isolated components combined through the asynchronous message passing communication style as *decoupled* in two dimensions. On the one hand, the components are decoupled in *time*, which supports concurrent execution. On the other hand, the components are decoupled in *space*, and therefore we can execute them remotely and even move them between locations.
+
+Regarding time, actors facilitate asynchrony intrinsically through the model design. Nevertheless, actor systems tend to offer synchronous primitives on top of the asynchronous style. Programmers receive better abstractions, at the cost of increased coupling. Microservices are free to choose the IPC style, as long as the IPC mechanism is based on message passing rather than shared memory, with respective effects on coupling.
+
+Regarding space, actors are conceptually fully isolated. However, in practice ensuring true isolation is difficult, especially for library-based actor implementations. We've discussed the conceptional problems for Akka in detail in Chapter [#ch-actor-impl]. In the end, the programmer have to guarantee the isolation by complying to programming conventions. Infringing these conventions introduces and exposes shared mutable state, which is a violation of the actor model. Also, shared mutability increases the coupling to the sharing component, both in time and in space. 
+
+Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. The only other coupling effect originates from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) within the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
+
+~ green
+
+The literature often points out a correlation between the metrics of coupling and cohesion [@Woo93]. If coupling is low, then cohesion tends to be high. Cohesion is reflected in the single responsibility principle. Aspects required to fulfilling the functionality is encapsulated within a single unit, respective an actor or microservice. Again, shared libraries pose a problem. 
+
+Echo's commonly used `core` library, wrapping most domain specific logic, is generally a prime example. It increases coupling and decreased cohesion of all components using it (which almost all actors and microservices are), but the affect is accepted to gain a better separation between domain logic and communication and coordination logic. Apart from that, modularity in both actor and microservice systems is high, as functionality of components can be arbitrarily used and combined.
+
+~
+
+This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. We already discussed message routing and will evaluate more aspects in subsequent sections, for example the location transparency in addresses and a guarantee of fairness.  
+
+
 ## Communication and Message Routing
 
 
@@ -117,28 +139,6 @@ The following table summarizes the communication capabilities of Echo's implemen
 {  }
 ~ End TableFigure
 ~ End Center
-
-
-## Cohesion, Coupling and Independence
-
-
-Bonér [@Bon16] defines truly isolated components combined through the asynchronous message passing communication style as *decoupled* in two dimensions. On the one hand, the components are decoupled in *time*, which supports concurrent execution. On the other hand, the components are decoupled in *space*, and therefore we can execute them remotely and even move them between locations.
-
-Regarding time, actors facilitate asynchrony intrinsically through the model design. Nevertheless, actor systems tend to offer synchronous primitives on top of the asynchronous style. Programmers receive better abstractions, at the cost of increased coupling. Microservices are free to choose the IPC style, as long as the IPC mechanism is based on message passing rather than shared memory, with respective effects on coupling.
-
-Regarding space, actors are conceptually fully isolated. However, in practice ensuring true isolation is difficult, especially for library-based actor implementations. We've discussed the conceptional problems for Akka in detail in Chapter [#ch-actor-impl]. In the end, the programmer have to guarantee the isolation by complying to programming conventions. Infringing these conventions introduces and exposes shared mutable state, which is a violation of the actor model. Also, shared mutability increases the coupling to the sharing component, both in time and in space. 
-
-Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. The only other coupling effect originates from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) within the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
-
-~ green
-
-The literature often points out a correlation between the metrics of coupling and cohesion [@Woo93]. If coupling is low, then cohesion tends to be high. Cohesion is reflected in the single responsibility principle. Aspects required to fulfilling the functionality is encapsulated within a single unit, respective an actor or microservice. Again, shared libraries pose a problem. 
-
-Echo's commonly used `core` library, wrapping most domain specific logic, is generally a prime example. It increases coupling and decreased cohesion of all components using it (which almost all actors and microservices are), but the affect is accepted to gain a better separation between domain logic and communication and coordination logic. Apart from that, modularity in both actor and microservice systems is high, as functionality of components can be arbitrarily used and combined.
-
-~
-
-This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. We already discussed message routing and will evaluate more aspects in subsequent sections, for example the location transparency in addresses and a guarantee of fairness.  
 
 
 ## Notions of Concurrency
@@ -526,10 +526,10 @@ The requirements in Chapter [#ch-scenario] explicitly state that neither mobilit
 In general, we deem the concerns related to dynamic reconfiguration more easily met with actors. Spawning new units is a core concept of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction. We need an additional layer to manage changing topologies. *Cloud management framework* are a category of tools that seem convenient. Therefore is a fundamental difference in the inherent notion of static versus dynamic changes in topology. This difference is a major concern when it comes to integrating actor and microservice task units. We will briefly outline an approach for integration in Section [#sec-actor-ms-integration].
 
 
-## Extensibility and Technology Diversity {#sec-technological-heterogeneity}
+### Extensibility and Technology Diversity {#sec-technological-heterogeneity}
 
 
-Another result of the dynamic reconfiguration property is that actor or microservice architectures are also open for extension. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* to refer to the introduction of either new versions of existing components (update) or new components entirely (addition). For updates of previous versions, special care has to be taken into account. The requirements will be the part of Section [#sec-design-by-contract]. 
+Another result of the dynamic reconfiguration property is that actor and microservice architectures are also open for extension. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* to refer to the introduction of either new versions of existing components (update) or new components entirely (addition). For updates of previous versions, special care has to be taken into account. The requirements will be the part of Section [#sec-design-by-contract]. 
 
 There are two different kinds of extensibility [@Agh85a;@Bac03]:
 
@@ -545,6 +545,30 @@ Another interesting concern is the technology limitations regarding the concepti
 The strong memory boundries and open communication interfaces of microservice provide a whole different level of flexibility. We can conceive a service using every programming language and technology we desire, as long as the tools are able to interact with the communication channels.
 
 Echo facilitates Java and the Spring framework for all task units, but each service could also have been written using distinct technology stacks. Even now, existing services can be replaced by new version using new technologies.   
+
+
+### Eventual Consistency and Availability
+
+
+The literature frequently points out that, due to their asynchrony and distribution, both actors and microservices are bound to a weak notion of data consistency generally referred to as *eventual consistency* [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. Eventual consistency describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Consequently, until this point in time, the data state across tasks is in flux and can therefore produce varying results. 
+
+~ todo
+Hier möglichst bald der Hinweis das Eventual Consistency notwendig/positiv für Scalability ist. Um zu begründen wieso das hier ein Unterkapitel ist
+~
+
+Echo suffers from inconsistency regarding the data store units. The state of all Indices is inevitably behind of the Catalogs, since Parsers send data to Catalogs. After performing updates and registering new episodes, the Catalogs forwards the new information to the IndexStores (broadcast). This is of course only true for the original recipient of the Parser data. An update to one Catalog must subsequently be also broadcast to the residual Catalog instances. Eventual consistency reduces the guarantee for consistent data to a guarantee that all data updates will be propagated to all data replicas [@Tan07]. Informally, we can observe that every form of exclusive state ownership combined with an asynchronous communication model without a transaction abstraction on top will introduce some form of eventual consistency into a system [@Bon17]. Eventual consistency is therefore inherent to all actor architectures. Due to the *at-least-once* delivery guarantee given by RabbitMQ, this weak form of consistency is also part of Echo's microservice variant.
+
+~ todo
+Hier würde eine Grafik helfen.
+~
+
+In contrast, requiring strong consistency is extremely difficult. Consistency essentially constraints the order of read and write operations on data [@Mah11], in this case from a global point of view. Software transactional memory is a prominent mechanism to achieve global orders. As we've pointed out, Akka did drop its transaction support for the performance impact in a local context alone. Additionally, Akka never achieved to extend transactions to remote actors. Microservices are faced with even more challenges. There is no inherent base system available to provide transactions. We must integrate the complience to an appropriate mechanism on an individual per service basis.
+
+The constraints required for maintaining strong consistency relate to safety [@Mah11]. A weakening of these constraints therefore reduces safety. In return, eventual consistency within a system has a positive effect on a specific liveness property, that is *availability*. Basically, availability relates to a system's responsiveness when requesting functionality. A consistency mechanism in general restrains this responsiveness. Informally, availability demands that all read and write operations complete. The sooner they complete, the more available the system is.
+
+~ todo
+KANN ICH AVAILABILITY IRGENDWIE MESSEN? DAS WÄRE EINE GUTE PRAKTISCHE TABELLE HIER, DIE DAS KAPITEL RECHTFERTIGEN WÜRDE...
+~
 
 
 ## Fault Tolerance and Resilience
@@ -672,26 +696,6 @@ Thus, in general we've found Actors to provide an easier abstraction to facilita
 Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 ~ end green
-
-
-## Eventual Consistency and Availability
-
-
-The literature frequently points out that, due to their asynchrony and distribution, both actors and microservices are bound to a weak notion of data consistency generally referred to as *eventual consistency* [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. Eventual consistency describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Consequently, until this point in time, the data state across tasks is in flux and can therefore produce varying results. 
-
-Echo suffers from inconsistency regarding the data store units. The state of all Indices is inevitably behind of the Catalogs, since Parsers send data to Catalogs. After performing updates and registering new episodes, the Catalogs forwards the new information to the IndexStores (broadcast). This is of course only true for the original recipient of the Parser data. An update to one Catalog must subsequently be also broadcast to the residual Catalog instances. Eventual consistency reduces the guarantee for consistent data to a guarantee that all data updates will be propagated to all data replicas [@Tan07]. Informally, we can observe that every form of exclusive state ownership combined with an asynchronous communication model without a transaction abstraction on top will introduce some form of eventual consistency into a system [@Bon17]. Eventual consistency is therefore inherent to all actor architectures. Due to the *at-least-once* delivery guarantee given by RabbitMQ, this weak form of consistency is also part of Echo's microservice variant.
-
-~ todo
-Hier würde eine Grafik helfen.
-~
-
-In contrast, requiring strong consistency is extremely difficult. Consistency essentially constraints the order of read and write operations on data [@Mah11], in this case from a global point of view. Software transactional memory is a prominent mechanism to achieve global orders. As we've pointed out, Akka did drop its transaction support for the performance impact in a local context alone. Additionally, Akka never achieved to extend transactions to remote actors. Microservices are faced with even more challenges. There is no inherent base system available to provide transactions. We must integrate the complience to an appropriate mechanism on an individual per service basis.
-
-The constraints required for maintaining strong consistency relate to safety [@Mah11]. A weakening of these constraints therefore reduces safety. In return, eventual consistency within a system has a positive effect on a specific liveness property, that is *availability*. Basically, availability relates to a system's responsiveness when requesting functionality. A consistency mechanism in general restrains this responsiveness. Informally, availability demands that all read and write operations complete. The sooner they complete, the more available the system is.
-
-~ todo
-KANN ICH AVAILABILITY IRGENDWIE MESSEN? DAS WÄRE EINE GUTE PRAKTISCHE TABELLE HIER, DIE DAS KAPITEL RECHTFERTIGEN WÜRDE...
-~
 
 
 ## Testability
