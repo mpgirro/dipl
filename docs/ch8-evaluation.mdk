@@ -115,28 +115,28 @@ Actors have message broker capability in their message router constructs through
 The following table summarizes the communication capabilities of Echo's implementations:
 
 ~ Begin Center
-~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of Communication Capabilities";}
+~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication capabilities"; page-align:here; width:100%}
 |-------------------------|---------------------------------------------|---------------------------|
-| Communication Style     | Echo with Akka                              | Echo with Spring MS       |
+| Communication Style     | Echo/Akka                                   | Echo/MSA                  |
 +-------------------------+---------------------------------------------+---------------------------+
-| Request/response        | `ask` method of `ActorRef`{language:scala}, | remote procedure call     |
+| Request/response        | `ask` method of `ActorRef`{language:scala}, | Remote procedure call     |
 |                         | cameo pattern                               | with REST                 |
 | ------------------------|---------------------------------------------|---------------------------|
-| Notification            | `tell` method of `ActorRef`{language:scala} | message queue service     |
+| Notification            | `tell` method of `ActorRef`{language:scala} | Message queue service     |
 |                         |                                             | like RabbitMQ             |
 | ------------------------|---------------------------------------------|---------------------------|
-| Request/async response  | request and response with                   | request and response      |
+| Request/async response  | Request and response with                   | Request and response      |
 |                         | `tell` method of `ActorRef`{language:scala} | through message queue     |
 | ------------------------|---------------------------------------------|---------------------------|
-| Publish/subscribe       | message broker actor with                   | message broker service    |
+| Publish/subscribe       | Message broker actor with                   | Message broker service    |
 |                         | `BroadcastRoutingLogic`{language:scala}     | like Kafka                |
 | ------------------------|---------------------------------------------|---------------------------|
-| Publish/async responses | message broker actor with                   | request through message   |
-|                         | `BroadcastRoutingLogic`{language:scala}     | broker, responses through |
+|                         | Message broker actor with                   | Request through message   |
+| Publish/async responses | `BroadcastRoutingLogic`{language:scala}     | broker, responses through |
 |                         | for request, responses with                 | message queue             |
 |                         | `tell` method of `ActorRef`{language:scala} |                           |
 | ------------------------|---------------------------------------------|---------------------------|
-{  }
+{ width:100%  }
 ~ End TableFigure
 ~ End Center
 
@@ -156,19 +156,19 @@ Actors and microservices are both concurrently executed components within their 
 Table [#tab-fundamental-concurrency-issues] gives an overview how actors and microservices are meeting the fundamental issues of concurrent programming we've given in Section [#sec-foundational-issues].
 
 ~ Begin TableFigure { #tab-fundamental-concurrency-issues; caption: "Overview of actors and microservices meeting fundamental issues of concurrent execution"; width:100%}
-|---------------------|-------------------------------|---------------------------------|
-| Issue               | Actors                        | Microservices                   |
-+---------------------+-------------------------------+---------------------------------+
-| __Expression__      | actor creation, concurrent    | service program execution,      |
-|                     | execution by runtime          | concurrent scheduling by OS     |
-| --------------------|-------------------------------|---------------------------------|
-| __Communication__   | message passing primitives    | message passing IPC mechanisms, |
-|                     | (e.g.\ `tell`, `ask`)         | no shared memory                |
-| --------------------|-------------------------------|---------------------------------|
-|                     | implicit among actors due to  | implicit among services due to  |
-| __Synchronization__ | message passing, single-      | message passing, potentially    |
-|                     | threaded semantics internally | required internally             |
-| --------------------|-------------------------------|---------------------------------|
+|-----------------|-------------------------------|---------------------------------|
+| Issue           | Actors                        | Microservices                   |
++-----------------+-------------------------------+---------------------------------+
+| Expression      | Actor creation, concurrent    | Service program execution,      |
+|                 | execution by runtime          | concurrent scheduling by OS     |
+| ----------------|-------------------------------|---------------------------------|
+| Communication   | Message passing primitives    | Message passing IPC mechanisms, |
+|                 | (e.g.\ `tell`, `ask`)         | no shared memory                |
+| ----------------|-------------------------------|---------------------------------|
+|                 | Implicit among actors due to  | Implicit among services due to  |
+| Synchronization | message passing, single-      | message passing, potentially    |
+|                 | threaded semantics internally | required internally             |
+| ----------------|-------------------------------|---------------------------------|
 { width:100%  }                               
 ~ End TableFigure
 
@@ -252,23 +252,23 @@ The distributed object approach has many similarities to concepts we've already 
 
 Table [#tab-dispatch-semantics-capabilities] gives an overview of the available dispatch semantics capabilities that we will evaluate in more detail for every concept. The semantics are based on Akka's `UntypedActor`{language:java} for actors and `TypedActor`{language:java} (it offers type safety for message passing) for active objects, Java RMI [@OracleJavaRMI] for distributed objects and Java/Spring-based mechanisms for microservices.
 
-~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (Actors/Active Objects), Java RMI (Distributed Objects) and Spring (Microservices)"; width:100%}
-|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
-|                      | Past Type                           | Now Type                            | Future Type                          |
-+----------------------+-------------------------------------+-------------------------------------+--------------------------------------+
-| __Actors__           | `tell` method                       | not available                       | `ask` method                         |
-| ---------------------|-------------------------------------|-------------------------------------|--------------------------------------|
-| __Active Objects__   | method with no                      | method with any                     | method with                          |
-|                      | return type (`void`{language:java}) | `Object`{language:java} return type | `Future`{language:java}  return type |
-|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
-|                      |                                     | every method,                       | several proposals,                   |
-| __Distributed Obj__. | not available                       | regardless of                       | e.g.\ [@Fal99], but no            |
-|                      |                                     | return type                         | official support                     |
-| ---------------------|-------------------------------------|-------------------------------------|--------------------------------------|
-|                      | asynchronous                        | synchronous                         | IPC with semi-sync.                  |
-| __Microservices__    | IPC, e.g.\ AMQP                     | IPC, e.g.\ REST                     | API, e.g.\ Apache                    |
-|                      |                                     |                                     | HTTP Components                      |
-|----------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (actors/active objects), Java RMI (distributed objects) and Spring (microservices)"; page-align:here; width:100%}
+|------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+| Construct        | Past Type                           | Now Type                            | Future Type                          |
++------------------+-------------------------------------+-------------------------------------+--------------------------------------+
+| Actor            | `tell` method                       | Not available                       | `ask` method                         |
+| -----------------|-------------------------------------|-------------------------------------|--------------------------------------|
+| Active Object    | Method with no                      | Method with any                     | Method with                          |
+|                  | return type (`void`{language:java}) | `Object`{language:java} return type | `Future`{language:java}  return type |
+|------------------|-------------------------------------|-------------------------------------|--------------------------------------|
+|                  |                                     | Every method,                       | Several proposals,                   |
+| Distributed Obj. | Not available                       | regardless of                       | e.g.\ [@Fal99], but no               |
+|                  |                                     | return type                         | official support                     |
+| -----------------|-------------------------------------|-------------------------------------|--------------------------------------|
+|                  | Asynchronous                        | Synchronous                         | IPC with semi-sync.                  |
+| Microservice     | IPC, e.g.\ AMQP                     | IPC, e.g.\ REST                     | API, e.g.\ Apache                    |
+|                  |                                     |                                     | HTTP Components                      |
+|------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 { width:100%  }
 ~ End TableFigure
 
@@ -298,7 +298,7 @@ The actor model deals with distribution transparently. Just like distributed obj
 
 The truly fundamental difference between addressing an actor and a distributed object is within the dispatch semantics. Actors rely on asynchronous message passing as defined by the basic model primitives. Asynchronous messages are decoupled in time and do not introduce the expectation of an immediate response (blocking call). In general, method calls with a (non-future) return value are synchronously dispatched and create the expectation of an immediate response. Message passing (past type) is therefore more loosely coupled than the request/reply calls (now type). In general, we expect distributed objects to facilitate many now-typed methods, as this result type variant is natural within OOP. 
 
-Even worse, distributed objects with Java RMI only facilitate blocking method invocations [@OracleJavaRMI]. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [@@Fal99]. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
+Even worse, distributed objects with Java RMI only facilitate blocking method invocations [@OracleJavaRMI]. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [@Fal99]. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
 
 <!--
 Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
@@ -471,28 +471,28 @@ Their ability to *scale* is arguably one of the most relevant reasons given in t
 
 Table [#tab-scalability-compatibility-matrix] summarizes scalability variants provided by Echo. The subsequent sections will discuss the aspects in detail. 
 
-~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Scalability compatibility matrix"; width:100%}
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Scalability compatibility matrix"; page-align:here; width:100%}
 |-------------------------|-----------------------------------|-------------------------------|
 | Scalability Form        | Echo/Akka                         | Echo/MSA                      |
 +-------------------------+-----------------------------------+-------------------------------+
-|                         | very efficient resource           | hindered if internal          |
+|                         | Very efficient resource           | Hindered if internal          |
 | Vertical scalability    | utilization if no blocking        | concurrency of service        |
 |                         | inside actor                      | requires synchronization      |
 | ------------------------|-----------------------------------|-------------------------------|
-| Horizontal scalability  | Akka cluster                      | requires network IPC          |
+| Horizontal scalability  | Akka cluster                      | Requires network IPC          |
 | ------------------------|-----------------------------------|-------------------------------|
-| Load scalability        | server-side load balancing        | client-side load balancing    |
+| Load scalability        | Server-side load balancing        | Client-side load balancing    |
 |                         | with routing logic                | with Ribbon                   |
 | ------------------------|-----------------------------------|-------------------------------|
-| Structural scalability  | via location transparency         | requires discovery mechanism  |
+| Structural scalability  | Location transparency             | Requires discovery mechanism  |
 |                         | inherent in actor addresses       | for location transparency     |
 | ------------------------|-----------------------------------|-------------------------------|
-| Dynamic reconfiguration | inherent through basic            | requires service registry for |
+| Dynamic reconfiguration | Inherent through basic            | Requires service registry for |
 |                         | model primitive                   | integration                   |
 | ------------------------|-----------------------------------|-------------------------------|
-| Mobility                | weak mobility (no relocation of persistent state of Stores)      ||
+| Mobility                | Weak mobility (no relocation of persistent state of Stores)      ||
 | ------------------------|-----------------------------------|-------------------------------|
-|                         | requires resource control         | requires appropriate cloud    |
+|                         | Requires resource control         | Requires appropriate cloud    |
 | Elasticity              | of cluster (see [ref]{.red}), not | management framework,         |
 |                         | supported by Echo                 | not supported by Echo         |
 | ------------------------|-----------------------------------|-------------------------------|

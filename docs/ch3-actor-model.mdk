@@ -138,11 +138,11 @@ Table [#tab-actor-ao-comparison] gives an overview of the major differences rele
 |-------------------------|-------------------|----------------------------------|
 | Characteristic          | Actors            | Active Objects                   |
 +-------------------------+-------------------+----------------------------------+
-| Basic construct         | arbitrary "actor" | object                           |
+| Basic construct         | Arbitrary "actor" | Object                           |
 | ------------------------|-------------------|----------------------------------|
-| Message typization      | dynamic           | static                           |
+| Message typization      | Dynamic           | Static                           |
 | ------------------------|-------------------|----------------------------------|
-| Message synchronization | asynchronous      | synchronous/asynchronous/future, |
+| Message synchronization | Asynchronous      | Synchronous/asynchronous/future, |
 |                         |                   | depends on method signature      |
 | ------------------------|-------------------|----------------------------------|
 ~ End TableFigure
