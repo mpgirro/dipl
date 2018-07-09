@@ -17,9 +17,9 @@ Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and
 
 Actor and microservice semantics relies on the strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
 
-Encapsulation is known from object-oriented programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an object's state. Clients are required to issue requests for the services an object offers in order to get access to or modify the object's state [@Sny93]. These "services" -- not to be confused with the concept of a *microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines*, and considers to be a necessity for encapsulation [@Mey97]. 
+Encapsulation is a concept we know from object-oriented programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an object's state. Clients are required to issue requests for the services an object offers in order to get access to or modify the object's state [@Sny93]. These "services" -- not to be confused with the concept of a *microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines* and he considers these services to be a necessity for encapsulation [@Mey97]. 
 
-Both actors and microservices offer well-defined interfaces in their own way. For an actor it is the sum of messages it understands through its behavior. For Microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes, or the messages it consumes from a message broker. Only through the interfaces can the state be accessed and modified.
+Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of understood messages through the actor's behavior. For microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes or the messages the microservice consumes from a message broker. Only through the interfaces can we access or modify the service's state.
 
 
 ### Shared and Mutable State
@@ -27,17 +27,25 @@ Both actors and microservices offer well-defined interfaces in their own way. Fo
 
 One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages, i.e.\ only one message is processed at a time. This eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
 
-On the other hand, such reasoning cannot be applied for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm used to implement the service, state is necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure any kind of single-threaded semantics. In general, we can therefore assume that synchronization is required to the service's internal state.
+On the other hand, we cannot apply the same reasoning for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm we use to implement the service, state is not necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure single-threaded semantics. In general, we can therefore assume that synchronization is required to the service's internal state.
 
-However, the microservice paradigm dictates that shared memory *between* services has to be avoided, as are all kinds of shared resources in general. Since every service runs within a dedicated system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent reference sharing to joined mutable data. The channels provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
+However, the microservice paradigm dictates that we must avoid shared memory *between* services, as well as all kinds of shared resources in general. Since every service runs within a dedicated system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent reference sharing to joined mutable data. The channels provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
-Actors are generally faced with more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while not necessarily apparent to the programmer. Especially the imperative style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
+Actors generally face more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while not necessarily apparent to the programmer. Especially the imperative style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
+
+~ todo
+Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufigkeit die jeweiligen "Notions" von shared/mutable state haben. Um Relevanz für dieses Unterkapitel herzustellen. 
+~
 
 
 ### Persistence
 
 
 The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. We refer to this property as *persistence*. [kann ich da was zitieren?]{.mind}
+
+~todo
+Hier einen Satz Begründung das Persistence/IO potentiell langsam sein kann, und daher eine Auswirkung auf die Concurrency hat.
+~
 
 Persisting information can be implemented in many different strategies. Database systems are one well established approach. However, each component is granted access to all other component's persistent state, if a database is shared among them. Database sharing does not only provide a simple way to skip any isolation mechanisms and bypass the components interface, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
 
@@ -56,6 +64,10 @@ This restriction opens up another opportunity however. Monolithic applications t
 
 ### Cohesion, Coupling and Independence
 
+~ todo
+Warum ist das hier wichtig bzgl "Concurrent Programming"? Begründung im ersten Absatz!
+~
+
 
 Bonér [@Bon16] defines truly isolated components combined through the asynchronous message passing communication style as *decoupled* in two dimensions. On the one hand, the components are decoupled in *time*, which supports concurrent execution. On the other hand, the components are decoupled in *space*, and therefore we can execute them remotely and even move them between locations.
 
@@ -73,7 +85,7 @@ Echo's commonly used `core` library, wrapping most domain specific logic, is gen
 
 ~
 
-This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. We already discussed message routing and will evaluate more aspects in subsequent sections, for example the location transparency in addresses and a guarantee of fairness.  
+This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. 
 
 
 ## Communication and Message Routing
@@ -141,7 +153,7 @@ The following table summarizes the communication capabilities of Echo's implemen
 ~ End Center
 
 
-## Notions of Concurrency
+## Conception of Concurrent Execution
 
 
 ~ todo
@@ -382,7 +394,7 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren können, was wiederum ausdrückt wie viel Nebenläufigkeit innerhalb eines Hosts ausgedrückt werden kann. JVM Actors: im Bereich von maximal einigen 10k (im Gegensatz zu Millionen in Erlang -- da sehr viel schlankere Konstrukte); Microservices: theoretisch so viele wie das OS an Prozessen verträgt (habe ich hier Literatur bezüglich begrenzender Faktoren?), praktisch aber nicht all zu viele im Fall von Echo, da deren Stack doch relativ unschlanke Service forciert. 
 ~
 
-
+<!--
 ## Governance, Deployment and Autonomy
 
 ~ todo
@@ -462,6 +474,7 @@ Autonomy:
 ~
 
 ~ end green
+-->
 
 
 ## Scalability and Modularity
@@ -549,6 +562,18 @@ Echo facilitates Java and the Spring framework for all task units, but each serv
 
 ### Eventual Consistency and Availability
 
+~ lit
+
+Für Safety & Liveness Argumente:
+
+* [@Bai13] "Eventual consistency today- limitations, extensions, and beyond"
+
+Aus der Wikipedia:
+
+* "eventual consistency is purely a liveness guarantee (reads eventually return the same value) and does not make safety guarantees: an eventually consistent system can return any value before it converges"
+* "Whereas eventual consistency is only a liveness guarantee (updates will be observed eventually), strong eventual consistency (SEC) adds the safety guarantee that any two nodes that have received the same (unordered) set of updates will be in the same state"
+~
+
 
 The literature frequently points out that, due to their asynchrony and distribution, both actors and microservices are bound to a weak notion of data consistency generally referred to as *eventual consistency* [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. Eventual consistency describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Consequently, until this point in time, the data state across tasks is in flux and can therefore produce varying results. 
 
@@ -618,6 +643,7 @@ Availability:
 ~ end green
 
 
+<!--
 ## Separation of Concerns and Single Responsibility
 
 ~ todo
@@ -696,6 +722,7 @@ Thus, in general we've found Actors to provide an easier abstraction to facilita
 Microservices on the other hand offer less incentive to encapsulate each distinct responsibility inside a dedicated task unit. Each conceived service is by design a dedicated program, thus entails all resulting challenges ranging from the obligation of maintaining an its own separate codebase up to the additional deployment considerations.
 
 ~ end green
+-->
 
 
 ## Testability
@@ -716,8 +743,13 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 
 From a theoretical point of view, any safety property can be violated by a finite execution, thus they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks.
 
+## Formal Methods
 
-## Actor Model and Process Calculi
+~ todo
+Ein paar einführende Worte
+~
+
+### Actor Model and Process Calculi
 
 
 Among the theories of formulating concurrent computation we find a family called *process calculi* or *process algebras*. They define formal models composed of so-called *processes* which are communicating within the laws and conditions laid out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interactions with other discrete event systems. The other systems then have to react to the interactions. Therefore, Baeten terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. As a result, one approach towards concurrency theory is the path of a process algebras.
@@ -787,7 +819,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 -->
 
 
-## Design by Contract {#sec-design-by-contract}
+### Design by Contract {#sec-design-by-contract}
 
 
 So far, we've covered concerns both actors and microservices provide profound practical support for. Yet from a theoretical point of view, there is the potential for more sophisticated solutions. From here on, we briefly endeavor into these subjects, for which actors and microservices offer rather basic capabilities at best. Two concerns that we will merit attention here are static contracts between task units in general, and behavioral types in particular.
@@ -863,14 +895,14 @@ An alternative approach towards verifying composition is to migrate from the sin
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.*\ [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.*\ [@Hut16] and Ancona *et al.*\ [@Anc16].
 
-## Metrics and Experiments
+## Benchmark Evaluation
 
 ~ todo
 Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
 
-### Quality Metrics
+### Software Metrics
 
 ~ todo
 LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
@@ -879,8 +911,7 @@ LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte
 Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
 
 
-
-#### Byte Code Size
+...
 
 ~ todo
 Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
@@ -911,22 +942,36 @@ Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normale
 {  }
 ~
 
-#### Lines of Code
-
-
-
-#### Startup Time
-
 ~ todo
-Tabelle: Startup time des Akka monolithen vs Startup time eines jeden Microservices
+Hinweis das alle Executables die selbe `core` library verwenden, diese daher auch in jedem fat JAR enthalten ist.
 ~
 
-### Experimental System Evaluation
+### Profiling
+
+~ lit
+* Actor Utilization in Akka:
+    * [@Moa17] "Supporting Resource Control for Actor Systems in Akka"
+    * [@Ros16a] "Profiling actor utilization and communication in Akka"
+    * [@Ros16b] "AkkaProf- A Profiler for Akka Actors in Parallel and Distributed Applications"
+~
+
+
+### Experiment Setup
+
+~ lit
+* traditionally IR uses *test collections* for evaluation. 
+* To our knowledge there is not Podcast related test collection available as of yet (since podcast is a rather unexplored domain in IR)
+* We use a custom selection of feeds for the indexing subsystem (initial + update)
+* We require a list of queries to test the retrieval subsystem
+* IR has standardizes lists, but those are usually annotated for better effectiveness evaluation and limited to a specialized domain.
+* normally query statistics form large Engines are not used, but we will
+~
+
+
+### Experiment 1: Feed Processing
 
 Experimental Setup: [MacBook Pro, XY GHz, XY cores, XY RAM, etc, running macOS XY]{.red}
 
+### Experiment 2: Search Result Retrieval
 
-#### Experiment 1: Feed Processing
-
-
-#### Experiment 2: Search Result Retrieval
+...
