@@ -572,6 +572,7 @@ Aus der Wikipedia:
 
 * "eventual consistency is purely a liveness guarantee (reads eventually return the same value) and does not make safety guarantees: an eventually consistent system can return any value before it converges"
 * "Whereas eventual consistency is only a liveness guarantee (updates will be observed eventually), strong eventual consistency (SEC) adds the safety guarantee that any two nodes that have received the same (unordered) set of updates will be in the same state"
+* "Clusters which provide "lazy" redundancy by updating copies in an asynchronous fashion are called 'eventually consistent'"
 ~
 
 
@@ -967,11 +968,33 @@ Hinweis das alle Executables die selbe `core` library verwenden, diese daher auc
 * normally query statistics form large Engines are not used, but we will
 ~
 
+For a performance evaluation, we require a workload simulation that we can use to test both the actor- and microservice implementations against. A recent work [@Gri17] points out that there is not general simulation approach for MSAs as of yet. Therefore, we have to design a custom reference scenario. Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately.
 
-### Experiment 1: Feed Processing
+---
 
-Experimental Setup: [MacBook Pro, XY GHz, XY cores, XY RAM, etc, running macOS XY]{.red}
+Setup:
 
-### Experiment 2: Search Result Retrieval
+[Machine: XY GHz, XY cores, XY RAM, etc, running macOS XY]{.red}
+
+* __Processor__: 3,1 GHz Intel Core i5
+* __Memory__: 16 GB 2133 MHz LPDDR3
+* Processor Name:	Intel Core i5
+* Processor Speed:	3,1 GHz
+* Number of Processors:	1
+* Total Number of Cores:	2
+* L2 Cache (per Core):	256 KB
+* L3 Cache:	4 MB
+* Memory:	16 GB
+* Storage: 
+    * Type: SSD
+    * Connection: PCI-Express
+    * File system: APFS
+
+
+### Simulation Experiment 1: Indexing Subsystem
+
+...
+
+### Simulation Experiment 2: Retrieval Subsystem
 
 ...
