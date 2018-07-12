@@ -744,7 +744,7 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 
 From a theoretical point of view, any safety property can be violated by a finite execution, thus they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks.
 
-## Formal Methods
+## Formal Specifications
 
 ~ todo
 Ein paar einführende Worte
@@ -956,8 +956,27 @@ Hinweis das alle Executables die selbe `core` library verwenden, diese daher auc
     * [@Ros16b] "AkkaProf- A Profiler for Akka Actors in Parallel and Distributed Applications"
 ~
 
+### Evaluating simulation results
 
-### Experiment Setup
+
+
+
+
+### Document and Query Sets
+
+We've already mentioned that information retrieval uses the precision and recall metrics to evaluate IR techniques. IR uses standardized test dataset collections in order to make evaluation results compareable across scientific works. 
+
+However, precision and recall assess the effectiveness of the retrieval. We are interrested in the efficiency of the Echo system implementations, so that we can draw conclusions about the underlying concurrency model. Therefore, we require a workload similation to test both implementations against. A recent work [@Gri17] points out that there is no general simulation approach for MSAs as of yet. We have to design a custom experiment. Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately.
+
+Nevertheless, we are faced with the problem of a dataset for running the similation experiments. The indexing subsystem requires a collection of podcast RSS/Atom feeds. The retrieval subsystem requires filled Lucene datastructures and a collection of test queries. Domain-specific IR has specialised domain-specific datasets. To the authors knowledge, the only available dataset for podcast IR is given by [TODO]. This dataset was designed for evaluating extracted audio transcript. Therefore, the dataset contains URLs to audio files, but no RSS feeds. 
+
+
+### Test environment
+
+
+
+
+### Experiment Setup / Evaluation infrastructure
 
 ~ lit
 * traditionally IR uses *test collections* for evaluation. 
@@ -968,7 +987,7 @@ Hinweis das alle Executables die selbe `core` library verwenden, diese daher auc
 * normally query statistics form large Engines are not used, but we will
 ~
 
-For a performance evaluation, we require a workload simulation that we can use to test both the actor- and microservice implementations against. A recent work [@Gri17] points out that there is not general simulation approach for MSAs as of yet. Therefore, we have to design a custom reference scenario. Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately.
+For a performance evaluation, we require a workload simulation that we can use to test both the actor- and microservice implementations against. A recent work [@Gri17] points out that there is no general simulation approach for MSAs as of yet. Therefore, we have to design a custom reference scenario. Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately.
 
 ---
 
