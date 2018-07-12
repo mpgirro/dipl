@@ -1,4 +1,4 @@
-package echo.actor.directory.repository
+package echo.actor.catalog.repository
 
 import echo.core.domain.entity.{EpisodeEntity, PodcastEntity}
 import org.springframework.data.jpa.repository.{JpaRepository, Query}

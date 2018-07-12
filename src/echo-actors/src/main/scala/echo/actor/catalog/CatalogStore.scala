@@ -1,4 +1,4 @@
-package echo.actor.directory
+package echo.actor.catalog
 
 import java.sql.{Connection, DriverManager}
 
@@ -15,14 +15,14 @@ import liquibase.{Contexts, LabelExpression, Liquibase}
   * @author Maximilian Irro
   */
 
-object DirectoryStore {
+object CatalogStore {
     def name(storeIndex: Int): String = "store-" + storeIndex
     def props(databaseUrl: String): Props = {
-        Props(new DirectoryStore(databaseUrl)).withDispatcher("echo.directory.dispatcher")
+        Props(new CatalogStore(databaseUrl)).withDispatcher("echo.directory.dispatcher")
     }
 }
 
-class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
+class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -89,7 +89,7 @@ class DirectoryStore (databaseUrl: String) extends Actor with ActorLogging {
 
     private def createDirectoryStoreWorkerActor(databaseUrl: String): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(DirectoryStoreHandler.props(workerIndex, databaseUrl), DirectoryStoreHandler.name(workerIndex))
+        val directoryStore = context.actorOf(CatalogStoreHandler.props(workerIndex, databaseUrl), CatalogStoreHandler.name(workerIndex))
         currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died

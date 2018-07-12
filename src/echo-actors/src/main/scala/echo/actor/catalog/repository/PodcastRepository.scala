@@ -1,4 +1,4 @@
-package echo.actor.directory.repository
+package echo.actor.catalog.repository
 
 import echo.core.domain.entity.{PodcastEntity}
 import echo.core.domain.feed.FeedStatus

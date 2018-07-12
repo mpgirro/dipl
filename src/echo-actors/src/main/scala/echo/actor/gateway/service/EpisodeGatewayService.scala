@@ -10,7 +10,7 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
-import echo.actor.directory.DirectoryProtocol._
+import echo.actor.catalog.CatalogProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._

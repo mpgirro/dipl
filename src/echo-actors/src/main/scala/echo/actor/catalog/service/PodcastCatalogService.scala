@@ -1,15 +1,12 @@
-package echo.actor.directory.service
+package echo.actor.catalog.service
 
 import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
-import echo.actor.directory.repository.{PodcastRepository, RepositoryFactoryBuilder}
+import echo.actor.catalog.repository.{PodcastRepository, RepositoryFactoryBuilder}
 import echo.core.domain.dto.PodcastDTO
-import echo.core.domain.feed.FeedStatus
 import echo.core.mapper.{PodcastMapper, TeaserMapper}
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.{PageRequest, Sort}
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.stereotype.Repository
@@ -22,8 +19,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class PodcastDirectoryService (log: LoggingAdapter,
-                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class PodcastCatalogService(log: LoggingAdapter,
+                            rfb: RepositoryFactoryBuilder) extends CatalogService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var podcastRepository: PodcastRepository = _

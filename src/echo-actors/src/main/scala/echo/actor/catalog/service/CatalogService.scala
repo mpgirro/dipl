@@ -1,11 +1,11 @@
-package echo.actor.directory.service
+package echo.actor.catalog.service
 
 import javax.persistence.EntityManager
 
 /**
   * @author Maximilian Irro
   */
-trait DirectoryService {
+trait CatalogService {
 
     /*
     protected val rfb: RepositoryFactoryBuilder

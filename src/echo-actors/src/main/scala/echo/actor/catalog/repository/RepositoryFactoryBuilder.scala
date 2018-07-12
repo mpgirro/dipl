@@ -1,4 +1,4 @@
-package echo.actor.directory.repository
+package echo.actor.catalog.repository
 
 import java.util.Properties
 import javax.persistence.{EntityManager, EntityManagerFactory}

@@ -1,9 +1,9 @@
-package echo.actor.directory.service
+package echo.actor.catalog.service
 
 import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
-import echo.actor.directory.repository.{ChapterRepository, RepositoryFactoryBuilder}
+import echo.actor.catalog.repository.{ChapterRepository, RepositoryFactoryBuilder}
 import echo.core.domain.dto.{ChapterDTO, ModifiableChapterDTO}
 import echo.core.mapper.ChapterMapper
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
@@ -14,8 +14,8 @@ import scala.collection.JavaConverters._
 /**
   * @author Maximilian Irro
   */
-class ChapterDirectoryService (log: LoggingAdapter,
-                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class ChapterCatalogService(log: LoggingAdapter,
+                            rfb: RepositoryFactoryBuilder) extends CatalogService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var chapterRepository: ChapterRepository = _

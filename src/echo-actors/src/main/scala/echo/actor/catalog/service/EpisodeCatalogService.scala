@@ -1,9 +1,10 @@
-package echo.actor.directory.service
+package echo.actor.catalog.service
 
 import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
-import echo.actor.directory.repository.{EpisodeRepository, RepositoryFactoryBuilder}
+import echo.actor.catalog.repository.{EpisodeRepository, RepositoryFactoryBuilder}
+import echo.actor.catalog.repository.EpisodeRepository
 import echo.core.domain.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.mapper.{EpisodeMapper, PodcastMapper, TeaserMapper}
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
@@ -17,8 +18,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class EpisodeDirectoryService (log: LoggingAdapter,
-                               rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class EpisodeCatalogService(log: LoggingAdapter,
+                            rfb: RepositoryFactoryBuilder) extends CatalogService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var episodeRepository: EpisodeRepository = _

@@ -1,15 +1,15 @@
-package echo.actor.directory
+package echo.actor.catalog
 
 import akka.actor.ActorSystem
 import akka.dispatch.{PriorityGenerator, UnboundedPriorityMailbox}
 import com.typesafe.config.Config
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol._
+import CatalogProtocol._
 
 /**
   * @author Maximilian Irro
   */
-class DirectoryPriorityActorMailbox(settings: ActorSystem.Settings, config: Config) extends UnboundedPriorityMailbox(
+class CatalogPriorityActorMailbox(settings: ActorSystem.Settings, config: Config) extends UnboundedPriorityMailbox(
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
         case ActorRefCrawlerActor(_)    => 0

@@ -4,9 +4,9 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Ter
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.catalog.CatalogBroker
 import echo.actor.cli.CLI
 import echo.actor.crawler.Crawler
-import echo.actor.directory.DirectoryBroker
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
@@ -59,7 +59,7 @@ class NodeMaster extends Actor with ActorLogging {
         crawler = context.actorOf(Crawler.props(), Crawler.name(1))
         context watch crawler
 
-        directory = context.actorOf(DirectoryBroker.props(), DirectoryBroker.name)
+        directory = context.actorOf(CatalogBroker.props(), CatalogBroker.name)
         context watch directory
 
         gateway = context.watch(context.actorOf(Gateway.props(), Gateway.name(1)))

@@ -13,7 +13,7 @@ import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import com.mortennobel.imagescaling.ResampleOp
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol._
+import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus

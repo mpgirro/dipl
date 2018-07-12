@@ -1,4 +1,4 @@
-package echo.actor.directory
+package echo.actor.catalog
 
 import java.time.LocalDateTime
 
@@ -8,7 +8,7 @@ import echo.core.domain.feed.FeedStatus
 /**
   * @author Maximilian Irro
   */
-object DirectoryProtocol {
+object CatalogProtocol {
 
     trait DirectoryCommand
 

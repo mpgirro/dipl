@@ -1,13 +1,12 @@
-package echo.actor.directory.service
+package echo.actor.catalog.service
 
 import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
-import echo.actor.directory.repository.{FeedRepository, RepositoryFactoryBuilder}
+import echo.actor.catalog.repository.{FeedRepository, RepositoryFactoryBuilder}
 import echo.core.domain.dto.FeedDTO
 import echo.core.mapper.FeedMapper
-import org.springframework.data.domain.{PageRequest, Sort}
-import org.springframework.data.domain.Sort.Direction
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -19,8 +18,8 @@ import scala.collection.JavaConverters._
   */
 @Repository
 @Transactional
-class FeedDirectoryService (log: LoggingAdapter,
-                            rfb: RepositoryFactoryBuilder) extends DirectoryService {
+class FeedCatalogService(log: LoggingAdapter,
+                         rfb: RepositoryFactoryBuilder) extends CatalogService {
 
     private var repositoryFactory: JpaRepositoryFactory = _
     private var feedRepository: FeedRepository = _

@@ -1,4 +1,4 @@
-package echo.actor.directory
+package echo.actor.catalog
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.cluster.pubsub.DistributedPubSub
@@ -6,18 +6,18 @@ import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeA
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.ActorRefCrawlerActor
-import echo.actor.directory.DirectoryProtocol.{DirectoryCommand, DirectoryEvent, DirectoryQuery}
+import CatalogProtocol.{DirectoryCommand, DirectoryEvent, DirectoryQuery}
 
 /**
   * @author Maximilian Irro
   */
 
-object DirectoryBroker {
+object CatalogBroker {
     final val name = "directory"
-    def props(): Props = Props(new DirectoryBroker())
+    def props(): Props = Props(new CatalogBroker())
 }
 
-class DirectoryBroker extends Actor with ActorLogging {
+class CatalogBroker extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -89,8 +89,8 @@ class DirectoryBroker extends Actor with ActorLogging {
     }
 
     private def createDirectoryStore(storeIndex: Int, databaseUrl: String): ActorRef = {
-        val directoryStore = context.actorOf(DirectoryStore.props(databaseUrl),
-            name = DirectoryStore.name(storeIndex))
+        val directoryStore = context.actorOf(CatalogStore.props(databaseUrl),
+            name = CatalogStore.name(storeIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )

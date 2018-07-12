@@ -8,7 +8,7 @@ import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import akka.stream._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol._
+import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException

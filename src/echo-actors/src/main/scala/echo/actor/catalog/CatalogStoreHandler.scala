@@ -1,4 +1,4 @@
-package echo.actor.directory
+package echo.actor.catalog
 
 import java.time.LocalDateTime
 import javax.persistence.{EntityManager, EntityManagerFactory}
@@ -8,9 +8,11 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.directory.DirectoryProtocol._
-import echo.actor.directory.repository.RepositoryFactoryBuilder
-import echo.actor.directory.service._
+import echo.actor.catalog.repository.RepositoryFactoryBuilder
+import echo.actor.catalog.service._
+import echo.actor.catalog.CatalogProtocol._
+import echo.actor.catalog.repository.RepositoryFactoryBuilder
+import echo.actor.catalog.service._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent}
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
@@ -26,15 +28,15 @@ import scala.concurrent.blocking
   * @author Maximilian Irro
   */
 
-object DirectoryStoreHandler {
+object CatalogStoreHandler {
     def name(workerIndex: Int): String = "handler-" + workerIndex
     def props(workerIndex: Int, databaseUrl: String): Props = {
-        Props(new DirectoryStoreHandler(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
+        Props(new CatalogStoreHandler(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
     }
 }
 
-class DirectoryStoreHandler(workerIndex: Int,
-                            databaseUrl: String) extends Actor with ActorLogging {
+class CatalogStoreHandler(workerIndex: Int,
+                          databaseUrl: String) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -52,10 +54,10 @@ class DirectoryStoreHandler(workerIndex: Int,
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
 
-    private val podcastService = new PodcastDirectoryService(log, repositoryFactoryBuilder)
-    private val episodeService = new EpisodeDirectoryService(log, repositoryFactoryBuilder)
-    private val feedService = new FeedDirectoryService(log, repositoryFactoryBuilder)
-    private val chapterService = new ChapterDirectoryService(log, repositoryFactoryBuilder)
+    private val podcastService = new PodcastCatalogService(log, repositoryFactoryBuilder)
+    private val episodeService = new EpisodeCatalogService(log, repositoryFactoryBuilder)
+    private val feedService = new FeedCatalogService(log, repositoryFactoryBuilder)
+    private val chapterService = new ChapterCatalogService(log, repositoryFactoryBuilder)
 
     private val podcastMapper = PodcastMapper.INSTANCE
     private val episodeMapper = EpisodeMapper.INSTANCE
@@ -653,7 +655,7 @@ class DirectoryStoreHandler(workerIndex: Int,
       * @param task the function to be executed inside a transaction
       * @param services all services used within the callable function, which therefore require a refresh before doing the work
       */
-    private def doInTransaction(task: () => Any, services: List[DirectoryService] ): Any = {
+    private def doInTransaction(task: () => Any, services: List[CatalogService] ): Any = {
         blocking {
             val em: EntityManager = emf.createEntityManager()
             TransactionSynchronizationManager.bindResource(emf, new EntityManagerHolder(em))
