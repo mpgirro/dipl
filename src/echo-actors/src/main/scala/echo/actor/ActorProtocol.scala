@@ -3,6 +3,7 @@ package echo.actor
 import java.time.LocalDateTime
 
 import akka.actor.ActorRef
+import com.google.common.collect.ImmutableList
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 
@@ -12,17 +13,22 @@ import echo.core.domain.feed.FeedStatus
   */
 object ActorProtocol {
 
+    // Job variants for Crawler
     trait FetchJob
     case class NewPodcastFetchJob() extends FetchJob
     case class UpdateEpisodesFetchJob(etag: String, lastMod: String) extends FetchJob
     case class WebsiteFetchJob() extends FetchJob
 
-    case class DownloadWithHeadCheck(exo: String, url: String, job: FetchJob)
-    case class DownloadContent(exo: String, url: String, job: FetchJob, encoding: Option[String])
+    // Msg: Catalog -> Updater
+    case class ProcessFeed(exo: String, url: String, job: FetchJob, rtts: ImmutableList[java.lang.Long])
+
+    // Msg: Updater -> Crawler
+    case class DownloadWithHeadCheck(exo: String, url: String, job: FetchJob, rtts: ImmutableList[java.lang.Long])
+    case class DownloadContent(exo: String, url: String, job: FetchJob, encoding: Option[String], rtts: ImmutableList[java.lang.Long])
 
     // Crawler -> Parser
-    case class ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String)
-    case class ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String)
+    case class ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtts: ImmutableList[java.lang.Long])
+    case class ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, rtts: ImmutableList[java.lang.Long])
     case class ParseWebsiteData(exo: String, html: String)
     case class ParseFyydEpisodes(podcastExo: String, episodesData: String)
 
@@ -35,23 +41,24 @@ object ActorProtocol {
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
     trait ActorRefInfo
 
-    case class ActorRefDirectoryStoreActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefCatalogStoreActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefCrawlerActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefParserActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefFeedStoreActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefIndexStoreActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefSearcherActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefGatewayActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefUpdaterActor(ref: ActorRef) extends ActorRefInfo
 
     // These are maintenance methods, I use during development
-    case class DebugPrintAllPodcasts()    // User/CLI -> DirectoryStore
-    case class DebugPrintAllEpisodes()    // User/CLI -> DirectoryStore
+    case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore
+    case class DebugPrintAllEpisodes()    // User/CLI -> CatalogStore
     case class DebugPrintAllFeeds()
     case class DebugPrintCountAllPodcasts()
     case class DebugPrintCountAllEpisodes()
     case class DebugPrintCountAllFeeds()
-    case class LoadTestFeeds()            // CLI -> DirectoryStore
-    case class LoadMassiveFeeds()         // CLI -> DirectoryStore
+    case class LoadTestFeeds()            // CLI -> CatalogStore
+    case class LoadMassiveFeeds()         // CLI -> CatalogStore
 
     // User -> Crawler
     // TODO: automatic: Crawler -> Crawler on a regular basis

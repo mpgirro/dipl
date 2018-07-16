@@ -2,6 +2,7 @@ package echo.actor.catalog
 
 import java.time.LocalDateTime
 
+import com.google.common.collect.ImmutableList
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
 
@@ -10,58 +11,58 @@ import echo.core.domain.feed.FeedStatus
   */
 object CatalogProtocol {
 
-    trait DirectoryCommand
+    trait CatalogCommand
 
-    case class ProposeNewFeed(url: String) extends DirectoryCommand                                   // Web/CLI -> DirectoryStore
-    case class RegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO) extends DirectoryCommand // Questions: Parser -> DirectoryStore
-
-
-    trait DirectoryEvent
-
-    case class AddPodcastAndFeedIfUnknown(podcast: PodcastDTO, feed: FeedDTO) extends DirectoryEvent
-
-    // Crawler -> DirectoryStore
-    case class FeedStatusUpdate(podcastExo: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus) extends DirectoryEvent
-    case class UpdateFeedUrl(oldUrl: String, newUrl: String) extends DirectoryEvent
-    case class UpdateLinkByExo(exo: String, newUrl: String) extends DirectoryEvent
-
-    case class SaveChapter(chapter: ChapterDTO) extends DirectoryEvent
-
-    // Parser -> DirectoryStore
-    case class UpdatePodcast(podcastExo: String, feedUrl: String, podcast: PodcastDTO) extends DirectoryEvent
-    case class UpdateEpisode(podcastExo: String, episode: EpisodeDTO) extends DirectoryEvent
-    case class UpdateEpisodeWithChapters(podcastExo: String, episode: EpisodeDTO, chapter: List[ChapterDTO]) extends DirectoryEvent
+    case class ProposeNewFeed(url: String, rtts: ImmutableList[java.lang.Long]) extends CatalogCommand                 // Web/CLI -> CatalogStore
+    case class RegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, rtts: ImmutableList[java.lang.Long]) extends CatalogCommand // Questions: Parser -> CatalogStore
 
 
-    trait DirectoryQuery
+    trait CatalogEvent
 
-    // Gateway -> DirectoryStore
-    case class GetPodcast(podcastExo: String) extends DirectoryQuery
-    case class GetAllPodcasts(page: Int, size: Int) extends DirectoryQuery
-    case class GetAllPodcastsRegistrationComplete(page: Int, size: Int) extends DirectoryQuery
-    case class GetAllFeeds(page: Int, size: Int) extends DirectoryQuery
-    case class GetEpisode(episodeExo: String) extends DirectoryQuery
-    case class GetEpisodesByPodcast(podcastExo: String) extends DirectoryQuery
-    case class GetFeedsByPodcast(podcastExo: String) extends DirectoryQuery
-    case class GetChaptersByEpisode(episodeExo: String) extends DirectoryQuery
+    case class AddPodcastAndFeedIfUnknown(podcast: PodcastDTO, feed: FeedDTO) extends CatalogEvent
 
-    // Web/CLI -> DirectoryStore
-    case class CheckPodcast(exo: String) extends DirectoryQuery
-    case class CheckFeed(exo: String) extends DirectoryQuery
-    case class CheckAllPodcasts() extends DirectoryQuery
-    case class CheckAllFeeds() extends DirectoryQuery
+    // Crawler -> CatalogStore
+    case class FeedStatusUpdate(podcastExo: String, feedUrl: String, timestamp: LocalDateTime, status: FeedStatus) extends CatalogEvent
+    case class UpdateFeedUrl(oldUrl: String, newUrl: String) extends CatalogEvent
+    case class UpdateLinkByExo(exo: String, newUrl: String) extends CatalogEvent
+
+    case class SaveChapter(chapter: ChapterDTO) extends CatalogEvent
+
+    // Parser -> CatalogStore
+    case class UpdatePodcast(podcastExo: String, feedUrl: String, podcast: PodcastDTO) extends CatalogEvent
+    case class UpdateEpisode(podcastExo: String, episode: EpisodeDTO) extends CatalogEvent
+    case class UpdateEpisodeWithChapters(podcastExo: String, episode: EpisodeDTO, chapter: List[ChapterDTO]) extends CatalogEvent
 
 
-    trait DirectoryQueryResult
+    trait CatalogQuery
 
-    // DirectoryStore -> Gateway
-    case class PodcastResult(podcast: PodcastDTO) extends DirectoryQueryResult
-    case class AllPodcastsResult(results: List[PodcastDTO]) extends DirectoryQueryResult
-    case class AllFeedsResult(results: List[FeedDTO]) extends DirectoryQueryResult
-    case class EpisodeResult(episode: EpisodeDTO) extends DirectoryQueryResult
-    case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends DirectoryQueryResult
-    case class FeedsByPodcastResult(feeds: List[FeedDTO]) extends DirectoryQueryResult
-    case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends DirectoryQueryResult
-    case class NothingFound(exo: String) extends DirectoryQueryResult
+    // Gateway -> CatalogStore
+    case class GetPodcast(podcastExo: String) extends CatalogQuery
+    case class GetAllPodcasts(page: Int, size: Int) extends CatalogQuery
+    case class GetAllPodcastsRegistrationComplete(page: Int, size: Int) extends CatalogQuery
+    case class GetAllFeeds(page: Int, size: Int) extends CatalogQuery
+    case class GetEpisode(episodeExo: String) extends CatalogQuery
+    case class GetEpisodesByPodcast(podcastExo: String) extends CatalogQuery
+    case class GetFeedsByPodcast(podcastExo: String) extends CatalogQuery
+    case class GetChaptersByEpisode(episodeExo: String) extends CatalogQuery
+
+    // Web/CLI -> CatalogStore
+    case class CheckPodcast(exo: String) extends CatalogQuery
+    case class CheckFeed(exo: String) extends CatalogQuery
+    case class CheckAllPodcasts() extends CatalogQuery
+    case class CheckAllFeeds() extends CatalogQuery
+
+
+    trait CatalogQueryResult
+
+    // CatalogStore -> Gateway
+    case class PodcastResult(podcast: PodcastDTO) extends CatalogQueryResult
+    case class AllPodcastsResult(results: List[PodcastDTO]) extends CatalogQueryResult
+    case class AllFeedsResult(results: List[FeedDTO]) extends CatalogQueryResult
+    case class EpisodeResult(episode: EpisodeDTO) extends CatalogQueryResult
+    case class EpisodesByPodcastResult(episodes: List[EpisodeDTO]) extends CatalogQueryResult
+    case class FeedsByPodcastResult(feeds: List[FeedDTO]) extends CatalogQueryResult
+    case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends CatalogQueryResult
+    case class NothingFound(exo: String) extends CatalogQueryResult
 
 }

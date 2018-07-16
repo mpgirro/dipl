@@ -10,11 +10,14 @@ import javax.imageio.ImageIO
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
+import com.google.common.collect.ImmutableList
 import com.mortennobel.imagescaling.ResampleOp
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
@@ -46,7 +49,7 @@ class ParserWorker extends Actor with ActorLogging {
 
     private val fyydAPI: FyydAPI = new FyydAPI()
 
-    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
+    private val catalogEventStream = CONFIG.getString("echo.catalog.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
@@ -62,8 +65,8 @@ class ParserWorker extends Actor with ActorLogging {
             case e: FeedParsingException =>
                 log.error("FeedParsingException occured while processing feed : {}", currFeedUrl)
                 //directoryStore ! FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-                val directoryEvent = FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
-                emitDirectoryEvent(directoryEvent)
+                val catalogEvent = FeedStatusUpdate(currPodcastExo, currFeedUrl, LocalDateTime.now(), FeedStatus.PARSE_ERROR)
+                emitCatalogEvent(catalogEvent)
                 currPodcastExo = ""
                 currFeedUrl = ""
             case e: java.lang.StackOverflowError =>
@@ -84,24 +87,24 @@ class ParserWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
-        case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String) =>
+        case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtts: ImmutableList[java.lang.Long]) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
 
-            parse(podcastExo, feedUrl, feedData, isNewPodcast = true)
+            parse(podcastExo, feedUrl, feedData, isNewPodcast = true, rtts)
 
             currFeedUrl = ""
             currPodcastExo = ""
 
-        case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String) =>
+        case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, rtts: ImmutableList[java.lang.Long]) =>
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastExo)
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
 
-            parse(podcastExo, feedUrl, episodeFeedData, isNewPodcast = false)
+            parse(podcastExo, feedUrl, episodeFeedData, isNewPodcast = false, rtts)
 
             currFeedUrl = ""
             currPodcastExo = ""
@@ -120,24 +123,24 @@ class ParserWorker extends Actor with ActorLogging {
             val episodes: List[EpisodeDTO] = fyydAPI.getEpisodes(json).asScala.toList
             log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastExo)
             for(episode <- episodes){
-                registerEpisode(podcastExo, episode)
+                registerEpisode(podcastExo, episode, ImmutableList.of())
             }
 
     }
 
-    private def sendDirectoryCommand(command: DirectoryCommand): Unit = {
-        mediator ! Send("/user/node/directory", command, localAffinity = true)
+    private def sendCatalogCommand(command: CatalogCommand): Unit = {
+        mediator ! Send("/user/node/"+CatalogBroker.name, command, localAffinity = true)
     }
 
-    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
-        mediator ! Publish(directoryEventStream, event)
+    private def emitCatalogEvent(event: CatalogEvent): Unit = {
+        mediator ! Publish(catalogEventStream, event)
     }
 
     private def emitIndexEvent(event: IndexEvent): Unit = {
         mediator ! Publish(indexEventStream, event)
     }
 
-    private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean): Unit = {
+    private def parse(podcastExo: String, feedUrl: String, feedData: String, isNewPodcast: Boolean, rtts: ImmutableList[java.lang.Long]): Unit = {
 
         val parser = RomeFeedParser.of(feedData)
         Option(parser.getPodcast) match {
@@ -166,20 +169,20 @@ class ParserWorker extends Actor with ActorLogging {
                     // request that the podcasts website will get added to the index as well, if possible
                     Option(p.getLink) match {
                         case Some(link) =>
-                            crawler ! DownloadWithHeadCheck(p.getExo, link, WebsiteFetchJob())
+                            crawler ! DownloadWithHeadCheck(p.getExo, link, WebsiteFetchJob(), ImmutableList.of())
                         case None => log.debug("No link set for podcast {} --> no website data will be added to the index", p.getExo)
                     }
                 }
 
                 // we always update a podcasts metadata, this likely may have changed (new descriptions, etc)
-                val directoryEvent = UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
-                emitDirectoryEvent(directoryEvent)
+                val catalogEvent = UpdatePodcast(podcastExo, feedUrl, p.toImmutable)
+                emitCatalogEvent(catalogEvent)
 
                 // check for "new" episodes: because this is a new Podcast, all episodes will be new and registered
                 Option(parser.getEpisodes) match {
                     case Some(es) =>
                         for(e <- es.asScala){
-                            registerEpisode(podcastExo, e)
+                            registerEpisode(podcastExo, e, rtts)
                         }
                     case None => log.warning("Parsing generated a NULL-List[EpisodeDTO] for feed: {}", feedUrl)
                 }
@@ -187,7 +190,7 @@ class ParserWorker extends Actor with ActorLogging {
         }
     }
 
-    private def registerEpisode(podcastExo: String, episode: EpisodeDTO): Unit = {
+    private def registerEpisode(podcastExo: String, episode: EpisodeDTO, rtts: ImmutableList[java.lang.Long]): Unit = {
 
         val e = episodeMapper.toModifiable(episode)
 
@@ -203,8 +206,8 @@ class ParserWorker extends Actor with ActorLogging {
         })
         */
 
-        val directoryCommand = RegisterEpisodeIfNew(podcastExo, e.toImmutable)
-        sendDirectoryCommand(directoryCommand)
+        val catalogCommand = RegisterEpisodeIfNew(podcastExo, e.toImmutable, RoundTripTime.appendNow(rtts))
+        sendCatalogCommand(catalogCommand)
     }
 
     private def base64Image(imageUrl: String): String = {

@@ -3,6 +3,7 @@ package echo.actor.cli
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
@@ -25,10 +26,11 @@ object CLI {
               parser: ActorRef,
               searcher: ActorRef,
               crawler: ActorRef,
-              directoryStore: ActorRef,
-              gateway: ActorRef): Props = {
+              catalogStore: ActorRef,
+              gateway: ActorRef,
+              updater: ActorRef): Props = {
 
-        Props(new CLI(master, parser, searcher, crawler, directoryStore, gateway))
+        Props(new CLI(master, parser, searcher, crawler, catalogStore, gateway, updater))
             .withDispatcher("echo.cli.dispatcher")
 
     }
@@ -38,8 +40,9 @@ class CLI(master: ActorRef,
           parser: ActorRef,
           searcher: ActorRef,
           crawler: ActorRef,
-          directoryStore: ActorRef,
-          gateway: ActorRef) extends Actor with ActorLogging {
+          catalogStore: ActorRef,
+          gateway: ActorRef,
+          updater: ActorRef) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -101,25 +104,25 @@ class CLI(master: ActorRef,
             case q@("q" | "quit" | "exit") :: _ => shutdown = true
 
             case "propose" :: Nil   => usage("propose")
-            case "propose" :: feeds => feeds.foreach(f => directoryStore ! ProposeNewFeed(f))
+            case "propose" :: feeds => feeds.foreach(f => updater ! ProposeNewFeed(f, ImmutableList.of()))
 
             case "check" :: "podcast" :: Nil           => usage("check podcast")
-            case "check" :: "podcast" :: "all" :: Nil  => directoryStore ! CheckAllPodcasts
+            case "check" :: "podcast" :: "all" :: Nil  => catalogStore ! CheckAllPodcasts
             case "check" :: "podcast" :: "all" :: _    => usage("check podcast")
-            case "check" :: "podcast" :: exo :: Nil    => directoryStore ! CheckPodcast(exo)
+            case "check" :: "podcast" :: exo :: Nil    => catalogStore ! CheckPodcast(exo)
             case "check" :: "podcast" :: _ :: _        => usage("check podcast")
 
             case "check" :: "feed" :: Nil              => usage("check feed")
-            case "check" :: "feed" :: "all" :: Nil     => directoryStore ! CheckAllFeeds
+            case "check" :: "feed" :: "all" :: Nil     => catalogStore ! CheckAllFeeds
             case "check" :: "feed" :: "all" :: _       => usage("check feed")
-            case "check" :: "feed" :: exo :: Nil       => directoryStore ! CheckFeed(exo)
+            case "check" :: "feed" :: exo :: Nil       => catalogStore ! CheckFeed(exo)
             case "check" :: "feed" :: _ :: _           => usage("check feed")
 
-            case "count" :: "podcasts" :: Nil => directoryStore ! DebugPrintCountAllPodcasts
+            case "count" :: "podcasts" :: Nil => catalogStore ! DebugPrintCountAllPodcasts
             case "count" :: "podcasts" :: _   => usage("count")
-            case "count" :: "episodes" :: Nil => directoryStore ! DebugPrintCountAllEpisodes
+            case "count" :: "episodes" :: Nil => catalogStore ! DebugPrintCountAllEpisodes
             case "count" :: "episodes" :: _   => usage("count")
-            case "count" :: "feeds" :: Nil    => directoryStore ! DebugPrintCountAllFeeds
+            case "count" :: "feeds" :: Nil    => catalogStore ! DebugPrintCountAllFeeds
             case "count" :: "feeds" :: _      => usage("count")
             case "count" :: _                 => usage("count")
 
@@ -127,11 +130,11 @@ class CLI(master: ActorRef,
             case "search" :: query  => search(query)
 
             case "print" :: "database" :: Nil               => usage("print database")
-            case "print" :: "database" :: "podcasts" :: Nil => directoryStore ! DebugPrintAllPodcasts
+            case "print" :: "database" :: "podcasts" :: Nil => catalogStore ! DebugPrintAllPodcasts
             case "print" :: "database" :: "podcasts" :: _   => usage("print database")
-            case "print" :: "database" :: "episodes" :: Nil => directoryStore ! DebugPrintAllEpisodes
+            case "print" :: "database" :: "episodes" :: Nil => catalogStore ! DebugPrintAllEpisodes
             case "print" :: "database" :: "episodes" :: _   => usage("print database")
-            case "print" :: "database" :: "feeds" :: Nil    => directoryStore ! DebugPrintAllFeeds
+            case "print" :: "database" :: "feeds" :: Nil    => catalogStore ! DebugPrintAllFeeds
             case "print" :: "database" :: "feeds" :: _      => usage("print database")
             case "print" :: "database" :: _                 => usage("print database")
             case "print" :: _                               => help()
@@ -199,49 +202,49 @@ class CLI(master: ActorRef,
                     println(s"\n${DocumentFormatter.cliFormat(result)}\n")
                 }
                 println()
-            case other => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
+            case other => log.error("Received unexpected CatalogResult type : {}", other.getClass)
         }
     }
 
     private def getAndPrintPodcast(exo: String) = {
-        val future = directoryStore ? GetPodcast(exo)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
+        val future = catalogStore ? GetPodcast(exo)
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[CatalogQueryResult]
         response match {
             case PodcastResult(podcast)  => println(podcast.toString)
-            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Podcast with EXO : {}", unknownId)
-            case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
+            case NothingFound(unknownId) => log.info("CatalogStore responded that there is no Podcast with EXO : {}", unknownId)
+            case other                   => log.error("Received unexpected CatalogResult type : {}", other.getClass)
         }
     }
 
     private def getAndPrintEpisode(exo: String) = {
-        val future = directoryStore ? GetEpisode(exo)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
+        val future = catalogStore ? GetEpisode(exo)
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[CatalogQueryResult]
         response match {
             case EpisodeResult(episode)  => println(episode.toString)
-            case NothingFound(unknownId) => log.info("DirectoryStore responded that there is no Episode with EXO : {}", unknownId)
-            case other                   => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
+            case NothingFound(unknownId) => log.info("CatalogStore responded that there is no Episode with EXO : {}", unknownId)
+            case other                   => log.error("Received unexpected CatalogResult type : {}", other.getClass)
         }
     }
 
     private def loadTestFeeds(): Unit = {
         log.debug("Received LoadTestFeeds")
         for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
-            directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), ImmutableList.of())
         }
     }
 
     private def loadMassiveFeeds(): Unit = {
         log.debug("Received LoadMassiveFeeds")
         for (feed <- Source.fromFile(MASSIVE_TXT).getLines) {
-            directoryStore ! ProposeNewFeed(UrlUtil.sanitize(feed))
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), ImmutableList.of())
         }
     }
 
     private def saveFeeds(dest: String): Unit = {
         log.debug("Received SaveFeeds : {}", dest)
 
-        val future = directoryStore ? GetAllFeeds(0, 10000)
-        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[DirectoryQueryResult]
+        val future = catalogStore ? GetAllFeeds(0, 10000)
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[CatalogQueryResult]
         response match {
             case AllFeedsResult(feeds)  =>
                 import java.io._
@@ -249,7 +252,7 @@ class CLI(master: ActorRef,
                 log.info("Writing {} feeds to file : {}", feeds.size, dest)
                 feeds.foreach(f => pw.write(f.getUrl+ "\n"))
                 pw.close()
-            case other => log.error("Received unexpected DirectoryResult type : {}", other.getClass)
+            case other => log.error("Received unexpected CatalogResult type : {}", other.getClass)
         }
     }
 

@@ -57,7 +57,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
             .onHalfOpen(breakerHalfOpen("Searcher"))
 
     private var searcher: ActorRef = _
-    private var directoryStore: ActorRef = _
+    private var catalogStore: ActorRef = _
 
     private val searchService = new SearchGatewayService(log, searcherBreaker)
     private val podcastService = new PodcastGatewayService(log, catalogBreaker)
@@ -86,7 +86,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
             } ~
             pathPrefix("load-test") { // TODO
                 get {
-                    directoryStore ! LoadTestFeeds()
+                    catalogStore ! LoadTestFeeds()
                     complete(StatusCodes.OK)
                 }
             } ~
@@ -111,12 +111,12 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
 
     override def receive: Receive = {
 
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directoryStore = ref
-            podcastService.setDirectoryStoreActorRef(ref)
-            episodeService.setDirectoryStoreActorRef(ref)
-            feedService.setDirectoryStoreActorRef(ref)
+        case ActorRefCatalogStoreActor(ref) =>
+            log.debug("Received ActorRefCatalogStoreActor(_)")
+            catalogStore = ref
+            podcastService.setCatalogStoreActorRef(ref)
+            episodeService.setCatalogStoreActorRef(ref)
+            feedService.setCatalogStoreActorRef(ref)
         case _ =>
             log.warning("GatewayActor does not handle any Actor-messages yet")
     }

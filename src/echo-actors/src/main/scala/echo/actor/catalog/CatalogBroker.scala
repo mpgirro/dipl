@@ -6,14 +6,14 @@ import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeA
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.ActorRefCrawlerActor
-import CatalogProtocol.{DirectoryCommand, DirectoryEvent, DirectoryQuery}
+import CatalogProtocol.{CatalogCommand, CatalogEvent, CatalogQuery}
 
 /**
   * @author Maximilian Irro
   */
 
 object CatalogBroker {
-    final val name = "directory"
+    final val name = "catalog"
     def props(): Props = Props(new CatalogBroker())
 }
 
@@ -22,10 +22,10 @@ class CatalogBroker extends Actor with ActorLogging {
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
-    private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.directory.store-count")).getOrElse(1) // TODO
+    private val STORE_COUNT: Int = Option(CONFIG.getInt("echo.catalog.store-count")).getOrElse(1) // TODO
     private val DATABASE_URLs = Array("jdbc:h2:mem:echo1", "jdbc:h2:mem:echo2")// TODO I'll have to thing about a better solution in a distributed context
 
-    private val eventStreamName = Option(CONFIG.getString("echo.directory.event-stream")).getOrElse("directory-event-stream")
+    private val eventStreamName = Option(CONFIG.getString("echo.catalog.event-stream")).getOrElse("catalog-event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
     mediator ! Subscribe(eventStreamName, self) // subscribe to the topic (= event stream)
     mediator ! Put(self) // register to the path
@@ -43,9 +43,9 @@ class CatalogBroker extends Actor with ActorLogging {
         val routees: Vector[ActorRefRoutee] = (1 to List(STORE_COUNT, DATABASE_URLs.length).min)
             .map(i => {
                 val databaseUrl = DATABASE_URLs(i-1)
-                val directoryStore = createDirectoryStore(i, databaseUrl)
-                context watch directoryStore
-                ActorRefRoutee(directoryStore)
+                val catalogStore = createCatalogStore(i, databaseUrl)
+                context watch catalogStore
+                ActorRefRoutee(catalogStore)
             })
             .to[Vector]
 
@@ -67,15 +67,15 @@ class CatalogBroker extends Actor with ActorLogging {
             crawler = ref
             broadcastRouter.route(msg, sender())
 
-        case command: DirectoryCommand =>
+        case command: CatalogCommand =>
             log.debug("Routing command: {}", command.getClass)
             roundRobinRouter.route(command, sender())
 
-        case event: DirectoryEvent =>
+        case event: CatalogEvent =>
             log.debug("Routing event: {}", event.getClass)
             broadcastRouter.route(event, sender())
 
-        case query: DirectoryQuery =>
+        case query: CatalogQuery =>
             log.debug("Routing query : {}", query.getClass)
             roundRobinRouter.route(query, sender())
 
@@ -88,14 +88,14 @@ class CatalogBroker extends Actor with ActorLogging {
             broadcastRouter.route(message, sender())
     }
 
-    private def createDirectoryStore(storeIndex: Int, databaseUrl: String): ActorRef = {
-        val directoryStore = context.actorOf(CatalogStore.props(databaseUrl),
+    private def createCatalogStore(storeIndex: Int, databaseUrl: String): ActorRef = {
+        val catalogStore = context.actorOf(CatalogStore.props(databaseUrl),
             name = CatalogStore.name(storeIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
-        Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
+        Option(crawler).foreach(c => catalogStore ! ActorRefCrawlerActor(c) )
 
-        directoryStore
+        catalogStore
     }
 
     private def removeStore(routee: ActorRef): Unit = {

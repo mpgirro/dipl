@@ -31,7 +31,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    private var directoryStore: ActorRef = _
+    private var catalogStore: ActorRef = _
 
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
@@ -42,7 +42,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
                     }
 
 
-    def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
+    def setCatalogStoreActorRef(catalogStore: ActorRef): Unit = this.catalogStore = catalogStore
 
 
     @ApiOperation(value = "Get list of all Episodes",
@@ -74,7 +74,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     */
     def getEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}", exo)
-        onCompleteWithBreaker(breaker)(directoryStore ? GetEpisode(exo)) {
+        onCompleteWithBreaker(breaker)(catalogStore ? GetEpisode(exo)) {
             case Success(res) =>
                 res match {
                     case EpisodeResult(episode) => complete(OK, episode)
@@ -98,7 +98,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def getChaptersByEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}/chapters", exo)
-        onCompleteWithBreaker(breaker)(directoryStore ? GetChaptersByEpisode(exo)) {
+        onCompleteWithBreaker(breaker)(catalogStore ? GetChaptersByEpisode(exo)) {
             case Success(res) =>
                 res match {
                     case ChaptersByEpisodeResult(chapters) => complete(OK, ArrayWrapper(chapters))

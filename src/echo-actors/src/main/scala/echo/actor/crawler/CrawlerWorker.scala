@@ -6,10 +6,13 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import akka.stream._
+import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
+import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -48,7 +51,7 @@ class CrawlerWorker extends Actor with ActorLogging {
     private implicit val actorSystem: ActorSystem = context.system
     private implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(actorSystem))
 
-    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
+    private val catalogEventStream = CONFIG.getString("echo.catalog.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
@@ -92,7 +95,7 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
 
-        case DownloadWithHeadCheck(exo, url, job) =>
+        case DownloadWithHeadCheck(exo, url, job, rtts) =>
 
             this.currUrl = url
             this.currJob = job
@@ -101,21 +104,21 @@ class CrawlerWorker extends Actor with ActorLogging {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
                         log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                        headCheck(exo, url, job)
+                        headCheck(exo, url, job, rtts)
                     }
                 case _ =>
                     log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                    headCheck(exo, url, job)
+                    headCheck(exo, url, job, rtts)
             }
 
 
-        case DownloadContent(exo, url, job, encoding) =>
+        case DownloadContent(exo, url, job, encoding, rtts) =>
             log.debug("Received Download({},'{}',{},{})", exo, url, job.getClass.getSimpleName, encoding)
 
             this.currUrl = url
             this.currJob = job
 
-            fetchContent(exo, url, job, encoding) // TODO send encoding via message
+            fetchContent(exo, url, job, encoding, rtts) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
@@ -123,12 +126,12 @@ class CrawlerWorker extends Actor with ActorLogging {
 
     }
 
-    private def sendDirectoryCommand(command: DirectoryCommand): Unit = {
-        mediator ! Send("/user/node/directory", command, localAffinity = true)
+    private def sendCatalogCommand(command: CatalogCommand): Unit = {
+        mediator ! Send("/user/node/"+CatalogBroker.name, command, localAffinity = true)
     }
 
-    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
-        mediator ! Publish(directoryEventStream, event)
+    private def emitCatalogEvent(event: CatalogEvent): Unit = {
+        mediator ! Publish(catalogEventStream, event)
     }
 
     private def onCrawlFyyd(count: Int) = {
@@ -137,12 +140,12 @@ class CrawlerWorker extends Actor with ActorLogging {
         val feeds = fyydAPI.getFeedUrls(count)
 
         log.debug("Received {} feeds from {}", feeds.size, fyydAPI.getURL)
-        log.debug("Proposing these feeds to the internal directory now")
+        log.debug("Proposing these feeds to the internal catalog now")
 
         val it = feeds.iterator()
         while (it.hasNext) {
-            val directoryCommand = ProposeNewFeed(it.next())
-            sendDirectoryCommand(directoryCommand)
+            val catalogCommand = ProposeNewFeed(it.next(), ImmutableList.of())
+            sendCatalogCommand(catalogCommand)
         }
     }
 
@@ -161,12 +164,12 @@ class CrawlerWorker extends Actor with ActorLogging {
         job match {
             case WebsiteFetchJob() => // do nothing...
             case _ =>
-                val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
-                emitDirectoryEvent(directoryEvent)
+                val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_ERROR)
+                emitCatalogEvent(catalogEvent)
         }
     }
 
-    private def headCheck(exo: String, url: String, job: FetchJob): Unit = {
+    private def headCheck(exo: String, url: String, job: FetchJob, rtts: ImmutableList[java.lang.Long]): Unit = {
         blocking {
             val headResult = httpClient.headCheck(url)
 
@@ -187,15 +190,15 @@ class CrawlerWorker extends Actor with ActorLogging {
                             // to some feed analytic tools, we set our records to the new location
                             if (!url.equals(href)) {
                                 //directoryStore ! UpdateLinkByExo(exo, href)
-                                val directoryEvent = UpdateLinkByExo(exo, href)
-                                emitDirectoryEvent(directoryEvent)
+                                val catalogEvent = UpdateLinkByExo(exo, href)
+                                emitCatalogEvent(catalogEvent)
 
                                 val indexEvent = UpdateDocLinkIndexEvent(exo, href)
                                 emitIndexEvent(indexEvent)
                             }
 
                             // we always download websites, because we only do it once anyway
-                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, rtts) // TODO
                             //fetchContent(exo, href, job, encoding)
 
                         case _ =>
@@ -203,8 +206,8 @@ class CrawlerWorker extends Actor with ActorLogging {
                             // it will use the new location starting with the next update cycle
                             if (!url.equals(href)) {
                                 //directoryStore ! UpdateFeedUrl(url, href)
-                                val directoryEvent = UpdateFeedUrl(url, href)
-                                emitDirectoryEvent(directoryEvent)
+                                val catalogEvent = UpdateFeedUrl(url, href)
+                                emitCatalogEvent(catalogEvent)
                             }
 
                             /*
@@ -212,7 +215,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                              * here I have to do some voodoo with etag/lastMod to
                              * determine weither the feed changed and I really need to redownload
                              */
-                            self ! DownloadContent(exo, href, job, encoding) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, rtts) // TODO
                             //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
@@ -230,19 +233,19 @@ class CrawlerWorker extends Actor with ActorLogging {
       * @param url
       * @param job
       */
-    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String]): Unit = {
+    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String], rtts: ImmutableList[java.lang.Long]): Unit = {
         blocking {
             val data = httpClient.fetchContent(url, encoding.asJava)
             job match {
                 case NewPodcastFetchJob() =>
-                    parser ! ParseNewPodcastData(url, exo, data)
-                    val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                    emitDirectoryEvent(directoryEvent)
+                    parser ! ParseNewPodcastData(url, exo, data, RoundTripTime.appendNow(rtts))
+                    val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    emitCatalogEvent(catalogEvent)
 
                 case UpdateEpisodesFetchJob(etag, lastMod) =>
-                    parser ! ParseUpdateEpisodeData(url, exo, data)
-                    val directoryEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
-                    emitDirectoryEvent(directoryEvent)
+                    parser ! ParseUpdateEpisodeData(url, exo, data, RoundTripTime.appendNow(rtts))
+                    val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
+                    emitCatalogEvent(catalogEvent)
 
                 case WebsiteFetchJob() =>
                     parser ! ParseWebsiteData(exo, data)

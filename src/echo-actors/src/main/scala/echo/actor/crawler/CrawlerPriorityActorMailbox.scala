@@ -12,9 +12,9 @@ class CrawlerPriorityActorMailbox (settings: ActorSystem.Settings, config: Confi
     // Create a new PriorityGenerator, lower prio means more important
     PriorityGenerator {
         case ActorRefParserActor(_)          => 0
-        case ActorRefDirectoryStoreActor(_)  => 0
-        case DownloadWithHeadCheck(_,_,_)    => 1
-        case DownloadContent(_,_,_,_)        => 1
+        case ActorRefCatalogStoreActor(_)    => 0
+        case DownloadWithHeadCheck(_,_,_,_)  => 1
+        case DownloadContent(_,_,_,_,_)      => 1
         case CrawlFyyd(_)                    => 1
         case _                               => 2
     })

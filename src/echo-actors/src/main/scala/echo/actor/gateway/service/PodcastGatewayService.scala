@@ -30,12 +30,12 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     private val CONFIG = ConfigFactory.load()
     // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    private val DEFAULT_PAGE: Int = CONFIG.getInt("echo.directory.default-page")
-    private val DEFAULT_SIZE: Int = CONFIG.getInt("echo.directory.default-size")
+    private val DEFAULT_PAGE: Int = CONFIG.getInt("echo.catalog.default-page")
+    private val DEFAULT_SIZE: Int = CONFIG.getInt("echo.catalog.default-size")
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    private var directoryStore: ActorRef = _
+    private var catalogStore: ActorRef = _
 
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
@@ -49,7 +49,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
                     }
 
 
-    def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
+    def setCatalogStoreActorRef(catalogStore: ActorRef): Unit = this.catalogStore = catalogStore
 
 
     @ApiOperation(value = "Get list of all Podcasts",
@@ -64,7 +64,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
             val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
             val s: Int = size.getOrElse(DEFAULT_SIZE)
 
-            onCompleteWithBreaker(breaker)(directoryStore ? GetAllPodcastsRegistrationComplete(p,s)) {
+            onCompleteWithBreaker(breaker)(catalogStore ? GetAllPodcastsRegistrationComplete(p,s)) {
                 case Success(res) =>
                     res match {
                         case AllPodcastsResult(results) =>
@@ -92,12 +92,12 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
                   response = classOf[PodcastDTO])
     def getPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}", exo)
-        onCompleteWithBreaker(breaker)(directoryStore ? GetPodcast(exo)) {
+        onCompleteWithBreaker(breaker)(catalogStore ? GetPodcast(exo)) {
             case Success(res) =>
                 res match {
                     case PodcastResult(podcast) => complete(StatusCodes.OK, podcast)
                     case NothingFound(unknown)  =>
-                        log.error("DirectoryStore responded that there is no Podcast : {}", unknown)
+                        log.error("CatalogStore responded that there is no Podcast : {}", unknown)
                         complete(StatusCodes.NotFound)
                 }
 
@@ -116,7 +116,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getEpisodesByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/episodes", exo)
-        onCompleteWithBreaker(breaker)(directoryStore ? GetEpisodesByPodcast(exo)) {
+        onCompleteWithBreaker(breaker)(catalogStore ? GetEpisodesByPodcast(exo)) {
             case Success(res) =>
                 res match {
                     case EpisodesByPodcastResult(episodes) => complete(StatusCodes.OK, ArrayWrapper(episodes))
@@ -137,7 +137,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getFeedsByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/feeds", exo)
-        onCompleteWithBreaker(breaker)(directoryStore ? GetFeedsByPodcast(exo)) {
+        onCompleteWithBreaker(breaker)(catalogStore ? GetFeedsByPodcast(exo)) {
             case Success(res) =>
                 res match {
                     case FeedsByPodcastResult(feeds) => complete(StatusCodes.OK, ArrayWrapper(feeds))

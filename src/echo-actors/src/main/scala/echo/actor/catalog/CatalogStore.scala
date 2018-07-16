@@ -5,7 +5,7 @@ import java.sql.{Connection, DriverManager}
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.ActorRefCrawlerActor
+import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefUpdaterActor}
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
@@ -18,7 +18,7 @@ import liquibase.{Contexts, LabelExpression, Liquibase}
 object CatalogStore {
     def name(storeIndex: Int): String = "store-" + storeIndex
     def props(databaseUrl: String): Props = {
-        Props(new CatalogStore(databaseUrl)).withDispatcher("echo.directory.dispatcher")
+        Props(new CatalogStore(databaseUrl)).withDispatcher("echo.catalog.dispatcher")
     }
 }
 
@@ -27,17 +27,18 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
-    private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.directory.worker-count")).getOrElse(5)
+    private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.catalog.worker-count")).getOrElse(5)
 
     private var currentWorkerIndex = 1
 
     private var crawler: ActorRef = _
+    private var updater: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
-            val directoryStore = createDirectoryStoreWorkerActor(databaseUrl)
-            context watch directoryStore
-            ActorRefRoutee(directoryStore)
+            val catalogStore = createCatalogStoreWorkerActor(databaseUrl)
+            context watch catalogStore
+            ActorRefRoutee(catalogStore)
         }
         Router(RoundRobinRoutingLogic(), routees)
     }
@@ -55,6 +56,11 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
         case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ ActorRefUpdaterActor(ref) =>
+            log.debug("Received ActorRefUpdaterActor(_)")
+            updater = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
         case Terminated(corpse) =>
@@ -87,15 +93,15 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
     }
 
-    private def createDirectoryStoreWorkerActor(databaseUrl: String): ActorRef = {
+    private def createCatalogStoreWorkerActor(databaseUrl: String): ActorRef = {
         val workerIndex = currentWorkerIndex
-        val directoryStore = context.actorOf(CatalogStoreHandler.props(workerIndex, databaseUrl), CatalogStoreHandler.name(workerIndex))
+        val catalogStore = context.actorOf(CatalogStoreHandler.props(workerIndex, databaseUrl), CatalogStoreHandler.name(workerIndex))
         currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
-        Option(crawler).foreach(c => directoryStore ! ActorRefCrawlerActor(c) )
+        Option(crawler).foreach(c => catalogStore ! ActorRefCrawlerActor(c) )
 
-        directoryStore
+        catalogStore
     }
 
     private def runLiquibaseUpdate(): Unit = {

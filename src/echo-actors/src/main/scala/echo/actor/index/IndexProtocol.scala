@@ -9,7 +9,7 @@ object IndexProtocol {
 
     trait IndexEvent
 
-    // Crawler/Parser/DirectoryStore -> IndexStore
+    // Crawler/Parser/CatalogStore -> IndexStore
     case class AddDocIndexEvent(doc: IndexDocDTO) extends IndexEvent
     case class UpdateDocWebsiteDataIndexEvent(exo: String, html: String) extends IndexEvent
     case class UpdateDocImageIndexEvent(exo: String, image: String) extends IndexEvent

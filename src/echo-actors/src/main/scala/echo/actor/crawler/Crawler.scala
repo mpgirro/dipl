@@ -9,7 +9,7 @@ import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefDirectoryStoreActor, ActorRefParserActor}
+import echo.actor.ActorProtocol.{ActorRefCatalogStoreActor, ActorRefParserActor}
 import echo.core.exception.EchoException
 
 import scala.concurrent.duration._
@@ -32,7 +32,7 @@ class Crawler extends Actor with ActorLogging {
     private var workerIndex = 1
 
     private var parser: ActorRef = _
-    private var directory: ActorRef = _
+    private var catalog: ActorRef = _
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -65,10 +65,10 @@ class Crawler extends Actor with ActorLogging {
             parser = ref
             router.routees.foreach(r => r.send(ActorRefParserActor(parser), sender()))
 
-        case ActorRefDirectoryStoreActor(ref) =>
-            log.debug("Received ActorRefDirectoryStoreActor(_)")
-            directory = ref
-            router.routees.foreach(r => r.send(ActorRefDirectoryStoreActor(directory), sender()))
+        case ActorRefCatalogStoreActor(ref) =>
+            log.debug("Received ActorRefCatalogStoreActor(_)")
+            catalog = ref
+            router.routees.foreach(r => r.send(ActorRefCatalogStoreActor(catalog), sender()))
 
         case Terminated(corpse) =>
             //log.info("Child '{}' terminated" + corpse.path.name)
@@ -107,8 +107,8 @@ class Crawler extends Actor with ActorLogging {
         workerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
-        Option(parser).foreach(p => directory ! ActorRefParserActor(p) )
-        Option(directory).foreach(d => directory ! ActorRefDirectoryStoreActor(d))
+        Option(parser).foreach(p => catalog ! ActorRefParserActor(p) )
+        Option(catalog).foreach(d => catalog ! ActorRefCatalogStoreActor(d))
 
         crawler
     }

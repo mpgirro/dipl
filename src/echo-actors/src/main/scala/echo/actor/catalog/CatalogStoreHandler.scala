@@ -6,6 +6,7 @@ import javax.persistence.{EntityManager, EntityManagerFactory}
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
+import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.repository.RepositoryFactoryBuilder
@@ -14,6 +15,7 @@ import echo.actor.catalog.CatalogProtocol._
 import echo.actor.catalog.repository.RepositoryFactoryBuilder
 import echo.actor.catalog.service._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent}
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
@@ -31,7 +33,7 @@ import scala.concurrent.blocking
 object CatalogStoreHandler {
     def name(workerIndex: Int): String = "handler-" + workerIndex
     def props(workerIndex: Int, databaseUrl: String): Props = {
-        Props(new CatalogStoreHandler(workerIndex, databaseUrl)).withDispatcher("echo.directory.dispatcher")
+        Props(new CatalogStoreHandler(workerIndex, databaseUrl)).withDispatcher("echo.catalog.dispatcher")
     }
 }
 
@@ -41,15 +43,16 @@ class CatalogStoreHandler(workerIndex: Int,
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
-    private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.directory.max-page-size")).getOrElse(10000)
+    private val MAX_PAGE_SIZE: Int = Option(CONFIG.getInt("echo.catalog.max-page-size")).getOrElse(10000)
 
-    private val directoryEventStream = CONFIG.getString("echo.directory.event-stream")
+    private val catalogEventStream = CONFIG.getString("echo.catalog.event-stream")
     private val indexEventStream = CONFIG.getString("echo.index.event-stream")
     private val mediator = DistributedPubSub(context.system).mediator
 
     private val exoGenerator: ExoGenerator = new ExoGenerator(workerIndex)
 
     private var crawler: ActorRef = _
+    private var updater: ActorRef = _
 
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -89,7 +92,11 @@ class CatalogStoreHandler(workerIndex: Int,
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
-        case ProposeNewFeed(feedUrl) => proposeFeed(feedUrl)
+        case ActorRefUpdaterActor(ref) =>
+            log.debug("Received ActorRefUpdaterActor(_)")
+            updater = ref
+
+        case ProposeNewFeed(feedUrl, rtts) => proposeFeed(feedUrl, rtts)
 
         case CheckPodcast(exo) => onCheckPodcast(exo)
 
@@ -133,7 +140,7 @@ class CatalogStoreHandler(workerIndex: Int,
 
         case GetChaptersByEpisode(episodeExo) => onGetChaptersByEpisode(episodeExo)
 
-        case RegisterEpisodeIfNew(podcastExo, episode) => onRegisterEpisodeIfNew(podcastExo, episode)
+        case RegisterEpisodeIfNew(podcastExo, episode, rtts) => onRegisterEpisodeIfNew(podcastExo, episode, rtts)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
@@ -149,15 +156,15 @@ class CatalogStoreHandler(workerIndex: Int,
 
     }
 
-    private def emitDirectoryEvent(event: DirectoryEvent): Unit = {
-        mediator ! Publish(directoryEventStream, event)
+    private def emitCatalogEvent(event: CatalogEvent): Unit = {
+        mediator ! Publish(catalogEventStream, event)
     }
 
     private def emitIndexEvent(event: IndexEvent): Unit = {
         mediator ! Publish(indexEventStream, event)
     }
 
-    private def proposeFeed(url: String): Unit = {
+    private def proposeFeed(url: String, rtts: ImmutableList[java.lang.Long]): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
         def task = () => {
@@ -187,13 +194,14 @@ class CatalogStoreHandler(workerIndex: Int,
                         .create()
                     feedService.save(feed).map(f => {
 
-                        val directoryEvent = AddPodcastAndFeedIfUnknown(
+                        val catalogEvent = AddPodcastAndFeedIfUnknown(
                             idMapper.clearImmutable(p),
                             idMapper.clearImmutable(f))
-                        emitDirectoryEvent(directoryEvent)
+                        emitCatalogEvent(catalogEvent)
 
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
-                        crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
+                        updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), RoundTripTime.appendNow(rtts))
+                        //crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
                     })
                 })
             } else {
@@ -464,7 +472,8 @@ class CatalogStoreHandler(workerIndex: Int,
             if(feeds.nonEmpty){
                 // crawler ! FetchFeedForUpdateEpisodes(podcastId, feeds.head.getUrl)
                 val f = feeds.head
-                crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                //crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                updater ! ProcessFeed(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
             } else {
                 log.error("No Feeds registered for Podcast (EXO) : {}", podcastId)
             }
@@ -478,7 +487,8 @@ class CatalogStoreHandler(workerIndex: Int,
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
-                    crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                    //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                    updater ! ProcessFeed(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
                 }).getOrElse({
                     log.error("No Podcast found in Database for Feed (EXO) : {}", feedId)
                 })
@@ -498,7 +508,8 @@ class CatalogStoreHandler(workerIndex: Int,
                 val feeds = feedService.findAllByPodcast(p.getExo)
                 if(feeds.nonEmpty){
                     val f = feeds.head
-                    crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                    //crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
+                    updater ! ProcessFeed(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
                 } else {
                     log.error("No Feeds registered for Podcast (EXO) : {}", p.getExo)
                 }
@@ -513,7 +524,8 @@ class CatalogStoreHandler(workerIndex: Int,
         def task = () => {
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getExo).map{p => {
-                    crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
+                    //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
+                    updater ! ProcessFeed(p.getExo, f.getUrl, NewPodcastFetchJob(), RoundTripTime.appendNow(ImmutableList.of()))
                 }}.getOrElse({
                     log.error("No Podcast found in Database for Feed (EXO) : {}", f.getExo)
                 })
@@ -522,7 +534,7 @@ class CatalogStoreHandler(workerIndex: Int,
         doInTransaction(task, List(podcastService, feedService))
     }
 
-    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO): Unit = {
+    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, rtts: ImmutableList[java.lang.Long]): Unit = {
         log.debug("Received RegisterEpisodeIfNew({}, '{}')", podcastExo, episode.getTitle)
 
         def task: () => Option[EpisodeDTO] = () => {
@@ -582,13 +594,14 @@ class CatalogStoreHandler(workerIndex: Int,
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
                  * the data too (this will of course mean that I will update my own data, which is a
                  * bit pointless, by oh well... */
-                val directoryEvent = UpdateEpisode(podcastExo, idMapper.clearImmutable(e))
-                emitDirectoryEvent(directoryEvent)
+                val catalogEvent = UpdateEpisode(podcastExo, idMapper.clearImmutable(e))
+                emitCatalogEvent(catalogEvent)
 
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
                     case Some(link) =>
-                        crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
+                        //crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
+                        updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), RoundTripTime.appendNow(rtts))
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getExo)
                 }
             case None =>

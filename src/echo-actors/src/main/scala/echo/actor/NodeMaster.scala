@@ -11,6 +11,7 @@ import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.SearcherActor
+import echo.actor.updater.Updater
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -41,8 +42,9 @@ class NodeMaster extends Actor with ActorLogging {
     private var parser: ActorRef = _
     private var searcher: ActorRef = _
     private var crawler: ActorRef = _
-    private var directory: ActorRef = _
+    private var catalog: ActorRef = _
     private var gateway: ActorRef = _
+    private var updater: ActorRef = _
     private var cli: ActorRef = _
 
     override def preStart(): Unit = {
@@ -59,26 +61,32 @@ class NodeMaster extends Actor with ActorLogging {
         crawler = context.actorOf(Crawler.props(), Crawler.name(1))
         context watch crawler
 
-        directory = context.actorOf(CatalogBroker.props(), CatalogBroker.name)
-        context watch directory
+        catalog = context.actorOf(CatalogBroker.props(), CatalogBroker.name)
+        context watch catalog
 
         gateway = context.watch(context.actorOf(Gateway.props(), Gateway.name(1)))
+
+        updater = context.watch(context.actorOf(Updater.props(), Updater.name))
 
         createCLI()
 
         // pass around references not provided by constructors due to circular dependencies
         crawler ! ActorRefParserActor(parser)
-        crawler ! ActorRefDirectoryStoreActor(directory)
+        crawler ! ActorRefCatalogStoreActor(catalog)
 
-        parser ! ActorRefDirectoryStoreActor(directory)
+        parser ! ActorRefCatalogStoreActor(catalog)
         parser ! ActorRefCrawlerActor(crawler)
 
         searcher ! ActorRefIndexStoreActor(index)
 
-        gateway ! ActorRefDirectoryStoreActor(directory)
+        gateway ! ActorRefCatalogStoreActor(catalog)
 
-        directory ! ActorRefCrawlerActor(crawler)
-        directory ! ActorRefDirectoryStoreActor(directory)
+        catalog ! ActorRefCrawlerActor(crawler)
+        catalog ! ActorRefCatalogStoreActor(catalog)
+        catalog ! ActorRefUpdaterActor(updater)
+
+        updater ! ActorRefCatalogStoreActor(catalog)
+        updater ! ActorRefCrawlerActor(crawler)
 
         log.info("up and running")
     }
@@ -107,7 +115,7 @@ class NodeMaster extends Actor with ActorLogging {
         // it is important to shutdown all actor(supervisor) befor shutting down the actor system
         context.system.stop(cli)
         context.system.stop(crawler)    // these have a too full inbox usually to let them finish processing
-        context.system.stop(directory)
+        context.system.stop(catalog)
         context.system.stop(gateway)
         context.system.stop(index)
         context.system.stop(parser)
@@ -121,7 +129,7 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     private def createCLI(): Unit = {
-        cli = context.actorOf(CLI.props(self, parser, searcher, crawler, directory, gateway),
+        cli = context.actorOf(CLI.props(self, parser, searcher, crawler, catalog, gateway, updater),
             name = CLI.name)
         context watch cli
     }

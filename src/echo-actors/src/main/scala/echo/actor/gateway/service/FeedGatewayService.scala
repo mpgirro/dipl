@@ -26,7 +26,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
-    private var directoryStore: ActorRef = _
+    private var catalogStore: ActorRef = _
 
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
@@ -36,7 +36,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
         }
 
 
-    def setDirectoryStoreActorRef(directoryStore: ActorRef): Unit = this.directoryStore = directoryStore
+    def setCatalogStoreActorRef(catalogStore: ActorRef): Unit = this.catalogStore = catalogStore
 
 
     def getAllFeeds: Route = get {

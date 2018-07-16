@@ -25,7 +25,7 @@ class CatalogPriorityActorMailbox(settings: ActorSystem.Settings, config: Config
         case GetEpisodesByPodcast(_)    => 1
         case FeedStatusUpdate(_,_,_,_)  => 2
         case UpdatePodcast(_,_,_)       => 3
-        case ProposeNewFeed(_)          => 4
+        case ProposeNewFeed(_,_)        => 4
         case CheckPodcast(_)            => 5
         case CheckFeed(_)               => 5
         case CheckAllPodcasts           => 5
