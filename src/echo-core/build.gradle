@@ -148,12 +148,14 @@ run.doFirst {
 }
 
 test {
+    /*
     useJUnitPlatform {
         excludeTags 'slow'
         includeEngines 'junit-jupiter', 'junit-vintage'
     }
 
     failFast = true
+    */
 
     // Always run tests, even when nothing changed.
     dependsOn 'cleanTest'
@@ -163,7 +165,6 @@ test {
         events "passed", "skipped", "failed"
     }
 }
-
 
 junitPlatform {
     details 'tree'
