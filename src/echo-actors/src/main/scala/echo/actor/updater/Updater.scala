@@ -36,11 +36,11 @@ class Updater extends Actor with ActorLogging {
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
-        case ProposeNewFeed(url, rtts) =>
-            catalog ! ProposeNewFeed(url, RoundTripTime.appendNow(rtts))
+        case ProposeNewFeed(url, benchmark) =>
+            catalog ! ProposeNewFeed(url, benchmark.bumpRTTs())
 
-        case ProcessFeed(exo, url, job: FetchJob, rtts) =>
-            crawler ! DownloadWithHeadCheck(exo, url, job, RoundTripTime.appendNow(rtts))
+        case ProcessFeed(exo, url, job: FetchJob, benchmark) =>
+            crawler ! DownloadWithHeadCheck(exo, url, job, benchmark.bumpRTTs())
     }
 
 }

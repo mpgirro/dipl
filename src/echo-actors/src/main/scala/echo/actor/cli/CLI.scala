@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
+import echo.core.benchmark.{Benchmark, ImmutableBenchmark}
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._
@@ -56,6 +57,10 @@ class CLI(master: ActorRef,
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
+        "benchmark"      -> "<feed|index|search>",
+        "benchmark feed" -> "feed <url>",
+        "benchmark index"-> "",
+        "benchmark search"-> "",
         "check podcast"  -> "[all|<exo>]",
         "check feed"     -> "[all|<exo>]",
         "count"          -> "[podcasts|episodes|feeds]",
@@ -73,11 +78,15 @@ class CLI(master: ActorRef,
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
     repl()
 
+
     override def postStop: Unit = {
         log.info("shutting down")
     }
 
     override def receive: Receive = {
+        case BenchmarkReport(b) =>
+            log.info("Received BenchmarkReport:")
+            log.info(b.toString)
         case unhandled => log.info("Received " + unhandled)
     }
 
@@ -104,7 +113,17 @@ class CLI(master: ActorRef,
             case q@("q" | "quit" | "exit") :: _ => shutdown = true
 
             case "propose" :: Nil   => usage("propose")
-            case "propose" :: feeds => feeds.foreach(f => updater ! ProposeNewFeed(f, ImmutableList.of()))
+            case "propose" :: feeds => feeds.foreach(f => updater ! ProposeNewFeed(f, Benchmark.empty()))
+
+            case "benchmark" :: Nil                   => usage("benchmark")
+            case "benchmark" :: "feed" :: Nil         => usage("benchmark feed")
+            case "benchmark" :: "feed" :: feed :: Nil =>
+                updater ! ProposeNewFeed(feed, Benchmark.empty())
+            case "benchmark" :: "feed" :: feed :: _   => usage("benchmark feed")
+            case "benchmark" :: "index" :: Nil        => println("NOT YET IMPLEMENTED") // TODO
+            case "benchmark" :: "index" :: _          => usage("benchmark index")
+            case "benchmark" :: "search" :: Nil       => println("NOT YET IMPLEMENTED") // TODO
+            case "benchmark" :: "search" :: _         => usage("benchmark search")
 
             case "check" :: "podcast" :: Nil           => usage("check podcast")
             case "check" :: "podcast" :: "all" :: Nil  => catalogStore ! CheckAllPodcasts
@@ -229,14 +248,14 @@ class CLI(master: ActorRef,
     private def loadTestFeeds(): Unit = {
         log.debug("Received LoadTestFeeds")
         for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
-            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), ImmutableList.of())
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), Benchmark.empty())
         }
     }
 
     private def loadMassiveFeeds(): Unit = {
         log.debug("Received LoadMassiveFeeds")
         for (feed <- Source.fromFile(MASSIVE_TXT).getLines) {
-            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), ImmutableList.of())
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), Benchmark.empty())
         }
     }
 

@@ -12,7 +12,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.{Benchmark, ImmutableBenchmark, RoundTripTime}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -95,7 +95,7 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
 
-        case DownloadWithHeadCheck(exo, url, job, rtts) =>
+        case DownloadWithHeadCheck(exo, url, job, benchmark) =>
 
             this.currUrl = url
             this.currJob = job
@@ -104,21 +104,21 @@ class CrawlerWorker extends Actor with ActorLogging {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
                         log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                        headCheck(exo, url, job, rtts)
+                        headCheck(exo, url, job, benchmark)
                     }
                 case _ =>
                     log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                    headCheck(exo, url, job, rtts)
+                    headCheck(exo, url, job, benchmark)
             }
 
 
-        case DownloadContent(exo, url, job, encoding, rtts) =>
+        case DownloadContent(exo, url, job, encoding, benchmark) =>
             log.debug("Received Download({},'{}',{},{})", exo, url, job.getClass.getSimpleName, encoding)
 
             this.currUrl = url
             this.currJob = job
 
-            fetchContent(exo, url, job, encoding, rtts) // TODO send encoding via message
+            fetchContent(exo, url, job, encoding, benchmark) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
@@ -144,7 +144,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         val it = feeds.iterator()
         while (it.hasNext) {
-            val catalogCommand = ProposeNewFeed(it.next(), ImmutableList.of())
+            val catalogCommand = ProposeNewFeed(it.next(), Benchmark.empty())
             sendCatalogCommand(catalogCommand)
         }
     }
@@ -169,7 +169,7 @@ class CrawlerWorker extends Actor with ActorLogging {
         }
     }
 
-    private def headCheck(exo: String, url: String, job: FetchJob, rtts: ImmutableList[java.lang.Long]): Unit = {
+    private def headCheck(exo: String, url: String, job: FetchJob, benchmark: Benchmark): Unit = {
         blocking {
             val headResult = httpClient.headCheck(url)
 
@@ -198,7 +198,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                             }
 
                             // we always download websites, because we only do it once anyway
-                            self ! DownloadContent(exo, href, job, encoding, rtts) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, benchmark.bumpRTTs()) // TODO
                             //fetchContent(exo, href, job, encoding)
 
                         case _ =>
@@ -215,7 +215,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                              * here I have to do some voodoo with etag/lastMod to
                              * determine weither the feed changed and I really need to redownload
                              */
-                            self ! DownloadContent(exo, href, job, encoding, rtts) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, benchmark) // TODO
                             //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
@@ -233,17 +233,17 @@ class CrawlerWorker extends Actor with ActorLogging {
       * @param url
       * @param job
       */
-    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String], rtts: ImmutableList[java.lang.Long]): Unit = {
+    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String], benchmark: Benchmark): Unit = {
         blocking {
             val data = httpClient.fetchContent(url, encoding.asJava)
             job match {
                 case NewPodcastFetchJob() =>
-                    parser ! ParseNewPodcastData(url, exo, data, RoundTripTime.appendNow(rtts))
+                    parser ! ParseNewPodcastData(url, exo, data, benchmark.bumpRTTs())
                     val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     emitCatalogEvent(catalogEvent)
 
                 case UpdateEpisodesFetchJob(etag, lastMod) =>
-                    parser ! ParseUpdateEpisodeData(url, exo, data, RoundTripTime.appendNow(rtts))
+                    parser ! ParseUpdateEpisodeData(url, exo, data, benchmark.bumpRTTs())
                     val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     emitCatalogEvent(catalogEvent)
 

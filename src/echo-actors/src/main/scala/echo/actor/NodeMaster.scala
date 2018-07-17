@@ -88,6 +88,8 @@ class NodeMaster extends Actor with ActorLogging {
         updater ! ActorRefCatalogStoreActor(catalog)
         updater ! ActorRefCrawlerActor(crawler)
 
+        index ! ActorRefCLIActor(cli)
+
         log.info("up and running")
     }
 

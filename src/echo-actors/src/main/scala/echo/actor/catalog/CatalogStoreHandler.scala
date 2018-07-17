@@ -15,7 +15,7 @@ import echo.actor.catalog.CatalogProtocol._
 import echo.actor.catalog.repository.RepositoryFactoryBuilder
 import echo.actor.catalog.service._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent}
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.{Benchmark, ImmutableBenchmark, RoundTripTime}
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
@@ -96,7 +96,7 @@ class CatalogStoreHandler(workerIndex: Int,
             log.debug("Received ActorRefUpdaterActor(_)")
             updater = ref
 
-        case ProposeNewFeed(feedUrl, rtts) => proposeFeed(feedUrl, rtts)
+        case ProposeNewFeed(feedUrl, benchmark) => proposeFeed(feedUrl, benchmark)
 
         case CheckPodcast(exo) => onCheckPodcast(exo)
 
@@ -140,7 +140,7 @@ class CatalogStoreHandler(workerIndex: Int,
 
         case GetChaptersByEpisode(episodeExo) => onGetChaptersByEpisode(episodeExo)
 
-        case RegisterEpisodeIfNew(podcastExo, episode, rtts) => onRegisterEpisodeIfNew(podcastExo, episode, rtts)
+        case RegisterEpisodeIfNew(podcastExo, episode, benchmark) => onRegisterEpisodeIfNew(podcastExo, episode, benchmark)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
@@ -164,7 +164,7 @@ class CatalogStoreHandler(workerIndex: Int,
         mediator ! Publish(indexEventStream, event)
     }
 
-    private def proposeFeed(url: String, rtts: ImmutableList[java.lang.Long]): Unit = {
+    private def proposeFeed(url: String, benchmark: Benchmark): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
         def task = () => {
@@ -200,7 +200,7 @@ class CatalogStoreHandler(workerIndex: Int,
                         emitCatalogEvent(catalogEvent)
 
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
-                        updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), RoundTripTime.appendNow(rtts))
+                        updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), benchmark.bumpRTTs())
                         //crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
                     })
                 })
@@ -473,7 +473,11 @@ class CatalogStoreHandler(workerIndex: Int,
                 // crawler ! FetchFeedForUpdateEpisodes(podcastId, feeds.head.getUrl)
                 val f = feeds.head
                 //crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                updater ! ProcessFeed(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
+                val b = ImmutableBenchmark.builder()
+                    .setUri(f.getUrl)
+                    .setLocation(f.getUrl)
+                    .create()
+                updater ! ProcessFeed(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null), b)
             } else {
                 log.error("No Feeds registered for Podcast (EXO) : {}", podcastId)
             }
@@ -488,7 +492,11 @@ class CatalogStoreHandler(workerIndex: Int,
             feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                    updater ! ProcessFeed(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
+                    val b = ImmutableBenchmark.builder()
+                        .setUri(f.getUrl)
+                        .setLocation(f.getUrl)
+                        .create()
+                    updater ! ProcessFeed(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null), b)
                 }).getOrElse({
                     log.error("No Podcast found in Database for Feed (EXO) : {}", feedId)
                 })
@@ -509,7 +517,11 @@ class CatalogStoreHandler(workerIndex: Int,
                 if(feeds.nonEmpty){
                     val f = feeds.head
                     //crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                    updater ! ProcessFeed(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null), RoundTripTime.appendNow(ImmutableList.of()))
+                    val b = ImmutableBenchmark.builder()
+                        .setUri(f.getUrl)
+                        .setLocation(f.getUrl)
+                        .create()
+                    updater ! ProcessFeed(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null), b)
                 } else {
                     log.error("No Feeds registered for Podcast (EXO) : {}", p.getExo)
                 }
@@ -525,7 +537,11 @@ class CatalogStoreHandler(workerIndex: Int,
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getExo).map{p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
-                    updater ! ProcessFeed(p.getExo, f.getUrl, NewPodcastFetchJob(), RoundTripTime.appendNow(ImmutableList.of()))
+                    val b = ImmutableBenchmark.builder()
+                        .setUri(f.getUrl)
+                        .setLocation(f.getUrl)
+                        .create()
+                    updater ! ProcessFeed(p.getExo, f.getUrl, NewPodcastFetchJob(), b)
                 }}.getOrElse({
                     log.error("No Podcast found in Database for Feed (EXO) : {}", f.getExo)
                 })
@@ -534,7 +550,7 @@ class CatalogStoreHandler(workerIndex: Int,
         doInTransaction(task, List(podcastService, feedService))
     }
 
-    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, rtts: ImmutableList[java.lang.Long]): Unit = {
+    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, benchmark: Benchmark): Unit = {
         log.debug("Received RegisterEpisodeIfNew({}, '{}')", podcastExo, episode.getTitle)
 
         def task: () => Option[EpisodeDTO] = () => {
@@ -588,7 +604,7 @@ class CatalogStoreHandler(workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastExo, e.getExo)
 
-                val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e))
+                val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e), benchmark.bumpRTTs())
                 emitIndexEvent(indexEvent)
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
@@ -601,7 +617,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 Option(e.getLink) match {
                     case Some(link) =>
                         //crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
-                        updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), RoundTripTime.appendNow(rtts))
+                        updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), Benchmark.empty())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getExo)
                 }
             case None =>
