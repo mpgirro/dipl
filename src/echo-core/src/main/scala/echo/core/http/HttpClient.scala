@@ -1,11 +1,15 @@
 package echo.core.http
 
+import java.nio.file.Paths
+import java.util.Optional
+
 import com.softwaremill.sttp._
 import com.typesafe.scalalogging.Logger
 import echo.core.exception.EchoException
 
 import scala.compat.java8.OptionConverters._
 import scala.concurrent.duration._
+import scala.io.Source
 
 /**
   *
@@ -32,7 +36,16 @@ class HttpClient (val timeout: Long,
     @throws(classOf[java.net.UnknownHostException])
     @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def headCheck(url: String): HeadResult = {
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            headCheckHTTP(url)
+        } else if (url.startsWith("file:///")) {
+            headCheckFILE(url)
+        } else {
+            throw new IllegalArgumentException("URL points neither to local nor remote resource : " + url)
+        }
+    }
 
+    private def headCheckHTTP(url: String): HeadResult = {
         val response = emptyRequest // use empty request, because standard req uses header "Accept-Encoding: gzip" which can cause problems with HEAD requests
             .head(uri"${url}")
             .readTimeout(DOWNLOAD_TIMEOUT)
@@ -82,11 +95,11 @@ class HttpClient (val timeout: Long,
             .map(ct => ct.split(";")
                 .lift(1)                      // -> charset="UTF-8"
                 .map(_.split("=")
-                    .lift(1)                  // -> "UTF-8"
-                    .map( _
-                        .replaceAll("\"", "") // remove quotation marks if any
-                        .trim ))              // remove whitespace
-                    .getOrElse(None))
+                .lift(1)                  // -> "UTF-8"
+                .map( _
+                .replaceAll("\"", "") // remove quotation marks if any
+                .trim ))              // remove whitespace
+                .getOrElse(None))
             .getOrElse(None)
 
         //set the etag if existent
@@ -105,13 +118,39 @@ class HttpClient (val timeout: Long,
         )
     }
 
+    private def headCheckFILE(url: String): HeadResult = {
+
+        val path = Paths.get(url)
+        val mimeType = java.nio.file.Files.probeContentType(path)
+        val file = path.toFile
+        val status = if (file.exists()) 200 else 404
+
+        new HeadResult(
+            status,
+            Optional.of(url),
+            Optional.of(mimeType),
+            Optional.of("UTF-8"),
+            Optional.empty(),
+            Optional.empty()
+        )
+    }
+
     @throws(classOf[EchoException])
     @throws(classOf[java.net.ConnectException])
     @throws(classOf[java.net.SocketTimeoutException])
     @throws(classOf[java.net.UnknownHostException])
     @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def fetchContent(url: String, encoding: java.util.Optional[String]): String = {
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            fetchContentHTTP(url, encoding)
+        } else if (url.startsWith("file:///")) {
+            fetchContentFILE(url, encoding)
+        } else {
+            throw new IllegalArgumentException("URL points neither to local nor remote resource : " + url)
+        }
+    }
 
+    private def fetchContentHTTP(url: String, encoding: java.util.Optional[String]): String = {
         val request = sttp
             .get(uri"${url}")
             .readTimeout(DOWNLOAD_TIMEOUT)
@@ -151,6 +190,10 @@ class HttpClient (val timeout: Long,
 
                 new String(data, encoding.asScala.getOrElse("utf-8"))
         }
+    }
+
+    private def fetchContentFILE(url: String, encoding: java.util.Optional[String]): String = {
+        Source.fromURL(url).getLines.mkString
     }
 
     private def analyzeUrl(url: String): (String, String) = {
