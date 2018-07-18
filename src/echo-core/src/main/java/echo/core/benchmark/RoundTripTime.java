@@ -54,4 +54,12 @@ public interface RoundTripTime {
         }
     }
 
+    default long getFirstTimestamp() {
+        return (getRtts().size() > 0) ? getRtts().get(0) : 0;
+    }
+
+    default long getLastTimestamp() {
+        return (getRtts().size() > 0) ? getRtts().get(getRtts().size()-1) : 0;
+    }
+
 }

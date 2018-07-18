@@ -128,7 +128,7 @@ class HttpClient (val timeout: Long,
         new HeadResult(
             status,
             Optional.of(url),
-            Optional.of(mimeType),
+            Optional.of(Option(mimeType).getOrElse("text/xml")),
             Optional.of("UTF-8"),
             Optional.empty(),
             Optional.empty()
