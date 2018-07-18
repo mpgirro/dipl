@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import akka.actor.ActorRef
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.Benchmark
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 
@@ -21,15 +21,15 @@ object ActorProtocol {
     case class WebsiteFetchJob() extends FetchJob
 
     // Msg: Catalog -> Updater
-    case class ProcessFeed(exo: String, url: String, job: FetchJob, b: Benchmark)
+    case class ProcessFeed(exo: String, url: String, job: FetchJob, rtt: RoundTripTime)
 
     // Msg: Updater -> Crawler
-    case class DownloadWithHeadCheck(exo: String, url: String, job: FetchJob, b: Benchmark)
-    case class DownloadContent(exo: String, url: String, job: FetchJob, encoding: Option[String], b: Benchmark)
+    case class DownloadWithHeadCheck(exo: String, url: String, job: FetchJob, rtt: RoundTripTime)
+    case class DownloadContent(exo: String, url: String, job: FetchJob, encoding: Option[String], rtt: RoundTripTime)
 
     // Crawler -> Parser
-    case class ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, b: Benchmark)
-    case class ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, b: Benchmark)
+    case class ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtt: RoundTripTime)
+    case class ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, rtt: RoundTripTime)
     case class ParseWebsiteData(exo: String, html: String)
     case class ParseFyydEpisodes(podcastExo: String, episodesData: String)
 
@@ -50,10 +50,10 @@ object ActorProtocol {
     case class ActorRefSearcherActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefGatewayActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefUpdaterActor(ref: ActorRef) extends ActorRefInfo
-    case class ActorRefCLIActor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefBenchmarkMonitor(ref: ActorRef) extends ActorRefInfo
 
     // Benchmark
-    case class BenchmarkReport(b: Benchmark)
+    case class BenchmarkReport(rtt: RoundTripTime)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore

@@ -88,7 +88,7 @@ class NodeMaster extends Actor with ActorLogging {
         updater ! ActorRefCatalogStoreActor(catalog)
         updater ! ActorRefCrawlerActor(crawler)
 
-        index ! ActorRefCLIActor(cli)
+        index ! ActorRefBenchmarkMonitor(self)
 
         log.info("up and running")
     }
@@ -98,6 +98,9 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
+        case BenchmarkReport(b) =>
+            log.info("Received BenchmarkReport:")
+            log.info(b.toString)
         case Terminated(corpse) => onTerminated(corpse)
         case ShutdownSystem()   => onSystemShutdown()
     }

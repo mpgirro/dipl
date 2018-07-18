@@ -3,9 +3,8 @@ package echo.actor.index
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCLIActor, BenchmarkReport}
+import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, BenchmarkReport}
 import echo.actor.index.IndexProtocol._
-import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto.ImmutableIndexDocDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
@@ -79,7 +78,7 @@ class IndexStore (indexPath: String,
 
     override def receive: Receive = {
 
-        case ActorRefCLIActor(ref) =>
+        case ActorRefBenchmarkMonitor(ref) =>
             log.debug("Received ActorRefCLIActor(_)")
             monitor = ref
 
@@ -87,11 +86,11 @@ class IndexStore (indexPath: String,
             commitIndexIfChanged()
             context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
-        case AddDocIndexEvent(doc, benchmark) =>
+        case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
             // TODO add now to rtts and send to CLI
-            monitor ! BenchmarkReport(benchmark.bumpRTTs())
+            monitor ! BenchmarkReport(rtt.bumpRTTs())
 
             indexCommitter.add(doc)
             indexChanged = true

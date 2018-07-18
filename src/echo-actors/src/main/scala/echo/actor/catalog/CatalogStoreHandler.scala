@@ -15,7 +15,7 @@ import echo.actor.catalog.CatalogProtocol._
 import echo.actor.catalog.repository.RepositoryFactoryBuilder
 import echo.actor.catalog.service._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent}
-import echo.core.benchmark.{Benchmark, ImmutableBenchmark, RoundTripTime}
+import echo.core.benchmark.{ImmutableRoundTripTime, RoundTripTime, Workflow}
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 import echo.core.mapper._
@@ -96,7 +96,7 @@ class CatalogStoreHandler(workerIndex: Int,
             log.debug("Received ActorRefUpdaterActor(_)")
             updater = ref
 
-        case ProposeNewFeed(feedUrl, benchmark) => proposeFeed(feedUrl, benchmark)
+        case ProposeNewFeed(feedUrl, rtt) => proposeFeed(feedUrl, rtt)
 
         case CheckPodcast(exo) => onCheckPodcast(exo)
 
@@ -140,7 +140,7 @@ class CatalogStoreHandler(workerIndex: Int,
 
         case GetChaptersByEpisode(episodeExo) => onGetChaptersByEpisode(episodeExo)
 
-        case RegisterEpisodeIfNew(podcastExo, episode, benchmark) => onRegisterEpisodeIfNew(podcastExo, episode, benchmark)
+        case RegisterEpisodeIfNew(podcastExo, episode, rtt) => onRegisterEpisodeIfNew(podcastExo, episode, rtt)
 
         case DebugPrintAllPodcasts => debugPrintAllPodcasts()
 
@@ -164,7 +164,7 @@ class CatalogStoreHandler(workerIndex: Int,
         mediator ! Publish(indexEventStream, event)
     }
 
-    private def proposeFeed(url: String, benchmark: Benchmark): Unit = {
+    private def proposeFeed(url: String, rtt: RoundTripTime): Unit = {
         log.debug("Received msg proposing a new feed: " + url)
 
         def task = () => {
@@ -200,7 +200,7 @@ class CatalogStoreHandler(workerIndex: Int,
                         emitCatalogEvent(catalogEvent)
 
                         // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
-                        updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), benchmark.bumpRTTs())
+                        updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), rtt.bumpRTTs())
                         //crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
                     })
                 })
@@ -473,7 +473,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 // crawler ! FetchFeedForUpdateEpisodes(podcastId, feeds.head.getUrl)
                 val f = feeds.head
                 //crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                val b = ImmutableBenchmark.builder()
+                val b = ImmutableRoundTripTime.builder()
                     .setUri(f.getUrl)
                     .setLocation(f.getUrl)
                     .create()
@@ -492,7 +492,7 @@ class CatalogStoreHandler(workerIndex: Int,
             feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                    val b = ImmutableBenchmark.builder()
+                    val b = ImmutableRoundTripTime.builder()
                         .setUri(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
@@ -517,7 +517,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 if(feeds.nonEmpty){
                     val f = feeds.head
                     //crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
-                    val b = ImmutableBenchmark.builder()
+                    val b = ImmutableRoundTripTime.builder()
                         .setUri(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
@@ -537,7 +537,7 @@ class CatalogStoreHandler(workerIndex: Int,
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getExo).map{p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
-                    val b = ImmutableBenchmark.builder()
+                    val b = ImmutableRoundTripTime.builder()
                         .setUri(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
@@ -550,7 +550,7 @@ class CatalogStoreHandler(workerIndex: Int,
         doInTransaction(task, List(podcastService, feedService))
     }
 
-    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, benchmark: Benchmark): Unit = {
+    private def onRegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, rtt: RoundTripTime): Unit = {
         log.debug("Received RegisterEpisodeIfNew({}, '{}')", podcastExo, episode.getTitle)
 
         def task: () => Option[EpisodeDTO] = () => {
@@ -604,7 +604,9 @@ class CatalogStoreHandler(workerIndex: Int,
             case Some(e) =>
                 log.info("episode registered : '{}' [p:{},e:{}]", e.getTitle, podcastExo, e.getExo)
 
-                val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e), benchmark.bumpRTTs())
+                val indexEvent = AddDocIndexEvent(indexMapper.toImmutable(e), ImmutableRoundTripTime.copyOf(rtt)
+                    .withWorkflow(Workflow.EPISODE_INDEX)
+                    .bumpRTTs())
                 emitIndexEvent(indexEvent)
 
                 /* TODO send an update to all catalogs via the broker, so all other stores will have
@@ -617,7 +619,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 Option(e.getLink) match {
                     case Some(link) =>
                         //crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
-                        updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), Benchmark.empty())
+                        updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), RoundTripTime.empty())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getExo)
                 }
             case None =>

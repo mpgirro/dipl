@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
-import echo.core.benchmark.{Benchmark, ImmutableBenchmark}
+import echo.core.benchmark.{ImmutableRoundTripTime, RoundTripTime, Workflow}
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._
@@ -84,9 +84,6 @@ class CLI(master: ActorRef,
     }
 
     override def receive: Receive = {
-        case BenchmarkReport(b) =>
-            log.info("Received BenchmarkReport:")
-            log.info(b.toString)
         case unhandled => log.info("Received " + unhandled)
     }
 
@@ -113,12 +110,18 @@ class CLI(master: ActorRef,
             case q@("q" | "quit" | "exit") :: _ => shutdown = true
 
             case "propose" :: Nil   => usage("propose")
-            case "propose" :: feeds => feeds.foreach(f => updater ! ProposeNewFeed(f, Benchmark.empty()))
+            case "propose" :: feeds => feeds.foreach(f => updater ! ProposeNewFeed(f, RoundTripTime.empty()))
 
             case "benchmark" :: Nil                   => usage("benchmark")
             case "benchmark" :: "feed" :: Nil         => usage("benchmark feed")
             case "benchmark" :: "feed" :: feed :: Nil =>
-                updater ! ProposeNewFeed(feed, Benchmark.empty())
+                // TODO inform NodeMaster of benchmark
+                val b = ImmutableRoundTripTime.builder()
+                    .setUri(feed)
+                    .setLocation(feed)
+                    .setWorkflow(Workflow.PODCAST_INDEX)
+                    .create()
+                updater ! ProposeNewFeed(feed, b)
             case "benchmark" :: "feed" :: feed :: _   => usage("benchmark feed")
             case "benchmark" :: "index" :: Nil        => println("NOT YET IMPLEMENTED") // TODO
             case "benchmark" :: "index" :: _          => usage("benchmark index")
@@ -248,14 +251,14 @@ class CLI(master: ActorRef,
     private def loadTestFeeds(): Unit = {
         log.debug("Received LoadTestFeeds")
         for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
-            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), Benchmark.empty())
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), RoundTripTime.empty())
         }
     }
 
     private def loadMassiveFeeds(): Unit = {
         log.debug("Received LoadMassiveFeeds")
         for (feed <- Source.fromFile(MASSIVE_TXT).getLines) {
-            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), Benchmark.empty())
+            updater ! ProposeNewFeed(UrlUtil.sanitize(feed), RoundTripTime.empty())
         }
     }
 

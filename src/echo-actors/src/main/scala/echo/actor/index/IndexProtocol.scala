@@ -1,7 +1,7 @@
 package echo.actor.index
 
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.Benchmark
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
 
 /**
@@ -12,7 +12,7 @@ object IndexProtocol {
     trait IndexEvent
 
     // Crawler/Parser/CatalogStore -> IndexStore
-    case class AddDocIndexEvent(doc: IndexDocDTO, b: Benchmark) extends IndexEvent
+    case class AddDocIndexEvent(doc: IndexDocDTO, rtt: RoundTripTime) extends IndexEvent
     case class UpdateDocWebsiteDataIndexEvent(exo: String, html: String) extends IndexEvent
     case class UpdateDocImageIndexEvent(exo: String, image: String) extends IndexEvent
     case class UpdateDocLinkIndexEvent(exo: String, newLink: String) extends IndexEvent

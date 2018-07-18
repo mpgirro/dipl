@@ -3,7 +3,7 @@ package echo.actor.catalog
 import java.time.LocalDateTime
 
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.Benchmark
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
 
@@ -14,8 +14,8 @@ object CatalogProtocol {
 
     trait CatalogCommand
 
-    case class ProposeNewFeed(url: String, b: Benchmark) extends CatalogCommand                 // Web/CLI -> CatalogStore
-    case class RegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, b: Benchmark) extends CatalogCommand // Questions: Parser -> CatalogStore
+    case class ProposeNewFeed(url: String, rtt: RoundTripTime) extends CatalogCommand                 // Web/CLI -> CatalogStore
+    case class RegisterEpisodeIfNew(podcastExo: String, episode: EpisodeDTO, rtt: RoundTripTime) extends CatalogCommand // Questions: Parser -> CatalogStore
 
 
     trait CatalogEvent

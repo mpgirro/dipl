@@ -1,12 +1,8 @@
 package echo.actor.updater
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Send
 import echo.actor.ActorProtocol._
-import echo.actor.catalog.CatalogBroker
-import echo.actor.catalog.CatalogProtocol.{CatalogCommand, ProposeNewFeed}
-import echo.core.benchmark.RoundTripTime
+import echo.actor.catalog.CatalogProtocol.ProposeNewFeed
 
 /**
   * @author Maximilian Irro
@@ -36,11 +32,11 @@ class Updater extends Actor with ActorLogging {
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
 
-        case ProposeNewFeed(url, benchmark) =>
-            catalog ! ProposeNewFeed(url, benchmark.bumpRTTs())
+        case ProposeNewFeed(url, rtt) =>
+            catalog ! ProposeNewFeed(url, rtt.bumpRTTs())
 
-        case ProcessFeed(exo, url, job: FetchJob, benchmark) =>
-            crawler ! DownloadWithHeadCheck(exo, url, job, benchmark.bumpRTTs())
+        case ProcessFeed(exo, url, job: FetchJob, rtt) =>
+            crawler ! DownloadWithHeadCheck(exo, url, job, rtt.bumpRTTs())
     }
 
 }

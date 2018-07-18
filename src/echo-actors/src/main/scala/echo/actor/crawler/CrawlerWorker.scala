@@ -6,21 +6,19 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
 import akka.stream._
-import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
-import echo.core.benchmark.{Benchmark, ImmutableBenchmark, RoundTripTime}
+import echo.core.benchmark.RoundTripTime
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
 import echo.core.parse.api.FyydAPI
 
 import scala.compat.java8.OptionConverters._
-import scala.concurrent.blocking
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, blocking}
 import scala.language.postfixOps
 
 /**
@@ -95,7 +93,7 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
 
-        case DownloadWithHeadCheck(exo, url, job, benchmark) =>
+        case DownloadWithHeadCheck(exo, url, job, rtt) =>
 
             this.currUrl = url
             this.currJob = job
@@ -104,21 +102,21 @@ class CrawlerWorker extends Actor with ActorLogging {
                 case WebsiteFetchJob() =>
                     if (WEBSITE_JOBS) {
                         log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                        headCheck(exo, url, job, benchmark)
+                        headCheck(exo, url, job, rtt)
                     }
                 case _ =>
                     log.info("Received DownloadWithHeadCheck({}, '{}', {})", exo, url, job.getClass.getSimpleName)
-                    headCheck(exo, url, job, benchmark)
+                    headCheck(exo, url, job, rtt)
             }
 
 
-        case DownloadContent(exo, url, job, encoding, benchmark) =>
+        case DownloadContent(exo, url, job, encoding, rtt) =>
             log.debug("Received Download({},'{}',{},{})", exo, url, job.getClass.getSimpleName, encoding)
 
             this.currUrl = url
             this.currJob = job
 
-            fetchContent(exo, url, job, encoding, benchmark) // TODO send encoding via message
+            fetchContent(exo, url, job, encoding, rtt) // TODO send encoding via message
 
         case CrawlFyyd(count) => onCrawlFyyd(count)
 
@@ -144,7 +142,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         val it = feeds.iterator()
         while (it.hasNext) {
-            val catalogCommand = ProposeNewFeed(it.next(), Benchmark.empty())
+            val catalogCommand = ProposeNewFeed(it.next(), RoundTripTime.empty())
             sendCatalogCommand(catalogCommand)
         }
     }
@@ -169,7 +167,7 @@ class CrawlerWorker extends Actor with ActorLogging {
         }
     }
 
-    private def headCheck(exo: String, url: String, job: FetchJob, benchmark: Benchmark): Unit = {
+    private def headCheck(exo: String, url: String, job: FetchJob, rtt: RoundTripTime): Unit = {
         blocking {
             val headResult = httpClient.headCheck(url)
 
@@ -198,7 +196,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                             }
 
                             // we always download websites, because we only do it once anyway
-                            self ! DownloadContent(exo, href, job, encoding, benchmark.bumpRTTs()) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, rtt.bumpRTTs()) // TODO
                             //fetchContent(exo, href, job, encoding)
 
                         case _ =>
@@ -215,7 +213,7 @@ class CrawlerWorker extends Actor with ActorLogging {
                              * here I have to do some voodoo with etag/lastMod to
                              * determine weither the feed changed and I really need to redownload
                              */
-                            self ! DownloadContent(exo, href, job, encoding, benchmark) // TODO
+                            self ! DownloadContent(exo, href, job, encoding, rtt) // TODO
                             //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
@@ -233,17 +231,17 @@ class CrawlerWorker extends Actor with ActorLogging {
       * @param url
       * @param job
       */
-    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String], benchmark: Benchmark): Unit = {
+    private def fetchContent(exo: String, url: String, job: FetchJob, encoding: Option[String], rtt: RoundTripTime): Unit = {
         blocking {
             val data = httpClient.fetchContent(url, encoding.asJava)
             job match {
                 case NewPodcastFetchJob() =>
-                    parser ! ParseNewPodcastData(url, exo, data, benchmark.bumpRTTs())
+                    parser ! ParseNewPodcastData(url, exo, data, rtt.bumpRTTs())
                     val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     emitCatalogEvent(catalogEvent)
 
                 case UpdateEpisodesFetchJob(etag, lastMod) =>
-                    parser ! ParseUpdateEpisodeData(url, exo, data, benchmark.bumpRTTs())
+                    parser ! ParseUpdateEpisodeData(url, exo, data, rtt.bumpRTTs())
                     val catalogEvent = FeedStatusUpdate(exo, url, LocalDateTime.now(), FeedStatus.DOWNLOAD_SUCCESS)
                     emitCatalogEvent(catalogEvent)
 
