@@ -12,6 +12,7 @@ import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.SearcherActor
 import echo.actor.updater.Updater
+import echo.core.benchmark.RoundTripTimeMonitor
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -46,6 +47,8 @@ class NodeMaster extends Actor with ActorLogging {
     private var gateway: ActorRef = _
     private var updater: ActorRef = _
     private var cli: ActorRef = _
+
+    private val rttMonitor = new RoundTripTimeMonitor()
 
     override def preStart(): Unit = {
 
@@ -98,9 +101,12 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
-        case BenchmarkReport(b) =>
-            log.info("Received BenchmarkReport:")
-            log.info(b.toString)
+        case MonitorFeedProgress(feedProperties) =>
+            log.debug("Received MonitorFeedProgress(_)")
+            rttMonitor.initWithProperties(feedProperties)
+        case RoundTripTimeReport(rtt) =>
+            log.debug("Received {}", rtt)
+            rttMonitor.addRoundTripTime(rtt)
         case Terminated(corpse) => onTerminated(corpse)
         case ShutdownSystem()   => onSystemShutdown()
     }
@@ -134,7 +140,7 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     private def createCLI(): Unit = {
-        cli = context.actorOf(CLI.props(self, parser, searcher, crawler, catalog, gateway, updater),
+        cli = context.actorOf(CLI.props(self, parser, searcher, crawler, catalog, gateway, updater, self),
             name = CLI.name)
         context watch cli
     }

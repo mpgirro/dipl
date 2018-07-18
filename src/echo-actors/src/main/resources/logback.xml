@@ -41,6 +41,7 @@
 
     <logger name="echo.actor" level="INFO" />
     <logger name="echo.core" level="WARN" />
+    <logger name="echo.core.benchmark" level="INFO" />
     <logger name="ch.qos.logback" level="WARN"/>
     <logger name="liquibase" level="WARN"/>
     <logger name="org.hibernate" level="WARN"/>

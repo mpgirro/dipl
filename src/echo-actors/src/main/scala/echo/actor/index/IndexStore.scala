@@ -3,7 +3,7 @@ package echo.actor.index
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, BenchmarkReport}
+import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, RoundTripTimeReport}
 import echo.actor.index.IndexProtocol._
 import echo.core.domain.dto.ImmutableIndexDocDTO
 import echo.core.exception.SearchException
@@ -90,7 +90,7 @@ class IndexStore (indexPath: String,
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
             // TODO add now to rtts and send to CLI
-            monitor ! BenchmarkReport(rtt.bumpRTTs())
+            monitor ! RoundTripTimeReport(rtt.bumpRTTs())
 
             indexCommitter.add(doc)
             indexChanged = true

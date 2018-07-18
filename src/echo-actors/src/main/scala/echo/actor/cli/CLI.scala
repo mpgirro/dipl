@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
-import echo.core.benchmark.{ImmutableRoundTripTime, RoundTripTime, Workflow}
+import echo.core.benchmark._
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._
@@ -29,9 +29,10 @@ object CLI {
               crawler: ActorRef,
               catalogStore: ActorRef,
               gateway: ActorRef,
-              updater: ActorRef): Props = {
+              updater: ActorRef,
+              benchmarkMonitor: ActorRef): Props = {
 
-        Props(new CLI(master, parser, searcher, crawler, catalogStore, gateway, updater))
+        Props(new CLI(master, parser, searcher, crawler, catalogStore, gateway, updater, benchmarkMonitor))
             .withDispatcher("echo.cli.dispatcher")
 
     }
@@ -43,7 +44,8 @@ class CLI(master: ActorRef,
           crawler: ActorRef,
           catalogStore: ActorRef,
           gateway: ActorRef,
-          updater: ActorRef) extends Actor with ActorLogging {
+          updater: ActorRef,
+          benchmarkMonitor: ActorRef) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
@@ -73,6 +75,8 @@ class CLI(master: ActorRef,
         "get podcast"    -> "<exo>",
         "get episode"    -> "<exo>"
     )
+
+    val feedPropertyUtil = new FeedPropertyUtil()
 
 
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
@@ -123,7 +127,7 @@ class CLI(master: ActorRef,
                     .create()
                 updater ! ProposeNewFeed(feed, b)
             case "benchmark" :: "feed" :: feed :: _   => usage("benchmark feed")
-            case "benchmark" :: "index" :: Nil        => println("NOT YET IMPLEMENTED") // TODO
+            case "benchmark" :: "index" :: Nil        => benchmarkIndexSubsystem()
             case "benchmark" :: "index" :: _          => usage("benchmark index")
             case "benchmark" :: "search" :: Nil       => println("NOT YET IMPLEMENTED") // TODO
             case "benchmark" :: "search" :: _         => usage("benchmark search")
@@ -275,6 +279,20 @@ class CLI(master: ActorRef,
                 feeds.foreach(f => pw.write(f.getUrl+ "\n"))
                 pw.close()
             case other => log.error("Received unexpected CatalogResult type : {}", other.getClass)
+        }
+    }
+
+    private def benchmarkIndexSubsystem(): Unit = {
+        val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
+        benchmarkMonitor ! MonitorFeedProgress(feedProperties)
+        for (fp: FeedProperty <- feedProperties.asScala) {
+            val location = "file://"+fp.getLocation
+            val rtt = ImmutableRoundTripTime.builder()
+                .setUri(fp.getUri)
+                .setLocation(location)
+                .setWorkflow(Workflow.PODCAST_INDEX)
+                .create()
+            updater ! ProposeNewFeed(location, rtt) // TODO adjust location
         }
     }
 

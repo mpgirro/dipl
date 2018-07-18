@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import akka.actor.ActorRef
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.{FeedProperty, RoundTripTime}
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 
@@ -53,7 +53,8 @@ object ActorProtocol {
     case class ActorRefBenchmarkMonitor(ref: ActorRef) extends ActorRefInfo
 
     // Benchmark
-    case class BenchmarkReport(rtt: RoundTripTime)
+    case class RoundTripTimeReport(rtt: RoundTripTime)
+    case class MonitorFeedProgress(feedProperties: java.util.List[FeedProperty])
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore
