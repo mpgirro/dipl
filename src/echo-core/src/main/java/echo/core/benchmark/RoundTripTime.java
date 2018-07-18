@@ -31,6 +31,13 @@ public interface RoundTripTime {
 
     ImmutableList<Long> getRtts();
 
+    static RoundTripTime empty() {
+        return ImmutableRoundTripTime.builder()
+            .setUri("")
+            .setLocation("")
+            .create();
+    }
+
     default RoundTripTime bumpRTTs() {
         return ImmutableRoundTripTime.builder()
             .from(this)
@@ -38,11 +45,13 @@ public interface RoundTripTime {
             .create();
     }
 
-    static RoundTripTime empty() {
-        return ImmutableRoundTripTime.builder()
-            .setUri("")
-            .setLocation("")
-            .create();
+    default long overallRuntime() {
+        final ImmutableList<Long> rtts = getRtts();
+        if (rtts.isEmpty()) {
+            return 0;
+        } else {
+            return rtts.get(rtts.size()-1) - rtts.get(0);
+        }
     }
 
 }

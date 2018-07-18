@@ -1,5 +1,9 @@
 package echo.core;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.rometools.modules.activitystreams.types.Video;
+import echo.core.benchmark.FeedProperty;
 import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
 import echo.core.exception.SearchException;
@@ -13,11 +17,10 @@ import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
 import echo.core.util.ExoGenerator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -137,8 +140,8 @@ public class CoreApp {
                     usage(cmd);
                 }
             } else if (isCmd(cmd,"test-id-generator")) {
-                final Map<String,Integer> occurences = new HashMap<>();
-                for (int i=0; i<100000; i++) {
+                final Map<String, Integer> occurences = new HashMap<>();
+                for (int i = 0; i < 100000; i++) {
                     final String id = idGenerator.getNewExo();
                     if (occurences.containsKey(id)) {
                         occurences.put(id, occurences.get(id) + 1);
@@ -154,6 +157,18 @@ public class CoreApp {
                     .entrySet().stream()
                     .limit(10)
                     .forEach(e -> out.println(e.getKey() + " :  " + e.getValue()));
+            } else if (isCmd(cmd, "generate-feed-properties-file")) {
+
+                final String destDir = "../benchmark/feeds/";
+                final String feedsFile = "../feeds-benchmark-50.txt"; // TODO make a CLI argument?
+                try {
+                    final List<FeedProperty> properties = generateFeedProperties(feedsFile, destDir);
+                    saveProperties(properties, "/Users/max/Desktop/properties.json");
+                } catch (IOException | FeedParsingException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
             }
@@ -254,6 +269,49 @@ public class CoreApp {
             .useDelimiter("\\A")
             .next();
 
+    }
+
+    private List<FeedProperty> generateFeedProperties(String feedsListFile, String feedDestDir) throws IOException, FeedParsingException {
+
+        final List<FeedProperty> properties = new LinkedList<>();
+        final Stream<String> feedsStream = Files.lines(Paths.get(feedsListFile));
+        for (String url : feedsStream.toArray(String[]::new)) {
+            final String feedData = download(url);
+            final String fileName = url.replaceAll("[\\\\/:*?\"<>|]", "_") + ".xml";
+
+            final File file = new File(feedDestDir+fileName);
+            final String path = file.getCanonicalPath();
+            writeToFile(path, feedData);
+
+            final FeedParser feedParser = RomeFeedParser.of(feedData);
+            final FeedProperty property = new FeedProperty(url, path, feedParser.getEpisodes().size());
+            properties.add(property);
+        }
+
+        return properties;
+    }
+
+    private void writeToFile(String dest, String content) throws IOException {
+        final Path path = Paths.get(dest);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write(content);
+        }
+    }
+
+    public List<FeedProperty> loadProperties(String filePath) throws IOException {
+        out.println("Loading feed properties file : " + filePath);
+        final Gson gson = new Gson();
+        try (Reader reader = new FileReader(filePath)) {
+            return gson.fromJson(reader, new TypeToken<List<FeedProperty>>(){}.getType());
+        }
+    }
+
+    public void saveProperties(List<FeedProperty> properties, String filePath) throws IOException {
+        out.println("Saving feed properties to file : " + filePath);
+        final Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter(filePath)) {
+            gson.toJson(properties, writer);
+        }
     }
 
 }
