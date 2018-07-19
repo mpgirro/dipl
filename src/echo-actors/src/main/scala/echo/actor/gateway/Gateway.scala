@@ -16,6 +16,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service.{EpisodeGatewayService, FeedGatewayService, PodcastGatewayService, SearchGatewayService}
+import echo.core.benchmark.MessagesPerSecondCounter
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -58,6 +59,9 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
 
     private var searcher: ActorRef = _
     private var catalogStore: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
+
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     private val searchService = new SearchGatewayService(log, searcherBreaker)
     private val podcastService = new PodcastGatewayService(log, catalogBreaker)
@@ -117,6 +121,20 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
             podcastService.setCatalogStoreActorRef(ref)
             episodeService.setCatalogStoreActorRef(ref)
             feedService.setCatalogStoreActorRef(ref)
+
+        case ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+
+        case StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+
+        case StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+
         case _ =>
             log.warning("GatewayActor does not handle any Actor-messages yet")
     }

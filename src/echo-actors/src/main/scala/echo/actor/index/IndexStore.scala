@@ -3,8 +3,9 @@ package echo.actor.index
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, RoundTripTimeReport}
+import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol._
+import echo.core.benchmark.MessagesPerSecondCounter
 import echo.core.domain.dto.ImmutableIndexDocDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
@@ -50,8 +51,9 @@ class IndexStore (indexPath: String,
 
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
+    private var benchmarkMonitor: ActorRef = _
 
-    private var monitor: ActorRef = _
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     // kickoff the committing play
     context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
@@ -79,40 +81,55 @@ class IndexStore (indexPath: String,
     override def receive: Receive = {
 
         case ActorRefBenchmarkMonitor(ref) =>
-            log.debug("Received ActorRefCLIActor(_)")
-            monitor = ref
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+
+        case StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+
+        case StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
 
         case CommitIndex =>
+            mpsCounter.incrementCounter()
             commitIndexIfChanged()
             context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
+            mpsCounter.incrementCounter()
+
             // TODO add now to rtts and send to CLI
-            monitor ! RoundTripTimeReport(rtt.bumpRTTs())
+            benchmarkMonitor ! RoundTripTimeReport(rtt.bumpRTTs())
 
             indexCommitter.add(doc)
             indexChanged = true
 
         case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
-
+            mpsCounter.incrementCounter()
             updateWebsiteQueue.enqueue((exo,html))
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case UpdateDocImageIndexEvent(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
-
+            mpsCounter.incrementCounter()
             updateImageQueue.enqueue((exo, image))
 
         case UpdateDocLinkIndexEvent(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
-
+            mpsCounter.incrementCounter()
             updateLinkQueue.enqueue((exo, link))
 
         case SearchIndex(query, page, size) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
+
+            mpsCounter.incrementCounter()
+
             currQuery = query // make a copy in case of an exception
 
             indexSearcher.refresh()

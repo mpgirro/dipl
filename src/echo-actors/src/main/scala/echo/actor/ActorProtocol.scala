@@ -55,6 +55,9 @@ object ActorProtocol {
     // Benchmark
     case class RoundTripTimeReport(rtt: RoundTripTime)
     case class MonitorFeedProgress(feedProperties: java.util.List[FeedProperty])
+    case class StartMessagePerSecondMonitoring()
+    case class StopMessagePerSecondMonitoring()
+    case class MessagePerSecondReport(actorName: String, mps: Double)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore

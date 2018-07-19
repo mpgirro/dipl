@@ -5,7 +5,8 @@ import java.sql.{Connection, DriverManager}
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefUpdaterActor}
+import echo.actor.ActorProtocol._
+import echo.core.benchmark.MessagesPerSecondCounter
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
@@ -33,6 +34,9 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
     private var crawler: ActorRef = _
     private var updater: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
+
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -63,6 +67,22 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
             updater = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
+        case msg @ ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            router.routees.foreach(r => r.send(msg, sender()))
+
         case Terminated(corpse) =>
             /* TODO at some point we want to simply restart replace the worker
             router = router.removeRoutee(corpse)
@@ -89,6 +109,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
+            mpsCounter.incrementCounter()
             router.route(work, sender())
 
     }

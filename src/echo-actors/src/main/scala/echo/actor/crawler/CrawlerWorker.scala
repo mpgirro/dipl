@@ -11,7 +11,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -54,9 +54,10 @@ class CrawlerWorker extends Actor with ActorLogging {
     private val mediator = DistributedPubSub(context.system).mediator
 
     private var parser: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
 
+    private val mpsCounter = new MessagesPerSecondCounter()
     private val fyydAPI: FyydAPI = new FyydAPI()
-
     private var httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
     private var currUrl: String = _
@@ -93,7 +94,23 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexerActor(_)")
             parser = ref
 
+        case ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+
+        case StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+
+        case StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+
         case DownloadWithHeadCheck(exo, url, job, rtt) =>
+            log.debug("Received Download({},'{}',{},_)", exo, url, job.getClass.getSimpleName)
+
+            mpsCounter.incrementCounter()
 
             this.currUrl = url
             this.currJob = job
@@ -111,16 +128,22 @@ class CrawlerWorker extends Actor with ActorLogging {
 
 
         case DownloadContent(exo, url, job, encoding, rtt) =>
-            log.debug("Received Download({},'{}',{},{})", exo, url, job.getClass.getSimpleName, encoding)
+            log.debug("Received Download({},'{}',{},{},_)", exo, url, job.getClass.getSimpleName, encoding)
+
+            mpsCounter.incrementCounter()
 
             this.currUrl = url
             this.currJob = job
 
             fetchContent(exo, url, job, encoding, rtt) // TODO send encoding via message
 
-        case CrawlFyyd(count) => onCrawlFyyd(count)
+        case CrawlFyyd(count) =>
+            mpsCounter.incrementCounter()
+            onCrawlFyyd(count)
 
-        case LoadFyydEpisodes(podcastId, fyydId) => onLoadFyydEpisodes(podcastId, fyydId)
+        case LoadFyydEpisodes(podcastId, fyydId) =>
+            mpsCounter.incrementCounter()
+            onLoadFyydEpisodes(podcastId, fyydId)
 
     }
 

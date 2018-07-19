@@ -285,6 +285,7 @@ class CLI(master: ActorRef,
     private def benchmarkIndexSubsystem(): Unit = {
         val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
         benchmarkMonitor ! MonitorFeedProgress(feedProperties)
+        benchmarkMonitor ! StartMessagePerSecondMonitoring
         for (fp: FeedProperty <- feedProperties.asScala) {
             val location = "file://"+fp.getLocation
             val rtt = ImmutableRoundTripTime.builder()
@@ -294,6 +295,12 @@ class CLI(master: ActorRef,
                 .create()
             updater ! ProposeNewFeed(location, rtt) // TODO adjust location
         }
+    }
+
+    private def benchmarkRetrievalSubsystem(): Unit = {
+        benchmarkMonitor ! StartMessagePerSecondMonitoring
+
+        // TODO
     }
 
 }

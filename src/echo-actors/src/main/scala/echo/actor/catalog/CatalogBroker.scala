@@ -5,8 +5,9 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeAck}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.ActorRefCrawlerActor
-import CatalogProtocol.{CatalogCommand, CatalogEvent, CatalogQuery}
+import echo.actor.ActorProtocol._
+import echo.actor.catalog.CatalogProtocol.{CatalogCommand, CatalogEvent, CatalogQuery}
+import echo.core.benchmark.MessagesPerSecondCounter
 
 /**
   * @author Maximilian Irro
@@ -31,6 +32,9 @@ class CatalogBroker extends Actor with ActorLogging {
     mediator ! Put(self) // register to the path
 
     private var crawler: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
+
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     /*
      * We define two separate routings, based on the Command–query separation principle
@@ -67,16 +71,35 @@ class CatalogBroker extends Actor with ActorLogging {
             crawler = ref
             broadcastRouter.route(msg, sender())
 
+        case msg @ ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+            broadcastRouter.route(msg, sender())
+
+        case msg @ StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+            broadcastRouter.route(msg, sender())
+
+        case msg @ StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            broadcastRouter.route(msg, sender())
+
         case command: CatalogCommand =>
             log.debug("Routing command: {}", command.getClass)
+            mpsCounter.incrementCounter()
             roundRobinRouter.route(command, sender())
 
         case event: CatalogEvent =>
             log.debug("Routing event: {}", event.getClass)
+            mpsCounter.incrementCounter()
             broadcastRouter.route(event, sender())
 
         case query: CatalogQuery =>
             log.debug("Routing query : {}", query.getClass)
+            mpsCounter.incrementCounter()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -85,6 +108,7 @@ class CatalogBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
+            mpsCounter.incrementCounter()
             broadcastRouter.route(message, sender())
     }
 

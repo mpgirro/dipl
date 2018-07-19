@@ -4,7 +4,8 @@ import akka.actor.SupervisorStrategy.{Escalate, Resume}
 import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefCrawlerActor, ActorRefCatalogStoreActor}
+import echo.actor.ActorProtocol._
+import echo.core.benchmark.MessagesPerSecondCounter
 import echo.core.exception.FeedParsingException
 
 import scala.concurrent.duration._
@@ -29,6 +30,9 @@ class Parser extends Actor with ActorLogging {
 
     private var catalogStore: ActorRef = _
     private var crawler: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
+
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -51,15 +55,31 @@ class Parser extends Actor with ActorLogging {
 
     override def receive: Receive = {
 
-        case ActorRefCatalogStoreActor(ref) =>
+        case msg @ ActorRefCatalogStoreActor(ref) =>
             log.debug("Received ActorRefCatalogStoreActor(_)")
             catalogStore = ref
-            router.routees.foreach(r => r.send(ActorRefCatalogStoreActor(catalogStore), sender()))
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case ActorRefCrawlerActor(ref) =>
+        case msg @ ActorRefCrawlerActor(ref) =>
             log.debug("Received ActorRefCrawlerActor(_)")
             crawler = ref
-            router.routees.foreach(r => r.send(ActorRefCrawlerActor(crawler), sender()))
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefCLIActor(_)")
+            benchmarkMonitor = ref
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+            router.routees.foreach(r => r.send(msg, sender()))
+
+        case msg @ StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            router.routees.foreach(r => r.send(msg, sender()))
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> forwarding it to all routees")
@@ -67,6 +87,7 @@ class Parser extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
+            mpsCounter.incrementCounter()
             router.route(work, sender())
     }
 

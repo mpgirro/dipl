@@ -12,7 +12,7 @@ import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.SearcherActor
 import echo.actor.updater.Updater
-import echo.core.benchmark.RoundTripTimeMonitor
+import echo.core.benchmark.{MessagesPerSecondMonitor, RoundTripTimeMonitor}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -49,27 +49,19 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor()
+    private val mpsMonitor = new MessagesPerSecondMonitor()
 
     override def preStart(): Unit = {
 
         val clusterDomainListener = context.watch(context.actorOf(ClusterDomainEventListener.props(), ClusterDomainEventListener.name))
 
-        index = context.watch(context.actorOf(IndexBroker.props(), IndexBroker.name))
-
-        parser = context.actorOf(Parser.props(), Parser.name(1))
-        context watch parser
-
+        index    = context.watch(context.actorOf(IndexBroker.props(),   IndexBroker.name))
+        parser   = context.watch(context.actorOf(Parser.props(),        Parser.name(1)))
         searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name))
-
-        crawler = context.actorOf(Crawler.props(), Crawler.name(1))
-        context watch crawler
-
-        catalog = context.actorOf(CatalogBroker.props(), CatalogBroker.name)
-        context watch catalog
-
-        gateway = context.watch(context.actorOf(Gateway.props(), Gateway.name(1)))
-
-        updater = context.watch(context.actorOf(Updater.props(), Updater.name))
+        crawler  = context.watch(context.actorOf(Crawler.props(),       Crawler.name(1)))
+        catalog  = context.watch(context.actorOf(CatalogBroker.props(), CatalogBroker.name))
+        gateway  = context.watch(context.actorOf(Gateway.props(),       Gateway.name(1)))
+        updater  = context.watch(context.actorOf(Updater.props(),       Updater.name))
 
         createCLI()
 
@@ -91,7 +83,14 @@ class NodeMaster extends Actor with ActorLogging {
         updater ! ActorRefCatalogStoreActor(catalog)
         updater ! ActorRefCrawlerActor(crawler)
 
-        index ! ActorRefBenchmarkMonitor(self)
+        // send for benchmark monitor
+        catalog  ! ActorRefBenchmarkMonitor(self)
+        index    ! ActorRefBenchmarkMonitor(self)
+        crawler  ! ActorRefBenchmarkMonitor(self)
+        parser   ! ActorRefBenchmarkMonitor(self)
+        searcher ! ActorRefBenchmarkMonitor(self)
+        updater  ! ActorRefBenchmarkMonitor(self)
+        gateway  ! ActorRefBenchmarkMonitor(self)
 
         log.info("up and running")
     }
@@ -101,13 +100,33 @@ class NodeMaster extends Actor with ActorLogging {
     }
 
     override def receive: Receive = {
+
+        case StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            sendStartMessagePerSecondMonitoringMessages()
+
+        case StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            sendStopMessagePerSecondMonitoringMessages()
+
+        case MessagePerSecondReport(name, mps) =>
+            log.debug("Received StopMessagePerSecondMonitoring({},{})", name, mps)
+            mpsMonitor.addAndPrintMetric(name, mps)
+
         case MonitorFeedProgress(feedProperties) =>
             log.debug("Received MonitorFeedProgress(_)")
             rttMonitor.initWithProperties(feedProperties)
+
         case RoundTripTimeReport(rtt) =>
             log.debug("Received {}", rtt)
             rttMonitor.addRoundTripTime(rtt)
+            if (rttMonitor.isFinished) {
+                sendStopMessagePerSecondMonitoringMessages()
+                rttMonitor.logResults()
+            }
+
         case Terminated(corpse) => onTerminated(corpse)
+
         case ShutdownSystem()   => onSystemShutdown()
     }
 
@@ -143,6 +162,26 @@ class NodeMaster extends Actor with ActorLogging {
         cli = context.actorOf(CLI.props(self, parser, searcher, crawler, catalog, gateway, updater, self),
             name = CLI.name)
         context watch cli
+    }
+
+    private def sendStartMessagePerSecondMonitoringMessages(): Unit = {
+        catalog  ! StartMessagePerSecondMonitoring
+        index    ! StartMessagePerSecondMonitoring
+        crawler  ! StartMessagePerSecondMonitoring
+        parser   ! StartMessagePerSecondMonitoring
+        searcher ! StartMessagePerSecondMonitoring
+        updater  ! StartMessagePerSecondMonitoring
+        gateway  ! StartMessagePerSecondMonitoring
+    }
+
+    private def sendStopMessagePerSecondMonitoringMessages(): Unit = {
+        catalog  ! StopMessagePerSecondMonitoring
+        index    ! StopMessagePerSecondMonitoring
+        crawler  ! StopMessagePerSecondMonitoring
+        parser   ! StopMessagePerSecondMonitoring
+        searcher ! StopMessagePerSecondMonitoring
+        updater  ! StopMessagePerSecondMonitoring
+        gateway  ! StopMessagePerSecondMonitoring
     }
 
 }

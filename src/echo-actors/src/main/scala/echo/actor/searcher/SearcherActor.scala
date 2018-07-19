@@ -7,6 +7,7 @@ import com.google.common.base.Strings.isNullOrEmpty
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexQuery, SearchIndex}
+import echo.core.benchmark.MessagesPerSecondCounter
 import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
@@ -31,6 +32,9 @@ class SearcherActor extends Actor with ActorLogging {
     mediator ! Put(self) // register to the path
 
     private var indexStore: ActorRef = _
+    private var benchmarkMonitor: ActorRef = _
+
+    private val mpsCounter = new MessagesPerSecondCounter()
 
     private var responseHandlerCounter = 0
 
@@ -44,8 +48,22 @@ class SearcherActor extends Actor with ActorLogging {
             log.debug("Received ActorRefIndexStoreActor(_)")
             indexStore = ref
 
+        case ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefBenchmarkMonitor(_)")
+            benchmarkMonitor = ref
+
+        case StartMessagePerSecondMonitoring =>
+            log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsCounter.startCounting()
+
+        case StopMessagePerSecondMonitoring =>
+            log.debug("Received StopMessagePerSecondMonitoring(_)")
+            mpsCounter.stopCounting()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+
         case SearchRequest(query, page, size) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)
+            mpsCounter.incrementCounter()
 
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
 
