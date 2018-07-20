@@ -1,5 +1,6 @@
 package echo.core.benchmark;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import echo.core.exception.FeedParsingException;
@@ -27,7 +28,7 @@ public class FeedPropertyUtil {
 
     private static final Logger log = LoggerFactory.getLogger(FeedPropertyUtil.class);
 
-    public List<FeedProperty> generateFeedProperties(String feedsListFile, String feedDestDir) throws IOException, FeedParsingException {
+    public ImmutableList<FeedProperty> generateFeedProperties(String feedsListFile, String feedDestDir) throws IOException, FeedParsingException {
         log.debug("Generating feed properties for feeds in : {} -- saving feeds to : {}", feedsListFile, feedDestDir);
 
         final List<FeedProperty> properties = new LinkedList<>();
@@ -45,15 +46,17 @@ public class FeedPropertyUtil {
             properties.add(property);
         }
 
-        return properties;
+        return ImmutableList.copyOf(properties);
     }
 
-    public List<FeedProperty> loadProperties(String filePath) throws IOException {
+    public ImmutableList<FeedProperty> loadProperties(String filePath) throws IOException {
         log.debug("Loading feed properties from file : {}", filePath);
         final Gson gson = new Gson();
+        final List<FeedProperty> results;
         try (Reader reader = new FileReader(filePath)) {
-            return gson.fromJson(reader, new TypeToken<List<FeedProperty>>(){}.getType());
+            results = gson.fromJson(reader, new TypeToken<List<FeedProperty>>(){}.getType());
         }
+        return ImmutableList.copyOf(results);
     }
 
     public void saveProperties(List<FeedProperty> properties, String filePath) throws IOException {

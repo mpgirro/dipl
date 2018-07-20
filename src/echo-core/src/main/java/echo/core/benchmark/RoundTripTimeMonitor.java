@@ -1,10 +1,10 @@
 package echo.core.benchmark;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,24 +15,32 @@ public class RoundTripTimeMonitor {
     private static final Logger log = LoggerFactory.getLogger(RoundTripTimeMonitor.class);
 
     private final Map<String, RoundTripTimeProgress> progressMap = new HashMap<>();
-    private int finishedFeeds;
-    private int totalFeeds;
+    private int finishedItems; // feeds or queries
+    private int totalItems;    // feeds or queries
 
-    private boolean finished = false;
+    protected boolean finished = false;
 
     public boolean isFinished() {
         return finished;
     }
 
-    public void initWithProperties(List<FeedProperty> properties) {
-
-        progressMap.clear();
-        finishedFeeds = 0;
-        totalFeeds = properties.size();
+    public void initWithProperties(ImmutableList<FeedProperty> properties) {
+        this.reset();
+        totalItems = properties.size();
 
         for (FeedProperty fp : properties) {
-            final RoundTripTimeProgress rttp = new RoundTripTimeProgress(fp.getUri(), fp.getNumberOfEpisodes());
+            final RoundTripTimeProgress rttp = new IndexRoundTripTimeProgress(fp.getUri(), fp.getNumberOfEpisodes());
             progressMap.put(fp.getUri(), rttp);
+        }
+    }
+
+    public void initWithQueries(ImmutableList<String> queries) {
+        this.reset();
+        totalItems = queries.size();
+
+        for (String q : queries) {
+            final RoundTripTimeProgress rttp = new QueryRoundTripTimeProgress(q);
+            progressMap.put(q, rttp);
         }
     }
 
@@ -43,34 +51,38 @@ public class RoundTripTimeMonitor {
             return;
         }
 
-        if (!progressMap.containsKey(rtt.getUri())) {
-            log.warn("Unable to process RTT -- No progress registered for URI : {}", rtt.getUri());
+        if (!progressMap.containsKey(rtt.getId())) {
+            log.warn("Unable to process RTT -- No progress registered for ID : {}", rtt.getId());
             return;
         }
 
-        final RoundTripTimeProgress progress = progressMap.get(rtt.getUri());
+        final RoundTripTimeProgress progress = progressMap.get(rtt.getId());
+        final IndexRoundTripTimeProgress indexRTTP;
+        final QueryRoundTripTimeProgress queryRTTP;
         switch (rtt.getWorkflow()) {
             case PODCAST_INDEX:
-                progress.setPodcastRTT(rtt);
+                indexRTTP = (IndexRoundTripTimeProgress) progress;
+                indexRTTP.setPodcastRTT(rtt);
                 break;
             case EPISODE_INDEX:
-                progress.addEpisodeRTT(rtt);
+                indexRTTP = (IndexRoundTripTimeProgress) progress;
+                indexRTTP.addEpisodeRTT(rtt);
                 break;
             case RESULT_RETRIEVAL:
-
-                // TODO
-
+                queryRTTP = (QueryRoundTripTimeProgress) progress;
+                queryRTTP.setResultsRTT(rtt);
                 break;
             default:
-                log.warn("Unknown Workflow : {} for RTT with URI : {}", rtt.getWorkflow(), rtt.getUri());
+                log.warn("Unknown Workflow : {} for RTT with URI : {}", rtt.getWorkflow(), rtt.getId());
                 break;
         }
 
         if (progress.finished()) {
-            finishedFeeds += 1;
+            finishedItems += 1;
+            progress.calculateEvaluation();
         }
 
-        if (finishedFeeds == totalFeeds) {
+        if (finishedItems == totalItems) {
             finished = true;
         }
     }
@@ -86,18 +98,17 @@ public class RoundTripTimeMonitor {
         long sumOverallRTT = 0;
         long sumMeanRTTPerEp = 0;
         for (RoundTripTimeProgress p : progressMap.values()) {
-            p.calculateEvaluation();
-            log.info("[RTT] overall: {}ms\tmeanPerEp: {}ms\turl: {}", String.format("%1$6s", p.getOverallRoundTripTime()), String.format("%1$6s", p.getMeanRoundTripTimePerEpisode()), p.getUri());
+            log.info("[RTT] overall: {}ms\tmeanPerEp: {}ms\tmeanMsgL: {}ms\tid: {}", String.format("%1$6s", p.getOverallRoundTripTime()), String.format("%1$6s", p.getMeanRoundTripTime()), String.format("%1$8s", String.format("%7.1f", p.getMeanMessageLatency())), p.getId());
 
             sumOverallRTT += p.getOverallRoundTripTime();
-            sumMeanRTTPerEp += p.getMeanRoundTripTimePerEpisode();
+            sumMeanRTTPerEp += p.getMeanRoundTripTime();
         }
 
         final double nrOfElements = (double) progressMap.values().size();
         final double meanOverallRTT = ((double) sumOverallRTT) / nrOfElements;
         final double overallMeanRTTPerEp = ((double) sumMeanRTTPerEp) / nrOfElements;
-        printMetric("Mean overall RTT     ", String.format("%1$8s", String.format("%6.1f", meanOverallRTT)));
-        printMetric("Overall mean RTT / Ep", String.format("%1$8s", String.format("%6.1f", overallMeanRTTPerEp)));
+        printMetric("Mean overall RTT", String.format("%1$8s", String.format("%6.1f", meanOverallRTT)) + "ms");
+        printMetric("Overall mean RTT", String.format("%1$8s", String.format("%6.1f", overallMeanRTTPerEp)) + "ms");
     }
 
     private void printMetric(String name, double metric) {
@@ -106,6 +117,12 @@ public class RoundTripTimeMonitor {
 
     private void printMetric(String name, String value) {
         log.info("[RTT] {} : {}", name, value);
+    }
+
+    private void reset() {
+        finished = false;
+        progressMap.clear();
+        finishedItems = 0;
     }
 
 }

@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 @JsonDeserialize(as = ImmutableRoundTripTime.class)
 public interface RoundTripTime {
 
-    String getUri();
+    String getId();
 
     String getLocation();
 
@@ -33,7 +33,7 @@ public interface RoundTripTime {
 
     static RoundTripTime empty() {
         return ImmutableRoundTripTime.builder()
-            .setUri("")
+            .setId("")
             .setLocation("")
             .create();
     }
@@ -60,6 +60,20 @@ public interface RoundTripTime {
 
     default long getLastTimestamp() {
         return (getRtts().size() > 0) ? getRtts().get(getRtts().size()-1) : 0;
+    }
+
+    default double getMeanMessageLatency() {
+        final ImmutableList<Long> rtts = getRtts();
+
+        final int nrOfElems = rtts.size();
+        if (nrOfElems < 2) return 0;
+
+        long sumLatency = 0;
+        for (int i = 0; i < nrOfElems-2; i++) {
+            final long latency = rtts.get(i+1) - rtts.get(i);
+            sumLatency += latency;
+        }
+        return ((double) sumLatency) / ((double) nrOfElems);
     }
 
 }
