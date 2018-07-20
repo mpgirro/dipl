@@ -33,11 +33,12 @@ object ActorProtocol {
     case class ParseWebsiteData(exo: String, html: String)
     case class ParseFyydEpisodes(podcastExo: String, episodesData: String)
 
-    // Gateway(= Web) -> Searcher
-    case class SearchRequest(query: String, page: Option[Int], size: Option[Int])
+    // Gateway(= Web) -> Searcher; CLI -> Gateway (Benchmark)
+    case class SearchRequest(query: String, page: Option[Int], size: Option[Int], rtt: RoundTripTime)
+    case class BenchmarkSearchRequest(query: String, page: Option[Int], size: Option[Int], rtt: RoundTripTime)
 
     // Searcher -> User
-    case class SearchResults(results: ResultWrapperDTO)
+    case class SearchResults(results: ResultWrapperDTO, rtt: RoundTripTime)
 
     // These messages are sent to propagate actorRefs to other actors, to overcome circular dependencies
     trait ActorRefInfo
@@ -53,8 +54,10 @@ object ActorProtocol {
     case class ActorRefBenchmarkMonitor(ref: ActorRef) extends ActorRefInfo
 
     // Benchmark
-    case class RoundTripTimeReport(rtt: RoundTripTime)
-    case class MonitorFeedProgress(feedProperties: java.util.List[FeedProperty])
+    case class IndexSubSystemRoundTripTimeReport(rtt: RoundTripTime)
+    case class RetrievalSubSystemRoundTripTimeReport(rtt: RoundTripTime)
+    case class MonitorFeedProgress(feedProperties: ImmutableList[FeedProperty])
+    case class MonitorQueryProgress(queries: ImmutableList[String])
     case class StartMessagePerSecondMonitoring()
     case class StopMessagePerSecondMonitoring()
     case class MessagePerSecondReport(actorName: String, mps: Double)

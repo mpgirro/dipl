@@ -37,7 +37,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
 
     override def receive: Receive = {
 
-        case IndexResultsFound(query: String, resultWrapper: ResultWrapperDTO) =>
+        case IndexResultsFound(query: String, resultWrapper: ResultWrapperDTO, rtt) =>
             log.info("Received {} results from index for query '{}'", resultWrapper.getTotalHits, query)
             timeoutMessager.cancel
 
@@ -58,12 +58,12 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
                 })
                 .map(r => r.toImmutable)
 
-            sendResponseAndShutdown(SearchResults(resultWrapper))
+            sendResponseAndShutdown(SearchResults(resultWrapper, rtt.bumpRTTs()))
 
-        case NoIndexResultsFound(query: String) =>
+        case NoIndexResultsFound(query: String, rtt) =>
             log.info("Received NO results from index for query '{}'", query)
             timeoutMessager.cancel
-            sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty()))
+            sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty(), rtt.bumpRTTs()))
 
         case IndexRetrievalTimeout =>
             log.warning("IndexRetrievalTimeout triggered")

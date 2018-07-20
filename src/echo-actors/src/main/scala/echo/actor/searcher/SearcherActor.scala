@@ -7,7 +7,7 @@ import com.google.common.base.Strings.isNullOrEmpty
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexQuery, SearchIndex}
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
 import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
@@ -61,7 +61,7 @@ class SearcherActor extends Actor with ActorLogging {
             mpsCounter.stopCounting()
             benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
 
-        case SearchRequest(query, page, size) =>
+        case SearchRequest(query, page, size, rtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)
             mpsCounter.incrementCounter()
 
@@ -77,15 +77,15 @@ class SearcherActor extends Actor with ActorLogging {
             }
 
             if (isNullOrEmpty(query)) {
-                sender ! SearchResults(ResultWrapperDTO.empty())
+                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
             }
 
             if (p < 0) {
-                sender ! SearchResults(ResultWrapperDTO.empty())
+                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
             }
 
             if (s < 0) {
-                sender ! SearchResults(ResultWrapperDTO.empty())
+                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
             }
 
             val originalSender = Some(sender) // this is important to not expose the handler
@@ -93,7 +93,7 @@ class SearcherActor extends Actor with ActorLogging {
             responseHandlerCounter += 1
             val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
 
-            val indexQuery = SearchIndex(query, p, s)
+            val indexQuery = SearchIndex(query, p, s, rtt.bumpRTTs())
             sendIndexQuery(indexQuery, responseHandler)
 
     }

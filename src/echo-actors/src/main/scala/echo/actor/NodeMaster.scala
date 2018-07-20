@@ -12,7 +12,7 @@ import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.SearcherActor
 import echo.actor.updater.Updater
-import echo.core.benchmark.{MessagesPerSecondMonitor, RoundTripTimeMonitor}
+import echo.core.benchmark.{MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -117,13 +117,17 @@ class NodeMaster extends Actor with ActorLogging {
             log.debug("Received MonitorFeedProgress(_)")
             rttMonitor.initWithProperties(feedProperties)
 
-        case RoundTripTimeReport(rtt) =>
-            log.debug("Received {}", rtt)
-            rttMonitor.addRoundTripTime(rtt)
-            if (rttMonitor.isFinished) {
-                sendStopMessagePerSecondMonitoringMessages()
-                rttMonitor.logResults()
-            }
+        case MonitorQueryProgress(queries) =>
+            log.debug("Received MonitorQueryProgress(_)")
+            rttMonitor.initWithQueries(queries)
+
+        case IndexSubSystemRoundTripTimeReport(rtt) =>
+            log.debug("Received IndexSubSystemRoundTripTimeReport(_)", rtt)
+            addRttReport(rtt)
+
+        case RetrievalSubSystemRoundTripTimeReport(rtt) =>
+            log.debug("Received RetrievalSubSystemRoundTripTimeReport(_)")
+            addRttReport(rtt)
 
         case Terminated(corpse) => onTerminated(corpse)
 
@@ -162,6 +166,14 @@ class NodeMaster extends Actor with ActorLogging {
         cli = context.actorOf(CLI.props(self, parser, searcher, crawler, catalog, gateway, updater, self),
             name = CLI.name)
         context watch cli
+    }
+
+    private def addRttReport(rtt: RoundTripTime): Unit = {
+        rttMonitor.addRoundTripTime(rtt)
+        if (rttMonitor.isFinished) {
+            sendStopMessagePerSecondMonitoringMessages()
+            rttMonitor.logResults()
+        }
     }
 
     private def sendStartMessagePerSecondMonitoringMessages(): Unit = {

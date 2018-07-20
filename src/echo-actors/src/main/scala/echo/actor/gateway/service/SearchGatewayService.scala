@@ -2,7 +2,7 @@ package echo.actor.gateway.service
 
 import javax.ws.rs.Path
 
-import akka.actor.ActorContext
+import akka.actor.{ActorContext, ActorRef}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Send
 import akka.dispatch.MessageDispatcher
@@ -13,13 +13,15 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{SearchRequest, SearchResults}
+import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRequest, SearchResults}
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
+import echo.core.benchmark.RoundTripTime
+import echo.core.domain.dto.ResultWrapperDTO
 import io.swagger.annotations._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 /**
@@ -36,18 +38,22 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     private val DEFAULT_PAGE: Int = CONFIG.getInt("echo.gateway.default-page")
     private val DEFAULT_SIZE: Int = CONFIG.getInt("echo.gateway.default-size")
 
+    private val SEARCHER_PATH = "/user/node/searcher"
+
     // will be set after construction of the service via the setter method,
     // once the message with the reference arrived
     //private var searcher: ActorRef = _
 
     private val mediator = DistributedPubSub(context.system).mediator
 
+    private var benchmarkMonitor: ActorRef = _
+
     override val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
     override val route: Route = pathPrefix("search") { pathEndOrSingleSlash { search } }
 
 
-    //def setSearcherActorRef(searcher: ActorRef): Unit = this.searcher = searcher
+    def setBenchmarkMonitorActorRef(benchmarkMonitor: ActorRef): Unit = this.benchmarkMonitor = benchmarkMonitor
 
     /*
     @Path("/search")
@@ -90,11 +96,11 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            onCompleteWithBreaker(breaker)(emitSearchQuery(SearchRequest(query, page, size))) {
+            onCompleteWithBreaker(breaker)(emitSearchQuery(SearchRequest(query, page, size, RoundTripTime.empty()))) {
                 case Success(res) =>
                     res match {
-                        case SearchResults(results) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
-                        case NoIndexResultsFound(_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
+                        case SearchResults(results,_) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
+                        case NoIndexResultsFound(_,_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
                         case IndexRetrievalTimeout  =>
                             log.error("Timeout during search in SearchService")
                             complete(StatusCodes.RequestTimeout)                            // 408 search took too long
@@ -118,6 +124,31 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
         }
     }
 
+    def benchmarkSearch(query: String, page: Option[Int], size: Option[Int], rtt1: RoundTripTime): Unit = {
+        implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.gateway.dispatcher")
+        emitSearchQuery(SearchRequest(query, page, size, rtt1.bumpRTTs()))
+            .onComplete {
+                case Success(res) =>
+                    res match {
+                        case SearchResults(results, rtt2) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt2.bumpRTTs())
+                        case NoIndexResultsFound(q, rtt2) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt2.bumpRTTs())
+                        case _ =>
+                            log.error("[BENCH] Received unhandled message on search request")
+                            benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
+                    }
+                //Circuit breaker opened handling
+                case Failure(ex: CircuitBreakerOpenException) =>
+                    log.error("[BENCH] CircuitBreakerOpenException calling Searcher")
+                    benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
+
+                //General exception handling
+                case Failure(ex) =>
+                    log.error("[BENCH] Exception while calling Searcher with query : {}", query)
+                    ex.printStackTrace()
+                    benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
+            }
+    }
+
     /**
       * Sends message to a searcher within the cluster, NOT prefering locally available searchers,
       * because we more likely will operate only one gateway, but have multiple index stores
@@ -126,6 +157,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
       */
     private def emitSearchQuery(requestMsg: SearchRequest): Future[Any] = {
         log.debug("Sending request message to some searcher in the cluster : {}", requestMsg)
-        mediator ? Send(path = "/user/node/searcher", msg = requestMsg, localAffinity = false)
+        mediator ? Send(path = SEARCHER_PATH, msg = requestMsg, localAffinity = false)
     }
+
 }

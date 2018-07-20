@@ -27,13 +27,13 @@ object IndexProtocol {
     trait IndexQuery
 
     // Searcher -> IndexStore
-    case class SearchIndex(query: String, page: Int, size: Int) extends IndexQuery
+    case class SearchIndex(query: String, page: Int, size: Int, rtt: RoundTripTime) extends IndexQuery
 
 
     trait IndexQueryResult
 
     // IndexStore -> Searcher
-    case class IndexResultsFound(query: String, results: ResultWrapperDTO) extends IndexQueryResult
-    case class NoIndexResultsFound(query: String) extends IndexQueryResult
+    case class IndexResultsFound(query: String, results: ResultWrapperDTO, rtt: RoundTripTime) extends IndexQueryResult
+    case class NoIndexResultsFound(query: String, rtt: RoundTripTime) extends IndexQueryResult
 
 }

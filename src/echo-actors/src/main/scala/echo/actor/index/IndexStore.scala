@@ -5,7 +5,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol._
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
 import echo.core.domain.dto.ImmutableIndexDocDTO
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
@@ -65,7 +65,7 @@ class IndexStore (indexPath: String,
                 log.error("Error trying to search the index; reason: {}", e.getMessage)
             case e: Exception =>
                 log.error("Unhandled Exception : {}", e.getMessage, e)
-                sender ! NoIndexResultsFound(currQuery) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
+                sender ! NoIndexResultsFound(currQuery, RoundTripTime.empty()) // TODO besser eine neue antwortmessage a la ErrorIndexResult und entsprechend den fehler in der UI anzeigen zu können
                 currQuery = ""
         }
         super.postRestart(cause)
@@ -104,7 +104,7 @@ class IndexStore (indexPath: String,
             mpsCounter.incrementCounter()
 
             // TODO add now to rtts and send to CLI
-            benchmarkMonitor ! RoundTripTimeReport(rtt.bumpRTTs())
+            benchmarkMonitor ! IndexSubSystemRoundTripTimeReport(rtt.bumpRTTs())
 
             indexCommitter.add(doc)
             indexChanged = true
@@ -125,7 +125,7 @@ class IndexStore (indexPath: String,
             mpsCounter.incrementCounter()
             updateLinkQueue.enqueue((exo, link))
 
-        case SearchIndex(query, page, size) =>
+        case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
             mpsCounter.incrementCounter()
@@ -135,10 +135,10 @@ class IndexStore (indexPath: String,
             indexSearcher.refresh()
             val results = indexSearcher.search(query, page, size)
             if(results.getTotalHits > 0){
-                sender ! IndexResultsFound(query,results)
+                sender ! IndexResultsFound(query,results, rtt.bumpRTTs())
             } else {
                 log.warning("No Podcast matching query: '{}' found in the index", query)
-                sender ! NoIndexResultsFound(query)
+                sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
             }
 
             currQuery = "" // wipe the copy

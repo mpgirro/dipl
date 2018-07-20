@@ -121,7 +121,7 @@ class CLI(master: ActorRef,
             case "benchmark" :: "feed" :: feed :: Nil =>
                 // TODO inform NodeMaster of benchmark
                 val b = ImmutableRoundTripTime.builder()
-                    .setUri(feed)
+                    .setId(feed)
                     .setLocation(feed)
                     .setWorkflow(Workflow.PODCAST_INDEX)
                     .create()
@@ -129,7 +129,7 @@ class CLI(master: ActorRef,
             case "benchmark" :: "feed" :: feed :: _   => usage("benchmark feed")
             case "benchmark" :: "index" :: Nil        => benchmarkIndexSubsystem()
             case "benchmark" :: "index" :: _          => usage("benchmark index")
-            case "benchmark" :: "search" :: Nil       => println("NOT YET IMPLEMENTED") // TODO
+            case "benchmark" :: "search" :: Nil       => benchmarkRetrievalSubsystem()
             case "benchmark" :: "search" :: _         => usage("benchmark search")
 
             case "check" :: "podcast" :: Nil           => usage("check podcast")
@@ -218,10 +218,10 @@ class CLI(master: ActorRef,
     }
 
     private def search(query: List[String]): Unit = {
-        val future = searcher ? SearchRequest(query.mkString(" "), Some(1), Some(100))
+        val future = searcher ? SearchRequest(query.mkString(" "), Some(1), Some(100), RoundTripTime.empty())
         val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[SearchResults]
         response match {
-            case SearchResults(results) =>
+            case SearchResults(results, rtt) =>
                 println("Found "+results.getResults.size()+" results for query '" + query.mkString(" ") + "'")
                 println("Results:")
                 for (result <- results.getResults.asScala) {
@@ -286,10 +286,10 @@ class CLI(master: ActorRef,
         val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
         benchmarkMonitor ! MonitorFeedProgress(feedProperties)
         benchmarkMonitor ! StartMessagePerSecondMonitoring
-        for (fp: FeedProperty <- feedProperties.asScala) {
+        for (fp <- feedProperties.asScala) {
             val location = "file://"+fp.getLocation
             val rtt = ImmutableRoundTripTime.builder()
-                .setUri(fp.getUri)
+                .setId(fp.getUri)
                 .setLocation(location)
                 .setWorkflow(Workflow.PODCAST_INDEX)
                 .create()
@@ -298,9 +298,21 @@ class CLI(master: ActorRef,
     }
 
     private def benchmarkRetrievalSubsystem(): Unit = {
+        val queries = loadBenchmarkQueries("../benchmark/queries.txt")
+        benchmarkMonitor ! MonitorQueryProgress(queries)
         benchmarkMonitor ! StartMessagePerSecondMonitoring
+        for (q <- queries.asScala) {
+            val rtt = ImmutableRoundTripTime.builder()
+                .setId(q)
+                .setLocation("")
+                .setWorkflow(Workflow.RESULT_RETRIEVAL)
+                .create()
+            gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+        }
+    }
 
-        // TODO
+    private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
+        ImmutableList.copyOf(Source.fromFile(filePath).getLines.asJava)
     }
 
 }

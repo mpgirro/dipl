@@ -16,6 +16,8 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service.{EpisodeGatewayService, FeedGatewayService, PodcastGatewayService, SearchGatewayService}
+import echo.actor.index.IndexProtocol.NoIndexResultsFound
+import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.MessagesPerSecondCounter
 
 import scala.concurrent.Future
@@ -125,6 +127,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
         case ActorRefBenchmarkMonitor(ref) =>
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
+            searchService.setBenchmarkMonitorActorRef(ref)
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
@@ -134,6 +137,11 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsCounter.stopCounting()
             benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+
+        case BenchmarkSearchRequest(q, p, s, rtt) =>
+            log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
+            mpsCounter.incrementCounter()
+            searchService.benchmarkSearch(q, p, s, rtt.bumpRTTs())
 
         case _ =>
             log.warning("GatewayActor does not handle any Actor-messages yet")

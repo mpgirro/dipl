@@ -541,7 +541,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 val f = feeds.head
                 //crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 val b = ImmutableRoundTripTime.builder()
-                    .setUri(f.getUrl)
+                    .setId(f.getUrl)
                     .setLocation(f.getUrl)
                     .create()
                 updater ! ProcessFeed(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null), b)
@@ -560,7 +560,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 podcastService.findOneByFeed(feedId).map(p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                     val b = ImmutableRoundTripTime.builder()
-                        .setUri(f.getUrl)
+                        .setId(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
                     updater ! ProcessFeed(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null), b)
@@ -585,7 +585,7 @@ class CatalogStoreHandler(workerIndex: Int,
                     val f = feeds.head
                     //crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                     val b = ImmutableRoundTripTime.builder()
-                        .setUri(f.getUrl)
+                        .setId(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
                     updater ! ProcessFeed(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null), b)
@@ -605,7 +605,7 @@ class CatalogStoreHandler(workerIndex: Int,
                 podcastService.findOneByFeed(f.getExo).map{p => {
                     //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
                     val b = ImmutableRoundTripTime.builder()
-                        .setUri(f.getUrl)
+                        .setId(f.getUrl)
                         .setLocation(f.getUrl)
                         .create()
                     updater ! ProcessFeed(p.getExo, f.getUrl, NewPodcastFetchJob(), b)
