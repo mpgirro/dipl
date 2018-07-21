@@ -84,7 +84,7 @@ dependencies {
 
     compile "at.irro.dipl:echo-core:$echo_core_version"
 
-    compile "com.google.guava:guava:${guava_version}"
+    compile "com.google.guava:guava:$guava_version"
 
     compile 'org.jsoup:jsoup:1.11.2'                    // HTTP parser
 

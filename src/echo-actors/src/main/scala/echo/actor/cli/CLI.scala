@@ -76,7 +76,7 @@ class CLI(master: ActorRef,
         "get episode"    -> "<exo>"
     )
 
-    val feedPropertyUtil = new FeedPropertyUtil()
+    private val feedPropertyUtil = new FeedPropertyUtil()
 
 
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
