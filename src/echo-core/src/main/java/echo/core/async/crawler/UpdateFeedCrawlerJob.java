@@ -2,6 +2,7 @@ package echo.core.async.crawler;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.RoundTripTime;
 import org.immutables.value.Value;
 
 /**
@@ -25,5 +26,8 @@ public interface UpdateFeedCrawlerJob extends CrawlerJob {
 
     @Value.Parameter
     String url();
+
+    @Value.Parameter
+    RoundTripTime getRTT();
 
 }

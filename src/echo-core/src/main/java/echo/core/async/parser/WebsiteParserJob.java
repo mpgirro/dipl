@@ -2,6 +2,7 @@ package echo.core.async.parser;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.RoundTripTime;
 import org.immutables.value.Value;
 
 /**
@@ -25,5 +26,8 @@ public interface WebsiteParserJob extends ParserJob {
 
     @Value.Parameter
     String getHtml();
+
+    @Value.Parameter
+    RoundTripTime getRTT();
 
 }

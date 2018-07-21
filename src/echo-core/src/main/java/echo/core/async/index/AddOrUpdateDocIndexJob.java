@@ -2,6 +2,7 @@ package echo.core.async.index;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.IndexDocDTO;
 import org.immutables.value.Value;
 
@@ -23,5 +24,8 @@ public interface AddOrUpdateDocIndexJob extends IndexJob {
 
     @Value.Parameter
     IndexDocDTO getIndexDoc();
+
+    @Value.Parameter
+    RoundTripTime getRTT();
 
 }

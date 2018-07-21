@@ -1,4 +1,4 @@
-package echo.core.async.crawler;
+package echo.core.async.catalog;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -17,15 +17,12 @@ import org.immutables.value.Value;
     defaults   = @Value.Immutable(builder = false),  // We may also disable builder
     build      = "create"           // rename 'build' method on builder to 'create'
 )
-@JsonSerialize(as = ImmutableNewFeedCrawlerJob.class)
-@JsonDeserialize(as = ImmutableNewFeedCrawlerJob.class)
-public interface NewFeedCrawlerJob extends CrawlerJob {
+@JsonSerialize(as = ImmutableProposeNewFeedJob.class)
+@JsonDeserialize(as = ImmutableProposeNewFeedJob.class)
+public interface ProposeNewFeedJob extends CatalogJob {
 
     @Value.Parameter
-    String exo();
-
-    @Value.Parameter
-    String url();
+    String getFeed();
 
     @Value.Parameter
     RoundTripTime getRTT();

@@ -2,6 +2,7 @@ package echo.core.async.catalog;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.PodcastDTO;
 import org.immutables.value.Value;
 
@@ -23,5 +24,8 @@ public interface UpdatePodcastCatalogJob extends CatalogJob {
 
     @Value.Parameter
     PodcastDTO getPodcast();
+
+    @Value.Parameter
+    RoundTripTime getRTT();
 
 }
