@@ -53,10 +53,12 @@ echo:
         queue-capacity: 10000
     rabbit:
         catalog-queue: echo.catalog.queue
+        updater-queue: echo.updater.queue
     amqp:
         exchange: echo.direct
         catalog-routingkey: echo.catalog.routingkey
         crawler-routingkey: echo.crawler.routingkey
+        update-routingkey: echo.update.routingkey
         index-routingkey: echo.index.routingkey
 
 eureka:

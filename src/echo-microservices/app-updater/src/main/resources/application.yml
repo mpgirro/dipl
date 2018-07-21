@@ -1,22 +1,28 @@
 
-spring:
-    application:
-        name: echo-updater
-
 server:
     port: ${ECHO_UPDATER_PORT:3037}
 
-management:
-    security:
-        enabled: false
-
 echo:
-    searcher:
-        default-page: 1
-        default-size: 20
+    parser:
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000
+    rabbit:
+        updater-queue: echo.updater.queue
+    amqp:
+        exchange: echo.direct
+        catalog-routingkey: echo.catalog.routingkey
+        crawler-routingkey: echo.crawler.routingkey
+        updater-routingkey: echo.updater.routingkey
+
+spring:
+    application:
+        name: echo-updater
+    rabbitmq:
+        host: ${ECHO_RABBITMQ_HOST:localhost}
+        port: ${ECHO_RABBITMQ_PORT:5672}
+        username: ${ECHO_RABBITMQ_USERNAME:guest}
+        password: ${ECHO_RABBITMQ_PASSWORD:guest}
 
 eureka:
     client:
@@ -25,26 +31,3 @@ eureka:
     instance:
         leaseRenewalIntervalInSeconds: 1
         leaseExpirationDurationInSeconds: 2
-
-ribbon:
-    eureka:
-        enabled: true
-        MaxAutoRetries: 3
-        MaxAutoRetriesNextServer: 1
-        ReadTimeout: 1000
-    #echo-index:
-    #    listOfServers: echo-index,localhost:3032
-
-hystrix:
-    command:
-        default:
-            execution:
-                isolation:
-                    thread:
-                        timeoutInMilliseconds: 10000
-
-feign:
-    httpclient:
-        connection-timeout: 5000
-    hystrix:
-        enabled: true

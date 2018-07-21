@@ -25,13 +25,13 @@ public class AsyncConfig implements AsyncConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(AsyncConfig.class);
 
-    @Value("${echo.searcher.core-pool-size:2}")
+    @Value("${echo.updater.core-pool-size:2}")
     private Integer CORE_POOL_SIZE;
 
-    @Value("${echo.searcher.max-pool-size:50}")
+    @Value("${echo.updater.max-pool-size:50}")
     private Integer MAX_POOL_SIZE;
 
-    @Value("${echo.searcher.queue-capacity:10000}")
+    @Value("${echo.updater.queue-capacity:10000}")
     private Integer QUEUE_CAPACITY;
 
     @Override
@@ -42,7 +42,7 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setCorePoolSize(CORE_POOL_SIZE);
         executor.setMaxPoolSize(MAX_POOL_SIZE);
         executor.setQueueCapacity(QUEUE_CAPACITY);
-        executor.setThreadNamePrefix("echo-searcher-Executor-");
+        executor.setThreadNamePrefix("echo-updater-Executor-");
         return new ExceptionHandlingAsyncTaskExecutor(executor);
     }
 

@@ -1,8 +1,9 @@
 package echo.microservice.catalog.service;
 
 import com.google.common.base.MoreObjects;
-import echo.core.async.crawler.ImmutableNewFeedCrawlerJob;
-import echo.core.async.crawler.NewFeedCrawlerJob;
+import echo.core.async.updater.ImmutableProcessNewFeedJob;
+import echo.core.async.updater.ProcessNewFeedJob;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.dto.ImmutableFeedDTO;
 import echo.core.domain.dto.ImmutablePodcastDTO;
@@ -11,12 +12,14 @@ import echo.core.domain.feed.FeedStatus;
 import echo.core.mapper.FeedMapper;
 import echo.microservice.catalog.ExoUtil;
 import echo.microservice.catalog.async.CrawlerQueueSender;
+import echo.microservice.catalog.async.UpdaterQueueSender;
 import echo.microservice.catalog.repository.FeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +51,9 @@ public class FeedService {
 
     @Autowired
     private CrawlerQueueSender crawlerQueueSender;
+
+    @Autowired
+    private UpdaterQueueSender updaterQueueSender;
 
     private final FeedMapper feedMapper = FeedMapper.INSTANCE;
 
@@ -130,8 +136,9 @@ public class FeedService {
         return feedRepository.countAll();
     }
 
+    @Async
     @Transactional
-    public void propose(String feedUrl) {
+    public void propose(String feedUrl, RoundTripTime rtt) {
         log.info("Request to propose Feed by URL : {}", feedUrl);
         if (findAllByUrl(feedUrl).isEmpty()) {
 
@@ -158,8 +165,8 @@ public class FeedService {
                     .setRegistrationTimestamp(LocalDateTime.now());
                 save(fBuilder.create());
 
-                final NewFeedCrawlerJob job = ImmutableNewFeedCrawlerJob.of(p.getExo(), feedUrl);
-                crawlerQueueSender.produceMsg(job);
+                final ProcessNewFeedJob job = ImmutableProcessNewFeedJob.of(p.getExo(), feedUrl, rtt.bumpRTTs());
+                updaterQueueSender.produceMsg(job);
             } else {
                 log.error("Error on saving podcast (from builder) : {}", pBuilder);
             }

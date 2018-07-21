@@ -1,10 +1,20 @@
 package echo.microservice.cli
 
+import com.google.common.collect.ImmutableList
 import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
+import echo.core.benchmark.{FeedPropertyUtil, ImmutableRoundTripTime, Workflow}
 import echo.core.util.UrlUtil
 
+import scala.collection.JavaConverters._
 import scala.io.{Source, StdIn}
+
+object CliApp {
+    def main(args:Array[String]){
+        val app = new CliApp
+        app.repl()
+    }
+}
 
 class CliApp {
 
@@ -24,8 +34,13 @@ class CliApp {
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<exo>",
-        "get episode"    -> "<exo>"
+        "get episode"    -> "<exo>",
+        "benchmark"      -> "<index|search>",
+        "benchmark index"-> "",
+        "benchmark search"-> ""
     )
+
+    private val feedPropertyUtil = new FeedPropertyUtil()
 
     // TODO
     private val CATALOG_URL = "http://localhost:3031/catalog"
@@ -49,6 +64,12 @@ class CliApp {
                     case "load" :: "feeds" :: Nil               => usage("load feeds")
                     case "load" :: "feeds" :: "test" :: Nil     => loadTestFeeds()
                     case "load" :: "feeds" :: _                 => usage("load feeds")
+
+                    case "benchmark" :: "index" :: Nil  => benchmarkIndexSubsystem()
+                    case "benchmark" :: "index" :: _    => usage("benchmark index")
+                    case "benchmark" :: "search" :: Nil => benchmarkRetrievalSubsystem()
+                    case "benchmark" :: "search" :: _   => usage("benchmark search")
+                    case "benchmark" :: _               => usage("benchmark")
 
                     case _  => help()
                 }
@@ -82,6 +103,7 @@ class CliApp {
     }
 
     private def propose(url: String): Unit = {
+        // TODO
         sttp.post(uri"${CATALOG_URL}/feed/propose?url=${url}").send()
     }
 
@@ -92,13 +114,41 @@ class CliApp {
             propose(UrlUtil.sanitize(feed))
         }
     }
-}
 
-object CliApp {
-    def main(args:Array[String]){
-        val app = new CliApp
-        app.repl()
+    private def benchmarkIndexSubsystem(): Unit = {
+        val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
+        benchmarkMonitor ! MonitorFeedProgress(feedProperties)
+        benchmarkMonitor ! StartMessagePerSecondMonitoring
+        for (fp <- feedProperties.asScala) {
+            val location = "file://"+fp.getLocation
+            val rtt = ImmutableRoundTripTime.builder()
+                .setId(fp.getUri)
+                .setLocation(location)
+                .setWorkflow(Workflow.PODCAST_INDEX)
+                .create()
+            updater ! ProposeNewFeed(location, rtt) // TODO adjust location
+        }
+    }
+
+    private def benchmarkRetrievalSubsystem(): Unit = {
+        val queries = loadBenchmarkQueries("../benchmark/queries.txt")
+        benchmarkMonitor ! MonitorQueryProgress(queries)
+        benchmarkMonitor ! StartMessagePerSecondMonitoring
+        for (q <- queries.asScala) {
+            val rtt = ImmutableRoundTripTime.builder()
+                .setId(q)
+                .setLocation("")
+                .setWorkflow(Workflow.RESULT_RETRIEVAL)
+                .create()
+            gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+        }
+    }
+
+    private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
+        ImmutableList.copyOf(Source.fromFile(filePath).getLines.asJava)
     }
 }
+
+
 
 
