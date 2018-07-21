@@ -1,0 +1,50 @@
+
+spring:
+    application:
+        name: echo-updater
+
+server:
+    port: ${ECHO_UPDATER_PORT:3037}
+
+management:
+    security:
+        enabled: false
+
+echo:
+    searcher:
+        default-page: 1
+        default-size: 20
+        core-pool-size: 2
+        max-pool-size: 50
+        queue-capacity: 10000
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://${ECHO_REGISTRY_HOST:127.0.0.1}:3036/eureka/
+    instance:
+        leaseRenewalIntervalInSeconds: 1
+        leaseExpirationDurationInSeconds: 2
+
+ribbon:
+    eureka:
+        enabled: true
+        MaxAutoRetries: 3
+        MaxAutoRetriesNextServer: 1
+        ReadTimeout: 1000
+    #echo-index:
+    #    listOfServers: echo-index,localhost:3032
+
+hystrix:
+    command:
+        default:
+            execution:
+                isolation:
+                    thread:
+                        timeoutInMilliseconds: 10000
+
+feign:
+    httpclient:
+        connection-timeout: 5000
+    hystrix:
+        enabled: true

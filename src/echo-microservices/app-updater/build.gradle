@@ -1,0 +1,246 @@
+import org.gradle.internal.os.OperatingSystem
+
+buildscript {
+    ext {
+        spring_boot_version = '1.5.10.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven { url "http://repo.spring.io/plugins-release" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
+        classpath "io.spring.gradle:propdeps-plugin:0.0.9.RELEASE"
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+}
+
+defaultTasks 'clean build runBoot'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+assert System.properties['java.specification.version'] == '1.8'
+
+group 'at.irro.dipl'
+version = '1.0-SNAPSHOT'
+description = ''
+
+bootRepackage {
+    mainClass = 'echo.microservice.updater.UpdaterApp'
+}
+
+/* TODO why does this not work?
+war {
+
+}
+*/
+
+springBoot {
+    mainClass = 'echo.microservice.updater.UpdaterApp'
+    executable = true
+    buildInfo()
+}
+
+if (OperatingSystem.current().isWindows()) {
+    task pathingJar(type: Jar) {
+        dependsOn configurations.runtime
+        appendix = 'pathing'
+
+        doFirst {
+            manifest {
+                attributes 'Class-Path': configurations.runtime.files.collect {
+                    it.toURI().toURL().toString().replaceFirst(/file:\/+/, '/').replaceAll(' ', '%20')
+                }.join(' ')
+            }
+        }
+    }
+
+    bootRun {
+        addResources = false
+        dependsOn pathingJar
+        doFirst {
+            classpath = files("$buildDir/classes/java/main", "$buildDir/resources/main", pathingJar.archivePath)
+        }
+    }
+} else {
+    bootRun {
+        addResources = false
+    }
+}
+
+test {
+    exclude '**/CucumberTest*'
+
+    // uncomment if the tests reports are not generated
+    // ignoreFailures true
+    reports.html.enabled = false
+}
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/tests")
+    reportOn test
+}
+
+/* TODO
+apply from: 'gradle/docker.gradle'
+
+if (project.hasProperty('prod')) {
+    apply from: 'gradle/profile_prod.gradle'
+} else {
+    apply from: 'gradle/profile_dev.gradle'
+}
+*/
+
+configurations {
+    providedRuntime
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+ext {
+    echo_core_version = '1.0-SNAPSHOT'
+    log4j_version = '2.9.1'
+    logback_version = '1.2.3'
+    spring_aspects_version = '4.3.14.RELEASE'
+    guava_version = '24.1-jre'
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenLocal()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencies {
+    compile "at.irro.dipl:echo-core:${echo_core_version}"
+    compile "com.google.guava:guava:${guava_version}"
+
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+
+    compile "org.springframework.boot:spring-boot-starter-cache"
+    compile "io.dropwizard.metrics:metrics-core"
+    //compile "io.dropwizard.metrics:metrics-jcache"
+    compile "io.dropwizard.metrics:metrics-json"
+    compile "io.dropwizard.metrics:metrics-jvm"
+    compile "io.dropwizard.metrics:metrics-servlet"
+    compile "io.dropwizard.metrics:metrics-servlets"
+    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '4.11'
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    compile "com.fasterxml.jackson.core:jackson-annotations"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.module:jackson-module-afterburner"
+    //compile "com.ryantenney.metrics:metrics-spring"
+    compile "javax.cache:cache-api"
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile "javax.transaction:javax.transaction-api"
+    compile "org.ehcache:ehcache"
+    //compile "org.hibernate:hibernate-jcache"
+    compile "org.hibernate:hibernate-entitymanager"
+    compile "org.hibernate:hibernate-envers"
+    compile "org.hibernate:hibernate-validator"
+    compile "org.springframework.boot:spring-boot-actuator"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.springframework.boot:spring-boot-loader-tools"
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-starter-aop"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile ("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: 'spring-boot-starter-tomcat'
+    }
+    compile "org.springframework.boot:spring-boot-starter-undertow"
+    compile group: 'org.zalando', name: 'problem-spring-web', version: '0.22.2'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter', version: '1.3.2.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-ribbon', version: '1.4.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-spectator', version: '1.4.3.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '1.4.3.RELEASE'
+    //compile 'org.springframework.cloud:spring-cloud-starter-consul-all:1.3.3.RELEASE'
+    compile "org.springframework.retry:spring-retry"
+    compile "org.springframework.cloud:spring-cloud-spring-service-connector"
+    compile "org.springframework:spring-context-support"
+    compile "org.springframework.security:spring-security-config"
+    compile "org.springframework.security:spring-security-data"
+    compile "org.springframework.security:spring-security-web"
+    compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: '2.0.0'
+    /*
+    compile ("io.springfox:springfox-swagger2") {
+        exclude module: 'mapstruct'
+    }
+    compile "io.springfox:springfox-bean-validators"
+    */
+    testCompile "com.jayway.jsonpath:json-path"
+    testCompile ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
+    testCompile "org.springframework.security:spring-security-test"
+    testCompile "org.springframework.boot:spring-boot-test"
+    testCompile "org.assertj:assertj-core"
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
+    testCompile "org.hamcrest:hamcrest-library"
+
+
+    /*
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compile('org.springframework.boot:spring-boot-starter-aop')
+    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    runtime('org.springframework.boot:spring-boot-devtools')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile group: 'org.springframework', name: 'spring-aspects', version: "$spring_aspects_version"
+
+    testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+
+    compile "ch.qos.logback:logback-classic:${logback_version}"
+
+    implementation 'com.google.guava:guava:23.0'
+
+    testImplementation 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.13.0'
+    */
+}
+
+task cleanResources(type: Delete) {
+    delete 'build/resources'
+}
+
+// Generating gradle wrapper so people don't have to have the Gradle version preinstalled
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.6'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+task stage(dependsOn: 'bootRepackage') {
+}
+
+compileJava.dependsOn processResources
+processResources.dependsOn cleanResources,bootBuildInfo
+bootBuildInfo.mustRunAfter cleanResources
