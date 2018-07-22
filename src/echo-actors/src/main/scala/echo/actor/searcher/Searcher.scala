@@ -13,12 +13,12 @@ import echo.core.domain.dto.ResultWrapperDTO
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-object SearcherActor {
+object Searcher {
     final val name = "searcher"
-    def props(): Props = Props(new SearcherActor()).withDispatcher("echo.searcher.dispatcher")
+    def props(): Props = Props(new Searcher()).withDispatcher("echo.searcher.dispatcher")
 }
 
-class SearcherActor extends Actor with ActorLogging {
+class Searcher extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 

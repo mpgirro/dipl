@@ -10,7 +10,7 @@ import echo.actor.crawler.Crawler
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
-import echo.actor.searcher.SearcherActor
+import echo.actor.searcher.Searcher
 import echo.actor.updater.Updater
 import echo.core.benchmark.{MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
 
@@ -57,7 +57,7 @@ class NodeMaster extends Actor with ActorLogging {
 
         index    = context.watch(context.actorOf(IndexBroker.props(),   IndexBroker.name))
         parser   = context.watch(context.actorOf(Parser.props(),        Parser.name(1)))
-        searcher = context.watch(context.actorOf(SearcherActor.props(), SearcherActor.name))
+        searcher = context.watch(context.actorOf(Searcher.props(),      Searcher.name))
         crawler  = context.watch(context.actorOf(Crawler.props(),       Crawler.name(1)))
         catalog  = context.watch(context.actorOf(CatalogBroker.props(), CatalogBroker.name))
         gateway  = context.watch(context.actorOf(Gateway.props(),       Gateway.name(1)))
