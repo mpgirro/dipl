@@ -116,7 +116,7 @@ public class EpisodeService {
 
                     log.info("episode registered : '{}' [p:{},e:{}]", r.getTitle(), podcastExo, r.getExo());
 
-                    final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(r));
+                    final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(r), job.getRTT().bumpRTTs());
                     indexQueueSender.produceMsg(indexJob);
 
                     // TODO download episode website

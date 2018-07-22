@@ -1,5 +1,7 @@
 package echo.microservice.index.web.rest;
 
+import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
@@ -13,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -28,6 +31,9 @@ public class IndexResource {
     @Autowired
     private IndexService indexService;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @RequestMapping(
         value    = "/search",
         method   = RequestMethod.GET,
@@ -35,9 +41,11 @@ public class IndexResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Integer page,
-                                                        @RequestParam("size") Integer size) throws SearchException {
+                                                        @RequestParam("size") Integer size,
+                                                        @RequestBody RoundTripTime rtt) throws SearchException {
         log.info("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
-        final ResultWrapperDTO result = indexService.search(query, page, size);
+        mpsCounter.incrementCounter();
+        final ResultWrapperDTO result = indexService.search(query, page, size, rtt);
         return new ResponseEntity<>(
             result,
             HttpStatus.OK);
@@ -49,6 +57,7 @@ public class IndexResource {
     @ResponseStatus(HttpStatus.OK)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
         log.debug("REST request to save doc : {}", doc.getExo());
+        mpsCounter.incrementCounter();
         indexService.add(doc);
     }
 
@@ -58,6 +67,7 @@ public class IndexResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IndexDocDTO> getDoc(@PathVariable String exo) {
         log.debug("REST request to get index document: {}", exo);
+        mpsCounter.incrementCounter();
         // TODO
         throw new UnsupportedOperationException("Not yet implemented");
     }

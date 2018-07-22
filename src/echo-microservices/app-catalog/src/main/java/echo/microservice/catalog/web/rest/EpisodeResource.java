@@ -1,6 +1,7 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
+import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.domain.dto.ArrayWrapperDTO;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +41,14 @@ public class EpisodeResource {
 
     private IdMapper idMapper = IdMapper.INSTANCE;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @PostMapping("/episode")
     @Transactional
     public ResponseEntity<EpisodeDTO> createEpisode(@RequestBody EpisodeDTO episode) throws URISyntaxException {
         log.debug("REST request to save Episode : {}", episode);
+        mpsCounter.incrementCounter();
         final Optional<EpisodeDTO> created = episodeService.save(episode);
         return created
             .map(idMapper::clearImmutable)
@@ -56,6 +62,7 @@ public class EpisodeResource {
     @ResponseStatus(HttpStatus.OK)
     public void registerEpisode(@RequestBody RegisterEpisodeIfNewJobCatalogJob job) throws URISyntaxException {
         log.debug("REST request to register episode by Podcast (EXO) : {}", job.getPodcastExo());
+        mpsCounter.incrementCounter();
         episodeService.register(job);
     }
 
@@ -63,6 +70,7 @@ public class EpisodeResource {
     @Transactional
     public ResponseEntity<EpisodeDTO> updateEpisode(@RequestBody EpisodeDTO episode) {
         log.debug("REST request to update Episode : {}", episode);
+        mpsCounter.incrementCounter();
         final Optional<EpisodeDTO> updated = episodeService.update(episode);
         return updated
             .map(idMapper::clearImmutable)
@@ -79,6 +87,7 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.debug("REST request to get Episode (EXO) : {}", exo);
+        mpsCounter.incrementCounter();
         final Optional<EpisodeDTO> episode = episodeService.findOneByExo(exo);
         return episode
             .map(idMapper::clearImmutable)
@@ -95,6 +104,7 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
+        mpsCounter.incrementCounter();
         final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo).stream()
             .map(idMapper::clearImmutable)
             .collect(Collectors.toList());

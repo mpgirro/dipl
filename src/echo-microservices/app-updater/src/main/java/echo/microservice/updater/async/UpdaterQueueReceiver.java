@@ -1,6 +1,7 @@
 package echo.microservice.updater.async;
 
 import echo.core.async.updater.UpdaterJob;
+import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @author Maximilian Irro
@@ -21,6 +24,9 @@ public class UpdaterQueueReceiver {
 
     @Autowired
     private UpdaterService updaterService;
+
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
 
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "${echo.rabbit.updater-queue}", durable = "true"),

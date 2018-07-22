@@ -1,5 +1,6 @@
 package echo.microservice.searcher.service;
 
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.web.client.IndexClient;
@@ -31,7 +32,7 @@ public class SearchService {
     @Autowired
     private IndexClient indexClient;
 
-    public ResultWrapperDTO search(String query, Optional<Integer> page, Optional<Integer> size) {
+    public ResultWrapperDTO search(String query, Optional<Integer> page, Optional<Integer> size, RoundTripTime rtt) {
         log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);
 
         final int p = page.orElse(DEFAULT_PAGE);
@@ -41,7 +42,7 @@ public class SearchService {
         if (p < 0) return ResultWrapperDTO.empty();
         if (s < 0) return ResultWrapperDTO.empty();
 
-        return indexClient.getSearchResults(query, p, s);
+        return indexClient.getSearchResults(query, p, s, rtt.bumpRTTs());
     }
 
 }

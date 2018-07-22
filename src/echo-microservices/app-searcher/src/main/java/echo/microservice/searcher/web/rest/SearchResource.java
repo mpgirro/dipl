@@ -1,5 +1,7 @@
 package echo.microservice.searcher.web.rest;
 
+import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.SearchService;
 import org.slf4j.Logger;
@@ -8,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
@@ -27,15 +27,20 @@ public class SearchResource {
     @Autowired
     private SearchService searchService;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @RequestMapping(
         value    = "/search",
         method   = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Optional<Integer> page,
-                                                        @RequestParam("size") Optional<Integer> size) {
+                                                        @RequestParam("size") Optional<Integer> size,
+                                                        @RequestBody RoundTripTime rtt) {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
-        final ResultWrapperDTO result = searchService.search(query, page, size);
+        mpsCounter.incrementCounter();
+        final ResultWrapperDTO result = searchService.search(query, page, size, rtt);
         return new ResponseEntity<>(
             result,
             HttpStatus.OK);

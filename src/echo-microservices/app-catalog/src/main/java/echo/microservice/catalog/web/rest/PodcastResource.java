@@ -1,5 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
+import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.domain.dto.*;
 import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,9 @@ public class PodcastResource {
     private FeedService feedService;
 
     private IdMapper idMapper = IdMapper.INSTANCE;
+
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
 
     @RequestMapping(
         value    = "/podcast",

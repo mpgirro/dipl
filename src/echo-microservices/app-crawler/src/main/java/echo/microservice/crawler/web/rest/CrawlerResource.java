@@ -1,5 +1,7 @@
 package echo.microservice.crawler.web.rest;
 
+import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
 import echo.microservice.crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.net.URISyntaxException;
 
 /**
@@ -21,6 +24,9 @@ public class CrawlerResource {
     @Autowired
     private CrawlerService crawlerService;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @RequestMapping(value = "/download-new-feed",
         method = RequestMethod.POST,
         params = { "exo", "url" })
@@ -28,7 +34,8 @@ public class CrawlerResource {
     public void downloadNewFeed(@RequestParam("exo") String exo,
                                 @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
-        crawlerService.downloadFeed(exo, url, true);
+        mpsCounter.incrementCounter();
+        crawlerService.downloadFeed(exo, url, true, RoundTripTime.empty());
     }
 
     @RequestMapping(value = "/download-update-feed",
@@ -38,7 +45,8 @@ public class CrawlerResource {
     public void downloadUpdateFeed(@RequestParam("exo") String exo,
                                    @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
-        crawlerService.downloadFeed(exo, url, false);
+        mpsCounter.incrementCounter();
+        crawlerService.downloadFeed(exo, url, false, RoundTripTime.empty());
     }
 
     @RequestMapping(value = "/download-website",
@@ -48,6 +56,7 @@ public class CrawlerResource {
     public void downloadWebsite(@RequestParam("exo") String exo,
                                 @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download website by EXO/URL : ({},{})", exo, url);
+        mpsCounter.incrementCounter();
         crawlerService.downloadWebsite(exo, url);
     }
 

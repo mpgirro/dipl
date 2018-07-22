@@ -3,6 +3,7 @@ package echo.microservice.crawler.service;
 import echo.core.async.parser.ImmutableNewFeedParserJob;
 import echo.core.async.parser.ImmutableUpdateFeedParserJob;
 import echo.core.async.parser.ParserJob;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.exception.EchoException;
 import echo.core.http.HeadResult;
 import echo.core.http.HttpClient;
@@ -53,7 +54,7 @@ public class CrawlerService {
     }
 
     @Async
-    public void downloadFeed(String podcastExo, String feedUrl, boolean isNewPodcast) {
+    public void downloadFeed(String podcastExo, String feedUrl, boolean isNewPodcast, RoundTripTime rtt) {
         try {
             final HeadResult headResult = httpClient.headCheck(feedUrl);
             if (headResult.getLocation().isPresent() ) {
@@ -67,9 +68,9 @@ public class CrawlerService {
 
                 ParserJob job;
                 if (isNewPodcast) {
-                    job = ImmutableNewFeedParserJob.of(podcastExo, feedUrl, feedData);
+                    job = ImmutableNewFeedParserJob.of(podcastExo, feedUrl, feedData, rtt.bumpRTTs());
                 } else {
-                    job = ImmutableUpdateFeedParserJob.of(podcastExo, feedUrl, feedData);
+                    job = ImmutableUpdateFeedParserJob.of(podcastExo, feedUrl, feedData, rtt.bumpRTTs());
                 }
                 parserQueueSender.produceMsg(job);
 

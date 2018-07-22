@@ -3,6 +3,7 @@ package echo.microservice.parser.async;
 import echo.core.async.parser.NewFeedParserJob;
 import echo.core.async.parser.ParserJob;
 import echo.core.async.parser.UpdateFeedParserJob;
+import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @author Maximilian Irro
@@ -24,6 +27,9 @@ public class ParserQueueReceiver {
     @Autowired
     private ParserService parserService;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @RabbitListener(bindings = @QueueBinding(
         value    = @Queue(value = "${echo.rabbit.parser-queue}", durable = "true"),
         exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
@@ -31,14 +37,15 @@ public class ParserQueueReceiver {
     )
     public void recievedMessage(ParserJob parserJob) {
         //log.debug("Recieved Message : {}", parserJob);
+        mpsCounter.incrementCounter();
         if (parserJob instanceof NewFeedParserJob) {
             final NewFeedParserJob job = (NewFeedParserJob) parserJob;
             log.info("Recieved NewFeedParserJob for EXO : {}", job.getExo());
-            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true);
+            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true, job.getRTT());
         } else if (parserJob instanceof UpdateFeedParserJob) {
             final UpdateFeedParserJob job = (UpdateFeedParserJob) parserJob;
             log.info("Recieved UpdateFeedParserJob for EXO : {}", job.getExo());
-            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false);
+            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false, job.getRTT());
         } else {
             throw new RuntimeException("Received unhandled ParserJob of type : " + parserJob.getClass());
         }

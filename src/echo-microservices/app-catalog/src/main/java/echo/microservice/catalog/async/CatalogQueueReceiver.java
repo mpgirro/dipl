@@ -6,6 +6,7 @@ import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.ImmutableAddOrUpdateDocIndexJob;
+import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -20,6 +21,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
@@ -41,6 +43,9 @@ public class CatalogQueueReceiver {
 
     @Autowired
     private IndexQueueSender indexQueueSender;
+
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 

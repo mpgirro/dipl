@@ -1,5 +1,6 @@
 package echo.microservice.gateway.web.client;
 
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import feign.FeignException;
@@ -38,7 +39,8 @@ class SearcherClientFallbackFactory implements FallbackFactory<SearcherClient> {
             @Override
             public ResultWrapperDTO getSearchResults(@SuppressWarnings("unused") String query,
                                                      @SuppressWarnings("unused") Integer page,
-                                                     @SuppressWarnings("unused") Integer size) {
+                                                     @SuppressWarnings("unused") Integer size,
+                                                     RoundTripTime rtt) {
                 log.warn("getSearchResults fallback; reason was: {}, {}", cause.getMessage(), cause);
 
                 if (cause instanceof FeignException && ((FeignException) cause).status() == 404) {
@@ -52,6 +54,7 @@ class SearcherClientFallbackFactory implements FallbackFactory<SearcherClient> {
                     .setMaxPage(1)
                     .setTotalHits(0)
                     .setResults(Collections.emptyList())
+                    .setRTT(rtt.bumpRTTs())
                     .create();
             }
         };

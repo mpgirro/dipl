@@ -1,5 +1,7 @@
 package echo.microservice.catalog.web.rest;
 
+import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.mapper.IdMapper;
 import echo.core.parse.rss.FeedParser;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
@@ -30,10 +33,14 @@ public class FeedResource {
 
     private IdMapper idMapper = IdMapper.INSTANCE;
 
+    @Resource(name = "messagesPerSecondCounter")
+    private MessagesPerSecondCounter mpsCounter;
+
     @PostMapping("/feed")
     @Transactional
     public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feed) throws URISyntaxException {
         log.debug("REST request to save Feed : {}", feed);
+        mpsCounter.incrementCounter();
         final Optional<FeedDTO> created = feedService.save(feed);
         return created
             .map(idMapper::clearImmutable)
@@ -51,13 +58,15 @@ public class FeedResource {
     @ResponseStatus(HttpStatus.OK)
     public void proposeFeed(@RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to propose Feed by URL : {}", url);
-        feedService.propose(url);
+        mpsCounter.incrementCounter();
+        feedService.propose(url, RoundTripTime.empty());
     }
 
     @PutMapping("/feed")
     @Transactional
     public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feed) {
         log.debug("REST request to update Feed : {}", feed);
+        mpsCounter.incrementCounter();
         final Optional<FeedDTO> updated = feedService.update(feed);
         return updated
             .map(idMapper::clearImmutable)
@@ -74,6 +83,7 @@ public class FeedResource {
     @Transactional(readOnly = true)
     public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);
+        mpsCounter.incrementCounter();
         final Optional<FeedDTO> feed = feedService.findOneByExo(exo);
         return feed
             .map(idMapper::clearImmutable)

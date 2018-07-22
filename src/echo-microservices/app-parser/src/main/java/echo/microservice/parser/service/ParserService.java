@@ -5,6 +5,7 @@ import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.parser.ParserJob;
+import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.ModifiablePodcastDTO;
@@ -44,7 +45,7 @@ public class ParserService {
     private final EpisodeMapper episodeMapper = EpisodeMapper.INSTANCE;
 
     @Async
-    public void parseFeed(String podcastExo, String feedUrl, String feedData, boolean isNewPodcast) {
+    public void parseFeed(String podcastExo, String feedUrl, String feedData, boolean isNewPodcast, RoundTripTime rtt) {
         try {
             final FeedParser parser = RomeFeedParser.of(feedData);
             final Optional<PodcastDTO> podcast = Optional.ofNullable(parser.getPodcast());
@@ -67,7 +68,7 @@ public class ParserService {
                     }
                 }
 
-                final UpdatePodcastCatalogJob updatePodcastJob = ImmutableUpdatePodcastCatalogJob.of(p.toImmutable());
+                final UpdatePodcastCatalogJob updatePodcastJob = ImmutableUpdatePodcastCatalogJob.of(p.toImmutable(), rtt.bumpRTTs());
                 catalogQueueSender.produceMsg(updatePodcastJob);
 
                 Optional
@@ -85,7 +86,7 @@ public class ParserService {
                                 .ofNullable(e.getContentEncoded())
                                 .ifPresent(c -> e.setContentEncoded(Jsoup.clean(c, Whitelist.basic())));
 
-                            final RegisterEpisodeIfNewJobCatalogJob registerEpisodeJob = ImmutableRegisterEpisodeIfNewJobCatalogJob.of(podcastExo, e.toImmutable());
+                            final RegisterEpisodeIfNewJobCatalogJob registerEpisodeJob = ImmutableRegisterEpisodeIfNewJobCatalogJob.of(podcastExo, e.toImmutable(), rtt.bumpRTTs());
                             catalogQueueSender.produceMsg(registerEpisodeJob);
                         }));
             } else {

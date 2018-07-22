@@ -1,5 +1,7 @@
 package echo.microservice.index.service;
 
+import echo.core.benchmark.RoundTripTime;
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;
@@ -52,8 +54,9 @@ public class IndexService {
         indexCommitter.commit();
     }
 
-    public ResultWrapperDTO search(String query, Integer page, Integer size) throws SearchException {
+    public ResultWrapperDTO search(String query, Integer page, Integer size, RoundTripTime rtt) throws SearchException {
         indexSearcher.refresh();
-        return indexSearcher.search(query, page, size);
+        final ImmutableResultWrapperDTO result = (ImmutableResultWrapperDTO) indexSearcher.search(query, page, size);
+        return result.withRTT(rtt.bumpRTTs());
     }
 }
