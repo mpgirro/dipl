@@ -2,6 +2,7 @@ package echo.core.domain.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.RoundTripTime;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
@@ -36,12 +37,16 @@ public interface ResultWrapperDTO {
     @Nullable
     List<IndexDocDTO> getResults();
 
+    @Nullable
+    RoundTripTime getRTT();
+
     static ResultWrapperDTO empty() {
         return ImmutableResultWrapperDTO.builder()
             .setCurrPage(0)
             .setMaxPage(0)
             .setTotalHits(0)
             .setResults(Collections.emptyList()) // this list is immutable
+            .setRTT(RoundTripTime.empty())
             .create();
     }
 
