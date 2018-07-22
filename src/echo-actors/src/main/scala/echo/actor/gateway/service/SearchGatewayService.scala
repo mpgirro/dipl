@@ -17,7 +17,7 @@ import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRe
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
 import echo.core.domain.dto.ResultWrapperDTO
 import io.swagger.annotations._
 
@@ -30,7 +30,7 @@ import scala.util.{Failure, Success}
 @Path("/api/search")  // @Path annotation required for Swagger
 @Api(value = "/api/search",
     produces = "application/json")
-class SearchGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
+class SearchGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter)
                            (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     private val CONFIG = ConfigFactory.load()
@@ -96,6 +96,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
+            mpsCounter.incrementCounter()
             onCompleteWithBreaker(breaker)(emitSearchQuery(SearchRequest(query, page, size, RoundTripTime.empty()))) {
                 case Success(res) =>
                     res match {

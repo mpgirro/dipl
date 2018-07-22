@@ -12,6 +12,7 @@ import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
+import echo.core.benchmark.MessagesPerSecondCounter
 import echo.core.domain.dto.EpisodeDTO
 import io.swagger.annotations._
 
@@ -26,7 +27,7 @@ import scala.util.{Failure, Success}
 @Api(value = "/api/episode",
      produces = "application/json")
 */
-class EpisodeGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
+class EpisodeGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -51,6 +52,9 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
                   response = classOf[Set[EpisodeDTO]],
                   responseContainer = "Set")
     def getAllEpisodes: Route = get {
+
+        mpsCounter.incrementCounter()
+
         complete(NotImplemented)
     }
 
@@ -74,6 +78,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     */
     def getEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}", exo)
+        mpsCounter.incrementCounter()
         onCompleteWithBreaker(breaker)(catalogStore ? GetEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -98,6 +103,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def getChaptersByEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}/chapters", exo)
+        mpsCounter.incrementCounter()
         onCompleteWithBreaker(breaker)(catalogStore ? GetChaptersByEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -128,6 +134,8 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def postEpisode: Route = post {
         entity(as[EpisodeDTO]) { episode =>
 
+            mpsCounter.incrementCounter()
+
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
                 case UserRepository.UserAdded(_)  => complete(StatusCodes.Created)
@@ -142,6 +150,8 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def putEpisode(id: String): Route = put {
         entity(as[EpisodeDTO]) { episode =>
 
+            mpsCounter.incrementCounter()
+
             // TODO update podcast with exo
 
             complete(NotImplemented)
@@ -149,6 +159,8 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     }
 
     def deleteEpisode(id: String): Route = delete {
+
+        mpsCounter.incrementCounter()
 
         // TODO delete podcast -  I guess this should not be supported?
 

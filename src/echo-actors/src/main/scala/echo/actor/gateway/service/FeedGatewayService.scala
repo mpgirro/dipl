@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.CircuitBreaker
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
+import echo.core.benchmark.MessagesPerSecondCounter
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 
@@ -21,7 +22,7 @@ import scala.concurrent.duration.FiniteDuration
 @Path("/api/feed")  // @Path annotation required for Swagger
 @Api(value = "/api/feed",
     produces = "application/json")
-class FeedGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker)
+class FeedGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter)
                          (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -41,12 +42,16 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def getAllFeeds: Route = get {
 
+        mpsCounter.incrementCounter()
+
         // TODO
 
         complete(StatusCodes.NotImplemented)
     }
 
     def getFeed(id: String): Route = get {
+
+        mpsCounter.incrementCounter()
 
         // TODO
 
@@ -55,6 +60,8 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def postFeed: Route = post {
         entity(as[FeedDTO]) { feed =>
+
+            mpsCounter.incrementCounter()
 
             // TODO
 
@@ -65,6 +72,8 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     def putFeed(id: String): Route = put {
         entity(as[FeedDTO]) { feed =>
 
+            mpsCounter.incrementCounter()
+
             // TODO
 
             complete(StatusCodes.NotImplemented)
@@ -72,6 +81,8 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     }
 
     def deleteFeed(id: String): Route = delete {
+
+        mpsCounter.incrementCounter()
 
         // TODO
 

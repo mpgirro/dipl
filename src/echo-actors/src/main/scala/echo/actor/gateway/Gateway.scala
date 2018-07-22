@@ -65,10 +65,10 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
 
     private val mpsCounter = new MessagesPerSecondCounter()
 
-    private val searchService = new SearchGatewayService(log, searcherBreaker)
-    private val podcastService = new PodcastGatewayService(log, catalogBreaker)
-    private val episodeService = new EpisodeGatewayService(log, catalogBreaker)
-    private val feedService = new FeedGatewayService(log, catalogBreaker)
+    private val searchService = new SearchGatewayService(log, searcherBreaker, mpsCounter)
+    private val podcastService = new PodcastGatewayService(log, catalogBreaker, mpsCounter)
+    private val episodeService = new EpisodeGatewayService(log, catalogBreaker, mpsCounter)
+    private val feedService = new FeedGatewayService(log, catalogBreaker, mpsCounter)
 
     override def preStart: Unit = {
 
