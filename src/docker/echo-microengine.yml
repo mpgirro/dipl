@@ -104,6 +104,22 @@ services:
         #build: ../echo-microservices/app-registry/Dockerfile
         ports:
             - 3036:3036
+    echo-updater:
+        container_name: "echo-updater"
+        hostname: "echo-updater"
+        image: echo-updater:latest
+        #build: ../echo-microservices/app-updater/Dockerfile
+        ports:
+            - 3037:3037
+        environment:
+            - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_REGISTRY_HOST=echo-registry
+        links:
+            - echo-rabbitmq
+            - echo-registry
+        depends_on:
+            - echo-rabbitmq
+            - echo-registry
     echo-rabbitmq:
         container_name: "echo-rabbitmq"
         hostname: "echo-rabbitmq"

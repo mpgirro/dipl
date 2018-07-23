@@ -15,6 +15,7 @@ buildscript {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
         classpath "io.spring.gradle:propdeps-plugin:0.0.9.RELEASE"
         classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
 }
 
@@ -31,6 +32,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'docker'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -244,3 +246,11 @@ task stage(dependsOn: 'bootRepackage') {
 compileJava.dependsOn processResources
 processResources.dependsOn cleanResources,bootBuildInfo
 bootBuildInfo.mustRunAfter cleanResources
+
+task buildDocker(type: Docker, dependsOn: build) {
+    push = Project.hasProperty('push')
+    applicationName = 'echo-registry'
+    tagVersion = 'latest'
+    tag = "${applicationName}"
+    dockerfile = file('Dockerfile')
+}

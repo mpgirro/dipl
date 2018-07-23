@@ -1,10 +1,7 @@
 package echo.microservice.registry.web.rest;
 
 import com.google.common.collect.ImmutableList;
-import echo.core.benchmark.FeedProperty;
-import echo.core.benchmark.MessagesPerSecondCounter;
-import echo.core.benchmark.MessagesPerSecondMonitor;
-import echo.core.benchmark.RoundTripTimeMonitor;
+import echo.core.benchmark.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -36,7 +33,7 @@ public class BenchmarkResource {
     @RequestMapping(
         value  = "/rtt-report",
         method = RequestMethod.POST)
-    public ResponseEntity<Void> rttReport(RequestBody RoundTripTime rtt) throws URISyntaxException {
+    public ResponseEntity<Void> rttReport(@RequestBody RoundTripTime rtt) throws URISyntaxException {
         log.debug("REST request to add RTT report : {}", rtt);
         rttMonitor.addRoundTripTime(rtt);
         if (rttMonitor.isFinished()) {

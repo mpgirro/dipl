@@ -252,5 +252,7 @@ bootBuildInfo.mustRunAfter cleanResources
 task buildDocker(type: Docker, dependsOn: build) {
     push = Project.hasProperty('push')
     applicationName = 'echo-index'
+    tagVersion = 'latest'
+    tag = "${applicationName}"
     dockerfile = file('Dockerfile')
 }

@@ -1,12 +1,10 @@
-FROM openjdk:8-jdk
+FROM openjdk:8-jdk-alpine
 
 MAINTAINER Maximilian Irro
 
-#ENV MONGO_URL mongodb://localhost/belfastjug_sample_01
+VOLUME /tmp
+ADD build/libs/app-gateway-1.0-SNAPSHOT-all.jar /app.jar
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
-ADD build/libs/gateway-1.0-SNAPSHOT.jar /app.jar
-
-RUN sh -c 'touch /app.jar'
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 EXPOSE 3030
