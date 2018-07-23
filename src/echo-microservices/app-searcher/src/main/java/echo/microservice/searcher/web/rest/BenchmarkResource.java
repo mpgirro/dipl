@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -34,21 +35,21 @@ public class BenchmarkResource {
         value  = "/start-mps",
         method = RequestMethod.POST,
         params = { "mps" })
-    @ResponseStatus(HttpStatus.OK)
-    public void startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+    public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
         mpsCounter.startCounting();
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @RequestMapping(
         value  = "/stop-mps",
         method = RequestMethod.POST,
         params = { "mps" })
-    @ResponseStatus(HttpStatus.OK)
-    public void stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+    public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
         mpsCounter.stopCounting();
         benchmarkClient.setMpsReport(applicationName, mpsCounter.getMessagesPerSecond());
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @RequestMapping(
