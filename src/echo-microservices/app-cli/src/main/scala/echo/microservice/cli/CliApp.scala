@@ -3,7 +3,8 @@ package echo.microservice.cli
 import com.google.common.collect.ImmutableList
 import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
-import echo.core.benchmark.{FeedPropertyUtil, ImmutableRoundTripTime, Workflow}
+import echo.core.async.catalog.{ImmutableProposeNewFeedJob, ProposeNewFeedJob}
+import echo.core.benchmark.{FeedProperty, FeedPropertyUtil, ImmutableRoundTripTime, Workflow}
 import echo.core.util.UrlUtil
 
 import scala.collection.JavaConverters._
@@ -44,6 +45,8 @@ class CliApp {
 
     // TODO
     private val CATALOG_URL = "http://localhost:3031/catalog"
+    private val REGISTRY_URL = "http://localhost:3036"
+    private val UPDATER_URL = "http://localhost:3037"
     private val FEEDS_TXT = "../../feeds.txt"
 
     private implicit val backend = HttpURLConnectionBackend()
@@ -107,6 +110,23 @@ class CliApp {
         sttp.post(uri"${CATALOG_URL}/feed/propose?url=${url}").send()
     }
 
+    private implicit val feedPropertiesSerializer: BodySerializer[ImmutableList[FeedProperty]] = {
+        ps: ImmutableList[FeedProperty] =>
+            val serializedProperties = ps.asScala
+                .map(p => s"{'uri':'${p.getUri}', 'location':${p.getLocation}, 'numberOfEpisodes':${p.getNumberOfEpisodes} }")
+                .mkString(",")
+            val serializedList = s"[$serializedProperties]"
+            StringBody(serializedList, "UTF-8", Some("application/json"))
+    }
+
+    private implicit val proposeNewFeedJobSerializer: BodySerializer[ProposeNewFeedJob] = {
+        job: ProposeNewFeedJob =>
+            val serializedTimestamps = s"[${job.getRTT.getRtts.asScala.mkString(",")}]"
+            val serializedRtt = s"{'id':'${job.getRTT.getId}', 'location':'${job.getRTT.getLocation}', 'workflow':'${job.getRTT.getWorkflow.getName}', 'rtts':$serializedTimestamps"
+            val serializedJob = s"{'feed':'${job.getFeed}', 'rtt':'$serializedRtt'}"
+            StringBody(serializedJob, "UTF-8", Some("application/json"))
+    }
+
     private def loadTestFeeds(): Unit = {
         log.debug("Received LoadTestFeeds")
         for (feed <- Source.fromFile(FEEDS_TXT).getLines) {
@@ -117,8 +137,13 @@ class CliApp {
 
     private def benchmarkIndexSubsystem(): Unit = {
         val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
-        benchmarkMonitor ! MonitorFeedProgress(feedProperties)
-        benchmarkMonitor ! StartMessagePerSecondMonitoring
+
+        sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-feed-progress")
+            .body(feedProperties)
+            .send()
+
+        startMessagePerSecondMonitoring()
+
         for (fp <- feedProperties.asScala) {
             val location = "file://"+fp.getLocation
             val rtt = ImmutableRoundTripTime.builder()
@@ -126,14 +151,23 @@ class CliApp {
                 .setLocation(location)
                 .setWorkflow(Workflow.PODCAST_INDEX)
                 .create()
-            updater ! ProposeNewFeed(location, rtt) // TODO adjust location
+
+            val job = ImmutableProposeNewFeedJob.of(location, rtt)
+            sttp.post(uri"${UPDATER_URL}/updater/propose-new-feed")
+                .body(job)
+                .send()
         }
     }
 
     private def benchmarkRetrievalSubsystem(): Unit = {
         val queries = loadBenchmarkQueries("../benchmark/queries.txt")
-        benchmarkMonitor ! MonitorQueryProgress(queries)
-        benchmarkMonitor ! StartMessagePerSecondMonitoring
+
+        sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-query-progress")
+            .body(queries)
+            .send()
+
+        startMessagePerSecondMonitoring()
+        
         for (q <- queries.asScala) {
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(q)
@@ -147,6 +181,12 @@ class CliApp {
     private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
         ImmutableList.copyOf(Source.fromFile(filePath).getLines.asJava)
     }
+
+    private def startMessagePerSecondMonitoring(): Unit = {
+        sttp.post(uri"${REGISTRY_URL}/benchmark/start-mps")
+            .send()
+    }
+
 }
 
 
