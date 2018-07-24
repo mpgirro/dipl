@@ -99,11 +99,13 @@ task testReport(type: TestReport) {
     reportOn test
 }
 
+/*
 if (project.hasProperty('prod')) {
     apply from: 'gradle/profile_prod.gradle'
 } else {
     apply from: 'gradle/profile_dev.gradle'
 }
+*/
 
 configurations {
     providedRuntime

@@ -12,7 +12,7 @@ MAINTAINER Maximilian Irro
 #CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.war"]
 
 VOLUME /tmp
-ADD build/libs/app-index-1.0-SNAPSHOT-all.jar /app.jar
+ADD build/libs/index-1.0-SNAPSHOT-all.jar /app.jar
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 EXPOSE 3032
