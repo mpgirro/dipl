@@ -113,31 +113,35 @@ class CliApp {
 
     private implicit val stringListSerializer: BodySerializer[ImmutableList[String]] = {
         ps: ImmutableList[String] =>
-            val serializedList = s"[${ps.asScala.mkString(",")}]"
+            val serializedList = s"[${ps.asScala.mkString(", ")}]"
+            println(serializedList)
             StringBody(serializedList, "UTF-8", Some("application/json"))
     }
 
     private implicit val feedPropertiesSerializer: BodySerializer[ImmutableList[FeedProperty]] = {
         ps: ImmutableList[FeedProperty] =>
             val serializedProperties = ps.asScala
-                .map(p => s"{'uri':'${p.getUri}', 'location':${p.getLocation}, 'numberOfEpisodes':${p.getNumberOfEpisodes} }")
+                .map(p => s"""{\"uri\":\"${p.getUri}\", \"location\":\"${p.getLocation}\", \"numberOfEpisodes\":${p.getNumberOfEpisodes} }""")
                 .mkString(",")
             val serializedList = s"[$serializedProperties]"
+            println(serializedList)
             StringBody(serializedList, "UTF-8", Some("application/json"))
     }
 
     private implicit val roundTripTimeSerializer: BodySerializer[RoundTripTime] = {
         rtt: RoundTripTime =>
-            val serializedTimestamps = s"[${rtt.getRtts.asScala.mkString(",")}]"
-            val serializedRtt = s"{'id':'${rtt.getId}', 'location':'${rtt.getLocation}', 'workflow':'${rtt.getWorkflow.getName}', 'rtts':$serializedTimestamps"
+            val serializedTimestamps = s"[${rtt.getRtts.asScala.mkString(", ")}]"
+            val serializedRtt = s"""{\"id\":\"${rtt.getId}\", \"location\":\"${rtt.getLocation}\", \"workflow\":\"${rtt.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
+            println(serializedRtt)
             StringBody(serializedRtt, "UTF-8", Some("application/json"))
     }
 
     private implicit val proposeNewFeedJobSerializer: BodySerializer[ProposeNewFeedJob] = {
         job: ProposeNewFeedJob =>
-            val serializedTimestamps = s"[${job.getRTT.getRtts.asScala.mkString(",")}]"
-            val serializedRtt = s"{'id':'${job.getRTT.getId}', 'location':'${job.getRTT.getLocation}', 'workflow':'${job.getRTT.getWorkflow.getName}', 'rtts':$serializedTimestamps"
-            val serializedJob = s"{'feed':'${job.getFeed}', 'rtt':'$serializedRtt'}"
+            val serializedTimestamps = s"[${job.getRTT.getRtts.asScala.mkString(", ")}]"
+            val serializedRtt = s"""{\"id\":\"${job.getRTT.getId}\", \"location\":\"${job.getRTT.getLocation}\", \"workflow\":\"${job.getRTT.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
+            val serializedJob = s"""{\"feed\":\"${job.getFeed}\", \"rtt\":$serializedRtt}"""
+            println(serializedJob)
             StringBody(serializedJob, "UTF-8", Some("application/json"))
     }
 
@@ -150,7 +154,7 @@ class CliApp {
     }
 
     private def benchmarkIndexSubsystem(): Unit = {
-        val feedProperties = feedPropertyUtil.loadProperties("../benchmark/properties.json") // TODO replace file path by something not hardcoded
+        val feedProperties = feedPropertyUtil.loadProperties("../../benchmark/properties.json") // TODO replace file path by something not hardcoded
 
         sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-feed-progress")
             .body(feedProperties)
@@ -174,7 +178,7 @@ class CliApp {
     }
 
     private def benchmarkRetrievalSubsystem(): Unit = {
-        val queries = loadBenchmarkQueries("../benchmark/queries.txt")
+        val queries = loadBenchmarkQueries("../../benchmark/queries.txt")
 
         sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-query-progress")
             .body(queries)
