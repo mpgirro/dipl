@@ -1,5 +1,8 @@
 package echo.microservice.updater.async;
 
+import echo.core.async.updater.ProcessFeedWebsiteJob;
+import echo.core.async.updater.ProcessNewFeedJob;
+import echo.core.async.updater.ProcessUpdateFeedJob;
 import echo.core.async.updater.UpdaterJob;
 import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.microservice.updater.service.UpdaterService;
@@ -33,15 +36,14 @@ public class UpdaterQueueReceiver {
         exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
         key      = "${echo.amqp.updater-routingkey}")
     )
-    public void recievedMessage(UpdaterJob job) {
-        log.debug("Received Message : {}", job);
+    public void recievedMessage(UpdaterJob updaterJob) {
+        log.debug("Received Message : {}", updaterJob);
         mpsCounter.incrementCounter();
-        updaterService.processJob(job);
-        /*
+        //updaterService.processJob(job);
         if (updaterJob instanceof ProcessNewFeedJob) {
             final ProcessNewFeedJob job = (ProcessNewFeedJob) updaterJob;
             log.info("Recieved ProcessNewFeedJob for EXO : {}", job.getExo());
-            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true);
+            updaterService.processNewFeedJob(job);
         } else if (updaterJob instanceof ProcessUpdateFeedJob) {
             final ProcessUpdateFeedJob job = (ProcessUpdateFeedJob) updaterJob;
             log.info("Recieved ProcessUpdateFeedJob for EXO : {}", job.getExo());
@@ -55,7 +57,6 @@ public class UpdaterQueueReceiver {
         } else {
             throw new RuntimeException("Received unhandled UpdaterJob of type : " + updaterJob.getClass());
         }
-        */
     }
 
 }

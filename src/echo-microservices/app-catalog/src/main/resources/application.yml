@@ -70,4 +70,4 @@ eureka:
         leaseExpirationDurationInSeconds: 2
 
 feign:
-    registry-url: ${ECHO_REGISTRY_HOST:localhost}
+    registry-url: ${ECHO_REGISTRY_HOST:localhost}:${ECHO_REGISTRY_PORT:3036}

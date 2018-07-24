@@ -23,6 +23,7 @@ echo:
 eureka:
     client:
         serviceUrl:
+            fetchRegistry: true
             defaultZone: http://${ECHO_REGISTRY_HOST:127.0.0.1}:3036/eureka/
     instance:
         leaseRenewalIntervalInSeconds: 1
@@ -52,6 +53,6 @@ feign:
         connection-timeout: 5000
     hystrix:
         enabled: true
-    registry-url: ${ECHO_REGISTRY_HOST:localhost}
-    catalog-url: ${ECHO_CATALOG_HOST:localhost}
-    searcher-url: ${ECHO_SEARCHER_HOST:localhost}
+    registry-url: ${ECHO_REGISTRY_HOST:localhost}:${ECHO_REGISTRY_PORT:3036}
+    catalog-url: ${ECHO_CATALOG_HOST:localhost}:${ECHO_CATALOG_PORT:3031}
+    searcher-url: ${ECHO_SEARCHER_HOST:localhost}:${ECHO_SEARCHER_PORT:3035}

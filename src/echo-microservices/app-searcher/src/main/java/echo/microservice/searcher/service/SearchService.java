@@ -32,7 +32,7 @@ public class SearchService {
     @Autowired
     private IndexClient indexClient;
 
-    public ResultWrapperDTO search(String query, Optional<Integer> page, Optional<Integer> size, RoundTripTime rtt) {
+    public ResultWrapperDTO search(String query, Optional<Integer> page, Optional<Integer> size) {
         log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);
 
         final int p = page.orElse(DEFAULT_PAGE);
@@ -42,7 +42,20 @@ public class SearchService {
         if (p < 0) return ResultWrapperDTO.empty();
         if (s < 0) return ResultWrapperDTO.empty();
 
-        return indexClient.getSearchResults(query, p, s, rtt.bumpRTTs());
+        return indexClient.getSearchResults(query, p, s);
+    }
+
+    public ResultWrapperDTO searchBenchmark(String query, Optional<Integer> page, Optional<Integer> size, RoundTripTime rtt) {
+        log.debug("Request to benchmark search for query/page/size : ('{}',{},{})", query, page, size);
+
+        final int p = page.orElse(DEFAULT_PAGE);
+        final int s = size.orElse(DEFAULT_SIZE);
+
+        if (isNullOrEmpty(query)) return ResultWrapperDTO.empty();
+        if (p < 0) return ResultWrapperDTO.empty();
+        if (s < 0) return ResultWrapperDTO.empty();
+
+        return indexClient.getBenchmarkSearchResults(query, p, s, rtt.bumpRTTs());
     }
 
 }

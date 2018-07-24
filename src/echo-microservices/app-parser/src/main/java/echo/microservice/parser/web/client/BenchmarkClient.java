@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "${feign.registry-url}",
+    name = "echo-registry",
+    url = "${feign.registry-url}",
     configuration = FeignConfig.class
 )
 public interface BenchmarkClient {

@@ -36,11 +36,10 @@ public class SearchResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Optional<Integer> page,
-                                                        @RequestParam("size") Optional<Integer> size,
-                                                        @RequestBody RoundTripTime rtt) {
+                                                        @RequestParam("size") Optional<Integer> size) {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
         mpsCounter.incrementCounter();
-        final ResultWrapperDTO result = searchService.search(query, page, size, rtt);
+        final ResultWrapperDTO result = searchService.search(query, page, size);
         return new ResponseEntity<>(
             result,
             HttpStatus.OK);

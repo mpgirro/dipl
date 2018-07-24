@@ -41,7 +41,7 @@ public class UpdaterService {
     }
 
     @Async
-    public void processJob(ProcessNewFeedJob updaterJob) {
+    public void processNewFeedJob(ProcessNewFeedJob updaterJob) {
         log.info("Recieved ProcessNewFeedJob for EXO : {}", updaterJob.getExo());
         final NewFeedCrawlerJob crawlerJob = ImmutableNewFeedCrawlerJob.of(updaterJob.getExo(), updaterJob.getFeed(), updaterJob.getRTT().bumpRTTs());
         crawlerQueueSender.produceMsg(crawlerJob);

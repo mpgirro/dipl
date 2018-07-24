@@ -41,11 +41,10 @@ public class IndexResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
                                                         @RequestParam("page") Integer page,
-                                                        @RequestParam("size") Integer size,
-                                                        @RequestBody RoundTripTime rtt) throws SearchException {
+                                                        @RequestParam("size") Integer size) throws SearchException {
         log.info("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
         mpsCounter.incrementCounter();
-        final ResultWrapperDTO result = indexService.search(query, page, size, rtt);
+        final ResultWrapperDTO result = indexService.search(query, page, size, RoundTripTime.empty());
         return new ResponseEntity<>(
             result,
             HttpStatus.OK);

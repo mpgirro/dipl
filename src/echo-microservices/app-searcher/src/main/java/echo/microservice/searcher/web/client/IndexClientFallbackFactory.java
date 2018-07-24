@@ -39,6 +39,30 @@ class IndexClientFallbackFactory implements FallbackFactory<IndexClient> {
             @Override
             public ResultWrapperDTO getSearchResults(@SuppressWarnings("unused") String query,
                                                      @SuppressWarnings("unused") Integer page,
+                                                     @SuppressWarnings("unused") Integer size) {
+                log.warn("fallback; reason was: {}, {}", cause.getMessage(), cause);
+
+                if (cause instanceof FeignException && ((FeignException) cause).status() == 404) {
+                    // Treat the HTTP 404 status
+                    // TODO
+                }
+
+                log.warn("Exception: {}", cause.getMessage());
+                cause.printStackTrace();
+
+                return ImmutableResultWrapperDTO
+                    .builder()
+                    .setCurrPage(1)
+                    .setMaxPage(1)
+                    .setTotalHits(0)
+                    .setResults(Collections.emptyList())
+                    .setRTT(RoundTripTime.empty())
+                    .create();
+            }
+
+            @Override
+            public ResultWrapperDTO getBenchmarkSearchResults(@SuppressWarnings("unused") String query,
+                                                     @SuppressWarnings("unused") Integer page,
                                                      @SuppressWarnings("unused") Integer size,
                                                      RoundTripTime rtt) {
                 log.warn("fallback; reason was: {}, {}", cause.getMessage(), cause);

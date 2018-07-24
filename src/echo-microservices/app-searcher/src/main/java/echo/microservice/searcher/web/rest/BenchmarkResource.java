@@ -1,17 +1,22 @@
 package echo.microservice.searcher.web.rest;
 
 import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
+import echo.core.domain.dto.ResultWrapperDTO;
+import echo.microservice.searcher.service.SearchService;
 import echo.microservice.searcher.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  * @author Maximilian Irro
@@ -27,6 +32,9 @@ public class BenchmarkResource {
 
     @Autowired
     private BenchmarkClient benchmarkClient;
+
+    @Autowired
+    private SearchService searchService;
 
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
@@ -59,6 +67,22 @@ public class BenchmarkResource {
         log.debug("REST request to get MPS");
         mpsCounter.incrementCounter();
         return mpsCounter.getMessagesPerSecond();
+    }
+
+    @RequestMapping(
+        value    = "/search",
+        method   = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("query") String query,
+                                                        @RequestParam("page") Optional<Integer> page,
+                                                        @RequestParam("size") Optional<Integer> size,
+                                                        @RequestBody RoundTripTime rtt) {
+        log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
+        mpsCounter.incrementCounter();
+        final ResultWrapperDTO result = searchService.searchBenchmark(query, page, size, rtt);
+        return new ResponseEntity<>(
+            result,
+            HttpStatus.OK);
     }
 
 }

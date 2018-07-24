@@ -48,5 +48,5 @@ feign:
         connection-timeout: 5000
     hystrix:
         enabled: true
-    registry-url: ${ECHO_REGISTRY_HOST:localhost}
-    index-url: ${ECHO_INDEX_HOST:localhost}
+    registry-url: ${ECHO_REGISTRY_HOST:localhost}:${ECHO_REGISTRY_PORT:3036}
+    index-url: ${ECHO_INDEX_HOST:localhost}:${ECHO_INDEX_PORT:3032}

@@ -34,13 +34,24 @@ public class SearcherService {
     @Autowired
     private SearcherClient searcherClient;
 
-    public Optional<ResultWrapperDTO> search(String query, Optional<Integer> page, Optional<Integer> size, RoundTripTime rtt) {
+    public Optional<ResultWrapperDTO> search(String query, Optional<Integer> page, Optional<Integer> size) {
         log.debug("Request to search for query/page/size : ('{}',{},{})", query, page, size);
 
         final Integer p = page.orElse(DEFAULT_PAGE);
         final Integer s = size.orElse(DEFAULT_SIZE);
 
-        final ResultWrapperDTO result = searcherClient.getSearchResults(query, p, s, rtt.bumpRTTs());
+        final ResultWrapperDTO result = searcherClient.getSearchResults(query, p, s);
+
+        return Optional.of(result);
+    }
+
+    public Optional<ResultWrapperDTO> searchBenchmark(String query, Optional<Integer> page, Optional<Integer> size, RoundTripTime rtt) {
+        log.debug("Request to benchmark search for query/page/size : ('{}',{},{})", query, page, size);
+
+        final Integer p = page.orElse(DEFAULT_PAGE);
+        final Integer s = size.orElse(DEFAULT_SIZE);
+
+        final ResultWrapperDTO result = searcherClient.getBenchmarkSearchResults(query, p, s, rtt.bumpRTTs());
 
         return Optional.of(result);
     }

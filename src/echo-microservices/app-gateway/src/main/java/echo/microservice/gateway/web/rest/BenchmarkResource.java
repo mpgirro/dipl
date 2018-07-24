@@ -71,7 +71,7 @@ public class BenchmarkResource {
 
     @RequestMapping(
         value    = "/search",
-        method   = RequestMethod.GET,
+        method   = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("q") String query,
                                                         @RequestParam("p") Optional<Integer> page,
@@ -79,7 +79,7 @@ public class BenchmarkResource {
                                                         @RequestBody RoundTripTime rtt) {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
         mpsCounter.incrementCounter();
-        final Optional<ResultWrapperDTO> resultWrapper = searcherService.search(query, page, size, rtt);
+        final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
         return resultWrapper
             .map(result -> new ResponseEntity<>(
                 result,

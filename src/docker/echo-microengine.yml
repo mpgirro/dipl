@@ -9,8 +9,11 @@ services:
             - 3030:3030
         environment:
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
             - ECHO_CATALOG_HOST=echo-catalog
+            - ECHO_CATALOG_PORT=3031
             - ECHO_SEARCHER_HOST=echo-searcher
+            - ECHO_SEARCHER_PORT=3035
         links:
             - echo-catalog
             - echo-searcher
@@ -26,7 +29,9 @@ services:
             - 3031:3031
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_RABBITMQ_PORT=5672
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
         links:
             - echo-rabbitmq
             - echo-registry
@@ -44,7 +49,9 @@ services:
             - "/Users/max/volumes/echo/index"
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_RABBITMQ_PORT=5672
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
         links:
             - echo-rabbitmq
             - echo-registry
@@ -60,7 +67,9 @@ services:
             - 3033:3033
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_RABBITMQ_PORT=5672
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
         links:
             - echo-rabbitmq
             - echo-registry
@@ -76,7 +85,9 @@ services:
             - 3034:3034
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_RABBITMQ_PORT=5672
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
         links:
             - echo-rabbitmq
             - echo-registry
@@ -92,7 +103,9 @@ services:
             - 3035:3035
         environment:
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
             - ECHO_INDEX_HOST=echo-index
+            - ECHO_INDEX_PORT=3032
         links:
             - echo-index
 
@@ -116,7 +129,9 @@ services:
             - 3037:3037
         environment:
             - ECHO_RABBITMQ_HOST=echo-rabbitmq
+            - ECHO_RABBITMQ_PORT=5672
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_REGISTRY_PORT=3036
         links:
             - echo-rabbitmq
             - echo-registry
