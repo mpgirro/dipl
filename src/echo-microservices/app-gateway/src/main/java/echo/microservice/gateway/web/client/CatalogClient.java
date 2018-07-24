@@ -11,7 +11,7 @@ import java.util.List;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "echo-catalog",
+    name = "${feign.catalog-url}",
     configuration = FeignConfig.class,
     fallbackFactory = CatalogClientFallackFactory.class
 )

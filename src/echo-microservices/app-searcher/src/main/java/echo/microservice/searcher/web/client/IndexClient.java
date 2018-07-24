@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "echo-index",
+    name = "${feign.index-url}",
     configuration = FeignConfig.class,
     fallbackFactory = IndexClientFallbackFactory.class
 )

@@ -9,6 +9,8 @@ services:
             - 3030:3030
         environment:
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_CATALOG_HOST=echo-catalog
+            - ECHO_SEARCHER_HOST=echo-searcher
         links:
             - echo-catalog
             - echo-searcher
@@ -90,6 +92,7 @@ services:
             - 3035:3035
         environment:
             - ECHO_REGISTRY_HOST=echo-registry
+            - ECHO_INDEX_HOST=echo-index
         links:
             - echo-index
 

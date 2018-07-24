@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Maximilian Irro
  */
 @FeignClient(
-    name = "echo-searcher",
+    name = "${feign.searcher-url}",
     configuration = FeignConfig.class,
     fallbackFactory = SearcherClientFallbackFactory.class
 )

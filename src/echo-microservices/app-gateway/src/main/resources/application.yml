@@ -52,3 +52,6 @@ feign:
         connection-timeout: 5000
     hystrix:
         enabled: true
+    registry-url: ${ECHO_REGISTRY_HOST:localhost}
+    catalog-url: ${ECHO_CATALOG_HOST:localhost}
+    searcher-url: ${ECHO_SEARCHER_HOST:localhost}

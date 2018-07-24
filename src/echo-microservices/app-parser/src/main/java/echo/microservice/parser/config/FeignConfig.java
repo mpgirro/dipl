@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"echo.microservice.index.web.client"})
+@EnableFeignClients(basePackages = {"echo.microservice.parser.web.client"})
 public class FeignConfig {
 
     @Bean

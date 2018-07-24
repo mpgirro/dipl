@@ -34,7 +34,7 @@ public class UpdaterQueueReceiver {
         key      = "${echo.amqp.updater-routingkey}")
     )
     public void recievedMessage(UpdaterJob job) {
-        //log.debug("Recieved Message : {}", job);
+        log.debug("Received Message : {}", job);
         mpsCounter.incrementCounter();
         updaterService.processJob(job);
         /*

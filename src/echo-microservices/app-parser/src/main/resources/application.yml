@@ -31,3 +31,5 @@ eureka:
         leaseRenewalIntervalInSeconds: 1
         leaseExpirationDurationInSeconds: 2
 
+feign:
+    registry-url: ${ECHO_REGISTRY_HOST:localhost}
