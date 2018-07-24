@@ -3,7 +3,7 @@ server:
     port: ${ECHO_UPDATER_PORT:3037}
 
 echo:
-    parser:
+    updater:
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000

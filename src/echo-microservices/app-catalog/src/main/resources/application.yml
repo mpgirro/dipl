@@ -58,7 +58,7 @@ echo:
         exchange: echo.direct
         catalog-routingkey: echo.catalog.routingkey
         crawler-routingkey: echo.crawler.routingkey
-        update-routingkey: echo.updater.routingkey
+        updater-routingkey: echo.updater.routingkey
         index-routingkey: echo.index.routingkey
 
 eureka:
