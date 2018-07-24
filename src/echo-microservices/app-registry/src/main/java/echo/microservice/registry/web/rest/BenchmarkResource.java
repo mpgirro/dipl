@@ -62,6 +62,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> monitorFeedProgress(@RequestBody List<FeedProperty> feedProperties) throws URISyntaxException {
         log.info("REST request to monitor fed progress for properties list : {}", feedProperties);
         rttMonitor.initWithProperties(ImmutableList.copyOf(feedProperties));
+        sendStartMessagePerSecondMonitoringMessages(true);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -71,6 +72,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> monitorQueryProgress(@RequestBody List<String> queries) throws URISyntaxException {
         log.info("REST request to monitor fed progres for queries list : {}", queries);
         rttMonitor.initWithQueries(ImmutableList.copyOf(queries));
+        sendStartMessagePerSecondMonitoringMessages(true);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

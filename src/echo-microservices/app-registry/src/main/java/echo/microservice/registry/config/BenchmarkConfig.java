@@ -12,14 +12,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BenchmarkConfig {
 
+    private final RoundTripTimeMonitor rttMonitor = new RoundTripTimeMonitor();
+    private final MessagesPerSecondMonitor mpsMonitor = new MessagesPerSecondMonitor();
+
     @Bean(name = "roundTripTimeMonitor")
     public RoundTripTimeMonitor rttMonitor(){
-        return new RoundTripTimeMonitor();
+        return rttMonitor;
     }
 
     @Bean(name = "messagesPerSecondMonitor")
     public MessagesPerSecondMonitor mpsMonitor(){
-        return new MessagesPerSecondMonitor();
+        return mpsMonitor;
     }
 
 }

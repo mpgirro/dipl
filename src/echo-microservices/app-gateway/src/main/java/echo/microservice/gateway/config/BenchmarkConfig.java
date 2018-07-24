@@ -10,10 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BenchmarkConfig {
 
+    private final MessagesPerSecondCounter mpsCounter = new MessagesPerSecondCounter();
+
     @Bean(name = "messagesPerSecondCounter")
     public MessagesPerSecondCounter mpsCounter(){
-        return new MessagesPerSecondCounter();
+        return mpsCounter;
     }
-
 
 }
