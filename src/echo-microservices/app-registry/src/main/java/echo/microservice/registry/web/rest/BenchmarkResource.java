@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * @author Maximilian Irro
@@ -40,7 +41,7 @@ public class BenchmarkResource {
             sendStopMessagePerSecondMonitoringMessages();
             rttMonitor.logResults();
         }
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -50,29 +51,26 @@ public class BenchmarkResource {
     public ResponseEntity<Void> mpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps) throws URISyntaxException {
         log.debug("REST request to report MPS : {} for unit : {}", mps, name);
         mpsMonitor.addAndPrintMetric(name, mps);
-
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @RequestMapping(
         value  = "/monitor-feed-progress",
         method = RequestMethod.POST)
-    public ResponseEntity<Void> monitorFeedProgress(@RequestBody ImmutableList<FeedProperty> feedProperties) throws URISyntaxException {
-        log.debug("REST request to monitor fed progress for properties list");
-        // TODO
-
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    public ResponseEntity<Void> monitorFeedProgress(@RequestBody List<FeedProperty> feedProperties) throws URISyntaxException {
+        log.info("REST request to monitor fed progress for properties list : {}", feedProperties);
+        rttMonitor.initWithProperties(ImmutableList.copyOf(feedProperties));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
         value  = "/monitor-query-progress",
         method = RequestMethod.POST)
-    public ResponseEntity<Void> monitorQueryProgress(@RequestBody ImmutableList<String> queries) throws URISyntaxException {
-        log.debug("REST request to monitor fed progres for queries list");
-        // TODO
-
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    public ResponseEntity<Void> monitorQueryProgress(@RequestBody List<String> queries) throws URISyntaxException {
+        log.info("REST request to monitor fed progres for queries list : {}", queries);
+        rttMonitor.initWithQueries(ImmutableList.copyOf(queries));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(

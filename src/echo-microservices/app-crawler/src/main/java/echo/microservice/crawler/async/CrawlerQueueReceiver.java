@@ -40,11 +40,11 @@ public class CrawlerQueueReceiver {
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;
             log.info("Recieved NewFeedCrawlerJob for Podcast EXO : {}", job.exo());
-            crawlerService.downloadFeed(job.exo(), job.url(), true, job.getRTT());
+            crawlerService.downloadFeed(job.exo(), job.url(), true, job.getRtt());
         } else if (crawlerJob instanceof UpdateFeedCrawlerJob) {
             final UpdateFeedCrawlerJob job = (UpdateFeedCrawlerJob) crawlerJob;
             log.info("Recieved UpdateFeedCrawlerJob for Podcast EXO : {}", job.exo());
-            crawlerService.downloadFeed(job.exo(), job.url(), false, job.getRTT());
+            crawlerService.downloadFeed(job.exo(), job.url(), false, job.getRtt());
         } else {
             throw new RuntimeException("Received unhandled CrawlerJob of type : " + crawlerJob.getClass());
         }

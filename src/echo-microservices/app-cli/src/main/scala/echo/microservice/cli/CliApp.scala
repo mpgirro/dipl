@@ -138,8 +138,8 @@ class CliApp {
 
     private implicit val proposeNewFeedJobSerializer: BodySerializer[ProposeNewFeedJob] = {
         job: ProposeNewFeedJob =>
-            val serializedTimestamps = s"[${job.getRTT.getRtts.asScala.mkString(", ")}]"
-            val serializedRtt = s"""{\"id\":\"${job.getRTT.getId}\", \"location\":\"${job.getRTT.getLocation}\", \"workflow\":\"${job.getRTT.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
+            val serializedTimestamps = s"[${job.getRtt.getRtts.asScala.mkString(", ")}]"
+            val serializedRtt = s"""{\"id\":\"${job.getRtt.getId}\", \"location\":\"${job.getRtt.getLocation}\", \"workflow\":\"${job.getRtt.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
             val serializedJob = s"""{\"feed\":\"${job.getFeed}\", \"rtt\":$serializedRtt}"""
             println(serializedJob)
             StringBody(serializedJob, "UTF-8", Some("application/json"))

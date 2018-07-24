@@ -62,7 +62,7 @@ public class CatalogQueueReceiver {
             log.debug("Recieved UpdatePodcastCatalogJob for EXO : {}", job.getPodcast().getExo());
             final Optional<PodcastDTO> registered = podcastService.update(job.getPodcast());
             if (registered.isPresent()) {
-                final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(registered.get()), job.getRTT().bumpRTTs());
+                final AddOrUpdateDocIndexJob indexJob = ImmutableAddOrUpdateDocIndexJob.of(indexMapper.toImmutable(registered.get()), job.getRtt().bumpRTTs());
                 indexQueueSender.produceMsg(indexJob);
             }
         } else if (catalogJob instanceof RegisterEpisodeIfNewJobCatalogJob) {
@@ -72,7 +72,7 @@ public class CatalogQueueReceiver {
         } else if (catalogJob instanceof ProposeNewFeedJob) {
             final ProposeNewFeedJob job = (ProposeNewFeedJob) catalogJob;
             log.debug("Recieved ProposeNewFeedJob for feed : {}", job.getFeed());
-            feedService.propose(job.getFeed(), job.getRTT());
+            feedService.propose(job.getFeed(), job.getRtt());
         } else {
             throw new RuntimeException("Received unhandled CatalogJob of type : " + catalogJob.getClass());
         }

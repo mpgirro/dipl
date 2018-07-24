@@ -41,11 +41,11 @@ public class ParserQueueReceiver {
         if (parserJob instanceof NewFeedParserJob) {
             final NewFeedParserJob job = (NewFeedParserJob) parserJob;
             log.info("Recieved NewFeedParserJob for EXO : {}", job.getExo());
-            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true, job.getRTT());
+            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true, job.getRtt());
         } else if (parserJob instanceof UpdateFeedParserJob) {
             final UpdateFeedParserJob job = (UpdateFeedParserJob) parserJob;
             log.info("Recieved UpdateFeedParserJob for EXO : {}", job.getExo());
-            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false, job.getRTT());
+            parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false, job.getRtt());
         } else {
             throw new RuntimeException("Received unhandled ParserJob of type : " + parserJob.getClass());
         }

@@ -37,13 +37,13 @@ public class UpdaterService {
     @Async
     public void processJob(ProposeNewFeedJob job) {
         log.info("Recieved ProposeNewFeedJob for feed : {}", job.getFeed());
-        proposeNewFeed(job.getFeed(), job.getRTT());
+        proposeNewFeed(job.getFeed(), job.getRtt());
     }
 
     @Async
     public void processNewFeedJob(ProcessNewFeedJob updaterJob) {
         log.info("Recieved ProcessNewFeedJob for EXO : {}", updaterJob.getExo());
-        final NewFeedCrawlerJob crawlerJob = ImmutableNewFeedCrawlerJob.of(updaterJob.getExo(), updaterJob.getFeed(), updaterJob.getRTT().bumpRTTs());
+        final NewFeedCrawlerJob crawlerJob = ImmutableNewFeedCrawlerJob.of(updaterJob.getExo(), updaterJob.getFeed(), updaterJob.getRtt().bumpRTTs());
         crawlerQueueSender.produceMsg(crawlerJob);
     }
 

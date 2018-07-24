@@ -9,8 +9,10 @@ import echo.core.index.IndexCommitter;
 import echo.core.index.IndexSearcher;
 import echo.core.index.LuceneCommitter;
 import echo.core.index.LuceneSearcher;
+import echo.microservice.index.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class IndexService {
 
     private IndexCommitter indexCommitter;
     private IndexSearcher indexSearcher;
+
+    @Autowired
+    private BenchmarkClient benchmarkClient;
 
     @PostConstruct
     private void init() throws IOException {

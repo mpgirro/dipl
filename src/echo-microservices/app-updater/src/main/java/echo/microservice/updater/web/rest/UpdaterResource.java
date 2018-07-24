@@ -33,7 +33,7 @@ public class UpdaterResource {
     public void proposeNewFeed(@RequestBody ProposeNewFeedJob job) {
         log.debug("REST request to propose new feed: ('{}',_)", job.getFeed());
         mpsCounter.incrementCounter();
-        updaterService.proposeNewFeed(job.getFeed(), job.getRTT());
+        updaterService.proposeNewFeed(job.getFeed(), job.getRtt());
     }
 
 }

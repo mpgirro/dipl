@@ -46,7 +46,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
         mpsCounter.startCounting();
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -57,7 +57,7 @@ public class BenchmarkResource {
         log.debug("REST request to stop MPS counting");
         mpsCounter.stopCounting();
         benchmarkClient.setMpsReport(applicationName, mpsCounter.getMessagesPerSecond());
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -80,6 +80,13 @@ public class BenchmarkResource {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
         mpsCounter.incrementCounter();
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
+
+        if (resultWrapper.isPresent()) {
+            benchmarkClient.rttReport(resultWrapper.get().getRTT().bumpRTTs());
+        } else {
+            benchmarkClient.rttReport(rtt.bumpRTTs());
+        }
+
         return resultWrapper
             .map(result -> new ResponseEntity<>(
                 result,

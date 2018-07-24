@@ -4,6 +4,7 @@ import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.IndexJob;
 import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.microservice.index.service.IndexService;
+import echo.microservice.index.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -26,6 +27,9 @@ public class IndexQueueReceiver {
     @Autowired
     private IndexService indexService;
 
+    @Autowired
+    private BenchmarkClient benchmarkClient;
+
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
 
@@ -40,6 +44,7 @@ public class IndexQueueReceiver {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
             log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());
             indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
+            benchmarkClient.rttReport(job.getRtt().bumpRTTs());
         } else {
             throw new RuntimeException("Received unhandled IndexJob of type : " + indexJob.getClass());
         }
