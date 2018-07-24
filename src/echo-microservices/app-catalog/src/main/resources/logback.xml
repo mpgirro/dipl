@@ -30,6 +30,7 @@
 
     <logger name="echo.microservice" level="INFO" />
     <logger name="echo.core" level="WARN" />
+    <logger name="echo.core.benchmark" level="INFO" />
 
     <logger name="javax.activation" level="WARN"/>
     <logger name="javax.mail" level="WARN"/>
