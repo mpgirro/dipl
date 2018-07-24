@@ -1,32 +1,32 @@
 package echo.core.benchmark;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.Gson;
+import org.immutables.value.Value;
 
 /**
  * @author Maximilian Irro
  */
-public class FeedProperty {
+@Value.Immutable
+@Value.Style(
+    jdkOnly    = true,              // prevent usage of Guava collections
+    get        = {"is*", "get*"},   // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",             // generates public no args constructor
+    build      = "create"           // rename 'build' method on builder to 'create'
+)
+@JsonSerialize(as = ImmutableFeedProperty.class)
+@JsonDeserialize(as = ImmutableFeedProperty.class)
+public interface FeedProperty {
 
-    private final String uri;
-    private final String location;
-    private final Integer numberOfEpisodes;
+    @Value.Parameter
+    String getUri();
 
-    public FeedProperty(String uri, String location, Integer numberOfEpisodes) {
-        this.uri = uri;
-        this.location = location;
-        this.numberOfEpisodes = numberOfEpisodes;
-    }
+    @Value.Parameter
+    String getLocation();
 
-    public String getUri() {
-        return uri;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public Integer getNumberOfEpisodes() {
-        return numberOfEpisodes;
-    }
+    @Value.Parameter
+    Integer getNumberOfEpisodes();
 
 }

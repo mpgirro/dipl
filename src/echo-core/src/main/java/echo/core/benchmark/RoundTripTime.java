@@ -2,10 +2,10 @@ package echo.core.benchmark;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableList;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author Maximilian Irro
@@ -29,7 +29,7 @@ public interface RoundTripTime {
     @Nullable
     Workflow getWorkflow();
 
-    ImmutableList<Long> getRtts();
+    List<Long> getRtts();
 
     static RoundTripTime empty() {
         return ImmutableRoundTripTime.builder()
@@ -46,7 +46,7 @@ public interface RoundTripTime {
     }
 
     default long overallRuntime() {
-        final ImmutableList<Long> rtts = getRtts();
+        final List<Long> rtts = getRtts();
         if (rtts.isEmpty()) {
             return 0;
         } else {
@@ -63,7 +63,7 @@ public interface RoundTripTime {
     }
 
     default double getMeanMessageLatency() {
-        final ImmutableList<Long> rtts = getRtts();
+        final List<Long> rtts = getRtts();
 
         final int nrOfElems = rtts.size();
         if (nrOfElems < 2) return 0;

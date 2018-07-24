@@ -42,7 +42,7 @@ public class FeedPropertyUtil {
             writeToFile(path, feedData);
 
             final FeedParser feedParser = RomeFeedParser.of(feedData);
-            final FeedProperty property = new FeedProperty(url, path, feedParser.getEpisodes().size());
+            final FeedProperty property = ImmutableFeedProperty.of(url, path, feedParser.getEpisodes().size());
             properties.add(property);
         }
 
