@@ -2,6 +2,7 @@ package echo.core.benchmark;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import echo.core.exception.FeedParsingException;
 import echo.core.parse.rss.FeedParser;
@@ -28,6 +29,10 @@ public class FeedPropertyUtil {
 
     private static final Logger log = LoggerFactory.getLogger(FeedPropertyUtil.class);
 
+    private final Gson gson = new GsonBuilder()
+        .registerTypeAdapter(FeedProperty.class, new FeedPropertyInterfaceAdapter())
+        .create();
+
     public ImmutableList<FeedProperty> generateFeedProperties(String feedsListFile, String feedDestDir) throws IOException, FeedParsingException {
         log.debug("Generating feed properties for feeds in : {} -- saving feeds to : {}", feedsListFile, feedDestDir);
 
@@ -51,7 +56,6 @@ public class FeedPropertyUtil {
 
     public ImmutableList<FeedProperty> loadProperties(String filePath) throws IOException {
         log.debug("Loading feed properties from file : {}", filePath);
-        final Gson gson = new Gson();
         final List<FeedProperty> results;
         try (Reader reader = new FileReader(filePath)) {
             results = gson.fromJson(reader, new TypeToken<List<FeedProperty>>(){}.getType());
@@ -61,7 +65,6 @@ public class FeedPropertyUtil {
 
     public void saveProperties(List<FeedProperty> properties, String filePath) throws IOException {
         log.debug("Saving feed properties to file : {}", filePath);
-        final Gson gson = new Gson();
         try (FileWriter writer = new FileWriter(filePath)) {
             gson.toJson(properties, writer);
         }

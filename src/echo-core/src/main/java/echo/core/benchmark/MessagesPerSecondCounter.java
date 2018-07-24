@@ -25,7 +25,7 @@ public class MessagesPerSecondCounter {
 
     public synchronized double getMessagesPerSecond() {
         final long elaspedTime = stopTimestamp - startTimestamp;
-        if (elaspedTime > 0) {
+        if (elaspedTime > 0 && counter > 0) {
             final double c = (double) counter;
             final double t = ((double) elaspedTime) / 1000;
             return c / t;

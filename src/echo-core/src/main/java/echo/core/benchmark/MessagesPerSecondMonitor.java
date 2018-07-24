@@ -25,7 +25,7 @@ public class MessagesPerSecondMonitor {
     }
 
     private void printMetric(String name, double metric) {
-        log.info("[MPS] {}mps   {}", String.format("%1$5s", String.format("%3.1f", metric)), name);
+        log.info("[MPS] {}mps   {}", String.format("%1$7s", String.format("%3.3f", metric)), name);
     }
 
 }

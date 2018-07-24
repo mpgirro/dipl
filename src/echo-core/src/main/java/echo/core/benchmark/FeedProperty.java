@@ -2,7 +2,6 @@ package echo.core.benchmark;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.gson.Gson;
 import org.immutables.value.Value;
 
 /**
