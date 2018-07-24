@@ -28,6 +28,6 @@ public interface WebsiteParserJob extends ParserJob {
     String getHtml();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

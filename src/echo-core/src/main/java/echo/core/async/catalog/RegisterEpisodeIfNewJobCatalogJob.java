@@ -29,6 +29,6 @@ public interface RegisterEpisodeIfNewJobCatalogJob extends CatalogJob {
     EpisodeDTO getEpisode();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

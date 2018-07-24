@@ -25,6 +25,6 @@ public interface ProposeNewFeedJob extends CatalogJob {
     String getFeed();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

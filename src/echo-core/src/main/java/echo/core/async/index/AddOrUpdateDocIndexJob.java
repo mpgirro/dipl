@@ -26,6 +26,6 @@ public interface AddOrUpdateDocIndexJob extends IndexJob {
     IndexDocDTO getIndexDoc();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

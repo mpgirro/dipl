@@ -26,6 +26,6 @@ public interface UpdatePodcastCatalogJob extends CatalogJob {
     PodcastDTO getPodcast();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

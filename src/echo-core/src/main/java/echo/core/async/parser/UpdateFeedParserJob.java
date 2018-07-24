@@ -31,6 +31,6 @@ public interface UpdateFeedParserJob extends ParserJob {
     String getData();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

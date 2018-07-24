@@ -28,6 +28,6 @@ public interface ProcessUpdateFeedJob extends UpdaterJob {
     String getFeed();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

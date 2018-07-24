@@ -28,6 +28,6 @@ public interface NewFeedCrawlerJob extends CrawlerJob {
     String url();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }

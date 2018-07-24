@@ -28,6 +28,6 @@ public interface ProcessFeedWebsiteJob extends UpdaterJob {
     String getUrl();
 
     @Value.Parameter
-    RoundTripTime getRTT();
+    RoundTripTime getRtt();
 
 }
