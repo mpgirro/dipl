@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList
 import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
 import echo.core.async.catalog.{ImmutableProposeNewFeedJob, ProposeNewFeedJob}
-import echo.core.benchmark.{FeedProperty, FeedPropertyUtil, ImmutableRoundTripTime, Workflow}
+import echo.core.benchmark._
 import echo.core.util.UrlUtil
 
 import scala.collection.JavaConverters._
@@ -44,6 +44,7 @@ class CliApp {
     private val feedPropertyUtil = new FeedPropertyUtil()
 
     // TODO
+    private val GATEWAY_URL = "http://localhost:3030"
     private val CATALOG_URL = "http://localhost:3031/catalog"
     private val REGISTRY_URL = "http://localhost:3036"
     private val UPDATER_URL = "http://localhost:3037"
@@ -110,6 +111,12 @@ class CliApp {
         sttp.post(uri"${CATALOG_URL}/feed/propose?url=${url}").send()
     }
 
+    private implicit val stringListSerializer: BodySerializer[ImmutableList[String]] = {
+        ps: ImmutableList[String] =>
+            val serializedList = s"[${ps.asScala.mkString(",")}]"
+            StringBody(serializedList, "UTF-8", Some("application/json"))
+    }
+
     private implicit val feedPropertiesSerializer: BodySerializer[ImmutableList[FeedProperty]] = {
         ps: ImmutableList[FeedProperty] =>
             val serializedProperties = ps.asScala
@@ -117,6 +124,13 @@ class CliApp {
                 .mkString(",")
             val serializedList = s"[$serializedProperties]"
             StringBody(serializedList, "UTF-8", Some("application/json"))
+    }
+
+    private implicit val roundTripTimeSerializer: BodySerializer[RoundTripTime] = {
+        rtt: RoundTripTime =>
+            val serializedTimestamps = s"[${rtt.getRtts.asScala.mkString(",")}]"
+            val serializedRtt = s"{'id':'${rtt.getId}', 'location':'${rtt.getLocation}', 'workflow':'${rtt.getWorkflow.getName}', 'rtts':$serializedTimestamps"
+            StringBody(serializedRtt, "UTF-8", Some("application/json"))
     }
 
     private implicit val proposeNewFeedJobSerializer: BodySerializer[ProposeNewFeedJob] = {
@@ -167,14 +181,19 @@ class CliApp {
             .send()
 
         startMessagePerSecondMonitoring()
-        
+
         for (q <- queries.asScala) {
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(q)
                 .setLocation("")
                 .setWorkflow(Workflow.RESULT_RETRIEVAL)
                 .create()
-            gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+
+            sttp.post(uri"${GATEWAY_URL}/benchmark/search?q=${q}&p=1&s=20")
+                .body(rtt)
+                .send()
+
+            //gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
         }
     }
 
