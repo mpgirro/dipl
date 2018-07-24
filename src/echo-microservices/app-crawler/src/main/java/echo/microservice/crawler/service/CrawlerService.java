@@ -56,6 +56,7 @@ public class CrawlerService {
     @Async
     public void downloadFeed(String podcastExo, String feedUrl, boolean isNewPodcast, RoundTripTime rtt) {
         try {
+            log.info("Performing HEAD check on : {}", feedUrl);
             final HeadResult headResult = httpClient.headCheck(feedUrl);
             if (headResult.getLocation().isPresent() ) {
                 final String location = headResult.getLocation().get();
@@ -64,9 +65,10 @@ public class CrawlerService {
                     // TODO send update to catalog with new location
                 }
 
+                log.info("Fetching content from : {}", feedUrl);
                 final String feedData = httpClient.fetchContent(feedUrl, headResult.getContentEncoding());
 
-                ParserJob job;
+                final ParserJob job;
                 if (isNewPodcast) {
                     job = ImmutableNewFeedParserJob.of(podcastExo, feedUrl, feedData, rtt.bumpRTTs());
                 } else {

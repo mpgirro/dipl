@@ -112,8 +112,8 @@ class CliApp {
     }
 
     private implicit val stringListSerializer: BodySerializer[ImmutableList[String]] = {
-        ps: ImmutableList[String] =>
-            val serializedList = s"[${ps.asScala.mkString(", ")}]"
+        qs: ImmutableList[String] =>
+            val serializedList = s"[${qs.asScala.map(q => "\""+q+"\"").mkString(", ")}]"
             println(serializedList)
             StringBody(serializedList, "UTF-8", Some("application/json"))
     }

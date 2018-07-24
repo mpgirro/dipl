@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -96,26 +97,97 @@ public class BenchmarkResource {
 
     private void sendStartMessagePerSecondMonitoringMessages(Boolean mps) {
         //HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
-        restTemplate.postForObject("http://localhost:3030/benchmark/start-mps?mps="+mps, null, Void.class); // Gateway
-        restTemplate.postForObject("http://localhost:3031/benchmark/start-mps?mps="+mps, null, Void.class); // Catalog
-        restTemplate.postForObject("http://localhost:3032/benchmark/start-mps?mps="+mps, null, Void.class); // Index
-        restTemplate.postForObject("http://localhost:3033/benchmark/start-mps?mps="+mps, null, Void.class); // Crawler
-        restTemplate.postForObject("http://localhost:3034/benchmark/start-mps?mps="+mps, null, Void.class); // Parser
-        restTemplate.postForObject("http://localhost:3035/benchmark/start-mps?mps="+mps, null, Void.class); // Searcher
-        restTemplate.postForObject("http://localhost:3037/benchmark/start-mps?mps="+mps, null, Void.class); // Updater
+        log.info("Informing all MS to start monitoring MPS");
+        startGatewayMps(mps);
+        startCatalogMps(mps);
+        startIndexMps(mps);
+        startCrawlerMps(mps);
+        startParserMps(mps);
+        startSearcherMps(mps);
+        startUpdaterMps(mps);
     }
 
     private void sendStopMessagePerSecondMonitoringMessages() {
+        log.info("Informing all MS to stop monitoring MPS and report results");
         final boolean mps = false;
         //HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
-        restTemplate.postForObject("http://localhost:3030/benchmark/stop-mps?mps="+mps, null, Void.class); // Gateway
-        restTemplate.postForObject("http://localhost:3031/benchmark/stop-mps?mps="+mps, null, Void.class); // Catalog
-        restTemplate.postForObject("http://localhost:3032/benchmark/stop-mps?mps="+mps, null, Void.class); // Index
-        restTemplate.postForObject("http://localhost:3033/benchmark/stop-mps?mps="+mps, null, Void.class); // Crawler
-        restTemplate.postForObject("http://localhost:3034/benchmark/stop-mps?mps="+mps, null, Void.class); // Parser
-        restTemplate.postForObject("http://localhost:3035/benchmark/stop-mps?mps="+mps, null, Void.class); // Searcher
-        restTemplate.postForObject("http://localhost:3037/benchmark/stop-mps?mps="+mps, null, Void.class); // Updater
+        stopGatewayMps(mps);
+        stopCatalogMps(mps);
+        stopIndexMps(mps);
+        stopCrawlerMps(mps);
+        stopParserMps(mps);
+        stopSearcherMps(mps);
+        stopUpdaterMps(mps);
+    }
 
+    @Async
+    public void startGatewayMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3030/benchmark/start-mps?mps="+mps, null, Void.class); // Gateway
+    }
+
+    @Async
+    public void startCatalogMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3031/benchmark/start-mps?mps="+mps, null, Void.class); // Catalog
+    }
+
+    @Async
+    public void startIndexMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3032/benchmark/start-mps?mps="+mps, null, Void.class); // Index
+    }
+
+    @Async
+    public void startCrawlerMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3033/benchmark/start-mps?mps="+mps, null, Void.class); // Crawler
+    }
+
+    @Async
+    public void startParserMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3034/benchmark/start-mps?mps="+mps, null, Void.class); // Parser
+    }
+
+    @Async
+    public void startSearcherMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3035/benchmark/start-mps?mps="+mps, null, Void.class); // Searcher
+    }
+
+    @Async
+    public void startUpdaterMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3037/benchmark/start-mps?mps="+mps, null, Void.class); // Updater
+    }
+
+    @Async
+    public void stopGatewayMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3030/benchmark/stop-mps?mps="+mps, null, Void.class); // Gateway
+    }
+
+    @Async
+    public void stopCatalogMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3031/benchmark/stop-mps?mps="+mps, null, Void.class); // Catalog
+    }
+
+    @Async
+    public void stopIndexMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3032/benchmark/stop-mps?mps="+mps, null, Void.class); // Index
+    }
+
+    @Async
+    public void stopCrawlerMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3033/benchmark/stop-mps?mps="+mps, null, Void.class); // Crawler
+    }
+
+    @Async
+    public void stopParserMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3034/benchmark/stop-mps?mps="+mps, null, Void.class); // Parser
+    }
+
+    @Async
+    public void stopSearcherMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3035/benchmark/stop-mps?mps="+mps, null, Void.class); // Searcher
+    }
+
+    @Async
+    public void stopUpdaterMps(boolean mps) {
+        restTemplate.postForObject("http://localhost:3037/benchmark/stop-mps?mps="+mps, null, Void.class); // Updater
     }
 
 }
