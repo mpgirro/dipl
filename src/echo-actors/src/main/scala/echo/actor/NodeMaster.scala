@@ -12,7 +12,7 @@ import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.Searcher
 import echo.actor.updater.Updater
-import echo.core.benchmark.{MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
+import echo.core.benchmark.{ArchitectureType, MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -48,8 +48,8 @@ class NodeMaster extends Actor with ActorLogging {
     private var updater: ActorRef = _
     private var cli: ActorRef = _
 
-    private val rttMonitor = new RoundTripTimeMonitor()
-    private val mpsMonitor = new MessagesPerSecondMonitor()
+    private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 21) // 'cause we have 21 actors in place that will report their MPS
 
     override def preStart(): Unit = {
 
@@ -111,15 +111,21 @@ class NodeMaster extends Actor with ActorLogging {
 
         case MessagePerSecondReport(name, mps) =>
             log.debug("Received StopMessagePerSecondMonitoring({},{})", name, mps)
-            mpsMonitor.addAndPrintMetric(name, mps)
+            mpsMonitor.addMetric(name, mps)
+            if (mpsMonitor.isFinished) {
+                log.info("MPS reporting finished; results in CSV format :")
+                println(mpsMonitor.toCsv)
+            }
 
         case MonitorFeedProgress(feedProperties) =>
             log.debug("Received MonitorFeedProgress(_)")
             rttMonitor.initWithProperties(feedProperties)
+            mpsMonitor.reset()
 
         case MonitorQueryProgress(queries) =>
             log.debug("Received MonitorQueryProgress(_)")
             rttMonitor.initWithQueries(queries)
+            mpsMonitor.reset()
 
         case IndexSubSystemRoundTripTimeReport(rtt) =>
             log.debug("Received IndexSubSystemRoundTripTimeReport(_)", rtt)
@@ -172,7 +178,8 @@ class NodeMaster extends Actor with ActorLogging {
         rttMonitor.addRoundTripTime(rtt)
         if (rttMonitor.isFinished) {
             sendStopMessagePerSecondMonitoringMessages()
-            rttMonitor.logResults()
+            log.info("RTT reporting finished; results in CSV format :")
+            println(rttMonitor.toCsv)
         }
     }
 
