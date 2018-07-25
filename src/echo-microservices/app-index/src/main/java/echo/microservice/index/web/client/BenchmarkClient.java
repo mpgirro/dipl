@@ -21,6 +21,6 @@ public interface BenchmarkClient {
     void rttReport(@RequestBody RoundTripTime rtt);
 
     @PostMapping(value = "/benchmark/mps-report")
-    void setMpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps);
+    void mpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps);
 
 }

@@ -3,6 +3,7 @@ package echo.microservice.index.async;
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.IndexJob;
 import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.RoundTripTime;
 import echo.microservice.index.service.IndexService;
 import echo.microservice.index.web.client.BenchmarkClient;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -44,10 +46,15 @@ public class IndexQueueReceiver {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
             log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());
             indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
-            benchmarkClient.rttReport(job.getRtt().bumpRTTs());
+            sendRttReport(job.getRtt().bumpRTTs());
         } else {
             throw new RuntimeException("Received unhandled IndexJob of type : " + indexJob.getClass());
         }
+    }
+
+    @Async
+    public void sendRttReport(RoundTripTime rtt) {
+        benchmarkClient.rttReport(rtt);
     }
 
 }

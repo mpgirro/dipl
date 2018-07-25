@@ -56,7 +56,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
         mpsCounter.stopCounting();
-        benchmarkClient.setMpsReport(applicationName, mpsCounter.getMessagesPerSecond());
+        benchmarkClient.mpsReport(applicationName, mpsCounter.getMessagesPerSecond());
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

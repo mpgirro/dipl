@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -56,7 +57,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
         mpsCounter.stopCounting();
-        benchmarkClient.setMpsReport(applicationName, mpsCounter.getMessagesPerSecond());
+        benchmarkClient.mpsReport(applicationName, mpsCounter.getMessagesPerSecond());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -82,9 +83,9 @@ public class BenchmarkResource {
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
 
         if (resultWrapper.isPresent()) {
-            benchmarkClient.rttReport(resultWrapper.get().getRTT().bumpRTTs());
+            sendRttReport(resultWrapper.get().getRTT().bumpRTTs());
         } else {
-            benchmarkClient.rttReport(rtt.bumpRTTs());
+            sendRttReport(rtt.bumpRTTs());
         }
 
         return resultWrapper
@@ -92,6 +93,11 @@ public class BenchmarkResource {
                 result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @Async
+    public void sendRttReport(RoundTripTime rtt) {
+        benchmarkClient.rttReport(rtt);
     }
 
 }
