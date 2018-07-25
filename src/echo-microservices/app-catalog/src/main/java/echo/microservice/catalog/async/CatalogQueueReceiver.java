@@ -49,10 +49,12 @@ public class CatalogQueueReceiver {
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "${echo.rabbit.catalog-queue}", durable = "true"),
-        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-        key      = "${echo.amqp.catalog-routingkey}")
+    @RabbitListener(
+        containerFactory = "rabbitListenerContainerFactory",
+        bindings = @QueueBinding(
+            value    = @Queue(value = "${echo.rabbit.catalog-queue}", durable = "true"),
+            exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+            key      = "${echo.amqp.catalog-routingkey}")
     )
     public void recievedMessage(CatalogJob catalogJob) {
         log.debug("Recieved Message : {}", catalogJob);

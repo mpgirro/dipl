@@ -30,10 +30,12 @@ public class CrawlerQueueReceiver {
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
 
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "${echo.rabbit.crawler-queue}", durable = "true"),
-        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-        key      = "${echo.amqp.crawler-routingkey}")
+    @RabbitListener(
+        containerFactory = "rabbitListenerContainerFactory",
+        bindings = @QueueBinding(
+            value    = @Queue(value = "${echo.rabbit.crawler-queue}", durable = "true"),
+            exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+            key      = "${echo.amqp.crawler-routingkey}")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
         mpsCounter.incrementCounter();

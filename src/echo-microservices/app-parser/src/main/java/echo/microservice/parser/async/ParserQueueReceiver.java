@@ -30,10 +30,12 @@ public class ParserQueueReceiver {
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
 
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "${echo.rabbit.parser-queue}", durable = "true"),
-        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-        key      = "${echo.amqp.parser-routingkey}")
+    @RabbitListener(
+        containerFactory = "rabbitListenerContainerFactory",
+        bindings = @QueueBinding(
+            value    = @Queue(value = "${echo.rabbit.parser-queue}", durable = "true"),
+            exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+            key      = "${echo.amqp.parser-routingkey}")
     )
     public void recievedMessage(ParserJob parserJob) {
         //log.debug("Recieved Message : {}", parserJob);

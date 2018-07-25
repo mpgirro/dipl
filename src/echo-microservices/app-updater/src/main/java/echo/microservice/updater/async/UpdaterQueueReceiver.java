@@ -31,10 +31,12 @@ public class UpdaterQueueReceiver {
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
 
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "${echo.rabbit.updater-queue}", durable = "true"),
-        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-        key      = "${echo.amqp.updater-routingkey}")
+    @RabbitListener(
+        containerFactory = "rabbitListenerContainerFactory",
+        bindings = @QueueBinding(
+            value    = @Queue(value = "${echo.rabbit.updater-queue}", durable = "true"),
+            exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+            key      = "${echo.amqp.updater-routingkey}")
     )
     public void recievedMessage(UpdaterJob updaterJob) {
         log.debug("Received Message : {}", updaterJob);

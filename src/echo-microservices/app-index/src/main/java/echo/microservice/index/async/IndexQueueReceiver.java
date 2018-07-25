@@ -35,10 +35,12 @@ public class IndexQueueReceiver {
     @Resource(name = "messagesPerSecondCounter")
     private MessagesPerSecondCounter mpsCounter;
 
-    @RabbitListener(bindings = @QueueBinding(
-        value    = @Queue(value = "${echo.rabbit.index-queue}", durable = "true"),
-        exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
-        key      = "${echo.amqp.index-routingkey}")
+    @RabbitListener(
+        containerFactory = "rabbitListenerContainerFactory",
+        bindings = @QueueBinding(
+            value    = @Queue(value = "${echo.rabbit.index-queue}", durable = "true"),
+            exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
+            key      = "${echo.amqp.index-routingkey}")
     )
     public void recievedMessage(IndexJob indexJob) {
         mpsCounter.incrementCounter();
