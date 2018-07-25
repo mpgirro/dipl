@@ -2,6 +2,7 @@ package echo.microservice.updater.config;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -37,6 +38,16 @@ public class RabbitConfig {
         connectionFactory.setUsername(env.getProperty("spring.rabbitmq.username"));
         connectionFactory.setPassword(env.getProperty("spring.rabbitmq.password"));
         return connectionFactory;
+    }
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory());
+        factory.setConcurrentConsumers(5);
+        factory.setMaxConcurrentConsumers(10);
+        factory.setMessageConverter(jsonMessageConverter());
+        return factory;
     }
 
     @Bean
