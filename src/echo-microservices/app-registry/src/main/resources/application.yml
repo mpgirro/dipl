@@ -15,5 +15,7 @@ eureka:
     client:
         registerWithEureka: false
         fetchRegistry: false
+        service-url:
+            defaultZone: http://localhost:${ECHO_REGISTRY_PORT:3036}/eureka
     server:
         enableSelfPreservation: false
