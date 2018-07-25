@@ -40,7 +40,8 @@ public class BenchmarkResource {
         rttMonitor.addRoundTripTime(rtt);
         if (rttMonitor.isFinished()) {
             sendStopMessagePerSecondMonitoringMessages();
-            rttMonitor.logResults();
+            log.info("RTT reporting finished; results in CSV format :");
+            System.out.println(rttMonitor.toCsv());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -51,7 +52,11 @@ public class BenchmarkResource {
         params = { "name", "mps" })
     public ResponseEntity<Void> mpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps) throws URISyntaxException {
         log.debug("REST request to report MPS : {} for unit : {}", mps, name);
-        mpsMonitor.addAndPrintMetric(name, mps);
+        mpsMonitor.addMetric(name, mps);
+        if (mpsMonitor.isFinished()) {
+            log.info("MPS reporting finished; results in CSV format :");
+            System.out.println(mpsMonitor.toCsv());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -63,6 +68,7 @@ public class BenchmarkResource {
         log.info("REST request to monitor fed progress for properties list : {}", feedProperties);
         rttMonitor.initWithProperties(ImmutableList.copyOf(feedProperties));
         sendStartMessagePerSecondMonitoringMessages(true);
+        mpsMonitor.reset();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -73,6 +79,7 @@ public class BenchmarkResource {
         log.info("REST request to monitor fed progres for queries list : {}", queries);
         rttMonitor.initWithQueries(ImmutableList.copyOf(queries));
         sendStartMessagePerSecondMonitoringMessages(true);
+        mpsMonitor.reset();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

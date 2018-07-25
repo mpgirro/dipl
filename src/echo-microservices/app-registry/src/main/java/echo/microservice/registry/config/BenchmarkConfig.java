@@ -1,5 +1,6 @@
 package echo.microservice.registry.config;
 
+import echo.core.benchmark.ArchitectureType;
 import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.benchmark.MessagesPerSecondMonitor;
 import echo.core.benchmark.RoundTripTimeMonitor;
@@ -12,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BenchmarkConfig {
 
-    private final RoundTripTimeMonitor rttMonitor = new RoundTripTimeMonitor();
-    private final MessagesPerSecondMonitor mpsMonitor = new MessagesPerSecondMonitor();
+    private final RoundTripTimeMonitor rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_MSA);
+    private final MessagesPerSecondMonitor mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_MSA,7); // 'cause we have 7 MS in place that will report their MPS
 
     @Bean(name = "roundTripTimeMonitor")
     public RoundTripTimeMonitor rttMonitor(){
