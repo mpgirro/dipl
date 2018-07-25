@@ -128,7 +128,7 @@ public class RoundTripTimeMonitor {
         log.info("[RTT] {} : {}ms", name, String.format("%1$6s", metric));
     }
 
-    private void printSumEvals() {
+    public void printSumEvals() {
         if (!isFinished()) {
             log.info("Not all podcasts and episodes have reported all metrics yet");
             return;
