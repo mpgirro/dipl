@@ -51,7 +51,7 @@ public class MessagesPerSecondMonitor {
         }
 
         final StringBuilder builder = new StringBuilder();
-        builder.append("src;mps;task-id\n");
+        builder.append("src;mps;task_id\n");
         for (Map.Entry<String,Double> e : mpsMap.entrySet()) {
             builder.append(type+";"+metricToString(e.getValue())+";"+e.getKey()+"\n");
         }
