@@ -42,6 +42,7 @@ public class BenchmarkResource {
             sendStopMessagePerSecondMonitoringMessages();
             log.info("RTT reporting finished; results in CSV format :");
             System.out.println(rttMonitor.toCsv());
+            rttMonitor.printSumEvals();
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

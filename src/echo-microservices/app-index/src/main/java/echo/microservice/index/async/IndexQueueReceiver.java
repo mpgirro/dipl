@@ -36,7 +36,7 @@ public class IndexQueueReceiver {
     private MessagesPerSecondCounter mpsCounter;
 
     @RabbitListener(
-        containerFactory = "rabbitListenerContainerFactory",
+        //containerFactory = "rabbitListenerContainerFactory",
         bindings = @QueueBinding(
             value    = @Queue(value = "${echo.rabbit.index-queue}", durable = "true"),
             exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),

@@ -40,6 +40,7 @@ public class RabbitConfig {
         return connectionFactory;
     }
 
+    /*
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
@@ -49,6 +50,7 @@ public class RabbitConfig {
         factory.setMessageConverter(jsonMessageConverter());
         return factory;
     }
+    */
 
     @Bean
     public AmqpAdmin amqpAdmin() {

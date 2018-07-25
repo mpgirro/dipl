@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,8 @@ public class IndexService {
     private IndexCommitter indexCommitter;
     private IndexSearcher indexSearcher;
 
+    private final List<IndexDocDTO> cache = new LinkedList<>();
+
     @Autowired
     private BenchmarkClient benchmarkClient;
 
@@ -51,17 +55,33 @@ public class IndexService {
         Optional.ofNullable(indexCommitter).ifPresent(IndexCommitter::destroy);
         Optional.ofNullable(indexSearcher).ifPresent(IndexSearcher::destroy);
     }
-
-    @Async
+    
     public void add(IndexDocDTO doc) {
-        log.info("Request to add document to index : {}", doc.getExo());
-        indexCommitter.add(doc);
-        indexCommitter.commit();
+        log.info("Request to add document to index cache : {}", doc.getExo());
+        synchronized (cache) {
+            cache.add(doc);
+        }
+        //indexCommitter.add(doc);
+        //indexCommitter.commit();
     }
 
     public ResultWrapperDTO search(String query, Integer page, Integer size, RoundTripTime rtt) throws SearchException {
         indexSearcher.refresh();
         final ImmutableResultWrapperDTO result = (ImmutableResultWrapperDTO) indexSearcher.search(query, page, size);
         return result.withRTT(rtt.bumpRTTs());
+    }
+
+    @Scheduled(fixedDelay = 3000)
+    public void commitIndex() {
+        synchronized (cache) {
+            if (!cache.isEmpty()) {
+                log.info("Adding cached documents to index and executing commit");
+                for (IndexDocDTO doc : cache) {
+                    indexCommitter.add(doc);
+                }
+                cache.clear();
+                indexCommitter.commit();
+            }
+        }
     }
 }
