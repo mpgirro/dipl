@@ -170,6 +170,7 @@ public class CoreApp {
                 } catch (IOException | FeedParsingException e) {
                     e.printStackTrace();
                 }
+                out.println("done");
             } else {
                 out.println("Unknown command '"+cmd+"'. Type 'help' for all commands");
             }
