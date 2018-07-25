@@ -1,0 +1,22 @@
+src;mps;task_id
+ECHO_AKKA;  2.540;parser-1/worker-1
+ECHO_AKKA;  2.540;parser-1/worker-2
+ECHO_AKKA;  0.000;searcher
+ECHO_AKKA;  3.048;crawler-1/worker-1
+ECHO_AKKA;  3.150;crawler-1/worker-2
+ECHO_AKKA;  0.000;gateway-1
+ECHO_AKKA;218.507;catalog/store-1
+ECHO_AKKA;  2.897;crawler-1/worker-5
+ECHO_AKKA;  9.246;updater
+ECHO_AKKA;  3.099;crawler-1/worker-3
+ECHO_AKKA;  3.049;crawler-1/worker-4
+ECHO_AKKA; 10.160;crawler-1
+ECHO_AKKA;106.680;index
+ECHO_AKKA; 53.020;catalog/store-1/handler-1
+ECHO_AKKA;223.509;catalog
+ECHO_AKKA; 39.935;catalog/store-1/handler-2
+ECHO_AKKA;107.477;catalog/store-1/handler-3
+ECHO_AKKA; 99.284;catalog/store-1/handler-4
+ECHO_AKKA; 55.777;catalog/store-1/handler-5
+ECHO_AKKA;106.990;index/store-1
+ECHO_AKKA;  5.080;parser-1
