@@ -125,7 +125,7 @@ public class RoundTripTimeMonitor {
     }
 
     private void printMetric(String name, double metric) {
-        log.info("[RTT] {} : {}ms", name, String.format("%1$6s", metric));
+        log.info("[RTT] {} : {}ms", name, String.format("%1$7s", metric));
     }
 
     public void printSumEvals() {
@@ -136,16 +136,28 @@ public class RoundTripTimeMonitor {
 
         long sumOverallRTT = 0;
         long sumMeanRTTPerEp = 0;
+        long earliestTimestamp = Long.MAX_VALUE;
+        long latestTimestamp = 0;
         for (RoundTripTimeProgress p : progressMap.values()) {
             sumOverallRTT += p.getOverallRoundTripTime();
             sumMeanRTTPerEp += p.getMeanRoundTripTime();
+
+            if (p.firstTimestamp < earliestTimestamp) {
+                earliestTimestamp = p.firstTimestamp;
+            }
+
+            if (latestTimestamp < p.lastTimestamp) {
+                latestTimestamp = p.lastTimestamp;
+            }
         }
 
+        final long overallRuntime = latestTimestamp - earliestTimestamp;
         final double nrOfElements = (double) progressMap.values().size();
         final double meanOverallRTT = ((double) sumOverallRTT) / nrOfElements;
         final double overallMeanRTTPerEp = ((double) sumMeanRTTPerEp) / nrOfElements;
-        printMetric("Mean overall RTT", String.format("%1$8s", String.format("%6.1f", meanOverallRTT)) + "ms");
-        printMetric("Overall mean RTT", String.format("%1$8s", String.format("%6.1f", overallMeanRTTPerEp)) + "ms");
+        printMetric("Mean overall RTT per Feed  ", String.format("%1$8s", String.format("%6.1f", meanOverallRTT)) + "ms");
+        printMetric("Overall mean RTT per Item  ", String.format("%1$8s", String.format("%6.1f", overallMeanRTTPerEp)) + "ms");
+        printMetric("Overall RT w.r.t Input Size", overallRuntime + "ms");
     }
 
     private void printMetric(String name, String value) {
