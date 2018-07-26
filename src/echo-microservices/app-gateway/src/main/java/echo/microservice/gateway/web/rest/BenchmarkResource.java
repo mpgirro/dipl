@@ -85,6 +85,7 @@ public class BenchmarkResource {
         if (resultWrapper.isPresent()) {
             sendRttReport(resultWrapper.get().getRTT().bumpRTTs());
         } else {
+            log.warn("No result present");
             sendRttReport(rtt.bumpRTTs());
         }
 

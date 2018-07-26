@@ -51,9 +51,18 @@ public class SearchService {
         final int p = page.orElse(DEFAULT_PAGE);
         final int s = size.orElse(DEFAULT_SIZE);
 
-        if (isNullOrEmpty(query)) return ResultWrapperDTO.empty();
-        if (p < 0) return ResultWrapperDTO.empty();
-        if (s < 0) return ResultWrapperDTO.empty();
+        if (isNullOrEmpty(query)) {
+            log.warn("Query is empty");
+            return ResultWrapperDTO.empty();
+        }
+        if (p < 0) {
+            log.warn("Parameter 'p' is < 0");
+            return ResultWrapperDTO.empty();
+        }
+        if (s < 0) {
+            log.warn("Parameter 's' is < 0");
+            return ResultWrapperDTO.empty();
+        }
 
         return indexClient.getBenchmarkSearchResults(query, p, s, rtt.bumpRTTs());
     }
