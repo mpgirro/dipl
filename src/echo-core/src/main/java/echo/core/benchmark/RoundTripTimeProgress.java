@@ -3,6 +3,8 @@ package echo.core.benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * @author Maximilian Irro
  */
@@ -28,6 +30,8 @@ public abstract class RoundTripTimeProgress {
     public abstract boolean finished();
 
     public abstract void calculateEvaluation();
+
+    public abstract List<RoundTripTime> getAllRTTs();
 
     public long getOverallRoundTripTime() {
         return lastTimestamp - firstTimestamp;

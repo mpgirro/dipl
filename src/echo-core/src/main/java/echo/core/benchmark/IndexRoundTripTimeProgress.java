@@ -1,5 +1,6 @@
 package echo.core.benchmark;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,5 +68,15 @@ public class IndexRoundTripTimeProgress extends RoundTripTimeProgress {
 
         meanRoundTripTime  = overallRoundTripTime  / (1 + totalEpisodes);  // integer devision rounding is fine, we have milliseconds anyway
         meanMessageLatency = overallMessageLatency / (1 + totalEpisodes);  // mean of podcast and all episodes
+    }
+
+    @Override
+    public List<RoundTripTime> getAllRTTs() {
+        final ImmutableList.Builder<RoundTripTime> builder = ImmutableList.builder();
+        if (podcastRTT != null) {
+            builder.add(podcastRTT);
+        }
+        builder.addAll(episodeRTTs);
+        return builder.build();
     }
 }

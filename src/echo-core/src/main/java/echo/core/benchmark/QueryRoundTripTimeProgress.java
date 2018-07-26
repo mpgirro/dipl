@@ -1,7 +1,10 @@
 package echo.core.benchmark;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Maximilian Irro
@@ -28,6 +31,11 @@ public class QueryRoundTripTimeProgress extends RoundTripTimeProgress {
 
         meanRoundTripTime = lastTimestamp - firstTimestamp; // only one RTT here
         meanMessageLatency = resultsRTT.getMeanMessageLatency();
+    }
+
+    @Override
+    public List<RoundTripTime> getAllRTTs() {
+        return ImmutableList.of(resultsRTT);
     }
 
     public void setResultsRTT(RoundTripTime resultsRTT) {

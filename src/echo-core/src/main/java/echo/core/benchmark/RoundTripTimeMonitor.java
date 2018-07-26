@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -122,6 +123,14 @@ public class RoundTripTimeMonitor {
             builder.append(type+";"+overallRoundTripTimeToString(p.getOverallRoundTripTime())+";"+meanRoundTripTimeToString(p.getMeanRoundTripTime())+";"+meanMessageLatencyToString(p.getMeanMessageLatency())+";"+e.getKey()+"\n");
         }
         return builder.toString();
+    }
+
+    public List<RoundTripTime> getAllRTTs() {
+        final ImmutableList.Builder<RoundTripTime> builder = ImmutableList.builder();
+        for (RoundTripTimeProgress p : progressMap.values()) {
+            builder.addAll(p.getAllRTTs());
+        }
+        return builder.build();
     }
 
     private void printMetric(String name, double metric) {
