@@ -11,6 +11,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
@@ -74,7 +75,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
      *                         documents, or if it exceeds the size of the found documents
      */
     @Override
-    public ResultWrapperDTO search(String q, int p, int s) throws SearchException {
+    public synchronized ResultWrapperDTO search(String q, int p, int s) throws SearchException {
 
         if ( p < 1 ) {
             throw new SearchException("Requested page number (p) required to be >1, got: " + p);
@@ -104,7 +105,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
         IndexSearcher indexSearcher = null;
         try {
 
-            final Query query = this.queryParser.parse(q);
+            final Query query = this.queryParser.parse(QueryParser.escape(q));
 
             indexSearcher = this.searcherManager.acquire();
             indexSearcher.setSimilarity(new ClassicSimilarity());
@@ -168,7 +169,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public Optional<IndexDocDTO> findByExo(String exo) throws SearchException {
+    public synchronized Optional<IndexDocDTO> findByExo(String exo) throws SearchException {
         IndexSearcher indexSearcher = null;
         try {
 
@@ -205,7 +206,7 @@ public class LuceneSearcher implements echo.core.index.IndexSearcher {
     }
 
     @Override
-    public void refresh(){
+    public synchronized void refresh(){
         try {
             this.searcherManager.maybeRefreshBlocking();
         } catch (IOException e) {
