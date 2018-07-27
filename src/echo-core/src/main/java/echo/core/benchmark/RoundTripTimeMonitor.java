@@ -20,6 +20,10 @@ public class RoundTripTimeMonitor {
     private int finishedItems; // feeds or queries
     private int totalItems;    // feeds or queries
 
+    private long overallRuntime;
+    private double meanRttPerFeed;
+    private double meanRttPerItem;
+
     protected boolean finished = false;
 
     public RoundTripTimeMonitor(ArchitectureType type) {
@@ -90,39 +94,48 @@ public class RoundTripTimeMonitor {
 
         if (finishedItems == totalItems) {
             finished = true;
+            calculateMetrics();
         }
     }
 
     public void logResults() {
 
-        if (!isFinished()) {
-            log.info("Not all podcasts and episodes have reported all metrics yet");
-            return;
-        }
+        ensureFinished();
 
         log.info("All expected podcasts and episodes have reported registration complete");
 
         for (RoundTripTimeProgress p : progressMap.values()) {
-            log.info("[RTT] overall: {}ms\tmeanPerEp: {}ms\tmeanMsgL: {}ms\tid: {}", overallRoundTripTimeToString(p.getOverallRoundTripTime()), meanRoundTripTimeToString(p.getMeanRoundTripTime()), meanMessageLatencyToString(p.getMeanMessageLatency()), p.getId());
+            log.info("[RTT] overall: {}ms\tmeanPerEp: {}ms\tmeanMsgL: {}ms\tid: {}", formatLong(p.getOverallRoundTripTime()), formatDouble(p.getMeanRoundTripTime()), formatDouble(p.getMeanMessageLatency()), p.getId());
         }
 
         printSumEvals();
     }
 
-    public String toCsv() {
+    public String getProgressCSV() {
 
-        if (!isFinished()) {
-            log.info("Not all podcasts and episodes have reported all metrics yet");
-            return null;
-        }
+        ensureFinished();
 
         final StringBuilder builder = new StringBuilder();
         builder.append("src;overallRT;meanRTpI;meanMsgL;uri\n");
         for (Map.Entry<String,RoundTripTimeProgress> e : progressMap.entrySet()) {
             final RoundTripTimeProgress p = e.getValue();
-            builder.append(type+";"+overallRoundTripTimeToString(p.getOverallRoundTripTime())+";"+meanRoundTripTimeToString(p.getMeanRoundTripTime())+";"+meanMessageLatencyToString(p.getMeanMessageLatency())+";"+e.getKey()+"\n");
+            builder.append(type+";"+ formatLong(p.getOverallRoundTripTime())+";"+formatDouble(p.getMeanRoundTripTime())+";"+ formatDouble(p.getMeanMessageLatency())+";"+e.getKey()+"\n");
         }
         return builder.toString();
+    }
+
+    public String getOverallCSV() {
+
+        ensureFinished();
+
+        return new StringBuilder()
+            .append("src;input_size;overallRT;mean_rtt_per_feed;mean_rtt_per_item\n")
+            .append(type).append(";")
+            .append(progressMap.size()).append(";")
+            .append(overallRuntime).append(";")
+            .append(meanRttPerFeed).append(";")
+            .append(meanRttPerItem).append(";")
+            .toString();
     }
 
     public List<RoundTripTime> getAllRTTs() {
@@ -133,23 +146,17 @@ public class RoundTripTimeMonitor {
         return builder.build();
     }
 
-    private void printMetric(String name, double metric) {
-        log.info("[RTT] {} : {}ms", name, String.format("%1$7s", metric));
-    }
+    private void calculateMetrics() {
 
-    public void printSumEvals() {
-        if (!isFinished()) {
-            log.info("Not all podcasts and episodes have reported all metrics yet");
-            return;
-        }
+        ensureFinished();
 
-        long sumOverallRTT = 0;
-        long sumMeanRTTPerEp = 0;
+        long sumMeanRttPerFeed = 0;
+        long sumMeanRttPerItem = 0;
         long earliestTimestamp = Long.MAX_VALUE;
         long latestTimestamp = 0;
         for (RoundTripTimeProgress p : progressMap.values()) {
-            sumOverallRTT += p.getOverallRoundTripTime();
-            sumMeanRTTPerEp += p.getMeanRoundTripTime();
+            sumMeanRttPerFeed += p.getOverallRoundTripTime();
+            sumMeanRttPerItem += p.getMeanRoundTripTime();
 
             if (p.firstTimestamp < earliestTimestamp) {
                 earliestTimestamp = p.firstTimestamp;
@@ -160,12 +167,34 @@ public class RoundTripTimeMonitor {
             }
         }
 
-        final long overallRuntime = latestTimestamp - earliestTimestamp;
         final double nrOfElements = (double) progressMap.values().size();
-        final double meanOverallRTT = ((double) sumOverallRTT) / nrOfElements;
-        final double overallMeanRTTPerEp = ((double) sumMeanRTTPerEp) / nrOfElements;
-        printMetric("Mean overall RTT per Feed  ", String.format("%1$8s", String.format("%6.1f", meanOverallRTT)) + "ms");
-        printMetric("Overall mean RTT per Item  ", String.format("%1$8s", String.format("%6.1f", overallMeanRTTPerEp)) + "ms");
+        this.overallRuntime = latestTimestamp - earliestTimestamp;
+        this.meanRttPerFeed = ((double) sumMeanRttPerFeed) / nrOfElements;
+        this.meanRttPerItem = ((double) sumMeanRttPerItem) / nrOfElements;
+    }
+
+    public long getOverallRuntime() {
+        return this.overallRuntime;
+    }
+
+    public double getMeanRttPerFeed() {
+        return this.meanRttPerFeed;
+    }
+
+    public double getMeanRttPerItem() {
+        return this.meanRttPerItem;
+    }
+
+    private void printMetric(String name, double metric) {
+        log.info("[RTT] {} : {}ms", name, String.format("%1$7s", metric));
+    }
+
+    public void printSumEvals() {
+
+        ensureFinished();
+
+        printMetric("Mean overall RTT per Feed  ", String.format("%1$8s", String.format("%6.1f", meanRttPerFeed)) + "ms");
+        printMetric("Overall mean RTT per Item  ", String.format("%1$8s", String.format("%6.1f", meanRttPerItem)) + "ms");
         printMetric("Overall RT w.r.t Input Size", overallRuntime + "ms");
     }
 
@@ -173,15 +202,11 @@ public class RoundTripTimeMonitor {
         log.info("[RTT] {} : {}", name, value);
     }
 
-    private String overallRoundTripTimeToString(long value) {
+    private String formatLong(long value) {
         return String.format("%1$6s", value);
     }
 
-    private String meanRoundTripTimeToString(long value) {
-        return String.format("%1$6s", value);
-    }
-
-    private String meanMessageLatencyToString(double value) {
+    private String formatDouble(double value) {
         return String.format("%1$8s", String.format("%7.1f", value));
     }
 
@@ -189,6 +214,12 @@ public class RoundTripTimeMonitor {
         finished = false;
         progressMap.clear();
         finishedItems = 0;
+    }
+
+    private void ensureFinished() {
+        if (!isFinished()) {
+            throw new UnsupportedOperationException("Invalid access of result value; RTT monitoring is not yet finished");
+        }
     }
 
 }
