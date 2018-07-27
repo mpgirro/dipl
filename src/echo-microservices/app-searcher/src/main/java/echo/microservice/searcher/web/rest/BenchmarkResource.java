@@ -2,6 +2,7 @@ package echo.microservice.searcher.web.rest;
 
 import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.benchmark.RoundTripTime;
+import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.SearchService;
 import echo.microservice.searcher.web.client.BenchmarkClient;
@@ -80,8 +81,12 @@ public class BenchmarkResource {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
         mpsCounter.incrementCounter();
         final ResultWrapperDTO result = searchService.searchBenchmark(query, page, size, rtt);
+        final ResultWrapperDTO newRes = ImmutableResultWrapperDTO.builder()
+            .from(result)
+            .setRTT(result.getRTT().bumpRTTs())
+            .create();
         return new ResponseEntity<>(
-            result,
+            newRes,
             HttpStatus.OK);
     }
 
