@@ -1,21 +1,18 @@
 package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Send}
-import com.google.common.base.Strings.isNullOrEmpty
+import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.index.IndexProtocol.{IndexQuery, SearchIndex}
-import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
-import echo.core.domain.dto.ResultWrapperDTO
+import echo.core.benchmark.MessagesPerSecondCounter
 
-import scala.concurrent.duration._
-import scala.language.postfixOps
+/**
+  * @author Maximilian Irro
+  */
 
 object Searcher {
-    final val name = "searcher"
-    def props(): Props = Props(new Searcher()).withDispatcher("echo.searcher.dispatcher")
+    def name(nodeIndex: Int): String = "searcher-" + nodeIndex
+    def props(): Props = Props(new Searcher())
 }
 
 class Searcher extends Actor with ActorLogging {
@@ -23,91 +20,67 @@ class Searcher extends Actor with ActorLogging {
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
     private val CONFIG = ConfigFactory.load()
-    // TODO these values are used by searcher and gateway, so save them somewhere more common for both
-    private val DEFAULT_PAGE: Int = Option(CONFIG.getInt("echo.gateway.default-page")).getOrElse(1)
-    private val DEFAULT_SIZE: Int = Option(CONFIG.getInt("echo.gateway.default-size")).getOrElse(20)
-    private val INTERNAL_TIMEOUT: FiniteDuration = Option(CONFIG.getInt("echo.internal-timeout")).getOrElse(5).seconds
+    private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.searcher.worker-count")).getOrElse(5)
 
-    private val mediator = DistributedPubSub(context.system).mediator
-    mediator ! Put(self) // register to the path
+    private var workerIndex = 1
 
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
     private val mpsCounter = new MessagesPerSecondCounter()
 
-    private var responseHandlerCounter = 0
-
-    override def postStop: Unit = {
-        log.info("shutting down")
+    private var router: Router = {
+        val routees = Vector.fill(WORKER_COUNT) {
+            val parser = createWorkerActor()
+            context watch parser
+            ActorRefRoutee(parser)
+        }
+        Router(RoundRobinRoutingLogic(), routees)
     }
 
     override def receive: Receive = {
 
-        case ActorRefIndexStoreActor(ref) =>
-            log.debug("Received ActorRefIndexStoreActor(_)")
+        case msg @ ActorRefIndexStoreActor(ref) =>
+            log.debug("ActorRefIndexStoreActor(_)")
             indexStore = ref
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case ActorRefBenchmarkMonitor(ref) =>
-            log.debug("Received ActorRefBenchmarkMonitor(_)")
+        case msg @ ActorRefBenchmarkMonitor(ref) =>
+            log.debug("Received ActorRefCLIActor(_)")
             benchmarkMonitor = ref
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case StartMessagePerSecondMonitoring =>
+        case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsCounter.startCounting()
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case StopMessagePerSecondMonitoring =>
+        case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsCounter.stopCounting()
             benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            router.routees.foreach(r => r.send(msg, sender()))
 
-        case SearchRequest(query, page, size, rtt) =>
-            log.debug("Received SearchRequest('{}',{},{})", query, page, size)
+        case request: SearchRequest =>
             mpsCounter.incrementCounter()
+            router.route(request, sender())
 
-            // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
-
-            val p: Int = page match {
-                case Some(x) => x
-                case None    => DEFAULT_PAGE
-            }
-            val s: Int = size match {
-                case Some(x) => x
-                case None    => DEFAULT_SIZE
-            }
-
-            if (isNullOrEmpty(query)) {
-                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
-            }
-
-            if (p < 0) {
-                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
-            }
-
-            if (s < 0) {
-                sender ! SearchResults(ResultWrapperDTO.empty(), RoundTripTime.empty())
-            }
-
-            val originalSender = Some(sender) // this is important to not expose the handler
-
-            responseHandlerCounter += 1
-            val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
-
-            val indexQuery = SearchIndex(query, p, s, rtt.bumpRTTs())
-            sendIndexQuery(indexQuery, responseHandler)
-
+        case work =>
+            log.warning("Routing work of UNKNOWN kind : {}", work.getClass)
+            mpsCounter.incrementCounter()
+            router.route(work, sender())
     }
 
-    /**
-      * Sends index query message to one Index Store within the Cluster, prefering a locally available Store for speed.
-      * This will expect the index to response with a message. This will not be handled by this Searcher, but delegated
-      * to the responseHandler
-      * @param queryMsg
-      * @param responseHandler
-      * @return Nothing
-      */
-    private def sendIndexQuery(queryMsg: IndexQuery, responseHandler: ActorRef): Unit = {
-        log.debug("Sending query message to one index store in the cluster : {}", queryMsg)
-        mediator.tell(Send("/user/node/index", queryMsg, localAffinity = true), responseHandler)
+
+    private def createWorkerActor(): ActorRef = {
+        val worker = context.actorOf(SearcherWorker.props(), SearcherWorker.name(workerIndex))
+
+        workerIndex += 1
+
+        // forward the actor refs to the worker, but only if those references haven't died
+        Option(indexStore).foreach(d => worker ! ActorRefIndexStoreActor(d))
+
+        worker
     }
+
 }

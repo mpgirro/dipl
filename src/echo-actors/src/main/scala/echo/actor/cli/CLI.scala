@@ -1,9 +1,12 @@
 package echo.actor.cli
 
+import java.util.Collections
+
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.google.common.collect.ImmutableList
+import com.softwaremill.sttp._
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
@@ -55,6 +58,8 @@ class CLI(master: ActorRef,
     private val FEEDS_TXT = "../feeds.txt"
     private val MASSIVE_TXT = "../feeds_unique.txt"
 
+    private val GATEWAY_URL = "http://localhost:3030/api"
+
     private var shutdown = false
 
     val usageMap = Map(
@@ -77,6 +82,8 @@ class CLI(master: ActorRef,
     )
 
     private val feedPropertyUtil = new FeedPropertyUtil()
+
+    private implicit val backend = HttpURLConnectionBackend()
 
 
     // to the REPL, if it terminates, then a poison pill is sent to self and the system will subsequently shutdown too
@@ -307,12 +314,39 @@ class CLI(master: ActorRef,
                 .setLocation("")
                 .setWorkflow(Workflow.RESULT_RETRIEVAL)
                 .create()
-            gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+            //gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+            log.info(s"sending request : GET ${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
+            sttp.get(uri"${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
+                //.body(rtt)
+                .send()
         }
     }
 
     private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
         ImmutableList.copyOf(Source.fromFile(filePath).getLines.asJava)
+    }
+
+    private implicit val stringListSerializer: BodySerializer[ImmutableList[String]] = {
+        qs: ImmutableList[String] =>
+            if (qs == null || qs.isEmpty) {
+                StringBody("[]", "UTF-8", Some("application/json"))
+            } else {
+                val serializedList = s"[${qs.asScala.map(q => "\""+q+"\"").mkString(", ")}]"
+                println(serializedList)
+                StringBody(serializedList, "UTF-8", Some("application/json"))
+            }
+    }
+
+    private implicit val roundTripTimeSerializer: BodySerializer[RoundTripTime] = {
+        rtt: RoundTripTime =>
+            if (rtt == null) {
+                StringBody("{}", "UTF-8", Some("application/json"))
+            } else {
+                val serializedTimestamps = if (rtt.getRtts == null || rtt.getRtts.isEmpty) "[]" else s"[${rtt.getRtts.asScala.mkString(", ")}]"
+                val serializedRtt = s"""{\"id\":\"${rtt.getId}\", \"location\":\"${rtt.getLocation}\", \"workflow\":\"${rtt.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
+                println(serializedRtt)
+                StringBody(serializedRtt, "UTF-8", Some("application/json"))
+            }
     }
 
 }

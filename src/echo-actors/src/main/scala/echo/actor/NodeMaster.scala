@@ -10,7 +10,7 @@ import echo.actor.crawler.Crawler
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
-import echo.actor.searcher.Searcher
+import echo.actor.searcher.{Searcher, SearcherWorker}
 import echo.actor.updater.Updater
 import echo.core.benchmark.{ArchitectureType, MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
 
@@ -49,7 +49,7 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
-    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 21) // 'cause we have 21 actors in place that will report their MPS
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 28) // 'cause we have 21 actors in place that will report their MPS
 
     override def preStart(): Unit = {
 
@@ -57,7 +57,7 @@ class NodeMaster extends Actor with ActorLogging {
 
         index    = context.watch(context.actorOf(IndexBroker.props(),   IndexBroker.name))
         parser   = context.watch(context.actorOf(Parser.props(),        Parser.name(1)))
-        searcher = context.watch(context.actorOf(Searcher.props(),      Searcher.name))
+        searcher = context.watch(context.actorOf(Searcher.props(),      Searcher.name(1)))
         crawler  = context.watch(context.actorOf(Crawler.props(),       Crawler.name(1)))
         catalog  = context.watch(context.actorOf(CatalogBroker.props(), CatalogBroker.name))
         gateway  = context.watch(context.actorOf(Gateway.props(),       Gateway.name(1)))
@@ -75,6 +75,7 @@ class NodeMaster extends Actor with ActorLogging {
         searcher ! ActorRefIndexStoreActor(index)
 
         gateway ! ActorRefCatalogStoreActor(catalog)
+        gateway ! ActorRefSearcherActor(searcher)
 
         catalog ! ActorRefCrawlerActor(crawler)
         catalog ! ActorRefCatalogStoreActor(catalog)
@@ -178,8 +179,10 @@ class NodeMaster extends Actor with ActorLogging {
         rttMonitor.addRoundTripTime(rtt)
         if (rttMonitor.isFinished) {
             sendStopMessagePerSecondMonitoringMessages()
+            rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
             log.info("RTT reporting finished; results in CSV format :")
             println(rttMonitor.toCsv)
+            rttMonitor.printSumEvals()
         }
     }
 

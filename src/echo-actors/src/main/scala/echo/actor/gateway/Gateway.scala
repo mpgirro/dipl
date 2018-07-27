@@ -15,7 +15,7 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.gateway.json.JsonSupport
-import echo.actor.gateway.service.{EpisodeGatewayService, FeedGatewayService, PodcastGatewayService, SearchGatewayService}
+import echo.actor.gateway.service._
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.MessagesPerSecondCounter
@@ -66,6 +66,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
     private val mpsCounter = new MessagesPerSecondCounter()
 
     private val searchService = new SearchGatewayService(log, searcherBreaker, mpsCounter)
+    private val benchmarkService = new BenchmarkGatewayService(log, searcherBreaker, mpsCounter, self)
     private val podcastService = new PodcastGatewayService(log, catalogBreaker, mpsCounter)
     private val episodeService = new EpisodeGatewayService(log, catalogBreaker, mpsCounter)
     private val feedService = new FeedGatewayService(log, catalogBreaker, mpsCounter)
@@ -88,7 +89,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
                 getFromResourceDirectory("swagger") ~ pathSingleSlash(get(redirect("index.html", StatusCodes.PermanentRedirect)))
             } ~
             pathPrefix("api") {
-                searchService.route ~ podcastService.route ~ episodeService.route ~ feedService.route
+                searchService.route ~ benchmarkService.route ~ podcastService.route ~ episodeService.route ~ feedService.route
             } ~
             pathPrefix("load-test") { // TODO
                 get {
@@ -124,10 +125,17 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
             episodeService.setCatalogStoreActorRef(ref)
             feedService.setCatalogStoreActorRef(ref)
 
+        case ActorRefSearcherActor(ref) =>
+            log.debug("Received ActorRefSearcherActor(_)")
+            searcher = ref
+            searchService.setSearcherActorRef(ref)
+            benchmarkService.setSearcherActorRef(ref)
+
         case ActorRefBenchmarkMonitor(ref) =>
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
             searchService.setBenchmarkMonitorActorRef(ref)
+            benchmarkService.setBenchmarkMonitorActorRef(ref)
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
@@ -141,7 +149,12 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
             mpsCounter.incrementCounter()
-            searchService.benchmarkSearch(q, p, s, rtt.bumpRTTs())
+            //searchService.benchmarkDistributedSearch(q, p, s, rtt)
+            benchmarkService.benchmarkSearch(q, p, s, rtt)
+
+        // when doing benchmarks, we can receive such messages
+        case SearchResults(results, rtt) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt.bumpRTTs())
+        case NoIndexResultsFound(q, rtt) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt.bumpRTTs())
 
         case _ =>
             log.warning("GatewayActor does not handle any Actor-messages yet")
