@@ -1,5 +1,9 @@
 package echo.actor
 
+import java.io.{FileWriter, PrintWriter}
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
@@ -12,7 +16,7 @@ import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
 import echo.actor.searcher.{Searcher, SearcherWorker}
 import echo.actor.updater.Updater
-import echo.core.benchmark.{ArchitectureType, MessagesPerSecondMonitor, RoundTripTime, RoundTripTimeMonitor}
+import echo.core.benchmark._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -49,7 +53,9 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
-    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 28) // 'cause we have 21 actors in place that will report their MPS
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 46) // 'cause we have 21 actors in place that will report their MPS
+
+    private val benchmarkUtil = new BenchmarkUtil("../benchmark/")
 
     override def preStart(): Unit = {
 
@@ -179,10 +185,29 @@ class NodeMaster extends Actor with ActorLogging {
         rttMonitor.addRoundTripTime(rtt)
         if (rttMonitor.isFinished) {
             sendStopMessagePerSecondMonitoringMessages()
-            rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
-            log.info("RTT reporting finished; results in CSV format :")
-            println(rttMonitor.toCsv)
-            rttMonitor.printSumEvals()
+            //rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
+
+            val size = rttMonitor.getAllRTTs.size()
+
+            var progressFile = "progress-not-set.txt"
+            var overallFile = "overall-not-set.txt"
+            if (Workflow.PODCAST_INDEX == rttMonitor.getWorkflow || Workflow.EPISODE_INDEX == rttMonitor.getWorkflow ) {
+                progressFile = "akka-index"+size+"-rtt-progress"
+                overallFile  = "akka-index-rtt-overall"
+            } else if (Workflow.RESULT_RETRIEVAL == rttMonitor.getWorkflow) {
+                progressFile = "akka-search"+size+"-rtt-progress"
+                overallFile  = "akka-search-rtt-overall"
+            } else {
+                log.warning("Unhandled Workflow : {}", rttMonitor.getWorkflow)
+            }
+
+            log.info("RTT progress CSV :")
+            val progressCSV = rttMonitor.getProgressCSV
+            benchmarkUtil.writeToFile(progressFile, progressCSV)
+
+            log.info("RTT overall CSV : ")
+            val overallCSV = rttMonitor.getOverallCSV
+            benchmarkUtil.appendToFile(overallFile, overallCSV)
         }
     }
 

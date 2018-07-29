@@ -133,11 +133,12 @@ class CLI(master: ActorRef,
                     .setWorkflow(Workflow.PODCAST_INDEX)
                     .create()
                 updater ! ProposeNewFeed(feed, b)
-            case "benchmark" :: "feed" :: feed :: _   => usage("benchmark feed")
-            case "benchmark" :: "index" :: Nil        => benchmarkIndexSubsystem()
-            case "benchmark" :: "index" :: _          => usage("benchmark index")
-            case "benchmark" :: "search" :: Nil       => benchmarkRetrievalSubsystem()
-            case "benchmark" :: "search" :: _         => usage("benchmark search")
+            case "benchmark" :: "feed" :: feed :: _      => usage("benchmark feed")
+            case "benchmark" :: "index" :: Nil           => benchmarkIndexSubsystem()
+            case "benchmark" :: "index" :: _             => usage("benchmark index")
+            case "benchmark" :: "search" :: Nil          => benchmarkRetrievalSubsystem(None)
+            case "benchmark" :: "search" :: count :: Nil => benchmarkRetrievalSubsystem(Some(count))
+            case "benchmark" :: "search" :: count :: _   => usage("benchmark search")
 
             case "check" :: "podcast" :: Nil           => usage("check podcast")
             case "check" :: "podcast" :: "all" :: Nil  => catalogStore ! CheckAllPodcasts
@@ -304,10 +305,14 @@ class CLI(master: ActorRef,
         }
     }
 
-    private def benchmarkRetrievalSubsystem(): Unit = {
-        val queries = loadBenchmarkQueries("../benchmark/queries.txt")
+    private def benchmarkRetrievalSubsystem(count: Option[String]): Unit = {
+        val inputFile = count
+            .map(c => "../benchmark/queries-lorem"+c+".txt")
+            .getOrElse("../benchmark/queries.txt")
+        val queries = loadBenchmarkQueries(inputFile)
         benchmarkMonitor ! MonitorQueryProgress(queries)
         benchmarkMonitor ! StartMessagePerSecondMonitoring
+        log.info(s"Sending ${queries.size()} search requests to ${GATEWAY_URL}")
         for (q <- queries.asScala) {
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(q)
@@ -315,7 +320,7 @@ class CLI(master: ActorRef,
                 .setWorkflow(Workflow.RESULT_RETRIEVAL)
                 .create()
             //gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
-            log.info(s"sending request : GET ${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
+            //log.info(s"sending request : GET ${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
             sttp.get(uri"${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
                 //.body(rtt)
                 .send()
