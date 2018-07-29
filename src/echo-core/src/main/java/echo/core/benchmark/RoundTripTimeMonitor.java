@@ -20,6 +20,8 @@ public class RoundTripTimeMonitor {
     private int finishedItems; // feeds or queries
     private int totalItems;    // feeds or queries
 
+    private Workflow workflow;
+
     private long overallRuntime;
     private double meanRttPerFeed;
     private double meanRttPerItem;
@@ -36,6 +38,7 @@ public class RoundTripTimeMonitor {
 
     public void initWithProperties(ImmutableList<FeedProperty> properties) {
         this.reset();
+        workflow = Workflow.PODCAST_INDEX;
         totalItems = properties.size();
 
         for (FeedProperty fp : properties) {
@@ -46,6 +49,7 @@ public class RoundTripTimeMonitor {
 
     public void initWithQueries(ImmutableList<String> queries) {
         this.reset();
+        workflow = Workflow.RESULT_RETRIEVAL;
         totalItems = queries.size();
 
         for (String q : queries) {
@@ -128,14 +132,17 @@ public class RoundTripTimeMonitor {
 
         ensureFinished();
 
-        return new StringBuilder()
-            .append("src;input_size;overallRT;mean_rtt_per_feed;mean_rtt_per_item\n")
-            .append(type).append(";")
-            .append(progressMap.size()).append(";")
-            .append(overallRuntime).append(";")
-            .append(meanRttPerFeed).append(";")
-            .append(meanRttPerItem).append(";")
-            .toString();
+        return //"src;input_size;overallRT;mean_rtt_per_feed;mean_rtt_per_item\n" +
+            type +
+            ";" +
+            progressMap.size() +
+            ";" +
+            overallRuntime +
+            ";" +
+            meanRttPerFeed +
+            ";" +
+            meanRttPerItem +
+            "\n";
     }
 
     public List<RoundTripTime> getAllRTTs() {
@@ -185,6 +192,10 @@ public class RoundTripTimeMonitor {
         return this.meanRttPerItem;
     }
 
+    public Workflow getWorkflow() {
+        return workflow;
+    }
+
     private void printMetric(String name, double metric) {
         log.info("[RTT] {} : {}ms", name, String.format("%1$7s", metric));
     }
@@ -214,6 +225,7 @@ public class RoundTripTimeMonitor {
         finished = false;
         progressMap.clear();
         finishedItems = 0;
+        workflow = null;
     }
 
     private void ensureFinished() {
