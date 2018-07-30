@@ -382,6 +382,7 @@ Maximilian Irro
 [INCLUDE=ch6-actor-impl]
 [INCLUDE=ch7-microservice-impl]
 [INCLUDE=ch8-evaluation]
+[INCLUDE=ch8a-performance-eval]
 [INCLUDE=ch9-conclusion]
 
 <!--

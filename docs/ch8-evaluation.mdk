@@ -1,5 +1,5 @@
 
-Comparative Evaluation {#ch-evaluation}
+Evaluation {#ch-evaluation}
 ==========
 
 <!-- of Actors and Microservices -->
@@ -11,6 +11,10 @@ Thinking like a computer scientist means more than being able to program a compu
 
 Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by actors and microservices to achieve concurrent computation within their respective architectures. 
 
+
+## Conceptual Evaluation
+
+...
 
 ## Encapsulation and Isolation
 
@@ -896,169 +900,3 @@ An alternative approach towards verifying composition is to migrate from the sin
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.*\ [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.*\ [@Hut16] and Ancona *et al.*\ [@Anc16].
 
-## Metrics and Experiments
-
-~ todo
-Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
-~
-
-We've compared the expressiveness capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each approach. The Echo system implementations provide us with the foundation to conduct respect experiments. The results will allow us to draw conclusions about the unterlying concurrency concept. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate systems. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we will measure the efficiency in terms of system performance.
-
-...
-
-Different methods to profile actors and respectivly Akka have been proposed [@Moa17;@Ros16a;@Ros16b]. Profiling microservices is more difficult in general since the technological diversity impedes common profiling tools. 
-
-...
-
-Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately. As the performance metric of each subsystem we use the *latency* $L$ of the subsystem to complete a job. For the indexing subsystem, a job is the complete processing of a given feed. For the retrieval subsystem, a job is the retrieval of relevant documents for a given query.
-
-If we know $L$, we can calculate the *throughput* $T$ of the subsystem simply with $T = 1 / L$. 
-
-~ todo
-images of the subsystem interaction models
-~
-
-All task units are based on the JVM and use the same `core` library for domain specific functionality. Platform and domain specific effects on latency and throughput are therefore uniform. All differences of latency and throughput between the two system implementations are a result of the unterlying programming models for communication and coordination [CITATION?]{.red}.
-
-Latency is effected by:
-
-* Eomployed communication mechanism (Akka runtime message delivery vs. REST/RabbitMQ)
-
----
-
-Another 
-
-
-### Software Artifact Metrics
-
-DAS HIER SOLLTE ICH EINFACH SCHON BEI DER "conceptual comparison" OBEN SCHREIBEN. 
-
-~ todo
-LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
-~
-
-Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
-
-
-...
-
-~ todo
-Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
-~
-
-... JAR = __Java__ __Ar__chive
-
-...Fat JAR = self-sufficient archive, contains classes and dependencies, executable
-
-~ center
-|---------------------|------------|-----------------| -------------|
-| Application         | LoC        | Skinny JAR (KB) | Fat JAR (KB) |
-+---------------------+------------+----------------:+-------------:+
-| Actor engine (Akka) | [??]{.red} | 1442.393        | 77106.239    |
-| --------------------|------------|-----------------|--------------|
-| CatalogStore (MS)   | [??]{.red} | 48.243          | 89319.380    |
-| --------------------|------------|-----------------|--------------|
-| IndexStore (MS)     | [??]{.red} | 16.117          | 83406.930    |
-| --------------------|------------|-----------------|--------------|
-| Searcher (MS)       | [??]{.red} | 15.982          | 81644.563    |
-| --------------------|------------|-----------------|--------------|
-| Web Crawler (MS)    | [??]{.red} | 17.161          | 83407.983    |
-| --------------------|------------|-----------------| -------------|
-| Parser (MS)         | [??]{.red} | 17.913          | 83408.733    |
-| --------------------|------------|-----------------|--------------|
-| Updater (MS)        | [??]{.red} | [??]{.red}      | [??]{.red}   |
-| --------------------|------------|-----------------| -------------|
-{  }
-~
-
-~ todo
-Hinweis das alle Executables die selbe `core` library verwenden, diese daher auch in jedem fat JAR enthalten ist.
-~
-
-### Profiling
-
-~ lit
-* Actor Utilization in Akka:
-    * [@Moa17] "Supporting Resource Control for Actor Systems in Akka"
-    * [@Ros16a] "Profiling actor utilization and communication in Akka"
-    * [@Ros16b] "AkkaProf- A Profiler for Akka Actors in Parallel and Distributed Applications"
-~
-
-### Evaluating simulation results
-
-
-
-
-
-### Document and Query Sets
-
-
-Therefore, we require a workload similation to test both implementations against. A recent work [@Gri17] points out that there is no general simulation approach for MSAs as of yet. We have to design a custom experiment. Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately.
-
-Nevertheless, we are faced with the problem of a dataset for running the similation experiments. The indexing subsystem requires a collection of podcast RSS/Atom feeds. The retrieval subsystem requires filled Lucene datastructures and a collection of test queries. Domain-specific IR has specialised domain-specific datasets. To the authors knowledge, the only available dataset for podcast IR is given by [TODO]. This dataset was designed for evaluating extracted audio transcript. Therefore, the dataset contains URLs to audio files, but no RSS feeds. 
-
-...
-
-We've already mentioned that information retrieval uses the precision and recall metrics to evaluate IR techniques. IR uses standardized test dataset collections in order to make evaluation results compareable across scientific works. 
-
-
-TABLE OF DATASET PARAMETERS:
-
-~ todo
-Tabelle
-~
-
-### Test environment
-
-
-
-
-### Experiment Setup / Evaluation infrastructure
-
-~ lit
-* traditionally IR uses *test collections* for evaluation. 
-* To our knowledge there is not Podcast related test collection available as of yet (since podcast is a rather unexplored domain in IR)
-* We use a custom selection of feeds for the indexing subsystem (initial + update)
-* We require a list of queries to test the retrieval subsystem
-* IR has standardizes lists, but those are usually annotated for better effectiveness evaluation and limited to a specialized domain.
-* normally query statistics form large Engines are not used, but we will
-* we only test on a single machine (because we dont have more), therefore distribution and related scalability variants are not evaluated
-~
-
-For a performance evaluation, we require a workload simulation that we can use to test both the actor- and microservice implementations against. A recent work [@Gri17] points out that there is no general simulation approach for MSAs as of yet. Therefore, we have to design a custom reference scenario. 
-
----
-
-Setup:
-
-[Machine: XY GHz, XY cores, XY RAM, etc, running macOS XY]{.red}
-
-* __Processor__: 3,1 GHz Intel Core i5
-* __Memory__: 16 GB 2133 MHz LPDDR3
-* Processor Name:	Intel Core i5
-* Processor Speed:	3,1 GHz
-* Number of Processors:	1
-* Total Number of Cores:	2
-* L2 Cache (per Core):	256 KB
-* L3 Cache:	4 MB
-* Memory:	16 GB
-* Storage: 
-    * Type: SSD
-    * Connection: PCI-Express
-    * File system: APFS
-
-
-### Simulation Experiment 1: Indexing Subsystem
-
-...
-
-### Simulation Experiment 2: Retrieval Subsystem
-
-...
-
-
-
-### Threats to Validity
-
-* test data set not fixed size (in bytes and no of episodes); arbitrary selected collection of XML feeds
-    * throughput usually w.r.t. size of messages

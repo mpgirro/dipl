@@ -14,13 +14,13 @@ This chapter covers a microservice architecture approach used to implement the c
 ## Service Technology Stack
 
 
-Service-oriented programming languages seem to be a good choice. Though some are theoretically matured, from a practical point they are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using it to implement Echo. 
+Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOC languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
 
-Instead, microservices are composed using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection integrates the Netflix open source stack, which has proven very effective for microservice development in industrial applications [@Car17]. 
+Instead, we composed microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection integrates the Netflix open source stack, which has proven very effective for microservice development in industrial applications [@Car17]. 
 
 Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor system runtime [@Hal06].
 
-As was done with the Actor implementation, attention will be paid to the linguistic support provided by the framework regarding an easy expression of service requirements.
+As was done with the actor implementation, attention will be paid to the linguistic support provided by the framework regarding an easy expression of service requirements.
 
 
 ~ todo
@@ -31,7 +31,7 @@ mehr?
 ## Internal Service Concurrency
 
 
-The Paradigm does not dictate any restriction on internal service structure. A service is free to be a concurrent unit internally, and to utilize any concurrency mechanism it sees fit (including actos). 
+The Paradigm does not dictate any restriction on internal service structure. A service is free to be a concurrent unit internally, and to utilize any concurrency mechanism it sees fit (including actors). 
 
 Echo's services are conceived through the Spring framework and utilize the concurrent programming structure that is provided through its IoC container. Spring uses thread-pools on which concerns, e.g.\ so-called *service*-objects (not to be confused with the microservice itself), are scheduled when an object's method is invoked. This kind of scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. Additionally, software transactions provide synchronization. The programming style used to express transactions is declarative. The `@Transactional` annotation on service-object's methods encloses the method into a transaction. Additionally, the STM is extend to database transactions transparently [@Wal07].
 
