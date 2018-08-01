@@ -1,5 +1,7 @@
 package echo.microservice.cli
 
+import java.util
+
 import com.google.common.collect.ImmutableList
 import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
@@ -22,6 +24,7 @@ class CliApp {
     private val log = Logger(classOf[CliApp])
 
     private var shutdown = false
+    private val workQueue = new WorkQueue(100)
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
@@ -71,8 +74,9 @@ class CliApp {
 
                     case "benchmark" :: "index" :: Nil  => benchmarkIndexSubsystem()
                     case "benchmark" :: "index" :: _    => usage("benchmark index")
-                    case "benchmark" :: "search" :: Nil => benchmarkRetrievalSubsystem()
-                    case "benchmark" :: "search" :: _   => usage("benchmark search")
+                    case "benchmark" :: "search" :: Nil          => benchmarkRetrievalSubsystem(None)
+                    case "benchmark" :: "search" :: count :: Nil => benchmarkRetrievalSubsystem(Some(count))
+                    case "benchmark" :: "search" :: count :: _   => usage("benchmark search")
                     case "benchmark" :: _               => usage("benchmark")
 
                     case _  => help()
@@ -82,6 +86,7 @@ class CliApp {
         }
 
         log.info("Terminating due to user request")
+        workQueue.shutdown()
     }
 
     private def usage(cmd: String): Unit = {
@@ -177,28 +182,37 @@ class CliApp {
         }
     }
 
-    private def benchmarkRetrievalSubsystem(): Unit = {
-        val queries = loadBenchmarkQueries("../../benchmark/queries.txt")
+    private def benchmarkRetrievalSubsystem(count: Option[String]): Unit = {
+        val inputFile = count
+            .map(c => "../../benchmark/queries-lorem"+c+".txt")
+            .getOrElse("../../benchmark/queries.txt")
+        val queries = loadBenchmarkQueries(inputFile)
 
         sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-query-progress")
             .body(queries)
             .send()
-
         startMessagePerSecondMonitoring()
 
+        log.info(s"Sending ${queries.size()} search requests to ${GATEWAY_URL}")
+
+        val rs = new util.LinkedList[Runnable]()
         for (q <- queries.asScala) {
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(q)
                 .setLocation("")
                 .setWorkflow(Workflow.RESULT_RETRIEVAL)
                 .create()
-
-            sttp.post(uri"${GATEWAY_URL}/benchmark/search?q=${q}&p=1&s=20")
-                .body(rtt)
-                .send()
-
-            //gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
+            val r = new Runnable {
+                override def run(): Unit = {
+                    sttp.post(uri"${GATEWAY_URL}/benchmark/search?q=${q}&p=1&s=20")
+                        .body(rtt)
+                        .send()
+                }
+            }
+            rs.add(r)
         }
+
+        workQueue.executeAll(rs)
     }
 
     private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
