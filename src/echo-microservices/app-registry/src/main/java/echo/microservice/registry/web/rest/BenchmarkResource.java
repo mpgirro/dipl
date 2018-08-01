@@ -30,7 +30,9 @@ public class BenchmarkResource {
     @Resource(name = "messagesPerSecondMonitor")
     private MessagesPerSecondMonitor mpsMonitor;
 
-    final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private final BenchmarkUtil benchmarkUtil = new BenchmarkUtil("../../benchmark/");
 
     @RequestMapping(
         value  = "/rtt-report",
@@ -40,9 +42,35 @@ public class BenchmarkResource {
         rttMonitor.addRoundTripTime(rtt);
         if (rttMonitor.isFinished()) {
             sendStopMessagePerSecondMonitoringMessages();
+
+            /*
+            //rttMonitor.getAllRTTs().stream().forEach(r -> log.info(r.getRtts().toString()));
             log.info("RTT reporting finished; results in CSV format :");
             System.out.println(rttMonitor.toCsv());
             rttMonitor.printSumEvals();
+            */
+
+            final int size = rttMonitor.getAllRTTs().size();
+
+            String progressFile = "msa-rtt-progress-not-set.txt";
+            String overallFile = "msa-rtt-overall-not-set.txt";
+            if (Workflow.PODCAST_INDEX == rttMonitor.getWorkflow() || Workflow.EPISODE_INDEX == rttMonitor.getWorkflow() ) {
+                progressFile = "msa-index"+size+"-rtt-progress";
+                overallFile  = "msa-index-rtt-overall";
+            } else if (Workflow.RESULT_RETRIEVAL == rttMonitor.getWorkflow()) {
+                progressFile = "msa-search"+size+"-rtt-progress";
+                overallFile  = "msa-search-rtt-overall";
+            } else {
+                log.warn("Unhandled Workflow : {}", rttMonitor.getWorkflow());
+            }
+
+            //log.info("RTT progress CSV :");
+            final String progressCSV = rttMonitor.getProgressCSV();
+            benchmarkUtil.writeToFile(progressFile, progressCSV);
+
+            //log.info("RTT overall CSV :");
+            final String overallCSV = rttMonitor.getOverallCSV();
+            benchmarkUtil.appendToFile(overallFile, overallCSV);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
