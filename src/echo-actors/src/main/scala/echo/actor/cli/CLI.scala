@@ -1,5 +1,6 @@
 package echo.actor.cli
 
+import java.util
 import java.util.Collections
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
@@ -61,6 +62,7 @@ class CLI(master: ActorRef,
     private val GATEWAY_URL = "http://localhost:3030/api"
 
     private var shutdown = false
+    private val workQueue = new WorkQueue(100)
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
@@ -113,6 +115,7 @@ class CLI(master: ActorRef,
 
         log.info("Terminating due to user request")
         master ! ShutdownSystem()
+        workQueue.shutdown()
     }
 
     private def exec(commands: Array[String]): Unit = {
@@ -310,21 +313,25 @@ class CLI(master: ActorRef,
             .map(c => "../benchmark/queries-lorem"+c+".txt")
             .getOrElse("../benchmark/queries.txt")
         val queries = loadBenchmarkQueries(inputFile)
+
         benchmarkMonitor ! MonitorQueryProgress(queries)
         benchmarkMonitor ! StartMessagePerSecondMonitoring
+
         log.info(s"Sending ${queries.size()} search requests to ${GATEWAY_URL}")
+
+        val rs = new util.LinkedList[Runnable]()
         for (q <- queries.asScala) {
-            val rtt = ImmutableRoundTripTime.builder()
-                .setId(q)
-                .setLocation("")
-                .setWorkflow(Workflow.RESULT_RETRIEVAL)
-                .create()
-            //gateway ! BenchmarkSearchRequest(q, Option(1), Option(20), rtt)
-            //log.info(s"sending request : GET ${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
-            sttp.get(uri"${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
-                //.body(rtt)
-                .send()
+            val r = new Runnable {
+                override def run(): Unit = {
+                    sttp.get(uri"${GATEWAY_URL}/benchmark-search?q=${q}&p=1&s=20")
+                        //.body(rtt)
+                        .send()
+                }
+            }
+            rs.add(r)
         }
+
+        workQueue.executeAll(rs)
     }
 
     private def loadBenchmarkQueries(filePath: String): ImmutableList[String] = {
