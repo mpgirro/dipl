@@ -189,8 +189,8 @@ class NodeMaster extends Actor with ActorLogging {
 
             val size = rttMonitor.getAllRTTs.size()
 
-            var progressFile = "progress-not-set.txt"
-            var overallFile = "overall-not-set.txt"
+            var progressFile = "akka-rtt-progress-not-set.txt"
+            var overallFile = "akka-rtt-overall-not-set.txt"
             if (Workflow.PODCAST_INDEX == rttMonitor.getWorkflow || Workflow.EPISODE_INDEX == rttMonitor.getWorkflow ) {
                 progressFile = "akka-index"+size+"-rtt-progress"
                 overallFile  = "akka-index-rtt-overall"
@@ -201,11 +201,11 @@ class NodeMaster extends Actor with ActorLogging {
                 log.warning("Unhandled Workflow : {}", rttMonitor.getWorkflow)
             }
 
-            log.info("RTT progress CSV :")
+            //log.info("RTT progress CSV :")
             val progressCSV = rttMonitor.getProgressCSV
             benchmarkUtil.writeToFile(progressFile, progressCSV)
 
-            log.info("RTT overall CSV : ")
+            //log.info("RTT overall CSV :")
             val overallCSV = rttMonitor.getOverallCSV
             benchmarkUtil.appendToFile(overallFile, overallCSV)
         }
