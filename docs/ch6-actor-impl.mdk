@@ -94,9 +94,9 @@ It is worth pointing out that though the actor model is Scala's standard concurr
 ~ Findings
 *Main findings*:
 
-* Library-based actor systems cannot ensure isolation by themselves.
-* Guaranteeing message immutability is the obligation of the programmer.
-* Message interoperability between programming languages is challenged by data type compatibility.
++ Library-based actor systems cannot ensure isolation by themselves.
++ Guaranteeing message immutability is the obligation of the programmer.
++ Message interoperability between programming languages is challenged by data type compatibility.
 ~
 
 
@@ -250,9 +250,9 @@ We've found that compile-time message safety restrictions, apart from active obj
 ~ Findings
 *Main findings*:
 
-* Though the actor model is build around asynchronous messaging, runtime systems can provide additional abstractions facilitating synchronous communication. We then require either additional concurrency models (futures) or additional actors (delegation).
-* An explicit sense of time is contrary to the actor model. Timing must be modeled in terms of messages.
-* Receiving dynamically typed actor messages is intrinsic to the actor model. Hence, sending messages is often implemented rather weakly-typed in actor systems, by not performing any type check at all. We can achieve stronger typization for sending messages by type-restricting actor addresses.
++ Though the actor model is build around asynchronous messaging, runtime systems can provide additional abstractions facilitating synchronous communication. We then require either additional concurrency models (futures) or additional actors (delegation).
++ An explicit sense of time is contrary to the actor concept. Timing must be modeled in terms of messages.
++ The actor model intrinsically types received messages dynamically. Hence, sending messages is often implemented rather weakly-typed in actor systems. We can achieve stronger typization for sending messages by type-restricting the actor addresses.
 ~
 
 

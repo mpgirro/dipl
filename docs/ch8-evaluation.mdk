@@ -385,11 +385,10 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 ~ Findings
 *Main findings*:
 
-* Actors and microservices qualify for distributed communication in a transparent way.
-* Distributed objects face problems in their abstraction of distribution.
-* Actor-based programming mitigates the conceptual problems of distributed objects.
-* Microservice-based programming mitigates the conceptual problems of distributed objects.
-* Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
++ Actors and microservices qualify for distributed communication in a transparent way.
++ Distributed objects face problems in their abstraction of distribution.
++ Actor- and microservice based programming mitigates the problematic abstraction of transparent distribution compared to DOs.
++ Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
 ~
 
 
@@ -913,5 +912,6 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 ~ Findings
 *Main findings*:
 
-* [TODO]{.red}
+* Microservices lack the theoretical framework and tool support to provide type safety between services. 
++ [TODO]{.red}
 ~
