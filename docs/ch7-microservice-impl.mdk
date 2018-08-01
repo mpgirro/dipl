@@ -82,6 +82,11 @@ Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" her
 ## Communication Mechanisms
 
 
+~ todo
+Hinweis das Daten IMMER (bei REST wie AMQP) in JSON serialisiert werden -> keine Datentyp inkompatibilität probleme
+~
+
+
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
 Communication has to happen via an inter-process communication mechanism. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate any specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
@@ -201,6 +206,15 @@ In contrast, with server-side load balancing requires a dedicated balancing serv
 
 ~ todo
 noch einen schönen Abschluss(ab)satz
+~
+
+
+~ Findings
+*Main findings*:
+
+* Different communication styles require different communication channels (synchronous via REST, asynchronous via AMQP).
+* Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. 
+* Centralized concerns (discovery, load balancing) requires additional dedicated microservice units.
 ~
 
 

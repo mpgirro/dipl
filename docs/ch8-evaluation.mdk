@@ -382,6 +382,16 @@ However, the one major benefit of active as well as distributed objects compared
 Noch ein paar genauere Argumente aus [@Wal96]?
 ~
 
+~ Findings
+*Main findings*:
+
+* Actors and microservices qualify for distributed communication in a transparent way.
+* Distributed objects face problems in their abstraction of distribution.
+* Actor-based programming mitigates the conceptual problems of distributed objects.
+* Microservice-based programming mitigates the conceptual problems of distributed objects.
+* Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
+~
+
 
 ### Components per Execution Environment
 
@@ -900,3 +910,8 @@ An alternative approach towards verifying composition is to migrate from the sin
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.*\ [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.*\ [@Hut16] and Ancona *et al.*\ [@Anc16].
 
+~ Findings
+*Main findings*:
+
+* [TODO]{.red}
+~

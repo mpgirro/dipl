@@ -1,26 +1,33 @@
-## Empirical Metrics and Experiments
+## Benchmark
 
 ~ todo
 Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
-We've compared the expressiveness capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each approach. The Echo system implementations provide us with the foundation to conduct respect experiments. The results will allow us to draw conclusions about the unterlying concurrency concept. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate systems. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we will measure the efficiency in terms of system performance.
+We've compared the expressiveness capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation to conduct a benchmark. The results will allow us to draw conclusions about the unterlying concurrency concept. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we will measure the efficiency in terms of system performance.
 
-... We require common metrics that we can gather in both system implementations.
+... Hence we require common metrics that we can gather in both system implementations to be able to compare performance.
 
-*Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Akka-specific profiling tools have used Savina to benchmark detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling is tailored to the actor model. 
+*Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Akka-specific profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling is tailored to the actor model. 
+
+Recent works report that microservice benchmarks are yet at an early stafe. There is yet a lack of benchmark systems as well as commonly established evaluation metrics. [REF?!]{.red}
+
+Recent works report that there is no widely established benchmark suit available for microservices archiectures [@Zho18] --> [STEHT DAS WIRKLICH SO HIER> DRINNEN?!]{.red}
 
 To the authors knowledge, there is no widely established benchmark suit available for microservice architectures available as of yet. Due to the technological diversity, there is also no general microservice profiling tool available. 
 
-Hence, we cannot refere to the benchmark literature for common metrics to use for evaluation. 
+Hence, we cannot refere to the literature for common metrics to use for evaluation. 
 
 ... General performance evaluation uses...
 
-... A project ... can be found on GitHub that benchmarks latency, throughput, and transfered data of popular microservices frameworks[^fn-msa-framework-benchmark], including Spring Boot and Akka HTTP. The benchmark experiment setup is rather simple in that the frameworks are merely used to serve "*Hellow World!*" on a REST interface as the workload. Though the experiment is simple, we use the general design idea of benchmarking workload and measuring latency and throughput. 
+... There is one project on GitHub that benchmarks latency, throughput, and transfered data of popular microservices frameworks[^fn-msa-framework-benchmark], including Spring Boot and Akka HTTP. The benchmark experiment setup is rather simple in that the frameworks are merely used to serve "*Hellow World!*" on a REST interface as the workload. Though the experiment is simple, we use the general design idea and measure latency and throughput for evaluation. Since Akka does not necessarily serialize data [REF]{.red}, we refrain from gathering the transfered bytes as an additional metric. 
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
-Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We will evaluate both subsystems separately. As the performance metric of each subsystem we use the *latency* $L$ of the subsystem to complete a job. For the indexing subsystem, a job is the complete processing of a given feed. For the retrieval subsystem, a job is the retrieval of relevant documents for a given query.
+Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We evaluate both subsystems separately. The workloads of each subsystem consist of jobs. 
+
+
+As the performance metric of each subsystem we use the *latency* $L$ of the subsystem to complete a job. For the indexing subsystem, a job is the complete processing of a given feed. For the retrieval subsystem, a job is the retrieval of relevant documents for a given query.
 
 If we know $L$, we can calculate the *throughput* $T$ of the subsystem simply with $T = 1 / L$. 
 
@@ -40,32 +47,26 @@ Another
 
 ...
 
+### Workload similation data
+
 DATASET:
 
-Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for experiment setup designs. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
+We need to simulate a workload scenario to benchmark each subsystem of the two system implementations. Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for workload data. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
 
-Part 1: Set of documents
-Part 2: Set of queries
-Part 3: Relevance assessment between queries and documents 
+* Part 1: Set of documents
+* Part 2: Set of queries
+* Part 3: Relevance assessment between queries and documents 
 { list-style-type:none }
 
 We are interrested in Part 1 as input for the indexing subsystem and Part 2 as input for the retrieval subsystem. Part 3 is required for effectivness evaluation, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the Podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
 
-Hence we must design our own dataset collection. In general, we are faced with two problems: Selecting documents (Podcast RSS feeds) and determining suitable queries. The literature usually assesses execution time, which in turn affects latency and throughput, with respect to (wrt.) input size. Real world RSS feeds have arbitrary data and therefore present an input size per feed we have no control over size. Since we do not concern the actual informational value of either feeds or queries, we can simply custom created feeds and queries with placeholder text.
+Hence we must design our own dataset collection. In general, we are faced with two problems: Selecting documents (RSS feeds) and determining suitable queries. Latency and throughput are affected by the execution time. The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries. Simple placeholder text is sufficient for text data. Well-known is the so-called *Lorem ipsum* as a general placeholder text snippet [^fn-lorem-ipsum]. Appendix [#ch-benchmark-feed] shows the resulting feed structure.
+
+[^fn-lorem-ipsum]: <https://lipsum.com>
 
 ~ todo
 Hier kann ich eine größenverteilung über alle feeds als bild einfügen, wenn mir ganz fad sein sollte
 ~
-
-A well-known placeholder text is the so-called *Lorem ipsum* [^fn-lorem-ipsum].
-
-[^fn-lorem-ipsum]: <https://www.lipsum.com>
-
-
-
-... In IR, this is a manual, tiresome and hard task [REF]{.red}
-
- 
 
 ### Software Artifact Metrics
 
@@ -132,6 +133,8 @@ Hinweis das alle Executables die selbe `core` library verwenden, diese daher auc
 
 
 
+
+### Software and Hardware Environment
 
 
 ### Document and Query Sets

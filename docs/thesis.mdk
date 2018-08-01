@@ -110,6 +110,7 @@ blockquote   { font-style: italic; }
 .figureline  { display: none }
 
 <!-- arbitrary helper classes, while work in progress -->
+.findings { border: solid black 1px; padding:1em }
 .litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
@@ -207,6 +208,13 @@ CSS Header      :
   }
   .figure > p {
     -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+  }
+  .findings > p {
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+  }
+  .findings > ul {
     -webkit-margin-after: 0;
   }
   /* TODO do I want the paper style for paragraphs? 
@@ -313,8 +321,11 @@ Es gilt einigen wenigen meinen Dank auszusprechen:
 
 Common problems require applications to manage multiple concerns simultaneously. A convenient approach is the concept of concurrent programming. In this thesis, we investigate two different approaches for introducing concurrent computational units into software architectures. One approach is the *actor model* describing theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The other approach is an architectural style based on so-called *microservices*, a recent trend that gained academic and industrial popularity. Microservices facilitate many of the old Unix principles for composing complex functionality through small, independent, highly cohesive and loosely coupled service executables interoperating via lightweight, technology heterogenous messaging channels. The deployment modality of microservices conceives concurrent execution through the operating system scheduler or network distribution respectively. We argue that both approaches share many conceptual similarities and few but significant differences which are affecting concurrent programming concerns. While actors follow a strict theoretical concept,  microservices, in their current deployment focused perception, are constrained merely by a set of rather loose principles, not more than best practices. Based on an exemplary scenario, we evaluate the conceptual capabilities for meeting concerns like communication, distribution, scalability and [??]{.red}. Additionally, we assess the efficiency of programming concurrency with actors and microservices by measuring the scenario implementation performance. We've found that [???]{.red}
 
+... we evaluate the conceptual 
 
- it is evaluated how concurrent software systems can be composed with Actors or Microservices utilizing their respective characteristics and resulting possibilities. Finally, argumentations for both approaches to concurrent programming are formulated and a shift in the notion of conceiving Microservices towards a stricter theoretical foundation we see closer to the Actor model is motivated. 
+... we developed a benchmark application in two system models: actor-based and microservice-based. 
+
+...it is evaluated how concurrent software systems can be composed with Actors or Microservices utilizing their respective characteristics and resulting possibilities. Finally, argumentations for both approaches to concurrent programming are formulated and a shift in the notion of conceiving Microservices towards a stricter theoretical foundation we see closer to the Actor model is motivated. 
 
 ...
 
@@ -382,8 +393,61 @@ Maximilian Irro
 [INCLUDE=ch6-actor-impl]
 [INCLUDE=ch7-microservice-impl]
 [INCLUDE=ch8-evaluation]
-[INCLUDE=ch8a-performance-eval]
+[INCLUDE=ch8a-performan-eval]
 [INCLUDE=ch9-conclusion]
+
+# Benchmark Feed { @h1="A"; #ch-benchmark-feed }
+
+...
+
+... The `<item>...</item>` element is replicated 20 times within each feed.
+
+~ todo
+Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, und die anzahl an episoden danach richten
+~
+
+```{language:xml}
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Lorem ipsum</title>
+    <link>http://lorem.ispum.fm</link>
+    <language>en-us</language>
+    <copyright>cc-by-nc-sa</copyright>
+    <description>
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed 
+      diam nonumy eirmod tempor invidunt ut labore et dolore magna
+      aliquyam erat, sed diam voluptua
+    </description>
+    <item>
+      <title>Lorem ipsum</title>
+      <enclosure url="http://lorem.ispum.fm/file.mp3" 
+                 length="17793193" type="audio/mpeg"/>
+      <guid isPermaLink="false">http://lorem.ispum.fm/li001</guid>
+      <pubDate>Fri, 13 Jul 2018 16:35:13 +0000</pubDate>
+      <description>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+        diam nonumy eirmod tempor invidunt ut labore et dolore magna
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et
+        justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+        sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+        nonumy eirmod tempor invidunt ut labore et dolore magna 
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et 
+        justo duo dolores et ea rebum. Stet clita kasd gubergren, no 
+        sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
+        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam 
+        nonumy eirmod tempor invidunt ut labore et dolore magna 
+        aliquyam erat, sed diam voluptua. At vero eos et accusam et 
+        justo duo dolores et ea rebum. Stet clita kasd gubergren, no 
+        sea takimata sanctus est Lorem ipsum dolor sit amet.
+      </description>
+    </item>
+  </channel>
+</rss>
+```
+
 
 <!--
 
