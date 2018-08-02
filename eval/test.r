@@ -175,3 +175,35 @@ hist(akka_search10000_rtt_progress$meanRTpI, col="red")
 
 akka_index2100_rtt_progress <- read.table("../src/benchmark/data/akka-index2100-rtt-progress_2018.07.29.12.33.11.csv", header=T, sep=";");
 boxplot(akka_index2100_rtt_progress$meanRTpI);
+
+
+
+# 
+# Boxplot describing the distribution of overall roundtrip times for 10k retrievals
+# Comparing both Akka and MSA in one image
+#
+akka_search10000_rtt_progress <- read.table("../src/benchmark/data/akka-search10000-rtt-progress_2018.08.01.16.47.00.csv", header=T, sep=";");
+msa_search10000_rtt_progress <- read.table("../src/benchmark/data/msa-search10000-rtt-progress_2018.08.01.15.58.09.csv", header=T, sep=";");
+
+# add a column stating where the data comes from, for later descrimination
+akka_search10000_rtt_progress$origin <- rep("Akka",nrow(akka_search10000_rtt_progress));
+msa_search10000_rtt_progress$origin <- rep("MSA",nrow(msa_search10000_rtt_progress));
+
+# draw boxplot comparing the mean latency per message, that is the timespan between sending and receiving
+meanMsgL_search.data <- rbind( akka_search10000_rtt_progress[,c("meanMsgL","origin")], msa_search10000_rtt_progress[,c("meanMsgL","origin")]); 
+boxplot(meanMsgL ~ origin, data=meanMsgL_search.data, outline=FALSE);  
+
+# draw boxplot comparing the overall runtime, that is from the point the message was received until the answer was returned
+overallRT_search.data <- rbind( akka_search10000_rtt_progress[,c("overallRT","origin")], msa_search10000_rtt_progress[,c("overallRT","origin")]); 
+boxplot(overallRT ~ origin, data=overallRT_search.data, outline=FALSE);  
+
+# - - - - - - - - - - - - - - - - - - -
+
+# select all rows where the overall RT is > 13ms (which is the threshold for the upper wisker of the MSA boxblot -> everything above is an outlier)
+overallRT_search.outliers <- overallRT_search.data[(overallRT_search.data[,1]>13),]
+
+overallRT_search.outliers_akka <- overallRT_search.outliers[(overallRT_search.outliers[,2]=="Akka"),]
+overallRT_search.outliers_msa <- overallRT_search.outliers[(overallRT_search.outliers[,2]=="MSA"),]
+
+hist(overallRT_search.outliers_akka$overallRT)
+hist(overallRT_search.outliers_msa$overallRT)
