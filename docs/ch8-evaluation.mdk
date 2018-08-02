@@ -16,7 +16,7 @@ Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and
 
 ...
 
-## Encapsulation and Isolation
+### Encapsulation and Isolation
 
 
 Actor and microservice semantics relies on the strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
@@ -26,7 +26,7 @@ Encapsulation is a concept we know from object-oriented programming. As Snyder p
 Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of understood messages through the actor's behavior. For microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes or the messages the microservice consumes from a message broker. Only through the interfaces can we access or modify the service's state.
 
 
-### Shared and Mutable State
+#### Shared and Mutable State
 
 
 One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages, i.e.\ only one message is processed at a time. This eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
@@ -42,7 +42,7 @@ Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufig
 ~
 
 
-### Persistence
+#### Persistence
 
 
 The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. We refer to this property as *persistence*. [kann ich da was zitieren?]{.mind}
@@ -66,7 +66,7 @@ Concurrent database interaction is conceptually easier for microservices. Severa
 This restriction opens up another opportunity however. Monolithic applications tend to rely on as few database systems as possible. A multitier architecture traditionally has the data access layer at the bottom, and consecutive layers are build relative to the bottom layer. A new database system brings the risk of fundamentally impacting a program's architecture. It is therefore unusual for program modules to have their own persistence layer exclusive to them. Due to their respective natures, modules based on the actor and microservice concepts make it easy to add additional persistence layers to accommodate architecture requirements. The approach of introducing specialized database systems based on respective persistence needs, at the risk of introducing potential redundancies, is referred to as *polyglot persistence* [@Bon16;@Fow14].
 
 
-### Cohesion, Coupling and Independence
+#### Cohesion, Coupling and Independence
 
 ~ todo
 Warum ist das hier wichtig bzgl "Concurrent Programming"? Begründung im ersten Absatz!
@@ -92,7 +92,7 @@ Echo's commonly used `core` library, wrapping most domain specific logic, is gen
 This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. 
 
 
-## Communication and Message Routing
+### Communication and Message Routing
 
 
 According to the general concerns of concurrent computation, tasks refraining from utilizing mutable shared memory require other kinds of communication links which facilitate message passing instead. Since both the actor model and microservice principles strictly omit shared state, they too require what we call *communication channels* for messaging. These channels transport information from a source to a destination, i.e.\ a *sender* is writing data to the channel, upon which a *receiver* can read. Independent of the concrete channel technology, message passing is a form of implicit synchronization of the information, since the event of reading a message can intrinsically only occur *after* the message has been sent. In contrast, shared state explicitly requires a defined order of accessing the information [@And83].
@@ -157,7 +157,7 @@ The following table summarizes the communication capabilities of Echo's implemen
 ~ End Center
 
 
-## Conception of Concurrent Execution
+### Conception of Concurrent Execution
 
 
 ~ todo
@@ -189,7 +189,7 @@ Table [#tab-fundamental-concurrency-issues] gives an overview how actors and mic
 ~ End TableFigure
 
 
-### Continuations, Threads and Processes
+#### Continuations, Threads and Processes
 
 
 Actors and microservices are fundamentally differently executed. Scala's standard actors provided two different execution semantics [@Hal09]. One of the semantics schedules the actors on threads. These actors are executed in an inversion of control manner [@Hal06], similarly to the strategy pursued by the Spring framework. The other of the two semantics is purely event-based and therefore without IoC. Thread-based actors are invoked by their current thread to execute a turn and upon completion return to their calling thread. On the other hand, event-based actors do not have (and need) a dedicated thread and therefore cannot return to one. Instead, they facilitate a much cheaper concept called *continuation-passing style* known from functional programming, where a function refrains from returning a computed result by calling a subsequent function, the so-called *continuation closure*. Akka extends this approach and defines as single closure for all messages until the behavior is replaced, which has shown to be much more effective [@Hal12]. We already gave an example of a continuation with `Actor.same`{language:scala} for Akka's type-restricted behaviors in Section [#sec-type-restricted-messages-and-compatibility]. `Dispatcher`{language:scala}s influence the thread assignment strategy for concurrently running the behavior closures [@Hal12]. Although using threads, the continuation closure approach is still considered event-based, since a thread can be seen as merely a trajectory in continuation space [@Shi97]. Nevertheless, threads are conceptually similar to processes, except that several threads can exist within a single process [@Bac03]. There, the actor thread-pools live in one or few processes and many actors share the same memory boundaries of their respective process. 
@@ -214,7 +214,7 @@ Programming with Microservices does not, unlike Actors, free one from the many h
 -->
 
 
-### Fairness and Resource Consumption
+#### Fairness and Resource Consumption
 
 
 Actors and microservices represent concurrent building blocks of equal status in their respective architectures. It is important to reason about the chances to make even progress, since we have a uniform view on concurrent execution [@Bus90]. Our view does not distringuish quasi-simultaneous execution on a single processor, truly parallel execution on multiple CPUs and distributed execution among several host machines. The property of uniform progress is called *fairness* and is closely related to the liveness of concurrent programs and systems, i.e.\ to avoid starvation [@Agh85a;@Agh99].
@@ -226,7 +226,7 @@ On the other hand, scheduling is a nonconcern for microservices. Every MSA is a 
 Howeverm, there is one drawback to the lack of scheduling concern in MSAs. The architecture cannot influence the resource consumption based on a service's actual demand. An operating system will always allocate resources towards a process. Therefore, every task unit of an MSA also stresses its hosts processing power on a regular basis, at least to a small amount. This drain on resources is true even when the services are neither requested nor perform active behaviors of their own. In these cases, every process activation is simply a waste of energy [@Tan07].
 
 
-## Distribution
+### Distribution
 
 
 ~LitNote
@@ -248,7 +248,7 @@ Communication via message passing has one fundamental property: no mutable memor
 The actor model intrinsically builds upon message passing to share state information between actors. Additionally, Actors are well isolated from each other. Based on these properties, Agha recasts the initial notion of actors in the light of distributed computation [@Agh85a]. Microservices intrinsically fall into the domain of distributed system as well, if the services choose to utilize a network-based communication mechanism. Therefore, it is important to evaluate the distribution notions and capabilities of both approaches.
 
 
-### Location Transparency
+#### Location Transparency
 
 All actor addresses in theory, and therefore also Akka's `ActorRef`{language:scala}s, make the location of the underlying actor transparent. The runtime system handles the actual message delivery on the same local node and on remote nodes. Addresses provide a uniform interface free of location considerations.
 
@@ -257,7 +257,7 @@ Microservices enable arbitrary communication channels, as long as the channels c
 Channels operating on the network level are distributed communication mechanisms. Network channels facilitate message passing and provide a uniform interface for remote as well as local communication [@Spe90]. Sockets are the most basic example. The socket interface is homogenous regarding whether a socket is on the same local or a remote node. However, sockets still require the *concrete* address [@Bac03]. In order to have the recipients' location transparent, the microservice paradigm requires additional effort in the form of discovery mechanisms. We've demonstrated how Echo integrates discovery based on Feign and Eureka directly into the client-side communication interface.
 
 
-### Distinction to Distributed Objects {#sec-distributed-objects}
+#### Distinction to Distributed Objects {#sec-distributed-objects}
 
 
 In object-oriented programming, the overall program state is partitioned into disjoint sets, each chunk belonging to a distinct object. As Werner pointed out, the state is distributed from a logical point of view [@Weg90]. However, distributed programming has different emphasis of concerns than OOP does. Yet, both architecture styles can be integrated to support physical distribution of objects. The notion is called *distributed objects* (DO). There, objects do not have to exists within the same program boundary, but can be distributed across numerous programs and therefore host machines. We can therefore view DOs from a process-oriented perspective. Barrio & Fuente [@Bar97] give a formal definition of modelling objects as processes.  
@@ -305,7 +305,7 @@ We already discussed the analogies of Actors and microservices to the notion of 
 -->
 
 
-#### Actors as Distributed Objects
+##### Actors as Distributed Objects
 
 
 The actor model deals with distribution transparently. Just like distributed object proxies, actor addresses pose as local interfaces. However, these addresses do not check message compatibility (method name and argument types). Erlang famously introduced the syntax `address ! message` to send a message of arbitrary form to an actor identified by a known address [@Arm93]. Since Erlang does not facilitate object-orientation, accessing state and message passing are strictly separate constructs by design. Other actor variants adopted this style, e.g.\ Scala's original actors and Akka. Scala's type system provides a punctuation-free syntax to invoke methods on objects which take only a single argument, offering an infix notation style[^fn-punctuation-free-call]. Despite an object-oriented context, we can apply different syntactic constructs to reference ordinary objects and actors. The distinction is merely by convention only. 
@@ -324,7 +324,7 @@ In there principles however, we deem that Actors avoid the problematic abstracti
 -->
 
 
-#### Microservices as Distributed Objects
+##### Microservices as Distributed Objects
 
 
 The method call on a DO proxy object makes it transparent for clients whether a locally available or remote server object is addressed. Though there is also location transparency in the microservice idiom, we generally can assume a distinction in the programming interface of local (within a service) and remote (between services) interaction. For service-internal interaction, we use the standard mechanisms of the service's technology paradigm, e.g.\ calling an object's method, or referencing a function. To issue an external request, we must issue a respective interface, regardless whether we expect a result or not. This interface is dedicated to the communication channel, e.g.\ a HTTP library or message queue API. Therefore, an external interaction should be recognizable to the programmer in general. For Echo's services, we use Spring and its IoC container. We demonstrated the definition of the `IndexClient`{language:java} interface for consuming a REST resource with Feign. Spring generates an implementation at runtime, but we must decorated the interface in a declarative programming style accordingly.
@@ -334,7 +334,7 @@ Although we utilize the resulting implementation in a purely Java-like, object-o
 Another argument is the granularity of service interfaces. Objects are prone to provide very fine-grained interfaces in general, e.g.\ to access each state variables separately. Microservices tend to have more course grained interfaces. In the SOP context, it is more likely that messages between services do not issue too fine-grained operations. Every message is at risk of the external communication mechanism's issues [@Sha17a], e.g.\ most Fallacies of distributed systems (Section [#sec-concurrency-network-level]). The microservice paradigm takes the problems of remote messages and procedure calls explicitely into account. Therefore, we do not deem microservices likely to be subject to the same conceptual issues as are distributed objects.
 
 
-#### Active Objects as Distributed Objects
+##### Active Objects as Distributed Objects
 
 
 Although we already discussed the similarity to actors, Section [#sec-active-objects] introduced another variant of the actor model. Active objects explicitly capitalize an object-oriented abstraction and therefore they are especially relevant here. We gave an example of the concurrency semantics of active object interfaces. The method call is separated from the message execution. We demonstrated the behavior in case of method interfaces with and without return values. Building on this previous example, we formulate:
@@ -392,7 +392,8 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 ~
 
 
-### Components per Execution Environment
+<!--
+#### Components per Execution Environment
 
 
 ~LitNote
@@ -406,6 +407,7 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 ~ todo
 Hier wird diskutiert wie viele Instanzen der jeweiligen Components existieren können, was wiederum ausdrückt wie viel Nebenläufigkeit innerhalb eines Hosts ausgedrückt werden kann. JVM Actors: im Bereich von maximal einigen 10k (im Gegensatz zu Millionen in Erlang -- da sehr viel schlankere Konstrukte); Microservices: theoretisch so viele wie das OS an Prozessen verträgt (habe ich hier Literatur bezüglich begrenzender Faktoren?), praktisch aber nicht all zu viele im Fall von Echo, da deren Stack doch relativ unschlanke Service forciert. 
 ~
+-->
 
 <!--
 ## Governance, Deployment and Autonomy
@@ -490,7 +492,7 @@ Autonomy:
 -->
 
 
-## Scalability and Modularity
+### Scalability and Modularity
 
 
 Their ability to *scale* is arguably one of the most relevant reasons given in the literature to utilize actor- or microservice-based architectures [@Tas13;@Hal09;@Mon16a;@Dra17c;@Sal16;@Che17;@Sal16;@Dra17b]. Based on the definition given by Bondi [@Bon00], *scalability* is an attribute influencing the performance of networks, systems and processes in general. From the cognition of industrial Erlang applications it has been suggested that scalability is more important than raw system performance [@Hal12]. Many different aspects influence scalability. From a concurrent point of view, any influence hindering parallelism has a negative impact. Examples are synchronization (cf.\ Java case study) and (temporal) deadlocks. The strong isolation and message passing principles of actors and microservices (isolated turn principle, avoidance of shared state) reduce coordination and contention cost. Therefore, message passing and isolation have a positive influence on scalability capabilities by limiting safety and liveness issues [@Bon16].
@@ -526,7 +528,7 @@ Table [#tab-scalability-compatibility-matrix] summarizes scalability variants pr
 ~ End TableFigure
 
 
-### Forms of Scalability
+#### Forms of Scalability
 
 
 There are many different forms and classification approaches for scalability. Two merit attention here. *Load scalability* refers to a steady performance if the demand or work increases. *Structural scalability* refers to the ability of the topology to change the amount of components, in this case concurrent task units [@Bon00].
@@ -540,7 +542,7 @@ A conceptual disadvantage is that by default load balancer do not know about the
 Message queue channels (`Q`) are also a form of load balancing. As the receiving components actively pull messages from the queue when they have computation capacity, e.g.\ `W` &larr; `Q`, they distribute load among themselves based on their demand [@Cou05;@Dra17c]. Every Web Crawler, Parser, DirectoryStore and IndexStore in the MSA has therefore an inherent scalability advantage. Since the services are multi-threaded applications due to the thread-pools the IoC container of Spring uses, each microservice can serve several work requests simultaniously. All these services pull the work packages from the message queue when there is a free thread. The message queue buffers all messages until they are consumed. In contrast, actors get work in the form of messages pushed directly into their mailbox. Message router units (`R`) do not buffer message, but distribute them immediately.  Mailboxes are limited in size [CITATION?]{.red}, therefore every mailbox runs into the risk of mailbox overflow, if over a period of time its actor takes longer to processes messages than it receives in the same amount of time.   
 
 
-### Dynamic Reconfiguration
+#### Dynamic Reconfiguration
 
 
 *Dynamic reconfiguration* relates to a change in a system's topology at runtime. Task units can be added, removed or relocated divergent from the static initialization configuration [@Agh85b]. Actors support dynamic reconfiguration inherently through the primitive allowing actors to spawn new actors. We already demonstrated this ad hoc instantiation with the dynamically created response handlers `H` spawned by Searchers. The loose coupling of microservices also provide support for changing topologies in principle. Service registries and asynchronous messages through intermediate message queues provide the foundation. Reconfiguration greatly effects scalability, because it increases the optimal utilization of hardware resources [HIER HAB ICH IRGENDWO EINE PASSENDE REF -- GANZ SICHER!]{.red}.
@@ -552,7 +554,7 @@ The requirements in Chapter [#ch-scenario] explicitly state that neither mobilit
 In general, we deem the concerns related to dynamic reconfiguration more easily met with actors. Spawning new units is a core concept of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction. We need an additional layer to manage changing topologies. *Cloud management framework* are a category of tools that seem convenient. Therefore is a fundamental difference in the inherent notion of static versus dynamic changes in topology. This difference is a major concern when it comes to integrating actor and microservice task units. We will briefly outline an approach for integration in Section [#sec-actor-ms-integration].
 
 
-### Extensibility and Technology Diversity {#sec-technological-heterogeneity}
+#### Extensibility and Technology Diversity {#sec-technological-heterogeneity}
 
 
 Another result of the dynamic reconfiguration property is that actor and microservice architectures are also open for extension. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* to refer to the introduction of either new versions of existing components (update) or new components entirely (addition). For updates of previous versions, special care has to be taken into account. The requirements will be the part of Section [#sec-design-by-contract]. 
@@ -573,7 +575,7 @@ The strong memory boundries and open communication interfaces of microservice pr
 Echo facilitates Java and the Spring framework for all task units, but each service could also have been written using distinct technology stacks. Even now, existing services can be replaced by new version using new technologies.   
 
 
-### Eventual Consistency and Availability
+#### Eventual Consistency and Availability
 
 ~ lit
 
@@ -610,7 +612,8 @@ KANN ICH AVAILABILITY IRGENDWIE MESSEN? DAS WÄRE EINE GUTE PRAKTISCHE TABELLE H
 ~
 
 
-## Fault Tolerance and Resilience
+<!--
+### Fault Tolerance and Resilience
 
 ~ todo
 Hier werden die unterschiedlichen Asnätze und Möglichkeiten für Fault tolerance (zB durch Supervision) und der Resilienz einzelner Komponente (Circuit Breaker, etc.) evaluiert.
@@ -655,7 +658,7 @@ Availability:
 ~
 
 ~ end green
-
+-->
 
 <!--
 ## Separation of Concerns and Single Responsibility
@@ -739,7 +742,7 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 -->
 
 
-## Testability
+### Testability
 
 
 ~ todo
@@ -757,13 +760,13 @@ Actors sind hier generell schwieriger, weil sie immer in einem Actor System "leb
 
 From a theoretical point of view, any safety property can be violated by a finite execution, thus they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks.
 
-## Formal Specifications
+### Formal Specifications
 
 ~ todo
 Ein paar einführende Worte
 ~
 
-### Actor Model and Process Calculi
+#### Actor Model and Process Calculi
 
 
 Among the theories of formulating concurrent computation we find a family called *process calculi* or *process algebras*. They define formal models composed of so-called *processes* which are communicating within the laws and conditions laid out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interactions with other discrete event systems. The other systems then have to react to the interactions. Therefore, Baeten terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. As a result, one approach towards concurrency theory is the path of a process algebras.
@@ -832,11 +835,47 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 -->
 
+#### Integrating Actors and Microservices {#sec-actor-ms-integration}
 
-### Design by Contract {#sec-design-by-contract}
+
+Even though the scientific community has not yet succeeded in formulating a link between actors and process calculi, we've seen tat there is at least the motivation to describe interoperability. Although our Echo microservices are not founded on a process calculus, it is still worth to entertain the the thought of integrating the actor and microservice concepts. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
+
+The microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice. We've demonstrated that other channels like AMQP queues are also viable. Actors, on the other hand, are more restricted, since the model semantics requires them to receive the *message* constructs in a uniform way. By implication, this restriction means that different communication channels can be utilized as long as they comply to a homogenous message receiving abstraction.
+
+*Akka HTTP* [@AkkaHTTP] is part of the Akka library collection. It provides a full client- and server-side HTTP stack on top of the basic actor construct. Thus, HTTP requests can be received as messages, just if they were sent by another actor: 
+
+```{language:scala}
+override def receive = {
+  case SomeMessage(_)                           => // handle message
+  case HttpResponse(status, headers, entity, _) => // process response
+}
+```
+
+Actors are identified by their unique address. This address is specific to a concrete actor system and not conform to a URI (__U__niform __R__esource __I__dentifier) as is required by HTTP in general. We must utilize an integration layer between a HTTP-addressable unit and the actual actor [@AkkaHTTP]. 
+
+Though this style of receiving messages is in principle conform to the actor abstraction, there are certain limits. By implication, HTTP endpoints also do not comply to actor addresses in general. The standard *send* mechanism through `tell` and `ask` is therefore not applicable to dispatch HTTP requests. We require an alternative interface:
+
+```{language:scala}
+Http().singleRequest(HttpRequest(URI(s"http://example.com")
+  .withQuery(s"name", s"value"))
+  .pipeTo(self)
+```
+
+The example uses `pipeTo` to have the integration layer reroute the response as an `HttpResponse`{language:scala} message to the sending actor (delegation).
+
+We see, not all the basic actor primitives are suitable to be used outside the actor construct. However, well introduced abstractions like Akka HTTP allow actors to provide their *actor behavior* to the outside in a microservice-like *service behavior* fashion. Communication between actors and microservices is possible in principle. Hence, we can construct systems where tasks are distributed between actors and microservices.  
+
+The general integrationn idea is not novel. We've mentioned the theoretical foundation from [@Mon97] for incorporating actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of Akka HTTP. However, interoperability is merely a concern of static configuration, because processes have only a static notion of interconnection topology in general. This static notion violates the dynamic reconfiguration inherent to actors [@Akm90;@Agh85b]. In order to overcome this limitation, bridge technologies like service discovery are utilized in microservice architectures. Hence, we require actors to integrate into this discovery mechanism, effectively rendering each actor into a mere microservices. This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* [@LightbendLagom] framework, a reactive microservice system framework built on top of Akka.
 
 
-So far, we've covered concerns both actors and microservices provide profound practical support for. Yet from a theoretical point of view, there is the potential for more sophisticated solutions. From here on, we briefly endeavor into these subjects, for which actors and microservices offer rather basic capabilities at best. Two concerns that we will merit attention here are static contracts between task units in general, and behavioral types in particular.
+#### Design by Contract {#sec-design-by-contract}
+
+
+Integration of actors and microservices does not only require a communication channel, but also messages that are understood by sender as well as receiver. This requirements is also true among actors and among microservices. We've mentioned that received actor messages are inherently dynamically typed, and hence sending messages is often weakly typed. We can strengthen this typization by type-restricting the send operation. Akka achieves this restriction by introducing a type parameter into the actor address. However, there is no guarantee that an actor has an appropriate behavior for a message sent to it at the moment the recipient processes this message. Also, there is no general guarantee of message compatibility between microservices. REST- and AMQP-based communication merely enforces well-formated XML or JSON documents. Serializers and deserializers on the sending and receiving ends guarantee correct marshalling. Yet nothing restricts that only messages are sent that will be understood by the receiver. Just as with actors, message compatibility is checked dynamically at runtime upon reception. Hence, ensuring compatibility in actor- and microservices-based programming is an obligation of the programmer. 
+
+---
+
+Yet from a theoretical point of view, there is the potential for more sophisticated solutions. From here on, we briefly endeavor into subjects for which actors and microservices offer rather basic capabilities at best. Two concerns that we will merit attention here are static contracts between task units in general, and behavioral types in particular.
 
 We've evaluated the capabilities and notions regarding concerns like isolation, decoupling, location transparency, mobility and [independent deployment (-> weggefallen?)]{.red}. All of these concerns facilitate dynamic change in the system topology (dynamic reconfiguration) [@Agh90;@Dra17a]. On the one hand, we can simply add new components and announce them via respective contextual mechanisms. On the other hand, we can *substitute* existing components by others (subtypes). Fowler & Lewis even give independent replacement and upgradeability as key properties of microservice architectures [@Fow14]. However, evolution within a system must not break the interface compatibility between the components. Otherwise the system inevitably breaks. This constraint raises the question of interface compatibility, and particularly the validation of it.
 
@@ -847,7 +886,7 @@ However, design by contract is generally more difficult in concurrent and distri
 Nevertheless, interface compatibility -- regardless of how strict the notion is perceived -- is required for new components and versions thereof. New subtypes are not completely free regarding changes. Subtypes must meet the *substitution principle* by Liskov & Wing [@Lis94;@Hut16]. The principle states that `S` is a subtype of `T` if an incarnation of `T` can be safely replace by any incarnation of `S`, i.e.\ `S` respects the contract promised by `T`. An actor or microservice can consequently be substituted by another if the new component abides the contract of the old, such that the system retains its behavior [@Hut16]. 
 
 
-### Contract Verification Mechanisms
+#### Contract Verification Mechanisms
 
 
 Component substitution in actor systems can take the most basic form of behavior replacement. This primitive does not affect an actor's address. The instance defined by the new behavior transparently replaces the old. As a result, the new actor can receive the same kinds of messages as did its predecessor but fail to provide an appropriate reaction because of the new behavior. Thus, reasoning about actor systems is hard in general. The characteristic of actors to interpret every message at runtime through its behavior makes message acceptance and rejection an intrinsically dynamic effect. [sollte ich was zitieren -- stimmt das überhaupt so wie ich das hier behaupte?!]{.mind}
@@ -863,7 +902,7 @@ Static compatibility checking is of course not possible for dynamically typed la
 Dedicated programming languages for service-oriented programming like Jolie open up the possibility to check contracts through stricter restrictions regarding the definition format of service interfaces. Static type checking, at least among the components written in Jolie, is applicable without breaking the requirement of open and well-defined interfaces [@Min17]. Process calculi are already formal definitions. They are in general more restrictive than the rules of the microservice paradigm. This restrictiveness is the foundation for even stronger reasoning. If a language is based on a calculus (recall that Jolie builds upon SOCK), we are able to verify more than interface signature compatibility. One example is the sequence of component activation. 
 
 
-### Behavioral Types
+#### Behavioral Types
 
 
 Guidi & Montesi [@Gui09] define three kinds of interfaces: functional (distinguished by a name, input and output), work-flow (requiring a valid sequence of interactions) and semantic (offering semantic information about functionality through some ontology). The previous section discussed contracts of the functional kinds, which address safety properties with pre- and postconditions [@Lis94]. This notion of design by contract is fundamentally limited in its capabilities regarding liveness properties. Compatibility specifications regarding liveness must also concern the behavior, that is the sequence of actions. *Temporal logic* is the theoretical foundation for incorporating liveness [ @Siv99].  

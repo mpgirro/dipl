@@ -146,7 +146,7 @@ This approach models a remote procedure call between the two components. Calling
 
 We can express message queue interaction in a similar fashion through annotations dedicated to AMQP insertion and consumption. 
 
-
+<!--
 ### Circuit Breaker
 
 
@@ -168,9 +168,10 @@ Circuit breaker sind die am öftesten in der Literatur beschriebene Fault tolera
 ~ todo
 Bsp bzgl. Hysterix welches das Feign Bsp oben erweitert
 ~
+-->
 
 
-### Discovery
+### Service Discovery
 
 For direct communication, we require the actual address of a recipient. In certain deployment scenarios however, this information is not statically available. We can apply the concept of *service discovery* known from SOA [@Cou05] to bridge this lack of static information. The so-called *registry* is a dedicated service component tasked with providing binding information about other services. 
 

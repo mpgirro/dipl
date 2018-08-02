@@ -334,7 +334,7 @@ The second strategy is perused in Echo. Blocking operations inside actors are in
 
 We see, efficient handling of IO peruses the same strategies as the introduced delegation-based handling of synchronous actor communication.
 
-
+<!--
 ## Clustering
 
 ~ todo
@@ -355,3 +355,4 @@ The capabilities of the Actor model to support distribution was first described 
 
 ...wichtig das die mechanismen die lokal für actos gehen auch verteil gelten 
 ~
+-->
