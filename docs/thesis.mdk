@@ -112,7 +112,7 @@ blockquote   { font-style: italic; }
 <!-- arbitrary helper classes, while work in progress -->
 .findings { border: solid black 1px; padding:1em }
 .findings-title { font-family: sans-serif; font-weight: bold }
-.findings-list { margin-top: 1ex; padding-top: 0ex;}
+.findings-list { margin-top: 1ex; padding-top: 0ex; }
 .litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
@@ -130,7 +130,8 @@ blockquote   { font-style: italic; }
 .todo, .important, .delete, .red {
   color:red
 }
-.green { color: green }
+.green  { color: green }
+.greenb { color: green; font-weight: bold }
 
 <!-- TODO do I want to have the same color in PDF and HTML?
 .cite-number {
@@ -230,7 +231,7 @@ CSS Header      :
   }
   */
   .findings-title {
-    font-family: Lato !important, sans-serif;
+    font-family: Lato !important;
   }
 
 

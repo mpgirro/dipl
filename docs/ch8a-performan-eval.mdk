@@ -6,7 +6,7 @@ Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 
 We've compared the expressiveness and capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation to conduct benchmarks. The results will allow us to draw conclusions about the underlying concurrency concepts. Therefore, we require some metrics to benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we need to gather must be viable to both programming models in order to be comparable.
 
-*Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Akka-specific profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling is tailored to the actor model. 
+*Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling is tailored to the actor model. 
 
 There are few benchmark applications for microservice architectures available as of yet ....
 

@@ -5,11 +5,17 @@ Evaluation {#ch-evaluation}
 <!-- of Actors and Microservices -->
 
 
-~ Epigraph { caption: "Jeannette M. Wing"}
+~ Epigraph { caption: "Jeannette M. Wing" }
 Thinking like a computer scientist means more than being able to program a computer. It requires thinking at multiple levels of abstraction.
 ~
 
 Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by actors and microservices to achieve concurrent computation within their respective architectures. 
+
+---
+
+As we've illustrated, both the actor and microservice model qualify for expressing concurrent computation. Furthermore, both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated their specific solution strategies we applied to implement the Echo scenario system. Now we want to evaluate both models. Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. Since we concern two concurrent programming models, we will furthermore compare the key properties both models are sharing.
+
+[Agha & Kim extend the concerns on universal programming models by *portability* and *performance predictability* [@Agh99]. We will merit all four concerns attention in this concluding discussion.]{.red}
 
 
 ## Conceptual Evaluation
@@ -19,23 +25,21 @@ Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and
 ### Encapsulation and Isolation
 
 
-Actor and microservice semantics relies on the strict separation of component states. This arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. 
+Actor and microservice semantics rely on the strict separation of component states. This separation arises the need to ensure that state is conceptually well encapsulated within a component and practically isolated from the outside. Encapsulation is a concept we know from object-oriented programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an object's state. Clients are required to issue requests for the services an object offers in order to get access to or modify the object's state [@Sny93]. These "services" -- not to be confused with the concept of a *microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines* and he considers these services to be a necessity for encapsulation [@Mey97]. 
 
-Encapsulation is a concept we know from object-oriented programming. As Snyder points out, OOP usually offers mechanisms to restrict the access to an object's state. Clients are required to issue requests for the services an object offers in order to get access to or modify the object's state [@Sny93]. These "services" -- not to be confused with the concept of a *microservice* -- are what Meyer calls "well-defined interfaces" in the form of *routines* and he considers these services to be a necessity for encapsulation [@Mey97]. 
-
-Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of understood messages through the actor's behavior. For microservices, it's based on the sum of facilitated communication channels, e.g.\ the REST interfaces it exposes or the messages the microservice consumes from a message broker. Only through the interfaces can we access or modify the service's state.
+Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of the messages the actor understands through its behavior. For microservices, the interface is based on the sum of facilitated communication channels, e.g.\ the REST interfaces the service exposes or the messages it consumes from a message broker. Only through the interfaces can we access or modify the service's state.
 
 
 #### Shared and Mutable State
 
 
-One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages, i.e.\ only one message is processed at a time. This eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
+One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages. An actor can only process one message at a time. The isolated turn principle eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
 
-On the other hand, we cannot apply the same reasoning for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm we use to implement the service, state is not necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure single-threaded semantics. In general, we can therefore assume that synchronization is required to the service's internal state.
+On the other hand, we cannot apply the same reasoning for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm we use to implement the service, state is not necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access to the state is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure single-threaded semantics. In general, we can therefore assume that we need to synchronize the access to the service's internal state.
 
-However, the microservice paradigm dictates that we must avoid shared memory *between* services, as well as all kinds of shared resources in general. Since every service runs within a dedicated system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent reference sharing to joined mutable data. The channels provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
+Additionally, the microservice paradigm dictates that we must avoid shared memory *between* services, as well as all kinds of shared resources in general. Since every service runs within a dedicated system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent reference sharing to joined mutable data. The viable channel technologies provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
-Actors generally face more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while not necessarily apparent to the programmer. Especially the imperative style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
+Actors generally face more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while at the same time not being necessarily apparent to the programmer. Think of the example we discussed for Akka. We can use every arbitrary object as a message. If an object is not constructed in an immutable fashion, the message transfern introduces shared state. Especially the imperative programming style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. Erlang is an example for such a language [REF irgendwas]{.red}. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
 
 ~ todo
 Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufigkeit die jeweiligen "Notions" von shared/mutable state haben. Um Relevanz für dieses Unterkapitel herzustellen. 
@@ -44,6 +48,8 @@ Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufig
 
 #### Persistence
 
+[WEG MIT DEM PERSISTENCE ZEUGS. DAS INTERESSIERT NICHT MAL MICH ZUM LESEN...]{.greenb}
+
 
 The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. We refer to this property as *persistence*. [kann ich da was zitieren?]{.mind}
 
@@ -51,7 +57,7 @@ The encapsulation and isolation principle of actors and microservices has one mo
 Hier einen Satz Begründung das Persistence/IO potentiell langsam sein kann, und daher eine Auswirkung auf die Concurrency hat.
 ~
 
-Persisting information can be implemented in many different strategies. Database systems are one well established approach. However, each component is granted access to all other component's persistent state, if a database is shared among them. Database sharing does not only provide a simple way to skip any isolation mechanisms and bypass the components interface, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
+Persisting information can be implemented in many different strategies. Database systems are one well established approach. However, each component is granted access to all other component's persistent state, if a database is shared among them. Database sharing does provide a simple way to skip isolation mechanisms and bypass the components interface, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
 
 As a consequence, we must provide each component with a very own database if persistence is required. Ever CatalogStore instance is therefore deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene datastructure. Neither an actor runtime nor a microservice technique can enforce the persistence restriction, therefore the obligation lies with us as the programmers. Unfortunately, database systems have always been design to provide read and write access to several components concurrently. The requirement is therefore rather unintuitive.
 
@@ -75,11 +81,11 @@ Warum ist das hier wichtig bzgl "Concurrent Programming"? Begründung im ersten 
 
 Bonér [@Bon16] defines truly isolated components combined through the asynchronous message passing communication style as *decoupled* in two dimensions. On the one hand, the components are decoupled in *time*, which supports concurrent execution. On the other hand, the components are decoupled in *space*, and therefore we can execute them remotely and even move them between locations.
 
-Regarding time, actors facilitate asynchrony intrinsically through the model design. Nevertheless, actor systems tend to offer synchronous primitives on top of the asynchronous style. Programmers receive better abstractions, at the cost of increased coupling. Microservices are free to choose the IPC style, as long as the IPC mechanism is based on message passing rather than shared memory, with respective effects on coupling.
+Regarding time, actors facilitate asynchrony intrinsically through the model design. Nevertheless, actor systems tend to offer synchronous primitives on top of the asynchronous style. Programmers receive better abstractions, at the cost of increased coupling. Microservices are free to choose the IPC style, as long as the IPC mechanism is based on message passing rather than shared memory, further reducing the coupling.
 
 Regarding space, actors are conceptually fully isolated. However, in practice ensuring true isolation is difficult, especially for library-based actor implementations. We've discussed the conceptional problems for Akka in detail in Chapter [#ch-actor-impl]. In the end, the programmer have to guarantee the isolation by complying to programming conventions. Infringing these conventions introduces and exposes shared mutable state, which is a violation of the actor model. Also, shared mutability increases the coupling to the sharing component, both in time and in space. 
 
-Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. The only other coupling effect originates from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) within the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
+Microservices have an inherent advantage regardless of the chosen programming model. The only true paradigm requirement is the avoidance of shared memory sections with other processes. Either the memory boundaries enforced by the operating system, or the hardware separation resulting from distribution guarantees separation and spacial decoupling. Besides, coupling is so low that each microservice can be implemented using an entirely different technology stack. The only other coupling effect that can originate comes from a shared code base. For example, we facilitate a custom `core` library in Echo. `core`  increases the service's coupling relative to the library. We've implemented all domain-specific functionality, as well as *data transfer objects* (DTO) within the `core`. The DTOs are the domain objects we use as messages. Therefore, all microservices are coupled among each other by the DTO classes. Actors suffer from the coupling problem unequally more. Every actor is intrinsically bound to its runtime system. Different interfaces to an actor system can exist. Akka demonstrates interface diversity for Java and Scala. Yet, the actors cannot escape the coupling to Akka's code base. Additionally, Echo's actors are also coupled by `core`, just like the services in the MSA variant. 
 
 ~ green
 
@@ -90,6 +96,15 @@ Echo's commonly used `core` library, wrapping most domain specific logic, is gen
 ~
 
 This two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on the actor system for versatile aspects, down to the basic model primitives. 
+
+~ Findings
+[Main findings]{.findings-title}
+
++ Actors and microservices both encapsulate state exclusively. The resulting isolation provides the foundation for concurrent, parallel and distributed execution without synchronization.
++ Actor libraries require programmers to merit special attention to ensure isolation. Microservices are inherently isolated through their separate OS process boundries.
++ Actors are coupled relative to their runtime ecosystem. Coupling between microservices is so low that we can utilize heterogenous technologies for each service. 
+{.findings-list}
+~
 
 
 ### Communication and Message Routing
