@@ -4,11 +4,14 @@
 Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
-We've compared the expressiveness capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation to conduct a benchmark. The results will allow us to draw conclusions about the unterlying concurrency concept. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we will measure the efficiency in terms of system performance.
-
-... Hence we require common metrics that we can gather in both system implementations to be able to compare performance.
+We've compared the expressiveness and capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation to conduct benchmarks. The results will allow us to draw conclusions about the underlying concurrency concepts. Therefore, we require some metrics to benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we need to gather must be viable to both programming models in order to be comparable.
 
 *Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Akka-specific profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling is tailored to the actor model. 
+
+There are few benchmark applications for microservice architectures available as of yet ....
+
+
+...
 
 Recent works report that microservice benchmarks are yet at an early stafe. There is yet a lack of benchmark systems as well as commonly established evaluation metrics. [REF?!]{.red}
 
@@ -96,23 +99,23 @@ We define a *skinny JAR* as ...
 ...and a *fat JAR* as ...
 
 ~ center
-|---------------------|------------|-----------------| -------------|
-| Application         | LoC        | Skinny JAR (KB) | Fat JAR (KB) |
-+---------------------+------------+----------------:+-------------:+
-| Actor engine (Akka) | [??]{.red} | 1442.393        | 77106.239    |
-| --------------------|------------|-----------------|--------------|
-| CatalogStore (MS)   | [??]{.red} | 48.243          | 89319.380    |
-| --------------------|------------|-----------------|--------------|
-| IndexStore (MS)     | [??]{.red} | 16.117          | 83406.930    |
-| --------------------|------------|-----------------|--------------|
-| Searcher (MS)       | [??]{.red} | 15.982          | 81644.563    |
-| --------------------|------------|-----------------|--------------|
-| Web Crawler (MS)    | [??]{.red} | 17.161          | 83407.983    |
-| --------------------|------------|-----------------| -------------|
-| Parser (MS)         | [??]{.red} | 17.913          | 83408.733    |
-| --------------------|------------|-----------------|--------------|
-| Updater (MS)        | [??]{.red} | [??]{.red}      | [??]{.red}   |
-| --------------------|------------|-----------------| -------------|
+|---------------------|------|-----------------| -------------|
+| Application         | LoC  | Skinny JAR (KB) | Fat JAR (KB) |
++---------------------+------+----------------:+-------------:+
+| Actor engine (Akka) | 4445 | 1577.871        | 77301.418    |
+| --------------------|------|-----------------|--------------|
+| CatalogStore (MS)   | 1739 | 53.897          | 89176.382    |
+| --------------------|------|-----------------|--------------|
+| IndexStore (MS)     | 619  | 21.501          | 83468.697    |
+| --------------------|------|-----------------|--------------|
+| Searcher (MS)       | 570  | 20.118          | 81705.127    |
+| --------------------|------|-----------------|--------------|
+| Web Crawler (MS)    | 614  | 21.310          | 83468.508    |
+| --------------------|------|-----------------| -------------|
+| Parser (MS)         | 606  | 22.010          | 83469.654    |
+| --------------------|------|-----------------|--------------|
+| Updater (MS)        | 577  | 20.903          | 83468.101    |
+| --------------------|------|-----------------| -------------|
 {  }
 ~
 
@@ -213,6 +216,13 @@ Setup:
     * should be way faster (link to official benchmarks)
     * Declarative style with Spring's `@RabbitListener` has overhead, but should not be so much (REST is not that effected)
 
+### Relevance of the Benchmark
+
+Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion.
+
+~ todo
+Hier noch ein paar Wörter ob ich etwas gefunden habe bzgl der sync/async Geschichte
+~
 
 ### Threats to Validity
 

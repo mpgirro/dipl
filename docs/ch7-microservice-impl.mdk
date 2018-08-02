@@ -211,11 +211,12 @@ noch einen schönen Abschluss(ab)satz
 
 
 ~ Findings
-*Main findings*:
+[Main findings]{.findings-title}
 
 + Different communication styles require different communication channels (synchronous via REST, asynchronous via AMQP).
 + Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. 
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
+{.findings-list}
 ~
 
 

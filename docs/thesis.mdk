@@ -111,6 +111,8 @@ blockquote   { font-style: italic; }
 
 <!-- arbitrary helper classes, while work in progress -->
 .findings { border: solid black 1px; padding:1em }
+.findings-title { font-family: sans-serif; font-weight: bold }
+.findings-list { margin-top: 1ex; padding-top: 0ex;}
 .litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
@@ -171,6 +173,7 @@ blockquote   { font-style: italic; }
 CSS Header      :
   @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
   @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+  @import url(https://fonts.googleapis.com/css?family=Lato);
   body.madoko {
     font-family: "Crimson Text", serif;
     font-size: 16px;
@@ -226,6 +229,9 @@ CSS Header      :
     margin-top: 0; 
   }
   */
+  .findings-title {
+    font-family: Lato !important, sans-serif;
+  }
 
 
 <!-- HTML -->

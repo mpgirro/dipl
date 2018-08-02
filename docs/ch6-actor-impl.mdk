@@ -92,11 +92,12 @@ It is worth pointing out that though the actor model is Scala's standard concurr
 
 
 ~ Findings
-*Main findings*:
+[Main findings]{.findings-title}
 
 + Library-based actor systems cannot ensure isolation by themselves.
 + Guaranteeing message immutability is the obligation of the programmer.
 + Message interoperability between programming languages is challenged by data type compatibility.
+{.findings-list}
 ~
 
 
@@ -248,11 +249,12 @@ Though Akka Typed provides static type safe messaging, it still has its limits. 
 We've found that compile-time message safety restrictions, apart from active objects, are a rare capability among actor systems. However, the Akka Typed library is in the current Akka version 2.5 still under active research and marked as "may change", thus to be considered experimental.
 
 ~ Findings
-*Main findings*:
+[Main findings]{.findings-title}
 
 + Though the actor model is build around asynchronous messaging, runtime systems can provide additional abstractions facilitating synchronous communication. We then require either additional concurrency models (futures) or additional actors (delegation).
 + An explicit sense of time is contrary to the actor concept. Timing must be modeled in terms of messages.
 + The actor model intrinsically types received messages dynamically. Hence, sending messages is often implemented rather weakly-typed in actor systems. We can achieve stronger typization for sending messages by type-restricting the actor addresses.
+{ .findings-list }
 ~
 
 

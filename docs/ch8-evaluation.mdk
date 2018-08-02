@@ -268,6 +268,7 @@ The distributed object approach has many similarities to concepts we've already 
 
 Table [#tab-dispatch-semantics-capabilities] gives an overview of the available dispatch semantics capabilities that we will evaluate in more detail for every concept. The semantics are based on Akka's `UntypedActor`{language:java} for actors and `TypedActor`{language:java} (it offers type safety for message passing) for active objects, Java RMI [@OracleJavaRMI] for distributed objects and Java/Spring-based mechanisms for microservices.
 
+~ Begin Center
 ~ Begin TableFigure { #tab-dispatch-semantics-capabilities; caption: "Dispatch semantics capability matrix for Akka (actors/active objects), Java RMI (distributed objects) and Spring (microservices)"; page-align:here; width:100%}
 |------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 | Construct        | Past Type                           | Now Type                            | Future Type                          |
@@ -287,6 +288,7 @@ Table [#tab-dispatch-semantics-capabilities] gives an overview of the available 
 |------------------|-------------------------------------|-------------------------------------|--------------------------------------|
 { width:100%  }
 ~ End TableFigure
+~ End Center
 
 
 <!--
@@ -383,12 +385,13 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 ~
 
 ~ Findings
-*Main findings*:
+[Main findings]{.findings-title}
 
 + Actors and microservices qualify for distributed communication in a transparent way.
 + Distributed objects face problems in their abstraction of distribution.
 + Actor- and microservice based programming mitigates the problematic abstraction of transparent distribution compared to DOs.
 + Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
+{.findings-list}
 ~
 
 
@@ -499,7 +502,7 @@ Their ability to *scale* is arguably one of the most relevant reasons given in t
 
 Table [#tab-scalability-compatibility-matrix] summarizes scalability variants provided by Echo. The subsequent sections will discuss the aspects in detail. 
 
-~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Scalability compatibility matrix"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of the actor- and microservice model"; page-align:here; width:100%}
 |-------------------------|-----------------------------------|-------------------------------|
 | Scalability Form        | Echo/Akka                         | Echo/MSA                      |
 +-------------------------+-----------------------------------+-------------------------------+
@@ -949,8 +952,9 @@ An alternative approach towards verifying composition is to migrate from the sin
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.*\ [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.*\ [@Hut16] and Ancona *et al.*\ [@Anc16].
 
 ~ Findings
-*Main findings*:
+[Main findings]{.findings-title}
 
 * Microservices lack the theoretical framework and tool support to provide type safety between services. 
 + [TODO]{.red}
+{.findings-list}
 ~
