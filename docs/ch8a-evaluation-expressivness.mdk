@@ -9,18 +9,28 @@ Evaluation {#ch-evaluation}
 Thinking like a computer scientist means more than being able to program a computer. It requires thinking at multiple levels of abstraction.
 ~
 
+
+
+---
+
 Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated that different solution strategies have to be applied as a result of inherent differences. This chapter will compare and evaluate the conceptualities applied by actors and microservices to achieve concurrent computation within their respective architectures. 
 
 ---
 
-As we've illustrated, both the actor and microservice model qualify for expressing concurrent computation. Furthermore, both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated their specific solution strategies we applied to implement the Echo scenario system. Now we want to evaluate both models. Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. Since we concern two concurrent programming models, we will furthermore compare the key properties both models are sharing.
+As we've illustrated, both the actor and microservice model qualify for expressing concurrent computation. Furthermore, both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. 
+
+Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated their specific solution strategies we applied to implement the Echo scenario system. Now we want to evaluate both models. 
+
+Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. Since we concern two concurrent programming models, we will furthermore compare the key properties both models are sharing as well as the resulting capabilities.
 
 [Agha & Kim extend the concerns on universal programming models by *portability* and *performance predictability* [@Agh99]. We will merit all four concerns attention in this concluding discussion.]{.red}
 
 
-## Conceptual Evaluation
+## Expressiveness and Conceptual Capabilities
 
-...
+
+Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated the solution strategies of each model and their expression through programming interfaces. This section will focus on comparing the capabilities that result from model properties and expressed [techniques/capabilities/???]{.red}. Furthermore, we will evaluate the expressiveness by analysing metrics of the software artifacts resulting from expressing computation through the actor and microservice programming model.  
+
 
 ### Encapsulation and Isolation
 
@@ -713,7 +723,7 @@ Separation of Concerns:
 * [@Weg90] "Concepts and Paradigms of Object-Oriented Programming"
     * "Splitting a large task into components is a time-honored method of managing complexity, variously referred to as "divide and conquer" and "separation of concerns"."
 * SoP between behavior and deployment part of Jolie programs, siehe [@Mon14;@Gui17]
-* Supervision and fault isolation --> good SoC [@Roe15], for "normal" messaging and supervision orthogonal and can evolve separately
+* Supervision and fault isolation -> good SoC [@Roe15], for "normal" messaging and supervision orthogonal and can evolve separately
     * failed children can be re-created from its `Props`{language:scala}, such that supervisor don't need special knowledge about their instantiation (argument, etc)
 * IoC generally facilitates SoC 
     * actor systems ähneln IoC container
@@ -984,7 +994,9 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 
 ### Software Artifact Metrics
 
-DAS HIER SOLLTE ICH EINFACH SCHON BEI DER "conceptual comparison" OBEN SCHREIBEN. 
+Chapters [#ch-actor-impl] and [#ch-microservice-impl] covered the expression of solution strategies for programming actors and microservices. The previous sections compared the capabilities resulting from model properties and the expressed strategies. Here, we want to merit attention to the effects that the programming models have on the resulting software artifacts.
+
+We concern ourself with three metrics: the *lines of code* (LoC) it took to express the respective functionality of an artifact in Echo, the size of the resulting artifact when compiling code, and the *startup time* (ST) of an artifact. 
 
 ~ todo
 LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
@@ -1005,30 +1017,35 @@ Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normale
 
 ...
 
-We define a *skinny JAR* as ...
+* We define a *skinny JAR* (sJAR) as the archive containing only the ...
+* Subsequently, a *fat JAR* (fJAR) is a ...
+* Lines of Code (LoC)
+* Startup Time (SuT)
 
-...and a *fat JAR* as ...
-
-~ center
-|---------------------|------|-----------------| -------------|
-| Application         | LoC  | Skinny JAR (KB) | Fat JAR (KB) |
-+---------------------+------+----------------:+-------------:+
-| Actor engine (Akka) | 4445 | 1577.871        | 77301.418    |
-| --------------------|------|-----------------|--------------|
-| CatalogStore (MS)   | 1739 | 53.897          | 89176.382    |
-| --------------------|------|-----------------|--------------|
-| IndexStore (MS)     | 619  | 21.501          | 83468.697    |
-| --------------------|------|-----------------|--------------|
-| Searcher (MS)       | 570  | 20.118          | 81705.127    |
-| --------------------|------|-----------------|--------------|
-| Web Crawler (MS)    | 614  | 21.310          | 83468.508    |
-| --------------------|------|-----------------| -------------|
-| Parser (MS)         | 606  | 22.010          | 83469.654    |
-| --------------------|------|-----------------|--------------|
-| Updater (MS)        | 577  | 20.903          | 83468.101    |
-| --------------------|------|-----------------| -------------|
+~ Begin Center
+~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of Code (LoC), byte code size of fat and skinny JAR, and Startup Time (ST) of Echo artifacts"; page-align:here }
+|---------------------|------|-----------| ----------| -----------|
+| Artifact            | LoC  | sJAR (KB) | fJAR (KB) | ST (s)     |
++---------------------+-----:+----------:+----------:+-----------:+
+| Actor engine (Akka) | 4445 | 1577.871  | 77301.418 | [??]{.red} |
+| --------------------|------|-----------|-----------|------------|
+| CatalogStore (MS)   | 1739 | 53.897    | 89176.382 | [??]{.red} |
+| --------------------|------|-----------|-----------|------------|
+| IndexStore (MS)     | 619  | 21.501    | 83468.697 | [??]{.red} |
+| --------------------|------|-----------|-----------|------------|
+| Searcher (MS)       | 570  | 20.118    | 81705.127 | [??]{.red} |
+| --------------------|------|-----------|-----------|------------|
+| Web Crawler (MS)    | 614  | 21.310    | 83468.508 | [??]{.red} |
+| --------------------|------|-----------| ----------|------------|
+| Parser (MS)         | 606  | 22.010    | 83469.654 | [??]{.red} |
+| --------------------|------|-----------| ----------|------------|
+| Registry (MS)       | 290  | 9.415     | 90652.021 | [??]{.red} |
+| --------------------|------|-----------|-----------|------------|
+| Updater (MS)        | 577  | 20.903    | 83468.101 | [??]{.red} |
+| --------------------|------|-----------| ----------|------------|
 {  }
-~
+~ End TableFigure
+~ End Center
 
 ~ todo
 Hinweis das alle Executables die selbe `core` library verwenden, diese daher auch in jedem fat JAR enthalten ist.

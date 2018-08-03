@@ -26,7 +26,7 @@ Doctor Thesis     : false
 Master Degree     : dipl. <!-- dipl. / rer.nat. / rer.soc.oec. / master -->
 Doctor Degree     : <!-- rer.nat. / techn. / rer.soc.oec. -->
 Script            : style/mathjax-font.js
-Toc depth         : 4
+Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 Bib style         : style/keynat.bst
@@ -400,8 +400,8 @@ Maximilian Irro
 [INCLUDE=ch5-scenario]
 [INCLUDE=ch6-actor-impl]
 [INCLUDE=ch7-microservice-impl]
-[INCLUDE=ch8-evaluation]
-[INCLUDE=ch8a-performan-eval]
+[INCLUDE=ch8a-evaluation-expressivness]
+[INCLUDE=ch8b-evaluation-efficiency]
 [INCLUDE=ch9-conclusion]
 
 # Benchmark Feed { @h1="A"; #ch-benchmark-feed }
