@@ -784,6 +784,14 @@ From a theoretical point of view, any safety property can be violated by a finit
 Ein paar einführende Worte
 ~
 
+~ lit
+* [@Eyt07] "Towards a framework and a benchmark for testing tools for multi-threaded programs"
+    * Model checking is a family of techniques, based on systematic and exhaustive state-space exploration, for verifying the properties of concurrent systems. Properties are typically expressed as invariants (predicates) or formulas in a temporal logic. 
+    * For concurrent programs, escape analysis,suchas [14], is used to determinewhich variables are thread-local and which can be shared. This information can be used to optimize the model or to guide the placement of instrumentation used by dynamic testing techniques.
+    * Race and deadlock detection: A deadlock is defined as a state where, in a collection of threads, each thread tries to acquire a lock already held by one of the other threads in the collection. Hence, the threads block each other in a cyclic manner. Tools exist that can examine traces for evidence of deadlock potentials [42,43]. Specifically, they look for cycles in lock graphs.
+
+~
+
 #### Actor Model and Process Calculi
 
 
@@ -972,4 +980,56 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 * Microservices lack the theoretical framework and tool support to provide type safety between services. 
 + [TODO]{.red}
 {.findings-list}
+~
+
+### Software Artifact Metrics
+
+DAS HIER SOLLTE ICH EINFACH SCHON BEI DER "conceptual comparison" OBEN SCHREIBEN. 
+
+~ todo
+LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
+~
+
+Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
+
+
+...
+
+~ todo
+Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
+~
+
+... JAR = __Java__ __Ar__chive
+
+...Fat JAR = self-sufficient archive, contains classes and dependencies, executable
+
+...
+
+We define a *skinny JAR* as ...
+
+...and a *fat JAR* as ...
+
+~ center
+|---------------------|------|-----------------| -------------|
+| Application         | LoC  | Skinny JAR (KB) | Fat JAR (KB) |
++---------------------+------+----------------:+-------------:+
+| Actor engine (Akka) | 4445 | 1577.871        | 77301.418    |
+| --------------------|------|-----------------|--------------|
+| CatalogStore (MS)   | 1739 | 53.897          | 89176.382    |
+| --------------------|------|-----------------|--------------|
+| IndexStore (MS)     | 619  | 21.501          | 83468.697    |
+| --------------------|------|-----------------|--------------|
+| Searcher (MS)       | 570  | 20.118          | 81705.127    |
+| --------------------|------|-----------------|--------------|
+| Web Crawler (MS)    | 614  | 21.310          | 83468.508    |
+| --------------------|------|-----------------| -------------|
+| Parser (MS)         | 606  | 22.010          | 83469.654    |
+| --------------------|------|-----------------|--------------|
+| Updater (MS)        | 577  | 20.903          | 83468.101    |
+| --------------------|------|-----------------| -------------|
+{  }
+~
+
+~ todo
+Hinweis das alle Executables die selbe `core` library verwenden, diese daher auch in jedem fat JAR enthalten ist.
 ~
