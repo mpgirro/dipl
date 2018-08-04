@@ -996,57 +996,59 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 
 Chapters [#ch-actor-impl] and [#ch-microservice-impl] covered the expression of solution strategies for programming actors and microservices. The previous sections compared the capabilities resulting from model properties and the expressed strategies. Here, we want to merit attention to the effects that the programming models have on the resulting software artifacts.
 
-We concern ourself with three metrics: the *lines of code* (LoC) it took to express the respective functionality of an artifact in Echo, the size of the resulting artifact when compiling code, and the *startup time* (ST) of an artifact. 
+We concern ourself with three metrics: the *lines of code* (LoC) it took to express the respective functionality, the size of the resulting artifacts, and the *startup time* (ST) of each artifact. 
 
 ~ todo
 LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
 ~
 
-Akka actors are part of a monolithic application, therefore the metrics are given for the whole application. The Spring microservices are independent programs, so the metrics can be given for each service engine separately.
+All Akka actors are compiled into a monolithic application, therefore the metrics refere to the resulting monolith. The Spring Boot microservices are independent programs, so we can give the metrics for each service engine separately.
 
+We measure size in terms of bytes of JAR (__J__ava __Ar__chive) files. There are several ways to package a JAR. Two kinds are of relevance to us. We define a *skinny JAR* (sJAR) as the archive containing merely the byte code of a program's source code. Subsequently, we use *fat JAR* (fJAR) for an archive containing the data of the skinny JAR version, together with it's direct dependencies (e.g.\ other libraries in their skinny JAR version), and the deployment information required to execute the application on a standard Java runtime environment. 
 
-...
+Startup time (ST) is an indication of the heavy-weightness of a construct, at least upon instantiation. 
 
-~ todo
-Tabelle: Byte code size der JAR files vom Akka Monolithen und aller MS. "Normales" JAR und all-in-one JAR?
-~
-
-... JAR = __Java__ __Ar__chive
-
-...Fat JAR = self-sufficient archive, contains classes and dependencies, executable
-
-...
-
-* We define a *skinny JAR* (sJAR) as the archive containing only the ...
-* Subsequently, a *fat JAR* (fJAR) is a ...
-* Lines of Code (LoC)
-* Startup Time (SuT)
+Table [#tab-artifact-metrics] gives the measures metrics for our Echo artifacts. As a reminder, the Core artifact is the library implementing the domain specific logic. Hence, Core's skinny JAR is part of the fat JARs of all microservice engines as well as the Akka monolithic engine. The Web application is the frontend client that both Echo system implementations have to serve their functionality too. The LoC metric of the Web application is merely given as a reference relative to the other artifacts.
 
 ~ Begin Center
 ~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of Code (LoC), byte code size of fat and skinny JAR, and Startup Time (ST) of Echo artifacts"; page-align:here }
-|---------------------|------|-----------| ----------| -----------|
-| Artifact            | LoC  | sJAR (KB) | fJAR (KB) | ST (s)     |
-+---------------------+-----:+----------:+----------:+-----------:+
-| Actor engine (Akka) | 4445 | 1577.871  | 77301.418 | [??]{.red} |
-| --------------------|------|-----------|-----------|------------|
-| CatalogStore (MS)   | 1739 | 53.897    | 89176.382 | [??]{.red} |
-| --------------------|------|-----------|-----------|------------|
-| IndexStore (MS)     | 619  | 21.501    | 83468.697 | [??]{.red} |
-| --------------------|------|-----------|-----------|------------|
-| Searcher (MS)       | 570  | 20.118    | 81705.127 | [??]{.red} |
-| --------------------|------|-----------|-----------|------------|
-| Web Crawler (MS)    | 614  | 21.310    | 83468.508 | [??]{.red} |
-| --------------------|------|-----------| ----------|------------|
-| Parser (MS)         | 606  | 22.010    | 83469.654 | [??]{.red} |
-| --------------------|------|-----------| ----------|------------|
-| Registry (MS)       | 290  | 9.415     | 90652.021 | [??]{.red} |
-| --------------------|------|-----------|-----------|------------|
-| Updater (MS)        | 577  | 20.903    | 83468.101 | [??]{.red} |
-| --------------------|------|-----------| ----------|------------|
+|-------------------|------|-----------| ----------| ---------|
+| Artifact          | LoC  | sJAR (KB) | fJAR (KB) | ST (sec) |
++-------------------+-----:+----------:+----------:+---------:+
+| Akka monolith     | 4445 | 965.3     | 76 688.8  | 5.5      |
+| ------------------|------|-----------|-----------|----------|
+| CatalogStore (MS) | 1739 | 53.9      | 89 176.3  | 14.6     |
+| ------------------|------|-----------|-----------|----------|
+| IndexStore (MS)   | 619  | 21.5      | 83 468.7  | 8.8      |
+| ------------------|------|-----------|-----------|----------|
+| Searcher (MS)     | 570  | 20.1      | 81 705.1  | 8.0      |
+| ------------------|------|-----------|-----------|----------|
+| Web Crawler (MS)  | 614  | 21.3      | 83 468.5  | 9.0      |
+| ------------------|------|-----------| ----------|----------|
+| Parser (MS)       | 606  | 22.0      | 83 469.6  | 8.3      |
+| ------------------|------|-----------| ----------|----------|
+| Registry (MS)     | 290  | 9.4       | 90 652.0  | 9.5      |
+| ------------------|------|-----------|-----------|----------|
+| Updater (MS)      | 577  | 20.9      | 83 468.1  | 8.8      |
+| ------------------|------|-----------| ----------|----------|
+| Core (library)    | 4614 | 275.9     | &mdash;   | &mdash;  |
+| ------------------|------|-----------| ----------|----------|
+| Web (frontend)    | 3144 | &mdash;   | &mdash;   | &mdash;  |
+| ------------------|------|-----------| ----------|----------|
 {  }
 ~ End TableFigure
 ~ End Center
 
 ~ todo
-Hinweis das alle Executables die selbe `core` library verwenden, diese daher auch in jedem fat JAR enthalten ist.
+Analyse der Tabellen-Einträge
 ~
+
+The Akka monolithic engine has of course by far the most lines of code, since a monolith implements the whole system within a single artifact, while the microservices merely implement parts of the overall system each. The overall LoC sum of all microservices is 4915. We see, although Spring provides very expressive declarative programming APIs, the Akka interface is still a bit less verbose.
+
+Even more interrestingly, each microservice engine takes considerably more time to startup than the entire Akka monolithic engine. The inversion of control model that powers the declarative programming style of Spring adds considerable runtime overhead. 
+
+The summized skinny JAR size of all microservice code bases is 169.1 KB [STIMMT DAS WIRKLICH?!]{.red}, which is considerably more compared to the 965.3 KB of the skinny Akka monolith. We've found multiple reasons for this significant difference in size. The actor code base is written in Scala, and we make heavy use of `case class`{language:scala} constructs. Scala's `case class`{language:scala}es are very compact class definitions that are mostly written in a single line of code. Instantiated objects are immutable, hence they suit very well for the data transfer objects that are exchanged in actor programming. Though these class definitions are compact, they still compile to dedicated `.class` files. On the other hand, all DTO classes between microservices are part of the shared Core library. The byte code sizes of these classes subsequently do not participate to the skinny JAR size of each microservice's artifact. Additionally, Scala is primarily a functional programming language, and usage of so-called *anonymous functions* is relatively common. Since it compiles to the JVM, these anonymous functions are compiled into dedicated `.class` files too [@Ode16]. Finally, Spring provides many utility functionality transparently, for example DTO class to JSON marshalling. Akka HTTP requires us to define JSON serializer classes manually with relatively significant code size. 
+
+The fat JAR sizes ...
+
+

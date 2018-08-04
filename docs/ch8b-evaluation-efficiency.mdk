@@ -117,6 +117,10 @@ Setup:
 * Indexing experiments are started on empty catalog/index
 * Retrieval experiments are started on filled index
 
+...
+
+* Spring Boot uses the thread pool of the embedded web server. In our case, *Undertow* [REF?]{.red} is the web server.
+
 
 ### Simulation Experiment 1: Indexing Subsystem
 
