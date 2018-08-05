@@ -26,7 +26,7 @@ Doctor Thesis     : false
 Master Degree     : dipl. <!-- dipl. / rer.nat. / rer.soc.oec. / master -->
 Doctor Degree     : <!-- rer.nat. / techn. / rer.soc.oec. -->
 Script            : style/mathjax-font.js
-Toc depth         : 4
+Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 Bib style         : style/keynat.bst

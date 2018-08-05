@@ -1,5 +1,5 @@
 
-A Concurrent System Scenario {#ch-scenario}
+Implementation of a Concurrent System {#ch-scenario}
 ============================
 
 
@@ -7,6 +7,11 @@ A Concurrent System Scenario {#ch-scenario}
 ~ Epigraph { caption: "Eric S. Raymond"}
 Every good work of software starts by scratching a developer's personal itch.
 ~
+
+
+
+
+## A Concurrent System Scenario
 
 ~ lit 
 * Introduction to Information Retrieval <https://nlp.stanford.edu/IR-book/>
@@ -36,13 +41,13 @@ Their construction is led by two basic requirements [@Man08]:
 * Efficiency
   : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-datedness of search results increases with the efficiency of this phase. 
 
-## Domain Description
+### Domain Description
 
 ~ todo
 kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds, sodass daraus ersichtlich wird welche Aufgaben eine entsprechende Suchmaschine (= Datenaggregierungs- und Abruf-System) erfüllen muss um ihre Dienstleistung anbieten zu können.
 ~
 
-## System Components
+### System Components
 
 
 At the core, the basic architecture and components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy" and a more modern interpretation of associated design principles given by Coulouris *et al.*\ [@Cou05].  
@@ -94,7 +99,7 @@ Task units ending in *\*Store* are stateful, all others stateless. When dataflow
 
 ~
 
-## Concurrent Concerns and Message Flow
+### Concurrent Concerns and Message Flow
 
 
 In general, all previously described components have to be executed concurrently. However, from a more general perspective, there are certain concerns that have to be met in a concurrent fashion, in order to ensure a "running" search engine. These involve multiple task units, and therefore these have to corporate in terms of an information flow between them.
@@ -118,7 +123,7 @@ In general, all previously described components have to be executed concurrently
 For example, the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. Updating is a regular task. In a large enough database of feeds, we can expect that nearly all the time there is an update in progress. These update tasks however should not interfere or limit other regular tasks, especially those with time constraints. All user interactions is constraint by time, therefore [ACHTUNG: hier habe ich den satz verändet, daher liest sich das jetzt so als würde sich die sync. und trans. negation of die time constraint tasks beziehen]{.red} synchronization or transactions are generally an undesirable and less expedient path  [@Cou05].
 
 
-## Scope and Limitations
+### Scope and Limitations
 
 ~ todo
 Hier beschreiben was die Implementierungen leisten können sollen, und was nicht

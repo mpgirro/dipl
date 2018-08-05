@@ -1,6 +1,6 @@
 
-Microservice-based Implementation {#ch-microservice-impl}
-=================================
+## Microservice-based Implementation {#ch-microservice-impl}
+
 
 
 ~ Epigraph { caption: "Ian Robinson"}
@@ -11,7 +11,7 @@ Be of the web, not behind the web.
 This chapter covers a microservice architecture approach used to implement the concurrent system outlined in Chapter [#ch-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
 
 
-## Service Technology Stack
+### Service Technology Stack
 
 
 Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOC languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
@@ -28,7 +28,7 @@ mehr?
 ~
 
 
-## Internal Service Concurrency
+### Internal Service Concurrency
 
 
 The Paradigm does not dictate any restriction on internal service structure. A service is free to be a concurrent unit internally, and to utilize any concurrency mechanism it sees fit (including actors). 
@@ -65,10 +65,10 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 -->
 
 
-## Isolation and Persistence
+### Isolation and Persistence
 
 
-Each microservices is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention laid out by the paradigm, services refrain from implementing shared memory sections among them. Synchronization is therefore never required among components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
+Each microservice is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention laid out by the paradigm, services refrain from implementing shared memory sections among them. We therefore never require synchronization among the components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
 
 Access to the database is usually supported by the database management systems in a concurrent way. As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
@@ -79,7 +79,7 @@ Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" her
 ~
 
 
-## Communication Mechanisms
+### Communication Mechanisms
 
 
 ~ todo
@@ -89,7 +89,7 @@ Hinweis das Daten IMMER (bei REST wie AMQP) in JSON serialisiert werden -> keine
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
-Communication has to happen via an inter-process communication mechanism. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate any specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
+Communication inn microservice architectures happens via inter-process communication mechanisms. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate a specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
 
 We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as prime (and often sole) example of valid communication channels throughout the literature. However, the author has experienced it to be practical only in certain situations. As REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo uses it for all direct user interaction issued through the Web interface, i.e.\ Catalog exploration (`G` &rightleftarrows; `D`) and running search queries on the Index (`G` &rightleftarrows; `S` &rightleftarrows; `I`).
 
@@ -113,7 +113,7 @@ The queue becomes an intermediate for all asynchronous messages. Senders push me
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. In fact, the messages that Echo's services are consuming from the AMQP queue can also be sent to the services directly via HTTP. All services offer respective REST interfaces. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for production as well as maintenance operations. 
 
 
-### Programming Abstractions {#src-ms-programming-abstractions}
+#### Programming Abstractions {#src-ms-programming-abstractions}
 
 
 Linguistic support is provided by Spring in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting as this style is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, so that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. Therefore, we can still apply deployment configuration without the need to recompile. The downside is additional runtime overhead and the lack of static compatibility checking. 
@@ -171,7 +171,7 @@ Bsp bzgl. Hysterix welches das Feign Bsp oben erweitert
 -->
 
 
-### Service Discovery
+#### Service Discovery
 
 For direct communication, we require the actual address of a recipient. In certain deployment scenarios however, this information is not statically available. We can apply the concept of *service discovery* known from SOA [@Cou05] to bridge this lack of static information. The so-called *registry* is a dedicated service component tasked with providing binding information about other services. 
 
@@ -191,7 +191,7 @@ In contrast, message queues have the major benefit that a sender is able to disp
 We need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
 
-### Load Balancing {#sec-ms-load-balancing}
+#### Load Balancing {#sec-ms-load-balancing}
 
 
 The idea of distributing work (*load*) between several instances of the same task unit is called *load balancing* (LB). The goal is to optimally utilize the resources of all instances and prevent that a single unit is overloaded. Load balancing maximizes throughput and minimizes response time of the overall system [@Ben90].
@@ -219,7 +219,7 @@ noch einen schönen Abschluss(ab)satz
 {.findings-list}
 ~
 
-## Fault tolerance
+### Fault tolerance
 
 Since the microservice model generally lacks a supervision concept, fault tolerance is a concern that must be handled directly by each service individually.
 
@@ -228,7 +228,7 @@ Hier bisi was zu Fault tolerance schreiben. Kann ich auch ein Hysterix Bsp bring
 ~
 
 
-## Deployment {#sec-ms-deployment}
+### Deployment {#sec-ms-deployment}
 
 
 ~ todo
