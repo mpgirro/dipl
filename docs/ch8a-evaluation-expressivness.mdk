@@ -26,10 +26,20 @@ Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing model
 [Agha & Kim extend the concerns on universal programming models by *portability* and *performance predictability* [@Agh99]. We will merit all four concerns attention in this concluding discussion.]{.red}
 
 
-## Expressiveness and Conceptual Capabilities
+## Expressiveness and Capabilities
 
 
 Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated the solution strategies of each model and their expression through programming interfaces. This section will focus on comparing the capabilities that result from model properties and expressed [techniques/capabilities/???]{.red}. Furthermore, we will evaluate the expressiveness by analysing metrics of the software artifacts resulting from expressing computation through the actor and microservice programming model.  
+
+~ todo
+Der Teil unten braucht dringend irgendeine Literatur Grundlage. Sonst bin ich auf zu dünnem Eis.
+~
+
+Expressiveness in the literature is often discussed in the light of formal methods to reduce syntax while preserving the expressed semantics. [CITATION NEEDED!!]{.red}
+
+We will employ a slightly different view of expressivness. Since we regard two programming models, we will assess the capabilities that can be expressed using the actor and microservice programming models.
+
+
 
 
 ### Encapsulation and Isolation
@@ -110,7 +120,7 @@ This two notions, high cohesion and low coupling, allow us to reason about the *
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Actors and microservices both encapsulate state exclusively. The resulting isolation provides the foundation for concurrent, parallel and distributed execution without synchronization.
++ Actors and microservices both encapsulate state exclusively. The resulting isolation provides the foundation for concurrent, parallel and distributed execution without synchronization between the task units.
 + Actor libraries require programmers to merit special attention to ensure isolation. Microservices are inherently isolated through their separate OS process boundries.
 + Actors are coupled relative to their runtime ecosystem. Coupling between microservices is so low that we can utilize heterogenous technologies for each service. 
 {.findings-list}
@@ -129,7 +139,7 @@ Throughout the literature we've identified various forms of information flows of
 |------------------|------------------------|-------------------------|
 |                  | One-to-One             | One-to-Many             |
 +------------------+------------------------+-------------------------+
-| **Synchronous**  | Request/response       | --                       |
+| **Synchronous**  | Request/response       | &mdash;                 |
 | -----------------|------------------------|-------------------------|
 | **Asynchronous** | Notification           | Publish/subscribe       |
 |                  | Request/async response | Publish/async responses |
@@ -414,7 +424,7 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 
 + Actors and microservices qualify for distributed communication in a transparent way.
 + Distributed objects face problems in their abstraction of distribution.
-+ Actor- and microservice based programming mitigates the problematic abstraction of transparent distribution compared to DOs.
++ Actor- and microservice-based programming mitigates the problematic abstraction of transparent distribution compared to DOs.
 + Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
 {.findings-list}
 ~
@@ -525,7 +535,7 @@ Autonomy:
 
 Their ability to *scale* is arguably one of the most relevant reasons given in the literature to utilize actor- or microservice-based architectures [@Tas13;@Hal09;@Mon16a;@Dra17c;@Sal16;@Che17;@Sal16;@Dra17b]. Based on the definition given by Bondi [@Bon00], *scalability* is an attribute influencing the performance of networks, systems and processes in general. From the cognition of industrial Erlang applications it has been suggested that scalability is more important than raw system performance [@Hal12]. Many different aspects influence scalability. From a concurrent point of view, any influence hindering parallelism has a negative impact. Examples are synchronization (cf.\ Java case study) and (temporal) deadlocks. The strong isolation and message passing principles of actors and microservices (isolated turn principle, avoidance of shared state) reduce coordination and contention cost. Therefore, message passing and isolation have a positive influence on scalability capabilities by limiting safety and liveness issues [@Bon16].
 
-Table [#tab-scalability-compatibility-matrix] summarizes scalability variants provided by Echo. The subsequent sections will discuss the aspects in detail. 
+Table [#tab-scalability-compatibility-matrix] gives an overview of the scalability variant capabilities provided by Echo. The subsequent sections will discuss the aspects in detail. 
 
 ~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of the actor- and microservice model"; page-align:here; width:100%}
 |-------------------------|-----------------------------------|-------------------------------|
@@ -619,7 +629,7 @@ Aus der Wikipedia:
 ~
 
 
-The literature frequently points out that, due to their asynchrony and distribution, both actors and microservices are bound to a weak notion of data consistency generally referred to as *eventual consistency* [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. Eventual consistency describes an informal (!) guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Consequently, until this point in time, the data state across tasks is in flux and can therefore produce varying results. 
+The literature frequently points out that, due to their asynchrony and distribution, both actors and microservices are bound to a weak notion of data consistency generally referred to as *eventual consistency* [@Agh14;@All13;@Dra17c;@Bon16;@Fow14;@Bon17]. Eventual consistency describes an informal (!)\ guarantee that in the absence of mutating data operations, all access to a dataset will produce the same result at some point in time eventually. Consequently, until this point in time, the data state across tasks is in flux and can therefore produce varying results. 
 
 ~ todo
 Hier möglichst bald der Hinweis das Eventual Consistency notwendig/positiv für Scalability ist. Um zu begründen wieso das hier ein Unterkapitel ist
@@ -1004,14 +1014,14 @@ LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte
 
 All Akka actors are compiled into a monolithic application, therefore the metrics refere to the resulting monolith. The Spring Boot microservices are independent programs, so we can give the metrics for each service engine separately.
 
-We measure size in terms of bytes of JAR (__J__ava __Ar__chive) files. There are several ways to package a JAR. Two kinds are of relevance to us. We define a *skinny JAR* (sJAR) as the archive containing merely the byte code of a program's source code. Subsequently, we use *fat JAR* (fJAR) for an archive containing the data of the skinny JAR version, together with it's direct dependencies (e.g.\ other libraries in their skinny JAR version), and the deployment information required to execute the application on a standard Java runtime environment. 
+We measure size in terms of bytes of JAR (__J__ava __Ar__chive) files. There are several ways to package a JAR. Two kinds are of relevance to us. We define a *skinny JAR* (sJAR) as the archive containing merely the byte code of a program's source code. Subsequently, we use *fat JAR* (fJAR) for an archive containing the data of the skinny JAR version, together with it's direct dependencies (e.g.\ other libraries in their skinny JAR version), and the deployment information required to execute the application on a standard Java runtime environment. Fat JARs are therefore executable artifacts.
 
 Startup time (ST) is an indication of the heavy-weightness of a construct, at least upon instantiation. 
 
 Table [#tab-artifact-metrics] gives the measures metrics for our Echo artifacts. As a reminder, the Core artifact is the library implementing the domain specific logic. Hence, Core's skinny JAR is part of the fat JARs of all microservice engines as well as the Akka monolithic engine. The Web application is the frontend client that both Echo system implementations have to serve their functionality too. The LoC metric of the Web application is merely given as a reference relative to the other artifacts.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of Code (LoC), byte code size of fat and skinny JAR, and Startup Time (ST) of Echo artifacts"; page-align:here }
+~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of code (LoC), byte code size of fat and skinny JARs, and startup time (ST) of Echo artifacts"; page-align:here }
 |-------------------|------|-----------| ----------| ---------|
 | Artifact          | LoC  | sJAR (KB) | fJAR (KB) | ST (sec) |
 +-------------------+-----:+----------:+----------:+---------:+
@@ -1047,8 +1057,16 @@ The Akka monolithic engine has of course by far the most lines of code, since a 
 
 Even more interrestingly, each microservice engine takes considerably more time to startup than the entire Akka monolithic engine. The inversion of control model that powers the declarative programming style of Spring adds considerable runtime overhead. 
 
-The summized skinny JAR size of all microservice code bases is 169.1 KB [STIMMT DAS WIRKLICH?!]{.red}, which is considerably more compared to the 965.3 KB of the skinny Akka monolith. We've found multiple reasons for this significant difference in size. The actor code base is written in Scala, and we make heavy use of `case class`{language:scala} constructs. Scala's `case class`{language:scala}es are very compact class definitions that are mostly written in a single line of code. Instantiated objects are immutable, hence they suit very well for the data transfer objects that are exchanged in actor programming. Though these class definitions are compact, they still compile to dedicated `.class` files. On the other hand, all DTO classes between microservices are part of the shared Core library. The byte code sizes of these classes subsequently do not participate to the skinny JAR size of each microservice's artifact. Additionally, Scala is primarily a functional programming language, and usage of so-called *anonymous functions* is relatively common. Since it compiles to the JVM, these anonymous functions are compiled into dedicated `.class` files too [@Ode16]. Finally, Spring provides many utility functionality transparently, for example DTO class to JSON marshalling. Akka HTTP requires us to define JSON serializer classes manually with relatively significant code size. 
+The summized skinny JAR size of all microservice code bases is 169.1 KB [STIMMT DAS WIRKLICH?!]{.red}, which is considerably more compared to the 965.3 KB of the skinny Akka monolith. We've analyzed the content of the respective skinny archive files and made the following observations that affect the difference in byte code size:
+
+* The actor code base is written in Scala, and we make heavy use of `case class`{language:scala} constructs. Scala's `case class`{language:scala}es are very compact class definitions that are mostly written in a single line of code. Instantiated objects are immutable, hence they suit very well for the data transfer objects that we exchange as messages in actor programming. Though these class definitions are compact, they still compile to dedicated `.class` files. In contrast, all DTO classes used for messages between microservices are part of the shared Core library. The byte code sizes of these classes subsequently do not participate to the sJAR size of each microservice's artifact. 
+* Scala is primarily a functional programming language and usage of so-called *anonymous functions* is relatively common. Since Scala targets the JVM, these anonymous functions are evalutated by the compiler as instance creation expressions of the `Function`{language:scala} class. Subsequently, anonymous functions are compiled into dedicated `.class` files too [@Ode16]. 
+* Spring provides many utility functionality transparently, for example DTO class to JSON marshalling. Akka HTTP requires us to define JSON serializer classes manually with relatively significant code sizes. 
 
 The fat JAR sizes ...
 
 
+
+~ todo
+Bar plot der fat JAR sizes, wo die MS balken anders eingefärbt sind als der Akka monolith
+~

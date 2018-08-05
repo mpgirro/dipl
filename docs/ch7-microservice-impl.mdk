@@ -213,10 +213,18 @@ noch einen schönen Abschluss(ab)satz
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Different communication styles require different communication channels (synchronous via REST, asynchronous via AMQP).
++ Different communication styles require different communication channels, e.g.\ REST for synchronous messages, and AMQP for asynchronous messages.
 + Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. 
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
+~
+
+## Fault tolerance
+
+Since the microservice model generally lacks a supervision concept, fault tolerance is a concern that must be handled directly by each service individually.
+
+~ todo
+Hier bisi was zu Fault tolerance schreiben. Kann ich auch ein Hysterix Bsp bringen. Damit das Kaputel nicht all zu kurz ist. Immerhin hab ich supervision auch bei Actors
 ~
 
 

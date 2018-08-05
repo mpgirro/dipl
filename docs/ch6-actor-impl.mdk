@@ -94,7 +94,7 @@ It is worth pointing out that though the actor model is Scala's standard concurr
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Library-based actor systems cannot ensure isolation by themselves.
++ Programming language features can jeopardize actor state encapsulation. Library-based actor systems cannot ensure isolation by themselves.
 + Guaranteeing message immutability is the obligation of the programmer.
 + Message interoperability between programming languages is challenged by data type compatibility.
 {.findings-list}
@@ -252,7 +252,7 @@ We've found that compile-time message safety restrictions, apart from active obj
 [Main findings]{.findings-title}
 
 + Though the actor model is build around asynchronous messaging, runtime systems can provide additional abstractions facilitating synchronous communication. We then require either additional concurrency models (futures) or additional actors (delegation).
-+ An explicit sense of time is contrary to the actor concept. Timing must be modeled in terms of messages.
++ An explicit sense of time is contrary to the actor concept. Timing must be handled by the runtime and communicated in terms of messages.
 + The actor model intrinsically types received messages dynamically. Hence, sending messages is often implemented rather weakly-typed in actor systems. We can achieve stronger typization for sending messages by type-restricting the actor addresses.
 { .findings-list }
 ~
@@ -315,6 +315,15 @@ Delivery reliability is also a general concern of sending messages to actors, be
 Akka therefore provides a weaker insurances regarding message delivery reliability than the theoretical actor model. Particularly, all messages are merely guaranteed to be delivered *at-most-once*. Additionally, when several actors send messages to the same recipient, no order of messages in the mailbox is guaranteed except that the messages of each particular sender are enqueued into the receivers mailbox in the same order as they have been dispatched by the respective sender (FIFO order) [@AkkaMDR].
 
 In contrast, other actor systems like Orleans choose to provide *at-least-once* delivery by resending messages that have not been acknowledged within a certain timeframe [@Ber14]. No message is ever lost but can emerge duplicated instead. As a consequence, the application logic of actors with at-least-once delivery has to be able to cope with the fact that one and the same message can be received several times. 
+
+~ Findings
+[Main findings]{.findings-title}
+
+* Actors exist within a hierarchical supervision structure.
+* Failure is communicated along side the hierarchy. 
+* Supervision is useful for complex message routing logics.
+{ .findings-list }
+~
 
 
 ## Persistence and IO {#sec-actor-persistence}

@@ -1,4 +1,4 @@
-## Efficiency and Benchmark Results
+## Efficiency and Benchmarks 
 
 
 ~ todo
@@ -121,18 +121,19 @@ Setup:
 
 * Spring Boot uses the thread pool of the embedded web server. In our case, *Undertow* [REF?]{.red} is the web server.
 
+### Benchmark Results
 
-### Simulation Experiment 1: Indexing Subsystem
-
-...
-
-### Simulation Experiment 2: Retrieval Subsystem
+#### Simulation Experiment 1: Indexing Subsystem
 
 ...
 
+#### Simulation Experiment 2: Retrieval Subsystem
+
+...
 
 
-### Observations
+
+#### Observations
 
 * Slow RabbitMQ 
     * should be way faster (link to official benchmarks)
