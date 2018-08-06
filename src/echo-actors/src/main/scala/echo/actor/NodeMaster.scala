@@ -14,7 +14,7 @@ import echo.actor.crawler.Crawler
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
-import echo.actor.searcher.{Searcher, SearcherWorker}
+import echo.actor.searcher.{Searcher, DelegationSearcherWorker}
 import echo.actor.updater.Updater
 import echo.core.benchmark._
 

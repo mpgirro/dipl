@@ -82,14 +82,14 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
             currQuery = query // make a copy in case of an exception
-            val beforeSearch = System.currentTimeMillis
+            //val beforeSearch = System.currentTimeMillis
             var results: ResultWrapperDTO = null
             blocking {
                 results = indexSearcher.search(query, page, size)
             }
 
-            val afterSearch = System.currentTimeMillis
-            log.info("[BENCH] Search took : {}ms", afterSearch-beforeSearch)
+            //val afterSearch = System.currentTimeMillis
+            //log.info("[BENCH] Search took : {}ms", afterSearch-beforeSearch)
 
             if(results.getTotalHits > 0){
                 sender ! IndexResultsFound(query,results, rtt.bumpRTTs())

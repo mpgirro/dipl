@@ -73,7 +73,7 @@ class Searcher extends Actor with ActorLogging {
 
 
     private def createWorkerActor(): ActorRef = {
-        val worker = context.actorOf(SearcherWorker.props(), SearcherWorker.name(workerIndex))
+        val worker = context.actorOf(FutureSearcherWorker.props(), DelegationSearcherWorker.name(workerIndex))
 
         workerIndex += 1
 
