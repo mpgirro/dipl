@@ -1,6 +1,6 @@
 
-Discussion & Conclusion {#ch-conclusion}
-==========
+# Discussion {#ch-discussion}
+
 
 
 ~ Epigraph { caption: "Theodor W. Adorno"}
@@ -47,6 +47,7 @@ This also affects the services portability. As services are independently replac
 General performance is well predictable, when the number of service instances can be fixed, as is with Echo. No elasticity mechanism is supported, thus the required operating system processes is foreseeable. Of course, third party components, e.g.\ RabbitMQ for asynchronous messaging, may spawn additional processes themselves. However, such are also expected to do this in a foreseeable way. In general, we deem it less likely to create new services as flexible as is done with Actors, for process creation comes with a relatively high price, e.g.\ due to the memory address space.  
 
 
+<!--
 ## Empirical Indications
 
 ~ todo
@@ -64,7 +65,12 @@ Hier kurz beschreiben welche Erkenntnisse es aus empirischer Forschung und Über
 * MS können gut sein wenn man einen bestehenden Monolithem refaktorisiert und aufspaltet (Literatur benötigt!)
 * literature on project success, where it says that projects transforming monolith into MSA have a high success chance, while projects starting initially with an MSA tend way more to fail
 ~
+-->
 
+
+# Conclusion {#ch-conclusion}
+
+...
 
 ## Outlook and Future Work
 
@@ -101,3 +107,5 @@ Languages like Jolie demonstrate how (micro-)service oriented computing can be f
 ~ todo
 Future Work
 ~
+
+We deem it worth to investigate if there are theoretical frameworks incorporating both actors and microservices
