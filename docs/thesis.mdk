@@ -400,12 +400,13 @@ Maximilian Irro
 [INCLUDE=ch2-concurrency]
 [INCLUDE=ch3-actor-model]
 [INCLUDE=ch4-microservice-paradigm]
-[INCLUDE=ch5-scenario]
-[INCLUDE=ch6-actor-impl]
-[INCLUDE=ch7-microservice-impl]
-[INCLUDE=ch8a-evaluation-expressivness]
-[INCLUDE=ch8b-evaluation-efficiency]
-[INCLUDE=ch9-conclusion]
+[INCLUDE=ch5a-impl-scenario]
+[INCLUDE=ch5b-impl-akka]
+[INCLUDE=ch5c-impl-msa]
+[INCLUDE=ch6a-evaluation-expressivness]
+[INCLUDE=ch6b-evaluation-efficiency]
+[INCLUDE=ch7-discussion]
+[INCLUDE=ch8-conclusion]
 
 # Benchmark Feed { @h1="A"; #ch-benchmark-feed }
 
