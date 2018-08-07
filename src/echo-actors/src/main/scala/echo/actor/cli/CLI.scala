@@ -114,7 +114,7 @@ class CLI(master: ActorRef,
         }
 
         log.info("Terminating due to user request")
-        master ! ShutdownSystem()
+        master ! ShutdownSystem
         workQueue.shutdown()
     }
 

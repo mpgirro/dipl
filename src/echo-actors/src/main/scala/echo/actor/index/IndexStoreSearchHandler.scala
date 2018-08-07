@@ -73,10 +73,10 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")
-            val beforeRefresh = System.currentTimeMillis
+            //val beforeRefresh = System.currentTimeMillis
             indexSearcher.refresh()
-            val afterRefresh = System.currentTimeMillis
-            log.info("[BENCH] Refresh took : {}ms", afterRefresh-beforeRefresh)
+            //val afterRefresh = System.currentTimeMillis
+            //log.info("[BENCH] Refresh took : {}ms", afterRefresh-beforeRefresh)
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)

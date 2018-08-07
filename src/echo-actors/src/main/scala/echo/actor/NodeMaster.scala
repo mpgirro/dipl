@@ -18,6 +18,7 @@ import echo.actor.searcher.{Searcher, DelegationSearcherWorker}
 import echo.actor.updater.Updater
 import echo.core.benchmark._
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -54,6 +55,7 @@ class NodeMaster extends Actor with ActorLogging {
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
     private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 46) // 'cause we have 21 actors in place that will report their MPS
+    private val memoryUsageMeter = new MemoryUsageMeter(200)
 
     private val benchmarkUtil = new BenchmarkUtil("../benchmark/")
 
@@ -99,10 +101,15 @@ class NodeMaster extends Actor with ActorLogging {
         updater  ! ActorRefBenchmarkMonitor(self)
         gateway  ! ActorRefBenchmarkMonitor(self)
 
+        memoryUsageMeter.start()
+
         log.info("up and running")
     }
 
     override def postStop: Unit = {
+
+        memoryUsageMeter.halt()
+
         log.info("shutting down")
     }
 
@@ -111,6 +118,7 @@ class NodeMaster extends Actor with ActorLogging {
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             sendStartMessagePerSecondMonitoringMessages()
+            memoryUsageMeter.startMonitoring()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
@@ -144,7 +152,7 @@ class NodeMaster extends Actor with ActorLogging {
 
         case Terminated(corpse) => onTerminated(corpse)
 
-        case ShutdownSystem()   => onSystemShutdown()
+        case ShutdownSystem   => onSystemShutdown()
     }
 
     private def onTerminated(corpse: ActorRef): Unit = {
@@ -152,7 +160,7 @@ class NodeMaster extends Actor with ActorLogging {
             createCLI() // we simply re-create the CLI
         } else {
             log.error("Oh noh! A critical subsystem died : {}", corpse.path)
-            self ! ShutdownSystem()
+            self ! ShutdownSystem
         }
     }
 
@@ -185,6 +193,12 @@ class NodeMaster extends Actor with ActorLogging {
         rttMonitor.addRoundTripTime(rtt)
         if (rttMonitor.isFinished) {
             sendStopMessagePerSecondMonitoringMessages()
+
+
+            memoryUsageMeter.stopMonitoring()
+            log.info("Mean memory usage : {}", memoryUsageMeter.getMeanMemoryUsageStr)
+            //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
+
             //rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
 
             val size = rttMonitor.getAllRTTs.size()
