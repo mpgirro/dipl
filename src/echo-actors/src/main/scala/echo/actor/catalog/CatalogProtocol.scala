@@ -66,4 +66,8 @@ object CatalogProtocol {
     case class ChaptersByEpisodeResult(chapters: List[ChapterDTO]) extends CatalogQueryResult
     case class NothingFound(exo: String) extends CatalogQueryResult
 
+    // some stuff for statistics
+    case class GetMeanEpisodeCountPerPodcast()
+    case class MeanEpisodeCountPerPodcast(podcastCount: Int, episodeCount: Int, mean: Int)
+
 }

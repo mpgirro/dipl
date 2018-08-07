@@ -80,7 +80,8 @@ class CLI(master: ActorRef,
         "save feeds"     -> "<dest>",
         "crawl fyyd"     -> "count",
         "get podcast"    -> "<exo>",
-        "get episode"    -> "<exo>"
+        "get episode"    -> "<exo>",
+        "request mean episodes" -> ""
     )
 
     private val feedPropertyUtil = new FeedPropertyUtil()
@@ -198,9 +199,12 @@ class CLI(master: ActorRef,
             case "get" :: "podcast" :: exo :: Nil => getAndPrintPodcast(exo)
             case "get" :: "podcast" :: exo :: _   => usage("get podcast")
 
-            case "get" :: "episode" :: Nil           => usage("get episode")
+            case "get" :: "episode" :: Nil        => usage("get episode")
             case "get" :: "episode" :: exo :: Nil => getAndPrintEpisode(exo)
             case "get" :: "episode" :: exo :: _   => usage("get episode")
+
+            case "request" :: "mean" :: "episodes" :: Nil => requestMeanEpisodeCountPerPodcast()
+            case "request" :: "mean" :: "episodes" :: _   => usage("request mean episodes")
 
             case _  => help()
         }
@@ -291,6 +295,15 @@ class CLI(master: ActorRef,
                 pw.close()
             case other => log.error("Received unexpected CatalogResult type : {}", other.getClass)
         }
+    }
+
+    private def requestMeanEpisodeCountPerPodcast(): Unit = {
+        log.debug("Requesting mean episode count per podcast from Catalog")
+        val future = catalogStore ? GetMeanEpisodeCountPerPodcast
+        val response = Await.result(future, INTERNAL_TIMEOUT.duration).asInstanceOf[MeanEpisodeCountPerPodcast]
+        log.info("Total Podcast Count   : {}", response.podcastCount)
+        log.info("Total Episode Count   : {}", response.episodeCount)
+        log.info("Mean Episodes/Podcast : {}", response.mean)
     }
 
     private def benchmarkIndexSubsystem(): Unit = {

@@ -221,6 +221,15 @@ class CatalogStoreHandler(workerIndex: Int,
             mpsCounter.incrementCounter()
             debugPrintCountAllFeeds()
 
+        case GetMeanEpisodeCountPerPodcast =>
+            log.debug("Request to get mean episode count per podcast")
+            def task = () => {
+                val ps = podcastService.findAllAsTeaser()
+                val es = episodeService.findAll()
+                val mean = es.size / ps.size
+                sender ! MeanEpisodeCountPerPodcast(ps.size, es.size, mean)
+            }
+            doInTransaction(task, List(podcastService, episodeService))
     }
 
     private def emitCatalogEvent(event: CatalogEvent): Unit = {
