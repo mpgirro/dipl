@@ -1,19 +1,24 @@
 package echo.core.benchmark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Maximilian Irro
  */
-public class WorkQueue
-{
+public class WorkQueue {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkQueue.class);
+
     private final int nThreads;
     private final PoolWorker[] threads;
     private final LinkedList<Runnable> queue;
 
-    public WorkQueue(int nThreads)
-    {
+    public WorkQueue(int nThreads) {
         this.nThreads = nThreads;
         queue = new LinkedList<>();
         threads = new PoolWorker[nThreads];
@@ -39,19 +44,29 @@ public class WorkQueue
     }
 
     public void shutdown() {
+        log.debug("Shutting down the work queue");
         synchronized(queue) {
             for (PoolWorker w : threads) {
-                w.interrupt();
+                w.halt();
             }
             queue.clear();
         }
+        log.debug("All workers halted and queue cleared");
     }
 
     private class PoolWorker extends Thread {
-        public void run() {
-            Runnable r;
 
-            while (true) {
+        private final AtomicBoolean running = new AtomicBoolean(false);
+
+        public void halt() {
+            running.set(false);
+        }
+
+        @Override
+        public void run() {
+            running.set(true);
+            while (running.get()) {
+                Runnable r;
                 synchronized(queue) {
                     while (queue.isEmpty()) {
                         try {
