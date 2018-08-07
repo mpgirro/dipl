@@ -36,10 +36,18 @@ class HttpClient (val timeout: Long,
     @throws(classOf[java.net.UnknownHostException])
     @throws(classOf[javax.net.ssl.SSLHandshakeException])
     def headCheck(url: String): HeadResult = {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            headCheckHTTP(url)
-        } else if (url.startsWith("file:///")) {
-            headCheckFILE(url)
+
+        // we will ensure that the protocol will be lower case, otherwise further stuff will fail
+        val parts = url.split("://")
+        if (parts.size != 2) {
+            throw new IllegalArgumentException("No valid URL provided : " + url)
+        }
+        val cleanUrl = parts(0).toLowerCase + "://" + parts(1)
+
+        if (cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {
+            headCheckHTTP(cleanUrl)
+        } else if (cleanUrl.startsWith("file:///")) {
+            headCheckFILE(cleanUrl)
         } else {
             throw new IllegalArgumentException("URL points neither to local nor remote resource : " + url)
         }
