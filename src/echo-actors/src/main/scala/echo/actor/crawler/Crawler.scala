@@ -2,7 +2,7 @@ package echo.actor.crawler
 
 import java.io.UnsupportedEncodingException
 import java.net.{ConnectException, SocketTimeoutException, UnknownHostException}
-import java.nio.charset.IllegalCharsetNameException
+import java.nio.charset.{IllegalCharsetNameException, MalformedInputException}
 import javax.net.ssl.SSLHandshakeException
 
 import akka.actor.SupervisorStrategy.{Escalate, Resume}
@@ -56,7 +56,10 @@ class Crawler extends Actor with ActorLogging {
             case _: SSLHandshakeException        => Resume
             case _: IllegalCharsetNameException  => Resume
             case _: UnsupportedEncodingException => Resume
-            case _: Exception                    => Escalate
+            case _: MalformedInputException      => Resume
+            case e: Exception                    =>
+                log.error("A Worker due to an unhandled exception of class : {}", e.getClass)
+                Escalate
         }
 
     override def postStop: Unit = {
