@@ -52,7 +52,7 @@ class CatalogStoreHandler(workerIndex: Int,
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -102,51 +102,51 @@ class CatalogStoreHandler(workerIndex: Int,
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
 
         case ProposeNewFeed(feedUrl, rtt) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             proposeFeed(feedUrl, rtt)
 
         case CheckPodcast(exo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onCheckPodcast(exo)
 
         case CheckFeed(exo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onCheckFeed(exo)
 
         case CheckAllPodcasts =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onCheckAllPodcasts(0, MAX_PAGE_SIZE)
 
         case CheckAllFeeds =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onCheckAllFeeds(0, MAX_PAGE_SIZE)
 
         case FeedStatusUpdate(podcastExo, feedUrl, timestamp, status) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onFeedStatusUpdate(podcastExo, feedUrl, timestamp, status)
 
         case SaveChapter(chapter) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onSaveChapter(chapter)
 
         case AddPodcastAndFeedIfUnknown(podcast, feed) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onAddPodcastAndFeedIfUnknown(podcast, feed)
 
         case UpdatePodcast(exo, url, podcast) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onUpdatePodcast(exo, url, podcast)
 
         case UpdateEpisode(podcastExo, episode) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onUpdateEpisode(podcastExo, episode)
 
         // TODO
@@ -154,71 +154,71 @@ class CatalogStoreHandler(workerIndex: Int,
         //case UpdateChapter(episodeExo, chapter) =>  ...
 
         case UpdateFeedUrl(oldUrl, newUrl) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onUpdateFeedMetadataUrl(oldUrl, newUrl)
 
         case UpdateLinkByExo(exo, newUrl) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onUpdateLinkByExo(exo, newUrl)
 
         case GetPodcast(podcastExo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetPodcast(podcastExo)
 
         case GetAllPodcasts(page, size) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetAllPodcasts(page, size)
 
         case GetAllPodcastsRegistrationComplete(page, size) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetAllPodcastsRegistrationComplete(page, size)
 
         case GetAllFeeds(page, size) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetAllFeeds(page, size)
 
         case GetEpisode(podcastExo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetEpisode(podcastExo)
 
         case GetEpisodesByPodcast(podcastExo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetEpisodesByPodcast(podcastExo)
 
         case GetFeedsByPodcast(podcastExo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetFeedsByPodcast(podcastExo)
 
         case GetChaptersByEpisode(episodeExo) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onGetChaptersByEpisode(episodeExo)
 
         case RegisterEpisodeIfNew(podcastExo, episode, rtt) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             onRegisterEpisodeIfNew(podcastExo, episode, rtt)
 
         case DebugPrintAllPodcasts =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintAllPodcasts()
 
         case DebugPrintAllEpisodes =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintAllEpisodes()
 
         case DebugPrintAllFeeds =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintAllFeeds()
 
         case DebugPrintCountAllPodcasts =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintCountAllPodcasts()
 
         case DebugPrintCountAllEpisodes =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintCountAllEpisodes()
 
         case DebugPrintCountAllFeeds =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             debugPrintCountAllFeeds()
 
         case GetMeanEpisodeCountPerPodcast =>

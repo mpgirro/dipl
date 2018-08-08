@@ -107,8 +107,8 @@ class NodeMaster extends Actor with ActorLogging {
 
     override def postStop: Unit = {
 
-        memoryUsageMeter.halt()
-        cpuLoadMeter.halt()
+        memoryUsageMeter.deactivate()
+        cpuLoadMeter.deactivate()
 
         log.info("shutting down")
     }
@@ -118,8 +118,8 @@ class NodeMaster extends Actor with ActorLogging {
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             sendStartMessagePerSecondMonitoringMessages()
-            memoryUsageMeter.startMonitoring()
-            cpuLoadMeter.startMonitoring()
+            memoryUsageMeter.startMeasurement()
+            cpuLoadMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
@@ -196,8 +196,8 @@ class NodeMaster extends Actor with ActorLogging {
             sendStopMessagePerSecondMonitoringMessages()
 
 
-            memoryUsageMeter.stopMonitoring()
-            cpuLoadMeter.stopMonitoring()
+            memoryUsageMeter.stopMeasurement()
+            cpuLoadMeter.stopMeasurement()
 
             log.info("Mean memory usage : {}", memoryUsageMeter.getMeanMemoryUsageStr)
             log.info("Mean CPU load     : {}", cpuLoadMeter.getMeanCpuLoad)

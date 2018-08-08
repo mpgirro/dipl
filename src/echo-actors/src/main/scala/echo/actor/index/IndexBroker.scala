@@ -8,7 +8,7 @@ import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLog
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
 import echo.actor.index.IndexProtocol.{IndexCommand, IndexEvent, IndexQuery}
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 import echo.core.exception.SearchException
 
 import scala.concurrent.duration._
@@ -59,7 +59,7 @@ class IndexBroker extends Actor with ActorLogging {
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     // TODO is this working when running in a cluster setup?
     override val supervisorStrategy: SupervisorStrategy =
@@ -77,13 +77,13 @@ class IndexBroker extends Actor with ActorLogging {
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
             broadcastRouter.route(msg, sender())
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
             broadcastRouter.route(msg, sender())
 
         case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
@@ -91,17 +91,17 @@ class IndexBroker extends Actor with ActorLogging {
 
         case command: IndexCommand =>
             log.debug("Routing command: {}", command.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             roundRobinRouter.route(command, sender())
 
         case event: IndexEvent =>
             log.debug("Routing event: {}", event.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             broadcastRouter.route(event, sender())
 
         case query: IndexQuery =>
             log.debug("Routing query : {}", query.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -110,7 +110,7 @@ class IndexBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             broadcastRouter.route(message, sender())
 
     }

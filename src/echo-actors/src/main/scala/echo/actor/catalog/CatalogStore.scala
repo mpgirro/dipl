@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.MessagesPerSecondMeter
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
@@ -36,7 +36,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -74,13 +74,13 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(msg, sender()))
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case Terminated(corpse) =>
@@ -109,7 +109,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             router.route(work, sender())
 
     }

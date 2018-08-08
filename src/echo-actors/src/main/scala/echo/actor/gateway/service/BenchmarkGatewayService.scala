@@ -15,7 +15,7 @@ import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRe
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.{ImmutableRoundTripTime, MessagesPerSecondCounter, RoundTripTime, Workflow}
+import echo.core.benchmark._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Maximilian Irro
   */
-class BenchmarkGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter, private val gateway: ActorRef)
+class BenchmarkGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsMeter: MessagesPerSecondMeter, private val gateway: ActorRef)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
 
@@ -82,7 +82,7 @@ class BenchmarkGatewayService (private val log: LoggingAdapter, private val brea
     private def benchmarkSearchRoute: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /benchmark/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(query)

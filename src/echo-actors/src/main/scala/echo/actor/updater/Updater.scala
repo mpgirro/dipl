@@ -3,7 +3,7 @@ package echo.actor.updater
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol.ProposeNewFeed
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 
 /**
   * @author Maximilian Irro
@@ -24,7 +24,7 @@ class Updater extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     override def receive: Receive = {
 
@@ -42,19 +42,19 @@ class Updater extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
 
         case ProposeNewFeed(url, rtt) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             catalog ! ProposeNewFeed(url, rtt.bumpRTTs())
 
         case ProcessFeed(exo, url, job: FetchJob, rtt) =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             crawler ! DownloadWithHeadCheck(exo, url, job, rtt.bumpRTTs())
     }
 

@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.CircuitBreaker
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 
@@ -22,7 +22,7 @@ import scala.concurrent.duration.FiniteDuration
 @Path("/api/feed")  // @Path annotation required for Swagger
 @Api(value = "/api/feed",
     produces = "application/json")
-class FeedGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter)
+class FeedGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsMeter: MessagesPerSecondMeter)
                          (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     // will be set after construction of the service via the setter method,
@@ -42,7 +42,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def getAllFeeds: Route = get {
 
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
 
         // TODO
 
@@ -51,7 +51,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def getFeed(id: String): Route = get {
 
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
 
         // TODO
 
@@ -61,7 +61,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     def postFeed: Route = post {
         entity(as[FeedDTO]) { feed =>
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             // TODO
 
@@ -72,7 +72,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     def putFeed(id: String): Route = put {
         entity(as[FeedDTO]) { feed =>
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             // TODO
 
@@ -82,7 +82,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def deleteFeed(id: String): Route = delete {
 
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
 
         // TODO
 

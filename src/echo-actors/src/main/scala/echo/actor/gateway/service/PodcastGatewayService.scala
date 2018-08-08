@@ -13,7 +13,7 @@ import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 import echo.core.domain.dto.PodcastDTO
 import io.swagger.annotations._
 
@@ -26,7 +26,7 @@ import scala.util.{Failure, Success}
 @Path("/api/podcast")  // @Path annotation required for Swagger
 @Api(value = "/api/podcast",
      produces = "application/json")
-class PodcastGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsCounter: MessagesPerSecondCounter)
+class PodcastGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsMeter: MessagesPerSecondMeter)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
     private val CONFIG = ConfigFactory.load()
@@ -61,7 +61,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def getAllPodcasts: Route = get {
         parameters('p.as[Int].?, 's.as[Int].?) { (page, size) =>
             log.info("GET /api/podcast?p={}&s={}", page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
             val s: Int = size.getOrElse(DEFAULT_SIZE)
@@ -94,7 +94,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
                   response = classOf[PodcastDTO])
     def getPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}", exo)
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
         onCompleteWithBreaker(breaker)(catalogStore ? GetPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -119,7 +119,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getEpisodesByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/episodes", exo)
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
         onCompleteWithBreaker(breaker)(catalogStore ? GetEpisodesByPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -141,7 +141,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getFeedsByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/feeds", exo)
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
         onCompleteWithBreaker(breaker)(catalogStore ? GetFeedsByPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -164,7 +164,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def postPodcast: Route = post {
         entity(as[PodcastDTO]) { podcast =>
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
@@ -180,7 +180,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def putPodcast(id: String): Route = put {
         entity(as[PodcastDTO]) { podcast =>
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             // TODO update podcast with exo
 
@@ -190,7 +190,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def deletePodcast(id: String): Route = delete {
 
-        mpsCounter.incrementCounter()
+        mpsMeter.incrementCounter()
 
         // TODO delete podcast -  I guess this should not be supported?
 

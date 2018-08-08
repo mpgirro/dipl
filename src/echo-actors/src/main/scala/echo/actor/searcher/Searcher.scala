@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 
 /**
   * @author Maximilian Irro
@@ -27,7 +27,7 @@ class Searcher extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -52,22 +52,22 @@ class Searcher extends Actor with ActorLogging {
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(msg, sender()))
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case request: SearchRequest =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             router.route(request, sender())
 
         case work =>
             log.warning("Routing work of UNKNOWN kind : {}", work.getClass)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             router.route(work, sender())
     }
 

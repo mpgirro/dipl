@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol._
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
-import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
+import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
 import echo.core.domain.dto.{ImmutableIndexDocDTO, IndexDocDTO}
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
@@ -58,7 +58,7 @@ class IndexStore (indexPath: String,
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
 
 
@@ -104,17 +104,17 @@ class IndexStore (indexPath: String,
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(msg, sender()))
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case CommitIndex =>
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             commitIndexIfChanged()
 
             //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
@@ -122,7 +122,7 @@ class IndexStore (indexPath: String,
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             // TODO add now to rtts and send to CLI
             benchmarkMonitor ! IndexSubSystemRoundTripTimeReport(rtt.bumpRTTs())
@@ -133,24 +133,24 @@ class IndexStore (indexPath: String,
 
         case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             updateWebsiteQueue.enqueue((exo,html))
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case UpdateDocImageIndexEvent(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             updateImageQueue.enqueue((exo, image))
 
         case UpdateDocLinkIndexEvent(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             updateLinkQueue.enqueue((exo, link))
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             val origSender = sender()
             router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), origSender)

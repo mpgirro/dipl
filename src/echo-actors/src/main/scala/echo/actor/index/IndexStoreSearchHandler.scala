@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
-import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
+import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
 import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
 import echo.core.exception.SearchException
 import echo.core.index.IndexSearcher
@@ -35,7 +35,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
     override def postRestart(cause: Throwable): Unit = {
         log.info("{} has been restarted or resumed", self.path.name)
@@ -64,12 +64,12 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")
@@ -98,7 +98,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
                 sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
             }
 
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             currQuery = "" // wipe the copy
 
     }

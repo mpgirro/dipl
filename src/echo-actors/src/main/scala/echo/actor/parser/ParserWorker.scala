@@ -16,7 +16,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
-import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
+import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
@@ -54,7 +54,7 @@ class ParserWorker extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     private var currFeedUrl = ""
@@ -94,16 +94,16 @@ class ParserWorker extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
 
         case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, err: RoundTripTime) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
@@ -115,7 +115,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, rtt: RoundTripTime) =>
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastExo)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
@@ -127,7 +127,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseWebsiteData(exo: String, html: String) =>
             log.debug("Received ParseWebsiteData({},_)", exo)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             val readableText = Jsoup.parse(html).text()
 
@@ -136,7 +136,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseFyydEpisodes(podcastExo, json) =>
             log.debug("Received ParseFyydEpisodes({},_)", podcastExo)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
 
             val episodes: List[EpisodeDTO] = fyydAPI.getEpisodes(json).asScala.toList
             log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastExo)

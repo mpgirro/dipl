@@ -18,7 +18,7 @@ import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service._
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.MessagesPerSecondCounter
+import echo.core.benchmark.{MessagesPerSecondMeter}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -63,13 +63,13 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
     private var catalogStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsMeter = new MessagesPerSecondMeter()
 
-    private val searchService = new SearchGatewayService(log, searcherBreaker, mpsCounter)
-    private val benchmarkService = new BenchmarkGatewayService(log, searcherBreaker, mpsCounter, self)
-    private val podcastService = new PodcastGatewayService(log, catalogBreaker, mpsCounter)
-    private val episodeService = new EpisodeGatewayService(log, catalogBreaker, mpsCounter)
-    private val feedService = new FeedGatewayService(log, catalogBreaker, mpsCounter)
+    private val searchService = new SearchGatewayService(log, searcherBreaker, mpsMeter)
+    private val benchmarkService = new BenchmarkGatewayService(log, searcherBreaker, mpsMeter, self)
+    private val podcastService = new PodcastGatewayService(log, catalogBreaker, mpsMeter)
+    private val episodeService = new EpisodeGatewayService(log, catalogBreaker, mpsMeter)
+    private val feedService = new FeedGatewayService(log, catalogBreaker, mpsMeter)
 
     override def preStart: Unit = {
 
@@ -139,16 +139,16 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
 
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
-            mpsCounter.incrementCounter()
+            mpsMeter.incrementCounter()
             //searchService.benchmarkDistributedSearch(q, p, s, rtt)
             benchmarkService.benchmarkSearch(q, p, s, rtt)
 

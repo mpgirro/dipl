@@ -11,7 +11,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{IndexEvent, UpdateDocLinkIndexEvent}
-import echo.core.benchmark.{MessagesPerSecondCounter, RoundTripTime}
+import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.EchoException
 import echo.core.http.HttpClient
@@ -56,7 +56,7 @@ class CrawlerWorker extends Actor with ActorLogging {
     private var parser: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondCounter()
+    private val mpsCounter = new MessagesPerSecondMeter()
     private val fyydAPI: FyydAPI = new FyydAPI()
     private var httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
@@ -100,11 +100,11 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startCounting()
+            mpsCounter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopCounting()
+            mpsCounter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getMessagesPerSecond)
 
         case DownloadWithHeadCheck(exo, url, job, rtt) =>
