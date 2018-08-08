@@ -1,6 +1,6 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.domain.dto.*;
 import echo.microservice.gateway.service.CatalogService;
 import org.slf4j.Logger;
@@ -34,8 +34,8 @@ public class CatalogResource {
     @Autowired
     private CatalogService catalogService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value    = "/podcast/{exo}",
@@ -43,7 +43,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PodcastDTO> getPodcast(@PathVariable String exo) {
         log.info("REST request to get Podcast (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<PodcastDTO> podcast = catalogService.getPodcast(exo);
         return podcast
             .map(result -> new ResponseEntity<>(
@@ -58,7 +58,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getEpisodesByPodcast(@PathVariable String exo) {
         log.info("REST request to get Episodes by Podcast (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final List<EpisodeDTO> episodes = catalogService.getEpisodesByPodcast(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(episodes),
@@ -71,7 +71,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getFeedsByPodcast(@PathVariable String exo) {
         log.info("REST request to get Feeds by Podcast (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final List<FeedDTO> feeds = catalogService.getFeedsByPodcast(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(feeds),
@@ -85,7 +85,7 @@ public class CatalogResource {
     public ResponseEntity<ArrayWrapperDTO> getAllPodcasts(@RequestParam("p") Optional<Integer> page,
                                                           @RequestParam("s") Optional<Integer> size) {
         log.info("REST request to get all Podcasts by page/size : ({},{})", page, size);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final List<PodcastDTO> podcasts = catalogService.getAllPodcasts(page, size);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(podcasts),
@@ -98,7 +98,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.info("REST request to get Episode (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<EpisodeDTO> episode = catalogService.getEpisode(exo);
         return episode
             .map(result -> new ResponseEntity<>(
@@ -113,7 +113,7 @@ public class CatalogResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.info("REST request to get Chapters by Episode (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final List<ChapterDTO> chapters = catalogService.getChaptersByEpisode(exo);
         return new ResponseEntity<>(
             ImmutableArrayWrapperDTO.of(chapters),

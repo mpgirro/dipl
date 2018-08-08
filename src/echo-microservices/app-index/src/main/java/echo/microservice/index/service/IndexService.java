@@ -55,7 +55,7 @@ public class IndexService {
         Optional.ofNullable(indexCommitter).ifPresent(IndexCommitter::destroy);
         Optional.ofNullable(indexSearcher).ifPresent(IndexSearcher::destroy);
     }
-    
+
     public void add(IndexDocDTO doc) {
         log.info("Request to add document to index cache : {}", doc.getExo());
         synchronized (cache) {
@@ -66,8 +66,12 @@ public class IndexService {
     }
 
     public ResultWrapperDTO search(String query, Integer page, Integer size, RoundTripTime rtt) throws SearchException {
+        //final long beforeRefresh = System.currentTimeMillis();
         indexSearcher.refresh();
+        //final long afterRefresh = System.currentTimeMillis();
         final ImmutableResultWrapperDTO result = (ImmutableResultWrapperDTO) indexSearcher.search(query, page, size);
+        //final long afterSearch = System.currentTimeMillis();
+        //log.info("[BENCH] Refresh took : {}ms ; Search took : {}ms", afterRefresh-beforeRefresh, afterSearch-afterRefresh);
         return result.withRTT(rtt.bumpRTTs());
     }
 

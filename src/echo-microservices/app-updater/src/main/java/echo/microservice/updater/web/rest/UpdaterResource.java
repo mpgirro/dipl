@@ -1,7 +1,7 @@
 package echo.microservice.updater.web.rest;
 
 import echo.core.async.catalog.ProposeNewFeedJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +23,8 @@ public class UpdaterResource {
     @Autowired
     private UpdaterService updaterService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value  = "/propose-new-feed",
@@ -32,7 +32,7 @@ public class UpdaterResource {
     @ResponseStatus(HttpStatus.OK)
     public void proposeNewFeed(@RequestBody ProposeNewFeedJob job) {
         log.debug("REST request to propose new feed: ('{}',_)", job.getFeed());
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         updaterService.proposeNewFeed(job.getFeed(), job.getRtt());
     }
 

@@ -1,6 +1,6 @@
 package echo.microservice.searcher.config;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BenchmarkConfig {
 
-    private final MessagesPerSecondCounter mpsCounter = new MessagesPerSecondCounter();
+    private final MessagesPerSecondMeter mpsMeter = new MessagesPerSecondMeter();
 
-    @Bean(name = "messagesPerSecondCounter")
-    public MessagesPerSecondCounter mpsCounter(){
-        return mpsCounter;
+    @Bean(name = "messagesPerSecondMeter")
+    public MessagesPerSecondMeter mpsMeter(){
+        return mpsMeter;
     }
 
 }

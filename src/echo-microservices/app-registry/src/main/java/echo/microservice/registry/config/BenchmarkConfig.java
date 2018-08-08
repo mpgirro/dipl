@@ -1,7 +1,6 @@
 package echo.microservice.registry.config;
 
 import echo.core.benchmark.ArchitectureType;
-import echo.core.benchmark.MessagesPerSecondCounter;
 import echo.core.benchmark.MessagesPerSecondMonitor;
 import echo.core.benchmark.RoundTripTimeMonitor;
 import org.springframework.context.annotation.Bean;

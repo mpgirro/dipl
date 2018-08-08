@@ -1,6 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.microservice.catalog.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,8 @@ public class BenchmarkResource {
     @Autowired
     private BenchmarkClient benchmarkClient;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value  = "/start-mps",
@@ -37,8 +37,8 @@ public class BenchmarkResource {
         params = { "mps" })
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
-        mpsCounter.startCounting();
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        mpsMeter.startMeasurement();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -47,9 +47,9 @@ public class BenchmarkResource {
         params = { "mps" })
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
-        mpsCounter.stopCounting();
-        benchmarkClient.setMpsReport(applicationName, mpsCounter.getMessagesPerSecond());
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        mpsMeter.stopMeasurement();
+        benchmarkClient.setMpsReport(applicationName, mpsMeter.getMessagesPerSecond());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -57,8 +57,8 @@ public class BenchmarkResource {
         method   = RequestMethod.GET)
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
-        mpsCounter.incrementCounter();
-        return mpsCounter.getMessagesPerSecond();
+        mpsMeter.incrementCounter();
+        return mpsMeter.getMessagesPerSecond();
     }
 
 }

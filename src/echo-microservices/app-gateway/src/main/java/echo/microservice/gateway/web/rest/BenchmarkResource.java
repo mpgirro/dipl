@@ -1,6 +1,6 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.gateway.service.SearcherService;
@@ -37,8 +37,8 @@ public class BenchmarkResource {
     @Autowired
     private SearcherService searcherService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value  = "/start-mps",
@@ -46,7 +46,7 @@ public class BenchmarkResource {
         params = { "mps" })
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
-        mpsCounter.startCounting();
+        mpsMeter.startMeasurement();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -56,8 +56,8 @@ public class BenchmarkResource {
         params = { "mps" })
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
-        mpsCounter.stopCounting();
-        benchmarkClient.mpsReport(applicationName, mpsCounter.getMessagesPerSecond());
+        mpsMeter.stopMeasurement();
+        benchmarkClient.mpsReport(applicationName, mpsMeter.getMessagesPerSecond());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,8 +66,8 @@ public class BenchmarkResource {
         method   = RequestMethod.GET)
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
-        mpsCounter.incrementCounter();
-        return mpsCounter.getMessagesPerSecond();
+        mpsMeter.incrementCounter();
+        return mpsMeter.getMessagesPerSecond();
     }
 
     @RequestMapping(
@@ -79,7 +79,7 @@ public class BenchmarkResource {
                                                         @RequestParam("s") Optional<Integer> size,
                                                         @RequestBody RoundTripTime rtt) {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
 
         if (resultWrapper.isPresent()) {

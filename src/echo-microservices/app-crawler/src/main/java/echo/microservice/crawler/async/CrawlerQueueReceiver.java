@@ -3,7 +3,7 @@ package echo.microservice.crawler.async;
 import echo.core.async.crawler.CrawlerJob;
 import echo.core.async.crawler.NewFeedCrawlerJob;
 import echo.core.async.crawler.UpdateFeedCrawlerJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.microservice.crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +27,8 @@ public class CrawlerQueueReceiver {
     @Autowired
     private CrawlerService crawlerService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RabbitListener(
         containerFactory = "rabbitListenerContainerFactory",
@@ -38,7 +38,7 @@ public class CrawlerQueueReceiver {
             key      = "${echo.amqp.crawler-routingkey}")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;
             log.info("Recieved NewFeedCrawlerJob for Podcast EXO : {}", job.exo());

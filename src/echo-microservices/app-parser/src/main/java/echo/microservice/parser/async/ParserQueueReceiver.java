@@ -3,7 +3,7 @@ package echo.microservice.parser.async;
 import echo.core.async.parser.NewFeedParserJob;
 import echo.core.async.parser.ParserJob;
 import echo.core.async.parser.UpdateFeedParserJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +27,8 @@ public class ParserQueueReceiver {
     @Autowired
     private ParserService parserService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RabbitListener(
         containerFactory = "rabbitListenerContainerFactory",
@@ -39,7 +39,7 @@ public class ParserQueueReceiver {
     )
     public void recievedMessage(ParserJob parserJob) {
         //log.debug("Recieved Message : {}", parserJob);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         if (parserJob instanceof NewFeedParserJob) {
             final NewFeedParserJob job = (NewFeedParserJob) parserJob;
             log.info("Recieved NewFeedParserJob for EXO : {}", job.getExo());

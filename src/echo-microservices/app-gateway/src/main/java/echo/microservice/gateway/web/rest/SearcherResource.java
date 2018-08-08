@@ -1,7 +1,6 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.gateway.service.SearcherService;
 import org.slf4j.Logger;
@@ -27,8 +26,8 @@ public class SearcherResource {
     @Autowired
     private SearcherService searcherService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value    = "/search",
@@ -38,7 +37,7 @@ public class SearcherResource {
                                                         @RequestParam("p") Optional<Integer> page,
                                                         @RequestParam("s") Optional<Integer> size) {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.search(query, page, size);
         return resultWrapper
             .map(result -> new ResponseEntity<>(

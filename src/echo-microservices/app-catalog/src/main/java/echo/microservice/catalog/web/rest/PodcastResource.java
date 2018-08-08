@@ -1,6 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.domain.dto.*;
 import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -42,8 +42,8 @@ public class PodcastResource {
 
     private IdMapper idMapper = IdMapper.INSTANCE;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value    = "/podcast",

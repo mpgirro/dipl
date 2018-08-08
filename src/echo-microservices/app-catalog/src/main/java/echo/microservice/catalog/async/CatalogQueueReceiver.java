@@ -6,7 +6,7 @@ import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.ImmutableAddOrUpdateDocIndexJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;
@@ -44,8 +44,8 @@ public class CatalogQueueReceiver {
     @Autowired
     private IndexQueueSender indexQueueSender;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     private final IndexMapper indexMapper = IndexMapper.INSTANCE;
 
@@ -58,7 +58,7 @@ public class CatalogQueueReceiver {
     )
     public void recievedMessage(CatalogJob catalogJob) {
         log.debug("Recieved Message : {}", catalogJob);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         if (catalogJob instanceof UpdatePodcastCatalogJob) {
             final UpdatePodcastCatalogJob job = (UpdatePodcastCatalogJob) catalogJob;
             log.debug("Recieved UpdatePodcastCatalogJob for EXO : {}", job.getPodcast().getExo());

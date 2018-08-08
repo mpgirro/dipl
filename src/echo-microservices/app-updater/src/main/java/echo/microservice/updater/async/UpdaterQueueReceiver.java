@@ -4,7 +4,7 @@ import echo.core.async.updater.ProcessFeedWebsiteJob;
 import echo.core.async.updater.ProcessNewFeedJob;
 import echo.core.async.updater.ProcessUpdateFeedJob;
 import echo.core.async.updater.UpdaterJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,8 @@ public class UpdaterQueueReceiver {
     @Autowired
     private UpdaterService updaterService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RabbitListener(
         containerFactory = "rabbitListenerContainerFactory",
@@ -40,7 +40,7 @@ public class UpdaterQueueReceiver {
     )
     public void recievedMessage(UpdaterJob updaterJob) {
         log.debug("Received Message : {}", updaterJob);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         //updaterService.processJob(job);
         if (updaterJob instanceof ProcessNewFeedJob) {
             final ProcessNewFeedJob job = (ProcessNewFeedJob) updaterJob;

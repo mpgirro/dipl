@@ -3,7 +3,7 @@ package echo.microservice.parser.web.rest;
 import echo.core.async.parser.NewFeedParserJob;
 import echo.core.async.parser.UpdateFeedParserJob;
 import echo.core.async.parser.WebsiteParserJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.benchmark.RoundTripTime;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
@@ -26,8 +26,8 @@ public class ParserResource {
     @Autowired
     private ParserService parserService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value  = "/new-podcast",
@@ -35,7 +35,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseNewPodcastData(@RequestBody NewFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data for new podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true, RoundTripTime.empty());
     }
 
@@ -45,7 +45,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseUpdateEpisodeData(@RequestBody UpdateFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data to update episodes for podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false, RoundTripTime.empty());
     }
 
@@ -55,7 +55,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseWebsiteData(@RequestBody WebsiteParserJob job) {
         log.debug("REST request to parseFeed website-data for EXO : {}", job.getExo());
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         parserService.parseWebsite(job.getExo(), job.getHtml());
     }
 

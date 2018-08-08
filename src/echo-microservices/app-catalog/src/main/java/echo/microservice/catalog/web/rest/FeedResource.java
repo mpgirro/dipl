@@ -1,10 +1,9 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.mapper.IdMapper;
-import echo.core.parse.rss.FeedParser;
 import echo.microservice.catalog.service.FeedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +32,14 @@ public class FeedResource {
 
     private IdMapper idMapper = IdMapper.INSTANCE;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @PostMapping("/feed")
     @Transactional
     public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feed) throws URISyntaxException {
         log.debug("REST request to save Feed : {}", feed);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<FeedDTO> created = feedService.save(feed);
         return created
             .map(idMapper::clearImmutable)
@@ -58,7 +57,7 @@ public class FeedResource {
     @ResponseStatus(HttpStatus.OK)
     public void proposeFeed(@RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to propose Feed by URL : {}", url);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         feedService.propose(url, RoundTripTime.empty());
     }
 
@@ -66,7 +65,7 @@ public class FeedResource {
     @Transactional
     public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feed) {
         log.debug("REST request to update Feed : {}", feed);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<FeedDTO> updated = feedService.update(feed);
         return updated
             .map(idMapper::clearImmutable)
@@ -83,7 +82,7 @@ public class FeedResource {
     @Transactional(readOnly = true)
     public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final Optional<FeedDTO> feed = feedService.findOneByExo(exo);
         return feed
             .map(idMapper::clearImmutable)

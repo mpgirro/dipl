@@ -1,7 +1,6 @@
 package echo.microservice.searcher.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondCounter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.SearchService;
 import org.slf4j.Logger;
@@ -27,8 +26,8 @@ public class SearchResource {
     @Autowired
     private SearchService searchService;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RequestMapping(
         value    = "/search",
@@ -38,7 +37,7 @@ public class SearchResource {
                                                         @RequestParam("page") Optional<Integer> page,
                                                         @RequestParam("size") Optional<Integer> size) {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         final ResultWrapperDTO result = searchService.search(query, page, size);
         return new ResponseEntity<>(
             result,

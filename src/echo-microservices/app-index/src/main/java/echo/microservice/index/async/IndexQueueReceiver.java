@@ -2,7 +2,7 @@ package echo.microservice.index.async;
 
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.IndexJob;
-import echo.core.benchmark.MessagesPerSecondCounter;
+import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.benchmark.RoundTripTime;
 import echo.microservice.index.service.IndexService;
 import echo.microservice.index.web.client.BenchmarkClient;
@@ -32,8 +32,8 @@ public class IndexQueueReceiver {
     @Autowired
     private BenchmarkClient benchmarkClient;
 
-    @Resource(name = "messagesPerSecondCounter")
-    private MessagesPerSecondCounter mpsCounter;
+    @Resource(name = "messagesPerSecondMeter")
+    private MessagesPerSecondMeter mpsMeter;
 
     @RabbitListener(
         //containerFactory = "rabbitListenerContainerFactory",
@@ -43,7 +43,7 @@ public class IndexQueueReceiver {
             key      = "${echo.amqp.index-routingkey}")
     )
     public void recievedMessage(IndexJob indexJob) {
-        mpsCounter.incrementCounter();
+        mpsMeter.incrementCounter();
         if (indexJob instanceof AddOrUpdateDocIndexJob) {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
             log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());
