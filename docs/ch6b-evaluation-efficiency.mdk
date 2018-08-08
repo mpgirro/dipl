@@ -1,4 +1,4 @@
-## Efficiency and Benchmarks 
+## Benchmark and Efficiency 
 
 
 ~ todo
@@ -111,6 +111,11 @@ Setup:
     * File system: APFS
 
 * JVM 
+
+...
+
+In this benchmark, we will merely explore effects related to vertical scalability (efficient resource utilization of a host machine), load scalability, and structural scalability [MUSS ICH DANN AUCH WIRKLICH AUSTESTEN -> MEHR MS!]{.red}. Horizontal scalability is beyond our capabilities due to the limitation of hardware resources available to us. As we've pointed out, the actor and microservice programming models are also capable of mobility and elasticity in principle. However, we will not explore these two forms of scalability, since the Echo implementations are not capable of them.
+
 
 ...
 
