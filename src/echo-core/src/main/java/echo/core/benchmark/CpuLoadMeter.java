@@ -3,27 +3,31 @@ package echo.core.benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Maximilian Irro
  */
-public class MemoryUsageMeter extends Thread {
+public class CpuLoadMeter extends Thread {
 
-    private static final Logger log = LoggerFactory.getLogger(MemoryUsageMeter.class);
-
-    private static final long MEGABYTE = 1000L * 1000L;
+    private static final Logger log = LoggerFactory.getLogger(CpuLoadMeter.class);
 
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean monitoring = new AtomicBoolean(false);
     private final int interval;
-    private final List<Long> dataPoints = new LinkedList<>();
+    private final List<Double> dataPoints = new LinkedList<>();
 
-    public MemoryUsageMeter(int interval) {
+    private final OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+
+    public CpuLoadMeter(int interval) {
         this.interval = interval;
         this.start();
     }
@@ -53,7 +57,7 @@ public class MemoryUsageMeter extends Thread {
             try {
                 if (monitoring.get()) {
                     synchronized (dataPoints) {
-                        dataPoints.add(getRealMemoryUsage());
+                        dataPoints.add(getProcessCpuLoad());
                     }
                 }
                 Thread.sleep(interval);
@@ -64,55 +68,44 @@ public class MemoryUsageMeter extends Thread {
         }
     }
 
-    public synchronized List<Long> getDataPoints() {
+    public synchronized List<Double> getDataPoints() {
         synchronized (dataPoints) {
             return dataPoints;
         }
     }
 
-    public synchronized long getCurrentMemoryUsage() {
-        return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
-            + ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
+    public synchronized double getProcessCpuLoad() {
+        final Object value = invokeOperatingSystemMXBeanMethod("getProcessCpuLoad");
+        return (value == null) ? 0.0 : (double) value;
     }
 
-    public synchronized long getGcCount() {
-        long sum = 0;
-        for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
-            long count = b.getCollectionCount();
-            if (count != -1) {
-                sum += count;
-            }
-        }
-        return sum;
-    }
-
-    public synchronized long getRealMemoryUsage() {
-        final long before = getGcCount();
-        System.gc();
-        while (getGcCount() == before); // busy waiting?!
-        return getCurrentMemoryUsage();
-    }
-
-    public synchronized double getMeanMemoryUsage() {
+    public synchronized double getMeanCpuLoad() {
         double result = 0;
         synchronized (dataPoints) {
             if (dataPoints.size() > 0) {
-                final long sum = dataPoints.stream()
-                    .mapToLong(Long::longValue)
+                final double sum = dataPoints.stream()
+                    .mapToDouble(Double::doubleValue)
                     .sum();
 
-                result = ((double) sum) / dataPoints.size();
+                result = sum / dataPoints.size();
             }
         }
         return result;
     }
 
-    public synchronized String getMeanMemoryUsageStr() {
-        return bytesToMegabytes((long) getMeanMemoryUsage()) + " MB";
+    private synchronized Object invokeOperatingSystemMXBeanMethod(String methodName) {
+        Object value = null;
+        for (Method method : operatingSystemMXBean.getClass().getDeclaredMethods()) {
+            method.setAccessible(true);
+            if (method.getName().equals(methodName) && Modifier.isPublic(method.getModifiers())) {
+                try {
+                    value = method.invoke(operatingSystemMXBean);
+                } catch (Exception e) {
+                    value = e;
+                    e.printStackTrace();
+                }
+            }
+        }
+        return value;
     }
-
-    private long bytesToMegabytes(long bytes) {
-        return bytes / MEGABYTE;
-    }
-
 }
