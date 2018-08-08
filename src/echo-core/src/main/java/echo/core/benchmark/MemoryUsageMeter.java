@@ -12,14 +12,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Maximilian Irro
  */
-public class MemoryUsageMeter extends Thread {
+public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
 
     private static final Logger log = LoggerFactory.getLogger(MemoryUsageMeter.class);
 
-    private static final long MEGABYTE = 1000L * 1000L;
+    private static final long MEGABYTE = 1000L * 1000L; // base 10, not base 2
 
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final AtomicBoolean monitoring = new AtomicBoolean(false);
+    private final AtomicBoolean measuring = new AtomicBoolean(false);
     private final int interval;
     private final List<Long> dataPoints = new LinkedList<>();
 
@@ -28,22 +28,32 @@ public class MemoryUsageMeter extends Thread {
         this.start();
     }
 
-    public void startMonitoring() {
-        log.debug("Starting the monitoring");
-        monitoring.set(true);
+    @Override
+    public void activate() {
+        log.debug("Activating the MemoryUsageMeter");
+        running.set(true);
+        this.start();
+    }
+
+    @Override
+    public void deactivate() {
+        log.debug("Deactivating the MemoryUsageMeter");
+        running.set(true);
+    }
+
+    @Override
+    public void startMeasurement() {
+        log.debug("Starting the memory usage measurement");
+        measuring.set(true);
         synchronized (dataPoints) {
             dataPoints.clear();
         }
     }
 
-    public void stopMonitoring() {
-        log.debug("Stopping the monitoring");
-        monitoring.set(false);
-    }
-
-    public void halt() {
-        log.debug("Halting the meter");
-        running.set(false);
+    @Override
+    public void stopMeasurement() {
+        log.debug("Stopping the memory usage measurement");
+        measuring.set(false);
     }
 
     @Override
@@ -51,7 +61,7 @@ public class MemoryUsageMeter extends Thread {
         running.set(true);
         while (running.get()) {
             try {
-                if (monitoring.get()) {
+                if (measuring.get()) {
                     synchronized (dataPoints) {
                         dataPoints.add(getRealMemoryUsage());
                     }
@@ -64,33 +74,10 @@ public class MemoryUsageMeter extends Thread {
         }
     }
 
-    public synchronized List<Long> getDataPoints() {
+    public List<Long> getDataPoints() {
         synchronized (dataPoints) {
             return dataPoints;
         }
-    }
-
-    public synchronized long getCurrentMemoryUsage() {
-        return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
-            + ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
-    }
-
-    public synchronized long getGcCount() {
-        long sum = 0;
-        for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
-            long count = b.getCollectionCount();
-            if (count != -1) {
-                sum += count;
-            }
-        }
-        return sum;
-    }
-
-    public synchronized long getRealMemoryUsage() {
-        final long before = getGcCount();
-        System.gc();
-        while (getGcCount() == before); // busy waiting?!
-        return getCurrentMemoryUsage();
     }
 
     public synchronized double getMeanMemoryUsage() {
@@ -109,6 +96,29 @@ public class MemoryUsageMeter extends Thread {
 
     public synchronized String getMeanMemoryUsageStr() {
         return bytesToMegabytes((long) getMeanMemoryUsage()) + " MB";
+    }
+
+    private synchronized long getCurrentMemoryUsage() {
+        return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
+            + ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
+    }
+
+    private synchronized long getGcCount() {
+        long sum = 0;
+        for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
+            long count = b.getCollectionCount();
+            if (count != -1) {
+                sum += count;
+            }
+        }
+        return sum;
+    }
+
+    private synchronized long getRealMemoryUsage() {
+        final long before = getGcCount();
+        System.gc();
+        while (getGcCount() == before); // busy waiting?!
+        return getCurrentMemoryUsage();
     }
 
     private long bytesToMegabytes(long bytes) {

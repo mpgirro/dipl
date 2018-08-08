@@ -9,19 +9,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Maximilian Irro
  */
-public class CpuLoadMeter extends Thread {
+public class CpuLoadMeter extends Thread implements BenchmarkMeter {
 
     private static final Logger log = LoggerFactory.getLogger(CpuLoadMeter.class);
 
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final AtomicBoolean monitoring = new AtomicBoolean(false);
+    private final AtomicBoolean measuring = new AtomicBoolean(false);
     private final int interval;
     private final List<Double> dataPoints = new LinkedList<>();
 
@@ -32,22 +30,32 @@ public class CpuLoadMeter extends Thread {
         this.start();
     }
 
-    public void startMonitoring() {
-        log.debug("Starting the monitoring");
-        monitoring.set(true);
+    @Override
+    public synchronized void activate() {
+        log.debug("Activating the CpuLoadMeter");
+        running.set(true);
+        this.start();
+    }
+
+    @Override
+    public void deactivate() {
+        log.debug("Deactivating the CpuLoadMeter");
+        running.set(true);
+    }
+
+    @Override
+    public void startMeasurement() {
+        log.debug("Starting the CPU load measurement");
         synchronized (dataPoints) {
+            measuring.set(true);
             dataPoints.clear();
         }
     }
 
-    public void stopMonitoring() {
-        log.debug("Stopping the monitoring");
-        monitoring.set(false);
-    }
-
-    public void halt() {
-        log.debug("Halting the meter");
-        running.set(false);
+    @Override
+    public void stopMeasurement() {
+        log.debug("Stopping the CPU load measurement");
+        measuring.set(false);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class CpuLoadMeter extends Thread {
         running.set(true);
         while (running.get()) {
             try {
-                if (monitoring.get()) {
+                if (measuring.get()) {
                     synchronized (dataPoints) {
                         dataPoints.add(getProcessCpuLoad());
                     }
@@ -68,15 +76,10 @@ public class CpuLoadMeter extends Thread {
         }
     }
 
-    public synchronized List<Double> getDataPoints() {
+    public List<Double> getDataPoints() {
         synchronized (dataPoints) {
             return dataPoints;
         }
-    }
-
-    public synchronized double getProcessCpuLoad() {
-        final Object value = invokeOperatingSystemMXBeanMethod("getProcessCpuLoad");
-        return (value == null) ? 0.0 : (double) value;
     }
 
     public synchronized double getMeanCpuLoad() {
@@ -91,6 +94,11 @@ public class CpuLoadMeter extends Thread {
             }
         }
         return result;
+    }
+
+    private synchronized double getProcessCpuLoad() {
+        final Object value = invokeOperatingSystemMXBeanMethod("getProcessCpuLoad");
+        return (value == null) ? 0.0 : (double) value;
     }
 
     private synchronized Object invokeOperatingSystemMXBeanMethod(String methodName) {
@@ -108,4 +116,5 @@ public class CpuLoadMeter extends Thread {
         }
         return value;
     }
+
 }

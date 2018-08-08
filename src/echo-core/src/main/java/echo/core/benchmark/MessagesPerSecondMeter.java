@@ -1,21 +1,42 @@
 package echo.core.benchmark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Maximilian Irro
  */
-public class MessagesPerSecondCounter {
+public class MessagesPerSecondMeter implements BenchmarkMeter {
+
+    private static final Logger log = LoggerFactory.getLogger(MessagesPerSecondMeter.class);
 
     private long startTimestamp;
     private long stopTimestamp;
     private long counter;
 
-    public synchronized void startCounting() {
+    @Override
+    public synchronized void activate() {
+        log.debug("Activating the MessagesPerSecondMeter");
+        // Nothing to activate
+    }
+
+    @Override
+    public synchronized void deactivate() {
+        log.debug("Deactivating the MessagesPerSecondMeter");
+        // Nothing to deactivate
+    }
+
+    @Override
+    public synchronized void startMeasurement() {
+        log.debug("Starting the MPS measurement");
         counter = 0;
         startTimestamp = System.currentTimeMillis();
         stopTimestamp = 0; // to prevent premature calls to getMessagesPerSecond()
     }
 
-    public synchronized void stopCounting() {
+    @Override
+    public synchronized void stopMeasurement() {
+        log.debug("Stopping the MPS measurement");
         stopTimestamp = System.currentTimeMillis();
     }
 
