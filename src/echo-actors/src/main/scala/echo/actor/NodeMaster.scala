@@ -56,6 +56,7 @@ class NodeMaster extends Actor with ActorLogging {
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
     private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 46) // 'cause we have 21 actors in place that will report their MPS
     private val memoryUsageMeter = new MemoryUsageMeter(200)
+    private val cpuLoadMeter = new CpuLoadMeter(200)
 
     private val benchmarkUtil = new BenchmarkUtil("../benchmark/")
 
@@ -101,14 +102,13 @@ class NodeMaster extends Actor with ActorLogging {
         updater  ! ActorRefBenchmarkMonitor(self)
         gateway  ! ActorRefBenchmarkMonitor(self)
 
-        memoryUsageMeter.start()
-
         log.info("up and running")
     }
 
     override def postStop: Unit = {
 
         memoryUsageMeter.halt()
+        cpuLoadMeter.halt()
 
         log.info("shutting down")
     }
@@ -119,6 +119,7 @@ class NodeMaster extends Actor with ActorLogging {
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             sendStartMessagePerSecondMonitoringMessages()
             memoryUsageMeter.startMonitoring()
+            cpuLoadMeter.startMonitoring()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
@@ -196,8 +197,12 @@ class NodeMaster extends Actor with ActorLogging {
 
 
             memoryUsageMeter.stopMonitoring()
+            cpuLoadMeter.stopMonitoring()
+
             log.info("Mean memory usage : {}", memoryUsageMeter.getMeanMemoryUsageStr)
+            log.info("Mean CPU load     : {}", cpuLoadMeter.getMeanCpuLoad)
             //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
+            //log.info("CPU load datapoints : {}", cpuLoadMeter.getDataPoints)
 
             //rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
 
