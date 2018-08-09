@@ -23,7 +23,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
-defaultTasks 'clean build runBoot'
+defaultTasks 'clean build bootRun'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
