@@ -1014,9 +1014,9 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 {.findings-list}
 ~
 
-### Software Artifact Metrics
+### Software Artifact Metrics Analysis
 
-Chapters [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies expressable by programming actors and microservices. The previous sections of this chapter compared the capabilities resulting from model properties and the expressed strategies. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts.
+Sections [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies expressable by programming actors and microservices. The previous sections of this chapter compared the capabilities resulting from model properties and the expressed strategies. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts.
 
 We concern ourself with three metrics: the *lines of code* (LoC) it took to express the respective functionality, the size of the resulting artifacts, and the *startup time* (ST) of each artifact. 
 
@@ -1024,13 +1024,13 @@ We concern ourself with three metrics: the *lines of code* (LoC) it took to expr
 LoC ist interessant weil es Rückschlüsse auf die Expressiveness zulässt. Byte code size ist interessant weil ich einen indirekt proportionalen Zusammenhang vermute (d.h. für weniger LoC nimmt man viel mehr eingebrachten byte code durch dependency injection in Kauf). Startup time soll nur illustrieren wie arg langsam so ein Service ist
 ~
 
-All Akka actors are compiled into a monolithic application. Therefore, the respective Akka metrics refere to the resulting monolith. The Spring-based microservices are independent programs, so we can give the metrics for each service engine separately.
+All Akka actors are compiled into a single monolithic application. Therefore, the respective Akka metrics refere to the resulting monolith. The Spring-based microservices are independent programs, so we can give the metrics for each service engine separately.
 
 We measure size in terms of the bytes of each JAR (__J__ava __Ar__chive) file. There are several ways to package a JAR. Two kinds are of relevance to us. We define a *skinny JAR* (sJAR) as the archive containing merely the byte code and direct resources (e.g.\ property files) of a program's source code. Subsequently, we use *fat JAR* (fJAR) for an archive containing the data of the skinny JAR version, together with it's direct dependencies (e.g.\ other libraries in their skinny JAR version), and the deployment information required to execute the application on a standard Java runtime environment. Fat JARs are therefore executable artifacts.
 
-Startup time (ST) is an indication of the heavy-weightness of a construct, at least upon instantiation. 
+...Startup time is an indication of the heavy-weightness of a construct, at least upon instantiation. 
 
-Table [#tab-artifact-metrics] gives the measures metrics for our Echo artifacts. As a reminder, the Core artifact is the library implementing the domain specific logic. Hence, Core's skinny JAR is part of the fat JARs of all microservice engines as well as the Akka monolithic engine. The Web application is the frontend client that both Echo system implementations have to serve their functionality too. The LoC metric of the Web application is merely given as a reference relative to the other artifacts.
+Table [#tab-artifact-metrics] gives the measured metrics for our Echo artifacts. As a reminder, the Core artifact is the library implementing the domain specific logic. Hence, Core's skinny JAR is part of all fat JARs of the microservice engines as well as the Akka monolithic engine. The Web application is the frontend client that both Echo system implementations have to serve their functionality too [(?schlechter satz)]{.red}. The LoC metric of the Web application is merely given as a reference relative to the other artifacts.
 
 ~ Begin Center
 ~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of code (LoC), byte code size of fat and skinny JARs, and startup time (ST) of Echo artifacts"; page-align:here }
@@ -1065,7 +1065,11 @@ Table [#tab-artifact-metrics] gives the measures metrics for our Echo artifacts.
 Analyse der Tabellen-Einträge
 ~
 
-The Akka monolithic engine has of course by far the most lines of code, since a monolith implements the whole system within a single artifact, while the microservices merely implement parts of the overall system each. The overall LoC sum of all microservices is 4915. We see, although Spring provides very expressive declarative programming APIs, the Akka interface is still a bit less verbose.
+The Akka monolithic engine has of course by far the most lines of code, since a monolith implements the whole system within a single artifact, while the microservices merely implement parts of the overall system each. Note that the DTO classes used to send asynchronous messages via AMQP are implemented in Core rather than directly within the service code bases. This is contrary to the microservice paradigm in principle, which states that shared code bases should be avoided [(hab ich das eigentlich im Kapitel 4 beschrieben?!)]{.red}. As a result, we usually have to expect duplicate DTO class code between the services.  
+
+However, Spring's AMQP integration greatly simplifies JSON deserialization of messages out of the box, if we use the very same class on the sending and receiving end. We resorted to shared classes and have them within the shared Core, to ease our benchmark application's development effort. To reflect the values that the paradigm intends and the resulting expected development effort, we've adjusted the LoC values of each microservice by the DTO class sizes each service uses. 
+
+The resulting overall LoC sum of all microservices is [4915]{.red}. We see, although Spring provides very expressive declarative programming APIs, the Akka interface is still a bit less verbose.
 
 Even more interrestingly, each microservice engine takes considerably more time to startup than the entire Akka monolithic engine. The inversion of control model that powers the declarative programming style of Spring adds considerable runtime overhead. 
 
