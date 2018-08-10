@@ -1,6 +1,8 @@
 
 server:
     port: ${ECHO_CATALOG_PORT:3031}
+    undertow:
+        worker-threads: 32
 
 spring:
     application:
@@ -60,6 +62,8 @@ echo:
         crawler-routingkey: echo.crawler.routingkey
         updater-routingkey: echo.updater.routingkey
         index-routingkey: echo.index.routingkey
+    benchmark:
+        meter-interval: 200
 
 eureka:
     client:
