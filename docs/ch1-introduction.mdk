@@ -63,6 +63,12 @@ Therefore, we want to address the following research question:
 
 > __RQ3__: *How do Actors compare against Microservices?*
 
+* What are the interrelations between actor features/primitives and microservice features/primitives
+
+* 1 MS mit X worker-threads ?= X actors on thread-pool with X threads
+
+* 2 MS mit X/2 worker-threads ?= X actors on thread-pool with X threads
+
 ## Aim and Scope of the Work
 
 ~ todo
