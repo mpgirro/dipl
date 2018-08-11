@@ -26,7 +26,7 @@ class Parser extends Actor with ActorLogging {
     private val CONFIG = ConfigFactory.load()
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.parser.worker-count")).getOrElse(2)
 
-    private var workerIndex = 1
+    private var workerIndex = 0
 
     private var catalogStore: ActorRef = _
     private var crawler: ActorRef = _
@@ -92,9 +92,8 @@ class Parser extends Actor with ActorLogging {
     }
 
     private def createParserActor(): ActorRef = {
-        val parser = context.actorOf(ParserWorker.props(), ParserWorker.name(workerIndex))
-
         workerIndex += 1
+        val parser = context.actorOf(ParserWorker.props(), ParserWorker.name(workerIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(catalogStore).foreach(d => parser ! ActorRefCatalogStoreActor(d))

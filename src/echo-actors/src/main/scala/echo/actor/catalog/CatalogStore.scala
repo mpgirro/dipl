@@ -30,7 +30,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     private val CONFIG = ConfigFactory.load()
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.catalog.worker-count")).getOrElse(5)
 
-    private var currentWorkerIndex = 1
+    private var currentWorkerIndex = 0
 
     private var crawler: ActorRef = _
     private var updater: ActorRef = _
@@ -115,9 +115,9 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     }
 
     private def createCatalogStoreWorkerActor(databaseUrl: String): ActorRef = {
+        currentWorkerIndex += 1
         val workerIndex = currentWorkerIndex
         val catalogStore = context.actorOf(CatalogStoreHandler.props(workerIndex, databaseUrl), CatalogStoreHandler.name(workerIndex))
-        currentWorkerIndex += 1
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => catalogStore ! ActorRefCrawlerActor(c) )

@@ -22,7 +22,7 @@ class Searcher extends Actor with ActorLogging {
     private val CONFIG = ConfigFactory.load()
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.searcher.worker-count")).getOrElse(5)
 
-    private var workerIndex = 1
+    private var workerIndex = 0
 
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
@@ -73,9 +73,8 @@ class Searcher extends Actor with ActorLogging {
 
 
     private def createWorkerActor(): ActorRef = {
-        val worker = context.actorOf(FutureSearcherWorker.props(), DelegationSearcherWorker.name(workerIndex))
-
         workerIndex += 1
+        val worker = context.actorOf(DelegationSearcherWorker.props(), DelegationSearcherWorker.name(workerIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(indexStore).foreach(d => worker ! ActorRefIndexStoreActor(d))

@@ -39,7 +39,7 @@ class IndexStore (indexPath: String,
     private val INDEX_PATH: String = Option(CONFIG.getString("echo.index.lucene-path")).getOrElse("index")
     */
     private val WORKER_COUNT: Int = Option(CONFIG.getInt("echo.index.handler-count")).getOrElse(5)
-    private var handlerIndex = 1
+    private var handlerIndex = 0
 
     private val mediator = DistributedPubSub(context.system).mediator
 
