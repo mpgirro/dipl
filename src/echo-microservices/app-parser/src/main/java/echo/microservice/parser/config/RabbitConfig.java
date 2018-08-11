@@ -10,6 +10,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,11 +24,18 @@ import org.springframework.core.env.Environment;
 @Import(JacksonConfig.class)
 public class RabbitConfig {
 
+    private final int concurrentConsumers;
+
     @Autowired
     private Environment env;
 
     @Autowired
     private JacksonConfig jacksonConfig;
+
+    @Autowired
+    public RabbitConfig(@Value("${server.undertow.worker-threads:10}") Integer concurrentConsumers) {
+        this.concurrentConsumers = concurrentConsumers;
+    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -44,8 +52,8 @@ public class RabbitConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
-        factory.setConcurrentConsumers(5);
-        factory.setMaxConcurrentConsumers(10);
+        factory.setConcurrentConsumers(concurrentConsumers);
+        factory.setMaxConcurrentConsumers(concurrentConsumers);
         factory.setMessageConverter(jsonMessageConverter());
         return factory;
     }
@@ -62,7 +70,7 @@ public class RabbitConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
     }
