@@ -121,6 +121,7 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 
 * Indexing experiments are started on empty catalog/index
 * Retrieval experiments are started on filled index
+* To avoid interferences of non-model specific parameters (latencies, etc.), we use the same database API in both architecture. Hence, the Akka implementation uses the Spring Data JPA binding that fits naturally into the CatalogStore microservice.  
 
 ...
 

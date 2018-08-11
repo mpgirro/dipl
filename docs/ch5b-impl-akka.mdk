@@ -6,7 +6,7 @@
 One actor is no actor. Actors come in systems.
 ~
 
-This section covers the strategies that can be applied by actor-based programming to implement concurrent systems like our scenario. The focus will be on the linguistic support provided by the framework we used to realize the requirements.
+This section covers the strategies applied by actor-based programming to implement concurrent systems like our scenario. The focus will be on the linguistic support provided by the framework we used to realize the requirements.
 
 ---
 

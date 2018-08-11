@@ -44,6 +44,10 @@ Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing model
 DELETE: Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated the solution strategies of each model and their expression through programming interfaces. This section will focus on comparing the capabilities that result from model properties and expressed [techniques/capabilities/???]{.red}. Furthermore, we will evaluate the expressiveness by analysing metrics of the software artifacts resulting from expressing computation through the actor and microservice programming model.  
 ~
 
+This section conducts a conceptual evaluation. We compare the capabilities and expressiveness of the actor and microservice programming models.
+
+...
+
 In this section we will compare and evaluate the capabilities that can be expressed by the actor and microservice programming models. 
 
 

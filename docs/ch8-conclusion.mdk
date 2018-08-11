@@ -40,3 +40,7 @@ Future Work
 ~
 
 We deem it worth to investigate if there are theoretical frameworks incorporating both actors and microservices
+
+* As we've demonstrated, Spring-based microservices produce heavy-weighted executable JAR files. The reason for the resulting size is that all dependencies are included into these JARs by the Java 8 compiler. However, great parts of these libraries are potentially never used. Recent trends in the Java evolution lead to Project Jigsaw (<http://openjdk.java.net/projects/jigsaw/>) starting from Java 9 and above. Jigsaw is an umbrella term for tools to create smaller runtimes with merely the required parts of the original JDK [TODO: stimmt das wirklich? Ist das nur das JDK was abgeschnitten wird, oder auch alle Libraries?]{.red}. It is worth to investigate the potential byte size savings as well as the resulting performance improvements.  
+
+* Worth to investigate the applicability of the actor model as the microservice internal concurrency approach.
