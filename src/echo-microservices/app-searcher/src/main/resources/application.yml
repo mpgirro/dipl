@@ -5,6 +5,8 @@ spring:
 
 server:
     port: ${ECHO_SEARCHER_PORT:3035}
+    undertow:
+        worker-threads: 32
 
 management:
     security:
@@ -17,6 +19,8 @@ echo:
         core-pool-size: 2
         max-pool-size: 50
         queue-capacity: 10000
+    benchmark:
+        meter-interval: 200
 
 eureka:
     client:

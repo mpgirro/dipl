@@ -10,6 +10,8 @@ spring:
 
 server:
     port: ${ECHO_INDEX_PORT:3032}
+    undertow:
+        worker-threads: 32
 
 management:
     security:
@@ -27,6 +29,8 @@ echo:
     amqp:
         exchange: echo.direct
         index-routingkey: echo.index.routingkey
+    benchmark:
+        meter-interval: 200
 
 eureka:
     client:

@@ -1,6 +1,8 @@
 
 server:
     port: ${ECHO_PARSER_PORT:3034}
+    undertow:
+        worker-threads: 32
 
 echo:
     parser:
@@ -13,6 +15,8 @@ echo:
         exchange: echo.direct
         parser-routingkey: echo.parser.routingkey
         catalog-routingkey: echo.catalog.routingkey
+    benchmark:
+        meter-interval: 200
 
 spring:
     application:

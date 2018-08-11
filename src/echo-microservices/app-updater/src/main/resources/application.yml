@@ -1,6 +1,8 @@
 
 server:
     port: ${ECHO_UPDATER_PORT:3037}
+    undertow:
+        worker-threads: 32
 
 echo:
     updater:
@@ -14,6 +16,8 @@ echo:
         catalog-routingkey: echo.catalog.routingkey
         crawler-routingkey: echo.crawler.routingkey
         updater-routingkey: echo.updater.routingkey
+    benchmark:
+        meter-interval: 200
 
 spring:
     application:

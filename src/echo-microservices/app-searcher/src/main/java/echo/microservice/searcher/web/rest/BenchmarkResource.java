@@ -1,5 +1,7 @@
 package echo.microservice.searcher.web.rest;
 
+import echo.core.benchmark.CpuLoadMeter;
+import echo.core.benchmark.MemoryUsageMeter;
 import echo.core.benchmark.MessagesPerSecondMeter;
 import echo.core.benchmark.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
@@ -40,6 +42,12 @@ public class BenchmarkResource {
     @Resource(name = "messagesPerSecondMeter")
     private MessagesPerSecondMeter mpsMeter;
 
+    @Resource(name = "memoryUsageMeter")
+    private MemoryUsageMeter memoryUsageMeter;
+
+    @Resource(name = "cpuLoadMeter")
+    private CpuLoadMeter cpuLoadMeter;
+
     @RequestMapping(
         value  = "/start-mps",
         method = RequestMethod.POST,
@@ -47,6 +55,8 @@ public class BenchmarkResource {
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
         mpsMeter.startMeasurement();
+        memoryUsageMeter.startMeasurement();
+        cpuLoadMeter.startMeasurement();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -57,6 +67,8 @@ public class BenchmarkResource {
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
         mpsMeter.stopMeasurement();
+        memoryUsageMeter.stopMeasurement();
+        cpuLoadMeter.stopMeasurement();
         benchmarkClient.setMpsReport(applicationName, mpsMeter.getMessagesPerSecond());
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -5,6 +5,8 @@ spring:
 
 server:
     port: ${ECHO_GATEWAY_PORT:3030}
+    undertow:
+        worker-threads: 32
 
 management:
     security:
@@ -19,6 +21,8 @@ echo:
         fallback-description: "Data could not be loaded due to a temporary problem. Try again later"
         default-page: 1
         efault-size: 20
+    benchmark:
+        meter-interval: 200
 
 eureka:
     client:
