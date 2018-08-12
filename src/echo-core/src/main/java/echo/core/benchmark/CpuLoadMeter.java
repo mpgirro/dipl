@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -24,6 +25,8 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
     private final List<Double> dataPoints = new LinkedList<>();
 
     private final OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+
+    private CpuLoadResult result;
 
     public CpuLoadMeter(int interval) {
         this.interval = interval;
@@ -56,6 +59,7 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
     public void stopMeasurement() {
         log.debug("Stopping the CPU load measurement");
         measuring.set(false);
+        calculateResult();
     }
 
     @Override
@@ -76,6 +80,17 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
         }
     }
 
+    public CpuLoadResult getResult() {
+        return Optional
+            .ofNullable(result)
+            .orElseThrow(() -> new RuntimeException("CPU load result not yet available"));
+    }
+
+    private void calculateResult() {
+        result = CpuLoadResult.of(dataPoints);
+    }
+
+    /* TODO delete?
     public List<Double> getDataPoints() {
         synchronized (dataPoints) {
             return dataPoints;
@@ -95,6 +110,7 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
         }
         return result;
     }
+    */
 
     private synchronized double getProcessCpuLoad() {
         final Object value = invokeOperatingSystemMXBeanMethod("getProcessCpuLoad");

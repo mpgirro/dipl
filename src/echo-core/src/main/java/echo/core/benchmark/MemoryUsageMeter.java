@@ -1,5 +1,6 @@
 package echo.core.benchmark;
 
+import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +8,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -16,12 +18,12 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
 
     private static final Logger log = LoggerFactory.getLogger(MemoryUsageMeter.class);
 
-    private static final long MEGABYTE = 1000L * 1000L; // base 10, not base 2
-
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean measuring = new AtomicBoolean(false);
     private final int interval;
     private final List<Long> dataPoints = new LinkedList<>();
+
+    private MemoryUsageResult result;
 
     public MemoryUsageMeter(int interval) {
         this.interval = interval;
@@ -54,6 +56,7 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
     public void stopMeasurement() {
         log.debug("Stopping the memory usage measurement");
         measuring.set(false);
+        calculateResult();
     }
 
     @Override
@@ -74,6 +77,17 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
         }
     }
 
+    public MemoryUsageResult getResult() {
+        return Optional
+            .ofNullable(result)
+            .orElseThrow(() -> new RuntimeException("Memory usage result not yet available"));
+    }
+
+    private void calculateResult() {
+        result = MemoryUsageResult.of(dataPoints);
+    }
+
+    /* TODO delete?
     public List<Long> getDataPoints() {
         synchronized (dataPoints) {
             return dataPoints;
@@ -94,9 +108,15 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
         return result;
     }
 
+    private long bytesToMegabytes(long bytes) {
+        return bytes / MEGABYTE;
+    }
+
     public synchronized String getMeanMemoryUsageStr() {
         return bytesToMegabytes((long) getMeanMemoryUsage()) + " MB";
     }
+
+    */
 
     private synchronized long getCurrentMemoryUsage() {
         return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
@@ -119,10 +139,6 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
         System.gc();
         while (getGcCount() == before); // busy waiting?!
         return getCurrentMemoryUsage();
-    }
-
-    private long bytesToMegabytes(long bytes) {
-        return bytes / MEGABYTE;
     }
 
 }
