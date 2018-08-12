@@ -139,6 +139,14 @@ The author expected an asynchronous handling of HTTP requests when fetching feed
  
 Although simple RPC styled retrieval did limit throughput, this can also be an advantage on the other hand. The limitation puts a uniform and more predictable stress on the thread-pool, avoids problems like actor starvation and maintains their overall liveness. There are however still other cases where futures may come into play. The following Section will continue discussing future usage in the light of communication.
 
+~ Findings
+[Main findings]{.findings-title}
+
++ We can combine actors with additional compatible concurrency models.
++ Combining futures with actors can have a negative impact on performance.
+{.findings-list}
+~
+
 
 ### Communication Abstractions
 
@@ -348,6 +356,14 @@ Isolation must not be broken though. Therefore [these children (WIE NENNE ICH DI
 The second strategy is perused in Echo. Blocking operations inside actors are involved and in fact increased by the factor equal to the number of children used. Therefore, we use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool can use a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. This dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
 
 We see, efficient handling of IO peruses the same strategies as the introduced delegation-based handling of synchronous actor communication.
+
+
+~ Findings
+[Main findings]{.findings-title}
+
++ Actors apply the same strategies to handle IO/persistance as they do for efficient message handling.
+{.findings-list}
+~
 
 <!--
 ## Clustering

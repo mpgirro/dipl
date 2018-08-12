@@ -122,10 +122,10 @@ On the other hand, active objects provide ordinary object-like interfaces. Sendi
 The active object method signatures do not only define communication with a certain degree of static type safety. Every signature also influences the behavior of an object's thread of control. Therefore, signatures constrain synchronization [@Lav95]. In the original work of Yonezawa *et al.*, they introduce multiple types of message passing for method invocation [@Yon86; @Kos16]:
 
 * Past Type
-  : The message is dispatched and the sending object's thread of control immediately continues. The thread does not wait until the message has been processed by the receiver. This behavior is equal to message passing in the actor model.
+  : The message is dispatched and the sending object's thread of control immediately continues. The thread does not wait until the message has been processed by the receiver. This behavior is equal to message passing in the classic actor model.
 
 * Now Type
-  : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replied the result. This behavior is equal to a procedure call with a return value.
+  : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replied the result. This behavior is equal to a method call (with a return value) on passiv objects.
 
 * Future Type
   : The sender's thread of control immediately returns, but receives a reference to the result that will be available at some point in the future. The actual result becomes available once the receiving object has processed the message and replied.
@@ -134,7 +134,7 @@ The example above illustrates two of these behaviors of method invocation of act
 
 Table [#tab-actor-ao-comparison] gives an overview of the major differences relevant to our considerations between actors and active objects.
 
-~ Begin TableFigure { #tab-actor-ao-comparison; caption: "Major differences between Actors and Active Objects"; page-align:here}
+~ Begin TableFigure { #tab-actor-ao-comparison; caption: "Major differences between actors and active objects"; page-align:here}
 |-------------------------|-------------------|----------------------------------|
 | Characteristic          | Actors            | Active Objects                   |
 +-------------------------+-------------------+----------------------------------+

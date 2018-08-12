@@ -442,10 +442,9 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Actors and microservices qualify for distributed communication in a transparent way, i.e.\ the messaging interfaces do not differe for local and remote interaction.
-+ Distributed objects face problems in their abstraction of distribution.
-+ Actor- and microservice-based programming mitigates the problematic abstraction of transparent distribution compared to DOs.
-+ Programming with active objects shares the conceptual problems of distributed objects. Hence, active objects are a more risky abstraction than classic actors and microservices.
++ Actors and microservices qualify for distributed communication in a transparent way. Their messaging interfaces do not differe for local and remote interaction.
++ Active and distributed objects provide type-safety for messages, but increase the risk to introduce unintended synchronization constraints with their abstraction of transparent distribution. 
++ Messaging interfaces in actor- and microservice-based programming mitigate the problematic abstraction of transparent distribution.
 {.findings-list}
 ~
 
@@ -667,6 +666,13 @@ The constraints required for maintaining strong consistency relate to safety [@M
 
 ~ todo
 KANN ICH AVAILABILITY IRGENDWIE MESSEN? DAS WÄRE EINE GUTE PRAKTISCHE TABELLE HIER, DIE DAS KAPITEL RECHTFERTIGEN WÜRDE...
+~
+
+~ Findings
+[Main findings]{.findings-title}
+
++ [TODO]{.red}
+{.findings-list}
 ~
 
 
