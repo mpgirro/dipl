@@ -1,8 +1,8 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.CpuLoadMeter;
-import echo.core.benchmark.MemoryUsageMeter;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.cpu.CpuLoadMeter;
+import echo.core.benchmark.memory.MemoryUsageMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.catalog.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class BenchmarkResource {
         mpsMeter.stopMeasurement();
         memoryUsageMeter.stopMeasurement();
         cpuLoadMeter.stopMeasurement();
-        benchmarkClient.setMpsReport(applicationName, mpsMeter.getMessagesPerSecond());
+        benchmarkClient.setMpsReport(applicationName, mpsMeter.getResult().mps);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -70,7 +70,7 @@ public class BenchmarkResource {
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
         mpsMeter.incrementCounter();
-        return mpsMeter.getMessagesPerSecond();
+        return mpsMeter.getResult().mps;
     }
 
 }

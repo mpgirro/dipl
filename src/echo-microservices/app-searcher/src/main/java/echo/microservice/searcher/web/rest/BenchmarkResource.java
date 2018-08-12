@@ -1,9 +1,9 @@
 package echo.microservice.searcher.web.rest;
 
-import echo.core.benchmark.CpuLoadMeter;
-import echo.core.benchmark.MemoryUsageMeter;
-import echo.core.benchmark.MessagesPerSecondMeter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.cpu.CpuLoadMeter;
+import echo.core.benchmark.memory.MemoryUsageMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.SearchService;
@@ -69,7 +69,7 @@ public class BenchmarkResource {
         mpsMeter.stopMeasurement();
         memoryUsageMeter.stopMeasurement();
         cpuLoadMeter.stopMeasurement();
-        benchmarkClient.setMpsReport(applicationName, mpsMeter.getMessagesPerSecond());
+        benchmarkClient.setMpsReport(applicationName, mpsMeter.getResult().mps);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -79,7 +79,7 @@ public class BenchmarkResource {
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
         mpsMeter.incrementCounter();
-        return mpsMeter.getMessagesPerSecond();
+        return mpsMeter.getResult().mps;
     }
 
     @RequestMapping(

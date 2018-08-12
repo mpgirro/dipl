@@ -1,7 +1,7 @@
 package echo.microservice.gateway.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;

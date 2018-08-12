@@ -6,7 +6,7 @@ import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.ImmutableAddOrUpdateDocIndexJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.mapper.IndexMapper;
 import echo.microservice.catalog.service.EpisodeService;

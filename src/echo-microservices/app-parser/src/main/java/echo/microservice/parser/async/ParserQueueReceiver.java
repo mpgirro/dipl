@@ -3,7 +3,7 @@ package echo.microservice.parser.async;
 import echo.core.async.parser.NewFeedParserJob;
 import echo.core.async.parser.ParserJob;
 import echo.core.async.parser.UpdateFeedParserJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.parser.service.ParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

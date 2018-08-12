@@ -1,6 +1,6 @@
 package echo.microservice.searcher.service;
 
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.web.client.IndexClient;

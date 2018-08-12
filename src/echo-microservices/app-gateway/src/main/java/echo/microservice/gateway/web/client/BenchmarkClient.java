@@ -1,6 +1,6 @@
 package echo.microservice.gateway.web.client;
 
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.gateway.config.FeignConfig;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

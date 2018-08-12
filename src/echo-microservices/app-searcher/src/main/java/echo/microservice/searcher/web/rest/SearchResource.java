@@ -1,6 +1,6 @@
 package echo.microservice.searcher.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.SearchService;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.domain.dto.*;
 import echo.microservice.gateway.service.CatalogService;
 import org.slf4j.Logger;

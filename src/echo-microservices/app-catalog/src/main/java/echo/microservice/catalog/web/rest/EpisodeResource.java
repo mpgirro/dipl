@@ -1,7 +1,7 @@
 package echo.microservice.catalog.web.rest;
 
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.domain.dto.ArrayWrapperDTO;
 import echo.core.domain.dto.ChapterDTO;
 import echo.core.domain.dto.EpisodeDTO;

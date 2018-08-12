@@ -1,7 +1,7 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.FeedService;

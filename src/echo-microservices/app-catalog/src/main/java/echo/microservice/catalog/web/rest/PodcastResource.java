@@ -1,6 +1,6 @@
 package echo.microservice.catalog.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.domain.dto.*;
 import echo.core.mapper.IdMapper;
 import echo.microservice.catalog.service.EpisodeService;

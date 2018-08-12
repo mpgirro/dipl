@@ -2,8 +2,8 @@ package echo.microservice.index.async;
 
 import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.IndexJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.index.service.IndexService;
 import echo.microservice.index.web.client.BenchmarkClient;
 import org.slf4j.Logger;

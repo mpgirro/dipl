@@ -7,6 +7,7 @@ import com.typesafe.scalalogging.Logger
 import com.softwaremill.sttp._
 import echo.core.async.catalog.{ImmutableProposeNewFeedJob, ProposeNewFeedJob}
 import echo.core.benchmark._
+import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.util.UrlUtil
 
 import scala.collection.JavaConverters._

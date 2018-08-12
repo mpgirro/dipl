@@ -5,7 +5,7 @@ import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
 import echo.core.async.parser.ParserJob;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.ModifiablePodcastDTO;

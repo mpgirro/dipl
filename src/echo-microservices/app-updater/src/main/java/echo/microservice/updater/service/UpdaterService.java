@@ -5,7 +5,7 @@ import echo.core.async.catalog.ProposeNewFeedJob;
 import echo.core.async.crawler.ImmutableNewFeedCrawlerJob;
 import echo.core.async.crawler.NewFeedCrawlerJob;
 import echo.core.async.updater.*;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.updater.async.CatalogQueueSender;
 import echo.microservice.updater.async.CrawlerQueueSender;
 import org.slf4j.Logger;

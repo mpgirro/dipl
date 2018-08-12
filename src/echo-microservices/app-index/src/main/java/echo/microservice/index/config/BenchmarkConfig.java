@@ -1,8 +1,8 @@
 package echo.microservice.index.config;
 
-import echo.core.benchmark.CpuLoadMeter;
-import echo.core.benchmark.MemoryUsageMeter;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.cpu.CpuLoadMeter;
+import echo.core.benchmark.memory.MemoryUsageMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -4,7 +4,7 @@ import echo.core.async.updater.ProcessFeedWebsiteJob;
 import echo.core.async.updater.ProcessNewFeedJob;
 import echo.core.async.updater.ProcessUpdateFeedJob;
 import echo.core.async.updater.UpdaterJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

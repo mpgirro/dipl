@@ -1,7 +1,7 @@
 package echo.microservice.crawler.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package echo.microservice.index.web.rest;
 
-import echo.core.benchmark.MessagesPerSecondMeter;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.core.exception.SearchException;

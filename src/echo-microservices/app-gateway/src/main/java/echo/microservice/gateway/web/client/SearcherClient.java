@@ -1,6 +1,6 @@
 package echo.microservice.gateway.web.client;
 
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.gateway.config.FeignConfig;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -29,6 +29,6 @@ public interface SearcherClient {
     ResultWrapperDTO getBenchmarkSearchResults(@RequestParam("query") String query,
                                                @RequestParam("page") Integer page,
                                                @RequestParam("size") Integer size,
-                                               @RequestBody  RoundTripTime rtt);
+                                               @RequestBody RoundTripTime rtt);
 
 }

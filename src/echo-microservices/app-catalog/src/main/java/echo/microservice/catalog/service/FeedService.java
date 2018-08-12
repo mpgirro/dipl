@@ -3,7 +3,7 @@ package echo.microservice.catalog.service;
 import com.google.common.base.MoreObjects;
 import echo.core.async.updater.ImmutableProcessNewFeedJob;
 import echo.core.async.updater.ProcessNewFeedJob;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.FeedDTO;
 import echo.core.domain.dto.ImmutableFeedDTO;
 import echo.core.domain.dto.ImmutablePodcastDTO;

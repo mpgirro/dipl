@@ -2,6 +2,9 @@ package echo.microservice.registry.web.rest;
 
 import com.google.common.collect.ImmutableList;
 import echo.core.benchmark.*;
+import echo.core.benchmark.mps.MessagesPerSecondMonitor;
+import echo.core.benchmark.rtt.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;

@@ -3,7 +3,7 @@ package echo.microservice.crawler.service;
 import echo.core.async.parser.ImmutableNewFeedParserJob;
 import echo.core.async.parser.ImmutableUpdateFeedParserJob;
 import echo.core.async.parser.ParserJob;
-import echo.core.benchmark.RoundTripTime;
+import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.exception.EchoException;
 import echo.core.http.HeadResult;
 import echo.core.http.HttpClient;

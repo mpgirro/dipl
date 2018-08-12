@@ -3,7 +3,7 @@ package echo.microservice.crawler.async;
 import echo.core.async.crawler.CrawlerJob;
 import echo.core.async.crawler.NewFeedCrawlerJob;
 import echo.core.async.crawler.UpdateFeedCrawlerJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

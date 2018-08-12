@@ -1,7 +1,7 @@
 package echo.microservice.updater.web.rest;
 
 import echo.core.async.catalog.ProposeNewFeedJob;
-import echo.core.benchmark.MessagesPerSecondMeter;
+import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
