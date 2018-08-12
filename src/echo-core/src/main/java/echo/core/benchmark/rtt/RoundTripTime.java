@@ -1,7 +1,8 @@
-package echo.core.benchmark;
+package echo.core.benchmark.rtt;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.Workflow;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;

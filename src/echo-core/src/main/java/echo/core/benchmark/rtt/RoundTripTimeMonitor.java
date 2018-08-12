@@ -1,6 +1,9 @@
-package echo.core.benchmark;
+package echo.core.benchmark.rtt;
 
 import com.google.common.collect.ImmutableList;
+import echo.core.benchmark.ArchitectureType;
+import echo.core.benchmark.FeedProperty;
+import echo.core.benchmark.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

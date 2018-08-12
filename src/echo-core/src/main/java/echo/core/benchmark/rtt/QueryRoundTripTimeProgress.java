@@ -1,4 +1,4 @@
-package echo.core.benchmark;
+package echo.core.benchmark.rtt;
 
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;

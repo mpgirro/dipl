@@ -1,4 +1,4 @@
-package echo.core.benchmark;
+package echo.core.benchmark.mps;
 
 /**
  * @author Maximilian Irro

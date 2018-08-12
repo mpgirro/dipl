@@ -2,6 +2,9 @@ package echo.core.benchmark;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import echo.core.benchmark.cpu.CpuLoadResult;
+import echo.core.benchmark.memory.MemoryUsageResult;
+import echo.core.benchmark.mps.MessagesPerSecondResult;
 import org.immutables.value.Value;
 
 /**

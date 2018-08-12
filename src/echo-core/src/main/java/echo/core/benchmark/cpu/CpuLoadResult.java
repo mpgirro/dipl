@@ -1,4 +1,4 @@
-package echo.core.benchmark;
+package echo.core.benchmark.cpu;
 
 import com.google.common.collect.ImmutableList;
 

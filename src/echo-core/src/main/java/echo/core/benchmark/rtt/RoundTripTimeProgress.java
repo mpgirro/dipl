@@ -1,4 +1,4 @@
-package echo.core.benchmark;
+package echo.core.benchmark.rtt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

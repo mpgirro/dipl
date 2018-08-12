@@ -1,5 +1,6 @@
-package echo.core.benchmark;
+package echo.core.benchmark.mps;
 
+import echo.core.benchmark.ArchitectureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
