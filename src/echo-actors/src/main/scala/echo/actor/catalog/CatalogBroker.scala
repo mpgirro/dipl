@@ -7,7 +7,7 @@ import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLog
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol.{CatalogCommand, CatalogEvent, CatalogQuery}
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 
 /**
   * @author Maximilian Irro
@@ -84,7 +84,7 @@ class CatalogBroker extends Actor with ActorLogging {
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
             broadcastRouter.route(msg, sender())
 
         case command: CatalogCommand =>

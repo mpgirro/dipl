@@ -18,7 +18,7 @@ import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service._
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -144,7 +144,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)

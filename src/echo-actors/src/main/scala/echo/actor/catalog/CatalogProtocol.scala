@@ -3,7 +3,7 @@ package echo.actor.catalog
 import java.time.LocalDateTime
 
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ChapterDTO, EpisodeDTO, FeedDTO, PodcastDTO}
 import echo.core.domain.feed.FeedStatus
 

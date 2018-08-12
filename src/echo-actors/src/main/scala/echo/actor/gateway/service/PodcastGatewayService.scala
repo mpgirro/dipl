@@ -13,7 +13,7 @@ import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.gateway.json.{ArrayWrapper, JsonSupport}
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.domain.dto.PodcastDTO
 import io.swagger.annotations._
 

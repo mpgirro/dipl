@@ -14,9 +14,13 @@ import echo.actor.crawler.Crawler
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
-import echo.actor.searcher.{Searcher, DelegationSearcherWorker}
+import echo.actor.searcher.{DelegationSearcherWorker, Searcher}
 import echo.actor.updater.Updater
 import echo.core.benchmark._
+import echo.core.benchmark.cpu.CpuLoadMeter
+import echo.core.benchmark.memory.MemoryUsageMeter
+import echo.core.benchmark.mps.MessagesPerSecondMonitor
+import echo.core.benchmark.rtt.{RoundTripTime, RoundTripTimeMonitor}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
@@ -199,8 +203,8 @@ class NodeMaster extends Actor with ActorLogging {
             memoryUsageMeter.stopMeasurement()
             cpuLoadMeter.stopMeasurement()
 
-            log.info("Mean memory usage : {}", memoryUsageMeter.getMeanMemoryUsageStr)
-            log.info("Mean CPU load     : {}", cpuLoadMeter.getMeanCpuLoad)
+            log.info("Mean memory usage : {}", memoryUsageMeter.getResult.meanBytesStr)
+            log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.meanLoadStr)
             //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
             //log.info("CPU load datapoints : {}", cpuLoadMeter.getDataPoints)
 

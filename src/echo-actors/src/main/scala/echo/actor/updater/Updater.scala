@@ -3,7 +3,7 @@ package echo.actor.updater
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol.ProposeNewFeed
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 
 /**
   * @author Maximilian Irro
@@ -47,7 +47,7 @@ class Updater extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
         case ProposeNewFeed(url, rtt) =>
             mpsMeter.incrementCounter()

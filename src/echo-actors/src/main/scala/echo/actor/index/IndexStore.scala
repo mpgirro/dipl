@@ -7,7 +7,8 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol._
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ImmutableIndexDocDTO, IndexDocDTO}
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
@@ -110,7 +111,7 @@ class IndexStore (indexPath: String,
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case CommitIndex =>

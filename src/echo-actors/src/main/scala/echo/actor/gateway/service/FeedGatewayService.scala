@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.CircuitBreaker
 import akka.util.Timeout
 import echo.actor.gateway.json.JsonSupport
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 

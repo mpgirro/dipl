@@ -12,6 +12,7 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol._
 import echo.core.benchmark._
+import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._

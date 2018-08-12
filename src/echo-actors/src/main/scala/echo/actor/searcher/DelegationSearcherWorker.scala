@@ -7,7 +7,8 @@ import com.google.common.base.Strings.isNullOrEmpty
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexQuery, SearchIndex}
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.ResultWrapperDTO
 
 import scala.concurrent.duration._
@@ -62,7 +63,7 @@ class DelegationSearcherWorker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
         case SearchRequest(query, page, size, rtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)

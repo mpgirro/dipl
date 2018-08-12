@@ -8,7 +8,7 @@ import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLog
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
 import echo.actor.index.IndexProtocol.{IndexCommand, IndexEvent, IndexQuery}
-import echo.core.benchmark.{MessagesPerSecondMeter}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.exception.SearchException
 
 import scala.concurrent.duration._
@@ -83,7 +83,7 @@ class IndexBroker extends Actor with ActorLogging {
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
             broadcastRouter.route(msg, sender())
 
         case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>

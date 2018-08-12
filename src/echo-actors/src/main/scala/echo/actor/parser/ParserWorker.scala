@@ -16,7 +16,8 @@ import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker
 import echo.actor.catalog.CatalogProtocol._
 import echo.actor.index.IndexProtocol.{AddDocIndexEvent, IndexEvent, UpdateDocWebsiteDataIndexEvent}
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.EpisodeDTO
 import echo.core.domain.feed.FeedStatus
 import echo.core.exception.FeedParsingException
@@ -99,16 +100,16 @@ class ParserWorker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
-        case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, err: RoundTripTime) =>
+        case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtt: RoundTripTime) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
             mpsMeter.incrementCounter()
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
 
-            parse(podcastExo, feedUrl, feedData, isNewPodcast = true, err)
+            parse(podcastExo, feedUrl, feedData, isNewPodcast = true, rtt)
 
             currFeedUrl = ""
             currPodcastExo = ""

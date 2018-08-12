@@ -11,7 +11,8 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexQuery, IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -90,7 +91,7 @@ class FutureSearcherWorker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
         case SearchRequest(query, page, size, rtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)

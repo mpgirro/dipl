@@ -17,7 +17,8 @@ import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRe
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.ResultWrapperDTO
 import io.swagger.annotations._
 

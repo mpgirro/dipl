@@ -1,7 +1,7 @@
 package echo.actor.index
 
 import com.google.common.collect.ImmutableList
-import echo.core.benchmark.RoundTripTime
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
 
 /**

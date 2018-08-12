@@ -16,6 +16,8 @@ import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark._
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}

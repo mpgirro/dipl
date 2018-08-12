@@ -4,7 +4,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
-import echo.core.benchmark.{MessagesPerSecondMeter, RoundTripTime}
+import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
 import echo.core.exception.SearchException
 import echo.core.index.IndexSearcher
@@ -69,7 +70,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getMessagesPerSecond)
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")
