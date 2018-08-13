@@ -4,6 +4,7 @@ import echo.core.async.index.AddOrUpdateDocIndexJob;
 import echo.core.async.index.IndexJob;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
+import echo.microservice.index.service.BenchmarkService;
 import echo.microservice.index.service.IndexService;
 import echo.microservice.index.web.client.BenchmarkClient;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class IndexQueueReceiver {
     private IndexService indexService;
 
     @Autowired
-    private BenchmarkClient benchmarkClient;
+    private BenchmarkService benchmarkService;
 
     @Resource(name = "messagesPerSecondMeter")
     private MessagesPerSecondMeter mpsMeter;
@@ -48,15 +49,12 @@ public class IndexQueueReceiver {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
             log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());
             indexService.add(job.getIndexDoc()); // TODO replace add with addOrUpdate
-            sendRttReport(job.getRtt().bumpRTTs());
+            benchmarkService.sendRttReport(job.getRtt().bumpRTTs());
         } else {
             throw new RuntimeException("Received unhandled IndexJob of type : " + indexJob.getClass());
         }
     }
 
-    @Async
-    public void sendRttReport(RoundTripTime rtt) {
-        benchmarkClient.rttReport(rtt);
-    }
+
 
 }

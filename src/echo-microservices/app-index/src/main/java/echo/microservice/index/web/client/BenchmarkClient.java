@@ -1,5 +1,6 @@
 package echo.microservice.index.web.client;
 
+import echo.core.benchmark.BenchmarkMeterReport;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.index.config.FeignConfig;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -22,5 +23,8 @@ public interface BenchmarkClient {
 
     @PostMapping(value = "/benchmark/mps-report")
     void mpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps);
+
+    @PostMapping(value = "/benchmark/benchmark-report")
+    void sendBenchmarkReport(@RequestBody BenchmarkMeterReport report);
 
 }

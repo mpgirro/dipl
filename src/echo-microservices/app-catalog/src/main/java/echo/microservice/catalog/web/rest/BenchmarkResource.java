@@ -1,8 +1,11 @@
 package echo.microservice.catalog.web.rest;
 
+import echo.core.benchmark.BenchmarkMeterReport;
+import echo.core.benchmark.ImmutableBenchmarkMeterReport;
 import echo.core.benchmark.cpu.CpuLoadMeter;
 import echo.core.benchmark.memory.MemoryUsageMeter;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
+import echo.microservice.catalog.service.BenchmarkService;
 import echo.microservice.catalog.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,43 +27,29 @@ public class BenchmarkResource {
 
     private final Logger log = LoggerFactory.getLogger(BenchmarkResource.class);
 
-    @Value("${spring.application.name:echo-catalog}")
-    private String applicationName;
-
     @Autowired
-    private BenchmarkClient benchmarkClient;
+    private BenchmarkService benchmarkService;
 
     @Resource(name = "messagesPerSecondMeter")
     private MessagesPerSecondMeter mpsMeter;
 
-    @Resource(name = "memoryUsageMeter")
-    private MemoryUsageMeter memoryUsageMeter;
-
-    @Resource(name = "cpuLoadMeter")
-    private CpuLoadMeter cpuLoadMeter;
-
     @RequestMapping(
-        value  = "/start-mps",
+        value  = "/start-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to start MPS counting");
-        mpsMeter.startMeasurement();
-        memoryUsageMeter.startMeasurement();
-        cpuLoadMeter.startMeasurement();
+        log.debug("REST request to start benchmark meters");
+        benchmarkService.startBenchmarkMeters();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
-        value  = "/stop-mps",
+        value  = "/stop-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to stop MPS counting");
-        mpsMeter.stopMeasurement();
-        memoryUsageMeter.stopMeasurement();
-        cpuLoadMeter.stopMeasurement();
-        benchmarkClient.setMpsReport(applicationName, mpsMeter.getResult().mps);
+        log.debug("REST request to stop benchmark meters");
+        benchmarkService.stopBenchmarkMetersAndSendReport();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

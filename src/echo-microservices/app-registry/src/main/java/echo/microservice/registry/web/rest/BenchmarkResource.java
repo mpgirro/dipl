@@ -92,6 +92,20 @@ public class BenchmarkResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(
+        value  = "/benchmark-report",
+        method = RequestMethod.POST)
+    public ResponseEntity<Void> benchmarkReport(@RequestBody BenchmarkMeterReport report) throws URISyntaxException {
+        log.debug("REST request to report benchmark results : {}", report);
+        mpsMonitor.addMetric(report.getName(), report.getMps().mps);
+        System.out.println(report.getName() + "\t: " + report.getMemoryUsage().meanBytesStr);
+        System.out.println(report.getName() + "\t: " + report.getCpuLoad().meanLoadStr);
+        if (mpsMonitor.isFinished()) {
+            log.info("MPS reporting finished; results in CSV format :");
+            System.out.println(mpsMonitor.toCsv());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @RequestMapping(
         value  = "/monitor-feed-progress",
