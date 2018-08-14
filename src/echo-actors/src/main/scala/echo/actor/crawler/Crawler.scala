@@ -38,6 +38,9 @@ class Crawler extends Actor with ActorLogging {
 
     private val mpsMeter = new MessagesPerSecondMeter()
 
+    private var expectedMsgCount = 0
+    private var expectedMsgGoal = 0
+
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
             val crawler = createCrawler()
@@ -82,6 +85,11 @@ class Crawler extends Actor with ActorLogging {
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
+        case ExpectedMessages(count) =>
+            log.debug("Received ExpectedMessages({})", count)
+            expectedMsgCount = 0
+            expectedMsgGoal = count
+
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -89,9 +97,7 @@ class Crawler extends Actor with ActorLogging {
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            router.routees.foreach(r => r.send(msg, sender()))
+            reportMps()
 
         case Terminated(corpse) =>
             //log.info("Child '{}' terminated" + corpse.path.name)
@@ -121,7 +127,7 @@ class Crawler extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            mpsMeter.incrementCounter()
+            tickMpsMeter()
             router.route(work, sender())
     }
 
@@ -134,6 +140,22 @@ class Crawler extends Actor with ActorLogging {
         Option(catalog).foreach(d => catalog ! ActorRefCatalogStoreActor(d))
 
         crawler
+    }
+
+    private def tickMpsMeter(): Unit = {
+        mpsMeter.incrementCounter()
+        expectedMsgCount += 1
+        if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
+            reportMps()
+        }
+    }
+
+    private def reportMps(): Unit = {
+        if (mpsMeter.isMeasuring) {
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+        }
     }
 
 }

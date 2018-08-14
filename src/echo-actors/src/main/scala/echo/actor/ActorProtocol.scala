@@ -62,6 +62,7 @@ object ActorProtocol {
     case class StartMessagePerSecondMonitoring()
     case class StopMessagePerSecondMonitoring()
     case class MessagePerSecondReport(actorName: String, mps: Double)
+    case class ExpectedMessages(count: Int)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore

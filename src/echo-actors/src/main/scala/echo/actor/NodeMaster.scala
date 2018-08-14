@@ -58,7 +58,7 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
-    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 46) // 'cause we have 21 actors in place that will report their MPS
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 81) // 'cause we have 21 actors in place that will report their MPS
     private val memoryUsageMeter = new MemoryUsageMeter(200)
     private val cpuLoadMeter = new CpuLoadMeter(200)
 
@@ -117,6 +117,8 @@ class NodeMaster extends Actor with ActorLogging {
         log.info("shutting down")
     }
 
+    var mpsMsgCounter = 0 // debug
+
     override def receive: Receive = {
 
         case StartMessagePerSecondMonitoring =>
@@ -132,6 +134,8 @@ class NodeMaster extends Actor with ActorLogging {
         case MessagePerSecondReport(name, mps) =>
             log.debug("Received StopMessagePerSecondMonitoring({},{})", name, mps)
             mpsMonitor.addMetric(name, mps)
+            mpsMsgCounter += 1
+            log.info("{} MPS reports", mpsMsgCounter)
             if (mpsMonitor.isFinished) {
                 log.info("MPS reporting finished; results in CSV format :")
                 println(mpsMonitor.toCsv)
@@ -142,10 +146,19 @@ class NodeMaster extends Actor with ActorLogging {
             rttMonitor.initWithProperties(feedProperties)
             mpsMonitor.reset()
 
+            val feedCount = feedProperties.size()
+            updater ! ExpectedMessages(2*feedCount) // 2x because bounce between catalog
+            crawler ! ExpectedMessages(feedCount)
+            parser ! ExpectedMessages(feedCount)
+
         case MonitorQueryProgress(queries) =>
             log.debug("Received MonitorQueryProgress(_)")
             rttMonitor.initWithQueries(queries)
             mpsMonitor.reset()
+
+            updater ! ExpectedMessages(0)
+            crawler ! ExpectedMessages(0)
+            parser ! ExpectedMessages(0)
 
         case IndexSubSystemRoundTripTimeReport(rtt) =>
             log.debug("Received IndexSubSystemRoundTripTimeReport(_)", rtt)
@@ -198,7 +211,6 @@ class NodeMaster extends Actor with ActorLogging {
         rttMonitor.addRoundTripTime(rtt)
         if (rttMonitor.isFinished) {
             sendStopMessagePerSecondMonitoringMessages()
-
 
             memoryUsageMeter.stopMeasurement()
             cpuLoadMeter.stopMeasurement()

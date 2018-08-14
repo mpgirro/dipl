@@ -26,6 +26,9 @@ class Updater extends Actor with ActorLogging {
 
     private val mpsMeter = new MessagesPerSecondMeter()
 
+    private var expectedMsgCount = 0
+    private var expectedMsgGoal = 0
+
     override def receive: Receive = {
 
         case ActorRefCatalogStoreActor(ref) =>
@@ -40,22 +43,38 @@ class Updater extends Actor with ActorLogging {
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
+        case ExpectedMessages(count) =>
+            log.debug("Received ExpectedMessages({})", count)
+            expectedMsgCount = 0
+            expectedMsgGoal = count
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            if (mpsMeter.isMeasuring) {
+                mpsMeter.stopMeasurement()
+                benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            }
 
         case ProposeNewFeed(url, rtt) =>
-            mpsMeter.incrementCounter()
+            tickMpsMeter()
             catalog ! ProposeNewFeed(url, rtt.bumpRTTs())
 
         case ProcessFeed(exo, url, job: FetchJob, rtt) =>
-            mpsMeter.incrementCounter()
+            tickMpsMeter()
             crawler ! DownloadWithHeadCheck(exo, url, job, rtt.bumpRTTs())
+    }
+
+    private def tickMpsMeter(): Unit = {
+        mpsMeter.incrementCounter()
+        expectedMsgCount += 1
+        if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+        }
     }
 
 }
