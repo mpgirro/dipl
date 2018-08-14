@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Maximilian Irro
@@ -12,6 +13,8 @@ import java.util.Optional;
 public class MessagesPerSecondMeter implements BenchmarkMeter {
 
     private static final Logger log = LoggerFactory.getLogger(MessagesPerSecondMeter.class);
+
+    private final AtomicBoolean measuring = new AtomicBoolean(false);
 
     private long startTime;
     private long stopTime;
@@ -34,23 +37,39 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
     @Override
     public synchronized void startMeasurement() {
         log.debug("Starting the MPS measurement");
-        counter = 0;
-        startTime = System.currentTimeMillis();
-        stopTime = 0; // to prevent premature calls to getMessagesPerSecond()
+        if (!measuring.get()) {
+            counter = 0;
+            startTime = System.currentTimeMillis();
+            stopTime = 0; // to prevent premature calls to getMessagesPerSecond()
+        }
+        measuring.set(true);
     }
 
     @Override
     public synchronized void stopMeasurement() {
         log.debug("Stopping the MPS measurement");
-        stopTime = System.currentTimeMillis();
-        calculateResult();
+        if (measuring.get()) {
+            stopTime = System.currentTimeMillis();
+            calculateResult();
+        }
+        measuring.set(false);
+    }
+
+    @Override
+    public boolean isActive() {
+        return true; // always active (no thread)
+    }
+
+    @Override
+    public boolean isMeasuring() {
+        return measuring.get();
     }
 
     public synchronized void incrementCounter() {
         counter += 1;
     }
 
-    public MessagesPerSecondResult getResult() {
+    public synchronized MessagesPerSecondResult getResult() {
         return Optional
             .ofNullable(result)
             .orElseThrow(() -> new RuntimeException("Messages per second result not yet available"));

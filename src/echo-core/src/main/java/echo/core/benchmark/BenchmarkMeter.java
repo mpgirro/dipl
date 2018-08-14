@@ -15,4 +15,8 @@ public interface BenchmarkMeter {
 
     void stopMeasurement();
 
+    boolean isActive();
+
+    boolean isMeasuring();
+
 }

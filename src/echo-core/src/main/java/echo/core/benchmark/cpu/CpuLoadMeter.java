@@ -51,16 +51,32 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
     public void startMeasurement() {
         log.debug("Starting the CPU load measurement");
         synchronized (dataPoints) {
+            if (!measuring.get()) {
+                dataPoints.clear();
+            }
             measuring.set(true);
-            dataPoints.clear();
         }
     }
 
     @Override
     public void stopMeasurement() {
         log.debug("Stopping the CPU load measurement");
-        measuring.set(false);
-        calculateResult();
+        synchronized (dataPoints) {
+            if (measuring.get()) {
+                calculateResult();
+            }
+            measuring.set(false);
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return running.get();
+    }
+
+    @Override
+    public boolean isMeasuring() {
+        return measuring.get();
     }
 
     @Override
@@ -81,7 +97,7 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
         }
     }
 
-    public CpuLoadResult getResult() {
+    public synchronized CpuLoadResult getResult() {
         return Optional
             .ofNullable(result)
             .orElseThrow(() -> new RuntimeException("CPU load result not yet available"));
