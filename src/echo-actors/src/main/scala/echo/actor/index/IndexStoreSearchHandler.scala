@@ -99,7 +99,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
                 sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
             }
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             currQuery = "" // wipe the copy
 
     }

@@ -109,7 +109,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             router.route(work, sender())
 
     }

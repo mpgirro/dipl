@@ -148,7 +148,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
 
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             //searchService.benchmarkDistributedSearch(q, p, s, rtt)
             benchmarkService.benchmarkSearch(q, p, s, rtt)
 

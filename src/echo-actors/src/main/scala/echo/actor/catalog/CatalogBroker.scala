@@ -89,17 +89,17 @@ class CatalogBroker extends Actor with ActorLogging {
 
         case command: CatalogCommand =>
             log.debug("Routing command: {}", command.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             roundRobinRouter.route(command, sender())
 
         case event: CatalogEvent =>
             log.debug("Routing event: {}", event.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             broadcastRouter.route(event, sender())
 
         case query: CatalogQuery =>
             log.debug("Routing query : {}", query.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -108,7 +108,7 @@ class CatalogBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             broadcastRouter.route(message, sender())
     }
 

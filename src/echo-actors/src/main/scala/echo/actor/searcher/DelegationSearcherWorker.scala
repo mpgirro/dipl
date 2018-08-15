@@ -67,7 +67,7 @@ class DelegationSearcherWorker extends Actor with ActorLogging {
 
         case SearchRequest(query, page, size, rtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
 

@@ -42,7 +42,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def getAllFeeds: Route = get {
 
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
 
         // TODO
 
@@ -51,7 +51,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def getFeed(id: String): Route = get {
 
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
 
         // TODO
 
@@ -61,7 +61,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     def postFeed: Route = post {
         entity(as[FeedDTO]) { feed =>
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             // TODO
 
@@ -72,7 +72,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
     def putFeed(id: String): Route = put {
         entity(as[FeedDTO]) { feed =>
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             // TODO
 
@@ -82,7 +82,7 @@ class FeedGatewayService (private val log: LoggingAdapter, private val breaker: 
 
     def deleteFeed(id: String): Route = delete {
 
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
 
         // TODO
 

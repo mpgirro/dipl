@@ -53,7 +53,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
                   responseContainer = "Set")
     def getAllEpisodes: Route = get {
 
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
 
         complete(NotImplemented)
     }
@@ -78,7 +78,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     */
     def getEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}", exo)
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
         onCompleteWithBreaker(breaker)(catalogStore ? GetEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -103,7 +103,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def getChaptersByEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}/chapters", exo)
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
         onCompleteWithBreaker(breaker)(catalogStore ? GetChaptersByEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -134,7 +134,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def postEpisode: Route = post {
         entity(as[EpisodeDTO]) { episode =>
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
@@ -150,7 +150,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def putEpisode(id: String): Route = put {
         entity(as[EpisodeDTO]) { episode =>
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             // TODO update podcast with exo
 
@@ -160,7 +160,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def deleteEpisode(id: String): Route = delete {
 
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
 
         // TODO delete podcast -  I guess this should not be supported?
 

@@ -109,7 +109,7 @@ class Parser extends Actor with ActorLogging {
     }
 
     private def tickMpsMeter(): Unit = {
-        mpsMeter.incrementCounter()
+        mpsMeter.registerMessage()
         expectedMsgCount += 1
         if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
             reportMps()

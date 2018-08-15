@@ -91,17 +91,17 @@ class IndexBroker extends Actor with ActorLogging {
 
         case command: IndexCommand =>
             log.debug("Routing command: {}", command.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             roundRobinRouter.route(command, sender())
 
         case event: IndexEvent =>
             log.debug("Routing event: {}", event.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             broadcastRouter.route(event, sender())
 
         case query: IndexQuery =>
             log.debug("Routing query : {}", query.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -110,7 +110,7 @@ class IndexBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             broadcastRouter.route(message, sender())
 
     }

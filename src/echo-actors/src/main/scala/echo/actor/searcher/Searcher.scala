@@ -62,12 +62,12 @@ class Searcher extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(msg, sender()))
 
         case request: SearchRequest =>
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             router.route(request, sender())
 
         case work =>
             log.warning("Routing work of UNKNOWN kind : {}", work.getClass)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             router.route(work, sender())
     }
 

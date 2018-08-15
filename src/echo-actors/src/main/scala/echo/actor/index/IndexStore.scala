@@ -115,7 +115,7 @@ class IndexStore (indexPath: String,
             router.routees.foreach(r => r.send(msg, sender()))
 
         case CommitIndex =>
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             commitIndexIfChanged()
 
             //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
@@ -123,7 +123,7 @@ class IndexStore (indexPath: String,
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             // TODO add now to rtts and send to CLI
             benchmarkMonitor ! IndexSubSystemRoundTripTimeReport(rtt.bumpRTTs())
@@ -134,24 +134,24 @@ class IndexStore (indexPath: String,
 
         case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             updateWebsiteQueue.enqueue((exo,html))
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case UpdateDocImageIndexEvent(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             updateImageQueue.enqueue((exo, image))
 
         case UpdateDocLinkIndexEvent(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
             updateLinkQueue.enqueue((exo, link))
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
-            mpsMeter.incrementCounter()
+            mpsMeter.registerMessage()
 
             val origSender = sender()
             router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), origSender)

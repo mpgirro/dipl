@@ -110,8 +110,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         case DownloadWithHeadCheck(exo, url, job, rtt) =>
             log.debug("Received Download({},'{}',{},_)", exo, url, job.getClass.getSimpleName)
-
-            mpsCounter.incrementCounter()
+            mpsCounter.registerMessage()
 
             this.currUrl = url
             this.currJob = job
@@ -130,8 +129,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         case DownloadContent(exo, url, job, encoding, rtt) =>
             log.debug("Received Download({},'{}',{},{},_)", exo, url, job.getClass.getSimpleName, encoding)
-
-            mpsCounter.incrementCounter()
+            mpsCounter.registerMessage()
 
             this.currUrl = url
             this.currJob = job
@@ -139,11 +137,11 @@ class CrawlerWorker extends Actor with ActorLogging {
             fetchContent(exo, url, job, encoding, rtt) // TODO send encoding via message
 
         case CrawlFyyd(count) =>
-            mpsCounter.incrementCounter()
+            mpsCounter.registerMessage()
             onCrawlFyyd(count)
 
         case LoadFyydEpisodes(podcastId, fyydId) =>
-            mpsCounter.incrementCounter()
+            mpsCounter.registerMessage()
             onLoadFyydEpisodes(podcastId, fyydId)
 
     }
