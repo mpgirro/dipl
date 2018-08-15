@@ -46,23 +46,23 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
     @Override
     public void startMeasurement() {
         log.debug("Starting the memory usage measurement");
-        synchronized (dataPoints) {
-            if (!measuring.get()) {
+        if (!measuring.get()) {
+            synchronized (dataPoints) {
                 dataPoints.clear();
             }
-            measuring.set(true);
         }
+        measuring.set(true);
     }
 
     @Override
     public void stopMeasurement() {
         log.debug("Stopping the memory usage measurement");
-        synchronized (dataPoints) {
-            if (measuring.get()) {
-                calculateResult();
+        if (measuring.get()) {
+            synchronized (dataPoints) {
+                result = MemoryUsageResult.of(dataPoints);
             }
-            measuring.set(false);
         }
+        measuring.set(false);
     }
 
     @Override
@@ -97,10 +97,6 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
         return Optional
             .ofNullable(result)
             .orElseThrow(() -> new RuntimeException("Memory usage result not yet available"));
-    }
-
-    private void calculateResult() {
-        result = MemoryUsageResult.of(dataPoints);
     }
 
     /* TODO delete?
