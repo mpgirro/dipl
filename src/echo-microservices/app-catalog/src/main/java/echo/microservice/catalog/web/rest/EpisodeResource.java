@@ -48,7 +48,7 @@ public class EpisodeResource {
     @Transactional
     public ResponseEntity<EpisodeDTO> createEpisode(@RequestBody EpisodeDTO episode) throws URISyntaxException {
         log.debug("REST request to save Episode : {}", episode);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<EpisodeDTO> created = episodeService.save(episode);
         return created
             .map(idMapper::clearImmutable)
@@ -62,7 +62,7 @@ public class EpisodeResource {
     @ResponseStatus(HttpStatus.OK)
     public void registerEpisode(@RequestBody RegisterEpisodeIfNewJobCatalogJob job) throws URISyntaxException {
         log.debug("REST request to register episode by Podcast (EXO) : {}", job.getPodcastExo());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         episodeService.register(job);
     }
 
@@ -70,7 +70,7 @@ public class EpisodeResource {
     @Transactional
     public ResponseEntity<EpisodeDTO> updateEpisode(@RequestBody EpisodeDTO episode) {
         log.debug("REST request to update Episode : {}", episode);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<EpisodeDTO> updated = episodeService.update(episode);
         return updated
             .map(idMapper::clearImmutable)
@@ -87,7 +87,7 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<EpisodeDTO> getEpisode(@PathVariable String exo) {
         log.debug("REST request to get Episode (EXO) : {}", exo);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<EpisodeDTO> episode = episodeService.findOneByExo(exo);
         return episode
             .map(idMapper::clearImmutable)
@@ -104,7 +104,7 @@ public class EpisodeResource {
     @Transactional(readOnly = true)
     public ResponseEntity<ArrayWrapperDTO> getChaptersByEpisode(@PathVariable String exo) {
         log.debug("REST request to get Chapters by Episode (EXO) : {}", exo);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final List<ChapterDTO> chapters = chapterService.findAllByEpisode(exo).stream()
             .map(idMapper::clearImmutable)
             .collect(Collectors.toList());

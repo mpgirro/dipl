@@ -44,8 +44,8 @@ public class BenchmarkResource {
         value  = "/start-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to start benchmark meters");
+    public ResponseEntity<Void> startBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to start benchmark meters");
         benchmarkService.startBenchmarkMeters();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -54,8 +54,8 @@ public class BenchmarkResource {
         value  = "/stop-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to stop benchmark meters");
+    public ResponseEntity<Void> stopBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to stop benchmark meters and report results");
         benchmarkService.stopBenchmarkMetersAndSendReport();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -65,8 +65,8 @@ public class BenchmarkResource {
         method   = RequestMethod.GET)
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
-        mpsMeter.incrementCounter();
-        return mpsMeter.getResult().mps;
+        mpsMeter.tick();
+        return mpsMeter.getResult().getMps();
     }
 
     @RequestMapping(
@@ -78,7 +78,7 @@ public class BenchmarkResource {
                                                         @RequestParam("size") Optional<Integer> size,
                                                         @RequestBody RoundTripTime rtt) {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final ResultWrapperDTO result = searchService.searchBenchmark(query, page, size, rtt);
         final ResultWrapperDTO newRes = ImmutableResultWrapperDTO.builder()
             .from(result)

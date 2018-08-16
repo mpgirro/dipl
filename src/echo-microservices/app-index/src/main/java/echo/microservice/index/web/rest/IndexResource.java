@@ -41,7 +41,7 @@ public class IndexResource {
                                                         @RequestParam("page") Integer page,
                                                         @RequestParam("size") Integer size) throws SearchException {
         log.info("REST request to search index for query/page/size : ('{}',{},{})", query, page, size);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final ResultWrapperDTO result = indexService.search(query, page, size, RoundTripTime.empty());
         return new ResponseEntity<>(
             result,
@@ -54,7 +54,7 @@ public class IndexResource {
     @ResponseStatus(HttpStatus.OK)
     public void addDoc(@RequestBody IndexDocDTO doc) throws URISyntaxException {
         log.debug("REST request to save doc : {}", doc.getExo());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         indexService.add(doc);
     }
 
@@ -64,7 +64,7 @@ public class IndexResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IndexDocDTO> getDoc(@PathVariable String exo) {
         log.debug("REST request to get index document: {}", exo);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         // TODO
         throw new UnsupportedOperationException("Not yet implemented");
     }

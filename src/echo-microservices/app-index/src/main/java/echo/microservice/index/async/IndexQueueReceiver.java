@@ -44,7 +44,7 @@ public class IndexQueueReceiver {
             key      = "${echo.amqp.index-routingkey}")
     )
     public void recievedMessage(IndexJob indexJob) {
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         if (indexJob instanceof AddOrUpdateDocIndexJob) {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;
             log.debug("Recieved AddOrUpdateDocIndexJob for EXO : {}", job.getIndexDoc().getExo());

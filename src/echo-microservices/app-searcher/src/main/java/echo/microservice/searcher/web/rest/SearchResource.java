@@ -37,7 +37,7 @@ public class SearchResource {
                                                         @RequestParam("page") Optional<Integer> page,
                                                         @RequestParam("size") Optional<Integer> size) {
         log.info("REST request to search for query/page/size : ('{}',{},{})", query, page, size);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final ResultWrapperDTO result = searchService.search(query, page, size);
         return new ResponseEntity<>(
             result,

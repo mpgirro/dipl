@@ -58,7 +58,7 @@ public class CatalogQueueReceiver {
     )
     public void recievedMessage(CatalogJob catalogJob) {
         log.debug("Recieved Message : {}", catalogJob);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         if (catalogJob instanceof UpdatePodcastCatalogJob) {
             final UpdatePodcastCatalogJob job = (UpdatePodcastCatalogJob) catalogJob;
             log.debug("Recieved UpdatePodcastCatalogJob for EXO : {}", job.getPodcast().getExo());

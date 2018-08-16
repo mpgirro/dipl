@@ -162,10 +162,10 @@ class CliApp {
     private def benchmarkIndexSubsystem(): Unit = {
         val feedProperties = feedPropertyUtil.loadProperties("../../benchmark/properties.json") // TODO replace file path by something not hardcoded
 
+        log.info("Transmitting feed data for progress monitoring")
         sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-feed-progress")
             .body(feedProperties)
             .send()
-
         startMessagePerSecondMonitoring()
 
         for (fp <- feedProperties.asScala) {
@@ -189,6 +189,7 @@ class CliApp {
             .getOrElse("../../benchmark/queries.txt")
         val queries = loadBenchmarkQueries(inputFile)
 
+        log.info("Transmitting query data for progress monitoring")
         sttp.post(uri"${REGISTRY_URL}/benchmark/monitor-query-progress")
             .body(queries)
             .send()
@@ -221,6 +222,7 @@ class CliApp {
     }
 
     private def startMessagePerSecondMonitoring(): Unit = {
+        log.info("Sending msg to start MPS meters")
         sttp.post(uri"${REGISTRY_URL}/benchmark/start-mps")
             .send()
     }

@@ -1,7 +1,5 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.cpu.CpuLoadMeter;
-import echo.core.benchmark.memory.MemoryUsageMeter;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
@@ -11,7 +9,6 @@ import echo.microservice.gateway.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +44,8 @@ public class BenchmarkResource {
         value  = "/start-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to start benchmark meters");
+    public ResponseEntity<Void> startBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to start benchmark meters");
         benchmarkService.startBenchmarkMeters();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -57,8 +54,8 @@ public class BenchmarkResource {
         value  = "/stop-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to stop benchmark meters");
+    public ResponseEntity<Void> stopBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to stop benchmark meters and report results");
         benchmarkService.stopBenchmarkMetersAndSendReport();
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -68,8 +65,8 @@ public class BenchmarkResource {
         method   = RequestMethod.GET)
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
-        mpsMeter.incrementCounter();
-        return mpsMeter.getResult().mps;
+        mpsMeter.tick();
+        return mpsMeter.getResult().getMps();
     }
 
     @RequestMapping(
@@ -81,7 +78,7 @@ public class BenchmarkResource {
                                                         @RequestParam("s") Optional<Integer> size,
                                                         @RequestBody RoundTripTime rtt) {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
 
         if (resultWrapper.isPresent()) {
@@ -100,7 +97,7 @@ public class BenchmarkResource {
 
     @Async
     public void sendRttReport(RoundTripTime rtt) {
-        benchmarkClient.rttReport(rtt);
+        benchmarkClient.sendRttReport(rtt);
     }
 
 }

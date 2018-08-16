@@ -35,8 +35,8 @@ public class BenchmarkResource {
         value  = "/start-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to start benchmark meters");
+    public ResponseEntity<Void> startBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to start benchmark meters");
         benchmarkService.startBenchmarkMeters();
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -45,8 +45,8 @@ public class BenchmarkResource {
         value  = "/stop-benchmark-meters",
         method = RequestMethod.POST,
         params = { "mps" })
-    public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
-        log.debug("REST request to stop benchmark meters");
+    public ResponseEntity<Void> stopBenchmarkMeters(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
+        log.info("REST request to stop benchmark meters and report results");
         benchmarkService.stopBenchmarkMetersAndSendReport();
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -56,8 +56,8 @@ public class BenchmarkResource {
         method   = RequestMethod.GET)
     public Double getMpsValue() {
         log.debug("REST request to get MPS");
-        mpsMeter.incrementCounter();
-        return mpsMeter.getResult().mps;
+        mpsMeter.tick();
+        return mpsMeter.getResult().getMps();
     }
 
 }

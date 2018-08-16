@@ -52,6 +52,7 @@ public class BenchmarkService {
         memoryUsageMeter.stopMeasurement();
         cpuLoadMeter.stopMeasurement();
 
+        /*
         final BenchmarkMeterReport report = ImmutableBenchmarkMeterReport.builder()
             .setName(applicationName)
             .setMps(mpsMeter.getResult())
@@ -59,12 +60,22 @@ public class BenchmarkService {
             .setCpuLoad(cpuLoadMeter.getResult())
             .create();
 
+        log.info("Sending : {}", report);
         benchmarkClient.sendBenchmarkReport(report);
+        */
+        log.info("Sending MPS report : {}", mpsMeter.getResult());
+        benchmarkClient.sendMpsReport(applicationName, mpsMeter.getResult());
+
+        log.info("Sending CPU load report : {}", cpuLoadMeter.getResult());
+        benchmarkClient.sendCpuReport(applicationName, cpuLoadMeter.getResult());
+
+        log.info("Sending memory usage report : {}", memoryUsageMeter.getResult());
+        benchmarkClient.sendMemoryReport(applicationName, memoryUsageMeter.getResult());
     }
 
     @Async
     public void sendRttReport(RoundTripTime rtt) {
-        benchmarkClient.rttReport(rtt);
+        benchmarkClient.sendRttReport(rtt);
     }
 
 }

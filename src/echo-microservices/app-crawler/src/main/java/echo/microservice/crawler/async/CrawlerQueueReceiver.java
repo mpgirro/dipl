@@ -38,7 +38,7 @@ public class CrawlerQueueReceiver {
             key      = "${echo.amqp.crawler-routingkey}")
     )
     public void recievedMessage(CrawlerJob crawlerJob) {
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;
             log.info("Recieved NewFeedCrawlerJob for Podcast EXO : {}", job.exo());

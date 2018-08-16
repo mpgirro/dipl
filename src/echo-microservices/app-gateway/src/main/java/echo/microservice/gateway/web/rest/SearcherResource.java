@@ -37,7 +37,7 @@ public class SearcherResource {
                                                         @RequestParam("p") Optional<Integer> page,
                                                         @RequestParam("s") Optional<Integer> size) {
         log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<ResultWrapperDTO> resultWrapper = searcherService.search(query, page, size);
         return resultWrapper
             .map(result -> new ResponseEntity<>(

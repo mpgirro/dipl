@@ -35,7 +35,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseNewPodcastData(@RequestBody NewFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data for new podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), true, RoundTripTime.empty());
     }
 
@@ -45,7 +45,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseUpdateEpisodeData(@RequestBody UpdateFeedParserJob job) {
         log.debug("REST request to parseFeed feed-data to update episodes for podcast(EXO)/feed : ({},'{}')", job.getExo(), job.getUrl());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         parserService.parseFeed(job.getExo(), job.getUrl(), job.getData(), false, RoundTripTime.empty());
     }
 
@@ -55,7 +55,7 @@ public class ParserResource {
     @ResponseStatus(HttpStatus.OK)
     public void parseWebsiteData(@RequestBody WebsiteParserJob job) {
         log.debug("REST request to parseFeed website-data for EXO : {}", job.getExo());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         parserService.parseWebsite(job.getExo(), job.getHtml());
     }
 

@@ -34,7 +34,7 @@ public class CrawlerResource {
     public void downloadNewFeed(@RequestParam("exo") String exo,
                                 @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         crawlerService.downloadFeed(exo, url, true, RoundTripTime.empty());
     }
 
@@ -45,7 +45,7 @@ public class CrawlerResource {
     public void downloadUpdateFeed(@RequestParam("exo") String exo,
                                    @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download feed by EXO/URL : ({},{})", exo, url);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         crawlerService.downloadFeed(exo, url, false, RoundTripTime.empty());
     }
 
@@ -56,7 +56,7 @@ public class CrawlerResource {
     public void downloadWebsite(@RequestParam("exo") String exo,
                                 @RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to download website by EXO/URL : ({},{})", exo, url);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         crawlerService.downloadWebsite(exo, url);
     }
 

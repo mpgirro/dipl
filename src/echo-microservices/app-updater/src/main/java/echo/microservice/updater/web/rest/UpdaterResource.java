@@ -32,7 +32,7 @@ public class UpdaterResource {
     @ResponseStatus(HttpStatus.OK)
     public void proposeNewFeed(@RequestBody ProposeNewFeedJob job) {
         log.debug("REST request to propose new feed: ('{}',_)", job.getFeed());
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         updaterService.proposeNewFeed(job.getFeed(), job.getRtt());
     }
 

@@ -2,13 +2,17 @@ package echo.microservice.registry.web.rest;
 
 import com.google.common.collect.ImmutableList;
 import echo.core.benchmark.*;
+import echo.core.benchmark.cpu.CpuLoadResult;
+import echo.core.benchmark.memory.MemoryUsageResult;
 import echo.core.benchmark.mps.MessagesPerSecondMonitor;
+import echo.core.benchmark.mps.MessagesPerSecondResult;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.benchmark.rtt.RoundTripTimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,14 @@ public class BenchmarkResource {
 
     private final Logger log = LoggerFactory.getLogger(BenchmarkResource.class);
 
+    private final String GATEWAY_URL  = "http://localhost:3030";
+    private final String CATALOG_URL  = "http://localhost:3031";
+    private final String INDEX_URL    = "http://localhost:3032";
+    private final String CRAWLER_URL  = "http://localhost:3033";
+    private final String PARSER_URL   = "http://localhost:3034";
+    private final String SEARCHER_URL = "http://localhost:3035";
+    private final String UPDATER_URL  = "http://localhost:3037";
+
     @Resource(name = "roundTripTimeMonitor")
     private RoundTripTimeMonitor rttMonitor;
 
@@ -39,9 +51,10 @@ public class BenchmarkResource {
 
     @RequestMapping(
         value  = "/rtt-report",
-        method = RequestMethod.POST)
+        method = RequestMethod.POST,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> rttReport(@RequestBody RoundTripTime rtt) throws URISyntaxException {
-        log.debug("REST request to add RTT report : {}", rtt);
+        log.info("REST request to add RTT report : {}", rtt);
         rttMonitor.addRoundTripTime(rtt);
         if (rttMonitor.isFinished()) {
             sendStopMessagePerSecondMonitoringMessages();
@@ -81,10 +94,10 @@ public class BenchmarkResource {
     @RequestMapping(
         value  = "/mps-report",
         method = RequestMethod.POST,
-        params = { "name", "mps" })
-    public ResponseEntity<Void> mpsReport(@RequestParam("name") String name, @RequestParam("mps") Double mps) throws URISyntaxException {
-        log.debug("REST request to report MPS : {} for unit : {}", mps, name);
-        mpsMonitor.addMetric(name, mps);
+        params = { "name" })
+    public ResponseEntity<Void> mpsReport(@RequestParam("name") String name, @RequestBody MessagesPerSecondResult mps) throws URISyntaxException {
+        log.debug("REST request to report {} MPS : {}", name, mps);
+        mpsMonitor.addMetric(name, mps.getMps()); // TODO
         if (mpsMonitor.isFinished()) {
             log.info("MPS reporting finished; results in CSV format :");
             System.out.println(mpsMonitor.toCsv());
@@ -93,13 +106,40 @@ public class BenchmarkResource {
     }
 
     @RequestMapping(
+        value  = "/cpu-report",
+        method = RequestMethod.POST,
+        params = { "name" })
+    public ResponseEntity<Void> cpuReport(@RequestParam("name") String name, @RequestBody CpuLoadResult cpuLoadResult) throws URISyntaxException {
+        log.debug("REST request to report {} CPU load : {}", name, cpuLoadResult);
+
+        // TODO
+        log.info("{} : {}", name, cpuLoadResult.getMeanLoadStr());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(
+        value  = "/memory-report",
+        method = RequestMethod.POST,
+        params = { "name" })
+    public ResponseEntity<Void> memoryReport(@RequestParam("name") String name, @RequestBody MemoryUsageResult memoryUsageResult) throws URISyntaxException {
+        log.debug("REST request to report {} memory load : {}", name, memoryUsageResult);
+
+        // TODO
+        log.info("{} : {}", name, memoryUsageResult.getMeanBytesStr());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(
         value  = "/benchmark-report",
-        method = RequestMethod.POST)
+        method = RequestMethod.POST,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> benchmarkReport(@RequestBody BenchmarkMeterReport report) throws URISyntaxException {
-        log.debug("REST request to report benchmark results : {}", report);
-        mpsMonitor.addMetric(report.getName(), report.getMps().mps);
-        System.out.println(report.getName() + "\t: " + report.getMemoryUsage().meanBytesStr);
-        System.out.println(report.getName() + "\t: " + report.getCpuLoad().meanLoadStr);
+        log.info("REST request to report benchmark results : {}", report);
+        mpsMonitor.addMetric(report.getName(), report.getMps().getMps());
+        System.out.println(report.getName() + "\t: " + report.getMemoryUsage().getMeanBytesStr());
+        System.out.println(report.getName() + "\t: " + report.getCpuLoad().getMeanLoadStr());
         if (mpsMonitor.isFinished()) {
             log.info("MPS reporting finished; results in CSV format :");
             System.out.println(mpsMonitor.toCsv());
@@ -177,72 +217,100 @@ public class BenchmarkResource {
 
     @Async
     public void startGatewayMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3030/benchmark/start-mps?mps="+mps, null, Void.class); // Gateway
+        final String url = GATEWAY_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Gateway
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startCatalogMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3031/benchmark/start-mps?mps="+mps, null, Void.class); // Catalog
+        final String url = CATALOG_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Catalog
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startIndexMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3032/benchmark/start-mps?mps="+mps, null, Void.class); // Index
+        final String url = INDEX_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Index
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startCrawlerMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3033/benchmark/start-mps?mps="+mps, null, Void.class); // Crawler
+        final String url = CRAWLER_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Crawler
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startParserMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3034/benchmark/start-mps?mps="+mps, null, Void.class); // Parser
+        final String url = PARSER_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Parser
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startSearcherMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3035/benchmark/start-mps?mps="+mps, null, Void.class); // Searcher
+        final String url = SEARCHER_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Searcher
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void startUpdaterMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3037/benchmark/start-mps?mps="+mps, null, Void.class); // Updater
+        final String url = UPDATER_URL+"/benchmark/start-benchmark-meters?mps="+mps; // Updater
+        log.info("Sending start MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopGatewayMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3030/benchmark/stop-mps?mps="+mps, null, Void.class); // Gateway
+        final String url = GATEWAY_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Gateway
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopCatalogMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3031/benchmark/stop-mps?mps="+mps, null, Void.class); // Catalog
+        final String url = CATALOG_URL+"/benchmark/stop-benchmark-meters?mps="+mps;  // Catalog
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopIndexMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3032/benchmark/stop-mps?mps="+mps, null, Void.class); // Index
+        final String url = INDEX_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Index
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopCrawlerMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3033/benchmark/stop-mps?mps="+mps, null, Void.class); // Crawler
+        final String url = CRAWLER_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Crawler
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopParserMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3034/benchmark/stop-mps?mps="+mps, null, Void.class); // Parser
+        final String url = PARSER_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Parser
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopSearcherMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3035/benchmark/stop-mps?mps="+mps, null, Void.class); // Searcher
+        final String url = SEARCHER_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Searcher
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
     @Async
     public void stopUpdaterMps(boolean mps) {
-        restTemplate.postForObject("http://localhost:3037/benchmark/stop-mps?mps="+mps, null, Void.class); // Updater
+        final String url = UPDATER_URL+"/benchmark/stop-benchmark-meters?mps="+mps; // Updater
+        log.info("Sending stop MPS meter to : {}", url);
+        restTemplate.postForObject(url, null, Void.class);
     }
 
 }

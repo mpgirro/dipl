@@ -21,10 +21,10 @@ public class BenchmarkConfig {
     private final CpuLoadMeter cpuLoadMeter;
 
     @Autowired
-    public BenchmarkConfig(@Value("${echo.benchmark.meter-interval:200}") Integer interval) {
-        messagesPerSecondMeter = new MessagesPerSecondMeter();
-        memoryUsageMeter = new MemoryUsageMeter(interval);
-        cpuLoadMeter = new CpuLoadMeter(interval);
+    public BenchmarkConfig(@Value("${spring.application.name:echo-gateway}") String applicationName, @Value("${echo.benchmark.meter-interval:200}") Integer interval) {
+        messagesPerSecondMeter = new MessagesPerSecondMeter(applicationName);
+        memoryUsageMeter = new MemoryUsageMeter(applicationName, interval);
+        cpuLoadMeter = new CpuLoadMeter(applicationName, interval);
     }
 
     @PreDestroy

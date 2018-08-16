@@ -39,7 +39,7 @@ public class ParserQueueReceiver {
     )
     public void recievedMessage(ParserJob parserJob) {
         //log.debug("Recieved Message : {}", parserJob);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         if (parserJob instanceof NewFeedParserJob) {
             final NewFeedParserJob job = (NewFeedParserJob) parserJob;
             log.info("Recieved NewFeedParserJob for EXO : {}", job.getExo());

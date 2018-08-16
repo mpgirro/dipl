@@ -39,7 +39,7 @@ public class FeedResource {
     @Transactional
     public ResponseEntity<FeedDTO> createFeed(@RequestBody FeedDTO feed) throws URISyntaxException {
         log.debug("REST request to save Feed : {}", feed);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<FeedDTO> created = feedService.save(feed);
         return created
             .map(idMapper::clearImmutable)
@@ -57,7 +57,7 @@ public class FeedResource {
     @ResponseStatus(HttpStatus.OK)
     public void proposeFeed(@RequestParam("url") String url) throws URISyntaxException {
         log.debug("REST request to propose Feed by URL : {}", url);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         feedService.propose(url, RoundTripTime.empty());
     }
 
@@ -65,7 +65,7 @@ public class FeedResource {
     @Transactional
     public ResponseEntity<FeedDTO> updateFeed(@RequestBody FeedDTO feed) {
         log.debug("REST request to update Feed : {}", feed);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<FeedDTO> updated = feedService.update(feed);
         return updated
             .map(idMapper::clearImmutable)
@@ -82,7 +82,7 @@ public class FeedResource {
     @Transactional(readOnly = true)
     public ResponseEntity<FeedDTO> getFeed(@PathVariable String exo) {
         log.debug("REST request to get Feed (EXO) : {}", exo);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         final Optional<FeedDTO> feed = feedService.findOneByExo(exo);
         return feed
             .map(idMapper::clearImmutable)
