@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 import akka.actor.ActorRef
 import com.google.common.collect.ImmutableList
 import echo.core.benchmark.rtt.RoundTripTime
-import echo.core.benchmark.{FeedProperty}
+import echo.core.benchmark.FeedProperty
+import echo.core.benchmark.mps.MessagesPerSecondResult
 import echo.core.domain.dto._
 import echo.core.domain.feed.FeedStatus
 
@@ -61,8 +62,7 @@ object ActorProtocol {
     case class MonitorQueryProgress(queries: ImmutableList[String])
     case class StartMessagePerSecondMonitoring()
     case class StopMessagePerSecondMonitoring()
-    case class MessagePerSecondReport(actorName: String, mps: Double)
-    case class ExpectedMessages(count: Int)
+    case class MessagePerSecondReport(report: MessagesPerSecondResult)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore

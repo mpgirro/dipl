@@ -61,7 +61,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def getAllPodcasts: Route = get {
         parameters('p.as[Int].?, 's.as[Int].?) { (page, size) =>
             log.info("GET /api/podcast?p={}&s={}", page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             val p: Int = page.map(p => p-1).getOrElse(DEFAULT_PAGE)
             val s: Int = size.getOrElse(DEFAULT_SIZE)
@@ -94,7 +94,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
                   response = classOf[PodcastDTO])
     def getPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}", exo)
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
         onCompleteWithBreaker(breaker)(catalogStore ? GetPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -119,7 +119,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getEpisodesByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/episodes", exo)
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
         onCompleteWithBreaker(breaker)(catalogStore ? GetEpisodesByPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -141,7 +141,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def getFeedsByPodcast(exo: String): Route = get {
         log.info("GET /api/podcast/{}/feeds", exo)
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
         onCompleteWithBreaker(breaker)(catalogStore ? GetFeedsByPodcast(exo)) {
             case Success(res) =>
                 res match {
@@ -164,7 +164,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def postPodcast: Route = post {
         entity(as[PodcastDTO]) { podcast =>
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
@@ -180,7 +180,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
     def putPodcast(id: String): Route = put {
         entity(as[PodcastDTO]) { podcast =>
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             // TODO update podcast with exo
 
@@ -190,7 +190,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
     def deletePodcast(id: String): Route = delete {
 
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
 
         // TODO delete podcast -  I guess this should not be supported?
 

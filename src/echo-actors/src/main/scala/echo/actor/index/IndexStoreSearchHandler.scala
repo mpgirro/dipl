@@ -36,7 +36,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     override def postRestart(cause: Throwable): Unit = {
         log.info("{} has been restarted or resumed", self.path.name)
@@ -70,7 +70,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")
@@ -99,7 +99,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
                 sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
             }
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             currQuery = "" // wipe the copy
 
     }

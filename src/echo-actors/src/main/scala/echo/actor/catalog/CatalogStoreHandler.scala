@@ -54,7 +54,7 @@ class CatalogStoreHandler(workerIndex: Int,
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private var repositoryFactoryBuilder = new RepositoryFactoryBuilder(databaseUrl)
     private var emf: EntityManagerFactory = repositoryFactoryBuilder.getEntityManagerFactory
@@ -109,46 +109,46 @@ class CatalogStoreHandler(workerIndex: Int,
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case ProposeNewFeed(feedUrl, rtt) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             proposeFeed(feedUrl, rtt)
 
         case CheckPodcast(exo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCheckPodcast(exo)
 
         case CheckFeed(exo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCheckFeed(exo)
 
         case CheckAllPodcasts =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCheckAllPodcasts(0, MAX_PAGE_SIZE)
 
         case CheckAllFeeds =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCheckAllFeeds(0, MAX_PAGE_SIZE)
 
         case FeedStatusUpdate(podcastExo, feedUrl, timestamp, status) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onFeedStatusUpdate(podcastExo, feedUrl, timestamp, status)
 
         case SaveChapter(chapter) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onSaveChapter(chapter)
 
         case AddPodcastAndFeedIfUnknown(podcast, feed) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onAddPodcastAndFeedIfUnknown(podcast, feed)
 
         case UpdatePodcast(exo, url, podcast) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onUpdatePodcast(exo, url, podcast)
 
         case UpdateEpisode(podcastExo, episode) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onUpdateEpisode(podcastExo, episode)
 
         // TODO
@@ -156,71 +156,71 @@ class CatalogStoreHandler(workerIndex: Int,
         //case UpdateChapter(episodeExo, chapter) =>  ...
 
         case UpdateFeedUrl(oldUrl, newUrl) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onUpdateFeedMetadataUrl(oldUrl, newUrl)
 
         case UpdateLinkByExo(exo, newUrl) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onUpdateLinkByExo(exo, newUrl)
 
         case GetPodcast(podcastExo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetPodcast(podcastExo)
 
         case GetAllPodcasts(page, size) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetAllPodcasts(page, size)
 
         case GetAllPodcastsRegistrationComplete(page, size) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetAllPodcastsRegistrationComplete(page, size)
 
         case GetAllFeeds(page, size) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetAllFeeds(page, size)
 
         case GetEpisode(podcastExo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetEpisode(podcastExo)
 
         case GetEpisodesByPodcast(podcastExo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetEpisodesByPodcast(podcastExo)
 
         case GetFeedsByPodcast(podcastExo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetFeedsByPodcast(podcastExo)
 
         case GetChaptersByEpisode(episodeExo) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onGetChaptersByEpisode(episodeExo)
 
         case RegisterEpisodeIfNew(podcastExo, episode, rtt) =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onRegisterEpisodeIfNew(podcastExo, episode, rtt)
 
         case DebugPrintAllPodcasts =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintAllPodcasts()
 
         case DebugPrintAllEpisodes =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintAllEpisodes()
 
         case DebugPrintAllFeeds =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintAllFeeds()
 
         case DebugPrintCountAllPodcasts =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintCountAllPodcasts()
 
         case DebugPrintCountAllEpisodes =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintCountAllEpisodes()
 
         case DebugPrintCountAllFeeds =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             debugPrintCountAllFeeds()
 
         case GetMeanEpisodeCountPerPodcast =>

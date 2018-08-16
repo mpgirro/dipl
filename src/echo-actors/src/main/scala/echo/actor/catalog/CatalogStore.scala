@@ -36,7 +36,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -72,16 +72,16 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
-        case msg @ StartMessagePerSecondMonitoring =>
+        case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
-            router.routees.foreach(r => r.send(msg, sender()))
+            router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
-        case msg @ StopMessagePerSecondMonitoring =>
+        case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            router.routees.foreach(r => r.send(msg, sender()))
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
         case Terminated(corpse) =>
             /* TODO at some point we want to simply restart replace the worker
@@ -109,7 +109,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             router.route(work, sender())
 
     }

@@ -57,7 +57,7 @@ class CrawlerWorker extends Actor with ActorLogging {
     private var parser: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsCounter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
     private val fyydAPI: FyydAPI = new FyydAPI()
     private var httpClient: HttpClient = new HttpClient(DOWNLOAD_TIMEOUT, DOWNLOAD_MAXBYTES)
 
@@ -101,16 +101,16 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
-            mpsCounter.startMeasurement()
+            mpsMeter.startMeasurement()
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsCounter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsCounter.getResult.mps)
+            mpsMeter.stopMeasurement()
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case DownloadWithHeadCheck(exo, url, job, rtt) =>
             log.debug("Received Download({},'{}',{},_)", exo, url, job.getClass.getSimpleName)
-            mpsCounter.registerMessage()
+            mpsMeter.tick()
 
             this.currUrl = url
             this.currJob = job
@@ -129,7 +129,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
         case DownloadContent(exo, url, job, encoding, rtt) =>
             log.debug("Received Download({},'{}',{},{},_)", exo, url, job.getClass.getSimpleName, encoding)
-            mpsCounter.registerMessage()
+            mpsMeter.tick()
 
             this.currUrl = url
             this.currJob = job
@@ -137,11 +137,11 @@ class CrawlerWorker extends Actor with ActorLogging {
             fetchContent(exo, url, job, encoding, rtt) // TODO send encoding via message
 
         case CrawlFyyd(count) =>
-            mpsCounter.registerMessage()
+            mpsMeter.tick()
             onCrawlFyyd(count)
 
         case LoadFyydEpisodes(podcastId, fyydId) =>
-            mpsCounter.registerMessage()
+            mpsMeter.tick()
             onLoadFyydEpisodes(podcastId, fyydId)
 
     }

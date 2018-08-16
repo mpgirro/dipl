@@ -59,7 +59,7 @@ class IndexBroker extends Actor with ActorLogging {
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     // TODO is this working when running in a cluster setup?
     override val supervisorStrategy: SupervisorStrategy =
@@ -83,7 +83,7 @@ class IndexBroker extends Actor with ActorLogging {
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             broadcastRouter.route(msg, sender())
 
         case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
@@ -91,17 +91,17 @@ class IndexBroker extends Actor with ActorLogging {
 
         case command: IndexCommand =>
             log.debug("Routing command: {}", command.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             roundRobinRouter.route(command, sender())
 
         case event: IndexEvent =>
             log.debug("Routing event: {}", event.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             broadcastRouter.route(event, sender())
 
         case query: IndexQuery =>
             log.debug("Routing query : {}", query.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -110,7 +110,7 @@ class IndexBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             broadcastRouter.route(message, sender())
 
     }

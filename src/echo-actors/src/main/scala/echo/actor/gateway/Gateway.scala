@@ -63,7 +63,7 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
     private var catalogStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private val searchService = new SearchGatewayService(log, searcherBreaker, mpsMeter)
     private val benchmarkService = new BenchmarkGatewayService(log, searcherBreaker, mpsMeter, self)
@@ -144,11 +144,11 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             //searchService.benchmarkDistributedSearch(q, p, s, rtt)
             benchmarkService.benchmarkSearch(q, p, s, rtt)
 

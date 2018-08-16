@@ -55,7 +55,7 @@ class ParserWorker extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
     private val fyydAPI: FyydAPI = new FyydAPI()
 
     private var currFeedUrl = ""
@@ -100,11 +100,11 @@ class ParserWorker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtt: RoundTripTime) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
@@ -116,7 +116,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseUpdateEpisodeData(feedUrl: String, podcastExo: String, episodeFeedData: String, rtt: RoundTripTime) =>
             log.debug("Received ParseEpisodeData({},{},_)", feedUrl, podcastExo)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             currFeedUrl = feedUrl
             currPodcastExo = podcastExo
@@ -128,7 +128,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseWebsiteData(exo: String, html: String) =>
             log.debug("Received ParseWebsiteData({},_)", exo)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             val readableText = Jsoup.parse(html).text()
 
@@ -137,7 +137,7 @@ class ParserWorker extends Actor with ActorLogging {
 
         case ParseFyydEpisodes(podcastExo, json) =>
             log.debug("Received ParseFyydEpisodes({},_)", podcastExo)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             val episodes: List[EpisodeDTO] = fyydAPI.getEpisodes(json).asScala.toList
             log.info("Loaded {} episodes from fyyd for podcast : {}", episodes.size, podcastExo)
@@ -229,6 +229,7 @@ class ParserWorker extends Actor with ActorLogging {
         sendCatalogCommand(catalogCommand)
     }
 
+    /* TODO this code works but produces bad output and is super slow!
     private def base64Image(imageUrl: String): String = {
         try {
             val sourceImage: BufferedImage = ImageIO.read(new URL(imageUrl))
@@ -244,5 +245,6 @@ class ParserWorker extends Actor with ActorLogging {
                 null
         }
     }
+    */
 
 }

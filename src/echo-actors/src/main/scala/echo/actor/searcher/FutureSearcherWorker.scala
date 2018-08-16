@@ -54,7 +54,7 @@ class FutureSearcherWorker extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private val breaker =
         CircuitBreaker(context.system.scheduler, MAX_BREAKER_FAILURES, BREAKER_CALL_TIMEOUT, BREAKER_RESET_TIMEOUT)
@@ -91,11 +91,11 @@ class FutureSearcherWorker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
         case SearchRequest(query, page, size, rtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             // TODO do some query processing (like extracting "sort:date:asc" and "sort:date:desc")
 

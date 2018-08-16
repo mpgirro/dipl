@@ -34,7 +34,7 @@ class CatalogBroker extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     /*
      * We define two separate routings, based on the Command–query separation principle
@@ -76,30 +76,30 @@ class CatalogBroker extends Actor with ActorLogging {
             benchmarkMonitor = ref
             broadcastRouter.route(msg, sender())
 
-        case msg @ StartMessagePerSecondMonitoring =>
+        case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
-            broadcastRouter.route(msg, sender())
+            broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
 
-        case msg @ StopMessagePerSecondMonitoring =>
+        case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            broadcastRouter.route(msg, sender())
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
 
         case command: CatalogCommand =>
             log.debug("Routing command: {}", command.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             roundRobinRouter.route(command, sender())
 
         case event: CatalogEvent =>
             log.debug("Routing event: {}", event.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             broadcastRouter.route(event, sender())
 
         case query: CatalogQuery =>
             log.debug("Routing query : {}", query.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             roundRobinRouter.route(query, sender())
 
         case Terminated(corpse) =>
@@ -108,7 +108,7 @@ class CatalogBroker extends Actor with ActorLogging {
 
         case message =>
             log.warning("Routing GENERAL message of kind (assuming it should be broadcast) : {}", message.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             broadcastRouter.route(message, sender())
     }
 

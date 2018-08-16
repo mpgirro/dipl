@@ -53,7 +53,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
                   responseContainer = "Set")
     def getAllEpisodes: Route = get {
 
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
 
         complete(NotImplemented)
     }
@@ -78,7 +78,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     */
     def getEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}", exo)
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
         onCompleteWithBreaker(breaker)(catalogStore ? GetEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -103,7 +103,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def getChaptersByEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}/chapters", exo)
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
         onCompleteWithBreaker(breaker)(catalogStore ? GetChaptersByEpisode(exo)) {
             case Success(res) =>
                 res match {
@@ -134,7 +134,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def postEpisode: Route = post {
         entity(as[EpisodeDTO]) { episode =>
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             /*
             onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
@@ -150,7 +150,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     def putEpisode(id: String): Route = put {
         entity(as[EpisodeDTO]) { episode =>
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             // TODO update podcast with exo
 
@@ -160,7 +160,7 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
 
     def deleteEpisode(id: String): Route = delete {
 
-        mpsMeter.registerMessage()
+        mpsMeter.tick()
 
         // TODO delete podcast -  I guess this should not be supported?
 

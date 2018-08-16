@@ -32,14 +32,11 @@ class Parser extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
-
-    private var expectedMsgCount = 0
-    private var expectedMsgGoal = 0
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
-            val parser = createParserActor()
+            val parser = createWorker()
             context watch parser
             ActorRefRoutee(parser)
         }
@@ -73,11 +70,6 @@ class Parser extends Actor with ActorLogging {
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
-        case ExpectedMessages(count) =>
-            log.debug("Received ExpectedMessages({})", count)
-            expectedMsgCount = 0
-            expectedMsgGoal = count
-
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -85,7 +77,11 @@ class Parser extends Actor with ActorLogging {
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            reportMps()
+            if (mpsMeter.isMeasuring) {
+                mpsMeter.stopMeasurement()
+                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+                router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+            }
 
         case PoisonPill =>
             log.debug("Received a PosionPill -> forwarding it to all routees")
@@ -93,35 +89,19 @@ class Parser extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            tickMpsMeter()
+            mpsMeter.tick()
             router.route(work, sender())
     }
 
-    private def createParserActor(): ActorRef = {
+    private def createWorker(): ActorRef = {
         workerIndex += 1
-        val parser = context.actorOf(ParserWorker.props(), ParserWorker.name(workerIndex))
+        val worker = context.actorOf(ParserWorker.props(), ParserWorker.name(workerIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
-        Option(catalogStore).foreach(d => parser ! ActorRefCatalogStoreActor(d))
-        Option(crawler).foreach(c => parser ! ActorRefCrawlerActor(c))
+        Option(catalogStore).foreach(d => worker ! ActorRefCatalogStoreActor(d))
+        Option(crawler).foreach(c => worker ! ActorRefCrawlerActor(c))
 
-        parser
-    }
-
-    private def tickMpsMeter(): Unit = {
-        mpsMeter.registerMessage()
-        expectedMsgCount += 1
-        if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
-            reportMps()
-        }
-    }
-
-    private def reportMps(): Unit = {
-        if (mpsMeter.isMeasuring) {
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
-        }
+        worker
     }
 
 }

@@ -27,7 +27,7 @@ class Searcher extends Actor with ActorLogging {
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -58,16 +58,16 @@ class Searcher extends Actor with ActorLogging {
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case request: SearchRequest =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             router.route(request, sender())
 
         case work =>
             log.warning("Routing work of UNKNOWN kind : {}", work.getClass)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             router.route(work, sender())
     }
 

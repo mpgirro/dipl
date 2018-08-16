@@ -58,11 +58,13 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
-    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 81) // 'cause we have 21 actors in place that will report their MPS
-    private val memoryUsageMeter = new MemoryUsageMeter(200)
-    private val cpuLoadMeter = new CpuLoadMeter(200)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 64) // 'cause we have X actors in place that will report their MPS
+    private val memoryUsageMeter = new MemoryUsageMeter(self.path.toStringWithoutAddress, 200)
+    private val cpuLoadMeter = new CpuLoadMeter(self.path.toStringWithoutAddress, 200)
 
     private val benchmarkUtil = new BenchmarkUtil("../benchmark/")
+
+    var mpsReportCount = 0 // debug
 
     override def preStart(): Unit = {
 
@@ -117,8 +119,6 @@ class NodeMaster extends Actor with ActorLogging {
         log.info("shutting down")
     }
 
-    var mpsMsgCounter = 0 // debug
-
     override def receive: Receive = {
 
         case StartMessagePerSecondMonitoring =>
@@ -126,16 +126,17 @@ class NodeMaster extends Actor with ActorLogging {
             sendStartMessagePerSecondMonitoringMessages()
             memoryUsageMeter.startMeasurement()
             cpuLoadMeter.startMeasurement()
+            mpsReportCount = 0
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             sendStopMessagePerSecondMonitoringMessages()
 
-        case MessagePerSecondReport(name, mps) =>
-            log.debug("Received StopMessagePerSecondMonitoring({},{})", name, mps)
-            mpsMonitor.addMetric(name, mps)
-            mpsMsgCounter += 1
-            log.info("{} MPS reports", mpsMsgCounter)
+        case MessagePerSecondReport(report) =>
+            log.debug("Received MessagePerSecondReport({},{})", report.name, report.mps)
+            mpsMonitor.addMetric(report.name, report.mps)
+            mpsReportCount += 1
+            log.info("{}. MPS report : {}", mpsReportCount, report.toString)
             if (mpsMonitor.isFinished) {
                 log.info("MPS reporting finished; results in CSV format :")
                 println(mpsMonitor.toCsv)
@@ -146,19 +147,10 @@ class NodeMaster extends Actor with ActorLogging {
             rttMonitor.initWithProperties(feedProperties)
             mpsMonitor.reset()
 
-            val feedCount = feedProperties.size()
-            updater ! ExpectedMessages(2*feedCount) // 2x because bounce between catalog
-            crawler ! ExpectedMessages(feedCount)
-            parser ! ExpectedMessages(feedCount)
-
         case MonitorQueryProgress(queries) =>
             log.debug("Received MonitorQueryProgress(_)")
             rttMonitor.initWithQueries(queries)
             mpsMonitor.reset()
-
-            updater ! ExpectedMessages(0)
-            crawler ! ExpectedMessages(0)
-            parser ! ExpectedMessages(0)
 
         case IndexSubSystemRoundTripTimeReport(rtt) =>
             log.debug("Received IndexSubSystemRoundTripTimeReport(_)", rtt)

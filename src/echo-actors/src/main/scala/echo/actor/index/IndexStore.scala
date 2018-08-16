@@ -59,7 +59,7 @@ class IndexStore (indexPath: String,
 
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
 
 
@@ -110,12 +110,14 @@ class IndexStore (indexPath: String,
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            router.routees.foreach(r => r.send(msg, sender()))
+            if (mpsMeter.isMeasuring) {
+                mpsMeter.stopMeasurement()
+                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+                router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+            }
 
         case CommitIndex =>
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             commitIndexIfChanged()
 
             //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
@@ -123,7 +125,7 @@ class IndexStore (indexPath: String,
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             // TODO add now to rtts and send to CLI
             benchmarkMonitor ! IndexSubSystemRoundTripTimeReport(rtt.bumpRTTs())
@@ -134,24 +136,24 @@ class IndexStore (indexPath: String,
 
         case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             updateWebsiteQueue.enqueue((exo,html))
 
         // TODO this fix is not done in the Directory and only correct data gets send to the index anyway...
         case UpdateDocImageIndexEvent(exo, image) =>
             log.debug("Received IndexStoreUpdateDocImage({},{})", exo, image)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             updateImageQueue.enqueue((exo, image))
 
         case UpdateDocLinkIndexEvent(exo, link) =>
             log.debug("Received IndexStoreUpdateDocLink({},'{}')", exo, link)
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             updateLinkQueue.enqueue((exo, link))
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
 
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             val origSender = sender()
             router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), origSender)

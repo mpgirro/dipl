@@ -36,14 +36,11 @@ class Crawler extends Actor with ActorLogging {
     private var catalog: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
-
-    private var expectedMsgCount = 0
-    private var expectedMsgGoal = 0
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
-            val crawler = createCrawler()
+            val crawler = createWorker()
             context watch crawler
             ActorRefRoutee(crawler)
         }
@@ -85,19 +82,18 @@ class Crawler extends Actor with ActorLogging {
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
-        case ExpectedMessages(count) =>
-            log.debug("Received ExpectedMessages({})", count)
-            expectedMsgCount = 0
-            expectedMsgGoal = count
-
-        case msg @ StartMessagePerSecondMonitoring =>
+        case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
-            router.routees.foreach(r => r.send(msg, sender()))
+            router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
-        case msg @ StopMessagePerSecondMonitoring =>
+        case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
-            reportMps()
+            if (mpsMeter.isMeasuring) {
+                mpsMeter.stopMeasurement()
+                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+                router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+            }
 
         case Terminated(corpse) =>
             //log.info("Child '{}' terminated" + corpse.path.name)
@@ -127,35 +123,19 @@ class Crawler extends Actor with ActorLogging {
 
         case work =>
             log.debug("Routing work of kind : {}", work.getClass)
-            tickMpsMeter()
+            mpsMeter.tick()
             router.route(work, sender())
     }
 
-    private def createCrawler(): ActorRef = {
+    private def createWorker(): ActorRef = {
         workerIndex += 1
-        val crawler = context.actorOf(CrawlerWorker.props(), CrawlerWorker.name(workerIndex))
+        val worker = context.actorOf(CrawlerWorker.props(), CrawlerWorker.name(workerIndex))
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(parser).foreach(p => catalog ! ActorRefParserActor(p) )
         Option(catalog).foreach(d => catalog ! ActorRefCatalogStoreActor(d))
 
-        crawler
-    }
-
-    private def tickMpsMeter(): Unit = {
-        mpsMeter.registerMessage()
-        expectedMsgCount += 1
-        if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
-            reportMps()
-        }
-    }
-
-    private def reportMps(): Unit = {
-        if (mpsMeter.isMeasuring) {
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-            router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
-        }
+        worker
     }
 
 }

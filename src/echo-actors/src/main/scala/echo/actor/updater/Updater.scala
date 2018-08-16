@@ -18,16 +18,11 @@ class Updater extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
 
-    //private val benchmarkFeedMap = new Map[String, String]
-
     private var catalog: ActorRef = _
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
 
-    private val mpsMeter = new MessagesPerSecondMeter()
-
-    private var expectedMsgCount = 0
-    private var expectedMsgGoal = 0
+    private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
     override def receive: Receive = {
 
@@ -43,11 +38,6 @@ class Updater extends Actor with ActorLogging {
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
-        case ExpectedMessages(count) =>
-            log.debug("Received ExpectedMessages({})", count)
-            expectedMsgCount = 0
-            expectedMsgGoal = count
-
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -56,25 +46,16 @@ class Updater extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             if (mpsMeter.isMeasuring) {
                 mpsMeter.stopMeasurement()
-                benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
+                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             }
 
         case ProposeNewFeed(url, rtt) =>
-            tickMpsMeter()
+            mpsMeter.tick()
             catalog ! ProposeNewFeed(url, rtt.bumpRTTs())
 
         case ProcessFeed(exo, url, job: FetchJob, rtt) =>
-            tickMpsMeter()
+            mpsMeter.tick()
             crawler ! DownloadWithHeadCheck(exo, url, job, rtt.bumpRTTs())
-    }
-
-    private def tickMpsMeter(): Unit = {
-        mpsMeter.registerMessage()
-        expectedMsgCount += 1
-        if (expectedMsgCount == expectedMsgGoal && mpsMeter.isMeasuring) {
-            mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(self.path.toString, mpsMeter.getResult.mps)
-        }
     }
 
 }

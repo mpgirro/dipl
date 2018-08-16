@@ -60,7 +60,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     private def search: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCompleteWithBreaker(breaker)(searcher ? SearchRequest(query, page, size, RoundTripTime.empty())) {
                 case Success(res) =>
                     res match {
@@ -130,7 +130,7 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
     def distributedSearch: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
             onCompleteWithBreaker(breaker)(emitSearchQuery(SearchRequest(query, page, size, RoundTripTime.empty()))) {
                 case Success(res) =>
                     res match {

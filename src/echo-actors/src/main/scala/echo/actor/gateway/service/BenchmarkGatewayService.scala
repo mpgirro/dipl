@@ -84,7 +84,7 @@ class BenchmarkGatewayService (private val log: LoggingAdapter, private val brea
     private def benchmarkSearchRoute: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /benchmark/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))
-            mpsMeter.registerMessage()
+            mpsMeter.tick()
 
             val rtt = ImmutableRoundTripTime.builder()
                 .setId(query)
