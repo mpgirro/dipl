@@ -1,7 +1,11 @@
 package echo.core.benchmark.mps;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import org.immutables.value.Value;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -10,20 +14,32 @@ import static java.util.stream.Collectors.toList;
 /**
  * @author Maximilian Irro
  */
-public class MessagesPerSecondResult {
+@Value.Immutable
+@Value.Style(
+    jdkOnly    = true,              // prevent usage of Guava collections
+    get        = {"is*", "get*"},   // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",             // generates public no args constructor
+    defaults   = @Value.Immutable(builder = false),  // We may also disable builder
+    build      = "create"           // rename 'build' method on builder to 'create'
+)
+@JsonSerialize(as = ImmutableMessagesPerSecondResult.class)
+@JsonDeserialize(as = ImmutableMessagesPerSecondResult.class)
+public interface MessagesPerSecondResult {
 
-    public final String name;
-    public final ImmutableList<Long> dataPoints;
-    public final double mps;
-    public final String mpsStr;
+    @Value.Parameter
+    String getName();
 
-    private MessagesPerSecondResult(String name, Map<Long, Long> buckets) {
-        this.name = name;
-        this.dataPoints = buckets.keySet()
-            .stream()
-            .sorted()
-            .map(buckets::get)
-            .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+    @Value.Parameter
+    Double getMps();
+
+    @Value.Parameter
+    String getMpsStr();
+
+    @Value.Parameter
+    List<Long> dataPoints();
+
+    static MessagesPerSecondResult of(String name, Map<Long, Long> buckets) {
 
         long messagesCount = 0;
         long secondsCount  = 0;
@@ -34,21 +50,16 @@ public class MessagesPerSecondResult {
 
         final double m = (double) messagesCount;
         final double s = (double) secondsCount;
-        mps = (s > 0) ? (m / s) : 0.0;
-        mpsStr = "" + ((double) Math.round(mps * 100) / 100);
+        final double mps = (s > 0) ? (m / s) : 0.0;
+        final String mpsStr = "" + ((double) Math.round(mps * 100) / 100);
+
+        final ImmutableList<Long> dataPoints = buckets.keySet()
+            .stream()
+            .sorted()
+            .map(buckets::get)
+            .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+
+        return ImmutableMessagesPerSecondResult.of(name, mps, mpsStr, dataPoints);
     }
 
-    public static MessagesPerSecondResult of(String name, Map<Long, Long> buckets) {
-        return new MessagesPerSecondResult(name, buckets);
-    }
-
-    @Override
-    public String toString() {
-        return "MessagesPerSecondResult{" +
-            "name='" + name + '\'' +
-            ", mps=" + mps +
-            ", mpsStr='" + mpsStr + '\'' +
-            ", dataPoints=" + dataPoints +
-            '}';
-    }
 }

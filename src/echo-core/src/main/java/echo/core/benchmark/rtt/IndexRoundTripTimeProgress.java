@@ -1,6 +1,7 @@
 package echo.core.benchmark.rtt;
 
 import com.google.common.collect.ImmutableList;
+import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ public class IndexRoundTripTimeProgress extends RoundTripTimeProgress {
     private int totalEpisodes;
 
     private RoundTripTime podcastRTT;
-    private List<RoundTripTime> episodeRTTs = new LinkedList<>();
+    private final List<RoundTripTime> episodeRTTs = new LinkedList<>();
 
     public IndexRoundTripTimeProgress(String id, int totalEpisodes) {
         super(id);
@@ -47,6 +48,11 @@ public class IndexRoundTripTimeProgress extends RoundTripTimeProgress {
 
     @Override
     public void calculateEvaluation() {
+
+        if (!finished()) {
+            throw new RuntimeException("Cannot calculate IndexRoundTripTimeProgress evaluation -- not yet finished");
+        }
+
         firstTimestamp = podcastRTT.getRtts().get(0);
         lastTimestamp = podcastRTT.getRtts().get(podcastRTT.getRtts().size()-1);
 
@@ -79,4 +85,5 @@ public class IndexRoundTripTimeProgress extends RoundTripTimeProgress {
         builder.addAll(episodeRTTs);
         return builder.build();
     }
+
 }

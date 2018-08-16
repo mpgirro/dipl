@@ -1,46 +1,51 @@
 package echo.core.benchmark.cpu;
 
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.value.Value;
 
 import java.util.List;
 
 /**
  * @author Maximilian Irro
  */
-public class CpuLoadResult {
+@Value.Immutable
+@Value.Style(
+    jdkOnly    = true,              // prevent usage of Guava collections
+    get        = {"is*", "get*"},   // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",             // generates public no args constructor
+    defaults   = @Value.Immutable(builder = false),  // We may also disable builder
+    build      = "create"           // rename 'build' method on builder to 'create'
+)
+@JsonSerialize(as = ImmutableCpuLoadResult.class)
+@JsonDeserialize(as = ImmutableCpuLoadResult.class)
+public interface CpuLoadResult {
 
-    public final String name;
-    public final ImmutableList<Double> dataPoints;
-    public final double meanLoad;
-    public final String meanLoadStr;
+    @Value.Parameter
+    String getName();
 
-    private CpuLoadResult(String name, List<Double> dataPoints) {
-        this.name = name;
-        this.dataPoints = ImmutableList.copyOf(dataPoints);
+    @Value.Parameter
+    Double getMeanLoad();
 
-        double tmp = 0;
+    @Value.Parameter
+    String getMeanLoadStr();
+
+    @Value.Parameter
+    List<Double> dataPoints();
+
+    static CpuLoadResult of(String name, List<Double> dataPoints) {
+        double meanLoad = 0;
         if (dataPoints.size() > 0) {
             final double sum = dataPoints.stream()
                 .mapToDouble(Double::doubleValue)
                 .sum();
 
-            tmp = sum / dataPoints.size();
+            meanLoad = sum / dataPoints.size();
         }
-        meanLoad = tmp;
-        meanLoadStr = "" + ((double) Math.round(meanLoad * 100) / 100);
+        final String meanLoadStr = "" + ((double) Math.round(meanLoad * 100) / 100);
+
+        return ImmutableCpuLoadResult.of(name, meanLoad, meanLoadStr, dataPoints);
     }
 
-    public static CpuLoadResult of(String name, List<Double> dataPoints) {
-        return new CpuLoadResult(name, dataPoints);
-    }
-
-    @Override
-    public String toString() {
-        return "CpuLoadResult{" +
-            "name='" + name + '\'' +
-            ", meanLoad=" + meanLoad +
-            ", meanLoadStr='" + meanLoadStr + '\'' +
-            ", dataPoints=" + dataPoints +
-            '}';
-    }
 }

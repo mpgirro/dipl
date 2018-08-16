@@ -1,48 +1,52 @@
 package echo.core.benchmark.memory;
 
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.value.Value;
 
 import java.util.List;
 
 /**
  * @author Maximilian Irro
  */
-public class MemoryUsageResult {
+@Value.Immutable
+@Value.Style(
+    jdkOnly    = true,              // prevent usage of Guava collections
+    get        = {"is*", "get*"},   // Detect 'get' and 'is' prefixes in accessor methods
+    init       = "set*",
+    create     = "new",             // generates public no args constructor
+    defaults   = @Value.Immutable(builder = false),  // We may also disable builder
+    build      = "create"           // rename 'build' method on builder to 'create'
+)
+@JsonSerialize(as = ImmutableMemoryUsageResult.class)
+@JsonDeserialize(as = ImmutableMemoryUsageResult.class)
+public interface MemoryUsageResult {
 
-    private static final long MEGABYTE = 1000L * 1000L; // base 10, not base 2
+    long MEGABYTE = 1000L * 1000L; // base 10, not base 2
 
-    public final String name;
-    public final ImmutableList<Long> dataPoints;
-    public final double meanBytes;
-    public final String meanBytesStr;
+    @Value.Parameter
+    String getName();
 
-    private MemoryUsageResult(String name, List<Long> dataPoints) {
-        this.name = name;
-        this.dataPoints = ImmutableList.copyOf(dataPoints);
+    @Value.Parameter
+    Double getMeanBytes();
 
-        double tmp = 0;
+    @Value.Parameter
+    String getMeanBytesStr();
+
+    @Value.Parameter
+    List<Long> dataPoints();
+
+    static MemoryUsageResult of(String name, List<Long> dataPoints) {
+        double meanBytes = 0;
         if (dataPoints.size() > 0) {
             final long sum = dataPoints.stream()
                 .mapToLong(Long::longValue)
                 .sum();
 
-            tmp = ((double) sum) / dataPoints.size();
+            meanBytes = ((double) sum) / dataPoints.size();
         }
-        meanBytes = tmp;
-        meanBytesStr = (((long) meanBytes) / MEGABYTE) + " MB";
-    }
+        final String meanBytesStr = (((long) meanBytes) / MEGABYTE) + " MB";
 
-    public static MemoryUsageResult of(String name, List<Long> dataPoints) {
-        return new MemoryUsageResult(name, dataPoints);
-    }
-
-    @Override
-    public String toString() {
-        return "MemoryUsageResult{" +
-            "name='" + name + '\'' +
-            ", meanBytes=" + meanBytes +
-            ", meanBytesStr='" + meanBytesStr + '\'' +
-            ", dataPoints=" + dataPoints +
-            '}';
+        return ImmutableMemoryUsageResult.of(name, meanBytes, meanBytesStr, dataPoints);
     }
 }
