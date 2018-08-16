@@ -22,35 +22,37 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
 
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean measuring = new AtomicBoolean(false);
-    private final int interval;
     private final List<Double> dataPoints = new LinkedList<>();
+    private final String name;
+    private final int interval;
 
     private final OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 
     private CpuLoadResult result;
 
-    public CpuLoadMeter(int interval) {
+    public CpuLoadMeter(String name, int interval) {
+        this.name = name;
         this.interval = interval;
         this.start();
     }
 
     @Override
     public synchronized void activate() {
-        log.debug("Activating the CpuLoadMeter");
+        log.debug("{} : Activating the CpuLoadMeter", name);
         running.set(true);
         this.start();
     }
 
     @Override
     public void deactivate() {
-        log.debug("Deactivating the CpuLoadMeter");
+        log.debug("{} : Deactivating the CpuLoadMeter", name);
         running.set(true);
     }
 
     @Override
     public void startMeasurement() {
-        log.debug("Starting the CPU load measurement");
-        if (!measuring.get()) {
+        log.debug("{} : Starting the CPU load measurement", name);
+        if (!isMeasuring()) {
             synchronized (dataPoints) {
                 dataPoints.clear();
             }
@@ -60,8 +62,8 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
 
     @Override
     public void stopMeasurement() {
-        log.debug("Stopping the CPU load measurement");
-        if (measuring.get()) {
+        log.debug("{} : Stopping the CPU load measurement", name);
+        if (isMeasuring()) {
             synchronized (dataPoints) {
                 result = CpuLoadResult.of(dataPoints);
             }
@@ -82,16 +84,16 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
     @Override
     public void run() {
         running.set(true);
-        while (running.get()) {
+        while (isActive()) {
             try {
-                if (measuring.get()) {
+                if (isActive()) {
                     synchronized (dataPoints) {
                         dataPoints.add(getProcessCpuLoad());
                     }
                 }
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
-                log.error("Error on collecting datapoints : {}", e);
+                log.error("{} : Error on collecting datapoints : {}", name, e);
                 e.printStackTrace();
             }
         }
@@ -100,7 +102,7 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
     public synchronized CpuLoadResult getResult() {
         return Optional
             .ofNullable(result)
-            .orElseThrow(() -> new RuntimeException("CPU load result not yet available"));
+            .orElseThrow(() -> new RuntimeException(name + " : CPU load result not yet available"));
     }
 
     /* TODO delete?

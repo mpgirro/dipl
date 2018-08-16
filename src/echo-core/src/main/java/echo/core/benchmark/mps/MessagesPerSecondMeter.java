@@ -18,26 +18,31 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
 
     private final AtomicBoolean measuring = new AtomicBoolean(false);
     private final Map<Long, Long> buckets = new HashMap<>();
+    private final String name;
 
     private long startTime;
     private MessagesPerSecondResult result;
 
+    public MessagesPerSecondMeter(String name) {
+        this.name = name;
+    }
+
     @Override
     public synchronized void activate() {
-        log.debug("Activating the MessagesPerSecondMeter");
+        log.debug("{} : Activating the MessagesPerSecondMeter", name);
         // Nothing to activate
     }
 
     @Override
     public synchronized void deactivate() {
-        log.debug("Deactivating the MessagesPerSecondMeter");
+        log.debug("{} : Deactivating the MessagesPerSecondMeter", name);
         // Nothing to deactivate
     }
 
     @Override
     public synchronized void startMeasurement() {
-        log.debug("Starting the MPS measurement");
-        if (!measuring.get()) {
+        log.debug("{} : Starting the MPS measurement", name);
+        if (!isMeasuring()) {
             synchronized (buckets) {
                 buckets.clear();
                 startTime = System.currentTimeMillis() / 1000;
@@ -48,8 +53,8 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
 
     @Override
     public synchronized void stopMeasurement() {
-        log.debug("Stopping the MPS measurement");
-        if (measuring.get()) {
+        log.debug("{} : Stopping the MPS measurement", name);
+        if (isMeasuring()) {
             synchronized (buckets) {
                 result = MessagesPerSecondResult.of(buckets);
             }
@@ -67,10 +72,10 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
         return measuring.get();
     }
 
-    public void registerMessage() {
+    public synchronized void registerMessage() {
 
-        if (!measuring.get()) {
-            log.warn("Cannot register new message - the meter is not running!");
+        if (!isMeasuring()) {
+            log.warn("{} : Cannot register new message - the meter is not measuring!", name);
             return;
         }
 
@@ -88,7 +93,7 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
     public synchronized MessagesPerSecondResult getResult() {
         return Optional
             .ofNullable(result)
-            .orElseThrow(() -> new RuntimeException("Messages per second result not yet available"));
+            .orElseThrow(() -> new RuntimeException(name + " : Messages per second result not yet available"));
     }
 
     /*

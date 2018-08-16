@@ -20,33 +20,35 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
 
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean measuring = new AtomicBoolean(false);
-    private final int interval;
     private final List<Long> dataPoints = new LinkedList<>();
+    private final String name;
+    private final int interval;
 
     private MemoryUsageResult result;
 
-    public MemoryUsageMeter(int interval) {
+    public MemoryUsageMeter(String name, int interval) {
+        this.name = name;
         this.interval = interval;
         this.start();
     }
 
     @Override
     public void activate() {
-        log.debug("Activating the MemoryUsageMeter");
+        log.debug("{} : Activating the MemoryUsageMeter", name);
         running.set(true);
         this.start();
     }
 
     @Override
     public void deactivate() {
-        log.debug("Deactivating the MemoryUsageMeter");
+        log.debug("{} : Deactivating the MemoryUsageMeter", name);
         running.set(true);
     }
 
     @Override
     public void startMeasurement() {
-        log.debug("Starting the memory usage measurement");
-        if (!measuring.get()) {
+        log.debug("{} : Starting the memory usage measurement", name);
+        if (!isMeasuring()) {
             synchronized (dataPoints) {
                 dataPoints.clear();
             }
@@ -56,8 +58,8 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
 
     @Override
     public void stopMeasurement() {
-        log.debug("Stopping the memory usage measurement");
-        if (measuring.get()) {
+        log.debug("{} : Stopping the memory usage measurement", name);
+        if (isMeasuring()) {
             synchronized (dataPoints) {
                 result = MemoryUsageResult.of(dataPoints);
             }
@@ -78,7 +80,7 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
     @Override
     public void run() {
         running.set(true);
-        while (running.get()) {
+        while (isActive()) {
             try {
                 if (measuring.get()) {
                     synchronized (dataPoints) {
@@ -87,7 +89,7 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
                 }
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
-                log.error("Error on collecting datapoints : {}", e);
+                log.error("{} : Error on collecting datapoints : {}", name, e);
                 e.printStackTrace();
             }
         }
@@ -96,7 +98,7 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
     public synchronized MemoryUsageResult getResult() {
         return Optional
             .ofNullable(result)
-            .orElseThrow(() -> new RuntimeException("Memory usage result not yet available"));
+            .orElseThrow(() -> new RuntimeException(name + " : Memory usage result not yet available"));
     }
 
     /* TODO delete?
