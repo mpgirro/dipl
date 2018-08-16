@@ -65,7 +65,7 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
         log.debug("{} : Stopping the CPU load measurement", name);
         if (isMeasuring()) {
             synchronized (dataPoints) {
-                result = CpuLoadResult.of(dataPoints);
+                result = CpuLoadResult.of(name, dataPoints);
             }
         }
         measuring.set(false);

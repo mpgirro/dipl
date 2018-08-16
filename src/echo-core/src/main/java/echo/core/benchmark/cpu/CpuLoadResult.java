@@ -9,11 +9,13 @@ import java.util.List;
  */
 public class CpuLoadResult {
 
+    public final String name;
     public final ImmutableList<Double> dataPoints;
     public final double meanLoad;
     public final String meanLoadStr;
 
-    private CpuLoadResult(List<Double> dataPoints) {
+    private CpuLoadResult(String name, List<Double> dataPoints) {
+        this.name = name;
         this.dataPoints = ImmutableList.copyOf(dataPoints);
 
         double tmp = 0;
@@ -28,21 +30,17 @@ public class CpuLoadResult {
         meanLoadStr = "" + ((double) Math.round(meanLoad * 100) / 100);
     }
 
-    public static CpuLoadResult of(List<Double> dataPoints) {
-        return new CpuLoadResult(dataPoints);
+    public static CpuLoadResult of(String name, List<Double> dataPoints) {
+        return new CpuLoadResult(name, dataPoints);
     }
 
-    /* TODO
-    public double getMeanLoad() {
-        return meanLoad;
+    @Override
+    public String toString() {
+        return "CpuLoadResult{" +
+            "name='" + name + '\'' +
+            ", meanLoad=" + meanLoad +
+            ", meanLoadStr='" + meanLoadStr + '\'' +
+            ", dataPoints=" + dataPoints +
+            '}';
     }
-    public String getMeanLoadAsString() {
-        return meanLoadStr;
-    }
-
-    public List<Double> getDataPoints() {
-        return dataPoints;
-    }
-    */
-
 }

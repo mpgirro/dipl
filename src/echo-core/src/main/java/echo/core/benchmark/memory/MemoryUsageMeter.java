@@ -61,7 +61,7 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
         log.debug("{} : Stopping the memory usage measurement", name);
         if (isMeasuring()) {
             synchronized (dataPoints) {
-                result = MemoryUsageResult.of(dataPoints);
+                result = MemoryUsageResult.of(name, dataPoints);
             }
         }
         measuring.set(false);

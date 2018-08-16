@@ -11,11 +11,13 @@ public class MemoryUsageResult {
 
     private static final long MEGABYTE = 1000L * 1000L; // base 10, not base 2
 
+    public final String name;
     public final ImmutableList<Long> dataPoints;
     public final double meanBytes;
     public final String meanBytesStr;
 
-    private MemoryUsageResult(List<Long> dataPoints) {
+    private MemoryUsageResult(String name, List<Long> dataPoints) {
+        this.name = name;
         this.dataPoints = ImmutableList.copyOf(dataPoints);
 
         double tmp = 0;
@@ -30,22 +32,17 @@ public class MemoryUsageResult {
         meanBytesStr = (((long) meanBytes) / MEGABYTE) + " MB";
     }
 
-    public static MemoryUsageResult of(List<Long> dataPoints) {
-        return new MemoryUsageResult(dataPoints);
+    public static MemoryUsageResult of(String name, List<Long> dataPoints) {
+        return new MemoryUsageResult(name, dataPoints);
     }
 
-    /* TODO
-    public double getMeanBytes() {
-        return meanBytes;
+    @Override
+    public String toString() {
+        return "MemoryUsageResult{" +
+            "name='" + name + '\'' +
+            ", meanBytes=" + meanBytes +
+            ", meanBytesStr='" + meanBytesStr + '\'' +
+            ", dataPoints=" + dataPoints +
+            '}';
     }
-
-    public String getMeanBytesAsString() {
-        return meanBytesStr;
-    }
-
-    public List<Long> getDataPoints() {
-        return dataPoints;
-    }
-    */
-
 }

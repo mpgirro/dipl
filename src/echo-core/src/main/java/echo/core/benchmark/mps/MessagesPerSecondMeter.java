@@ -56,7 +56,7 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
         log.debug("{} : Stopping the MPS measurement", name);
         if (isMeasuring()) {
             synchronized (buckets) {
-                result = MessagesPerSecondResult.of(buckets);
+                result = MessagesPerSecondResult.of(name, buckets);
             }
         }
         measuring.set(false);
@@ -72,7 +72,7 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
         return measuring.get();
     }
 
-    public synchronized void registerMessage() {
+    public synchronized void tick() {
 
         if (!isMeasuring()) {
             log.warn("{} : Cannot register new message - the meter is not measuring!", name);
