@@ -9,16 +9,25 @@ Every good work of software starts by scratching a developer's personal itch.
 ~
 
 
+~todo
+Einführungs Blabla was hier in den Unterkapitel alles kommt.
+~
+
+In this chapter we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies/approaches to implement this scenario using the actor model. Subsequently Section [#ch-microservice-impl] describes the implementation approach for the same scenario using the microservice model.
 
 
-## A Concurrent System Scenario
+## A Concurrent System Scenario {#sec-scenario}
 
 ~ lit 
 * Introduction to Information Retrieval <https://nlp.stanford.edu/IR-book/>
 ~
 
 
-In this chapter, we outline a domain-specific search engine we call *Echo*[^fn-echo-name] is presented. The search engine serves as an illustration of a concurrent system and provides us a baseline for evaluating relevant concerns and issues regarding the conception of concurrency using actors and microservices. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
+In this section, we outline a domain-specific search engine we call *Echo*[^fn-echo-name]. The search engine serves as an illustration of a concurrent system and provides us a baseline for evaluating programming with actors and microservices for concurrent execution.
+
+
+
+relevant concerns and issues regarding the conception of concurrency using actors and microservices. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
 
 [^fn-echo-name]: The name "Echo" was chosen for its wonderful characteristics of providing a short package name and the analogy to *recalling spoken words*.  
 
@@ -33,13 +42,13 @@ Search engines cause the illusion of being monolithic systems, but are actually 
 Hier fehlen noch ein paar verbindende Sätze
 ~
 
-Their construction is led by two basic requirements [@Man08]:
+Search engine construction is generally led by two basic requirements [@Man08]:
 
 * Effectiveness
-  : is about the quality of search results, and the sole concern of the scientific discipline called *information retrieval*, which is distinguishing *precision* and *recall* as the two aspects affecting effectiveness. Its optimization is not within the scope of this thesis, and thus merely a basic scoring method provided by the utilized information retrieval library is applied.
+  : is about the quality of search results, and the sole concern of the scientific discipline called *information retrieval* (IR). *Precision* and *recall* are distinguished by IR as the two aspects affecting effectiveness. The optimization of effectiveness is not within the scope of this thesis. We therefore merely apply a basic scoring method provided by the utilized information retrieval library for determining search results.
 
 * Efficiency
-  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase, but also of the data aggregation, such that the up-to-datedness of search results increases with the efficiency of this phase. 
+  : is about response time and throughput, therefore highly affected by the concurrent processing capabilities of the system. Efficiency is not only a concern of the retrieval phase. The data aggregation phase requires efficiency to increase the up-to-dateness of search results. 
 
 ### Domain Description
 
@@ -54,9 +63,9 @@ At the core, the basic architecture and components are inspired by the work of B
 
 ...
 
-A web interface is provided that both backends have to support. It is written with Angular [@GoogleAngular], so the backends have to provide conform REST interfaces to interact with them from the outside. The web UI serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
+We provide both backends with a web interface that they have to support. The Web application is written with Angular [@GoogleAngular], so the backends have to provide conform REST interfaces to allow interaction from the outside. The Web application serves as a proof of concept for intended functionality of the backend implementations, as well as a [meerschweinchen]{.important} for finding problems during development.
 
-In order to prevent any domain-specific code from being implemented twice unnecessarily, we supply both backends with a `core` library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. Lucene [@ApacheLucene] is utilized to create such structures. It offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is provided using ROME [@ROME], enriched by a custom written extension to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
+In order to prevent any domain-specific code from being implemented twice unnecessarily, we supply both backends with the Core library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. We use Lucene [@ApacheLucene] to create this structures. Lucene offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is done using ROME [@ROME], enriched by an extension we wrote to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
 
 ...
 
@@ -67,10 +76,10 @@ In order to prevent any domain-specific code from being implemented twice unnece
   : hold the data structure that is used for searching, the so-called *reverse index*. Registered information entities are called *documents*, relating to one podcast or episode in our case. A reverse index maps the previous *document-term* relationship into a *term-document* structure. IndexStores only have relevant information that are needed to match the documents to search queries. Useful textual information is e.g.\ title, subtitle, multiple general information tags (`<description>` or `<content:encoded>`), chapter marks that are found within feeds, as well as transcripts and the HTML source of linked websites. 
 
 * Web Crawlers (W)
-  : are tasked with the acquisition of information, that is downloading data from URLs. These can relate to feeds, general websites or APIs of other existing directories, which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
+  : aquire the information stores by the search engine, hence they download data from URLs. These URLs can relate to feeds, general websites, or APIs of other existing directories which can be used to discover new feeds. A major concern of web crawlers in general is robustness against the perils of the web [@Man08].
 
 * Parsers (P)
-  : are tasked with the transformation of acquired information, that is analyzing feed XML data, into internal  representation formats. The extracted data is what will be taken into account when running search queries and subsequently be displayed by the web interface. An important requirement on parsers is robustness regarding flawed information, because all considered data is encoded in a markup language, viz.\ XML or HTML.
+  : transform the acquired information into internal representation formats by analyzing feed XML data. The extracted data is what we take into account when running search queries and subsequently display in the Web application. An important requirement on parsers is robustness regarding flawed information, because all considered data is encoded in a markup language, viz.\ XML or HTML.
 
 * Searchers (S)
   : are tasked with performing search operations. However, they merely apply some basic query pre-processing themselves and delegate the retrieval of relevant documents to an IndexStore using its inverted index. The respective results are communicated back via the Searcher to the Gateway.
