@@ -403,8 +403,8 @@ Maximilian Irro
 [INCLUDE=ch5a-impl-scenario]
 [INCLUDE=ch5b-impl-akka]
 [INCLUDE=ch5c-impl-msa]
-[INCLUDE=ch6a-evaluation-expressivness]
-[INCLUDE=ch6b-evaluation-efficiency]
+[INCLUDE=ch6a-eval-expressivness]
+[INCLUDE=ch6b-eval-efficiency]
 [INCLUDE=ch7-discussion]
 [INCLUDE=ch8-conclusion]
 
