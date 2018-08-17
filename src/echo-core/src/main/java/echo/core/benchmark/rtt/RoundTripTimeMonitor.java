@@ -18,7 +18,7 @@ public class RoundTripTimeMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(RoundTripTimeMonitor.class);
 
-    private final ArchitectureType type;
+    private final ArchitectureType architectureType;
     private final Map<String, RoundTripTimeProgress> progressMap = new HashMap<>();
     private int finishedItems; // feeds or queries
     private int totalItems;    // feeds or queries
@@ -31,8 +31,8 @@ public class RoundTripTimeMonitor {
 
     protected boolean finished = false;
 
-    public RoundTripTimeMonitor(ArchitectureType type) {
-        this.type = type;
+    public RoundTripTimeMonitor(ArchitectureType architectureType) {
+        this.architectureType = architectureType;
     }
 
     public boolean isFinished() {
@@ -126,7 +126,7 @@ public class RoundTripTimeMonitor {
         builder.append("src;overallRT;meanRTpI;meanMsgL;uri\n");
         for (Map.Entry<String,RoundTripTimeProgress> e : progressMap.entrySet()) {
             final RoundTripTimeProgress p = e.getValue();
-            builder.append(type+";"+ formatLong(p.getOverallRoundTripTime())+";"+formatDouble(p.getMeanRoundTripTime())+";"+ formatDouble(p.getMeanMessageLatency())+";"+e.getKey()+"\n");
+            builder.append(architectureType +";"+ formatLong(p.getOverallRoundTripTime())+";"+formatDouble(p.getMeanRoundTripTime())+";"+ formatDouble(p.getMeanMessageLatency())+";"+e.getKey()+"\n");
         }
         return builder.toString();
     }
@@ -136,7 +136,7 @@ public class RoundTripTimeMonitor {
         ensureFinished();
 
         return //"src;input_size;overallRT;mean_rtt_per_feed;mean_rtt_per_item\n" +
-            type +
+            architectureType +
             ";" +
             progressMap.size() +
             ";" +
@@ -233,7 +233,7 @@ public class RoundTripTimeMonitor {
 
     private void ensureFinished() {
         if (!isFinished()) {
-            throw new UnsupportedOperationException("Invalid access of result value; RTT monitoring is not yet finished");
+            throw new RuntimeException("Invalid access of result value; RTT monitoring is not yet finished");
         }
     }
 
