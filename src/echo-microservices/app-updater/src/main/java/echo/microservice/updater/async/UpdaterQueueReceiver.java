@@ -40,7 +40,7 @@ public class UpdaterQueueReceiver {
     )
     public void recievedMessage(UpdaterJob updaterJob) {
         log.debug("Received Message : {}", updaterJob);
-        mpsMeter.incrementCounter();
+        mpsMeter.tick();
         //updaterService.processJob(job);
         if (updaterJob instanceof ProcessNewFeedJob) {
             final ProcessNewFeedJob job = (ProcessNewFeedJob) updaterJob;

@@ -91,6 +91,7 @@ public class BenchmarkResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /*
     @RequestMapping(
         value  = "/mps-report",
         method = RequestMethod.POST,
@@ -130,6 +131,7 @@ public class BenchmarkResource {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    */
 
     @RequestMapping(
         value  = "/benchmark-report",
@@ -176,7 +178,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> startMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to start MPS counting");
         sendStartMessagePerSecondMonitoringMessages(mps);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -186,7 +188,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> stopMpsCounting(@RequestParam("mps") @SuppressWarnings("unused") Boolean mps) throws URISyntaxException {
         log.debug("REST request to stop MPS counting");
         sendStopMessagePerSecondMonitoringMessages();
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

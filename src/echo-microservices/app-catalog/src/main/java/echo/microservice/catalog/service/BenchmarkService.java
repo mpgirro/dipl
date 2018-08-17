@@ -1,5 +1,7 @@
 package echo.microservice.catalog.service;
 
+import echo.core.benchmark.BenchmarkMeterReport;
+import echo.core.benchmark.ImmutableBenchmarkMeterReport;
 import echo.core.benchmark.cpu.CpuLoadMeter;
 import echo.core.benchmark.memory.MemoryUsageMeter;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
@@ -49,7 +51,6 @@ public class BenchmarkService {
         memoryUsageMeter.stopMeasurement();
         cpuLoadMeter.stopMeasurement();
 
-        /*
         final BenchmarkMeterReport report = ImmutableBenchmarkMeterReport.builder()
             .setName(applicationName)
             .setMps(mpsMeter.getResult())
@@ -57,9 +58,11 @@ public class BenchmarkService {
             .setCpuLoad(cpuLoadMeter.getResult())
             .create();
 
-        log.info("Sending : {}", report);
+        log.info("Sending benchmark report");
+        log.debug("{}", report);
         benchmarkClient.sendBenchmarkReport(report);
-        */
+
+        /*
         log.info("Sending MPS report : {}", mpsMeter.getResult());
         benchmarkClient.sendMpsReport(applicationName, mpsMeter.getResult());
 
@@ -68,6 +71,7 @@ public class BenchmarkService {
 
         log.info("Sending memory usage report : {}", memoryUsageMeter.getResult());
         benchmarkClient.sendMemoryReport(applicationName, memoryUsageMeter.getResult());
+        */
     }
 
 }
