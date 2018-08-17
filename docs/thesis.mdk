@@ -111,7 +111,7 @@ blockquote   { font-style: italic; }
 
 <!-- arbitrary helper classes, while work in progress -->
 .findings { border: solid black 1px; padding:1em }
-.findings-title { font-family: sans-serif; font-weight: bold }
+.findings-title { font-family: sans-serif; font-weight: bold; margin-left:1rem; }
 .findings-list { margin-top: 1ex; padding-top: 0ex; }
 .litnote, .lit, .literature { 
   background-color: LightGray;

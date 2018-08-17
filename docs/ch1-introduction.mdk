@@ -103,6 +103,11 @@ We are conducting a *conceptual* analysis and will therefore refrain from giving
 Hier einen kurzen Überblick über die Arbeitsweise, ähnlich der Darlegung die bereits im Expose gegeben wurde.
 ~
 
+* Literature review; Identify core principle of each programming model.
+* Define a scenario for concurrent system. Develop two scenario implementation using actor- and microservice programming model.
+* Evaluate the common characteristics, separate strategies and resulting capabilities of both models.
+* Compare/Evaluate the performance of both models on a benchmark based on the scenario implementations  
+
 ~ green
 * the assumptions/theses/laws/etc on MSA presented in chapter "MSA" were identified through thorough literature research
 * literature review for chapter: concurrency, Actor model, microservice paradigm, similarities and differences
@@ -113,9 +118,11 @@ Hier einen kurzen Überblick über die Arbeitsweise, ähnlich der Darlegung die 
 
 ...
 
-
-* A benchmark and performance comparison of an application with a mixture of synchronous and asynchronous communication.... two programming model implementations (actors, microservices)
+* A conceptual evaluation of actor- and microservice programming models with a focus on concurrent computation.
+* A benchmark and performance comparison of an application scenario with a mixture of synchronous and asynchronous communication.... based on implementations using the actor and microservice programming models
 
 ## Structure of the Thesis
 
-The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *Concurrency* in general with a focus on the concerns relevant for our discussion. In Chapter [#ch-actor-model] the *Actor Model of Computation* is introduced and subsequently the *Microservice Architecture Style* in Chapter [#ch-microservice-paradigm]. An exemplary scenario for a concurrent system is outlined in Chapter [#ch-scenario]. Building upon this, Chapter [#ch-actor-impl] is concerned with the conceptualities of implementing it using an Actor approach, while Chapter [#ch-microservice-impl] does the same for a Microservice Architecture. Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, Chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.
+The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *concurrency* in general with a focus on the concerns relevant for our discussion. In Chapter [#ch-actor-model] the *actor model of computation* is introduced and subsequently the *microservice architecture style* in Chapter [#ch-microservice-paradigm]. Chapter [#ch-scenario] concerns programming with actors and microservices, where Section [#ch-scenario] describes a scenario system we implement, Section [#ch-actor-impl] the implementation strategies with actors, and Section [#ch-microservice-impl] the implememtation strategies with microservices.
+
+Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, Chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.
