@@ -47,6 +47,7 @@ public class BenchmarkResource {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private final BenchmarkMonitor reportMonitor = new BenchmarkMonitor(ArchitectureType.ECHO_MSA);
     private final BenchmarkUtil benchmarkUtil = new BenchmarkUtil("../../benchmark/");
 
     @RequestMapping(
@@ -139,6 +140,8 @@ public class BenchmarkResource {
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> benchmarkReport(@RequestBody BenchmarkMeterReport report) throws URISyntaxException {
         log.info("REST request to report benchmark results : {}", report);
+
+        /* for Microservices, the MPS reports are equal to overall reports, so no special handling I guess?
         mpsMonitor.addMetric(report.getName(), report.getMps().getMps());
         System.out.println(report.getName() + "\t: " + report.getMemoryUsage().getMeanBytesStr());
         System.out.println(report.getName() + "\t: " + report.getCpuLoad().getMeanLoadStr());
@@ -146,6 +149,14 @@ public class BenchmarkResource {
             log.info("MPS reporting finished; results in CSV format :");
             System.out.println(mpsMonitor.toCsv());
         }
+        */
+
+        reportMonitor.addReport(report);
+        if (reportMonitor.isFinished()) {
+            log.info("All expected benchmark reports received :");
+            System.out.println(reportMonitor.toCsv());
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -155,6 +166,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> monitorFeedProgress(@RequestBody List<FeedProperty> feedProperties) throws URISyntaxException {
         log.info("REST request to monitor fed progress for properties list : {}", feedProperties);
         rttMonitor.initWithProperties(ImmutableList.copyOf(feedProperties));
+        reportMonitor.init(7);
         sendStartMessagePerSecondMonitoringMessages(true);
         mpsMonitor.reset();
         return new ResponseEntity<>(HttpStatus.OK);
@@ -166,6 +178,7 @@ public class BenchmarkResource {
     public ResponseEntity<Void> monitorQueryProgress(@RequestBody List<String> queries) throws URISyntaxException {
         log.info("REST request to monitor fed progres for queries list : {}", queries);
         rttMonitor.initWithQueries(ImmutableList.copyOf(queries));
+        reportMonitor.init(7);
         sendStartMessagePerSecondMonitoringMessages(true);
         mpsMonitor.reset();
         return new ResponseEntity<>(HttpStatus.OK);
