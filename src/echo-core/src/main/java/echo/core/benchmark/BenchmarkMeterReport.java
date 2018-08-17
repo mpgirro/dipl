@@ -15,7 +15,6 @@ import org.immutables.value.Value;
     get        = {"is*", "get*"},   // Detect 'get' and 'is' prefixes in accessor methods
     init       = "set*",
     create     = "new",             // generates public no args constructor
-    defaults   = @Value.Immutable(builder = false),  // We may also disable builder
     build      = "create"           // rename 'build' method on builder to 'create'
 )
 @JsonSerialize(as = ImmutableBenchmarkMeterReport.class)
