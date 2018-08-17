@@ -436,6 +436,10 @@ We see, in general active objects and distributed objects share the same potenti
 However, the one major benefit of active as well as distributed objects compared to classic actors and microservices is their type safety when passing messages. It is statically known whether a server is able to understand a request. Respectively, a client can only dispatch messages which are guaranteed to be accepted. 
 
 ~ todo
+Hier ein paar Worte zu Orleans. Warum nimmt dieses AOs her und hat es die API abstractionsprobleme irgendwie gelöst? Immerhin ist es für Cloud Computing gemacht... Darauf muss ich auf jeden Fall kurz eingehen, um dem ganzen hier etwas Sinnhaftigket zu verleihen
+~
+
+~ todo
 Noch ein paar genauere Argumente aus [@Wal96]?
 ~
 

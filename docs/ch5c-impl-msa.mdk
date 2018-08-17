@@ -16,7 +16,7 @@ This chapter covers a microservice architecture approach used to implement the c
 
 Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOC languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
 
-Instead, we composed microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection integrates the Netflix open source stack, which has proven very effective for microservice development in industrial applications [@Car17]. 
+Instead, we composed microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection is an open source stack which has proven very effective for microservice development in industrial applications [@Car17]. 
 
 Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor system runtime [@Hal06].
 
@@ -175,12 +175,10 @@ Bsp bzgl. Hysterix welches das Feign Bsp oben erweitert
 
 For direct communication, we require the actual address of a recipient. In certain deployment scenarios however, this information is not statically available. We can apply the concept of *service discovery* known from SOA [@Cou05] to bridge this lack of static information. The so-called *registry* is a dedicated service component tasked with providing binding information about other services. 
 
-We merely predefine the connection to the registry statically and are obligated to ensure it at runtime. Microservices then need to register with the registry service, in order to be discoverable by others [@Mon16a]. This dedicated service is introducing a new component into the architecture:
+We merely predefine the connection to the registry statically and are obligated to ensure the availability of the connection at runtime. Microservices then need to register with the registry service, in order to be discoverable by others [@Mon16a]. This dedicated service is introducing a new component into the architecture:
 
 * Discovery Registry (D)
-  : ~ todo
-    kurze Beschreibung hier einfügen
-    ~
+  : are centralized services that serve to retrieve address information for dynamic connections. Services need to register with the registry service providing a designation and their address. Clients are then able to lookup the current address of registered services for a given designation.
 
 The `name` argument of the `@FeignClient` annotation in the REST example given before relates to the designation we used to register the IndexStore unit. The advantage of Feign is that it automatically integrates with discovery mechanisms. Examples for service registry technologies are *Consul* [@HashicorpConsul], a standalone registry service solution, and *Eureka* [@NetflixEureka], a module of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default. The author of this thesis found Consul to be very resource consuming in comparison. Eureka, on the other hand, tends to require extensive time for initial discovery and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` we've experienced that the circuit breaker can trigger before the discovery has finished. We can increase the timeout of the circuit breaker, but this reduces the breaker's fail-fast intention.
 
