@@ -8,19 +8,18 @@ Be of the web, not behind the web.
 ~
 
 
-This chapter covers a microservice architecture approach used to implement the concurrent system outlined in Chapter [#ch-scenario]. We will focus our discussion on concerns specific to the Microservice paradigm for meeting the system requirements.
-
+This section covers the strategies applied by programming with the microservice model with respect to a specific technology stack to implement the concurrent system outlined in Section [#ch-scenario]. The focus will be on the linguistic support provided by the technology stack. Efficiency considerations will be part of Chapter [#ch-evaluation].
 
 ### Service Technology Stack
 
 
 Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOC languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
 
-Instead, we composed microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection is an open source stack which has proven very effective for microservice development in industrial applications [@Car17]. 
+Instead, we compose microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection has proven very effective for microservice development in industrial applications [@Car17]. 
 
-Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor system runtime [@Hal06].
+Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor runtime [@Hal06].
 
-As was done with the actor implementation, attention will be paid to the linguistic support provided by the framework regarding an easy expression of service requirements.
+As we did with the actor implementation, in subsequent sections we will pay attention to the linguistic support provided by the framework regarding the expression of service requirements.
 
 
 ~ todo
@@ -31,13 +30,19 @@ mehr?
 ### Internal Service Concurrency
 
 
-The Paradigm does not dictate any restriction on internal service structure. A service is free to be a concurrent unit internally, and to utilize any concurrency mechanism it sees fit (including actors). 
+The microservice model paradigm does not dictate restrictions on internal service structure. A service is free to be a concurrent unit internally, and to utilize every concurrency mechanism it sees fit (including actors). 
 
-Echo's services are conceived through the Spring framework and utilize the concurrent programming structure that is provided through its IoC container. Spring uses thread-pools on which concerns, e.g.\ so-called *service*-objects (not to be confused with the microservice itself), are scheduled when an object's method is invoked. This kind of scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. Additionally, software transactions provide synchronization. The programming style used to express transactions is declarative. The `@Transactional` annotation on service-object's methods encloses the method into a transaction. Additionally, the STM is extend to database transactions transparently [@Wal07].
+Echo's services are based on the Spring framework and utilize the concurrent programming structure that is provided through Spring's IoC container. Spring uses thread-pools on which concerns, e.g.\ so-called *service*-objects (not to be confused with the microservice itself), are scheduled when an object's method is invoked. This kind of scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. Additionally, software transactions provide synchronization. The programming style used to express transactions is declarative. The `@Transactional` annotation on service-object's methods encloses the method into a transaction. Additionally, the STM is extend to database transactions transparently [@Wal07].
 
 ~ todo
 mehr?
 ~
+
+~ red
+Asynchronous programming within a MS! `@Async` annotation and ThreadPoolExecutor
+~
+
+With Spring's concurrency model, we can achieve highly asynchronous execution inside a microservice. The `@Async` annotation...
 
 
 <!-- TODO delete?
@@ -68,11 +73,11 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ### Isolation and Persistence
 
 
-Each microservice is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention laid out by the paradigm, services refrain from implementing shared memory sections among them. We therefore never require synchronization among the components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
+Each microservice is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention, services refrain from implementing shared memory sections among them. We therefore never require synchronization among the components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
 
 Access to the database is usually supported by the database management systems in a concurrent way. As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
-Internally, the IoC container of Spring executes the database interactions on a thread-pool as well, as with most other concerns.
+Internally, the IoC container of Spring executes the database interactions on a thread-pool as well, as with most other concerns. Spring provides the foundation for microservices for efficient database interactions. Programmers do not have to pay additional concern or apply additional programming strategies to increase persistency efficiency.
 
 ~ todo
 Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" hervorheben?
@@ -89,16 +94,16 @@ Hinweis das Daten IMMER (bei REST wie AMQP) in JSON serialisiert werden -> keine
 
 [hab ich diesen blabla nicht schon bei der theory]{.red}
 
-Communication inn microservice architectures happens via inter-process communication mechanisms. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate a specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
+Communication in microservice architectures happens via inter-process communication mechanisms. Various kinds of interfaces are possible. While communication for actors happens in a uniform way, microservices are in general faced with more challenges. The freedom in the design of services does not dictate a specific communication interface. The only restriction regarding interaction is omitting shared memory between services. Solely relying on message passing mechanism makes services cohesive and loosely coupled.
 
-We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as prime (and often sole) example of valid communication channels throughout the literature. However, the author has experienced it to be practical only in certain situations. As REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo uses it for all direct user interaction issued through the Web interface, i.e.\ Catalog exploration (`G` &rightleftarrows; `D`) and running search queries on the Index (`G` &rightleftarrows; `S` &rightleftarrows; `I`).
+We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as the prime (and often sole) example of valid communication channels throughout the literature. However, the author has experienced it to be practical only in certain situations. As REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo facilitates REST for search inquiries through the Web application (`G` &rightleftarrows; `S` &rightleftarrows; `I`), as well as metadata retrieval from the CatalogStore (`G` &rightleftarrows; `D`).
 
-As even Fowler & Lewis [@Fow14] in their original microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The information aggregation flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, since no immediate reaction has to occur as a result to accepted message. Therefore, a message queue-like mechanism is desired. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
+As even Fowler & Lewis [@Fow14] in their original microservice definition point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The index aggregation information flow that is building and refreshing the Stores is more predestined for an asynchronous workflow, since no immediate reaction has to occur as a result to accepted message. Therefore, we desire a message queue-like mechanism. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
 
-A technology heterogenous message queue standard is required. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. The has the advantage that different implementations are possible and we can interchange them freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that has proven to integrate well in MSAs [@Dra17c]. Message queues conceptually introduce new components into the architecture:
+We require a technology heterogenous message queue standard. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. These definitions have the advantage that different implementations are possible and we can interchange them freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that has proven to integrate well in MSAs [@Dra17c]. Message queues conceptually introduce new components into the architecture:
 
 * Message Queues (Q)
-  : are distributed point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space [@Cou05]. 
+  : are distributed point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space (asynchronous) [@Cou05]. 
 
 <!--
 ~ Figure { #fig-ms-channels; caption: "Microservice communication channels"; width:50%; float:left; margin-right: 1ex; }
@@ -108,7 +113,7 @@ A technology heterogenous message queue standard is required. AMQP (__A__dvanced
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 -->
 
-The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For example, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, we push a message `W` &rarr; `Q` and at some later point the Parser pulls it `P` &larr; `Q`. The actively communicating components are therefore `W` and `P`. The queue is merely invoked by other components and performs routing logic internally.
+The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For example, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, we push a message `W` &rarr; `Q` and at some later point the Parser pulls it `P` &larr; `Q`. The actively communicating components are therefore `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
 
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. In fact, the messages that Echo's services are consuming from the AMQP queue can also be sent to the services directly via HTTP. All services offer respective REST interfaces. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for production as well as maintenance operations. 
 
@@ -116,7 +121,7 @@ In general, a service can have several different interfaces, based on heterogeno
 #### Programming Abstractions {#src-ms-programming-abstractions}
 
 
-Linguistic support is provided by Spring in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting as this style is not intrinsic to Java's imperative programming concept. However, it can be introduced through *annotations*, so that the framework can apply appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. Therefore, we can still apply deployment configuration without the need to recompile. The downside is additional runtime overhead and the lack of static compatibility checking. 
+Spring provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the Spring framework then applies appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. Therefore, we can still apply deployment configuration without the need to recompile. The downside is additional runtime overhead and the lack of static compatibility checking. 
 
 For example, a Searcher queries an IndexStore using synchronous REST communication (`S` &rightleftarrows; `I`). We use the Spring binding for *Feign* [@OpenFeign], a library dedicated to annotation-based decorations for Java interfaces. Clients can consume RESTful endpoints using a dynamic interface implementation. We express the example in `S` by:
 
@@ -128,9 +133,7 @@ public interface IndexClient {
 }
 ```
 
-Calling the `query`{language:java} method on a dynamically generated implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion, and only returns once the result was received. Mapping the HTTP body content of the response to domain objects is done transparently, provided that appropriate XML or JSON serializers are configured with the IoC container. As a result, every domain object may be used for the method result type.
-
-The IndexStore is able to receive the request by declaring an appropriate REST-endpoint using a similar annotation driven implementation approach: 
+Calling the `query`{language:java} method on a dynamically generated implementation instance for `IndexClient`{language:java} dispatches the REST call in a blocking fashion. The method only returns once the result was received from the Index. Mapping the HTTP body content of the response to domain objects is done transparently, provided that appropriate XML or JSON serializers are configured with the IoC container. As a result, every domain object can be used for the method result type. The IndexStore is able to receive the request by declaring an appropriate REST-endpoint using a similar annotation driven implementation approach: 
 
 ```{language:java}
 @RestController
@@ -144,7 +147,7 @@ public class IndexResource {
 
 This approach models a remote procedure call between the two components. Calling `query("TU Wien")`{language:java} of an `IndexClient`{language:java} in `I` is received by `IndexResource`{language:java} in `S` as a call to its `query(String)`{language:java} method with argument `"TU Wien"`{language:java}. The method invocation on the client-side is given through the service's programmer. On the server-side, the method is called by the service's inversion of control container when a respective request on the transparently exposed REST interface is registered.
 
-We can express message queue interaction in a similar fashion through annotations dedicated to AMQP insertion and consumption. 
+We can express message queue interaction in a similar fashion through annotations dedicated to AMQP insertion and consumption. While the above REST example declares a synchronous API, the AMQP annotations declare asynchronous APIs, hence an interface method call on the client-side will return before the message has been received and processed on the server-side.
 
 <!--
 ### Circuit Breaker
@@ -173,20 +176,26 @@ Bsp bzgl. Hysterix welches das Feign Bsp oben erweitert
 
 #### Service Discovery
 
-For direct communication, we require the actual address of a recipient. In certain deployment scenarios however, this information is not statically available. We can apply the concept of *service discovery* known from SOA [@Cou05] to bridge this lack of static information. The so-called *registry* is a dedicated service component tasked with providing binding information about other services. 
+
+Message queues decouple the sender from the receiver. Therefore, the sender neither requires nor knows the address of the actual receiver. For direct communication like REST however, we require the actual address of a recipient. Yet in certain deployment scenarios this information is not statically available. We can apply the concept of *service discovery* known from SOA [@Cou05] to bridge this lack of static information. The so-called *registry* is a dedicated service component providing binding information about other services. 
 
 We merely predefine the connection to the registry statically and are obligated to ensure the availability of the connection at runtime. Microservices then need to register with the registry service, in order to be discoverable by others [@Mon16a]. This dedicated service is introducing a new component into the architecture:
 
 * Discovery Registry (D)
-  : are centralized services that serve to retrieve address information for dynamic connections. Services need to register with the registry service providing a designation and their address. Clients are then able to lookup the current address of registered services for a given designation.
+  : are centralized services and provide address information for dynamic connections. Services need to register with the registry service providing a designation and their address. Clients are then able to lookup the current address of registered services for a given designation.
 
-The `name` argument of the `@FeignClient` annotation in the REST example given before relates to the designation we used to register the IndexStore unit. The advantage of Feign is that it automatically integrates with discovery mechanisms. Examples for service registry technologies are *Consul* [@HashicorpConsul], a standalone registry service solution, and *Eureka* [@NetflixEureka], a module of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default. The author of this thesis found Consul to be very resource consuming in comparison. Eureka, on the other hand, tends to require extensive time for initial discovery and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` we've experienced that the circuit breaker can trigger before the discovery has finished. We can increase the timeout of the circuit breaker, but this reduces the breaker's fail-fast intention.
+The `name` argument of the `@FeignClient` annotation in the REST example given before relates to the designation we use to register the IndexStore unit. The advantage of Feign is that it automatically integrates with discovery mechanisms. Examples for service registry technologies are *Consul* [@HashicorpConsul], a standalone registry service solution, and *Eureka* [@NetflixEureka], a module of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default. The author of this thesis found Consul to be very resource consuming in comparison. 
+<!--
+Eureka, on the other hand, tends to require extensive time for initial discovery and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` we've experienced that the circuit breaker can trigger before the discovery has finished. We can increase the timeout of the circuit breaker, but this reduces the breaker's fail-fast intention.
+-->
 
-Using discovery mechanisms impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services, i.e.\ `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. 
+Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services, i.e.\ `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
+
+~ todo
+Grafik die die Registry lookups darstellt im beispiel oben
+~
 
 In contrast, message queues have the major benefit that a sender is able to dispatch a message to the queue without having to know the address of a receiver. This circumstance provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when we utilize message queue channels if the queue address is known statically. Otherwise, we can also use the discovery mechanism to retrieve the queue's address dynamically. 
-
-We need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
 
 #### Load Balancing {#sec-ms-load-balancing}
@@ -198,7 +207,7 @@ There are two directions towards load balancing. A central supervising entity di
 
 Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for client-side load balancing. The main reason for preferring Eureka over Consul for service discovery is that Ribbon is able to integrate with Eureka. A Ribbon client does not dispatch a message directly to an address obtained from the registry, but instead provide a static name that recipients have used to register with the discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument to the `@FeignClient` annotation of the declarative REST interface, since Ribbon is transparently integrating into Feign upon respective configuration.
 
-In contrast, with server-side load balancing requires a dedicated balancing server for recipient selection. *Zuul* [@NetflixZuul] is another Spring Cloud module for creating balancing server services. The approach requires us to add a new balancing component to the system architecture:
+In contrast, server-side load balancing requires a dedicated balancing service for recipient selection. *Zuul* [@NetflixZuul] is another Spring Cloud module for creating balancing server services. The approach requires us to add a new balancing component to the system architecture:
 
 * Load Balancer (L)
   : [TODO]{.red} are centralized services dedicated to distribute messages between a set of equal instances...
@@ -212,6 +221,7 @@ noch einen schönen Abschluss(ab)satz
 [Main findings]{.findings-title}
 
 + Different communication styles require different communication channels, e.g.\ REST for synchronous messages, and AMQP for asynchronous messages.
++ Microservices are free to serve the same functionality on different communication interfaces and technologies at the same time. 
 + Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. 
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
