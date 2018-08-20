@@ -237,7 +237,17 @@ CSS Header      :
   .li {
     text-align: justify;
   }
-
+  h1 {
+    text-align: end;
+  }
+  .toc>h1 {
+    text-align: start;
+  }
+  blockquote {
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+  }
+  
 
 <!-- HTML -->
 ~ Begin HtmlOnly

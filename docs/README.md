@@ -4,6 +4,8 @@
 
 ## Graphics
 
+DOT files:
+
 * Graphics are written in the DOT graph description language
 * Translated with Graphviz https://graphviz.gitlab.io
 * Use `dot2graphiz` to translate graph files to a more LaTeX look and feel https://dot2tex.readthedocs.io/en/latest/index.html
@@ -22,3 +24,7 @@ pdfcrop task-units.pdf
 ```
 
 Online editor: http://www.webgraphviz.com
+
+XML files:
+
+* Create and edited with: [draw.io](https://www.draw.io)

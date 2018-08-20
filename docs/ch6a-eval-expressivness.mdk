@@ -10,17 +10,16 @@ Thinking like a computer scientist means more than being able to program a compu
 ~
 
 
-
----
-
 Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Chapter [#ch-scenario] described the strategies applied by both programming models. In this chapter we want to evaluate both models.
 
 As we've illustrated, both the actor and microservice model qualify for expressing concurrent computation. Furthermore, both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. 
 
-Several author [@Kan12;@Kar09;@Agh99] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. Since we concern two concurrent programming models, we will furthermore compare the key properties both models are sharing as well as the resulting capabilities.
+Several author [@Kan12;@Kar09;@Agh99] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. 
 
----
+Section [#ch-actor-impl] compares the key properties that are the foundation of the concurrent execution of both models and the resulting capabilitues. The model capabilities allow us to evaluate the expressiveness of each programming model. Section [#ch-microservice-impl] provides a benchmark for the actor and microservice scenario implementation. Based on this benchmark we evaluate the efficiency of the programming models.
 
+
+<!--
 This chapter will compare and evaluate the capabilities resulting from their conceptualities
 
 
@@ -35,11 +34,13 @@ Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and
 Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. Since we concern two concurrent programming models, we will furthermore compare the key properties both models are sharing as well as the resulting capabilities.
 
 [Agha & Kim extend the concerns on universal programming models by *portability* and *performance predictability* [@Agh99]. We will merit all four concerns attention in this concluding discussion.]{.red}
+-->
 
 
 ## Capabilities and Expressiveness
 
 
+<!--
 ~ red
 DELETE: Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced actors and microservices separately and focused on their individual concepts. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] demonstrated the solution strategies of each model and their expression through programming interfaces. This section will focus on comparing the capabilities that result from model properties and expressed [techniques/capabilities/???]{.red}. Furthermore, we will evaluate the expressiveness by analysing metrics of the software artifacts resulting from expressing computation through the actor and microservice programming model.  
 ~
@@ -47,8 +48,9 @@ DELETE: Chapters [#ch-actor-model] and [#ch-microservice-paradigm] introduced ac
 This section conducts a conceptual evaluation. We compare the capabilities and expressiveness of the actor and microservice programming models.
 
 ...
+-->
 
-In this section we will compare and evaluate the capabilities that can be expressed by the actor and microservice programming models. 
+In this section we compare and evaluate the key properties of the actor and microservice programming models, as well as the capabilities that can be expressed by these models. 
 
 
 ~ todo
@@ -57,7 +59,7 @@ Der Teil unten braucht dringend irgendeine Literatur Grundlage. Sonst bin ich au
 
 Expressiveness in the literature is often discussed in the light of formal methods to reduce syntax while preserving the expressed semantics. [CITATION NEEDED!!]{.red}
 
-We will employ a slightly different view of expressivness. Since we regard two programming models, we will assess the capabilities that can be expressed using the actor and microservice programming models.
+We employ a slightly different view of expressivness. Since we regard two programming models, we will assess the capabilities that can be expressed using the actor and microservice programming models.
 
 
 
@@ -73,33 +75,54 @@ Both actors and microservices offer well-defined interfaces in their own way. Fo
 #### Shared and Mutable State
 
 
-One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages. An actor can only process one message at a time. The isolated turn principle eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
+One fundamental characteristic of both actors and microservices is their notion of shared state. Summarizing Chapter [#ch-actor-model], the actor model encapsulates state exclusively within an actor. Therefore, the state can only be accessed and modified by the actor itself. Additionally, actors provide single-threaded semantics while processing messages. An actor processes only one message at a time. The isolated turn principle eliminates the need for synchronization, since message are free of low-level data races, and a turn has exclusive access to the current state. The actor's state is fully isolated.
 
 On the other hand, we cannot apply the same reasoning for microservices in general. The paradigm states nothing about how state has to be handled internally. Depending on the programming paradigm we use to implement the service, state is not necessarily exclusive. In OOP for example, several objects can have access the same memory location. Furthermore, concurrent access to the state is also possible, e.g.\ as a reaction to several invocations of the service's interface within a short time span. Microservices do not ensure single-threaded semantics. In general, we can therefore assume that we need to synchronize the access to the service's internal state.
 
 Additionally, the microservice paradigm dictates that we must avoid shared memory *between* services, as well as all kinds of shared resources in general. Since every service runs within a dedicated system process, avoiding shared memory implies no direct intersection between service process boundaries. Typical communication channels satisfying the requirements given in Section [#sec-independence-and-interaction] also prevent reference sharing to joined mutable data. The viable channel technologies provide some sort of message passing designed to transfer information between the different memory spaces of distinct processes [@Les09].
 
-Actors generally face more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while at the same time not being necessarily apparent to the programmer. Think of the example we discussed for Akka. We can use every arbitrary object as a message. If an object is not constructed in an immutable fashion, the message transfern introduces shared state. Especially the imperative programming style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. Erlang is an example for such a language [REF irgendwas]{.red}. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
+Actors generally face more challenges when it comes to truly ensuring state separation. The components can exist within the same process boundaries and can therefore access the same memory locations. Depending on the programming paradigm used to implement the actors, exposing shared state to others can be rather easy while at the same time not being necessarily apparent to the programmer. Think of the example we discussed for Akka. We can use every arbitrary object as a message. If an object is not constructed in an immutable fashion, the message transfer shares the object's state. Especially the imperative programming style leans on mutable state. Actors in imperative languages therefore suffer from the need to apply extra care to preserve the model semantics. The functional paradigm tends to avoid these problems inherently. Behavior is modeled as a function and only this function is modifiable exclusively by the actor. If the actor model is integrated into the programming language directly, shared mutability problems can be avoided by designing appropriate restrictions enforced by the language. Erlang is an example for such a language [REF irgendwas]{.red}. However, library-based actor implementations in general cannot ensure full isolation by themselves [@Kos16].
 
 ~ todo
 Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufigkeit die jeweiligen "Notions" von shared/mutable state haben. Um Relevanz für dieses Unterkapitel herzustellen. 
 ~
 
 
-#### Persistence
+#### Concurrent Persistence and IO
 
 [WEG MIT DEM PERSISTENCE ZEUGS. DAS INTERESSIERT NICHT MAL MICH ZUM LESEN...]{.greenb}
 
 
 The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. We refer to this property as *persistence*. [kann ich da was zitieren?]{.mind}
 
-~todo
-Hier einen Satz Begründung das Persistence/IO potentiell langsam sein kann, und daher eine Auswirkung auf die Concurrency hat.
+Persisting information can be implemented in many different strategies. Database systems are one well established approach. If we share a database between several components, every component gets access to all other component's persistent state. Database sharing pose a simple way to skip isolation mechanisms and bypass the component interfaces, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
+
+As a consequence, we must provide each component with a very own database if persistence is required. Ever CatalogStore instance is deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene datastructure. Neither an actor runtime nor a microservice technique can enforce the persistence restriction. The obligation of correct configurationn lies solely with the programmers. 
+
+Persistance is a form of IO and therefore usually a potential performance limiting factor. Database systems therefore usually offer interfaces for concurrent interaction to increase interaction performance [REF?]{.red}. 
+
+~ Figure { #fig-persistence-microservice; caption: "Microservice maintaining several connections to an exclusive database"; width:50%; float:left; margin-right: 1ex; }
+![img-persistence-microservice]
 ~
 
-Persisting information can be implemented in many different strategies. Database systems are one well established approach. However, each component is granted access to all other component's persistent state, if a database is shared among them. Database sharing does provide a simple way to skip isolation mechanisms and bypass the components interface, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
+[img-persistence-microservice]: graphics/persistence-microservice.png "Image about microservice persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-As a consequence, we must provide each component with a very own database if persistence is required. Ever CatalogStore instance is therefore deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene datastructure. Neither an actor runtime nor a microservice technique can enforce the persistence restriction, therefore the obligation lies with us as the programmers. Unfortunately, database systems have always been design to provide read and write access to several components concurrently. The requirement is therefore rather unintuitive.
+Microservices can easily leverage the concurrent interaction capabilities of a database management system due to the service's internal concurrency capabilities. In Echo, the service's IoC container's utilize thread-pools. The database interaction concerns are scheduled on a pool and executed concurrently. Spring's transaction mechanism handles synchronization and extends to database transactions for concurrent access.
+
+Actors face more problems, since they are not concurrent internal. Database interaction is turn-based in general, thus sequential. We've outlined that the same strategies as for synchronous communication can be employed to improving persistence and IO efficiency for actors. Either we employ additional concurrency constructs (futures) or we delegate interaction to child actors. Futures always have the potential to violate the isolated turn principle. 
+
+~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:50%; float:left; margin-right: 1ex; }
+![img-persistence-actor]
+~
+
+[img-persistence-actor]: graphics/persistence-actor.png "Image about actor persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+
+Delegation forces us to share the database between several actors, violating the exclusive ownership of (shared) state. However, if we view the architecture component of e.g.\ a CatalogStore as the composition of several actors, the database is still exclusive to the component. Figure [#fig-persistence-actor] illustrates the interaction model. The delegation has to be implemented with care. The state is logically owned and maintained by the `store` actor, and the `child` actors merely perform the database interaction actions.
+
+
+<!--
+
+Unfortunately, database systems have always been design to provide read and write access to several components concurrently. The requirement is therefore rather unintuitive.
 
 We have outlined a scenario in Section [#sec-actor-persistence] where the author of this work has experienced that loosening up the database sharing restriction can have a possitive influence on an actor's throughput. The isolated turn principle implies that an actor can only perform one database interaction at a time. Database access is a form of IO and therefore a performance limiting factor. Breaking up the conceptual CatalogStore actor into several physical actors (the CatalogStore master and the database interaction slaves) enables us to perform database IO operations in a concurrent fashion. This disintegration violates the persistence ownership requirement by extending the access to a single database instance to a limited group of highly coupled actors.
 
@@ -108,8 +131,9 @@ SubActors des CatalogStores: master-slave? Hier muss ich mich auf eine Benennung
 ~
 
 Concurrent database interaction is conceptually easier for microservices. Several internal modules of a service are able to access an exclusive database in the same way a monolithic application's modules do. Concurrent interaction is also possible, since a microservice is allowed internal concurrency. The service's IoC container's utilize thread-pools. The database interaction concerns are scheduled on a pool and executed concurrently. Spring's transaction mechanism handles synchronization and extends to database transactions for concurrent access. However, no two microservices must leverage the same database instance. 
+-->
 
-This restriction opens up another opportunity however. Monolithic applications tend to rely on as few database systems as possible. A multitier architecture traditionally has the data access layer at the bottom, and consecutive layers are build relative to the bottom layer. A new database system brings the risk of fundamentally impacting a program's architecture. It is therefore unusual for program modules to have their own persistence layer exclusive to them. Due to their respective natures, modules based on the actor and microservice concepts make it easy to add additional persistence layers to accommodate architecture requirements. The approach of introducing specialized database systems based on respective persistence needs, at the risk of introducing potential redundancies, is referred to as *polyglot persistence* [@Bon16;@Fow14].
+The exclusive database ownership restriction also opens up opportunities. Monolithic applications tend to rely on as few database systems as possible. A multitier architecture traditionally has the data access layer at the bottom, and consecutive layers are build relative to the bottom layer. A new database system brings the risk of fundamentally impacting a program's architecture. It is therefore unusual for program modules to have their own persistence layer exclusive to them. Due to their respective natures, modules based on the actor and microservice concepts make it easy to add additional persistence layers to accommodate architecture requirements. The approach of introducing specialized database systems based on respective persistence needs, at the risk of introducing potential redundancies, is referred to as *polyglot persistence* [@Bon16;@Fow14].
 
 
 #### Cohesion, Coupling and Independence
@@ -188,7 +212,7 @@ Table [#tab-communication-styles-comparison] summarizes the communication capabi
 ~ Begin Center
 ~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication capabilities"; page-align:here; width:100%}
 |-------------------------|---------------------------------------------|---------------------------|
-| Communication Style     | Echo/Akka                                   | Echo/MSA                  |
+| Communication Style     | Akka                                        | Spring MSA                |
 +-------------------------+---------------------------------------------+---------------------------+
 | Request/response        | `ask` method of `ActorRef`{language:scala}, | Remote procedure call     |
 |                         | cameo pattern                               | with REST                 |

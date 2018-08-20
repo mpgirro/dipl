@@ -162,6 +162,12 @@ The actor model is solely built on the concept of *asynchronous* message passing
 
 Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell [!]` command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. We can use `ask` to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` is free to either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
+~ Figure { #fig-pipeline-search-future; caption: "Example message flow of a future-based synchronous call"; width:50%; float:left; margin-right: 1ex; margin-top:1em; }
+![img-pipeline-search-future]
+~
+
+[img-pipeline-search-future]: graphics/pipeline-search-future.png "Image about pipeline of a search request using futures" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+
 Resolving a `Future`{language:scala} inside an actor can be done in a waiting fashion, which causes the actor to block and prevent it from processing other request until an answer from e.g.\ an IndexStore is received. However, we need to avoid blocking if we expect an actor to process messages in reasonable time, e.g.\ the Searchers.
 
 ~ todo
@@ -207,6 +213,12 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 
 * Response Handlers (H)
   : exist with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receive an answer in a purely asynchronous fashion, or detect a timeout. Upon message receival, they pass on the result and deconstruct. 
+
+~ Begin Figure { #fig-pipeline-search-delegation; caption: "Example message flow of a delegation-based synchronous call"; width:50%; float:left; margin-right: 1ex; margin-top:1em; }
+![img-pipeline-search-delegation]
+~ End Figure
+
+[img-pipeline-search-delegation]: graphics/pipeline-search-delegation.png "Image about pipeline of a search request using delegation" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
 The actual information flow turns from being conceptually defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
 

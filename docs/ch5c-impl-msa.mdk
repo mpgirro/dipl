@@ -189,6 +189,12 @@ The `name` argument of the `@FeignClient` annotation in the REST example given b
 Eureka, on the other hand, tends to require extensive time for initial discovery and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` we've experienced that the circuit breaker can trigger before the discovery has finished. We can increase the timeout of the circuit breaker, but this reduces the breaker's fail-fast intention.
 -->
 
+~ Figure { #fig-service-discovery; caption: "Service discovery calls"; width:50%; float:left; margin-right: 1ex; }
+![img-service-discovery]
+~
+
+[img-service-discovery]: graphics/discovery-1.png "Image about service discovery" { width: 75%; vertical-align:middle; padding-bottom:1em; }
+
 Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services, i.e.\ `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
 ~ todo
@@ -222,7 +228,7 @@ noch einen schönen Abschluss(ab)satz
 
 + Different communication styles require different communication channels, e.g.\ REST for synchronous messages, and AMQP for asynchronous messages.
 + Microservices are free to serve the same functionality on different communication interfaces and technologies at the same time. 
-+ Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. 
++ Data is always serialized and exchanged in a technology neutral format (JSON), omitting data type compatibility issues. [TODO: steht das im Text?]{.red}
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
 ~
