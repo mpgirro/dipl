@@ -113,6 +113,7 @@ blockquote   { font-style: italic; }
 .findings { border: solid black 1px; padding:1em }
 .findings-title { font-family: sans-serif; font-weight: bold; margin-left:1rem; }
 .findings-list { margin-top: 1ex; padding-top: 0ex; }
+.example-title { font-family: sans-serif; font-weight: bold; }
 .litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
