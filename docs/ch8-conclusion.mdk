@@ -49,8 +49,41 @@ Languages like Jolie demonstrate how (micro-)service oriented computing can be f
 Future Work
 ~
 
+FUTURE WORK 1:
+
+We did not benchmark horizontal scalability to several machines. Also, we did not integrate actors and microservices into the same system architecture as equal concurrent task units for our benchmark. We deem it interresting if efficiency is improved by a combination approach of two task unit variants.
+
+* From a more theoretical point of view, we see the integration of actors and microservices relevant. 
+
+* For that, service-oriented computing languages provide in our view the right foundation, since the microservice model lacks a formal framework
+
+* The microservice model in our architecture lacks a formal framekwork (process calculus)
+
+* Also, a major limitation of both actors and microservices is the lack of checkable compatibility (*design by contract*). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented computing languages incorporating microservices into the language level built upon process calculi. We deem it worth to investigate into contract verification tequniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
+
+FUTURE WORK 2:
+
 We deem it worth to investigate if there are theoretical frameworks incorporating both actors and microservices
 
 * As we've demonstrated, Spring-based microservices produce heavy-weighted executable JAR files. The reason for the resulting size is that all dependencies are included into these JARs by the Java 8 compiler. However, great parts of these libraries are potentially never used. Recent trends in the Java evolution lead to Project Jigsaw (<http://openjdk.java.net/projects/jigsaw/>) starting from Java 9 and above. Jigsaw is an umbrella term for tools to create smaller runtimes with merely the required parts of the original JDK [TODO: stimmt das wirklich? Ist das nur das JDK was abgeschnitten wird, oder auch alle Libraries?]{.red}. It is worth to investigate the potential byte size savings as well as the resulting performance improvements.  
 
 * Worth to investigate the applicability of the actor model as the microservice internal concurrency approach.
+
+
+~ todo
+Der Text unten ist schon nicht schlecht. Allerdings will ich sagen das ich eigentlich SOC languages super und wertvoll finde. Und da wir gezeigt haben das Actors schon oft in Programmiersprachen eingebaut wurden, und wir gezeigt haben wie ähnlich sich Actors und Microservices sind, ist hier viel mehr potential für Arbeit da. 
+
+Außerdem finden wir das zB eben Design by Contract in beiden fällen zu kurz kommt. Hier könnte man eine verbindende Arbeit durchführen. Blablabla
+~
+
+
+In the course of this work, we've found a weakness of actors as well as microservices. Their limitation of checkable compatibility (cf. *design by contract*) is presenting [???]{.red}. Actors intrinsically type messages dynamically upon processing. The high degree of usable communication mechanisms and the lack of building upon a formal framework (process calculus) hinders a universal interface checker for microservices. Some work on static analysis for actors, especially Erlang, has been done in the literature. D'Osualdo *et al.* [@DOs13] for example defined a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. We believe that service-oriented process calculi are a suitable evolutionary step for microservices. Due to the high similarity between actors and microservices, we beliefe that theoretical work that has been done for actors is viable for 
+
+The theoretical work that has been done for actors is suitable for the foundation of further work. 
+
+* Work on Design by Contract capabilities:
+    * Akka homogenous interface, but intrinsically dynamically typed. 
+    * MSA free for all kinds of mechanism, every technology stack with own interface, hard to do any kind of compatibility checking
+    * Investigate further into capabilities/methodologies/technologies/opportunities/etc.
+
+

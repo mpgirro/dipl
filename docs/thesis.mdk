@@ -418,8 +418,11 @@ Maximilian Irro
 [INCLUDE=ch5c-impl-msa]
 [INCLUDE=ch6a-eval-expressivness]
 [INCLUDE=ch6b-eval-efficiency]
-[INCLUDE=ch7-discussion]
+<!--[INCLUDE=ch7-discussion]-->
 [INCLUDE=ch8-conclusion]
+
+[TOC=figures]
+[TOC=tables]
 
 # Benchmark Feed { @h1="A"; #ch-benchmark-feed }
 
