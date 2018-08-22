@@ -1,4 +1,4 @@
-
+<!-- TODO Section ist fertig, aber am 22.8.2018 testweise deaktiviert
 # Discussion {#ch-discussion}
 
 
@@ -45,7 +45,7 @@ Microservice generally affect the efficiency of an architecture in a positive wa
 This also affects the services portability. As services are independently replaceable, they can also be adapted to support new target ecosystems. Their basic process abstractions does not demand any specifics regarding parallelization, as it is merely optionally achievable, if multiple CPUs per host are available. Network topology is a bigger concern in principle, as such is not automatically abstractable. Dedicated discovery services are additionally required.
 
 General performance is well predictable, when the number of service instances can be fixed, as is with Echo. No elasticity mechanism is supported, thus the required operating system processes is foreseeable. Of course, third party components, e.g.\ RabbitMQ for asynchronous messaging, may spawn additional processes themselves. However, such are also expected to do this in a foreseeable way. In general, we deem it less likely to create new services as flexible as is done with Actors, for process creation comes with a relatively high price, e.g.\ due to the memory address space.  
-
+-->
 
 <!--
 ## Empirical Indications

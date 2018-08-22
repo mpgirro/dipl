@@ -341,6 +341,7 @@ Microservices enable arbitrary communication channels, as long as the channels c
 
 Channels operating on the network level are distributed communication mechanisms. Network channels facilitate message passing and provide a uniform interface for remote as well as local communication [@Spe90]. Sockets are the most basic example. The socket interface is homogenous regarding whether a socket is on the same local or a remote node. However, sockets still require the *concrete* address [@Bac03]. In order to have the recipients' location transparent, the microservice paradigm requires additional effort in the form of discovery mechanisms. We've demonstrated how Echo integrates discovery based on Feign and Eureka directly into the client-side communication interface.
 
+<!-- TODO Section ist fertig, aber am 22.8.2018 testweise deaktiviert
 
 #### Distinction to Distributed Objects {#sec-distributed-objects}
 
@@ -376,22 +377,6 @@ Table [#tab-dispatch-semantics-capabilities] gives an overview of the available 
 ~ End Center
 
 
-<!--
-However, the abstraction the distributed object concept provides was found to be be "leaky" due to conceptual problem [citation needed -- note on distributed computing]{.mind}. The transparent method call they offer is hiding to much context do be able to handle the many faults that come with any distributed programming setup. A simple example: 
-
-~LitNote
-* [@Ber14]
-    * "In a traditional RPC model (such as Java RMI, CORBA, or WCF) the programmer needs to explicitly bind the virtual reference to the service, usually via an external registry or location service."
-~
-
-~Todo
-hier das beispiel mit dem 1000 methoden aufrufe für die simme von .getSize()
-~
-
-We already discussed the analogies of Actors and microservices to the notion of objects. Now, with these similarities and the fact that Actors (or active objects) and microservices each provide mechanisms for location transparent messaging too, we should discuss weither they qualify as distributed objects themselves. This would mean they face the same problems as DO too. 
--->
-
-
 ##### Actors as Distributed Objects
 
 
@@ -402,13 +387,6 @@ The actor model deals with distribution transparently. Just like distributed obj
 The truly fundamental difference between addressing an actor and a distributed object is within the dispatch semantics. Actors rely on asynchronous message passing as defined by the basic model primitives. Asynchronous messages are decoupled in time and do not introduce the expectation of an immediate response (blocking call). In general, method calls with a (non-future) return value are synchronously dispatched and create the expectation of an immediate response. Message passing (past type) is therefore more loosely coupled than the request/reply calls (now type). In general, we expect distributed objects to facilitate many now-typed methods, as this result type variant is natural within OOP. 
 
 Even worse, distributed objects with Java RMI only facilitate blocking method invocations [@OracleJavaRMI]. RMI is not even regarding the return type of a method. Therefore, it does not matter if a method returns `Object`{language:java} or a subtype thereof, or nothing, as is indicated by the `void`{language:java} keyword. Every method call on a DO proxy (interface) blocks until the method has been executed by the DO instance (implementation). Future-typed methods are no exception. RMI does not provide semi-synchronous method dispatch, although numerous implementations have been proposed [@Fal99]. On the other hand, Akka does not even offer now-typed communication. The default messaging style is based on the past-typed `tell`, and the `ask` method provides future-typed messaging ontop of `tell` [CITATION?]{.red}. Due to this discrepancy in the dispatch semantics, we do not deem it likely that actors will be mistaken for distributed objects. 
-
-<!--
-Therefore, especially in object-oriented contexts where Actors are implemented as ordinary objects, special care has to be taken in order to avoid any chance to accidentially introduce such tighter coupled public methods. Additionally, Actor systems may intentionally provide higher-level constructs to abstract synchronous communication ontop of asynchronous messaging.
-
-
-In there principles however, we deem that Actors avoid the problematic abstraction of Distributed Objects. 
--->
 
 
 ##### Microservices as Distributed Objects
@@ -481,6 +459,8 @@ Noch ein paar genauere Argumente aus [@Wal96]?
 + Messaging interfaces in actor- and microservice-based programming mitigate the problematic abstraction of transparent distribution.
 {.findings-list}
 ~
+
+-->
 
 
 <!--
@@ -840,7 +820,16 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 -->
 
 
-### Formal Specifications
+### Integrating Actors and Microservices
+
+
+So far, our evaluation has shown that wen can express mostly the same capabilities with both actors and microservices. State is isolated, communication is open for a wide range of styles, and the execution modality enables parallelization and distribution in a transparent way. The major benefit of all these capabilities is a high degree of modularity as well as great flexibility for scalability. Each models takes into account different trade-offs to meet these capabilities.
+
+As a final capability evaluation, we want to reason whether all these properties enable actors and microservices to be concurrent tasks that we can integrate. We've already seen that the combination of concurrency models is a common and important practice, e.g.\ actors and futures.
+
+We will entertain this integration though first with some theoretical considerations and then discuss the practical approach regarding Akka and Spring.
+
+---
 
 
 ~ todo
@@ -875,7 +864,7 @@ Among the theories of formulating concurrent computation we find a family called
 
 Some process calculi gained considerable prominence. Examples are Milner's *Calculus of Communicating Systems* (CCS) [@Mil80] for having been the initial work in this domain, while Hoare's *Communicating Sequential Processes* (CSP) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the *&pi;-calculus* [@Mil92], also by Milner, merits special attention. The &pi;-calculus has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
 
-Much work has been done on the field of process algebras, since they allow us to express a theoretical basis for arbitrary domains and requirements. In fact, more practical approaches to express interacting processes frequently have their foundation in a process calculus. Some were also found to be well suited to express microservices. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* (__S__ervice __O__riented __C__omputing __K__ernel) [@Gui06]. In turn, SOCK is inspired by CCS and the &pi;-calculus. This relation of process algebra and microservices is especially interesting, since the actor model and process calculi share a long history. Hewitt & Milner published their initial works on the actor model and CCS in the same year, respectively 1973. Since then, these two approaches have mutually influenced and inspired the scientific development of each other. A fitting example are the *Asynchronous Sequential Processes* (ASP), which bear close resemblance to active objects, yet with a more coarse granularity [@Kos16] (cf.\ AO/DO vs.\ MS). As a result, scholars have long tried to formulate a theoretical link between actors and various calculi, with mixed and mostly limited success. To our knowledge, to most promising approaches in the literature so far have merely succeeded at describing interoperability between actors and calculi showing strong similarity. For example, Montanari & Talcott [@Mon97] demonstrate the cooperation of actors and agents of the &pi;-calculus. 
+Much work has been done on the field of process algebras, since they allow us to express a theoretical basis for arbitrary domains and requirements. In fact, more practical approaches to express interacting processes frequently have their foundation in a process calculus. Some were also found to be well suited to express microservices. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* (__S__ervice __O__riented __C__omputing __K__ernel) [@Gui06]. In turn, SOCK is inspired by CCS and the &pi;-calculus. This relation of process algebra and microservices is especially interesting, since the actor model and process calculi share a long history. Hewitt & Milner published their initial works on the actor model and CCS in the same year, respectively 1973. Since then, these two approaches have mutually influenced and inspired the scientific development of each other. A fitting example are the *Asynchronous Sequential Processes* (ASP), which bear close resemblance to active objects, yet with a more coarse granularity [@Kos16]. As a result, scholars have long tried to formulate a theoretical link between actors and various calculi, with mixed and mostly limited success. To our knowledge, to most promising approaches in the literature so far have merely succeeded at describing interoperability between actors and calculi showing strong similarity. For example, Montanari & Talcott [@Mon97] demonstrate the cooperation of actors and agents of the &pi;-calculus. 
 
 As Agha *et al.*\ [@Agh97] discuss in an extensive work, a true equivalence theory among a formal *actor calculus* and some process calculus requires the formulation of a *simulation relation* among the primitives. This has been done among different process calculi but is yet unfound regarding actors. They state as the foundational challenges:
 
@@ -937,7 +926,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 -->
 
-#### Integrating Actors and Microservices {#sec-actor-ms-integration}
+#### Akka Actors and Spring Microservices {#sec-actor-ms-integration}
 
 
 Even though the scientific community has not yet succeeded in formulating a link between actors and process calculi, we've seen tat there is at least the motivation to describe interoperability. Although our Echo microservices are not founded on a process calculus, it is still worth to entertain the the thought of integrating the actor and microservice concepts. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
@@ -969,6 +958,18 @@ We see, not all the basic actor primitives are suitable to be used outside the a
 
 The general integrationn idea is not novel. We've mentioned the theoretical foundation from [@Mon97] for incorporating actors and agents of the &pi;-calculus. There too, so-called *actor-&pi; coordinators* are used to translate between communication channels, similar to the integration layer of Akka HTTP. However, interoperability is merely a concern of static configuration, because processes have only a static notion of interconnection topology in general. This static notion violates the dynamic reconfiguration inherent to actors [@Akm90;@Agh85b]. In order to overcome this limitation, bridge technologies like service discovery are utilized in microservice architectures. Hence, we require actors to integrate into this discovery mechanism, effectively rendering each actor into a mere microservices. This unified approach isn't quite common yet, but technologies are starting to emerge building on this idea. An example is the *Lagom* [@LightbendLagom] framework, a reactive microservice system framework built on top of Akka.
 
+
+~ Findings
+[Main findings]{.findings-title}
+
++ Process calculi provide the theoretical frameworks for formal microservice specifications.
++  
++ [TODO]{.red}
+{.findings-list}
+~
+
+
+<!-- TODO Section ist fertig, aber am 22.8.2018 testweise deaktiviert
 
 #### Design by Contract {#sec-design-by-contract}
 
@@ -1017,36 +1018,8 @@ Active objects primarily address the problem of contracts for actors. Their obje
 
 There is a generalization of describing valid method invocation orders for objects. Two kinds of notions have been established in the literature. One notion is focusing on the introduction of very formally defined theoretical models (e.g.\ based on process calculi) into typization, as do for example *process types* [@Pun95a;@Hut16]. Another notion is based on less formally defined ideas summarized as *typestate*. The nonuniform method availability we've just described is a special variant of typestate referred to as *session types* [@Anc16]. We've found that modern active object variants like Orleans do not endeavor into method invocation order capabilities.
 
-
-<!-- TODO delete?
-... 
-
-
-Due to the nature of Actors and Microservices, these concepts intrinsically allow to define nonuniform interfaces.
-
-...
-
-
-
-
-~LitNote
-* distributed objects as processes, define a behavior 
-    * see [@Bar97]
-~
-
-...
-
-However, all these approaches towards component contracts still take rather basic information into account. 
-
-... only pre- and postconditions, and to a certain degree invariants.
--->
-
 Regarding microservices, we've mentioned WSDL as an interface description format. However, WSDL merely expresses static information and does not incorporate work-flow details [@Mon16b]. More sophisticated standards provide the expression towards behavior contracts, e.g.\ WS-BPEL (__W__eb __S__ervice -- __B__usiness __P__rocess __E__xecution __L__anguage) [@Anc16]. These standards build upon the ideas of formal concepts like process calculi, especially CCS and the &pi;-calculus [@Dra17a]. As with WSDL, they have been utilized in the SOA context, but it appears to us that these standards are yet rather neglected in the microservice domain. We presume this is due to the same reasons regarding too much complexity that is hindering easy service development. Once again, we argue for programming language-based solutions to overcome this hindrance. In fact, a primary design goal of Jolie was to build upon and extend WSDL interface descriptions and WS-BPEL orchestration, while fixing some of their formal semantics ambiguities [@Anc16;@Mon14].
 
-<!-- in der Juni version enthalten, aber nachdem ich mit "verlaufe" einfach mal rausgegeben"
-An alternative approach towards verifying composition is to migrate from the single component focus regarding behavior (orchestration) to a global viewpoint. High-level definitions called *choreographies* are used to coordinate otherwise autonomous components [@Anc16]. The choreography itself is a syntactic specification of the communication among parties within a system. Based on these specifications, component implementations are then generated such that they are correct-by-construction. This facilitates a paradigm called *Choreographic Programming*. It is still in its early stages, but we've found promising work towards an integration into the Microservice context [@Dra17a;@Mon13].
-
--->
 
 In general, behavioral type theoretical concepts do not seem to be widely applied in practice yet. Dragoni *et al.*\ [@Dra17a] argue that this is because they restrain the applicability of services, which is undesired by programmers. For a more detailed overview of behavioral contracts we refer the interested reader to Hüttel *et al.*\ [@Hut16] and Ancona *et al.*\ [@Anc16].
 
@@ -1058,7 +1031,11 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 {.findings-list}
 ~
 
+-->
+
+
 ### Software Artifact Metrics Analysis
+
 
 Sections [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies expressable by programming actors and microservices. The previous sections of this chapter compared the capabilities resulting from model properties and the expressed strategies. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts.
 
