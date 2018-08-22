@@ -815,18 +815,16 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 -->
 
 
-### Integrating Actors and Microservices
+### Integrating Actors and Microservices {#sec-actor-ms-integration}
 
 
-So far, our evaluation has shown that we can express the same capabilities with both actors and microservices. State is isolated, communication is open for a wide range of interaction styles, and the execution modality enables parallelization and distribution in a transparent way. The major benefit of all these capabilities is a high degree of modularity as well as great flexibility for scalability. The major differences are within the trade-offs we must accept as programmers in order to leverage the capabilities.
+So far, our evaluation has shown that we can express the same capabilities with both actors and microservices. State is isolated, communication is open for a wide range of interaction styles, and the execution modality enables parallelization and distribution in a transparent way. The major benefit of all these capabilities is a high degree of modularity as well as great flexibility for scalability. Each models brings it's own set of trade-offs, and we as programmers must decide on one of these sets in order to leverage the capabilities.
 
-As a final capability evaluation, we want to reason whether all these properties enable actors and microservices to be concurrent tasks that we can integrate. We've already seen that the combination of concurrency models is a common and important practice, e.g.\ actors and futures.
+As a final capability evaluation, we want to reason whether all these properties enable actors and microservices to be concurrent tasks that we can integrate. We've already seen that the combination of concurrency models is a common and important practice. Actors often incorporate futures, and microservices use arbitrary concurrency constructs internally, in our case threads and STM. We will entertain this integration thought first with some theoretical considerations and then discuss the practical approach regarding Akka and Spring.
 
-We will entertain this integration though first with some theoretical considerations and then discuss the practical approach regarding Akka and Spring.
+As we've discussed, there are two kinds of correctness properties: safety properties and liveness properties. Safety and liveness must not be weakened by combining two concurrency models. There are also two approaches to assess the correctness of a computation: testing and verification [REF?]{.red}. From a theoretical point of view, any safety property can be violated by a finite execution, hence they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks. We require strict theoretical frameworks to apply formal verification techniques. For actors, the theoretical actor model provides this framework. However, we've seen that the microservice model is defined by rather pragmatic rules in comparison. We yet lack a formal framework.
 
----
-
-
+<!--
 ~ todo
 Ein paar einführende Worte
 ~
@@ -843,6 +841,7 @@ However, we would like more theoretical boundries for our programming models. Si
 In general, there are also two approaches to assess the correctness of a computationn: testing and verification [REF?! - irgendwo muss da schon ein satz wo stehen]{.red}.
 
 From a theoretical point of view, any safety property can be violated by a finite execution, hence they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks.
+-->
 
 ~ lit
 * [@Eyt07] "Towards a framework and a benchmark for testing tools for multi-threaded programs"
@@ -855,11 +854,15 @@ From a theoretical point of view, any safety property can be violated by a finit
 #### Actor Model and Process Calculi
 
 
-Among the theories of formulating concurrent computation we find a family called *process calculi* or *process algebras*. They define formal models composed of so-called *processes* which are communicating within the laws and conditions laid out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interactions with other discrete event systems. The other systems then have to react to the interactions. Therefore, Baeten terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. As a result, one approach towards concurrency theory is the path of a process algebras.
+Among the theories of formulating concurrent computation we find a family called *process calculi* or *process algebras*. These calculi define formal models composed of so-called *processes*[^fn-process-concurrency-theory] which are communicating within the laws and conditions laid out by their theory. Baeten [@Bae05] defines *process* as any kind of *behavior* of a *discrete event system*, such that it is observable through discrete actions. These actions can include interactions with other discrete event systems. The other systems then have to react to the interactions. Therefore, Baeten terms all interacting systems as *reactive systems*, which is the base for parallel and distributed computing. As a result, one approach towards concurrency theory is the path of a process algebras.
+
+[^fn-process-concurrency-theory]: These are the processes of concurrency theory we've mentioned before. They must not be confused with operating system processes.
 
 Some process calculi gained considerable prominence. Examples are Milner's *Calculus of Communicating Systems* (CCS) [@Mil80] for having been the initial work in this domain, while Hoare's *Communicating Sequential Processes* (CSP) [@Hoa78] were the first to introduce message passing instead of global variables for process communication. For our considerations, the *&pi;-calculus* [@Mil92], also by Milner, merits special attention. The &pi;-calculus has a notion of process networks, including mobility and dynamic reconfiguration [@Bae05;@Mon97]. 
 
-Much work has been done on the field of process algebras, since they allow us to express a theoretical basis for arbitrary domains and requirements. In fact, more practical approaches to express interacting processes frequently have their foundation in a process calculus. Some were also found to be well suited to express microservices. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* (__S__ervice __O__riented __C__omputing __K__ernel) [@Gui06]. In turn, SOCK is inspired by CCS and the &pi;-calculus. This relation of process algebra and microservices is especially interesting, since the actor model and process calculi share a long history. Hewitt & Milner published their initial works on the actor model and CCS in the same year, respectively 1973. Since then, these two approaches have mutually influenced and inspired the scientific development of each other. A fitting example are the *Asynchronous Sequential Processes* (ASP), which bear close resemblance to active objects, yet with a more coarse granularity [@Kos16]. As a result, scholars have long tried to formulate a theoretical link between actors and various calculi, with mixed and mostly limited success. To our knowledge, to most promising approaches in the literature so far have merely succeeded at describing interoperability between actors and calculi showing strong similarity. For example, Montanari & Talcott [@Mon97] demonstrate the cooperation of actors and agents of the &pi;-calculus. 
+Much work has been done on the field of process algebras, since they allow us to express a theoretical basis for arbitrary domains and requirements. In fact, more practical approaches to express interacting processes frequently have their foundation in a process calculus. Some were also found to be well suited to express microservices. The Jolie language for example is based on a calculus dedicated to service-orientated computing called *SOCK* (__S__ervice __O__riented __C__omputing __K__ernel) [@Gui06]. In turn, SOCK is inspired by CCS and the &pi;-calculus. This relation of process algebra and microservices is especially interesting, since the actor model and process calculi share a long history. Hewitt & Milner published their initial works on the actor model and CCS in the same year, respectively 1973. Since then, these two approaches have mutually influenced and inspired the scientific development of each other. A fitting example are the *Asynchronous Sequential Processes* (ASP), which bear close resemblance to active objects, yet with a more coarse granularity [@Kos16]. 
+
+Scholars have long tried to formulate a theoretical link between actors and various calculi, with mixed and mostly limited success. To our knowledge, to most promising approaches in the literature so far have merely succeeded at describing interoperability between actors and calculi showing strong similarity. For example, Montanari & Talcott [@Mon97] demonstrate the cooperation of actors and agents of the &pi;-calculus. 
 
 As Agha *et al.*\ [@Agh97] discuss in an extensive work, a true equivalence theory among a formal *actor calculus* and some process calculus requires the formulation of a *simulation relation* among the primitives. This has been done among different process calculi but is yet unfound regarding actors. They state as the foundational challenges:
 
@@ -921,10 +924,10 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 
 -->
 
-#### Combining Akka Actors and Spring Microservices {#sec-actor-ms-integration}
+#### Combining Akka Actors and Spring Microservices {#sec-combining-akka-spring}
 
 
-Even though the scientific community has not yet succeeded in formulating a link between actors and process calculi, we've seen tat there is at least the motivation to describe interoperability. Although our Echo microservices are not founded on a process calculus, it is still worth to entertain the the thought of integrating the actor and microservice concepts. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
+Our Echo microservices are not founded on a process calculus since we have not implemented them in a SOC language like Jolie. Since there is no known theoretical link between the actor model and a SOC calculus, we are not able to reason about the correctness properties after integration anyway. Nevertheless, weÄve seen that scholars are motivated to describe interoperability between actors and calculi processes. Therefore, we can still think about the approach to integrate the our Akka actors and Spring-based microservices. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
 
 The microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice. We've demonstrated that other channels like AMQP queues are also viable. Actors, on the other hand, are more restricted, since the model semantics requires them to receive the *message* constructs in a uniform way. By implication, this restriction means that different communication channels can be utilized as long as they comply to a homogenous message receiving abstraction.
 
@@ -958,8 +961,8 @@ The general integrationn idea is not novel. We've mentioned the theoretical foun
 [Main findings]{.findings-title}
 
 + Process calculi provide the theoretical frameworks for formal microservice specifications.
-+  
-+ [TODO]{.red}
++ The theoretical link between actors and process calculi is yet an open scientific question.
++ Actors and microservices can still be integrated without a formal basis. However, the correctness properties of the models are then not ensured anymore.
 {.findings-list}
 ~
 
