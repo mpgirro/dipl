@@ -244,10 +244,12 @@ CSS Header      :
   .toc>h1 {
     text-align: start;
   }
-  blockquote {
+  /*
+  .epigraph blockquote {
     -webkit-margin-start: 0;
     -webkit-margin-end: 0;
   }
+  */
   
 
 <!-- HTML -->

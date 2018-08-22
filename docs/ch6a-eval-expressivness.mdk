@@ -271,9 +271,6 @@ Table [#tab-fundamental-concurrency-issues] gives an overview of how actors and 
 #### Continuations, Threads and Processes
 
 
-~
-
-
 Actors and microservices are fundamentally differently executed. Scala's standard actors provided two different execution semantics [@Hal09]. One of the semantics schedules the actors on threads. These actors are executed in an inversion of control manner [@Hal06], similarly to the strategy pursued by the Spring framework. The other of the two semantics is purely event-based and therefore without IoC. Thread-based actors are invoked by their current thread to execute a turn and upon completion return to their calling thread. On the other hand, event-based actors do not have (and need) a dedicated thread and therefore cannot return to one. Instead, they facilitate a much cheaper concept called *continuation-passing style* known from functional programming, where a function refrains from returning a computed result by calling a subsequent function, the so-called *continuation closure*. Akka extends this approach and defines as single closure for all messages until the behavior is replaced, which has shown to be much more effective [@Hal12]. We already gave an example of a continuation with `Actor.same`{language:scala} for Akka's type-restricted behaviors. `Dispatcher`{language:scala}s influence the thread assignment strategy for concurrently running the behavior closures [@Hal12]. Although using threads, the continuation closure approach is still considered event-based, since a thread can be seen as merely a trajectory in continuation space [@Shi97]. Nevertheless, threads are conceptually similar to processes, except that several threads can exist within a single process [@Bac03]. There, the actor thread-pools live in one or few processes and many actors share the same memory boundaries of their respective process. 
 
 Although executed on top of threads, the isolated turn principle essentially defines actors as single-threaded entities. The combination with asynchronous message passing allows the runtime to concurrently execute these logical single-threaded components. In general, an actor has no notion of concurrency at all itself. However, we've demonstrated how we can introduce additional concurrency constructs into the scope of actors, as long as these additional constructs do not break the actor model semantics. Section [#ch-actor-impl] demonstrated futures with their pitfalls as one option. In combination with the continuation abstraction, Akka actors are powerful and still extremely light-weight constructs.  
@@ -308,9 +305,10 @@ On the other hand, scheduling is a nonconcern for microservices. Every MSA is a 
 
 However, there is one drawback to the lack of scheduling concern in MSAs. The architecture cannot influence the resource consumption based on a service's actual demand. An operating system will always allocate resources towards a process. Therefore, every task unit of an MSA also stresses its hosts processing power on a regular basis, at least to a small amount. This drain on resources is true even when the services are neither requested nor perform active behaviors of their own. In these cases, every process activation is simply a waste of energy [@Tan07].
 
-~ todo
-Main Findings oder eine gegenüberstellende Tabelle
-~
+
+~ begin todo
+Entweder eine Main Findings Box oder eine gegenüberstellende Tabelle
+~ end todo
 
 
 ### Distribution
@@ -332,7 +330,7 @@ Main Findings oder eine gegenüberstellende Tabelle
 
 Communication via message passing has one fundamental property: no mutable memory is shared between the communicating components. Conceptionally, message passing does not require the components within the same memory space. As a result, it does not matter whether the components run on the same processor, different cores or even the same host machine [@Fel90]. In short, message passing allows for distribution. 
 
-The actor model intrinsically builds upon message passing to share state information between actors. Additionally, Actors are well isolated from each other. Based on these properties, Agha recasts the initial notion of actors in the light of distributed computation [@Agh85a]. Microservices intrinsically fall into the domain of distributed system as well, if the services choose to utilize a network-based communication mechanism. Therefore, it is important to evaluate the distribution notions and capabilities of both approaches.
+The actor model intrinsically builds upon message passing to share state information between actors. Additionally, actors are well isolated from each other. Based on these properties, Agha recasted the initial notion of actors in the light of distributed computation [@Agh85a]. Microservices intrinsically fall into the domain of distributed system as well, if the services choose to leverage a network-based communication mechanism. Therefore, it is important to evaluate the distribution notions and capabilities of both approaches.
 
 
 #### Location Transparency
