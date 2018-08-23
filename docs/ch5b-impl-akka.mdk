@@ -332,7 +332,11 @@ The set of routees has to be kept up to date, since actors can fail and no messa
 * Message Routers (R)
   : distribute received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers are intermediate units and supervise their routees. They only forward messages to living children. 
 
-When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Instead, the information flow becomes: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
+~ todo
+Bild des Routings
+~
+
+[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Instead, the information flow becomes: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. Akka provides the so-called *actor selection* as a mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when it is undeliverable. 
 

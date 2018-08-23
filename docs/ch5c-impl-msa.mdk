@@ -30,19 +30,29 @@ mehr?
 ### Internal Service Concurrency
 
 
-The microservice model paradigm does not dictate restrictions on internal service structure. A service is free to be a concurrent unit internally, and to utilize every concurrency mechanism it sees fit (including actors). 
+~ todo
+Hier muss ich für den neuen Text was zitieren!
+~
 
-Echo's services are based on the Spring framework and utilize the concurrent programming structure that is provided through Spring's IoC container. Spring uses thread-pools on which concerns, e.g.\ so-called *service*-objects (not to be confused with the microservice itself), are scheduled when an object's method is invoked. This kind of scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. Additionally, software transactions provide synchronization. The programming style used to express transactions is declarative. The `@Transactional` annotation on service-object's methods encloses the method into a transaction. Additionally, the STM is extend to database transactions transparently [@Wal07].
+The microservice model paradigm does not dictate restrictions on internal service structure. A service is free to apply concurrency internally, and to utilize every concurrency mechanism it sees fit (including actors). 
+
+Echo's services are based on the Spring framework and utilize the concurrent programming structure that is provided through Spring's IoC container. Spring services receive requests (we discuss the communication mechanism in Section [#sec-ms-communication-mechanisms] below) as method calls to objects of `@Component` annotated classes. Each of these method calls is therefore wrapped into a `Runnable`{language:java} and appended to a task queue. A `TaskExecutor`{language:java} constantly processes the task queue. `Executor`{language:java} is the Java concept name for a thread-pool. Each task is therefore eventually executed on an allocated thread of the thread-pool. We've already demonstrated how arbitratry method calls are easily wrapped as a `Runnable task`{language:java} in the Java concurrency case study of Chapter [#ch-concurrency]. [REF für den absatz!]{.red}. This kind of method execution scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. 
+
+Since microservices are concurrent internally, we must mind shared internal resources. We must either ensure resources are immutable like with we have to for message in Akka, or synchronize the access to a resource. Spring uses software transactions for synchronization.   
+
+Spring provides linguistic support in a *declarative programming* style for many strategies and mechanisms [@Wal07]. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the Spring framework then applies appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. We leverage the declarative style for synchronization by defining software transactions on method calls using the `@Transactional` annotation. Spring also extends the STM to database transactions transparently [@Wal07].
+
+While Spring enqueues each request into a concurrent task queue automatically, we as programmers also want to use this technique to achieve higher concurrency inside a microservice. The `@Async` annotation allows us to declare methods as asynchronously dispatchable. When calling an `@Async` annotated method, Spring wraps the call into a `Runnable`{language:java} and enqueue the resulting task into the task queue. Since the method will execute at an unknown point in time for the caller, we cannot expect a result value directly. An `@Async` method is therefore `void`{language:java} in general. Alternatively, we can return a result wrapped in a `Future`{language:java}. We've seen this idea for active objects already, with their future type methods. The future allows us to return an intermediate result and provides an interface to check whether the actual result is yet available. The author has experience that Spring's default `AsyncTaskExecutor`{language:java} does not handle exceptions and subsequently does not log their occurence either. We've found this factor troubling for development. Echo therefore uses a custom `ExceptionHandlingAsyncTaskExecutor`{language:java} to fix this flaw.
+
+Although Spring's declarative programming style for concurrency is very powerful, we've found some limitations. The `@Async` and `@Transactional` annotations only show effect on `public`{language:java} methods. Additionally, self-invocation of an `@Async` method won't spawn a new asynchronous task, but instead execute within the same task in a synchronous fashion.
 
 ~ todo
-mehr?
+__Ich brauche so dringend Literatur für dieses Kapitel!__
 ~
 
-~ red
-Asynchronous programming within a MS! `@Async` annotation and ThreadPoolExecutor
+~ todo
+Wenn ich oben was zu den `akka.dispatch.Future` schreibe, dann hier vielleicht der Hinweis das das "normale" Futures sind.
 ~
-
-With Spring's concurrency model, we can achieve highly asynchronous execution inside a microservice. The `@Async` annotation...
 
 
 <!-- TODO delete?
@@ -84,7 +94,7 @@ Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" her
 ~
 
 
-### Communication Mechanisms
+### Communication Mechanisms {#sec-ms-communication-mechanisms}
 
 
 ~ todo
@@ -113,6 +123,10 @@ We require a technology heterogenous message queue standard. AMQP (__A__dvanced 
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 -->
 
+~ todo
+Bild des Beispiels
+~
+
 The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For example, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, we push a message `W` &rarr; `Q` and at some later point the Parser pulls it `P` &larr; `Q`. The actively communicating components are therefore `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
 
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. In fact, the messages that Echo's services are consuming from the AMQP queue can also be sent to the services directly via HTTP. All services offer respective REST interfaces. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for production as well as maintenance operations. 
@@ -121,7 +135,7 @@ In general, a service can have several different interfaces, based on heterogeno
 #### Programming Abstractions {#src-ms-programming-abstractions}
 
 
-Spring provides linguistic support in a *declarative programming* style for many communication strategies and mechanisms [@Wal07]. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the Spring framework then applies appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. Therefore, we can still apply deployment configuration without the need to recompile. The downside is additional runtime overhead and the lack of static compatibility checking. 
+We've already seen that Spring provides a declarative programming style through annotations. The implementation of an annotation's behavior uses relection. The benefit of reflection is that we can still apply deployment configuration without the need to recompile, which is especially useful for communication configuration. The downside is additional runtime overhead and the lack of static compatibility checking. 
 
 For example, a Searcher queries an IndexStore using synchronous REST communication (`S` &rightleftarrows; `I`). We use the Spring binding for *Feign* [@OpenFeign], a library dedicated to annotation-based decorations for Java interfaces. Clients can consume RESTful endpoints using a dynamic interface implementation. We express the example in `S` by:
 
@@ -196,10 +210,6 @@ Eureka, on the other hand, tends to require extensive time for initial discovery
 [img-service-discovery]: graphics/discovery-1.png "Image about service discovery" { width: 75%; vertical-align:middle; padding-bottom:1em; }
 
 Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services, i.e.\ `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
-
-~ todo
-Grafik die die Registry lookups darstellt im beispiel oben
-~
 
 In contrast, message queues have the major benefit that a sender is able to dispatch a message to the queue without having to know the address of a receiver. This circumstance provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when we utilize message queue channels if the queue address is known statically. Otherwise, we can also use the discovery mechanism to retrieve the queue's address dynamically. 
 
