@@ -83,15 +83,22 @@ Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, 
 ### Isolation and Persistence
 
 
-Each microservice is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention, services refrain from implementing shared memory sections among them. We therefore never require synchronization among the components. Databases are used for persisting state. By another convention, each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication.
+Each microservice is by definition instantiated as a system level process. The isolation of services is founded on the strict memory boundaries enforced by the operating system. By convention, services refrain from implementing shared memory sections among them. We therefore never require synchronization among the components. The principle must be extended to the persistence of state.
 
-Access to the database is usually supported by the database management systems in a concurrent way. As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
+Persisting information can be implemented in many different strategies. Database systems are one well established approach. If we share a database between several microservices, every service gets access to all other component's persistent state. Database sharing pose a simple way to skip isolation mechanisms and bypass the service interfaces, thus breaking the encapsulation principle. Therefore, one convention of the microservice principles is that each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication [@Cou05].
 
-Internally, the IoC container of Spring executes the database interactions on a thread-pool as well, as with most other concerns. Spring provides the foundation for microservices for efficient database interactions. Programmers do not have to pay additional concern or apply additional programming strategies to increase persistency efficiency.
+As a consequence, we must provide each component with a very own database if we require persistence. Every CatalogStore instance is deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene reverse index datastructure. 
 
-~ todo
-Bisi mager das Unterkapitel. Kann ich hier irgendwie "meine eigene Leistung" hervorheben?
+Persistance is a form of IO and as such a potential performance limiting factor. Hence, Database management systems usually support concurrent access to the database . As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
+
+~ Figure { #fig-persistence-microservice; caption: "Microservice maintaining several connections to an exclusive database"; width:45%; float:left; margin-right: 1ex; }
+![img-persistence-microservice]
 ~
+
+[img-persistence-microservice]: graphics/persistence-microservice.[svg,png] "Image about microservice persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+
+
+Since Spring executes all requests concurrently inside a `Runnable`{language:java} task on a thread-pool, concurrent database interactions are implicitely available. Every thread of the pool can interact with the database at the same time. The transactional memory of Spring extends to database transactions. We can observe that programmers do not have to pay additional concern or apply additional strategies to leverage efficient persistency through database concurrency. Hence, we expect a microservice to have several database connections in place at the same time (Figure [img-persistence-microservice]). 
 
 
 ### Communication Mechanisms {#sec-ms-communication-mechanisms}
@@ -123,11 +130,15 @@ We require a technology heterogenous message queue standard. AMQP (__A__dvanced 
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 -->
 
-~ todo
-Bild des Beispiels
+The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue.
+
+~ Figure { #fig-message-queue; caption: "Message queue"; width:45%; float:left; margin-right: 1ex; }
+![img-message-queue]
 ~
 
-The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For example, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, we push a message `W` &rarr; `Q` and at some later point the Parser pulls it `P` &larr; `Q`. The actively communicating components are therefore `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
+[img-message-queue]: graphics/message-queue.[svg,png] "Image about a message queue" { width: 80%; vertical-align:middle; padding-bottom:1em; }
+
+[Example]{.example-title}: We do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, Figure [#fig-message-queue] shows how the Crawler pushes a message `W` &rarr; `Q`. At some later point and idle Parser pulls this message `P` &larr; `Q`. The message travels asynchronously. The actively communicating components are `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
 
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. In fact, the messages that Echo's services are consuming from the AMQP queue can also be sent to the services directly via HTTP. All services offer respective REST interfaces. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for production as well as maintenance operations. 
 
@@ -207,9 +218,11 @@ Eureka, on the other hand, tends to require extensive time for initial discovery
 ![img-service-discovery]
 ~
 
-[img-service-discovery]: graphics/discovery-1.png "Image about service discovery" { width: 75%; vertical-align:middle; padding-bottom:1em; }
+[img-service-discovery]: graphics/discovery-1.png "Image about service discovery" { width: 70%; vertical-align:middle; padding-bottom:1em; }
 
-Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services, i.e.\ `G` &rightleftarrows; `D` to lookup `S`, and `S` &rightleftarrows; `D` to lookup `I`. This dampens the liveness of the initial request flow. We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
+Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services.
+
+[Example]{.example-title}: Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Susequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
 In contrast, message queues have the major benefit that a sender is able to dispatch a message to the queue without having to know the address of a receiver. This circumstance provides a high degree of decoupling as well as a notion of location transparency of sender and receiver. Therefore, no service discovery technology is required when we utilize message queue channels if the queue address is known statically. Otherwise, we can also use the discovery mechanism to retrieve the queue's address dynamically. 
 
@@ -230,6 +243,24 @@ In contrast, server-side load balancing requires a dedicated balancing service f
 
 ~ todo
 noch einen schönen Abschluss(ab)satz
+~
+
+~ Figure { #fig-client-side-load-balancing; caption: "Client-side load balancing: The client (S) directly maintains a list of recipients (I) directly from the discovery service (D)"; width:45%; float:left; margin-right: 1ex; }
+![img-client-side-load-balancing]
+~
+
+[img-client-side-load-balancing]: graphics/load-balancing-client-side.[svg,png] "Image about client-side load balancing" { width: 50%; vertical-align:middle; padding-bottom:1em; }
+
+~ Figure { #fig-server-side-load-balancing; caption: "Server-side load balancing: A separate load balancer (L) maintains a list of recipients (I) from the discovery service (D)"; width:45%; float:left; margin-right: 1ex; }
+![img-server-side-load-balancing]
+~
+
+[img-server-side-load-balancing]: graphics/load-balancing-server-side.[svg,png] "Image about server-side load balancing" { width: 80%; vertical-align:middle; padding-bottom:1em; }
+
+
+
+~ todo
+PLATZHALTER
 ~
 
 

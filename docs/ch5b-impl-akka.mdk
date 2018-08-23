@@ -168,13 +168,7 @@ Akka provides a primitive to introduce synchronous information flow. In addition
 
 [img-pipeline-search-future]: graphics/pipeline-search-future.png "Image about pipeline of a search request using futures" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-Resolving a `Future`{language:scala} inside an actor can be done in a waiting fashion, which causes the actor to block and prevent it from processing other request until an answer from e.g.\ an IndexStore is received. However, we need to avoid blocking if we expect an actor to process messages in reasonable time, e.g.\ the Searchers.
-
-~ todo
-Oben hier mehr Beispiel mit information flow?
-~
-
-To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
+[Scenario Example]{.example-title}: A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to a Searcher and finally to an IndexStore. The results are are propagated back from the `I` via `S` to `G`. The results are wrapped in a `Future`{{language:scala}} until it is resolved. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other request until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
 ```{language:scala}
 val f1: Future[Int] = actor1 ? msg1
@@ -220,7 +214,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 
 [img-pipeline-search-delegation]: graphics/pipeline-search-delegation.png "Image about pipeline of a search request using delegation" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-The actual information flow turns from being conceptually defined as `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G`. Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
+The actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
 
 [^fn-2nd-tell-argument]: Note that its alias `!`\ does not allow for more than one parameter.
 
@@ -361,25 +355,23 @@ In contrast, other actor systems like Orleans choose to provide *at-least-once* 
 
 We must employ some kind of data persistence mechanism, e.g.\ a database, in order to persist the internal states of actors. Echo's CatalogStores are a prime example. Due to the single-threaded semantics of actors, only a single interaction with the database is possible at the same time. This is inefficient, since database access is input/output and therefore a performance limiting factor in general [@Sub11]. Theoretically, the single-threaded semantics of actors makes database transactions obsolete, but the author has found that common APIs demand an active transaction in any case, e.g.\ with providers of the __J__ava __P__ersistence __A__PI (JPA).
 
-We can overcome the single-threaded limitation by utilizing a non-blocking API for database connections. Such APIs provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the actor's thread-pool. With the monadic methods of `Future`{language:scala} we can then define further computation on the result once it becomes available. The price is the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
+We can overcome the single-threaded limitation by utilizing a non-blocking API for database connections. These APIs provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the actor's thread-pool. With the monadic methods of `Future`{language:scala} we can then define further computation on the result once it becomes available. The price is the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
 
-If non-blocking APIs are not available, then the author has found that an efficient strategy is to handle numerous requests by intentionally weaking the encapsulation principle. Several children of a CatalogStore actor maintain connections to a shared database. This database conceptually belongs to the CatalogStore actor exclusively and holds its persistent state. The CatalogStore actor delegates all database interactions to these children using a `RoundRobinRoutingLogic`{language:scala}.
-
-~ todo
-Hier könnte ich eine neue Componente beschreiben (BUCHSTABE?!), und auch eine Grafik einbringen?
+~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:45%; float:left; margin-right: 1ex; }
+![img-persistence-actor]
 ~
 
-Isolation must not be broken though. Therefore [these children (WIE NENNE ICH DIESE CHILDREN?!)]{.red} neither share the same database connection interface object, nor any other mutable data. Simply the restriction on encapsulating the persistent state inside one single actor is loosened up. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism, as is required by any concurrent database interaction. [für diesen absatz muss ich irgendwas zitieren. fragt sich nur woher ich das nehme. hab ich mir ja theoretisch wie praktisch selber ausgedacht...]{.red}
+[img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-We pursue the second strategy in Echo. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
+Alternatively, the author has found that the delegation principle we've discussed for synchronous message handling is also an efficient strategy. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. However, conceptually we wanted to persist the state of a single actor, the CatalogStore respectively. If the database is managed by several actors, the state is not exclusive anymore. We see, we must intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The interaction tasks are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}.
 
-We see, efficient handling of IO pursues the same strategies as the introduced delegation-based handling of synchronous actor communication.
-
+We must no break isolation though. Therefore these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
 
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Actors apply the same strategies to handle IO/persistance as they do for efficient message handling.
++ Efficient handling of persistence and IO in general uses the same strategies as for synchronous actor communication.
++ Concurrent database interaction via delegation forces us to intentionally weaken the conceptual encapsulation of actor state.
 {.findings-list}
 ~
 

@@ -94,7 +94,7 @@ In order to prevent any domain-specific code from being implemented twice unnece
 ![img-task-units]
 ~
 
-[img-task-units]: graphics/interaction-model.png "Image about task units and message flow" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { width: 70%; vertical-align:middle; padding-bottom:1em; }
 
 Task units ending in *\*Store* are stateful, all others stateless. When dataflow examples are discussed involving arbitrary components `X` and `Y`, that will be substituted with the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`) in due course, the simplistic notation used is: `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 

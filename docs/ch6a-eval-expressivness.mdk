@@ -90,34 +90,15 @@ Hier vielleicht noch ein kurzer Hinweis welche Auswirkungen auf die Nebenläufig
 
 #### Concurrent Persistence and IO
 
-[WEG MIT DEM PERSISTENCE ZEUGS. DAS INTERESSIERT NICHT MAL MICH ZUM LESEN...]{.greenb}
+
+The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. In our scenario, every CatalogStore must have its exclusive database and every IndexStore its exclusive reverse index datastructure. However, neither an actor runtime nor a microservice technique can enforce this persistence restriction. The obligation of correct configurationn lies solely with the programmers. 
+
+Besides this restriction, we require concurrent interaction to persistence mechanisms to increase throughput. Microservices can easily leverage the concurrent interaction capabilities of a database management system due to the service's internal concurrency capabilities. The thread-pool strategy of Spring as well as the software transaction mechanism transparently extend to database interactions. 
+
+Actors face more problems, since they are not concurrent internal. As will all actions in the actor model, database interaction must be executed in a turn-based fashion in general, and are thus sequential. We've outlined that the we can employ the same strategies as for synchronous communication to improving persistence efficiency for actors. Either we employ additional concurrency constructs (futures) or we delegate interactions to child actors. Futures always have the potential to violate the isolated turn principle. Delegation forces us to share the database between several actors, violating the exclusive ownership of (shared) state. 
 
 
-The encapsulation and isolation principle of actors and microservices has one more important implication. State is exclusive to a single component. Each component must also take exclusive care if we expect the state to be durable across the components lifetime. We refer to this property as *persistence*. [kann ich da was zitieren?]{.mind}
 
-Persisting information can be implemented in many different strategies. Database systems are one well established approach. If we share a database between several components, every component gets access to all other component's persistent state. Database sharing pose a simple way to skip isolation mechanisms and bypass the component interfaces, thus breaking the encapsulation principle. Additionally, shared databases also open up a form of implicit communication through shared mutable state [@Cou05].
-
-As a consequence, we must provide each component with a very own database if persistence is required. Ever CatalogStore instance is deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene datastructure. Neither an actor runtime nor a microservice technique can enforce the persistence restriction. The obligation of correct configurationn lies solely with the programmers. 
-
-Persistance is a form of IO and therefore usually a potential performance limiting factor. Database systems therefore usually offer interfaces for concurrent interaction to increase interaction performance [REF?]{.red}. 
-
-~ Figure { #fig-persistence-microservice; caption: "Microservice maintaining several connections to an exclusive database"; width:50%; float:left; margin-right: 1ex; }
-![img-persistence-microservice]
-~
-
-[img-persistence-microservice]: graphics/persistence-microservice.png "Image about microservice persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
-
-Microservices can easily leverage the concurrent interaction capabilities of a database management system due to the service's internal concurrency capabilities. In Echo, the service's IoC container's utilize thread-pools. The database interaction concerns are scheduled on a pool and executed concurrently. Spring's transaction mechanism handles synchronization and extends to database transactions for concurrent access.
-
-Actors face more problems, since they are not concurrent internal. Database interaction is turn-based in general, thus sequential. We've outlined that the same strategies as for synchronous communication can be employed to improving persistence and IO efficiency for actors. Either we employ additional concurrency constructs (futures) or we delegate interaction to child actors. Futures always have the potential to violate the isolated turn principle. 
-
-~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:50%; float:left; margin-right: 1ex; }
-![img-persistence-actor]
-~
-
-[img-persistence-actor]: graphics/persistence-actor.png "Image about actor persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
-
-Delegation forces us to share the database between several actors, violating the exclusive ownership of (shared) state. However, if we view the architecture component of e.g.\ a CatalogStore as the composition of several actors, the database is still exclusive to the component. Figure [#fig-persistence-actor] illustrates the interaction model. The delegation has to be implemented with care. The state is logically owned and maintained by the `store` actor, and the `child` actors merely perform the database interaction actions.
 
 
 <!--
