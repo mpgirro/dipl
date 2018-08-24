@@ -42,7 +42,7 @@ We did not benchmark horizontal scalability to several machines. Also, we did no
 
 * Also, a major limitation of both actors and microservices is the lack of checkable compatibility (*design by contract*). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented computing languages incorporating microservices into the language level built upon process calculi. We deem it worth to investigate into contract verification tequniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
 
-
+* Actors and Microservices can be (semi)-independently upgraded, but there is no guarantee/ensurance for compatibility of new versions -> Design by Contract
 
 FUTURE WORK 2:
 

@@ -9,7 +9,7 @@ Be of the web, not behind the web.
 -->
 
 
-This section covers the strategies applied by programming with the microservice model with respect to a specific technology stack to implement the concurrent system outlined in Section [#ch-scenario]. The focus will be on the linguistic support provided by the technology stack. Efficiency considerations will be part of Chapter [#ch-evaluation].
+This section covers the strategies applied by programming with the microservice model. All discussed concepts are with respect to a specific technology stack, and the concurrent system outlined in Section [#sec-scenario]. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 ### Service Technology Stack
 
@@ -20,7 +20,7 @@ Instead, we compose microservices using a more traditional technology stack. We 
 
 Spring is based around the concept of *inversion of control* (IoC). Spring's IoC variant applies *dependency injection*. We do not instantiate objects directly, but instead define for certain classes what kinds of dependencies they need (i.e.\ we declare fields but do not initialize them directly). These kinds of classes are called *beans*. A so-called IoC *container* instantiates these beans and *injects* their dependencies through constructor arguments, factory methods or setter methods. An IoC container's primary responsibility is therefore the management of beans[^fn-managed-objects]. This is called *lifecycle management*. The actual execution logic of a bean, i.e.\ the scheduling on a thread-pool, is also left to the IoC container [@SpringDoc;@Wal07]. Therefore, Spring's IoC container is the internal concurrency managing system of each of our microservices. Conceptually, IoC management has a certain resemblance to the execution of actors by an actor runtime [@Hal06].
 
-[^fn-managed-objects]: Sometimes beans are therefore referred to as *managed objects*.
+[^fn-managed-objects]: Sometimes Spring beans are therefore referred to as *managed objects*.
 
 Spring Boot is primarily an application skeleton based on the Spring framework. The skeleton is a fully executable application, without any specific functionality however. We use Spring beans to add custom configuration and the functionality we want the application to fulfil [@SpringBootDoc]. In other words, Spring Boot provides us with a general foundation for the microservice's engine, and we as programmers merely add the specific service behavior using beans.
 

@@ -10,13 +10,9 @@ Thinking like a computer scientist means more than being able to program a compu
 ~
 
 
-In Chapters [#ch-actor-model] and [#ch-microservice-paradigm] we introduced the concepts of actors and microservices. Chapter [#ch-scenario] described the strategies we are able to apply with each model to implement concurrent system like our scenario. We discussed each model separately and focused on their individual concepts. In this chapter we want to compare and evaluate both models relative to each other.
+In Chapters [#ch-actor-model] and [#ch-microservice-paradigm] we introduced the concepts of actors and microservices. Chapter [#sec-scenario] described the strategies we are able to apply with each model to implement concurrent systems like our scenario. We discussed each model separately and focused on their individual concepts. In this chapter we want to compare and evaluate both models relative to each other. As we've demonstrated, both actors and microservices qualify for expressing concurrent computation. Furthermore, we gave the reason why both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. Several authors [@Kan12;@Kar09;@Agh99] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. 
 
-As we've illustrated, both actors and microservices qualify for expressing concurrent computation. Furthermore, both models support parallel execution on multicore processor as well as distributed computation on multiple hosts. 
-
-Several author [@Kan12;@Kar09;@Agh99] suggest that programing models regarding parallel and distributed contexts should be evaluated based on two objectives: *expressiveness* for programmers and *efficiency* of execution. 
-
-Section [#ch-actor-impl] compares the key properties that are the foundation of the concurrent execution of both models and the resulting capabilitues. The model capabilities allow us to evaluate the expressiveness of each programming model. Section [#ch-microservice-impl] provides a benchmark for the actor and microservice scenario implementation. Based on this benchmark we evaluate the efficiency of the programming models.
+Section [#sec-eval-expressiveness] compares the key properties that are the foundation of the concurrent execution of both models and the resulting capabilitues. The model capabilities allow us to evaluate the expressiveness of each programming model. Section [#sec-eval-efficiency] provides a benchmark for the actor and microservice scenario implementations. Based on this benchmark we evaluate the efficiency of the programming models.
 
 
 <!--
@@ -37,7 +33,7 @@ Kang & Cao [@Kan12] and Karmani *et al.*\ [@Kar09] suggest that programing model
 -->
 
 
-## Capabilities and Expressiveness
+## Capabilities and Expressiveness {#sec-eval-expressiveness}
 
 
 <!--
@@ -614,7 +610,7 @@ Message queue channels (`Q`) are also a form of load balancing. As the receiving
 
 A general prerequisite for dynamic reconfiguration is location transparency. Both actors as well as microservices have sophisticated solutions. Two additional properties, *mobility* and *elasticity*, become possible as a result. Mobility refers to the relocation of components between nodes [@Agh99;@Kan12;@Tan07]. Elasticity is a form of scalability summarizing the ability of a system to scale the number of components dynamically depending on the current demand, thus improving its load scalability. We can scale actors and microservices in a non-uniform way due to their component properties. Each individual component type allows us to instantiate it many times without having to duplicate the residual as well [@Dra17b;@Dra17c].
 
-The requirements in Chapter [#ch-scenario] explicitly state that neither mobility nor elasticity are concerns for Echo [TODO das muss ich noch wirklich dort hinschreiben]{.red}. However, the general approach is conceptually identical, therefore we present a short outline. We are able to created and terminated stateless task units easily on demand (elasticity). Since these units have no state that requires relocation, this reconfiguration also doubles as mobility. Strong mobility that requires the migration of state is not provided by Akka, but other runtimes like Orleans do provide state migration [@Ber14]. Stateful Stores are a bigger concern. In general, when we (re-)created a stateful unit, it is not safe to assume that its persistent state (database, reverse index) is up to date. Therefore, the state has to be updated with regard to all outstanding modifications. *Event sourcing* is a convenient concept which persist all modifying commands to Stores in a so-called *event logs*. A new or reactivated Store can request a history of modifications prior to the units existence. Message brokers have the potential to double as event logs. Kafka offers optional persistence support for messages. Akka's *Persistence* module is also convenient to introduce persistence of routed messages into the broker units. In both cases, it is within the obligation of the Store units to persist a counter or reference to the last received event separately. This reference is required to determine the required partial history.
+The requirements in Section [#sec-scenario] explicitly state that neither mobility nor elasticity are concerns for Echo [TODO das muss ich noch wirklich dort hinschreiben]{.red}. However, the general approach is conceptually identical, therefore we present a short outline. We are able to created and terminated stateless task units easily on demand (elasticity). Since these units have no state that requires relocation, this reconfiguration also doubles as mobility. Strong mobility that requires the migration of state is not provided by Akka, but other runtimes like Orleans do provide state migration [@Ber14]. Stateful Stores are a bigger concern. In general, when we (re-)created a stateful unit, it is not safe to assume that its persistent state (database, reverse index) is up to date. Therefore, the state has to be updated with regard to all outstanding modifications. *Event sourcing* is a convenient concept which persist all modifying commands to Stores in a so-called *event logs*. A new or reactivated Store can request a history of modifications prior to the units existence. Message brokers have the potential to double as event logs. Kafka offers optional persistence support for messages. Akka's *Persistence* module is also convenient to introduce persistence of routed messages into the broker units. In both cases, it is within the obligation of the Store units to persist a counter or reference to the last received event separately. This reference is required to determine the required partial history.
 
 In general, we deem the concerns related to dynamic reconfiguration more easily met with actors. Spawning new units is a core concept of the basic model primitives. Microservices themselves have no general notion of other services beyond interaction. We need an additional layer to manage changing topologies. *Cloud management framework* are a category of tools that seem convenient. Therefore is a fundamental difference in the inherent notion of static versus dynamic changes in topology. This difference is a major concern when it comes to integrating actor and microservice task units. We will briefly outline an approach for integration in Section [#sec-actor-ms-integration].
 
@@ -622,9 +618,7 @@ In general, we deem the concerns related to dynamic reconfiguration more easily 
 #### Extensibility and Technology Diversity {#sec-technological-heterogeneity}
 
 
-Another result of the dynamic reconfiguration property is that actor and microservice architectures are also open for extension. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* to refer to the introduction of either new versions of existing components (update) or new components entirely (addition). For updates of previous versions, special care has to be taken into account. The requirements will be the part of Section [#sec-design-by-contract]. 
-
-There are two different kinds of extensibility [@Agh85a;@Bac03]:
+Another result of the dynamic reconfiguration property is that actor and microservice architectures are also open for extension. In contrast to dynamic reconfiguration, where instances of existing task units are added or removed, we use *extensibility* to refer to the introduction of either new versions of existing components (update) or new components entirely (addition). There are two different kinds of extensibility [@Agh85a;@Bac03]:
 
 * static, where the architecture's code is adapted, recompiled and then redeployed
 * dynamic, where a new component is added to the architecture at runtime

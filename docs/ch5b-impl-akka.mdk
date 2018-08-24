@@ -8,13 +8,7 @@ One actor is no actor. Actors come in systems.
 ~
 -->
 
-This section covers the strategies applied by actor-based programming to implement concurrent systems like our scenario from Section [#sec-scenario]. The focus will be on the linguistic support provided by the used actor library. Efficiency considerations will be part of Chapter [#ch-evaluation].
-
----
-
-This chapter covers the conceptualities used to implement the concurrent system outlined in the previous chapter using an actor-based programming approach. The focus will be on the linguistic support provided by the used framework to realize the requirements, that is its support for the properties of the actor model and the provided programming abstractions for succinct expression of communication and synchronization between actors, as is suggested by scholars [@Kar09;@Kan12;@Agh99]. Efficiency considerations will be part of Chapter [#ch-evaluation].
-
----
+This section covers the strategies applied by programming with the actor model. All discussed concepts are with respect to the specific actor variant we use, and the concurrent system outlined in Section [#sec-scenario]. The focus is on the linguistic support provided by the actor library. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 It is important to realize that although there is *the* conceptual actor model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language or as a library [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations are relevant when evaluating linguistic support.
 
@@ -139,7 +133,7 @@ HTTP connections to remote and unknown servers definitively pose as potential bo
 
 The author expected an asynchronous handling of HTTP requests when fetching feeds to improve the throughput of Crawlers. However, this approach dispatches great many `Future`{language:java}s simultaneously. Feed endpoints have a wide variation in response times and an asynchronous API allows us to start requests before the previous has finished. All these futures stress the thread-pool of the Crawlers. Temporary starvations due to a lack of available threads on which actors can be scheduled were the result. The author has been this with both asynchronous client APIs of the *Akka HTTP* [@AkkaHTTP] module and the *Apache HTTP Components* [@ApacheHttpComponents] library. Akka HTTP also provides a *flow*-based variant, where the concept of *backpressure* known from *stream*-based programming should limit throughput accordingly. However, the author experienced that the underlying *super connection pool flow* also introduces a limit to the amount of concurrent requests to a single host [@AkkaHTTP]. As with many RSS feeds nowadays in general, publishers often choose to distribute feeds via dedicated providers. As a result, a great amount of feeds are centralized on a small amount of host, rendering Akka's flow variant inapplicable.
 
-[^fn-synchronous-http]: The most basic form would be merely a status code, e.g.\ the famous 404. 
+[^fn-synchronous-http]: The most basic form is merely a status code, e.g.\ the famous 404. 
  
 Although simple RPC-styled retrieval did limit throughput, we've found this to also be an advantage on the other hand. The limitation puts a uniform and more predictable stress on the thread-pool, avoids problems like actor starvation and maintains their overall liveness. There are however still other cases where futures can come into play. The following section continues discussing future usage in the light of communication.
 
@@ -247,7 +241,7 @@ The provided `Cancellable`{language:scala} reference allows us to prevent the tr
 
 One of the basic actor primitives allows actors to send messages to other actors it knows about. However, in general this does not define restrictions on the types of messages that are being sent. Messages are untyped in the theoretical model. The behavior of an actor decides at runtime upon processing a message whether it is able to handle the message.
 
-The active object concept aims to provide a higher-level abstraction and provides static guarantees for message types. However, AOs can become problematic under certain conditions, as Section [#sec-distributed-objects] will discuss in more detail. Therefore, current developments in Akka address the challenge of offering some level of type safety for messaging without using Akka's `TypedActor`{language:java}s for active objects. The APIs are summarized under the name *Akka Typed* [@AkkaTyped].
+The active object concept aims to provide a higher-level abstraction and provides static guarantees for message types. [However, AOs can become problematic under certain conditions (ohne AO Section kann ich jetzt hier das kurz in einem Satz beschreiben das die blocking API das problem ist)]{.red}. Therefore, current developments in Akka address the challenge of offering some level of type safety for messaging without using Akka's `TypedActor`{language:java}s for active objects. The APIs are summarized under the name *Akka Typed* [@AkkaTyped].
 
 One part of Akka's strategy to harden the isolation of actors is to never expose a reference to an actual actor instance directly. Instead, all communication happens via the messaging interfaces of the `ActorRef`{language:scala} proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e.\ `ActorRef[U]`{language:scala}. The range of acceptable messages is then limited to `U`{language:scala}-typed ones. The signatures of the messaging methods changes from `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
