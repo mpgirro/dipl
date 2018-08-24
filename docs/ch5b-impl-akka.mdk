@@ -285,9 +285,9 @@ The hierarchical relationship is fairly simple: a supervisor delegates work to i
 The signaling of an occurred failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. Failure notifications are handled by a so-called *supervision strategy*. One of four possible actions can be shown by a supervision strategy:
 
 * Action 1: Resuming the suspended child, when the fault can be safely ignored.
-* Action 2: Restarting the suspended child, in case its internal state is in an invalid state.
-* Action 3: Stopping the child completely by refraining from continuing its execution.
-* Action 4: Escalating the failure, if the exception is not covered by this actor. The supervisor then fails itself.
+* Action 2: Restarting the suspended child, if its internal state is invalid.
+* Action 3: Stopping the child completely by not continuing its execution.
+* Action 4: Escalating the failure, hence the supervisor fails itself.
 { list-style-type:none }
 
 A supervisor is notified solely in form of an exception that is propagated to it from the failed child. However, no state information that puts the exception into context is being offered. The reason is that state should only belong to and be processed by one actor exclusively. Assuming a failure results in the propagation of state to the supervisor, then part of the child's implementation logic leaks into its supervisor. The supervisor requires the knowledge to interpret the state in order to evaluate it in a meaningful way. However, Akka isolates the failure in the child. In case the child is being resumed (Action 1), the cleanup falls to the child itself. The message on which the fault occurred is not re-introduced into the mailbox, to avoid fault-reoccurrence. Actions 2-4 discard the child's state in any case [@Roe15;@AkkaSupervision]. 
@@ -386,7 +386,7 @@ Alternatively, the author has found that the delegation principle we've discusse
 ![img-persistence-actor]
 ~
 
-[img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width:5cm; vertical-align:middle; padding-bottom:1em; }
 
 [Example]{.example-title}: A CatalogStore actor has a database. Conceptually we wanted to use the database to persist the state of a single actor. If the database is managed by several actors, the state is not exclusive anymore. However, we need several actors for concurrent interaction. We see, we must intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The interaction tasks are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}.
 

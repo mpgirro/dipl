@@ -106,7 +106,7 @@ Persistance is a form of IO and as such a potential performance limiting factor.
 ![img-persistence-microservice]
 ~
 
-[img-persistence-microservice]: graphics/persistence-microservice.[svg,png] "Image about microservice persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-persistence-microservice]: graphics/persistence-microservice.[svg,png] "Image about microservice persistence" { width:5cm; vertical-align:middle; padding-bottom:1em; }
 
 
 Since Spring executes all requests concurrently inside a `Runnable`{language:java} task on a thread-pool, concurrent database interactions are implicitely available. Every thread of the pool can interact with the database at the same time. The transactional memory of Spring extends to database transactions. We can observe that programmers do not have to pay additional concern or apply additional strategies to leverage efficient persistency through database concurrency. Hence, we expect a microservice to have several database connections in place at the same time (Figure [#fig-persistence-microservice]). 

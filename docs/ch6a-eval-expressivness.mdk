@@ -556,38 +556,6 @@ Autonomy:
 
 Their ability to *scale* is arguably one of the most relevant reasons given in the literature to utilize actor- or microservice-based architectures [@Tas13;@Hal09;@Mon16a;@Dra17c;@Sal16;@Che17;@Sal16;@Dra17b]. Based on the definition given by Bondi [@Bon00], *scalability* is an attribute influencing the performance of networks, systems and processes in general. From the cognition of industrial Erlang applications it has been suggested that scalability is more important than raw system performance [@Hal12]. Many different aspects influence scalability. From a concurrent point of view, any influence hindering parallelism has a negative impact. Examples are synchronization (cf.\ Java case study) and (temporal) deadlocks. The strong isolation and message passing principles of actors and microservices (isolated turn principle, avoidance of shared memory) reduce coordination and contention cost. Therefore, message passing and isolation have a positive influence on scalability capabilities by limiting safety and liveness issues [@Bon16].
 
-Table [#tab-scalability-compatibility-matrix] gives an overview of the scalability variant capabilities provided by Echo. The subsequent sections will discuss the different variants in detail. 
-
-~ Begin Center
-~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of the actor- and microservice model"; page-align:here; width:100%}
-|------------------------|-----------------------------------|---------------------------------|
-| Scalability Form       | Akka                              | Spring MSA                      |
-+------------------------+-----------------------------------+---------------------------------+
-|                        | Very efficient resource           | Limited by the synchron-        |
-| Vertical scalability   | utilization if no blocking        | ization of the internal service |
-|                        | inside actor                      | concurrency (STM)               |
-| -----------------------|-----------------------------------|---------------------------------|
-| Horizontal scalability | Akka cluster                      | Requires network IPC            |
-| -----------------------|-----------------------------------|---------------------------------|
-| Load scalability       | Server-side load balancing        | Client-side load balancing      |
-|                        | with routing logic                | with Ribbon, message queues     |
-| -----------------------|-----------------------------------|---------------------------------|
-| Structural scalability | Location transparency             | Requires discovery mechanism    |
-|                        | inherent in actor addresses       | for location transparency       |
-| -----------------------|-----------------------------------|---------------------------------|
-| Dynamic                | Inherent through basic            | Requires service registry for   |
-| reconfiguration        | model primitive                   | integration                     |
-| -----------------------|-----------------------------------|---------------------------------|
-| Mobility               | Weak mobility (no relocation of persistent state of Stores)        ||
-| -----------------------|-----------------------------------|---------------------------------|
-|                        | Requires resource control         | Requires appropriate cloud      |
-| Elasticity             | of cluster (see [ref]{.red}), not | management framework,           |
-|                        | supported by Echo                 | not supported by Echo           |
-| -----------------------|-----------------------------------|---------------------------------|
-{ width:100% }                               
-~ End TableFigure
-~ End Center
-
 
 #### Forms of Scalability
 
@@ -670,12 +638,37 @@ The constraints required for maintaining strong consistency relate to safety [@M
 KANN ICH AVAILABILITY IRGENDWIE MESSEN? DAS WÄRE EINE GUTE PRAKTISCHE TABELLE HIER, DIE DAS KAPITEL RECHTFERTIGEN WÜRDE...
 ~
 
-~ Findings
-[Main findings]{.findings-title}
+Table [#tab-scalability-compatibility-matrix] summarizes the capabilities for each scalability variant provided through Akka and Spring.
 
-+ [TODO]{.red}
-{.findings-list}
-~
+~ Begin Center
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of the actor- and microservice model"; page-align:here; width:100%}
+|------------------------|-----------------------------------|---------------------------------|
+| Scalability Form       | Akka                              | Spring MSA                      |
++------------------------+-----------------------------------+---------------------------------+
+|                        | Very efficient resource           | Limited by the synchron-        |
+| Vertical scalability   | utilization if no blocking        | ization of the internal service |
+|                        | inside actor                      | concurrency (STM)               |
+| -----------------------|-----------------------------------|---------------------------------|
+| Horizontal scalability | Akka cluster                      | Requires network IPC            |
+| -----------------------|-----------------------------------|---------------------------------|
+| Load scalability       | Server-side load balancing        | Client-side load balancing      |
+|                        | with routing logic                | with Ribbon, message queues     |
+| -----------------------|-----------------------------------|---------------------------------|
+| Structural scalability | Location transparency             | Requires discovery mechanism    |
+|                        | inherent in actor addresses       | for location transparency       |
+| -----------------------|-----------------------------------|---------------------------------|
+| Dynamic                | Inherent through basic            | Requires service registry for   |
+| reconfiguration        | model primitive                   | integration                     |
+| -----------------------|-----------------------------------|---------------------------------|
+| Mobility               | Weak mobility (no relocation of persistent state of Stores)        ||
+| -----------------------|-----------------------------------|---------------------------------|
+|                        | Requires resource control         | Requires appropriate cloud      |
+| Elasticity             | of cluster (see [ref]{.red}), not | management framework,           |
+|                        | supported by Echo                 | not supported by Echo           |
+| -----------------------|-----------------------------------|---------------------------------|
+{ width:100% }                               
+~ End TableFigure
+~ End Center
 
 
 <!--
@@ -811,11 +804,11 @@ Microservices on the other hand offer less incentive to encapsulate each distinc
 ### Integrating Actors and Microservices {#sec-actor-ms-integration}
 
 
-So far, our evaluation has shown that we can express the same capabilities with both actors and microservices. State is isolated, communication is open for a wide range of interaction styles, and the execution modality enables parallelization and distribution in a transparent way. The major benefit of all these capabilities is a high degree of modularity as well as great flexibility for scalability. Each models brings it's own set of trade-offs, and we as programmers must decide on one of these sets in order to leverage the capabilities.
+So far, our evaluation has shown that we can express the same capabilities with both actors and microservices. State is isolated, communication is open for a wide range of interaction styles, and the execution modality enables parallelization and distribution in a transparent way. The major benefit of all these capabilities is a high degree of modularity as well as great flexibility for scalability. Each models brings its own set of trade-offs, and we as programmers must accept one of these sets in order to leverage the capabilities.
 
-As a final capability evaluation, we want to reason whether all these properties enable actors and microservices to be concurrent tasks that we can integrate. We've already seen that the combination of concurrency models is a common and important practice. Actors often incorporate futures, and microservices use arbitrary concurrency constructs internally, in our case threads and STM. We will entertain this integration thought first with some theoretical considerations and then discuss the practical approach regarding Akka and Spring.
+As a final capability evaluation, we want to reason whether all these properties enable actors and microservices to be flexible enough so we can integrate both kinds of concurrent tasks. We've already seen that the combination of concurrency models is a common and important practice. Actors often incorporate futures, and microservices use and mix arbitrary concurrency constructs internally. We will entertain this integration thought first with some theoretical considerations and then discuss the practical approach regarding Akka and Spring.
 
-As we've discussed, there are two kinds of correctness properties: safety properties and liveness properties. Safety and liveness must not be weakened by combining two concurrency models. There are also two approaches to assess the correctness of a computation: testing and verification [REF?]{.red}. From a theoretical point of view, any safety property can be violated by a finite execution, hence they can be tested for at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, liveness cannot be tested for at runtime, which raises the need for other concepts to either guarantee or at least inspect the liveness of tasks. We require strict theoretical frameworks to apply formal verification techniques. For actors, the theoretical actor model provides this framework. However, we've seen that the microservice model is defined by rather pragmatic rules in comparison. We yet lack a formal framework.
+As we've discussed, there are two kinds of correctness properties: safety properties and liveness properties. Safety and liveness must not be weakened by combining two concurrency models. There are also two approaches to assess the correctness of a computation: testing and verification [REF?]{.red}. From a theoretical point of view, we can violate every safety property by a finite execution. Hence we can test for safety at runtime. On the other hand, liveness properties cannot be violated by some finite execution in general, and even if an arbitrary finite execution causes a violation, there is some continuation of the same execution for which the property will still hold eventually [@Siv99]. Thus, we cannot test for liveness at runtime. This theoretical limitation raises the need for other concepts to either guarantee or at least inspect the liveness of tasks. We require strict theoretical frameworks to apply formal verification techniques. For actors, the theoretical actor model provides this framework. However, we've seen that the microservice model is defined by rather pragmatic rules in comparison. We yet lack a formal framework.
 
 <!--
 ~ todo
@@ -1097,4 +1090,15 @@ The fat JAR sizes ...
 
 ~ todo
 Bar plot der fat JAR sizes, wo die MS balken anders eingefärbt sind als der Akka monolith
+~
+
+
+
+~ Findings
+[Main findings]{.findings-title}
+
++ Programming actors in Akka is generally more expressive than using Spring for microservices regarding lines of code. Microservices architectures require programmers two write several distinct applications, which produces additional LoC. [stimmt das eh zu meinen Zahlen?]{.red} 
++ Spring's produces huge executable artifacts. Every single service engine is larger than the entire Akka monolith.
++ [TODO]{.red}
+{.findings-list}
 ~

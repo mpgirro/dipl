@@ -74,7 +74,7 @@ Epigraph {
            ~ End TexRaw&nl;\
            ~ End TexOnly&nl;\
            ~ Begin HtmlOnly&nl;\
-            <blockquote>&nl;\
+            <blockquote class='epigraph'>&nl;\
               <p class='epigraph-body'>&source;</p>&nl;\
               <footer class='epigraph-footer'>— &caption;</footer>&nl;\
             </blockquote>&nl;\
@@ -210,6 +210,10 @@ CSS Header      :
   .titleheader {
     max-width: 80%;
   }
+  .epigraph {
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+  }
   .epigraph-body { 
     -webkit-margin-before:0; 
     -webkit-margin-after:0;
@@ -257,10 +261,6 @@ CSS Header      :
     text-align: start;
   }
   /*
-  .epigraph blockquote {
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-  }
   */
   .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: "Computer Modern Sans" !important;
