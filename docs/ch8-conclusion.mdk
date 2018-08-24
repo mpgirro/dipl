@@ -81,6 +81,7 @@ Predicition is very difficult, especially about the future.
 ~
 -->
 
+~ green
 
 We've evaluated the conceptualities of Actors and Microservices, formulated arguments favoring each, and motivated their potential integration. In this final section, we want to argue a conceptual evolution towards a unification.
 
@@ -99,6 +100,7 @@ As a result, it is our believe that language-based solutions are worth future en
 The utilization of such formalisms is of course possible for the enhancement of the Actor model too, e.g.\ as was done by introducing the *Join* calculus into Erlang Actors to allow internal parallelization and deterministic concurrency [@Kan15].
 
 In any case, Actor and Microservice technologies can greatly influence their mutual evolution by *learning from* and *growing closer too* each other. For example, Akka already provides circuit breakers for `ask`-calls within its HTTP module. Additionally, Akka cluster nodes (in the version Echo is using) require static configuration for initial discovery. Just recently, automatic discovery capability using the Consul service registry has been merged into the Akka codebase for a future release.   
+~
 
 <!--
 Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, and Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].

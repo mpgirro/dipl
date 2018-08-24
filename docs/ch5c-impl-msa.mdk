@@ -13,45 +13,55 @@ This section covers the strategies applied by programming with the microservice 
 ### Service Technology Stack
 
 
-Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOC languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
+Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOP languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
 
-Instead, we compose microservices using a more traditional technology stack. Java serves as the programming language. Services are based on the *Spring* [@PivotalSpring] framework collection, most notably its *Spring Boot* module for application fundamentals. Additionally, the *Spring Cloud* module collection has proven very effective for microservice development in industrial applications [@Car17]. 
+Instead, we compose microservices using a more traditional technology stack. We use Java as the programming language for all services and the *Spring* [@PivotalSpring] framework, most notably its *Spring Boot* [@SpringBoot] module, for application fundamentals. Additionally, we apply many libraries of the *Spring Cloud* [@SpringCloud] collection, which have proven very effective for microservice development in industrial applications [@Car17]. 
 
-Spring is based around the concept of *inversion of control* (IoC). There, programmers can focus on implementing so-called *concerns* of arbitrary nature regarding the application. The actual execution logic of the concerns, i.e.\ the scheduling on a thread-pool, is left to the IoC container. This approach is usually referred to as *dependency injection* [@Wal07]. Conceptually, IoC has a certain resemblance to the execution of actors by an actor runtime [@Hal06].
+Spring is based around the concept of *inversion of control* (IoC). Spring's IoC variant applies *dependency injection*. We do not instantiate objects directly, but instead define for certain classes what kind of dependencies they need (i.e.\ we declare fields but do not initialize them directly). These kinds of classes are called *beans*. A so-called IoC *container* instantiates these beans and *injects* their dependencies through constructor arguments, factory methods or setter methods. An IoC container's primary responsibility is therefore the management of beans[^fn-managed-objects]. This is called *lifecycle management*. The actual execution logic of a beans i.e.\ the scheduling on a thread-pool, is also left to the IoC container [@SpringDocumentation;@Wal07]. Therefore, Spring's IoC container is the internal concurrency managing system of each of our microservices. Conceptually, IoC has a certain resemblance to the execution of actors by an actor runtime [@Hal06].
+
+[^fn-managed-objects]: Sometimes people therefore refer to beans as *managed objects*.
+
+Spring Boot is primarily an application skeleton based on the Spring framework. The skeleton is a fully executable application, without any specific functionality however. We use Spring beans to add custom configuration and the functionality we want the application to fulfil [@SpringBoot]. In other words, Spring Boot provides us with a general foundation for the microservice's engine, and we as programmers merely add the specific service behavior using beans.
+
+Spring Cloud is a set of libraries which focus on features like data access, messaging, stream, discovery, load balancing, circuit breaker, and many more [@SpringCloud]. The term *cloud* indicates that the modules are intended for cloud computing scenarios. This makes them useful to us since the microservice model is popular in the industry for applications that are designed to be deployed in the cloud [@Bon17;@Dra17b].
 
 As we did with the actor implementation, in subsequent sections we will pay attention to the linguistic support provided by the framework regarding the expression of service requirements.
 
+~ Findings
+[Main findings]{.findings-title}
 
-~ todo
-mehr?
++ We can leverage inversion of control frameworks to reduce the effort that comes with writing many separate applications for microservice architectures.
++ Programming with IoC transfers the management of concurrent execution to the IoC container.
+{.findings-list}
 ~
 
 
 ### Internal Service Concurrency
 
 
-~ todo
-Hier muss ich für den neuen Text was zitieren!
-~
-
 The microservice model paradigm does not dictate restrictions on internal service structure. A service is free to apply concurrency internally, and to utilize every concurrency mechanism it sees fit (including actors). 
 
-Echo's services are based on the Spring framework and utilize the concurrent programming structure that is provided through Spring's IoC container. Spring services receive requests (we discuss the communication mechanism in Section [#sec-ms-communication-mechanisms] below) as method calls to objects of `@Component` annotated classes. Each of these method calls is therefore wrapped into a `Runnable`{language:java} and appended to a task queue. A `TaskExecutor`{language:java} constantly processes the task queue. `Executor`{language:java} is the Java concept name for a thread-pool. Each task is therefore eventually executed on an allocated thread of the thread-pool. We've already demonstrated how arbitratry method calls are easily wrapped as a `Runnable task`{language:java} in the Java concurrency case study of Chapter [#ch-concurrency]. [REF für den absatz!]{.red}. This kind of method execution scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. 
+Echo's services are based on the Spring framework and utilize the concurrent programming structure that is provided through Spring's IoC container. Spring-based microservices receive requests (we discuss the communication mechanism in Section [#sec-ms-communication-mechanisms] below) as method calls to objects of classes with a so-called stereotype annotation (e.g.\ `@Component`, `@Controller`, etc.). Each of these method calls is therefore implicitly wrapped into a `Runnable`{language:java} and appended to a task queue. Spring's `TaskExecutor`{language:java} constantly processes the task queue. An `Executor`{language:java} is Java's variant of a thread-pool. Each task is eventually executed on an allocated thread of the thread-pool [@SpringDocumentation]. We've already demonstrated how arbitratry method calls are easily wrapped as a `Runnable task`{language:java} in the Java concurrency case study of Chapter [#ch-concurrency]. This kind of method execution scheduling has resemblance to the event-based semantics of actor systems [@Hal06]. 
 
 Since microservices are concurrent internally, we must mind shared internal resources. We must either ensure resources are immutable like with we have to for message in Akka, or synchronize the access to a resource. Spring uses software transactions for synchronization.   
 
-Spring provides linguistic support in a *declarative programming* style for many strategies and mechanisms [@Wal07]. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the Spring framework then applies appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. We leverage the declarative style for synchronization by defining software transactions on method calls using the `@Transactional` annotation. Spring also extends the STM to database transactions transparently [@Wal07].
+Spring provides linguistic support in a *declarative programming* style for many strategies and mechanisms. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the Spring framework then applies appropriate behavior. In contrast to annotation processors, where annotations are read by the compiler to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. This is a form of *aspect-oriented programming*. We leverage the declarative style for synchronization by defining software transactions on method calls using the `@Transactional` annotation. Spring also extends the STM to database transactions transparently [@SpringDocumentation;@Wal07].
 
-While Spring enqueues each request into a concurrent task queue automatically, we as programmers also want to use this technique to achieve higher concurrency inside a microservice. The `@Async` annotation allows us to declare methods as asynchronously dispatchable. When calling an `@Async` annotated method, Spring wraps the call into a `Runnable`{language:java} and enqueue the resulting task into the task queue. Since the method will execute at an unknown point in time for the caller, we cannot expect a result value directly. An `@Async` method is therefore `void`{language:java} in general. Alternatively, we can return a result wrapped in a `Future`{language:java}. We've seen this idea for active objects already, with their future type methods. The future allows us to return an intermediate result and provides an interface to check whether the actual result is yet available. The author has experience that Spring's default `AsyncTaskExecutor`{language:java} does not handle exceptions and subsequently does not log their occurence either. We've found this factor troubling for development. Echo therefore uses a custom `ExceptionHandlingAsyncTaskExecutor`{language:java} to fix this flaw.
+While Spring enqueues each request into a concurrent task queue automatically, we as programmers also want to leverage this technique to achieve a higher degree of concurrency inside a microservice. The `@Async` annotation allows us to declare methods as asynchronously dispatchable. When calling an `@Async` annotated method, Spring wraps the call into a `Runnable`{language:java} and enqueues the resulting task into the task queue. Since the method will execute at an unknown point in time for the caller, we cannot expect a result value directly. An `@Async` method is therefore `void`{language:java} in general. Alternatively, we can return the expected result wrapped in a `Future`{language:java} [@SpringDocumentation]. We've seen this idea for active objects already, with their future type methods. The future allows us to return an intermediate result and provides an interface to check whether the actual result is yet available. The author has experience that Spring's default `AsyncTaskExecutor`{language:java} does not handle exceptions and subsequently does not log their occurence either. We've experienced this factor troubling for development. Therefore, we use a custom `ExceptionHandlingAsyncTaskExecutor`{language:java} to fix this flaw. 
 
-Although Spring's declarative programming style for concurrency is very powerful, we've found some limitations. The `@Async` and `@Transactional` annotations only show effect on `public`{language:java} methods. Additionally, self-invocation of an `@Async` method won't spawn a new asynchronous task, but instead execute within the same task in a synchronous fashion.
+Although Spring's declarative programming style for concurrency is very powerful, we've experienced some limitations. The `@Async` and `@Transactional` annotations only show effect on `public`{language:java} methods. Additionally, self-invocation of an `@Async` method won't spawn a new asynchronous task, but instead execute within the same task in a synchronous fashion. Combining `@Async` and `@Transactional` is also possile. However, the asynchronously dispatched method will not run within the same transaction as the dispatching method, but in a fresh transaction instead [@SpringDocumentation].
 
-~ todo
-__Ich brauche so dringend Literatur für dieses Kapitel!__
-~
 
 ~ todo
 Wenn ich oben was zu den `akka.dispatch.Future` schreibe, dann hier vielleicht der Hinweis das das "normale" Futures sind.
+~
+
+~ Findings
+[Main findings]{.findings-title}
+
++ The IoC containers builds on Java's standard concurrency constructs (threads, synchronization), but exposes a completely different programming interface (implicit concurrency, STM).
++ We can leverage a declarative programming style even in an imperative programming languages to simplify the handling of concurrency issues.
+{.findings-list}
 ~
 
 
@@ -101,6 +111,14 @@ Persistance is a form of IO and as such a potential performance limiting factor.
 Since Spring executes all requests concurrently inside a `Runnable`{language:java} task on a thread-pool, concurrent database interactions are implicitely available. Every thread of the pool can interact with the database at the same time. The transactional memory of Spring extends to database transactions. We can observe that programmers do not have to pay additional concern or apply additional strategies to leverage efficient persistency through database concurrency. Hence, we expect a microservice to have several database connections in place at the same time (Figure [img-persistence-microservice]). 
 
 
+~ Findings
+[Main findings]{.findings-title}
+
++ [TODO]{.red}
+{.findings-list}
+~
+
+
 ### Communication Mechanisms {#sec-ms-communication-mechanisms}
 
 
@@ -136,7 +154,7 @@ The queue becomes an intermediate for all asynchronous messages. Senders push me
 ![img-message-queue]
 ~
 
-[img-message-queue]: graphics/message-queue.[svg,png] "Image about a message queue" { width: 80%; vertical-align:middle; padding-bottom:1em; }
+[img-message-queue]: graphics/message-queue.[svg,png] "Image about a message queue" { width: 70%; vertical-align:middle; padding-bottom:1em; }
 
 [Example]{.example-title}: We do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, Figure [#fig-message-queue] shows how the Crawler pushes a message `W` &rarr; `Q`. At some later point and idle Parser pulls this message `P` &larr; `Q`. The message travels asynchronously. The actively communicating components are `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
 
@@ -218,7 +236,7 @@ Eureka, on the other hand, tends to require extensive time for initial discovery
 ![img-service-discovery]
 ~
 
-[img-service-discovery]: graphics/discovery-1.png "Image about service discovery" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+[img-service-discovery]: graphics/discovery-1.[svg,png] "Image about service discovery" { width: 70%; vertical-align:middle; padding-bottom:1em; }
 
 Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. Additional RPCs for registry lookups are then required up to the amount of involved services.
 

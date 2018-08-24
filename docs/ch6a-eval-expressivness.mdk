@@ -95,7 +95,7 @@ The encapsulation and isolation principle of actors and microservices has one mo
 
 Besides this restriction, we require concurrent interaction to persistence mechanisms to increase throughput. Microservices can easily leverage the concurrent interaction capabilities of a database management system due to the service's internal concurrency capabilities. The thread-pool strategy of Spring as well as the software transaction mechanism transparently extend to database interactions. 
 
-Actors face more problems, since they are not concurrent internal. As will all actions in the actor model, database interaction must be executed in a turn-based fashion in general, and are thus sequential. We've outlined that the we can employ the same strategies as for synchronous communication to improving persistence efficiency for actors. Either we employ additional concurrency constructs (futures) or we delegate interactions to child actors. Futures always have the potential to violate the isolated turn principle. Delegation forces us to share the database between several actors, violating the exclusive ownership of (shared) state. 
+Actors face more problems, since they are not concurrent internal. As with all actions in the actor model, database interactions must be executed in a turn-based fashion in general, and are thus sequential. We've outlined that we can employ the same strategies as for synchronous communication to improving persistence efficiency for actors. Either we employ additional concurrency constructs (futures) or we delegate interactions to child actors. Futures always have the potential to violate the isolated turn principle. Delegation forces us to share the database between several actors, violating the exclusive ownership of (shared) state. 
 
 
 
@@ -150,6 +150,10 @@ Echo's commonly used `core` library, wrapping most domain specific logic, is gen
 
 These two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm, and is described as a direct consequence of high cohesion and low coupling throughout the literature [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are not necessarily contained within the strong boundaries of dedicated processes, and intrinsically depend on their actor system for versatile aspects, down to the basic model primitives. 
 
+~ todo
+diese Findings durch einen Vergleichstabelle ersetzen? Ansonsten muss noch was zu Persistence rein
+~
+
 ~ Findings
 [Main findings]{.findings-title}
 
@@ -190,7 +194,15 @@ One-to-many communication is neither inherent as a primitive to actors nor micro
 * Message Broker (B)
   : are commissioned with messages and forward them to potential recipients. The functionality is merely concerned with communication and therefore domain independent. Broker tasks constitute communication channels.
 
-[Example]{.example-title}: When a single Store needs to modify its state, we must ensure that all other Store units also perform the same update operation. Therefore, the unit does not performing the update operation directly. Instead, the component sends a respective update-message the message broker (`C` &rarr; `B`). All Stores, even the original sender, can then pull the message from the broker ($\{$`C`~1~$\cdots$`C`~n~$\}$  &larr; `B`). Upon message reception, each Store is then able to perform the state modification. Actors have message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. Echo implements the routing logic inside a separat actor. In Echo's MSA, the RabbitMQ service does not suffice for one-to-many message distribution. AMQP only supports what the JMS terminology calls *Queue*-semantic (one-to-one), but not the JMS *Topics* (one-to-many). We must apply another messaging technology. *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming system with very lightweight message constructs, and therefore appropriate for the microservice paradigm. 
+[Example]{.example-title}: When a single Store needs to modify its state, we must ensure that all other Store units also perform the same update operation. Therefore, the unit does not performing the update operation directly.
+
+~ Figure { #fig-message-broker; caption: "Message broker"; width:50%; float:left; margin-right: 1ex; }
+![img-message-broker]
+~
+
+[img-message-broker]: graphics/message-broker.[svg,png] "Image about message broker" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+
+Instead, the component sends a respective update-message the message broker (`C` &rarr; `B`). All Stores, even the original sender, can then pull the message from the broker ($\{$`C`~1~$\cdots$`C`~n~$\}$  &larr; `B`). Figure [#fig-message-broker] shows this flow. Upon message reception, each Store is then able to perform the state modification. Actors have message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. Echo implements the routing logic inside a separat actor. In Echo's MSA, the RabbitMQ service does not suffice for one-to-many message distribution. AMQP only supports what the JMS terminology calls *Queue*-semantic (one-to-one), but not the JMS *Topics* (one-to-many). We must apply another messaging technology. *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming system with very lightweight message constructs, and therefore appropriate for the microservice paradigm. 
 
 One important realization is the difference in messaging interfaces. While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`, and routes for `RoutingLogic`{language:scala}s) across all language bindings, the microservice model does not enfore any kind of interface. REST, AMQP and Kafka all have different interfaces. Since all Echo services are based on Spring, at least we express the interaction with each comminication mechanism in the same way within each service. But the microservice paradigm is also open for arbitrary technologie stacks, and every stack provides its own interface for each mechanism.   
 
@@ -303,7 +315,7 @@ Table [#tab-fundamental-concurrency-issues] gives an overview of how actors and 
 |-----------------|--------------------------------|---------------------------------|
 | Issue           | Actors                         | Microservices                   |
 +-----------------+--------------------------------+---------------------------------+
-| Expression      | Actor creation, concurrent     | Service program execution,      |
+| Expression      | Actor object, concurrent       | Service program execution,      |
 |                 | execution by runtime           | concurrent scheduling by OS     |
 | ----------------|--------------------------------|---------------------------------|
 |                 | Message passing primitives     | Message passing IPC mechanisms, |
@@ -550,33 +562,35 @@ Their ability to *scale* is arguably one of the most relevant reasons given in t
 
 Table [#tab-scalability-compatibility-matrix] gives an overview of the scalability variant capabilities provided by Echo. The subsequent sections will discuss the different variants in detail. 
 
+~ Begin Center
 ~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of the actor- and microservice model"; page-align:here; width:100%}
-|-------------------------|-----------------------------------|--------------------------------|
-| Scalability Form        | Akka                              | Spring MSA                     |
-+-------------------------+-----------------------------------+--------------------------------+
-|                         | Very efficient resource           | Limited by the synchronization |
-| Vertical scalability    | utilization if no blocking        | of the internal service        |
-|                         | inside actor                      | concurrency (STM)              |
-| ------------------------|-----------------------------------|--------------------------------|
-| Horizontal scalability  | Akka cluster                      | Requires network IPC           |
-| ------------------------|-----------------------------------|--------------------------------|
-| Load scalability        | Server-side load balancing        | Client-side load balancing     |
-|                         | with routing logic                | with Ribbon, message queues    |
-| ------------------------|-----------------------------------|--------------------------------|
-| Structural scalability  | Location transparency             | Requires discovery mechanism   |
-|                         | inherent in actor addresses       | for location transparency      |
-| ------------------------|-----------------------------------|--------------------------------|
-| Dynamic reconfiguration | Inherent through basic            | Requires service registry for  |
-|                         | model primitive                   | integration                    |
-| ------------------------|-----------------------------------|--------------------------------|
-| Mobility                | Weak mobility (no relocation of persistent state of Stores)       ||
-| ------------------------|-----------------------------------|--------------------------------|
-|                         | Requires resource control         | Requires appropriate cloud     |
-| Elasticity              | of cluster (see [ref]{.red}), not | management framework,          |
-|                         | supported by Echo                 | not supported by Echo          |
-| ------------------------|-----------------------------------|--------------------------------|
+|------------------------|-----------------------------------|---------------------------------|
+| Scalability Form       | Akka                              | Spring MSA                      |
++------------------------+-----------------------------------+---------------------------------+
+|                        | Very efficient resource           | Limited by the synchron-        |
+| Vertical scalability   | utilization if no blocking        | ization of the internal service |
+|                        | inside actor                      | concurrency (STM)               |
+| -----------------------|-----------------------------------|---------------------------------|
+| Horizontal scalability | Akka cluster                      | Requires network IPC            |
+| -----------------------|-----------------------------------|---------------------------------|
+| Load scalability       | Server-side load balancing        | Client-side load balancing      |
+|                        | with routing logic                | with Ribbon, message queues     |
+| -----------------------|-----------------------------------|---------------------------------|
+| Structural scalability | Location transparency             | Requires discovery mechanism    |
+|                        | inherent in actor addresses       | for location transparency       |
+| -----------------------|-----------------------------------|---------------------------------|
+| Dynamic                | Inherent through basic            | Requires service registry for   |
+| reconfiguration        | model primitive                   | integration                     |
+| -----------------------|-----------------------------------|---------------------------------|
+| Mobility               | Weak mobility (no relocation of persistent state of Stores)        ||
+| -----------------------|-----------------------------------|---------------------------------|
+|                        | Requires resource control         | Requires appropriate cloud      |
+| Elasticity             | of cluster (see [ref]{.red}), not | management framework,           |
+|                        | supported by Echo                 | not supported by Echo           |
+| -----------------------|-----------------------------------|---------------------------------|
 { width:100% }                               
 ~ End TableFigure
+~ End Center
 
 
 #### Forms of Scalability
@@ -912,7 +926,7 @@ In a classification of concurrency model, Swalens et al. summarize all abstracti
 #### Combining Akka Actors and Spring Microservices {#sec-combining-akka-spring}
 
 
-Our Echo microservices are not founded on a process calculus since we have not implemented them in a SOC language like Jolie. Since there is no known theoretical link between the actor model and a SOC calculus, we are not able to reason about the correctness properties after integration anyway. Nevertheless, weÄve seen that scholars are motivated to describe interoperability between actors and calculi processes. Therefore, we can still think about the approach to integrate the our Akka actors and Spring-based microservices. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
+Our Echo microservices are not founded on a process calculus since we have not implemented them in a SOP language like Jolie. Since there is no known theoretical link between the actor model and a SOC calculus, we are not able to reason about the correctness properties after integration anyway. Nevertheless, weÄve seen that scholars are motivated to describe interoperability between actors and calculi processes. Therefore, we can still think about the approach to integrate the our Akka actors and Spring-based microservices. From a theoretical point of view, two concurrent units are required to share a communication channel in order to interact [@Agh97]. 
 
 The microservice principles allow the services a rather high degree of freedom regarding their communication. REST-based state transfer via HTTP is a popular choice. We've demonstrated that other channels like AMQP queues are also viable. Actors, on the other hand, are more restricted, since the model semantics requires them to receive the *message* constructs in a uniform way. By implication, this restriction means that different communication channels can be utilized as long as they comply to a homogenous message receiving abstraction.
 

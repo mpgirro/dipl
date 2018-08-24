@@ -30,6 +30,9 @@ Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 Bib style         : style/keynat.bst
+name-references   : Bibliography
+name-figures      : List of Figures
+name-tables       : List of Tables
 
 <!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
 <!--Bib style : plainnat-->
@@ -231,9 +234,10 @@ CSS Header      :
     margin-top: 0; 
   }
   */
-  .findings-title {
+  .findings-title,
+  .example-title {
     font-family: Roboto !important;
-    font-size: 0.9em;
+    font-size: 0.9rem;
   }
   .li {
     text-align: justify;

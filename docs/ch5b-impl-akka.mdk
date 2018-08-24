@@ -166,7 +166,7 @@ Akka provides a primitive to introduce synchronous information flow. In addition
 ![img-pipeline-search-future]
 ~
 
-[img-pipeline-search-future]: graphics/pipeline-search-future.png "Image about pipeline of a search request using futures" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-pipeline-search-future]: graphics/pipeline-search-future.[svg,png] "Image about pipeline of a search request using futures" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
 [Scenario Example]{.example-title}: A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to a Searcher and finally to an IndexStore. The results are are propagated back from the `I` via `S` to `G`. The results are wrapped in a `Future`{{language:scala}} until it is resolved. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other request until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
@@ -212,7 +212,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 ![img-pipeline-search-delegation]
 ~ End Figure
 
-[img-pipeline-search-delegation]: graphics/pipeline-search-delegation.png "Image about pipeline of a search request using delegation" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-pipeline-search-delegation]: graphics/pipeline-search-delegation.[svg,png] "Image about pipeline of a search request using delegation" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
 The actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
 
@@ -326,11 +326,13 @@ The set of routees has to be kept up to date, since actors can fail and no messa
 * Message Routers (R)
   : distribute received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers are intermediate units and supervise their routees. They only forward messages to living children. 
 
-~ todo
-Bild des Routings
+~ Figure { #fig-message-router; caption: "Message router"; width:45%; float:left; margin-right: 1ex; }
+![img-message-router]
 ~
 
-[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Instead, the information flow becomes: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
+[img-message-router]: graphics/message-router.[svg,png] "Image about a message router" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+
+[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Figure [#fig-message-router] shows that the actual information flow incorporates an intermediate router: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. Akka provides the so-called *actor selection* as a mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when it is undeliverable. 
 
@@ -357,13 +359,15 @@ We must employ some kind of data persistence mechanism, e.g.\ a database, in ord
 
 We can overcome the single-threaded limitation by utilizing a non-blocking API for database connections. These APIs provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the actor's thread-pool. With the monadic methods of `Future`{language:scala} we can then define further computation on the result once it becomes available. The price is the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
 
+Alternatively, the author has found that the delegation principle we've discussed for synchronous message handling is also an efficient strategy. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
+
 ~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:45%; float:left; margin-right: 1ex; }
 ![img-persistence-actor]
 ~
 
 [img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 
-Alternatively, the author has found that the delegation principle we've discussed for synchronous message handling is also an efficient strategy. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. However, conceptually we wanted to persist the state of a single actor, the CatalogStore respectively. If the database is managed by several actors, the state is not exclusive anymore. We see, we must intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The interaction tasks are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}.
+[Example]{.example-title}: A CatalogStore actor has a database. Conceptually we wanted to use the database to persist the state of a single actor. If the database is managed by several actors, the state is not exclusive anymore. However, we need several actors for concurrent interaction. We see, we must intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The interaction tasks are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}.
 
 We must no break isolation though. Therefore these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
 
