@@ -113,9 +113,9 @@ blockquote   { font-style: italic; }
 .figureline  { display: none }
 
 <!-- arbitrary helper classes, while work in progress -->
-.findings { border: solid black 1px; padding:1em }
+.findings { border: solid black 1px; padding:1rem }
 .findings-title { font-family: sans-serif; font-weight: bold; margin-left:1rem; }
-.findings-list { margin-top: 1ex; padding-top: 0ex; }
+.findings-list { margin-top: 1ex; padding-top: 0ex; margin-right:1rem; }
 .example-title { font-family: sans-serif; font-weight: bold; }
 .litnote, .lit, .literature { 
   background-color: LightGray;
@@ -176,16 +176,24 @@ blockquote   { font-style: italic; }
 -->
 
 CSS Header      :
+  /*
   @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
   @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
   @import url(https://fonts.googleapis.com/css?family=Roboto);
+  */
+  /*
+  @import url(http://spratt.github.io/Computer-Modern/cmserif.css);
+  @import url(http://spratt.github.io/Computer-Modern/cmsans.css);
+  */
+  @import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css);
   body.madoko {
-    font-family: "Crimson Text", serif;
+    font-family: "Computer Modern Serif", "Crimson Text", serif;
     font-size: 16px;
-    max-width: 34em; /* reduce to: 34em */
+    max-width: 38em; /* reduce to: 34em */
   }
   .madoko code, .madoko pre {
-    font-family: "Source Code Pro", monospace;
+    font-family: "Computer Modern Typewriter", "Source Code Pro", monospace;
+    font-size: 1rem !important;
   }
   .madoko .math-rendering {
     color: black;
@@ -236,8 +244,8 @@ CSS Header      :
   */
   .findings-title,
   .example-title {
-    font-family: Roboto !important;
-    font-size: 0.9rem;
+    font-family: "Computer Modern Sans", Roboto !important;
+    /*font-size: 0.9rem;*/
   }
   .li {
     text-align: justify;
@@ -254,6 +262,12 @@ CSS Header      :
     -webkit-margin-end: 0;
   }
   */
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Computer Modern Sans" !important;
+  }
+  dt {
+    font-family: "Computer Modern Sans" !important;
+  }
   
 
 <!-- HTML -->
@@ -432,7 +446,7 @@ Maximilian Irro
 
 ...
 
-... The `<item>...</item>` element is replicated 20 times within each feed.
+... The `<item>...</item>` element is replicated 70 times within each feed.
 
 ~ todo
 Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, und die anzahl an episoden danach richten
@@ -459,21 +473,14 @@ Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, u
       <guid isPermaLink="false">http://lorem.ispum.fm/li001</guid>
       <pubDate>Fri, 13 Jul 2018 16:35:13 +0000</pubDate>
       <description>
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-        diam nonumy eirmod tempor invidunt ut labore et dolore magna
-        aliquyam erat, sed diam voluptua. At vero eos et accusam et
-        justo duo dolores et ea rebum. Stet clita kasd gubergren, no
-        sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
-        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-        nonumy eirmod tempor invidunt ut labore et dolore magna 
-        aliquyam erat, sed diam voluptua. At vero eos et accusam et 
-        justo duo dolores et ea rebum. Stet clita kasd gubergren, no 
-        sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem 
-        ipsum dolor sit amet, consetetur sadipscing elitr, sed diam 
-        nonumy eirmod tempor invidunt ut labore et dolore magna 
-        aliquyam erat, sed diam voluptua. At vero eos et accusam et 
-        justo duo dolores et ea rebum. Stet clita kasd gubergren, no 
-        sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 
+        do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute 
+        irure dolor in reprehenderit in voluptate velit esse cillum 
+        dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
+        cupidatat non proident, sunt in culpa qui officia deserunt 
+        mollit anim id est laborum.
       </description>
     </item>
   </channel>

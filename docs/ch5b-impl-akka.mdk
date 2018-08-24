@@ -2,9 +2,11 @@
 ## Actor-based Implementation {#ch-actor-impl}
 
 
+<!--
 ~ Epigraph { caption: "Carl Hewitt"}
 One actor is no actor. Actors come in systems.
 ~
+-->
 
 This section covers the strategies applied by actor-based programming to implement concurrent systems like our scenario from Section [#sec-scenario]. The focus will be on the linguistic support provided by the used actor library. Efficiency considerations will be part of Chapter [#ch-evaluation].
 
@@ -326,13 +328,38 @@ The set of routees has to be kept up to date, since actors can fail and no messa
 * Message Routers (R)
   : distribute received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers are intermediate units and supervise their routees. They only forward messages to living children. 
 
+<!--
 ~ Figure { #fig-message-router; caption: "Message router"; width:45%; float:left; margin-right: 1ex; }
 ![img-message-router]
 ~
 
 [img-message-router]: graphics/message-router.[svg,png] "Image about a message router" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+-->
 
-[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Figure [#fig-message-router] shows that the actual information flow incorporates an intermediate router: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
+[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Figure [#fig-message-router] (left) shows that the actual information flow incorporates an intermediate router: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
+
+
+~ Begin Figure { #fig-message-router; caption: "Message routers (R) with different routing logics: `RoundRobinRoutingLogic`{language:scala} (left) and `BroadcastRoutingLogic`{language:scala} (right)"; width:100%; }
+
+~ Begin Columns
+~ Begin Column { width:50% }
+~ Begin Center
+![img-message-router-roundrobin]
+~ End Center
+~ End Column
+
+~ Begin Column { width:50% }
+~ Begin Center
+![img-message-router-broadcast]{margin-left:4rem}
+~ End Center
+~ End Column
+~ End Columns
+
+~ End Figure
+
+[img-message-router-roundrobin]: graphics/message-router-roundrobin.[svg,png] "Image about a message router (roundrobin)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
+
+[img-message-router-broadcast]: graphics/message-router-broadcast.[svg,png] "Image about a message router (broadcast)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising them [@Roe15]. Akka provides the so-called *actor selection* as a mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when it is undeliverable. 
 
