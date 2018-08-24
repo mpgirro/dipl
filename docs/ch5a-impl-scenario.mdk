@@ -56,6 +56,11 @@ Search engine construction is generally led by two basic requirements [@Man08]:
 kurze Beschreibung der technischen Realisation von Podcasts = Decentralized media syndication via RSS/Atom feeds, sodass daraus ersichtlich wird welche Aufgaben eine entsprechende Suchmaschine (= Datenaggregierungs- und Abruf-System) erfüllen muss um ihre Dienstleistung anbieten zu können.
 ~
 
+We build our domain specific search engine for the *Podcast* domain. On the one hand, the term is used to refere to an episodic series of digital media. The media is usually audio, sometimes also video.  On the other hand, Podcast can also refer to the distribution mechanism. The distribution builds upon XML-based web feeds. RSS [@Win03] (__R__ich __S__ite __S__ummary) or Atom [@RFC4287] are the established formats. Since RSS has always been the more widely format, we keep referring to *RSS feeds* from here on. Both formats gained popularity in the 2000s as an effective, decentralized mechanism to publish the updates of websites. Podcasts build upon the same principle, but utilize an otherwise optional field for items of an RSS feed, the so-called `<enclosure>` tag. This tag is intended to provide an URL (__U__niform __R__esource __L__ocator) to the media file. Subscribers to the feed can download the file behind the URL and listen/watch the media, usually through a specialized client application software. The `<enclosure>` is therefore the main content of an RSS item [@Pat06]. Additionally, there are other fields within an RSS feed. Some of these feeds contain human readable information about the linked media file, so-called metadata.
+
+Our search engine is designed to regularly analyze RSS feeds for podcasts. The metadata allows us to add information for every media file to a so-called *search index*. Although we do not analyze the media itself, we can still provide search functionality. The domain is very suitable for concurrent processing, since the RSS feed files are decentralized. Every Podcast content creator is publishing a separate feed. There is no interrelation between feeds. We can therefore not only process each feed separately, but also concurrently.
+
+
 ### System Components
 
 

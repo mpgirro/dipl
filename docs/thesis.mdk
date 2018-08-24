@@ -189,7 +189,7 @@ CSS Header      :
   body.madoko {
     font-family: "Computer Modern Serif", "Crimson Text", serif;
     font-size: 16px;
-    max-width: 38em; /* reduce to: 34em */
+    max-width: 39em; /* reduce to: 34em */
   }
   .madoko code, .madoko pre {
     font-family: "Computer Modern Typewriter", "Source Code Pro", monospace;
