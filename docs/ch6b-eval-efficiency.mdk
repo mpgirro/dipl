@@ -59,7 +59,7 @@ Another
 ### Simulation Workloads 
 
 
-Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. We evaluate both subsystems separately. Each subsystem requires a different kind of input data. For benchmarking a subsystem, we need to simulate a workload scenario with appropriate input data. Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for workload data. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
+Our search engine has two essential subsystems: the indexing subsystem and the retrieval subsystem. Since the indexing subsystem is not affected by the rate of search requests, we can evaluate both subsystems separately [@Lil09]. Each subsystem requires a different kind of input data. For benchmarking a subsystem, we need to simulate a workload scenario with appropriate input data. Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for workload data. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
 
 * Part 1: Set of documents
 * Part 2: Set of queries

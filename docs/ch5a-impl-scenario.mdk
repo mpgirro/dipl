@@ -1,5 +1,5 @@
 
-Implementation of a Concurrent System {#ch-implementation}
+Implementing Concurrent Systems {#ch-implementation}
 ============================
 
 
@@ -13,7 +13,7 @@ Every good work of software starts by scratching a developer's personal itch.
 Einführungs Blabla was hier in den Unterkapitel alles kommt.
 ~
 
-In this chapter we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies/approaches to implement this scenario using the actor model. Subsequently Section [#ch-microservice-impl] describes the implementation approach for the same scenario using the microservice model.
+In this chapter we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies we apply to implement this scenario using the actor model. Subsequently Section [#ch-microservice-impl] describes the implementation of the scenario using the microservice model.
 
 
 ## A Concurrent System Scenario {#sec-scenario}
@@ -23,11 +23,7 @@ In this chapter we cover the practical aspects of programming with actors and mi
 ~
 
 
-In this section, we outline a domain-specific search engine we call *Echo*[^fn-echo-name]. The search engine serves as an illustration of a concurrent system and provides us a baseline for evaluating programming with actors and microservices for concurrent execution.
-
-
-
-relevant concerns and issues regarding the conception of concurrency using actors and microservices. Subsequent Chapters [#ch-actor-impl] and [#ch-microservice-impl] will address the respective implementations.
+In this section, we outline a domain-specific search engine we call *Echo*[^fn-echo-name]. This search engine is our non-trivial example of a concurrent system that serves us as the reference for evaluating the programming of concurrency with actors and microservices.
 
 [^fn-echo-name]: The name "Echo" was chosen for its wonderful characteristics of providing a short package name and the analogy to *recalling spoken words*.  
 
@@ -36,7 +32,23 @@ relevant concerns and issues regarding the conception of concurrency using actor
 
 ...
 
-Search engines cause the illusion of being monolithic systems, but are actually a composition of rather loosely coupled subsystems [@Cou05].
+Search engines cause the illusion of being monolithic systems, but are actually a composition of rather loosely coupled and independent subsystems [@Cou05]. 
+
+A user makes use of a search engine by submitting a search request via a so-called *query*. The search engine then presents the user with respective results. This functionality however is merely the so-called retrieval phase performed by the *retrieval subsystem*. As the name indicates, in this phase information is retrieved. Subsequently, the information must have been collected and stored beforehand so that we can retrieve it. A second so-called *indexing subsystem* is responsible of gathering the information and storing it in a form that is suitable for searching [@Lil09;@Ped06].
+
+Several factors contribute to the fact that search engine architectures are suitable for concurrent programming research. First, both subsystems are mostly independent. They merely make use of a common information index, where the indexing subsystem is adding information and the retrieval subsystem is reading the information. Hence, the subsystems are independent for the most part and can run concurrently. Second, since many search engines regard very large amounts of data, they have long been in the focus of research about improving scalability. Concurrent, and especially parallel and distributed computing, like in cluster deployments, are especially [???]{.red} [@Ped06].   
+
+... Additionally, our specific domain we outline below is also very suitable for concurrent processing.
+
+
+
+
+[@Man08]
+
+
+The loose coupling and independence of the subsystems as well as their components provides us with the opportunity to leverage concurrent processing. 
+
+
 
 ~ todo
 Hier fehlen noch ein paar verbindende Sätze
@@ -71,6 +83,9 @@ We provide both backends with a web interface that they have to support. The Web
 In order to prevent any domain-specific code from being implemented twice unnecessarily, we supply both backends with the Core library offering functionality that is required by either backend. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. We use Lucene [@ApacheLucene] to create this structures. Lucene offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is done using ROME [@ROME], enriched by an extension we wrote to support extracting *Simple Chapter* [@PotloveSimpleChapters] information.
 
 ...
+
+
+The two high-level subsystems we've given above, indexing and retrieval, are internally composed of several smaller components. These components constitute the concurrent task units of our system. The respective units are:  
 
 * CatalogStores (C)
   : hold a catalog of all podcasts, with respective feeds, episodes and chapter marks thereof. Such information is persisted in relational databases based on a simple, straightforward domain model. CatalogStores hold the complete amount of information about any cataloged entity

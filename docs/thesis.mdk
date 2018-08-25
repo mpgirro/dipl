@@ -237,7 +237,7 @@ CSS Header      :
   .findings > ul {
     -webkit-margin-after: 0;
   }
-  /* TODO do I want the paper style for paragraphs? 
+  /* TODO do I want the paper style for paragraphs?  
   p {
     margin-bottom: 0;
   }
@@ -262,7 +262,8 @@ CSS Header      :
   }
   /*
   */
-  .h1, .h2, .h3, .h4, .h5, .h6 {
+  .h1, .h2, .h3, .h4, .h5, .h6,
+  .title {
     font-family: "Computer Modern Sans" !important;
   }
   dt {
