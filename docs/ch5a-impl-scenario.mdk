@@ -45,7 +45,7 @@ Our search engine is designed to regularly analyze RSS feeds for podcasts. The m
 ### System Components
 
 
-At the core, the basic architecture and the components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy", as well as a more modern interpretation of associated design principles given in [@Cou05] and [@Ped06].  
+At the core, the basic architecture and the components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy", as well as more modern interpretations of associated design principles given in [@Cou05] and [@Ped06].  
 
 The two high-level subsystems we've given above, indexing and retrieval, are internally composed of several smaller components. We specifiy that each of these components should be a concurrent task units of the programming model, i.e.\ an actor or a microservice. The respective units are:  
 

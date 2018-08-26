@@ -453,6 +453,8 @@ Maximilian Irro
 Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, und die anzahl an episoden danach richten
 ~
 
+&pagebreak;
+
 ```{language:xml}
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
@@ -461,7 +463,6 @@ Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, u
     <title>Lorem ipsum</title>
     <link>http://lorem.ispum.fm</link>
     <language>en-us</language>
-    <copyright>cc-by-nc-sa</copyright>
     <description>
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed 
       diam nonumy eirmod tempor invidunt ut labore et dolore magna
