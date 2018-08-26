@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+
 def item(nr)
     return %Q(
         <item>
@@ -22,13 +24,48 @@ def item(nr)
     )
 end
 
-if ARGV[0].nil?
-  puts "Error: no item count provided"
-  puts USAGE
-  exit
+def num_digits(n)
+    Math.log10(n).to_i + 1
 end
 
-item_count = ARGV[0].to_i
+def bail(reason)
+    puts "No #{reason} argument provided"
+    puts USAGE
+    exit
+end
+
+USAGE = "Usage: feed-gen --feed-count F_COUNT --item-count I_COUNT --feeds-dir F_DIR --properties-dir P_DIR"
+
+feed_count = nil
+item_count = nil
+feeds_dir = nil
+properties_dir = nil
+
+OptionParser.new do |opts|
+  opts.banner = USAGE
+
+  opts.on("--feed-count COUNT", "The amound of feeds to generate") do |fc|
+    feed_count = fc.to_i
+  end
+
+  opts.on("--item-count COUNT", "The amount of items to generate per feed") do |ic|
+    item_count = ic.to_i
+  end
+
+  opts.on("--feeds-dir DIR", "The directory where to write the feeds to") do |fd|
+    feeds_dir = fd
+  end
+
+  opts.on("--properties-dir DIR", "The directory where to write the properties JSON fileto") do |pd|
+    properties_dir = pd
+  end
+
+end.parse! # do the parsing. do it now!
+
+bail("feed-count") if feed_count.nil?
+bail("item-count") if item_count.nil?
+bail("feeds-dir") if feeds_dir.nil?
+bail("properties-dir") if properties_dir.nil?
 
 items_xml = Array
     .new(item_count) {|i| i+1 }
@@ -53,6 +90,23 @@ feed_xml = %Q(
 </rss>
 )
 
+property_lines = []
+
+(1..feed_count).each {|f|
+
+    digit_num = f.to_s.rjust(num_digits(feed_count), "0")
+    feed_file = feeds_dir + "/" + "dummy-feed-"+item_count.to_s+"-"+digit_num+".xml"
+
+    File.write(feed_file, feed_xml)
+
+    property_lines << "{\"uri\":\"http://lorem.ipsum.org/#{digit_num}\",\"location\":\"#{feed_file}\",\"numberOfEpisodes\":#{item_count}}"
+}
+
+properties_json = "[" + property_lines.inject("") {|s,i| s += ((s=="") ? "" : ",") + i } + "]"
+properties_file = properties_dir + "/" + "properties-lorem"+feed_count.to_s+".json"
+
 # puts feed_xml
-File.write("dummy-feed-"+item_count.to_s+".xml", feed_xml)
+File.write(properties_file, properties_json)
+
+
 
