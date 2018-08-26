@@ -5,7 +5,7 @@ def item(nr)
         <item>
             <title>Lorem ipsum</title>
             <enclosure url="http://lorem.ispum.fm/file-#{nr}.mp3"
-                       length="17793193#{nr}" type="audio/mpeg"/>
+                       length="#{nr}0000000" type="audio/mpeg"/>
             <guid isPermaLink="false">http://lorem.ispum.fm/li#{nr}</guid>
             <pubDate>Fri, 13 Jul 2018 16:35:13 +0000</pubDate>
             <description>
@@ -43,7 +43,6 @@ feed_xml = %Q(
     <title>Lorem ipsum</title>
     <link>http://lorem.ispum.fm</link>
     <language>en-us</language>
-    <copyright>cc-by-nc-sa</copyright>
     <description>
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
       diam nonumy eirmod tempor invidunt ut labore et dolore magna
@@ -54,4 +53,6 @@ feed_xml = %Q(
 </rss>
 )
 
-puts feed_xml
+# puts feed_xml
+File.write("dummy-feed-"+item_count.to_s+".xml", feed_xml)
+
