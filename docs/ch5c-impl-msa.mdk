@@ -9,7 +9,7 @@ Be of the web, not behind the web.
 -->
 
 
-This section covers the strategies applied by programming with the microservice model. All discussed concepts are with respect to a specific technology stack, and the concurrent system outlined in Section [#sec-scenario]. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
+This section covers the strategies applied by programming with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All discussed concepts are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 ### Service Technology Stack
 
