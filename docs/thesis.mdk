@@ -269,6 +269,9 @@ CSS Header      :
   dt {
     font-family: "Computer Modern Sans" !important;
   }
+  .madoko .footnotes code {
+    font-size: small !important;
+  }
   
 
 <!-- HTML -->
@@ -417,10 +420,11 @@ Maximilian Irro
 
 ~ TexOnly
 [TOC]
-<!--
+
+&pagebreak;
+
 [TOC=figures]
 [TOC=tables]
--->
 
 ~~ TexRaw
 % Switch to arabic numbering and start the enumeration of chapters in the table of content.
@@ -440,8 +444,6 @@ Maximilian Irro
 <!--[INCLUDE=ch7-discussion]-->
 [INCLUDE=ch8-conclusion]
 
-[TOC=figures]
-[TOC=tables]
 
 # Benchmark Feed { @h1="A"; #ch-benchmark-feed }
 

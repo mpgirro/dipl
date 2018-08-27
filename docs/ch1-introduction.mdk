@@ -47,6 +47,8 @@ Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature e
 
 > __RQ__: How do actors and microservices compare against regarding efficiency [unmissverständlicher formulieren]{.red}
 
+> __RQ__: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+
 * What are the interrelations between actor features/primitives and microservice features/primitives
 
 ~ red

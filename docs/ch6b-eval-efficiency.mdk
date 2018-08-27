@@ -27,6 +27,11 @@ A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular
 
 From the described metrics, we chose to use latency and throughput as benchmark metrics. Since Akka does not serialize data [REF]{.red} if actors are on the same JVM, we refrain from gathering the transfered bytes as an additional metric. 
 
+...
+
+* Def. Throughput: "requests are executed successfully (accepted, processed and responded properly)."
+
+* The CPU load value is the percentage of CPU used in the range 0-1, normalized to a single CPU. We run the simulations on a multicore machine. 
 
 ### STEHT HIER NOCH WAS BRAUCHBARES?!
 
@@ -117,6 +122,10 @@ Setup:
 
 In this benchmark, we will merely explore effects related to vertical scalability (efficient resource utilization of a host machine), load scalability, and structural scalability [MUSS ICH DANN AUCH WIRKLICH AUSTESTEN -> MEHR MS!]{.red}. Horizontal scalability is beyond our capabilities due to the limitation of hardware resources available to us. As we've pointed out, the actor and microservice programming models are also capable of mobility and elasticity in principle. However, we will not explore these two forms of scalability, since the Echo implementations are not capable of them.
 
+...
+
+All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. 
+
 
 ...
 
@@ -130,14 +139,15 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 
 ### Benchmark Results
 
-#### Simulation Experiment 1: Indexing Subsystem
+#### Experiment 1: Indexing Subsystem
 
 ...
 
-#### Simulation Experiment 2: Retrieval Subsystem
+#### Experiment 2: Retrieval Subsystem
 
 ...
 
+#### Experiment 3: Thread Utilization Efficiency
 
 
 #### Observations
