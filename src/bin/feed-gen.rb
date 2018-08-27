@@ -95,7 +95,7 @@ property_lines = []
 (1..feed_count).each {|f|
 
     digit_num = f.to_s.rjust(num_digits(feed_count), "0")
-    feed_file = feeds_dir + "/" + "dummy-feed-"+item_count.to_s+"-"+digit_num+".xml"
+    feed_file = feeds_dir + "/" + "dummy-feed-i"+item_count.to_s+"-f"+digit_num+".xml"
 
     File.write(feed_file, feed_xml)
 
@@ -103,7 +103,7 @@ property_lines = []
 }
 
 properties_json = "[" + property_lines.inject("") {|s,i| s += ((s=="") ? "" : ",") + i } + "]"
-properties_file = properties_dir + "/" + "properties-lorem"+feed_count.to_s+".json"
+properties_file = properties_dir + "/" + "properties-lorem-i"+item_count.to_s+"-f"+feed_count.to_s+".json"
 
 # puts feed_xml
 File.write(properties_file, properties_json)
