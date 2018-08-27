@@ -35,11 +35,11 @@ public class RoundTripTimeMonitor {
         this.architectureType = architectureType;
     }
 
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         return finished;
     }
 
-    public void initWithProperties(ImmutableList<FeedProperty> properties) {
+    public synchronized void initWithProperties(ImmutableList<FeedProperty> properties) {
         this.reset();
         workflow = Workflow.PODCAST_INDEX;
         totalItems = properties.size();
@@ -50,7 +50,7 @@ public class RoundTripTimeMonitor {
         }
     }
 
-    public void initWithQueries(ImmutableList<String> queries) {
+    public synchronized void initWithQueries(ImmutableList<String> queries) {
         this.reset();
         workflow = Workflow.RESULT_RETRIEVAL;
         totalItems = queries.size();
@@ -61,7 +61,7 @@ public class RoundTripTimeMonitor {
         }
     }
 
-    public void addRoundTripTime(RoundTripTime rtt) {
+    public synchronized void addRoundTripTime(RoundTripTime rtt) {
 
         if (rtt.getWorkflow() == null) {
             log.warn("Unable to process RTT -- workflow is NULL : {}", rtt);
@@ -105,7 +105,7 @@ public class RoundTripTimeMonitor {
         }
     }
 
-    public void logResults() {
+    public synchronized void logResults() {
 
         ensureFinished();
 
@@ -118,7 +118,7 @@ public class RoundTripTimeMonitor {
         printSumEvals();
     }
 
-    public String getProgressCSV() {
+    public synchronized String getProgressCSV() {
 
         ensureFinished();
 
@@ -131,7 +131,7 @@ public class RoundTripTimeMonitor {
         return builder.toString();
     }
 
-    public String getOverallCSV() {
+    public synchronized String getOverallCSV() {
 
         ensureFinished();
 
@@ -148,7 +148,7 @@ public class RoundTripTimeMonitor {
             "\n";
     }
 
-    public List<RoundTripTime> getAllRTTs() {
+    public synchronized List<RoundTripTime> getAllRTTs() {
         final ImmutableList.Builder<RoundTripTime> builder = ImmutableList.builder();
         for (RoundTripTimeProgress p : progressMap.values()) {
             builder.addAll(p.getAllRTTs());
@@ -156,7 +156,7 @@ public class RoundTripTimeMonitor {
         return builder.build();
     }
 
-    private void calculateMetrics() {
+    private synchronized void calculateMetrics() {
 
         ensureFinished();
 
@@ -183,19 +183,19 @@ public class RoundTripTimeMonitor {
         this.meanRttPerItem = ((double) sumMeanRttPerItem) / nrOfElements;
     }
 
-    public long getOverallRuntime() {
+    public synchronized long getOverallRuntime() {
         return this.overallRuntime;
     }
 
-    public double getMeanRttPerFeed() {
+    public synchronized double getMeanRttPerFeed() {
         return this.meanRttPerFeed;
     }
 
-    public double getMeanRttPerItem() {
+    public synchronized double getMeanRttPerItem() {
         return this.meanRttPerItem;
     }
 
-    public Workflow getWorkflow() {
+    public synchronized Workflow getWorkflow() {
         return workflow;
     }
 
@@ -203,7 +203,7 @@ public class RoundTripTimeMonitor {
         log.info("[RTT] {} : {}ms", name, String.format("%1$7s", metric));
     }
 
-    public void printSumEvals() {
+    public synchronized void printSumEvals() {
 
         ensureFinished();
 
@@ -212,26 +212,26 @@ public class RoundTripTimeMonitor {
         printMetric("Overall RT w.r.t Input Size", overallRuntime + "ms");
     }
 
-    private void printMetric(String name, String value) {
+    private synchronized void printMetric(String name, String value) {
         log.info("[RTT] {} : {}", name, value);
     }
 
-    private String formatLong(long value) {
+    private synchronized String formatLong(long value) {
         return String.format("%1$6s", value);
     }
 
-    private String formatDouble(double value) {
+    private synchronized String formatDouble(double value) {
         return String.format("%1$8s", String.format("%7.1f", value));
     }
 
-    private void reset() {
+    private synchronized void reset() {
         finished = false;
         progressMap.clear();
         finishedItems = 0;
         workflow = null;
     }
 
-    private void ensureFinished() {
+    private synchronized void ensureFinished() {
         if (!isFinished()) {
             throw new RuntimeException("Invalid access of result value; RTT monitoring is not yet finished");
         }

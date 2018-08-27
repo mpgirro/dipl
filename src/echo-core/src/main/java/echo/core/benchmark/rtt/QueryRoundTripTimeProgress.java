@@ -20,12 +20,12 @@ public class QueryRoundTripTimeProgress extends RoundTripTimeProgress {
     }
 
     @Override
-    public boolean finished() {
+    public synchronized boolean finished() {
         return (resultsRTT!=null);
     }
 
     @Override
-    public void calculateEvaluation() {
+    public synchronized void calculateEvaluation() {
         firstTimestamp = resultsRTT.getRtts().get(0);
         lastTimestamp = resultsRTT.getRtts().get(resultsRTT.getRtts().size()-1);
 
@@ -34,11 +34,11 @@ public class QueryRoundTripTimeProgress extends RoundTripTimeProgress {
     }
 
     @Override
-    public List<RoundTripTime> getAllRTTs() {
+    public synchronized List<RoundTripTime> getAllRTTs() {
         return ImmutableList.of(resultsRTT);
     }
 
-    public void setResultsRTT(RoundTripTime resultsRTT) {
+    public synchronized void setResultsRTT(RoundTripTime resultsRTT) {
         this.resultsRTT = resultsRTT;
     }
 }

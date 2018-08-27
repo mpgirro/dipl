@@ -39,10 +39,10 @@ public class BenchmarkMonitor {
         ensureFinished();
 
         final StringBuilder builder = new StringBuilder();
-        builder.append("architecture;mps;cpu;msm\n");
+        builder.append("src;mps;cpu;mem\n");
         for (BenchmarkMeterReport r : reports) {
             builder
-                .append(architectureType)
+                .append(r.getName())
                 .append(";")
                 .append(r.getMps().getMps())
                 .append(";")
