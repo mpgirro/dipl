@@ -2,12 +2,12 @@
 server:
     port: ${ECHO_UPDATER_PORT:3037}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 echo:
     updater:
-        core-pool-size: 2
-        max-pool-size: 50
+        core-pool-size: 16
+        max-pool-size: 16
         queue-capacity: 10000
     rabbit:
         updater-queue: echo.updater.queue

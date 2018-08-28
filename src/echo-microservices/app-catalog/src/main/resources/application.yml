@@ -2,7 +2,7 @@
 server:
     port: ${ECHO_CATALOG_PORT:3031}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 spring:
     application:
@@ -50,8 +50,8 @@ echo:
     catalog:
         default-page: 1
         default-size: 20
-        core-pool-size: 2
-        max-pool-size: 50
+        core-pool-size: 16
+        max-pool-size: 16
         queue-capacity: 10000
     rabbit:
         catalog-queue: echo.catalog.queue

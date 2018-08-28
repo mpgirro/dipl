@@ -2,14 +2,14 @@
 server:
     port: ${ECHO_CRAWLER_PORT:3033}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 echo:
     crawler:
-        core-pool-size: 2
         download-timeout: 10
         download-maxbytes: 5242880
-        max-pool-size: 50
+        core-pool-size: 16
+        max-pool-size: 16
         queue-capacity: 10000
     rabbit:
         crawler-queue: echo.crawler.queue

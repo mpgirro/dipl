@@ -56,7 +56,7 @@ public class CatalogQueueReceiver {
             exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
             key      = "${echo.amqp.catalog-routingkey}")
     )
-    public void recievedMessage(CatalogJob catalogJob) {
+    public void receive(CatalogJob catalogJob) {
         log.debug("Recieved Message : {}", catalogJob);
         mpsMeter.tick();
         if (catalogJob instanceof UpdatePodcastCatalogJob) {

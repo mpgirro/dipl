@@ -10,6 +10,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,11 +24,21 @@ import org.springframework.core.env.Environment;
 @Import(JacksonConfig.class)
 public class RabbitConfig {
 
+    private final int corePoolSize;
+    private final int maxPoolSize;
+
     @Autowired
     private Environment env;
 
     @Autowired
     private JacksonConfig jacksonConfig;
+
+    @Autowired
+    public RabbitConfig(@Value("${echo.catalog.core-pool-size:16}") Integer corePoolSize,
+                        @Value("${echo.catalog.max-pool-size:16}") Integer maxPoolSize) {
+        this.corePoolSize = corePoolSize;
+        this.maxPoolSize = maxPoolSize;
+    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -44,8 +55,8 @@ public class RabbitConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
-        factory.setConcurrentConsumers(5);
-        factory.setMaxConcurrentConsumers(10);
+        factory.setConcurrentConsumers(corePoolSize);
+        factory.setMaxConcurrentConsumers(maxPoolSize);
         factory.setMessageConverter(jsonMessageConverter());
         return factory;
     }

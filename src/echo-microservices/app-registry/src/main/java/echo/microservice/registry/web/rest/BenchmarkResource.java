@@ -55,7 +55,7 @@ public class BenchmarkResource {
         method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> rttReport(@RequestBody RoundTripTime rtt) throws URISyntaxException {
-        log.info("REST request to add RTT report : {}", rtt);
+        log.debug("REST request to add RTT report : {}", rtt);
         rttMonitor.addRoundTripTime(rtt);
         if (rttMonitor.isFinished()) {
             sendStopMessagePerSecondMonitoringMessages();
@@ -139,7 +139,8 @@ public class BenchmarkResource {
         method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> benchmarkReport(@RequestBody BenchmarkMeterReport report) throws URISyntaxException {
-        log.info("REST request to report benchmark results : {}", report);
+        log.info("REST request to report benchmark results for : {}", report.getName());
+        log.debug("{}", report);
 
         /* for Microservices, the MPS reports are equal to overall reports, so no special handling I guess?
         mpsMonitor.addMetric(report.getName(), report.getMps().getMps());

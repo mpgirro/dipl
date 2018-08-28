@@ -6,7 +6,7 @@ spring:
 server:
     port: ${ECHO_SEARCHER_PORT:3035}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 management:
     security:
@@ -16,8 +16,8 @@ echo:
     searcher:
         default-page: 1
         default-size: 20
-        core-pool-size: 2
-        max-pool-size: 50
+        core-pool-size: 16
+        max-pool-size: 16
         queue-capacity: 10000
     benchmark:
         meter-interval: 200

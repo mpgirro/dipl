@@ -37,13 +37,13 @@ public class IndexQueueReceiver {
     private MessagesPerSecondMeter mpsMeter;
 
     @RabbitListener(
-        //containerFactory = "rabbitListenerContainerFactory",
+        containerFactory = "rabbitListenerContainerFactory",
         bindings = @QueueBinding(
             value    = @Queue(value = "${echo.rabbit.index-queue}", durable = "true"),
             exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
             key      = "${echo.amqp.index-routingkey}")
     )
-    public void recievedMessage(IndexJob indexJob) {
+    public void receive(IndexJob indexJob) {
         mpsMeter.tick();
         if (indexJob instanceof AddOrUpdateDocIndexJob) {
             final AddOrUpdateDocIndexJob job = (AddOrUpdateDocIndexJob) indexJob;

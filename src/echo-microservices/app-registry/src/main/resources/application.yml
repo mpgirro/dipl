@@ -6,7 +6,7 @@ spring:
 server:
     port: ${ECHO_REGISTRY_PORT:3036}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 management:
     security:

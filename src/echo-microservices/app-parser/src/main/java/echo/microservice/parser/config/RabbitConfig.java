@@ -24,7 +24,8 @@ import org.springframework.core.env.Environment;
 @Import(JacksonConfig.class)
 public class RabbitConfig {
 
-    private final int concurrentConsumers;
+    private final int corePoolSize;
+    private final int maxPoolSize;
 
     @Autowired
     private Environment env;
@@ -33,8 +34,10 @@ public class RabbitConfig {
     private JacksonConfig jacksonConfig;
 
     @Autowired
-    public RabbitConfig(@Value("${server.undertow.worker-threads:10}") Integer concurrentConsumers) {
-        this.concurrentConsumers = concurrentConsumers;
+    public RabbitConfig(@Value("${echo.catalog.core-pool-size:16}") Integer corePoolSize,
+                        @Value("${echo.catalog.max-pool-size:16}") Integer maxPoolSize) {
+        this.corePoolSize = corePoolSize;
+        this.maxPoolSize = maxPoolSize;
     }
 
     @Bean
@@ -52,8 +55,8 @@ public class RabbitConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
-        factory.setConcurrentConsumers(concurrentConsumers);
-        factory.setMaxConcurrentConsumers(concurrentConsumers);
+        factory.setConcurrentConsumers(corePoolSize);
+        factory.setMaxConcurrentConsumers(maxPoolSize);
         factory.setMessageConverter(jsonMessageConverter());
         return factory;
     }

@@ -37,7 +37,7 @@ public class CrawlerQueueReceiver {
             exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
             key      = "${echo.amqp.crawler-routingkey}")
     )
-    public void recievedMessage(CrawlerJob crawlerJob) {
+    public void receive(CrawlerJob crawlerJob) {
         mpsMeter.tick();
         if (crawlerJob instanceof NewFeedCrawlerJob) {
             final NewFeedCrawlerJob job = (NewFeedCrawlerJob) crawlerJob;

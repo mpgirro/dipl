@@ -7,6 +7,7 @@ import echo.core.benchmark.memory.MemoryUsageMeter;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.microservice.index.web.client.BenchmarkClient;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,12 @@ public class BenchmarkService {
 
     @Async
     public void sendRttReport(RoundTripTime rtt) {
-        benchmarkClient.sendRttReport(rtt);
+        try {
+            benchmarkClient.sendRttReport(rtt);
+        } catch (FeignException e) {
+            log.error("Error sending RTT : {} ; Reason: {}", rtt, e);
+        }
+
     }
 
 }

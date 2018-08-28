@@ -11,7 +11,7 @@ spring:
 server:
     port: ${ECHO_INDEX_PORT:3032}
     undertow:
-        worker-threads: 32
+        worker-threads: 16
 
 management:
     security:
@@ -20,8 +20,8 @@ management:
 echo:
     index:
         lucene-path: /Users/max/volumes/echo/index
-        core-pool-size: 2
-        max-pool-size: 50
+        core-pool-size: 16
+        max-pool-size: 16
         queue-capacity: 10000
 
     rabbit:

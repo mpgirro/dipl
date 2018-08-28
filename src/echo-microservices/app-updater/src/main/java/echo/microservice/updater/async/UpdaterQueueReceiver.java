@@ -38,10 +38,9 @@ public class UpdaterQueueReceiver {
             exchange = @Exchange(value = "${echo.amqp.exchange}", durable = "true"),
             key      = "${echo.amqp.updater-routingkey}")
     )
-    public void recievedMessage(UpdaterJob updaterJob) {
+    public void receive(UpdaterJob updaterJob) {
         log.debug("Received Message : {}", updaterJob);
         mpsMeter.tick();
-        //updaterService.processJob(job);
         if (updaterJob instanceof ProcessNewFeedJob) {
             final ProcessNewFeedJob job = (ProcessNewFeedJob) updaterJob;
             log.info("Recieved ProcessNewFeedJob for EXO : {}", job.getExo());
