@@ -75,16 +75,18 @@ class IndexBroker extends Actor with ActorLogging {
             benchmarkMonitor = ref
             broadcastRouter.route(msg, sender())
 
-        case msg @ StartMessagePerSecondMonitoring =>
+        case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
-            broadcastRouter.route(msg, sender())
+            broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
+            //roundRobinRouter.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
-        case msg @ StopMessagePerSecondMonitoring =>
+        case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
-            broadcastRouter.route(msg, sender())
+            broadcastRouter.route(StopMessagePerSecondMonitoring, sender())
+            //roundRobinRouter.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
 
         case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
             log.info("successfully subscribed to : {}", eventStreamName)

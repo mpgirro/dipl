@@ -6,6 +6,7 @@ import akka.util.Timeout
 import echo.actor.ActorProtocol.SearchResults
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
+import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -23,14 +24,15 @@ object IndexStoreReponseHandler {
 
     case object IndexRetrievalTimeout
 
-    def props(indexStore: ActorRef, originalSender: Option[ActorRef], internalTimeout: FiniteDuration): Props = {
-        Props(new IndexStoreReponseHandler(indexStore, originalSender.get, internalTimeout))
+    def props(indexStore: ActorRef, originalSender: Option[ActorRef], fallbackRtt: RoundTripTime, internalTimeout: FiniteDuration): Props = {
+        Props(new IndexStoreReponseHandler(indexStore, originalSender.get, fallbackRtt, internalTimeout))
             .withDispatcher("echo.searcher.dispatcher")
     }
 }
 
 class IndexStoreReponseHandler(indexStore: ActorRef,
                                originalSender: ActorRef,
+                               fallbackRtt: RoundTripTime,
                                internalTimeout: FiniteDuration) extends Actor with ActorLogging {
 
     log.debug("{} running on dispatcher {}", self.path.name, context.props.dispatcher)
@@ -58,7 +60,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
                 })
                 .map(r => r.toImmutable)
 
-            sendResponseAndShutdown(SearchResults(resultWrapper, rtt.bumpRTTs()))
+            sendResponseAndShutdown(SearchResults(resultWrapper, rtt))
 
         case NoIndexResultsFound(query: String, rtt) =>
             log.info("Received NO results from index for query '{}'", query)
@@ -67,7 +69,7 @@ class IndexStoreReponseHandler(indexStore: ActorRef,
 
         case IndexRetrievalTimeout =>
             log.warning("IndexRetrievalTimeout triggered")
-            sendResponseAndShutdown(IndexRetrievalTimeout)
+            sendResponseAndShutdown(SearchResults(ResultWrapperDTO.empty(), fallbackRtt.bumpRTTs()))
 
         case _ =>
             log.debug("Stopping because received an unknown message : {}", self.path.name)

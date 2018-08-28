@@ -12,7 +12,7 @@ import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexQuery, IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.mps.MessagesPerSecondMeter
-import echo.core.benchmark.rtt.RoundTripTime
+import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist
@@ -93,7 +93,7 @@ class FutureSearcherWorker extends Actor with ActorLogging {
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
 
-        case SearchRequest(query, page, size, rtt) =>
+        case SearchRequest(query, page, size, originalRtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)
             mpsMeter.tick()
 
@@ -122,12 +122,12 @@ class FutureSearcherWorker extends Actor with ActorLogging {
 
             val originalSender = sender // this is important to not expose the handler
 
-            val call = indexStore.ask(SearchIndex(query, p, s, rtt.bumpRTTs()))(INTERNAL_TIMEOUT)
+            val call = indexStore.ask(SearchIndex(query, p, s, originalRtt.bumpRTTs()))(INTERNAL_TIMEOUT)
 
             breaker.withCircuitBreaker(call).onComplete {
                 case Success(res) =>
                     res match {
-                        case IndexResultsFound(q2, resultWrapper: ResultWrapperDTO, rtt2) =>
+                        case IndexResultsFound(q2, resultWrapper: ResultWrapperDTO, returnRtt) =>
                             log.info("Received {} results from index for query '{}'", resultWrapper.getTotalHits, q2)
 
                             resultWrapper.getResults
@@ -145,15 +145,15 @@ class FutureSearcherWorker extends Actor with ActorLogging {
                                 })
                                 .map(r => r.toImmutable)
 
-                            originalSender ! SearchResults(resultWrapper, rtt2.bumpRTTs())
+                            originalSender ! SearchResults(resultWrapper, returnRtt.bumpRTTs())
 
-                        case NoIndexResultsFound(q2, rtt2) =>
+                        case NoIndexResultsFound(q2, returnRtt) =>
                             log.info("Received NO results from index for query '{}'", q2)
-                            originalSender ! SearchResults(ResultWrapperDTO.empty(), rtt2.bumpRTTs())
+                            originalSender ! SearchResults(ResultWrapperDTO.empty(), returnRtt.bumpRTTs())
 
                         case IndexRetrievalTimeout  =>
                             log.error("Timeout during search in SearchService")
-                            originalSender ! IndexRetrievalTimeout
+                            originalSender ! NoIndexResultsFound(query, originalRtt.bumpRTTs())
                         case unknown =>
                             log.error("Received unhandled message on search request of class : {}", unknown.getClass)
                         // 500 generic server side error
@@ -162,13 +162,13 @@ class FutureSearcherWorker extends Actor with ActorLogging {
                 //Circuit breaker opened handling
                 case Failure(ex: CircuitBreakerOpenException) =>
                     log.error("CircuitBreakerOpenException calling Searcher -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
-                    originalSender ! NoIndexResultsFound(query, rtt.bumpRTTs())
+                    originalSender ! NoIndexResultsFound(query, originalRtt.bumpRTTs())
 
                 //General exception handling
                 case Failure(ex) =>
                     log.error("Exception while calling Searcher with query : {}", query)
                     ex.printStackTrace()
-                    originalSender ! NoIndexResultsFound(query, rtt.bumpRTTs())
+                    originalSender ! NoIndexResultsFound(query, originalRtt.bumpRTTs())
             }
     }
 

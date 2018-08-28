@@ -74,23 +74,19 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")
-            //val beforeRefresh = System.currentTimeMillis
-            indexSearcher.refresh()
-            //val afterRefresh = System.currentTimeMillis
-            //log.info("[BENCH] Refresh took : {}ms", afterRefresh-beforeRefresh)
+            blocking {
+                indexSearcher.refresh()
+            }
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
+            mpsMeter.tick()
 
             currQuery = query // make a copy in case of an exception
-            //val beforeSearch = System.currentTimeMillis
             var results: ResultWrapperDTO = null
             blocking {
                 results = indexSearcher.search(query, page, size)
             }
-
-            //val afterSearch = System.currentTimeMillis
-            //log.info("[BENCH] Search took : {}ms", afterSearch-beforeSearch)
 
             if(results.getTotalHits > 0){
                 sender ! IndexResultsFound(query,results, rtt.bumpRTTs())
@@ -99,9 +95,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
                 sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
             }
 
-            mpsMeter.tick()
             currQuery = "" // wipe the copy
-
     }
 
 }

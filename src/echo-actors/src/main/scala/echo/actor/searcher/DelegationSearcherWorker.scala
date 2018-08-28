@@ -95,9 +95,11 @@ class DelegationSearcherWorker extends Actor with ActorLogging {
             val originalSender = Some(sender) // this is important to not expose the handler
 
             responseHandlerCounter += 1
-            val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
 
-            val indexQuery = SearchIndex(query, p, s, rtt.bumpRTTs())
+            val rtt2 = rtt.bumpRTTs()
+            val responseHandler = context.actorOf(IndexStoreReponseHandler.props(indexStore, originalSender, rtt2, INTERNAL_TIMEOUT), s"handler-${responseHandlerCounter}")
+
+            val indexQuery = SearchIndex(query, p, s, rtt2)
             indexStore.tell(indexQuery, responseHandler)
             //sendIndexQuery(indexQuery, responseHandler) // TODO this is distributed message routing, which I benchmarked very slow
 

@@ -64,7 +64,7 @@ class NodeMaster extends Actor with ActorLogging {
 
     private val benchmarkUtil = new BenchmarkUtil("../benchmark/")
 
-    var mpsReportCount = 0 // debug
+    private var mpsReportCount = 0 // debug
 
     override def preStart(): Unit = {
 
@@ -133,8 +133,8 @@ class NodeMaster extends Actor with ActorLogging {
             sendStopMessagePerSecondMonitoringMessages()
 
         case MessagePerSecondReport(report) =>
-            log.debug("Received MessagePerSecondReport({},{})", report.name, report.mps)
-            mpsMonitor.addMetric(report.name, report.mps)
+            log.debug("Received MessagePerSecondReport({},{})", report.getName, report.getMps)
+            mpsMonitor.addMetric(report.getName, report.getMps)
             mpsReportCount += 1
             log.info("{}. MPS report : {}", mpsReportCount, report.toString)
             if (mpsMonitor.isFinished) {
@@ -207,8 +207,8 @@ class NodeMaster extends Actor with ActorLogging {
             memoryUsageMeter.stopMeasurement()
             cpuLoadMeter.stopMeasurement()
 
-            log.info("Mean memory usage : {}", memoryUsageMeter.getResult.meanBytesStr)
-            log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.meanLoadStr)
+            log.info("Mean memory usage : {}", memoryUsageMeter.getResult.getMeanBytesStr)
+            log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.getMeanLoadStr)
             //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
             //log.info("CPU load datapoints : {}", cpuLoadMeter.getDataPoints)
 

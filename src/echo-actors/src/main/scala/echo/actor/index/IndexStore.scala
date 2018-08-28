@@ -103,12 +103,12 @@ class IndexStore (indexPath: String,
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
-        case msg @ StartMessagePerSecondMonitoring =>
+        case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
-            router.routees.foreach(r => r.send(msg, sender()))
+            router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
-        case msg @ StopMessagePerSecondMonitoring =>
+        case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             if (mpsMeter.isMeasuring) {
                 mpsMeter.stopMeasurement()
@@ -117,14 +117,12 @@ class IndexStore (indexPath: String,
             }
 
         case CommitIndex =>
-            mpsMeter.tick()
             commitIndexIfChanged()
 
             //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
 
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
-
             mpsMeter.tick()
 
             // TODO add now to rtts and send to CLI
@@ -152,11 +150,9 @@ class IndexStore (indexPath: String,
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
-
             mpsMeter.tick()
 
-            val origSender = sender()
-            router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), origSender)
+            router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), sender())
 
             /*
             val origSender = sender()
@@ -194,6 +190,7 @@ class IndexStore (indexPath: String,
 
             currQuery = "" // wipe the copy
             */
+
     }
 
     private def commitIndexIfChanged(): Unit = {
