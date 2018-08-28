@@ -1,8 +1,0 @@
-src;mps;task_id
-ECHO_MSA;  0.000;echo-crawler
-ECHO_MSA;  0.000;echo-parser
-ECHO_MSA;  3.774;echo-gateway
-ECHO_MSA;  0.000;echo-updater
-ECHO_MSA;  3.782;echo-index
-ECHO_MSA;  3.756;echo-searcher
-ECHO_MSA;  0.000;echo-catalog
