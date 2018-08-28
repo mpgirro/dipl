@@ -141,6 +141,28 @@ All measurements we report are for cold starts of each system. We restart all in
 
 #### Experiment 1: Indexing Subsystem
 
+~ Figure { #fig-eval-index-overall; caption: "Overall processing time of indexing subsystem with respect to amount of feeds"; width:100%; }
+![img-eval-index-overall]
+~
+
+[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+
+...
+
+~ Figure { #fig-eval-index-rtt-overall; caption: "Round trip time of messages in the indexing phase"; width:100%; }
+![img-eval-index-rtt-overall]
+~
+
+[img-eval-index-rtt-overall]: graphics/eval-index-rtt-overall.[pdf,png] "Image about eval-index-rtt-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+
+...
+
+~ Figure { #fig-eval-index-rtt-meanMsgL; caption: "Mean message latency of messages in the indexing phase"; width:100%; }
+![img-eval-index-rtt-meanMsgL]
+~
+
+[img-eval-index-rtt-meanMsgL]: graphics/eval-index-rtt-meanMsgL.[pdf,png] "Image about eval-index-rtt-meanMsgL" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+
 ...
 
 #### Experiment 2: Retrieval Subsystem
