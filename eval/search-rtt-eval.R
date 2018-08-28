@@ -11,12 +11,16 @@ msa_search10000_rtt_progress$origin <- rep("MSA",nrow(msa_search10000_rtt_progre
 
 # draw boxplot comparing the mean latency per message, that is the timespan between sending and receiving
 meanMsgL_search.data <- rbind( akka_search10000_rtt_progress[,c("meanMsgL","origin")], msa_search10000_rtt_progress[,c("meanMsgL","origin")]); 
+pdf("eval-search-rtt-meanMsgL.pdf");
 boxplot(meanMsgL ~ origin, data=meanMsgL_search.data, outline=FALSE);  
+dev.off();
 
 # draw boxplot comparing the overall runtime, that is from the point the message was received until the answer was returned
 overallRT_search.data <- rbind( akka_search10000_rtt_progress[,c("overallRT","origin")], msa_search10000_rtt_progress[,c("overallRT","origin")]); 
+pdf("eval-search-rtt-overall.pdf");
 boxplot(overallRT ~ origin, 
 	data=overallRT_search.data, 
 	outline=FALSE,
 	main = "Overall Round Trip Time for Search",
 	ylab = "Round Trip Time [ms]");  
+dev.off();
