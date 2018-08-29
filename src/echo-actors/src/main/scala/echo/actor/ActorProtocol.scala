@@ -54,6 +54,7 @@ object ActorProtocol {
     case class ActorRefGatewayActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefUpdaterActor(ref: ActorRef) extends ActorRefInfo
     case class ActorRefBenchmarkMonitor(ref: ActorRef) extends ActorRefInfo
+    case class ActorRefSupervisor(ref: ActorRef) extends ActorRefInfo
 
     // Benchmark
     case class IndexSubSystemRoundTripTimeReport(rtt: RoundTripTime)
@@ -63,6 +64,7 @@ object ActorProtocol {
     case class StartMessagePerSecondMonitoring()
     case class StopMessagePerSecondMonitoring()
     case class MessagePerSecondReport(report: MessagesPerSecondResult)
+    case class ChildMpsReport(report: MessagesPerSecondResult)
 
     // These are maintenance methods, I use during development
     case class DebugPrintAllPodcasts()    // User/CLI -> CatalogStore

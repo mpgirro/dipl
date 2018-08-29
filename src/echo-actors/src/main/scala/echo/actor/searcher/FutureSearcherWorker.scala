@@ -53,6 +53,7 @@ class FutureSearcherWorker extends Actor with ActorLogging {
 
     private var indexStore: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
@@ -84,6 +85,10 @@ class FutureSearcherWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -92,6 +97,7 @@ class FutureSearcherWorker extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            supervisor ! ChildMpsReport(mpsMeter.getResult)
 
         case SearchRequest(query, page, size, originalRtt) =>
             log.debug("Received SearchRequest('{}',{},{})", query, page, size)

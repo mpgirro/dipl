@@ -5,9 +5,11 @@ import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, PoisonPill,
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
 import echo.core.exception.FeedParsingException
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
 /**
@@ -33,6 +35,7 @@ class Parser extends Actor with ActorLogging {
     private var benchmarkMonitor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, WORKER_COUNT)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -72,6 +75,7 @@ class Parser extends Actor with ActorLogging {
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(msg, sender()))
 
@@ -79,8 +83,17 @@ class Parser extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             if (mpsMeter.isMeasuring) {
                 mpsMeter.stopMeasurement()
-                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+                //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
                 router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+            }
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
             }
 
         case PoisonPill =>
@@ -100,6 +113,7 @@ class Parser extends Actor with ActorLogging {
         // forward the actor refs to the worker, but only if those references haven't died
         Option(catalogStore).foreach(d => worker ! ActorRefCatalogStoreActor(d))
         Option(crawler).foreach(c => worker ! ActorRefCrawlerActor(c))
+        worker ! ActorRefSupervisor(self)
 
         worker
     }

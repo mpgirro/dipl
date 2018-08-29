@@ -1,7 +1,7 @@
 package echo.actor.index
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
+import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
 import echo.core.benchmark.mps.MessagesPerSecondMeter
@@ -35,6 +35,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
     private var currQuery: String = ""
 
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
@@ -63,6 +64,10 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -71,6 +76,7 @@ class IndexStoreSearchHandler(indexSearcher: IndexSearcher) extends Actor with A
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            supervisor ! ChildMpsReport(mpsMeter.getResult)
 
         case RefreshIndexSearcher =>
             log.debug("Received RefreshIndexSearcher(_)")

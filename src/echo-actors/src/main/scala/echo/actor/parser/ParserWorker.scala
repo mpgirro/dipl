@@ -54,6 +54,7 @@ class ParserWorker extends Actor with ActorLogging {
     //private var directoryStore: ActorRef = _
     private var crawler: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
     private val fyydAPI: FyydAPI = new FyydAPI()
@@ -93,6 +94,10 @@ class ParserWorker extends Actor with ActorLogging {
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -101,6 +106,7 @@ class ParserWorker extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            supervisor ! ChildMpsReport(mpsMeter.getResult)
 
         case ParseNewPodcastData(feedUrl: String, podcastExo: String, feedData: String, rtt: RoundTripTime) =>
             log.debug("Received ParseNewPodcastData for feed: " + feedUrl)

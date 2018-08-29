@@ -4,7 +4,10 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -28,6 +31,7 @@ class Searcher extends Actor with ActorLogging {
     private var benchmarkMonitor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, WORKER_COUNT)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -52,14 +56,24 @@ class Searcher extends Actor with ActorLogging {
 
         case msg @ StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(msg, sender()))
 
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             router.routees.foreach(r => r.send(msg, sender()))
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, mpsMonitor.getMeanMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
+            }
 
         case request: SearchRequest =>
             mpsMeter.tick()
@@ -78,6 +92,7 @@ class Searcher extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(indexStore).foreach(d => worker ! ActorRefIndexStoreActor(d))
+        worker ! ActorRefSupervisor(self)
 
         worker
     }

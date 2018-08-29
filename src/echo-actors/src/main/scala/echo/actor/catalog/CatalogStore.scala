@@ -6,11 +6,14 @@ import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import akka.routing.{ActorRefRoutee, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
 import liquibase.database.jvm.JdbcConnection
 import liquibase.database.{Database, DatabaseFactory}
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.{Contexts, LabelExpression, Liquibase}
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -35,8 +38,10 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
     private var crawler: ActorRef = _
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, WORKER_COUNT)
 
     private var router: Router = {
         val routees = Vector.fill(WORKER_COUNT) {
@@ -67,6 +72,10 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
             updater = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case msg @ ActorRefBenchmarkMonitor(ref) =>
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
@@ -74,14 +83,25 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
-            router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
+            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
+                supervisor ! ChildMpsReport(selfReport)
+            }
 
         case Terminated(corpse) =>
             /* TODO at some point we want to simply restart replace the worker
@@ -121,6 +141,7 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => catalogStore ! ActorRefCrawlerActor(c) )
+        catalogStore ! ActorRefSupervisor(self)
 
         catalogStore
     }

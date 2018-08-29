@@ -58,7 +58,7 @@ class NodeMaster extends Actor with ActorLogging {
     private var cli: ActorRef = _
 
     private val rttMonitor = new RoundTripTimeMonitor(ArchitectureType.ECHO_AKKA)
-    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 64) // 'cause we have X actors in place that will report their MPS
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, 81) // 'cause we have X actors in place that will report their MPS
     private val memoryUsageMeter = new MemoryUsageMeter(self.path.toStringWithoutAddress, 200)
     private val cpuLoadMeter = new CpuLoadMeter(self.path.toStringWithoutAddress, 200)
 
@@ -136,7 +136,7 @@ class NodeMaster extends Actor with ActorLogging {
             log.debug("Received MessagePerSecondReport({},{})", report.getName, report.getMps)
             mpsMonitor.addMetric(report.getName, report.getMps)
             mpsReportCount += 1
-            log.info("{}. MPS report : {}", mpsReportCount, report.toString)
+            //log.info("{}. MPS report : {}", mpsReportCount, report.toString)
             if (mpsMonitor.isFinished) {
                 log.info("MPS reporting finished; results in CSV format :")
                 println(mpsMonitor.toCsv)
@@ -207,8 +207,8 @@ class NodeMaster extends Actor with ActorLogging {
             memoryUsageMeter.stopMeasurement()
             cpuLoadMeter.stopMeasurement()
 
-            log.info("Mean memory usage : {}", memoryUsageMeter.getResult.getMeanBytesStr)
-            log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.getMeanLoadStr)
+            log.info("Mean memory usage : {}", memoryUsageMeter.getResult.getMeanBytesAsStringWithUnit)
+            log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.getMeanLoadAsString)
             //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
             //log.info("CPU load datapoints : {}", cpuLoadMeter.getDataPoints)
 

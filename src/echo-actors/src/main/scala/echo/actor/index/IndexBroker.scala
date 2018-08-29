@@ -6,11 +6,13 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Subscribe, SubscribeAck}
 import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLogic, Router}
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{ActorRefBenchmarkMonitor, MessagePerSecondReport, StartMessagePerSecondMonitoring, StopMessagePerSecondMonitoring}
+import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol.{IndexCommand, IndexEvent, IndexQuery}
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
 import echo.core.exception.SearchException
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
 /**
@@ -60,6 +62,7 @@ class IndexBroker extends Actor with ActorLogging {
     private var benchmarkMonitor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, STORE_COUNT)
 
     // TODO is this working when running in a cluster setup?
     override val supervisorStrategy: SupervisorStrategy =
@@ -77,6 +80,7 @@ class IndexBroker extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
             //roundRobinRouter.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
@@ -84,9 +88,18 @@ class IndexBroker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             broadcastRouter.route(StopMessagePerSecondMonitoring, sender())
             //roundRobinRouter.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
+            }
 
         case SubscribeAck(Subscribe(`eventStreamName`, None, `self`)) =>
             log.info("successfully subscribed to : {}", eventStreamName)
@@ -120,6 +133,10 @@ class IndexBroker extends Actor with ActorLogging {
     private def createIndexStore(storeIndex: Int, indexPath: String): ActorRef = {
         val index = context.actorOf(IndexStore.props(indexPath, CREATE_INDEX), IndexStore.name(storeIndex))
         context.watch(index)
+
+        index ! ActorRefSupervisor(self)
+
+        index
     }
 
     private def removeStore(routee: ActorRef): Unit = {

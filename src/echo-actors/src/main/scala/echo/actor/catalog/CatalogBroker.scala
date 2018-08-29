@@ -7,7 +7,10 @@ import akka.routing.{ActorRefRoutee, BroadcastRoutingLogic, RoundRobinRoutingLog
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogProtocol.{CatalogCommand, CatalogEvent, CatalogQuery}
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro
@@ -35,6 +38,7 @@ class CatalogBroker extends Actor with ActorLogging {
     private var benchmarkMonitor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, STORE_COUNT)
 
     /*
      * We define two separate routings, based on the Command–query separation principle
@@ -78,14 +82,24 @@ class CatalogBroker extends Actor with ActorLogging {
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
-            broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
+            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            broadcastRouter.route(StopMessagePerSecondMonitoring, sender())
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
+            }
 
         case command: CatalogCommand =>
             log.debug("Routing command: {}", command.getClass)
@@ -118,6 +132,7 @@ class CatalogBroker extends Actor with ActorLogging {
 
         // forward the actor refs to the worker, but only if those references haven't died
         Option(crawler).foreach(c => catalogStore ! ActorRefCrawlerActor(c) )
+        catalogStore ! ActorRefSupervisor(self)
 
         catalogStore
     }

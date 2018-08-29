@@ -56,6 +56,7 @@ class CrawlerWorker extends Actor with ActorLogging {
 
     private var parser: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
     private val fyydAPI: FyydAPI = new FyydAPI()
@@ -92,12 +93,16 @@ class CrawlerWorker extends Actor with ActorLogging {
     override def receive: Receive = {
 
         case ActorRefParserActor(ref) =>
-            log.debug("Received ActorRefIndexerActor(_)")
+            log.debug("Received ActorRefParserActor(_)")
             parser = ref
 
         case ActorRefBenchmarkMonitor(ref) =>
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
+
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
 
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
@@ -107,6 +112,7 @@ class CrawlerWorker extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            supervisor ! ChildMpsReport(mpsMeter.getResult)
 
         case DownloadWithHeadCheck(exo, url, job, rtt) =>
             log.debug("Received Download({},'{}',{},_)", exo, url, job.getClass.getSimpleName)

@@ -53,6 +53,7 @@ class CatalogStoreHandler(workerIndex: Int,
     private var crawler: ActorRef = _
     private var updater: ActorRef = _
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
 
@@ -102,6 +103,10 @@ class CatalogStoreHandler(workerIndex: Int,
             log.debug("Received ActorRefBenchmarkMonitor(_)")
             benchmarkMonitor = ref
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
             mpsMeter.startMeasurement()
@@ -110,6 +115,7 @@ class CatalogStoreHandler(workerIndex: Int,
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
             benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+            supervisor ! ChildMpsReport(mpsMeter.getResult)
 
         case ProposeNewFeed(feedUrl, rtt) =>
             mpsMeter.tick()

@@ -7,12 +7,14 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.index.IndexProtocol._
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
-import echo.core.benchmark.mps.MessagesPerSecondMeter
+import echo.core.benchmark.ArchitectureType
+import echo.core.benchmark.mps.{MessagesPerSecondMeter, MessagesPerSecondMonitor, MessagesPerSecondResult}
 import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ImmutableIndexDocDTO, IndexDocDTO}
 import echo.core.exception.SearchException
 import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSearcher}
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,10 +60,10 @@ class IndexStore (indexPath: String,
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
     private var benchmarkMonitor: ActorRef = _
+    private var supervisor: ActorRef = _
 
     private val mpsMeter = new MessagesPerSecondMeter(self.path.toStringWithoutAddress)
-
-
+    private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, WORKER_COUNT)
 
     // kickoff the committing play
     //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
@@ -103,8 +105,13 @@ class IndexStore (indexPath: String,
             benchmarkMonitor = ref
             router.routees.foreach(r => r.send(msg, sender()))
 
+        case ActorRefSupervisor(ref) =>
+            log.debug("Received ActorRefSupervisor(_)")
+            supervisor = ref
+
         case StartMessagePerSecondMonitoring =>
             log.debug("Received StartMessagePerSecondMonitoring(_)")
+            mpsMonitor.reset()
             mpsMeter.startMeasurement()
             router.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
@@ -112,8 +119,18 @@ class IndexStore (indexPath: String,
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             if (mpsMeter.isMeasuring) {
                 mpsMeter.stopMeasurement()
-                benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
+                //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
                 router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
+            }
+
+        case ChildMpsReport(childReport) =>
+            log.info("Received ChildMpsReport({})", childReport)
+            mpsMonitor.addMetric(childReport.getName, childReport.getMps)
+            if (mpsMonitor.isFinished) {
+                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+                benchmarkMonitor ! MessagePerSecondReport(selfReport)
+                supervisor ! ChildMpsReport(selfReport)
             }
 
         case CommitIndex =>
@@ -286,6 +303,8 @@ class IndexStore (indexPath: String,
         handlerIndex += 1
         val newIndexSearcher: IndexSearcher = new LuceneSearcher(indexCommitter.asInstanceOf[LuceneCommitter].getIndexWriter)
         val handler = context.actorOf(IndexStoreSearchHandler.props(newIndexSearcher), IndexStoreSearchHandler.name(handlerIndex))
+
+        handler ! ActorRefSupervisor(self)
 
         handler
     }
