@@ -1,9 +1,6 @@
 package echo.microservice.updater.async;
 
-import echo.core.async.updater.ProcessFeedWebsiteJob;
-import echo.core.async.updater.ProcessNewFeedJob;
-import echo.core.async.updater.ProcessUpdateFeedJob;
-import echo.core.async.updater.UpdaterJob;
+import echo.core.async.updater.*;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.microservice.updater.service.UpdaterService;
 import org.slf4j.Logger;
@@ -55,6 +52,11 @@ public class UpdaterQueueReceiver {
             log.info("Recieved ProcessFeedWebsiteJob for EXO : {}", job.getExo());
             // TODO
             throw new UnsupportedOperationException("Not yet implemented");
+        } else if (updaterJob instanceof BenchmarkProposeNewFeedJob) {
+            final BenchmarkProposeNewFeedJob job = (BenchmarkProposeNewFeedJob) updaterJob;
+            log.info("Recieved BenchmarkProposeNewFeedJob for feed : {}", job.getFeed());
+            mpsMeter.tick();
+            updaterService.proposeNewFeed(job.getFeed(), job.getRtt());
         } else {
             throw new RuntimeException("Received unhandled UpdaterJob of type : " + updaterJob.getClass());
         }

@@ -11,6 +11,7 @@ import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.util.UrlUtil
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.io.{Source, StdIn}
 
 object CliApp {
@@ -142,13 +143,26 @@ class CliApp {
             StringBody(serializedRtt, "UTF-8", Some("application/json"))
     }
 
+    private def serialize(job: ProposeNewFeedJob): String = {
+        val serializedTimestamps = s"[${job.getRtt.getRtts.asScala.mkString(", ")}]"
+        val serializedRtt = s"""{\"id\":\"${job.getRtt.getId}\", \"location\":\"${job.getRtt.getLocation}\", \"workflow\":\"${job.getRtt.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
+
+        s"""{\"feed\":\"${job.getFeed}\", \"rtt\":$serializedRtt}"""
+    }
+
     private implicit val proposeNewFeedJobSerializer: BodySerializer[ProposeNewFeedJob] = {
         job: ProposeNewFeedJob =>
-            val serializedTimestamps = s"[${job.getRtt.getRtts.asScala.mkString(", ")}]"
-            val serializedRtt = s"""{\"id\":\"${job.getRtt.getId}\", \"location\":\"${job.getRtt.getLocation}\", \"workflow\":\"${job.getRtt.getWorkflow.getName}\", \"rtts\":$serializedTimestamps}"""
-            val serializedJob = s"""{\"feed\":\"${job.getFeed}\", \"rtt\":$serializedRtt}"""
-            println(serializedJob)
+            val serializedJob = serialize(job)
             StringBody(serializedJob, "UTF-8", Some("application/json"))
+    }
+
+    private implicit val proposeNewFeedJobsSerializer: BodySerializer[List[ProposeNewFeedJob]] = {
+        jobs: List[ProposeNewFeedJob] =>
+            val serializedJobs = jobs
+                .map(j => serialize(j))
+                .mkString(",")
+            val serializedList = s"[$serializedJobs]"
+            StringBody(serializedList, "UTF-8", Some("application/json"))
     }
 
     private def loadTestFeeds(): Unit = {
@@ -168,6 +182,7 @@ class CliApp {
             .send()
         startMessagePerSecondMonitoring()
 
+        val jobs = new mutable.ListBuffer[ProposeNewFeedJob]
         for (fp <- feedProperties.asScala) {
             val location = "file://"+fp.getLocation
             val rtt = ImmutableRoundTripTime.builder()
@@ -177,10 +192,20 @@ class CliApp {
                 .create()
 
             val job = ImmutableProposeNewFeedJob.of(location, rtt)
+
+            /*
             sttp.post(uri"${UPDATER_URL}/updater/propose-new-feed")
                 .body(job)
                 .send()
+            */
+
+            jobs += job
         }
+
+        log.info("Transmitting list of feeds to propose")
+        sttp.post(uri"${UPDATER_URL}/updater/propose-feeds")
+            .body(jobs.toList)
+            .send()
     }
 
     private def benchmarkRetrievalSubsystem(count: Option[String]): Unit = {

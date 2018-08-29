@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -34,6 +36,18 @@ public class UpdaterResource {
         log.debug("REST request to propose new feed: ('{}',_)", job.getFeed());
         mpsMeter.tick();
         updaterService.proposeNewFeed(job.getFeed(), job.getRtt());
+    }
+
+    @RequestMapping(
+        value  = "/propose-feeds",
+        method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void proposeNewFeed(@RequestBody List<ProposeNewFeedJob> jobs) {
+        log.debug("REST request to propose feeds: {}", jobs.stream().map(ProposeNewFeedJob::getFeed).collect(Collectors.joining( "," )));
+        for (ProposeNewFeedJob j : jobs) {
+            mpsMeter.tick();
+            updaterService.proposeNewFeed(j.getFeed(), j.getRtt());
+        }
     }
 
 }
