@@ -19,8 +19,6 @@ public class MessagesPerSecondMonitor {
     private final int nrOfTasks;
     private final Map<String, Double> mpsMap = new HashMap<>();
 
-    private final Comparator<Map.Entry<String,Double>> comparator = Comparator.comparing(Map.Entry::getKey);
-
     public MessagesPerSecondMonitor(ArchitectureType type, int nrOfTasks) {
         this.type = type;
         this.nrOfTasks = nrOfTasks;
@@ -47,11 +45,33 @@ public class MessagesPerSecondMonitor {
         log.info("[MPS] {}mps   {}", metricToString(metric), name);
     }
 
+    public List<Double> getDataPoints() {
+        return Lists.newLinkedList(mpsMap.values());
+    }
+
+    public double getMeanMps() {
+
+        if (!isFinished()) {
+            throw new RuntimeException("Not all tasks have reported metrics yet");
+        }
+
+        if (mpsMap.size() <= 0) {
+            return 0.0;
+        }
+
+        double sum = 0.0;
+        for (Map.Entry<String,Double> e : mpsMap.entrySet()) {
+            sum += e.getValue();
+        }
+
+        return sum / ((double) mpsMap.size());
+
+    }
+
     public String toCsv() {
 
         if (!isFinished()) {
-            log.info("Not all tasks have reported metrics yet");
-            return null;
+            throw new RuntimeException("Not all tasks have reported metrics yet");
         }
 
         final StringBuilder builder = new StringBuilder();

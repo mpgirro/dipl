@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.immutables.value.Value;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,6 @@ public interface MessagesPerSecondResult {
         final double m = (double) messagesCount;
         final double s = (double) secondsCount;
         final double mps = (s > 0) ? (m / s) : 0.0;
-        final String mpsStr = "" + ((double) Math.round(mps * 100) / 100);
 
         final ImmutableList<Long> dataPoints = buckets.keySet()
             .stream()
@@ -57,6 +57,10 @@ public interface MessagesPerSecondResult {
             .collect(collectingAndThen(toList(), ImmutableList::copyOf));
 
         return ImmutableMessagesPerSecondResult.of(name, mps, dataPoints);
+    }
+
+    static MessagesPerSecondResult of(String name, Double mps) {
+        return ImmutableMessagesPerSecondResult.of(name, mps, Collections.emptyList());
     }
 
     default String getMpsAsString() {
