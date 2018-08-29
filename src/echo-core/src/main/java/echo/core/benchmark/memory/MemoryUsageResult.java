@@ -31,9 +31,6 @@ public interface MemoryUsageResult {
     Double getMeanBytes();
 
     @Value.Parameter
-    String getMeanBytesStr();
-
-    @Value.Parameter
     List<Long> dataPoints();
 
     static MemoryUsageResult of(String name, List<Long> dataPoints) {
@@ -42,11 +39,19 @@ public interface MemoryUsageResult {
             final long sum = dataPoints.stream()
                 .mapToLong(Long::longValue)
                 .sum();
-
-            meanBytes = ((double) sum) / dataPoints.size();
+            if (sum > 0) {
+                meanBytes = ((double) sum) / dataPoints.size();
+            }
         }
-        final String meanBytesStr = (((long) meanBytes) / MEGABYTE) + " MB";
 
-        return ImmutableMemoryUsageResult.of(name, meanBytes, meanBytesStr, dataPoints);
+        return ImmutableMemoryUsageResult.of(name, meanBytes, dataPoints);
+    }
+
+    default String getMeanBytesAsString() {
+        return Long.toString(((long) (double) getMeanBytes()) / MEGABYTE);
+    }
+
+    default String getMeanBytesAsStringWithUnit() {
+        return getMeanBytesAsString() + " MB";
     }
 }

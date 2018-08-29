@@ -1,11 +1,12 @@
 package echo.core.benchmark.mps;
 
+import com.google.common.collect.Lists;
 import echo.core.benchmark.ArchitectureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Maximilian Irro
@@ -17,6 +18,8 @@ public class MessagesPerSecondMonitor {
     private final ArchitectureType type;
     private final int nrOfTasks;
     private final Map<String, Double> mpsMap = new HashMap<>();
+
+    private final Comparator<Map.Entry<String,Double>> comparator = Comparator.comparing(Map.Entry::getKey);
 
     public MessagesPerSecondMonitor(ArchitectureType type, int nrOfTasks) {
         this.type = type;
@@ -53,8 +56,20 @@ public class MessagesPerSecondMonitor {
 
         final StringBuilder builder = new StringBuilder();
         builder.append("src;mps;task_id\n");
-        for (Map.Entry<String,Double> e : mpsMap.entrySet()) {
-            builder.append(type+";"+metricToString(e.getValue())+";"+e.getKey()+"\n");
+
+        final List<Map.Entry<String,Double>> entries = mpsMap.entrySet()
+            .stream()
+            .sorted(Comparator.comparing(Map.Entry::getKey))
+            .collect(Collectors.toList());
+
+        for (Map.Entry<String,Double> e : entries) {
+            builder
+                .append(type)
+                .append(";")
+                .append(metricToString(e.getValue()))
+                .append(";")
+                .append(e.getKey())
+                .append("\n");
         }
         return builder.toString();
     }

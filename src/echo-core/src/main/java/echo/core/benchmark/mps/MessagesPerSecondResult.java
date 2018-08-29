@@ -34,9 +34,6 @@ public interface MessagesPerSecondResult {
     Double getMps();
 
     @Value.Parameter
-    String getMpsStr();
-
-    @Value.Parameter
     List<Long> dataPoints();
 
     static MessagesPerSecondResult of(String name, Map<Long, Long> buckets) {
@@ -59,7 +56,11 @@ public interface MessagesPerSecondResult {
             .map(buckets::get)
             .collect(collectingAndThen(toList(), ImmutableList::copyOf));
 
-        return ImmutableMessagesPerSecondResult.of(name, mps, mpsStr, dataPoints);
+        return ImmutableMessagesPerSecondResult.of(name, mps, dataPoints);
+    }
+
+    default String getMpsAsString() {
+        return String.format("%.4f", getMps());
     }
 
 }

@@ -29,9 +29,6 @@ public interface CpuLoadResult {
     Double getMeanLoad();
 
     @Value.Parameter
-    String getMeanLoadStr();
-
-    @Value.Parameter
     List<Double> dataPoints();
 
     static CpuLoadResult of(String name, List<Double> dataPoints) {
@@ -43,9 +40,13 @@ public interface CpuLoadResult {
 
             meanLoad = sum / dataPoints.size();
         }
-        final String meanLoadStr = "" + ((double) Math.round(meanLoad * 100) / 100);
 
-        return ImmutableCpuLoadResult.of(name, meanLoad, meanLoadStr, dataPoints);
+        return ImmutableCpuLoadResult.of(name, meanLoad, dataPoints);
     }
+
+    default String getMeanLoadAsString() {
+        return String.format("%.4f", getMeanLoad());
+    }
+
 
 }

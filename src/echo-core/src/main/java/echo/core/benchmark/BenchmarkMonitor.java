@@ -44,11 +44,11 @@ public class BenchmarkMonitor {
             builder
                 .append(r.getName())
                 .append(";")
-                .append(r.getMps().getMps())
+                .append(r.getMps().getMpsAsString())
                 .append(";")
-                .append(r.getCpuLoad().getMeanLoad())
+                .append(r.getCpuLoad().getMeanLoadAsString())
                 .append(";")
-                .append(r.getMemoryUsage().getMeanBytes())
+                .append(r.getMemoryUsage().getMeanBytesAsString())
                 .append("\n");
         }
         return builder.toString();
