@@ -13,15 +13,6 @@ We've compared the expressiveness and conceptual capabilities of actors and micr
 ### Performance Metrics
 
 
-~ todo
-In [@Lil09] wird die Performance eines Search Engine mit einem Agent approach getestet! Hier 1) darauf hinweisen und 2) einfach die selben Metriken zeigen
-~
-
-~ todo
-In [@Ped06] werden auch Sachen gemessen für einen Search Engine Cluster
-~
-
-
 *Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling are tailored to the actor model. 
 
 Recent works point out that there is still a lack of microservice benchmarks [@Zho18]. Due to the technological diversity, there is also no general microservice profiling tool available. Hence, no widely agreed upon metrics have established in the literature. Since we cannot identify well-established metrics both programming  models share from the literature, we have to revert to model unspecific metrics. Besides a lack of established metrics between actors and microservices, there is also no general simulation approach for MSAs as of yet [@Gri17]. Additionally, we have to design a custom experiment too.
@@ -30,32 +21,17 @@ The Echo search engine resembles a web-server application. Therefore we can simp
 
 [^fn-concurrent-process]: In this context, *process* referes to a task unit in concurrency theory, and not an OS process.
 
-A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario.
+A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. Since Akka does not serialize data [REF]{.red} if actors are on the same JVM, the comparison of transfered data is not expedient in our case.
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
-From the described metrics, we chose to use latency and throughput as benchmark metrics. Since Akka does not serialize data [REF]{.red} if actors are on the same JVM, we refrain from gathering the transfered bytes as an additional metric. 
+Lillis *et al.* [@Lil09] as well as Pedzai & Suleman [@Ped06] each use techniques we've discussed in this work, like synchronous/asynchronous and one-to-one/one-to-many communication styles, broker functionalities, lifecycle management (cf. Akka runtime, Spring IoC), to improve the performance of search engines. Among other things, they evaluate the performance by measuring the time it takes a system to index a given number of documents. The retrieval subsystem's performance is the time it takes to process a given number of queries.
 
 ...
 
-* Def. Throughput: "requests are executed successfully (accepted, processed and responded properly)."
-
-* The CPU load value is the percentage of CPU used in the range 0-1, normalized to a single CPU. We run the simulations on a multicore machine. 
-
----
-
-Pedzai & Suleman [@Ped06] evaluate the resource utilization of 
-
-
-Lillis *et al.* [@Lil09] used an agent-based approach to improve the performance of search engines by utilizing techniques that fall into our broad definition of concurrency. They also incorporate functionalities we've discussed in this work, like synchronous/asynchronous and one-to-one/one-to-many communication styles, broker functionalities, lifecycle management (cf. Akka runtime, Spring IoC), 
-
-...
-
-Lillis *et al.* [@Lil09] as well as Pedzai & Suleman [@Ped06] each use concurrent programming variants to improve the performance of search engines. Among other things, they evaluate the performance by measuring the time it takes a system to index a given number of documents. The retrieval subsystem's performance is the time it takes to process a given number of queries.
-
-...
-
+~ green
 All task units are based on the JVM and use the same Core library for domain specific functionality. Platform and domain specific effects on influencing the performance are therefore uniform between both implementations. All differences in the performance are therefore a result of the unterlying programming models for concurrency, hence communication and coordination [CITATION?]{.red}.
+~
 
 
 ### Simulation Workloads 
@@ -70,71 +46,29 @@ Our search engine has two essential subsystems: the indexing subsystem and the r
 
 We are interrested in Part 1 as input for the indexing subsystem and Part 2 as input for the retrieval subsystem. Part 3 is required for effectivness evaluation, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the Podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
 
-Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries using simple placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation.
+Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries using simple placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation. We've analyzed 500 arbitrary feeds obtained from the Fyyd[^fn-fyyd] podcast directory and found that the average feed has 70 episodes. To make the simulation workloads more realistic, the test feeds also have 70 elements.
 
 [^fn-lorem-ipsum]: <https://lipsum.com>
-
-~ todo
-Hier kann ich eine größenverteilung über alle feeds als bild einfügen, wenn mir ganz fad sein sollte
-~
+[^fn-fyyd]: <https://fyyd.de>
 
 
 ### Experiment Setup and Test Environment
 
 ~ lit
-* traditionally IR uses *test collections* for evaluation. 
-* To our knowledge there is not Podcast related test collection available as of yet (since podcast is a rather unexplored domain in IR)
-* We use a custom selection of feeds for the indexing subsystem (initial + update)
-* We require a list of queries to test the retrieval subsystem
-* IR has standardizes lists, but those are usually annotated for better effectiveness evaluation and limited to a specialized domain.
-* normally query statistics form large Engines are not used, but we will
 * we only test on a single machine (because we dont have more), therefore distribution and related scalability variants are not evaluated
 ~
 
-For a performance evaluation, we require a workload simulation that we can use to test both the actor- and microservice implementations against. A recent work [@Gri17] points out that there is no general simulation approach for MSAs as of yet. Therefore, we have to design a custom reference scenario. 
+All evaluation results are measured on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6.
 
----
-
-Setup:
-
-[Machine: XY GHz, XY cores, XY RAM, etc, running macOS XY]{.red}
-
-* __Processor__: 3,1 GHz Intel Core i5
-* __Memory__: 16 GB 2133 MHz LPDDR3
-* Processor Name:	Intel Core i5
-* Processor Speed:	3,1 GHz
-* Number of Processors:	1
-* Total Number of Cores:	2
-* L2 Cache (per Core):	256 KB
-* L3 Cache:	4 MB
-* Memory:	16 GB
-* Storage: 
-    * Type: SSD
-    * Connection: PCI-Express
-    * File system: APFS
-
-* JVM 
+All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on filled index. To avoid interferences of non-model specific parameters (latencies, etc.), we use the same database API in both architectures. Hence, the Akka implementation uses the Spring Data JPA binding that fits naturally into the CatalogStore microservice. Crawlers load the benchmark feeds from the local file system, and therefore are not subject to network induced latencies. 
 
 ...
 
-In this benchmark, we will merely explore effects related to vertical scalability (efficient resource utilization of a host machine), load scalability, and structural scalability [MUSS ICH DANN AUCH WIRKLICH AUSTESTEN -> MEHR MS!]{.red}. Horizontal scalability is beyond our capabilities due to the limitation of hardware resources available to us. As we've pointed out, the actor and microservice programming models are also capable of mobility and elasticity in principle. However, we will not explore these two forms of scalability, since the Echo implementations are not capable of them.
+In this benchmark, we will merely explore effects related to vertical scalability (efficient resource utilization of a host machine), load scalability, and structural scalability [MUSS ICH DANN AUCH WIRKLICH AUSTESTEN -> MEHR MS!]{.red}. Horizontal scalability is beyond our capabilities due to the limitation of hardware resources available to us (single machine). As we've pointed out, the actor and microservice programming models are also capable of mobility and elasticity in principle. However, we will not explore these two forms of scalability, since the Echo implementations are not capable of them.
 
-...
-
-All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. 
-
-
-...
-
-* Indexing experiments are started on empty catalog/index
-* Retrieval experiments are started on filled index
-* To avoid interferences of non-model specific parameters (latencies, etc.), we use the same database API in both architecture. Hence, the Akka implementation uses the Spring Data JPA binding that fits naturally into the CatalogStore microservice.  
-
-...
-
-* Spring Boot uses the thread pool of the embedded web server. In our case, *Undertow* [REF?]{.red} is the web server.
 
 ### Benchmark Results
+
 
 #### Experiment 1: Indexing Subsystem
 
@@ -199,6 +133,8 @@ All measurements we report are for cold starts of each system. We restart all in
 
 ### Relevance of the Benchmark
 
+...
+
 Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion.
 
 ~ todo
@@ -207,9 +143,30 @@ Hier noch ein paar Wörter ob ich etwas gefunden habe bzgl der sync/async Geschi
 
 ### Threats to Validity
 
-* test data set not fixed size (in bytes and no of episodes); arbitrary selected collection of XML feeds
-    * throughput usually w.r.t. size of messages
-* Only one machine, with only 2 cores (4 virtual)
-    * Akka only serializes messages when msg leaves local node -> every message effectively in-memory message passing
-    * Every MS uses either RabbitMQ or REST, and always serializes data due to network interface
-* Custom developed benchmark framework, not tools available for Akka and Spring that report compatibles values; custom framework might be inefficient 
+~ todo
+hier ein paar Blabla worte
+~
+
+#### External Threats to Validity 
+
+The external threats concern how much our results are generalizable. We've found that our scenario limits certain metrics naturally. The best example is throughput. We do not find the upper limit for the throughput, since the domain logic is limiting the performance. We can merely compare the programming models relative to each other with respect to our scenario. Not general statement about the performance of Akka or Spring-based services is possible.
+
+We selected efficiency metrics of search engines instead of metrics for evaluating concurrency models. The reason is that our scenario limits certain metrics naturally. The best example is throughput. The domain logic is limiting the performance, and therefore the throughput. We can merely compare the programming models relative to each other with respect to our scenario. Not general statement about the performance of Akka or Spring-based services is possible. Other metrics are not even measureable in the scenario. Example are creation time and maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence these metrics require an experiment outside the bounds of our scenario. 
+
+Additionally, we conducted the experiments merely on a single multicore machine. The experiments therefore only incorporate the effect of vertical scalability leveraged from general concurrency and parallelism on one single machine. Also, the multicore machine has a very small number of cores. The test setup does not take into account the horizontal scalability effects of distribution-induced concurrency.
+
+We eliminated the threat of selection bias by not using real world RSS feeds for simulation. Instead, we used test data with uniform size and feed structure.
+
+<!--
+Microservices are not a model of classic concurrency theory, and common benchmark metrics are difficult to apply. An example is maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence this metric requires an experiment outside of our scenario. Furthermore, from a theoretical point of view, we'd expect a very high upper limit of Akka actors, since an actors are modeled in the object space of OOP. Microservices are OS processes and in our scenario they require network communication. The maximum number of network ports is therefore also an upper limit for the microservices we can instantiate. The network port range is operating system dependend, but we expect it somewhere in the tens of thousands in general.
+-->
+
+
+#### Internal Threats to Validity 
+
+The internal threats to the validity of this benchmark concern the accuracy of our data collection tool. Since we did not find a tool that is sufficient to collect the data for Akka actors and Spring-based microservices, we developed a custom benchmark framework. This toolkit is implemented to the best of our knowledge, but we have to assume that its efficiency is not state of the art. This threat is mitigated since both systems are subject to the same suspected inefficiency, which does not distort the relative comparison of metrics.  
+
+An additional threat is our fair thread-pool size constraint in the benchmark. Each component is provided with the same amount of threads. For example, if we give a component a thread-pool with 32 threads, the actor-based component can fully leverage all 32 threads, e.g.\ for child actors or futures. This is not necessarily the case for Spring-based microservices. We've outlined in Section [#sec-internal-service-concurrency] that services use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool Spring's IoC container uses for requests. To ensure the 32 threads total, we configure each of the `TaskExecutor`{language:java} with merely 16 threads each. There is the threat that the service implementation does not distribute the computational load equally between these two thread-pools. Then the microservice has a disadvantage in its ability to fully leverage all threads. We mitigated this problem by carefully implementing the services internal concurrency to the best of our knowlege. Additionally, if a service does not apply asynchrony internally, we do not split up the thread-pool size since no second `TaskExecutor`{language:java} is applied anyway. 
+
+Furtermore, Akka does not serialize messages [REF?]{.red} if the sending and receiving actors are inside the same JVM. Every actor message
+

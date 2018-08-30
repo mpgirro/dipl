@@ -37,7 +37,7 @@ As we did with the actor implementation, in subsequent sections we will pay atte
 ~
 
 
-### Internal Service Concurrency
+### Internal Service Concurrency {#sec-internal-service-concurrency}
 
 
 The microservice model paradigm does not dictate restrictions on internal service structure. A service is free to apply concurrency internally, and to utilize every concurrency mechanism it sees fit (including actors). 

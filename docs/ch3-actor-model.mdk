@@ -132,6 +132,7 @@ The active object method signatures do not only define communication with a cert
 
 The example above illustrates two of these behaviors of method invocation of active objects. `void add(int)`{language:java} only dispatches a message and immediately returns (past type). In contrast, `int get(void)`{language:java} actually waits for a result (now type). Using the future type requires us to include an additional model of concurrency, the *future*. 
 
+<!--
 Table [#tab-actor-ao-comparison] gives an overview of the major differences relevant to our considerations between actors and active objects.
 
 ~ Begin TableFigure { #tab-actor-ao-comparison; caption: "Major differences between actors and active objects"; page-align:here}
@@ -146,6 +147,7 @@ Table [#tab-actor-ao-comparison] gives an overview of the major differences rele
 |                         |                   | depends on method signature      |
 | ------------------------|-------------------|----------------------------------|
 ~ End TableFigure
+-->
 
 
 ## Integration of other Concurrency Abstractions {#sec-actor-concurrency-combination}

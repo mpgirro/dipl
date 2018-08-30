@@ -92,15 +92,31 @@ Since our scientific focus is on the concurrent programming aspect and not the i
 
 In this section, we give a brief outline of the data processing pipelines which make up the two subsystems. The processing pipelines are resulting from the composition of the architecture components.
 
-* Indexing pipeline
-  : Feeds get either processed when they are initially indexed, or updated to check for new episodes. Hence, processing is either triggered by adding a yet unknown feed, or on demand by the Updater. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the updating candidates to the Web Crawler, which fetches the XML data of the feed via HTTP. The Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML. All metadata is then forwarded to the CatalogStore. The database of the Store persists the complete metadata. Additionally, the Catalog has to determine based on an episode's metadata record if the episode is already registered, or a new entry. The Catalog finally sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, where it is added to the Lucene index data structures. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
+Note that Figure [#fig-task-units] shows an interaction between the Gateway and the CatalogStore. The pipelines below do not mention this interaction. The Web UI can display the entire metadata of an item. Therefore we must retrieve the complete metadata from the CatalogStore. For search requests, the Retrieval subsystem merely produces the reduced metadata for the results that is stored in the search index. We nevertheless show the `G` &rightleftarrows; `C` call for completeness.
 
-* Retrieval pipeline
-  : The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
+
+#### Indexing Pipeline
+
+
+Feeds get either processed when they are initially indexed, or updated to check for new episodes. Hence, processing is either triggered by adding a yet unknown feed, or on demand by the Updater. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the updating candidates to the Web Crawler, which fetches the XML data of the feed via HTTP. The Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML. All metadata is then forwarded to the CatalogStore. The database of the Store persists the complete metadata. Additionally, the Catalog has to determine based on an episode's metadata record if the episode is already registered, or a new entry. The Catalog finally sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, where it is added to the Lucene index data structures. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
 
 [^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore it is not included in the search index. 
 
-Note that Figure [#fig-task-units] shows an interaction between the Gateway and the CatalogStore, but we did not mention this in neither of the pipelines above. The Web UI can display the entire metadata of an item. Therefore we must retrieve the complete metadata from the CatalogStore. For search requests, the Retrieval subsystem merely produces the reduced metadata for the results that is stored in the search index. We nevertheless show the `G` &rightleftarrows; `C` call for completeness.
+~ todo
+Grafik
+~
+
+
+#### Retrieval Pipeline
+
+
+The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
+
+~ todo
+Grafik
+~
+
+
 
 <!--
 Minor work flows:
