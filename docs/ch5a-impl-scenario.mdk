@@ -87,7 +87,7 @@ The actor-based as well as the microservice-based backend implementation has to 
 Since our scientific focus is on the concurrent programming aspect and not the information retrieval aspect, we want to implement the domain specific logic only once. Therefore, we provide each backend with a common *Core* library written in Java. The Core offers most domain-specific functionality, so that each backend codebase can focus on the concurrent execution and interaction. For example, the actual searching is done through a specialized data structure, the so-called *reverse index*. We use Lucene [@ApacheLucene] to create this structures. Lucene offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is done using ROME [@ROME], enriched by an extension we wrote to support additional *Simple Chapter* [@PotloveSimpleChapters] metadata information.
 
 
-### Subsystem Processing Pipelines
+### Subsystem Processing Pipelines {#sec-subsystem-pipelines}
 
 
 In this section, we give a brief outline of the data processing pipelines which make up the two subsystems. The processing pipelines are resulting from the composition of the architecture components.
@@ -102,19 +102,24 @@ Feeds get either processed when they are initially indexed, or updated to check 
 
 [^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore it is not included in the search index. 
 
-~ todo
-Grafik
+~ Figure { #fig-indexing-pipeline; caption: "Indexing pipeline"; width:100%; float:left;  }
+![img-indexing-pipeline]
 ~
+
+[img-indexing-pipeline]: graphics/pipeline-indexation.[svg,png] "Image about indexing pipeline" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
 
 
 #### Retrieval Pipeline
 
 
-The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`. 
+The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
-~ todo
-Grafik
+
+~ Figure { #fig-retrieval-pipeline; caption: "Retrieval pipeline"; width:100%; float:left;  }
+![img-retrieval-pipeline]
 ~
+
+[img-retrieval-pipeline]: graphics/pipeline-retrieval.[svg,png] "Image about retrieval pipeline" { height:1.5cm; vertical-align:middle; padding-bottom:1em; }
 
 
 

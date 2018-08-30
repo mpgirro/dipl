@@ -69,6 +69,10 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 
 ### Benchmark Results
 
+HINWEIS: Alle components haben 16 fixe threads
+
+For the benchmark, we provide each architecture component with a fixed number of threads available to them. If not states otherwise, the default thread-pool size for every component is 16. This way, we can reason about which underlying programming model better utilizes the available thread resources. 
+
 
 #### Experiment 1: Indexing Subsystem
 
@@ -79,6 +83,7 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 [img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
 
 ...
+
 
 ~ Figure { #fig-eval-index-rtt-overall; caption: "Round trip time of messages in the indexing phase"; width:100%; }
 ![img-eval-index-rtt-overall]
@@ -95,6 +100,20 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 [img-eval-index-rtt-meanMsgL]: graphics/eval-index-rtt-meanMsgL.[pdf,png] "Image about eval-index-rtt-meanMsgL" { height:7cm; vertical-align:middle; padding-bottom:1em; }
 
 ...
+
+---
+
+Figure [EINFÜGEN]{.red} is suprising at first glance. However, recall the indexing pipeline from Section [#sec-subsystem-pipelines]. The most computationally expensive domain-specific jobs have the Crawler (loading XML feeds, from local SSD storage in this benchmark), and the Parser (process relatively large XML documents). We expect these two tasks to take the most time for each message. The Parser has another effect to the pipeline. Due to the Parser's domain logic and our test feeds, for each message this component receives it produces 71 new messages (70 for the episodes metadata and 1 for the podcast metadata) for the subsequent component (CatalogStore) in the pipeline. Since the Catalog forwards parts of the metadata to the IndexStore, the IndexStore also receives 71 times more messages that an Updater, Crawler or Parser.
+
+We can draw several conclusions from Figure [EINFÜGEN]{.red}. The messages per second of CatalogStore is the lower bound of the capacity potential of each progrogramming model. We do not know the full amount of their MPS capacity, since the domain scenario provides a natural message limit. We can also conclude that all other components could reach this lower bound of the Catalog, if they were not hindered by the internal domain logic.  
+
+Since we know which components cannot exploit their model's potential, we can use these limited components to evaluate structural scalability effects. Especially the Crawler is suitable, since its domain logic is basically IO. The actor-based implementation of the Crawler utilizes child delegation to improve the IO efficiency, and with more threads can more children execute in parallel. For the microservice-based component, the IoC container can consume more messages and execute respective IO tasks through the `TaskExecutor`{language:java} with more threads available to it.
+
+We reconfigure the previous components in the pipeline with significantely more threads to ensure that the Crawler never suffers from temproral starvation, and benchmark the MPS for the Crawler with different underlying thread-pool sizes. The result is shown in Figure [EINFÜGEN]{.red}  
+
+
+
+
 
 #### Experiment 2: Retrieval Subsystem
 
@@ -122,14 +141,6 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 
 ...
 
-#### Experiment 3: Thread Utilization Efficiency
-
-
-#### Observations
-
-* Slow RabbitMQ 
-    * should be way faster (link to official benchmarks)
-    * Declarative style with Spring's `@RabbitListener` has overhead, but should not be so much (REST is not that effected)
 
 ### Relevance of the Benchmark
 
@@ -149,9 +160,7 @@ hier ein paar Blabla worte
 
 #### External Threats to Validity 
 
-The external threats concern how much our results are generalizable. We've found that our scenario limits certain metrics naturally. The best example is throughput. We do not find the upper limit for the throughput, since the domain logic is limiting the performance. We can merely compare the programming models relative to each other with respect to our scenario. Not general statement about the performance of Akka or Spring-based services is possible.
-
-We selected efficiency metrics of search engines instead of metrics for evaluating concurrency models. The reason is that our scenario limits certain metrics naturally. The best example is throughput. The domain logic is limiting the performance, and therefore the throughput. We can merely compare the programming models relative to each other with respect to our scenario. Not general statement about the performance of Akka or Spring-based services is possible. Other metrics are not even measureable in the scenario. Example are creation time and maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence these metrics require an experiment outside the bounds of our scenario. 
+The external threats concern how much our results are generalizable. We selected efficiency metrics of search engines instead of metrics for evaluating concurrency models. The reason is that our scenario limits certain metrics naturally. The best example is throughput. The domain logic is limiting the performance, and therefore we cannot find the upper limit for the throughput. We can merely compare the programming models relative to each other with respect to our scenario. Not general statement about the performance of Akka or Spring-based services is possible. Other metrics are not even measureable in the scenario. Example are creation time and maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence these metrics require an experiment outside the bounds of our scenario. 
 
 Additionally, we conducted the experiments merely on a single multicore machine. The experiments therefore only incorporate the effect of vertical scalability leveraged from general concurrency and parallelism on one single machine. Also, the multicore machine has a very small number of cores. The test setup does not take into account the horizontal scalability effects of distribution-induced concurrency.
 
@@ -166,7 +175,7 @@ Microservices are not a model of classic concurrency theory, and common benchmar
 
 The internal threats to the validity of this benchmark concern the accuracy of our data collection tool. Since we did not find a tool that is sufficient to collect the data for Akka actors and Spring-based microservices, we developed a custom benchmark framework. This toolkit is implemented to the best of our knowledge, but we have to assume that its efficiency is not state of the art. This threat is mitigated since both systems are subject to the same suspected inefficiency, which does not distort the relative comparison of metrics.  
 
-An additional threat is our fair thread-pool size constraint in the benchmark. Each component is provided with the same amount of threads. For example, if we give a component a thread-pool with 32 threads, the actor-based component can fully leverage all 32 threads, e.g.\ for child actors or futures. This is not necessarily the case for Spring-based microservices. We've outlined in Section [#sec-internal-service-concurrency] that services use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool Spring's IoC container uses for requests. To ensure the 32 threads total, we configure each of the `TaskExecutor`{language:java} with merely 16 threads each. There is the threat that the service implementation does not distribute the computational load equally between these two thread-pools. Then the microservice has a disadvantage in its ability to fully leverage all threads. We mitigated this problem by carefully implementing the services internal concurrency to the best of our knowlege. Additionally, if a service does not apply asynchrony internally, we do not split up the thread-pool size since no second `TaskExecutor`{language:java} is applied anyway. 
+An additional threat is resulting from the fixed amount of threads we provide for each component in the benchmark. Actor-based components can fully leverage all these threads, e.g.\ for child actors or futures. We've discussed in Section [#sec-internal-service-concurrency] that the microservices use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool of Spring's IoC container. To ensure the thread limit for the component, we have to split up the threads between the two thread-pools. There is the threat that a service's implementation does not distribute the computational load equally between the two thread-pools. We did not measure the thread-partitioning required for ideal thread utilization. Instead, we distributed the available threads evenly between both pools for all services. This threat is only mitigated for services which do not apply asynchrony internally. Then there is only the standard `TaskExecutor`{language:java} with the full amount of threads in place. 
 
-Furtermore, Akka does not serialize messages [REF?]{.red} if the sending and receiving actors are inside the same JVM. Every actor message
+Furtermore, Akka does not serialize messages [REF?]{.red} if the sending and receiving actors are inside the same JVM. Every actor message is then simple in-memory reference sharing of immutable objects, while each microservice message is definitely serialized and sent via a network interface (although the message is always delivered on the same machine).
 

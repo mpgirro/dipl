@@ -160,7 +160,7 @@ Akka provides a primitive to introduce synchronous information flow. In addition
 ![img-pipeline-search-future]
 ~
 
-[img-pipeline-search-future]: graphics/pipeline-search-future.[svg,png] "Image about pipeline of a search request using futures" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-pipeline-search-future]: graphics/search-future.[svg,png] "Image about pipeline of a search request using futures" { height:1.3cm; vertical-align:middle; padding-bottom:1em; }
 
 [Scenario Example]{.example-title}: A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to a Searcher and finally to an IndexStore. The results are are propagated back from the `I` via `S` to `G`. The results are wrapped in a `Future`{{language:scala}} until it is resolved. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other request until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
@@ -206,7 +206,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 ![img-pipeline-search-delegation]
 ~ End Figure
 
-[img-pipeline-search-delegation]: graphics/pipeline-search-delegation.[svg,png] "Image about pipeline of a search request using delegation" { width: 85%; vertical-align:middle; padding-bottom:1em; }
+[img-pipeline-search-delegation]: graphics/search-delegation.[svg,png] "Image about pipeline of a search request using delegation" { height:3.9cm; vertical-align:middle; padding-bottom:1em; }
 
 The actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
 

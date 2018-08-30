@@ -27,6 +27,9 @@ BEWERTUNG:
 * We've pointed out differences of Erlang and Orleons compared to Akka
 
 
+* We've found that evaluation metrics like throughput [(hab ich da noch andere gefunden?)]{.red} have limited significance due to limitations imposed by the domain 
+
+
 ~ todo
 Future Work
 ~
