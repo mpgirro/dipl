@@ -47,7 +47,7 @@ public class Foo extends UntypedActor {
 }
 ```
 
-Field `bar` in class `Foo`{language:java} has been given *external visibility* by declaring it to be `public`{language:java}. It is therefore part of every object of type `Foo`{language:java} and influencing the object's encapsulation [@Kni96]. From visibility follows accessibility, such that `bar` is also accessible from outside the scope of `Foo`{language:java}. Since it is not declared `final`{language:java}, we can also modify `bar` from outside the object's scope, which violates the exclusive state modification requirement of the actor semantics. 
+We extended `UntypedActor`{language:java}, since classic actors do not provide type-safety for messages. In contrast, Akka's `TypedActor`{language:java} is the base class for active objects, which do provide type-safety for messages [irgendwas REF]{.red}. We gave the field `bar` in class `Foo`{language:java} *external visibility* by declaring it `public`{language:java}. The field is therefore part of every object of type `Foo`{language:java} and influences the object's encapsulation [@Kni96]. From visibility follows accessibility, such that `bar` is also accessible from outside the scope of `Foo`{language:java}. Since it is not declared `final`{language:java}, we can also modify `bar` from outside the object's scope, which violates the exclusive state modification requirement of the actor semantics. 
 
 All Java-based actor implementations therefore face the problem that custom-written actor classes can easily break the required model semantics. In order to cope with this problem, object-oriented implementations can offer APIs where interaction with an actor instance is not issued directly through the instances method interfaces, but instead via proxy constructs like [@Hal12]:
 
@@ -55,9 +55,7 @@ All Java-based actor implementations therefore face the problem that custom-writ
 final ActorRef foo = system.actorOf(Foo.props());
 ```
 
-An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. 
-
-The `create` method of `Props`{language:java} takes a Java 8 lambda as an actor object factory. The lambda and the `create` call are commonly wrapped in a `props` method of the actor class. Java lambdas are basically functional closures[^fn-clojure] and only allow us to access effectively `final`{language:java} fields inside the lambda's scope. This restriction prevents us from exposing mutable state to the constructor of an actor class. Of course, this is only true for the `final`{language:java} fields themselves, but not their members (cf.\ Java case study in Section [#sec-concurrency-language-level]).
+An instance of `Foo`{language:java} is not directly created using the `new`{language:java} keyword as is custom in Java, but by using a factory method `actorOf` that hides the actual instantiation. The `create` method of `Props`{language:java} takes a Java 8 lambda as an actor object factory. The lambda and the `create` call are commonly wrapped in a `props` method of the actor class. Java lambdas are basically functional closures[^fn-clojure] and only allow us to access effectively `final`{language:java} fields inside the lambda's scope. This restriction prevents us from exposing mutable state to the constructor of an actor class. Of course, this is only true for the `final`{language:java} fields themselves, but not their members (cf.\ Java case study in Section [#sec-concurrency-language-level]).
 
 [^fn-clojure]: Not to be confused with *Clojure*, a dialect of the programming language Lisp for the JVM.
 

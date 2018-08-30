@@ -7,21 +7,30 @@ Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
 
-We've compared the expressiveness and conceptual capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. The results will allow us to draw conclusions about the underlying concurrency concepts. Therefore, we require some metrics to gather in the benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we gather must be viable in both programming models, such that be can compare these metrics.
+We've compared the expressiveness and conceptual capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. The results allow us to draw conclusions about the underlying concurrency concepts. Therefore, we require some metrics to gather in the benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we gather must be viable in both programming models, such that we can compare the values.
 
 
 ### Performance Metrics
 
 
+~ todo
+In [@Lil09] wird die Performance eines Search Engine mit einem Agent approach getestet! Hier 1) darauf hinweisen und 2) einfach die selben Metriken zeigen
+~
+
+~ todo
+In [@Ped06] werden auch Sachen gemessen für einen Search Engine Cluster
+~
+
+
 *Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling are tailored to the actor model. 
 
-Recent works point out that there is still a lack of microservice benchmarks [@Zho18]. Due to the technological diversity, there is also no general microservice profiling tool available. Hence, no widely agreed upon metrics have established in the literature. Since we cannot identify common metrics for the two programming  models from the literature, we have to revert to model unspecific metrics. Besides a lack of established common metrics between actors and microservices, there is also no general simulation approach for MSAs as of yet [@Gri17]. Additionally, we have to design a custom experiment too.
+Recent works point out that there is still a lack of microservice benchmarks [@Zho18]. Due to the technological diversity, there is also no general microservice profiling tool available. Hence, no widely agreed upon metrics have established in the literature. Since we cannot identify well-established metrics both programming  models share from the literature, we have to revert to model unspecific metrics. Besides a lack of established metrics between actors and microservices, there is also no general simulation approach for MSAs as of yet [@Gri17]. Additionally, we have to design a custom experiment too.
 
 The Echo search engine resembles a web-server application. Therefore we can simply issue the services provided by an Echo system for experimentation. Performance indicators for servers have long been e.g.\ connections per second, throughput and round trip time (RTT) [@ElS06]. More recent work compared concurrency in Erlang, Go and Scala with Akka for server applications. The benchmark used communication latency, creation time & maximum process[^fn-concurrent-process] support and throughput as metrics [@Val18]. 
 
 [^fn-concurrent-process]: In this context, *process* referes to a task unit in concurrency theory, and not an OS process.
 
-A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario
+A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario.
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
@@ -33,32 +42,20 @@ From the described metrics, we chose to use latency and throughput as benchmark 
 
 * The CPU load value is the percentage of CPU used in the range 0-1, normalized to a single CPU. We run the simulations on a multicore machine. 
 
-### STEHT HIER NOCH WAS BRAUCHBARES?!
+---
+
+Pedzai & Suleman [@Ped06] evaluate the resource utilization of 
+
+
+Lillis *et al.* [@Lil09] used an agent-based approach to improve the performance of search engines by utilizing techniques that fall into our broad definition of concurrency. They also incorporate functionalities we've discussed in this work, like synchronous/asynchronous and one-to-one/one-to-many communication styles, broker functionalities, lifecycle management (cf. Akka runtime, Spring IoC), 
 
 ...
 
-
----
-
-As the performance metric of each subsystem we use the *latency* $L$ of the subsystem to complete a job. For the indexing subsystem, a job is the complete processing of a given feed. For the retrieval subsystem, a job is the retrieval of relevant documents for a given query.
-
-If we know $L$, we can calculate the *throughput* $T$ of the subsystem simply with $T = 1 / L$. 
-
-~ todo
-images of the subsystem interaction models
-~
-
-All task units are based on the JVM and use the same `core` library for domain specific functionality. Platform and domain specific effects on latency and throughput are therefore uniform. All differences of latency and throughput between the two system implementations are a result of the unterlying programming models for communication and coordination [CITATION?]{.red}.
-
-Latency is effected by:
-
-* Eomployed communication mechanism (Akka runtime message delivery vs. REST/RabbitMQ)
-
----
-
-Another 
+Lillis *et al.* [@Lil09] as well as Pedzai & Suleman [@Ped06] each use concurrent programming variants to improve the performance of search engines. Among other things, they evaluate the performance by measuring the time it takes a system to index a given number of documents. The retrieval subsystem's performance is the time it takes to process a given number of queries.
 
 ...
+
+All task units are based on the JVM and use the same Core library for domain specific functionality. Platform and domain specific effects on influencing the performance are therefore uniform between both implementations. All differences in the performance are therefore a result of the unterlying programming models for concurrency, hence communication and coordination [CITATION?]{.red}.
 
 
 ### Simulation Workloads 
@@ -73,7 +70,7 @@ Our search engine has two essential subsystems: the indexing subsystem and the r
 
 We are interrested in Part 1 as input for the indexing subsystem and Part 2 as input for the retrieval subsystem. Part 3 is required for effectivness evaluation, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the Podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
 
-Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Latency and throughput are affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries using simple placeholder text. Well-known is the so-called *Lorem ipsum* as a general placeholder text snippet [^fn-lorem-ipsum]. Appendix [#ch-benchmark-feed] shows the resulting feed structure.
+Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries using simple placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation.
 
 [^fn-lorem-ipsum]: <https://lipsum.com>
 
@@ -141,7 +138,7 @@ All measurements we report are for cold starts of each system. We restart all in
 
 #### Experiment 1: Indexing Subsystem
 
-~ Figure { #fig-eval-index-overall; caption: "Overall processing time of indexing subsystem with respect to amount of feeds"; width:100%; }
+~ Figure { #fig-eval-index-overall; caption: "Overall processing time of indexing feeds"; width:100%; }
 ![img-eval-index-overall]
 ~
 
@@ -166,6 +163,28 @@ All measurements we report are for cold starts of each system. We restart all in
 ...
 
 #### Experiment 2: Retrieval Subsystem
+
+~ Figure { #fig-eval-search-overall; caption: "Overall processing time of search requests"; width:100%; }
+![img-eval-search-overall]
+~
+
+[img-eval-search-overall]: graphics/eval-search-overall.[pdf,png] "Image about eval-search-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+
+...
+
+~ Figure { #fig-eval-search-rtt-overall; caption: "Round trip time of messages in the retrieval phase"; width:100%; }
+![img-eval-search-rtt-overall]
+~
+
+[img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+
+...
+
+~ Figure { #fig-eval-search-rtt-meanMsgL; caption: "Mean message latency of messages in the retrieval phase"; width:100%; }
+![img-eval-search-rtt-meanMsgL]
+~
+
+[img-eval-search-rtt-meanMsgL]: graphics/eval-search-rtt-meanMsgL.[pdf,png] "Image about eval-search-rtt-meanMsgL" { height:7cm; vertical-align:middle; padding-bottom:1em; }
 
 ...
 

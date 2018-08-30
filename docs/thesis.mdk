@@ -445,25 +445,24 @@ Maximilian Irro
 [INCLUDE=ch8-conclusion]
 
 
-# Benchmark Feed { @h1="A"; #ch-benchmark-feed }
+# RSS 2.0 Feed Structure { @h1="A"; #ch-benchmark-feed }
 
-...
 
-... The `<item>...</item>` element is replicated 70 times within each feed.
+An RSS 2.0 [@Win03] feed is an XML document. It defines the `<rss>` tag. Atom [@RFC4287] feeds additionally apply the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"` to the `<rss>` tag. The `<channel>` encloses the metadata of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. In the podcast domain, these items are the episodes of the feeds. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item is the `<enclosure>`, which provides the URL to the episode's media file. Some feeds also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
 
-~ todo
-Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, und die anzahl an episoden danach richten
-~
+* `xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"` for metadata used in the iTunes Podcast Directory [@iTunesDirectory].
+* `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark information in the Simple Chapters [@PotloveSimpleChapters] format.
+
+Below is a complete example of an RSS 2.0 feed. It provides some few metadata elements. The feed merely has a single `<item>` element. In general, a feeds has several items. All metadata in this example is text of the so-called *Lorem ipsum*, a well-known placeholder text snippet [^fn-lorem-ipsum]. The text is not intended to transport any meaning. Instead, the text is used to demonstrate a text structure or visual form in the design and publishing industries. Hence, the Lorem ipsum is also suitable to illustrate the RSS feed structure, without providing actual meaningful content.
 
 &pagebreak;
 
 ```{language:xml}
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
-     xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<rss>
   <channel>
     <title>Lorem ipsum</title>
-    <link>http://lorem.ispum.fm</link>
+    <link>https://lorem.ispum.fm</link>
     <language>en-us</language>
     <description>
       Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed 
@@ -472,9 +471,9 @@ Ich könnte 500 feeds durchmessen und die mittlere anzahl ann episoden messen, u
     </description>
     <item>
       <title>Lorem ipsum</title>
-      <enclosure url="http://lorem.ispum.fm/file.mp3" 
+      <enclosure url="https://lorem.ispum.fm/episode-1.mp3" 
                  length="17793193" type="audio/mpeg"/>
-      <guid isPermaLink="false">http://lorem.ispum.fm/li001</guid>
+      <guid isPermaLink="false">https://lorem.ispum.fm/li001</guid>
       <pubDate>Fri, 13 Jul 2018 16:35:13 +0000</pubDate>
       <description>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 
