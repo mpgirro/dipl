@@ -96,6 +96,10 @@ Bibl {
 -->
 
 
+.abbrv-table { list-style-type:none; margin-left:0; tex-env: "itemize[leftmargin=*]"}
+.abbrv-table-li { margin-bottom:0.2ex; }
+.abbrv-item { font-family: sans-serif; font-weight: bold; width:8ex; }
+
 
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
@@ -268,6 +272,12 @@ CSS Header      :
   }
   dt {
     font-family: "Computer Modern Sans" !important;
+  }
+  .abbrv-item { 
+    font-family: "Computer Modern Sans" !important;
+  }
+  .abbrv-table {
+    -webkit-padding-start: 0;
   }
   .madoko .footnotes code {
     font-size: small !important;
@@ -444,6 +454,9 @@ Maximilian Irro
 <!--[INCLUDE=ch7-discussion]-->
 [INCLUDE=ch8-conclusion]
 
+~TexRaw
+\appendix
+~
 
 # RSS 2.0 Feed Structure { @h1="A"; #ch-benchmark-feed }
 
@@ -491,38 +504,62 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 ```
 
 
+# List of Abbreviations { - }
+
+* [AMQP]{.abbrv-item} Advanced Message Queue Protocol
+* [AO]{.abbrv-item} Active Object
+* [FIFO]{.abbrv-item} First In First Out
+* [IPC]{.abbrv-item} Inter-Process Communication
+* [IoC]{.abbrv-item} Inversion of Control
+* [JVM]{.abbrv-item} Java Virtual Machine
+* [LB]{.abbrv-item} Load Balancing
+* [MS]{.abbrv-item} Microservice
+* [MSA]{.abbrv-item} Microservice Architecture
+* [OOP]{.abbrv-item} Object-oriented Programming
+* [OS]{.abbrv-item} Operating System
+* [PID]{.abbrv-item} Process Identifier
+* [REST]{.abbrv-item} Representational State Transfer
+* [RPC]{.abbrv-item} Remote Procedure Call
+* [SOA]{.abbrv-item} Service-oriented Architecture
+* [SoC]{.abbrv-item} Separation of Concerns
+* [SOC]{.abbrv-item} Service-oriented Computing
+* [SOP]{.abbrv-item} Service-oriented Programming
+* [SRP]{.abbrv-item} Single Responsibility Principle
+* [STM]{.abbrv-item} Software Transactional Memory
+* [URI]{.abbrv-item} Uniform Resource Identifier
+* [URL]{.abbrv-item} Uniform Resource Locator
+* [VM]{.abbrv-item} Virtual Machine
+{ .abbrv-table }
+
 <!--
+|:~~~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| AMQP | Advanced Message Queue Protocol |
+| AO   | Active Object                   |
+| FIFO | First In First Out              |
+| IPC  | Inter-Process Communication     |
+| IoC  | Inversion of Control            |
+| JVM  | Java Virtual Machine            |
+| LB   | Load Balancing                  |
+| MS   | Microservice                    |
+| MSA  | Microservice Architecture       |
+| OOP  | Object-oriented Programming     |
+| OS   | Operating System                |
+| PID  | Process Identifier              |
+| REST | Representational State Transfer |
+| RPC  | Remote Procedure Call           |
+| SOA  | Service-oriented Architecture   |
+| SOC  | Service-oriented Computing      |
+| SOP  | Service-oriented Programming    |
+| SRP  | Single Responsibility Principle |
+| STM  | Software Transactional Memory   |
+| URI  | Uniform Resource Identifier     |
+| URL  | Uniform Resource Locator        |
+| VM   | Virtual Machine                 |
+{ width:100%; border-style:none; col-first-font-weight:bold; tr-margin-top:1ex }
+-->
 
-# Acronyms { - }
 
-These arconyms occur throughout the thesis.
-
-* AMQP Advanced Message Queue Protocol
-* AO Active Object
-* CMF Cloud Management Framework
-* DO Distributed Object
-* FIFO First In First Out
-* IPC Inter-Process Communication
-* IoC Inversion of Control
-* JVM Java Virtual Machine
-* LB Load Balancing
-* MS Microservice
-* MSA Microservice Architecture
-* OOP Object-oriented Programming
-* OS Operating System
-* PID Process Identifier
-* REST Representational State Transfer
-* RPC Remote Procedure Call
-* SOA Service-oriented Architecture
-* SoC Separation of Concerns
-* SOC Service-oriented Computing
-* SOP Service-oriented Programming
-* SRP Single Responsibility Principle
-* STM Software Transactional Memory
-* URI Uniform Resource Identifier
-* URL Uniform Resource Locator
-* VM Virtual Machine
-
+<!--
 # Glossary { - }
 
 * Akka
