@@ -67,7 +67,7 @@ class Searcher extends Actor with ActorLogging {
             router.routees.foreach(r => r.send(msg, sender()))
 
         case ChildMpsReport(childReport) =>
-            log.info("Received ChildMpsReport({})", childReport)
+            log.debug("Received ChildMpsReport({})", childReport)
             mpsMonitor.addMetric(childReport.getName, childReport.getMps)
             if (mpsMonitor.isFinished) {
                 val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)

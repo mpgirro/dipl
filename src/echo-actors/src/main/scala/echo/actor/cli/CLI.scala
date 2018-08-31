@@ -63,7 +63,7 @@ class CLI(master: ActorRef,
     private val GATEWAY_URL = "http://localhost:3030/api"
 
     private var shutdown = false
-    private val workQueue = new WorkQueue(100)
+    private val workQueue = new WorkQueue("Akka-Query-Queue",100)
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
