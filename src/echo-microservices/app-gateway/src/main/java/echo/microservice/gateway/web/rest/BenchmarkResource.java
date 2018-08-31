@@ -1,5 +1,6 @@
 package echo.microservice.gateway.web.rest;
 
+import echo.core.benchmark.BenchmarkSearchRequest;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
@@ -73,19 +74,16 @@ public class BenchmarkResource {
         value    = "/search",
         method   = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("q") String query,
-                                                        @RequestParam("p") Optional<Integer> page,
-                                                        @RequestParam("s") Optional<Integer> size,
-                                                        @RequestBody RoundTripTime rtt) {
-        log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
+    public ResponseEntity<ResultWrapperDTO> benchmarkSearchRequest(@RequestBody BenchmarkSearchRequest request) {
+        log.info("REST request to search for request : {}", request);
         mpsMeter.tick();
-        final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
+        final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(request.getQuery(), request.getPage(), request.getSize(), request.getRtt());
 
         if (resultWrapper.isPresent()) {
             sendRttReport(resultWrapper.get().getRTT().bumpRTTs());
         } else {
             log.warn("No result present");
-            sendRttReport(rtt.bumpRTTs());
+            sendRttReport(request.getRtt().bumpRTTs());
         }
 
         return resultWrapper

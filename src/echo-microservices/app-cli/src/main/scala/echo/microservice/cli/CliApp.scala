@@ -26,7 +26,7 @@ class CliApp {
     private val log = Logger(classOf[CliApp])
 
     private var shutdown = false
-    private val workQueue = new WorkQueue(100)
+    private val workQueue = new WorkQueue("MSA-Query-Queue", 100)
 
     val usageMap = Map(
         "propose"        -> "feed [feed [feed]]",
