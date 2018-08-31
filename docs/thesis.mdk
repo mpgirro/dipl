@@ -109,6 +109,7 @@ Bibl {
 
 <!-- applying sffamily to the references is a bit more complicated -->
 Bibliography { tex-cmd-outer-before: "\mdsetrefname{\textsf{&name-references;}}%mdk&nl;" }
+
 <!--Bibl { font-size: small }-->
 dt           { margin-top:1ex }
 dd           { margin-bottom:1ex }
@@ -461,7 +462,7 @@ Maximilian Irro
 # RSS 2.0 Feed Structure { @h1="A"; #ch-benchmark-feed }
 
 
-An RSS 2.0 [@Win03] feed is an XML document. It defines the `<rss>` tag. Atom [@RFC4287] feeds additionally apply the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"` to the `<rss>` tag. The `<channel>` encloses the metadata of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. In the podcast domain, these items are the episodes of the feeds. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item is the `<enclosure>`, which provides the URL to the episode's media file. Some feeds also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
+An RSS 2.0 [@Win03] feed is an XML document. It defines the `<rss>` tag. Atom [@RFC4287] feeds additionally apply the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"` to the `<rss>` tag. The `<channel>` encloses the metadata of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item of a podcast feed is the `<enclosure>`, which provides the URL to the episode's media file. Some feeds of the domain also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
 
 * `xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"` for metadata used in the iTunes Podcast Directory [@iTunesDirectory].
 * `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark information in the Simple Chapters [@PotloveSimpleChapters] format.
@@ -508,11 +509,17 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 
 * [AMQP]{.abbrv-item} Advanced Message Queue Protocol
 * [AO]{.abbrv-item} Active Object
+* [API]{.abbrv-item} Application Programming Interface
+* [DTO]{.abbrv-item} Data Transfer Object
 * [FIFO]{.abbrv-item} First In First Out
+* [HTTP]{.abbrv-item} Hypertext Transfer Protocol 
 * [IPC]{.abbrv-item} Inter-Process Communication
+* [IO]{.abbrv-item} Input/Output
 * [IoC]{.abbrv-item} Inversion of Control
+* [JAR]{.abbrv-item} Java Archive
 * [JVM]{.abbrv-item} Java Virtual Machine
 * [LB]{.abbrv-item} Load Balancing
+* [MPS]{.abbrv-item} Messages per Second
 * [MS]{.abbrv-item} Microservice
 * [MSA]{.abbrv-item} Microservice Architecture
 * [OOP]{.abbrv-item} Object-oriented Programming
@@ -530,6 +537,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [URL]{.abbrv-item} Uniform Resource Locator
 * [VM]{.abbrv-item} Virtual Machine
 { .abbrv-table }
+
 
 <!--
 |:~~~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|

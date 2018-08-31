@@ -21,7 +21,7 @@ The Echo search engine resembles a web-server application. Therefore we can simp
 
 [^fn-concurrent-process]: In this context, *process* referes to a task unit in concurrency theory, and not an OS process.
 
-A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. Since Akka does not serialize data [REF]{.red} if actors are on the same JVM, the comparison of transfered data is not expedient in our case.
+
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
@@ -151,6 +151,8 @@ Especially a lack of different interaction modes in microservice architecture be
 ~ todo
 Hier noch ein paar Wörter ob ich etwas gefunden habe bzgl der sync/async Geschichte
 ~
+
+A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
 
 ### Threats to Validity
 

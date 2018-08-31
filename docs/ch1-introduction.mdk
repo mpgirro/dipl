@@ -39,15 +39,21 @@ In this thesis, we merit attention to two approaches to concurrent programming. 
 
 Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and microservices. This work is aiming to fill this gap, with a regard focusing on the concurrent programming aspects of these concepts. Specifically, we ask the following research questions:
 
-> __RQ__: What are the key characteristics of actors and microserices?
+<!--
+> (__RQ__: What are the key characteristics of actors and microserices?)
+-->
 
-> __RQ__: Why do actors and microservices qualify for programming concurrency? How do both models conceive concurrent execution?
+> __RQ1__: Why do actors and microservices qualify for programming concurrency? How do both models conceive concurrent execution?
 
-> __RQ__: What are the expressive capabilities of both models regarding concurrent programming concerns (e.g.\ parallelization/distribution, location transparency, isolation/independence, scalability)?
+> __RQ2__: How is concurrency facilitated in the actor and microservice programming model?
 
-> __RQ__: How do actors and microservices compare against regarding efficiency [unmissverständlicher formulieren]{.red}
+> __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability?
 
-> __RQ__: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+<!--
+> (__RQ__: How do actors and microservices compare against regarding efficiency [unmissverständlicher formulieren]{.red})
+-->
+
+> __RQ4__: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
 
 * What are the interrelations between actor features/primitives and microservice features/primitives
 
@@ -104,6 +110,10 @@ We conducted our research using the following methodological steps:
 
 ## Contributions
 
+~ todo
+Hier nochmal drüberlesen und überarbeitet. Vll etwas hochgegriffen?
+~
+
 
 We give answers to the research questions be providing the following contributions:
 
@@ -118,6 +128,4 @@ We give answers to the research questions be providing the following contributio
 
 ## Structure of the Thesis
 
-The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *concurrency* in general with a focus on the concerns relevant for our susequent discussion. In Chapter [#ch-actor-model] the *actor model of computation* is introduced and subsequently the *microservice architecture style* in Chapter [#ch-microservice-paradigm]. Chapter [#ch-implementation] concerns programming with actors and microservices, where Section [#sec-scenario] describes a scenario system we implement, Section [#ch-actor-impl] the implementation strategies with actors, and Section [#ch-microservice-impl] the implememtation strategies with microservices.
-
-Chapter [#ch-evaluation] uses the theoretical knowledge and practical findings to compare Actors and Microservices by evaluating capabilities due to commonalities and differences. Finally, Chapter [#ch-conclusion] will state a case for both concepts and formulate our conclusive view.
+The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *concurrency* in general with a focus on the concerns relevant for our susequent discussion. In Chapter [#ch-actor-model] the *actor model of computation* is introduced and subsequently the *microservice architecture style* in Chapter [#ch-microservice-paradigm]. Chapter [#ch-implementation] concerns programming with actors and microservices, where Section [#sec-scenario] describes a scenario system we implement, Section [#ch-actor-impl] the implementation strategies with actors, and Section [#ch-microservice-impl] the implememtation strategies with microservices. Chapter [#ch-evaluation] evaluates both programming models based on the implementations. Chapter [#ch-conclusion] gives a conclusive view.

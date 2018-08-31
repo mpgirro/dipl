@@ -15,24 +15,68 @@ Hier soll 1 SEITE! sein in der ich zusammenfasse wie ich die Research Questions 
 
 ...
 
+In this thesis, we compared the programming of concurrent computation with the actor and microservice model. We've filled a gap in the literature and explored the interrelations of actors and microservices. In order to do so and answer our research questions, we've designed a domain-specific search engine as a prototypical concurrent system scenario. We also provide an actor implementation based on Akka as well as a microservice implementation based on the Spring framework of this system scenario. Finally, we gave an [evaluation/comparison]{.red} of the expressable capabilities of each model, and an efficiency benchmark of the system implementations.
+
+
+## Research Questions Revisited
+
+
+[TODO]{.red}
+
+
+### RQ1: Why do actors and microservices qualify for programming concurrency? { - }
+
+
+Actors and microservices encapsulate their state exlusively and all their communication solely facilitates message passing semantics. These properties provide a temporal and spacial decoupling, which allows for their implicit concurrent execution through an actor runtime or an operating system respectively.  
+
+
+### RQ2: How is concurrency facilitated in the actor and microservice programming model? { - }
 
 
 
-BEWERTUNG:
+The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally concurrency sources. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
 
-* ... the operational complexity that comes with a system consisting of many small independent programs.
+Microservices are free to employ internal concurrency using every model they choose.
 
-
-
-* We've pointed out differences of Erlang and Orleons compared to Akka
+[TODO more]{.red}
 
 
-* We've found that evaluation metrics like throughput [(hab ich da noch andere gefunden?)]{.red} have limited significance due to limitations imposed by the domain 
+### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability? { - }
+
+[TODO]{.red}
+
+We've shown that both models have to apply different implementation strategies, but can achieve the same capabilities in general. Their implementation strategies come with different trade-offs for each model.
+
+In general, we can expect larger executable artifacts and more resource consumption from the microservice approach, since the model produces independent programs. The author initially expected that the microservice style would also show a significantely higher programming effort, e.g.\ in lines of code. The suspected reason was the need to maintain a dedicated codebase for each service. However, we demonstrated how a declarative programming styles can significantely reduce the programming effort. The price is the resulting size of the executable artifacts.  
+
+The actor model achieves the same capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed deployment) exist within the same process and memory boundires. Much of the programmer's effort results from the liability of guaranteeing that no mutable state is accessible through reference sharing among any two actors to ensure the model semantics.
 
 
-~ todo
-Future Work
-~
+### RQ4: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { - }
+
+
+[TODO ein paar Sätze zu den Ergebnissen des Benchmarks]{.red}
+
+
+## Future Work
+
+
+In this thesis, we did not benchmark the effects of distribution due to limitations on available hardware resources. Also, although we've motivated the integration of Akka actors and Spring-based microservices in Section [#sec-combining-akka-spring], we did not investigate the effects on efficiency within a mixed architecture integrating actors and microservices as equal concurrent task units.
+
+A major limitation of both actors and microservices is the lack of checkable compatibility (design by contract). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented programming languages incorporate the microservice model into the language level, and sometimes build upon a process calculus. We deem it worth to fathom into contract verification techniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
+
+Besides, from our experiences in this work, it is the authors general believe that the microservice styles suffers from the lack of a theoretical framework. We therefore think that service-oriented programming languages are a highly promising evolutionary step, which is worth further investigation.
+
+<!--
+
+We deem it worth to investigate further into service-oriented programming languages
+
+...
+
+From our experiences in this work, it is the authors believe that the microservice styles suffers from the lack of a theoretical framework. Service-oriented programming languages, and their foundation on service-oriented computing calculi try to fill this deficiency. 
+
+
+---
 
 FUTURE WORK (kürzer geschrieben)
 
@@ -50,7 +94,7 @@ We did not benchmark horizontal scalability to several machines. Also, we did no
 
 * The microservice model in our architecture lacks a formal framekwork (process calculus)
 
-* Also, a major limitation of both actors and microservices is the lack of checkable compatibility (*design by contract*). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented computing languages incorporating microservices into the language level built upon process calculi. We deem it worth to investigate into contract verification tequniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
+* 
 
 * Actors and Microservices can be (semi)-independently upgraded, but there is no guarantee/ensurance for compatibility of new versions -> Design by Contract
 
@@ -82,8 +126,10 @@ The theoretical work that has been done for actors is suitable for the foundatio
 
 ---
 
-## Outlook and Future Work
 
+
+## Outlook and Future Work
+-->
 
 <!--
 ~ Epigraph { caption: "Niels Bohr" }
@@ -91,6 +137,7 @@ Predicition is very difficult, especially about the future.
 ~
 -->
 
+<!--
 ~ green
 
 We've evaluated the conceptualities of Actors and Microservices, formulated arguments favoring each, and motivated their potential integration. In this final section, we want to argue a conceptual evolution towards a unification.
@@ -111,6 +158,8 @@ The utilization of such formalisms is of course possible for the enhancement of 
 
 In any case, Actor and Microservice technologies can greatly influence their mutual evolution by *learning from* and *growing closer too* each other. For example, Akka already provides circuit breakers for `ask`-calls within its HTTP module. Additionally, Akka cluster nodes (in the version Echo is using) require static configuration for initial discovery. Just recently, automatic discovery capability using the Consul service registry has been merged into the Akka codebase for a future release.   
 ~
+
+-->
 
 <!--
 Languages like Jolie demonstrate how (micro-)service oriented computing can be facilitated on a language level. Microservices in general, and Jolie in particular, are having much in common with Actor Systems, as we've described in this thesis. Besides concurrency, concerns like scalability and [???]{.mind} are approached well by matured technologies like Akka or Erlang, on a programming language level [@Gui17]. However, their Actor abstraction prevents them from facilitating multiple communication channels in a uniform way, as was just demonstrated for HTTP. Service-oriented languages on the other hand can integrate multiple channels and their respective protocols in a seamless way. Extending Jolie programs with HTTP is demonstrated in [@Mon16b].

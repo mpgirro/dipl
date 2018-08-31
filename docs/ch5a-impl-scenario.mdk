@@ -76,7 +76,7 @@ Task units ending in *\*Store* are stateful, all others stateless. The component
 ![img-task-units]
 ~
 
-[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { width: 70%; vertical-align:middle; padding-bottom:1em; }
+[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.5cm; vertical-align:middle; padding-bottom:1em; margin-top:0; padding-top:0;}
 
 When we discuss dataflow examples in due course, we use the following shorthand notation for arbitrary components `X` and `Y`, that will be substituted with the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`). `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
@@ -98,21 +98,18 @@ Note that Figure [#fig-task-units] shows an interaction between the Gateway and 
 #### Indexing Pipeline
 
 
-Feeds get either processed when they are initially indexed, or updated to check for new episodes. Hence, processing is either triggered by adding a yet unknown feed, or on demand by the Updater. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the updating candidates to the Web Crawler, which fetches the XML data of the feed via HTTP. The Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML. All metadata is then forwarded to the CatalogStore. The database of the Store persists the complete metadata. Additionally, the Catalog has to determine based on an episode's metadata record if the episode is already registered, or a new entry. The Catalog finally sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, where it is added to the Lucene index data structures. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
-
-[^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore it is not included in the search index. 
-
 ~ Figure { #fig-indexing-pipeline; caption: "Indexing pipeline"; width:100%; float:left;  }
 ![img-indexing-pipeline]
 ~
 
 [img-indexing-pipeline]: graphics/pipeline-indexation.[svg,png] "Image about indexing pipeline" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
 
+Feeds get either processed when they are initially indexed, or updated to check for new episodes. Hence, processing is either triggered by adding a yet unknown feed, or on demand by the Updater. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the updating candidates to the Web Crawler, which fetches the XML data of the feed via HTTP. The Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML. All metadata is then forwarded to the CatalogStore. The database of the Store persists the complete metadata. Additionally, the Catalog has to determine based on an episode's metadata record if the episode is already registered, or a new entry. The Catalog finally sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, where it is added to the Lucene index data structures. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
+
+[^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore it is not included in the search index. 
+
 
 #### Retrieval Pipeline
-
-
-The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
 
 ~ Figure { #fig-retrieval-pipeline; caption: "Retrieval pipeline"; width:100%; float:left;  }
@@ -120,6 +117,8 @@ The essential purpose of the engine is search. The Web UI offers an interface si
 ~
 
 [img-retrieval-pipeline]: graphics/pipeline-retrieval.[svg,png] "Image about retrieval pipeline" { height:1.5cm; vertical-align:middle; padding-bottom:1em; }
+
+The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests by the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The found results by the IndexStore are then propagated back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
 
 
