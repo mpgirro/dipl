@@ -7,15 +7,7 @@ The price of anything is the amount of life you exchange for it.
 ~
 
 
-...
-
-~ todo
-Hier soll 1 SEITE! sein in der ich zusammenfasse wie ich die Research Questions beantwortet habe, welche Contributions ich gemacht habe, was die Ergebnisse/Erkenntnisse waren und 1-2 Sätze zu Future Work. Mehr nicht!
-~
-
-...
-
-In this thesis, we compared the programming of concurrent computation with the actor and microservice model. We've filled a gap in the literature and explored the interrelations of actors and microservices. In order to do so and answer our research questions, we've designed a domain-specific search engine as a prototypical concurrent system scenario. We also provide an actor implementation based on Akka as well as a microservice implementation based on the Spring framework of this system scenario. Finally, we gave an [evaluation/comparison]{.red} of the expressable capabilities of each model, and an efficiency benchmark of the system implementations.
+In this thesis, we compared the programming of concurrent computation with the actor and microservice model. We've explored the interrelations of the two models and filled a gap in the literature. In order to do so and answer our research questions, we've designed Echo, a domain-specific search engine as a concurrent system prototype scenario. We also provide an actor implementation based on Akka as well as a microservice implementation based on the Spring framework of this system scenario. Finally, we gave an [evaluation/comparison]{.red} of the expressable capabilities of each model, and an efficiency benchmark of the system implementations.
 
 
 ## Research Questions Revisited
@@ -24,24 +16,24 @@ In this thesis, we compared the programming of concurrent computation with the a
 [TODO]{.red}
 
 
-### RQ1: Why do actors and microservices qualify for programming concurrency? { - }
+### RQ1: Why do actors and microservices qualify for programming concurrency? { -; toc:clear }
 
 
 Actors and microservices encapsulate their state exlusively and all their communication solely facilitates message passing semantics. These properties provide a temporal and spacial decoupling, which allows for their implicit concurrent execution through an actor runtime or an operating system respectively.  
 
 
-### RQ2: How is concurrency facilitated in the actor and microservice programming model? { - }
+### RQ2: How is concurrency facilitated in the actor and microservice programming model? { -; toc:clear }
 
 
 
 The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally concurrency sources. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
 
-Microservices are free to employ internal concurrency using every model they choose.
+Microservices are free to employ internal concurrency using every model available to their technology stack.
 
 [TODO more]{.red}
 
 
-### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability? { - }
+### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability? { -; toc:clear }
 
 [TODO]{.red}
 
@@ -52,7 +44,7 @@ In general, we can expect larger executable artifacts and more resource consumpt
 The actor model achieves the same capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed deployment) exist within the same process and memory boundires. Much of the programmer's effort results from the liability of guaranteeing that no mutable state is accessible through reference sharing among any two actors to ensure the model semantics.
 
 
-### RQ4: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { - }
+### RQ4: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { -; toc:clear }
 
 
 [TODO ein paar Sätze zu den Ergebnissen des Benchmarks]{.red}

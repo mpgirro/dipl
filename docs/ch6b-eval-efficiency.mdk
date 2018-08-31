@@ -144,6 +144,9 @@ We reconfigure the previous components in the pipeline with significantely more 
 
 ### Relevance of the Benchmark
 
+
+To the authors knowledge, there exists not benchmark comparing Akka actors and Spring-based microservices yet. We were only able to find one project on GitHub [^fn-msa-framework-benchmark] which benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
+
 ...
 
 Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion.
@@ -152,7 +155,6 @@ Especially a lack of different interaction modes in microservice architecture be
 Hier noch ein paar Wörter ob ich etwas gefunden habe bzgl der sync/async Geschichte
 ~
 
-A project we've found on GitHub [^fn-msa-framework-benchmark] benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
 
 ### Threats to Validity
 

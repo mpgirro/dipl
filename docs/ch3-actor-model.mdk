@@ -10,7 +10,7 @@ Some problems are better evaded than solved.
 <!--## A Model of Computation {#sec-actor-primitives}-->
 
 
-In this thesis, we will focus on one particular model of concurrent computation. This *actor model* is based on a formalism Hewitt *et al.*\ [@Hew73] introduced in the 1970s. As the model's name suggests, it builds upon the concept of *actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communicating via asynchronous message passing [@Agh90]. He also reformulated the actor model into three basic primitives an actor can perform upon receiving a message [@Agh85a]:
+In this thesis, we will focus on one particular model of concurrent computation. The *actor model* is based on a formalism Hewitt *et al.*\ [@Hew73] introduced in the 1970s. As the model's name suggests, it builds upon the concept of *actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communicating via asynchronous message passing [@Agh90]. He also reformulated the actor model into three basic primitives an actor can perform upon receiving a message [@Agh85a]:
 
 1. Sending a finite number of messages to itself or other known actors.
 2. Creating a finite number of new actors.
