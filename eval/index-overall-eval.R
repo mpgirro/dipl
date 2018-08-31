@@ -4,6 +4,21 @@ msa_index_overall_data <- read.table("../src/benchmark/msa-index-rtt-overall.csv
 akka_index_overall_data$color <- rep("red",nrow(akka_index_overall_data));
 msa_index_overall_data$color <- rep("blue",nrow(msa_index_overall_data));
 
+akka_index_overall_data
+
+a <- aggregate(akka_index_overall_data$overallRT, list(input_size=akka_index_overall_data$input_size), mean)
+b <- aggregate(msa_index_overall_data$overallRT, list(input_size=msa_index_overall_data$input_size), mean)
+
+plot(b$input_size, b$x, 
+     type="l", pch=18, col="blue", lty=2, cex=1.2, 
+     xlab = "Input Feeds", ylab = "Overall Processing Time [ms]",
+     xlim=c(0,500), ylim=c(0, 400000))
+lines(a$input_size, a$x, pch=19, col="red", type="l")			   
+legend("topleft", legend=c("Akka", "MSA"),
+       col=c("red", "blue"), lty=1:2, cex=1)
+
+
+
 
 x1 <- akka_index_overall_data$input_size;
 y1 <- akka_index_overall_data$overallRT;
