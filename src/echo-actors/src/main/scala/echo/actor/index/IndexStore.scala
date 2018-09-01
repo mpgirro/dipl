@@ -127,8 +127,17 @@ class IndexStore (indexPath: String,
             log.debug("Received ChildMpsReport({})", childReport)
             mpsMonitor.addMetric(childReport.getName, childReport.getMps)
             if (mpsMonitor.isFinished) {
-                val overallMps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
-                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, overallMps)
+
+                /* when we benchmark the indexing subsystem, the MPS are generated here; in the retrieval phase, the
+                 * MPS are the mean of all children */
+                var mps: Double = 0.0
+                if (!mpsMeter.isMeasuring && mpsMeter.getResult.getMps > 0) {
+                    mps = mpsMeter.getResult.getMps
+                } else {
+                    mps = mpsMonitor.getDataPoints.asScala.foldLeft(0.0)(_ + _)
+                }
+
+                val selfReport = MessagesPerSecondResult.of(self.path.toStringWithoutAddress, mps)
                 benchmarkMonitor ! MessagePerSecondReport(selfReport)
                 supervisor ! ChildMpsReport(selfReport)
             }
@@ -167,7 +176,7 @@ class IndexStore (indexPath: String,
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
-            mpsMeter.tick()
+            //mpsMeter.tick()
 
             router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), sender())
 
