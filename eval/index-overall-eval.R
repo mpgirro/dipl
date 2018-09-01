@@ -1,3 +1,10 @@
+
+quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", 
+                       "CMU Sans Serif BoldOblique"))
+quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", 
+                         "CMU Serif BoldItalic"))
+
+
 index_akka_data <- read.table("data/index-akka-rtt-overall.csv", header=T, sep=";");
 index_msa_data <- read.table("data/index-msa-rtt-overall.csv", header=T, sep=";");
 
@@ -15,14 +22,34 @@ index_msa_data$color <- rep("blue",nrow(index_msa_data));
 a <- aggregate(index_akka_data$overallRT, list(input_size=index_akka_data$input_size), mean)
 b <- aggregate(index_msa_data$overallRT, list(input_size=index_msa_data$input_size), mean)
 
-plot(b$input_size, b$x, 
-     type="l", pch=18, col="blue", lty=2, cex=1.2, 
-     xlab = "Input Feeds", ylab = "Overall Processing Time [seconds]",
-     xlim=c(0,500), ylim=c(0, 400))
-lines(a$input_size, a$x, pch=19, col="red", type="l")			   
-legend("topleft", legend=c("Akka", "MSA"),
-       col=c("red", "blue"), lty=1:2, cex=1)
+pdf("out/eval-index-overall.pdf")
+#png("out/eval-index-overall.png", width=400, height=350, res=72)
 
+par(family = "cmu_sans")
+plot(b$input_size, b$x, 
+     type="l", pch=18, col="blue", lty=2, lwd=2,
+     cex.axis = 1.3, cex.lab = 1.3,
+     xlab = "Number of Feeds", ylab = "Overall Runtime [seconds]",
+     #xlab="", ylab="",
+     xlim=c(0,500), ylim=c(0, 400))
+     #xaxt="n", yaxt="n")
+lines(a$input_size, a$x, pch=19, col="red", type="l", lwd=2)	
+legend("topleft", legend=c("Akka", "MSA"),
+       col=c("red", "blue"), lty=1:2, cex=1.3, lwd=2)
+
+# draw an axis on the left 
+#axis(2, at=b$x,labels=b$x, col.axis="red", las=2)
+
+# draw an axis on the bottom 
+#axis(1, at=c(0,100,200,300,400,500),labels=c(0,100,200,300,400,500), cex=1.2)
+
+#title(main="My Title", col.main="red", 
+#      sub="My Sub-title", col.sub="blue", 
+#      xlab="My X label", ylab="My Y label",
+#      col.lab="green", cex.lab=1.5)
+
+
+dev.off();
 
 
 #
