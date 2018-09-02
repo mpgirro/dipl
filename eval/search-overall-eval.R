@@ -1,3 +1,79 @@
+
+quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", 
+                         "CMU Sans Serif BoldOblique"))
+#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", 
+#                          "CMU Serif BoldItalic"))
+
+library(extrafont)
+font_import(pattern = "CM")
+loadfonts()
+#par(family = "CM Sans")
+
+
+search_akka_delegation_data <- read.table("data/search-akka-delegation-rtt-overall.csv", header=T, sep=";")
+search_akka_future_data <- read.table("data/search-akka-future-rtt-overall.csv", header=T, sep=";")
+
+# milliseconds -> seconds
+search_akka_delegation_data$overallRT = search_akka_delegation_data$overallRT / 1000
+search_akka_future_data$overallRT = search_akka_future_data$overallRT / 1000
+
+# aggregate the values for every X, so we'll just show the means of them
+a <- aggregate(search_akka_delegation_data$overallRT, list(input_size=search_akka_delegation_data$input_size), mean)
+b <- aggregate(search_akka_future_data$overallRT, list(input_size=search_akka_future_data$input_size), mean)
+
+# this function plots the graphic of the data
+g <- function() {
+  plot(b$input_size, b$x, 
+       type="l", pch=18, col="chartreuse4", lty=3, lwd=2,
+       cex.axis = 1.3, cex.lab = 1.3,
+       xlab = "Search Requests", ylab = "Overall Runtime [seconds]",
+       #xlab="", ylab="",
+       xlim=c(0,3000), ylim=c(0, 20))
+  #xaxt="n", yaxt="n")
+  lines(a$input_size, a$x, pch=19, col="red", type="l", lwd=2)	
+  legend("topleft", legend=c("Akka (Delegation)", "Akka (Future)"),
+         col=c("red", "chartreuse4"), lty=1:3, cex=1.3, lwd=2)
+}
+
+# execute this to show in Rstudio
+par(family = "cmu_sans")
+g()
+
+
+dest <- "out/eval-search-comparison-akka-delegation-future"
+
+# output PNG
+png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
+par(family = "cmu_sans")
+g()
+dev.off()
+
+# output PDF
+pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
+par(family = "CM Sans")
+g()
+dev.off()
+# embed the CM Sans font into the PDF, or printing might become a problem
+embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
+
+
+
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+
+
+plot(search_akka_delegation_data$input_size, search_akka_delegation_data$overallRT, type="l", pch=18, col="blue", lty=2, cex=1.2, 
+     xlab = "Search Requests", ylab = "Elapsed Time [Seconds]",
+     xlim=c(0,5000), ylim=c(0, 250))
+lines(search_akka_future_data$input_size, search_akka_future_data$overallRT, type="l", pch=19, col="red")			   
+legend("topleft", legend=c("Akka (Delegation)", "Akka (Future)"),
+       col=c("red", "blue"), lty=1:2, cex=1)
+
+
+
+
+
 akka_search_overall_data <- read.table("../src/benchmark/akka-search-rtt-overall.csv", header=T, sep=";")
 msa_search_overall_data <- read.table("../src/benchmark/msa-search-rtt-overall.csv", header=T, sep=";")
 
@@ -41,6 +117,8 @@ plot(x2, y2,
      xlab = "Search requests", ylab = "Response Time [ms]",
      xlim=c(0,5000), ylim=c(0, 250))
 abline(x2.lm, col="blue");
+
+
 
 
 
