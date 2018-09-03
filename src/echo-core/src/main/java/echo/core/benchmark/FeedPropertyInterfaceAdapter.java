@@ -1,7 +1,6 @@
 package echo.core.benchmark;
 
 import com.google.gson.*;
-import echo.core.benchmark.FeedProperty;
 
 import java.lang.reflect.Type;
 

@@ -15,7 +15,6 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import echo.core.domain.dto.*;
 import echo.core.exception.FeedParsingException;
-import echo.core.parse.rss.rome.PodloveSimpleChapterItem;
 import echo.core.parse.rss.rome.PodloveSimpleChapterModule;
 import echo.core.util.UrlUtil;
 import org.slf4j.Logger;

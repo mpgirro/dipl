@@ -2,7 +2,6 @@ package echo.core.parse.rss;
 
 import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
-import echo.core.exception.FeedParsingException;
 
 import java.util.List;
 

@@ -22,36 +22,44 @@ public class BenchmarkMonitor {
         this.architectureType = architectureType;
     }
 
-    public void init(long expectedReports) {
+    public synchronized void init(long expectedReports) {
         this.expectedReports = expectedReports;
-        reports.clear();
-    }
-
-    public void addReport(BenchmarkMeterReport report) {
-        reports.add(report);
-    }
-
-    public boolean isFinished() {
-        return reports.size() == expectedReports;
-    }
-
-    public String toCsv() {
-        ensureFinished();
-
-        final StringBuilder builder = new StringBuilder();
-        builder.append("src;mps;cpu;mem\n");
-        for (BenchmarkMeterReport r : reports) {
-            builder
-                .append(r.getName())
-                .append(";")
-                .append(r.getMps().getMpsAsString())
-                .append(";")
-                .append(r.getCpuLoad().getMeanLoadAsString())
-                .append(";")
-                .append(r.getMemoryUsage().getMeanBytesAsString())
-                .append("\n");
+        synchronized (reports) {
+            reports.clear();
         }
-        return builder.toString();
+    }
+
+    public synchronized void addReport(BenchmarkMeterReport report) {
+        synchronized (reports) {
+            reports.add(report);
+        }
+    }
+
+    public synchronized boolean isFinished() {
+        synchronized (reports) {
+            return reports.size() == expectedReports;
+        }
+    }
+
+    public synchronized String toCsv() {
+        synchronized (reports) {
+            ensureFinished();
+
+            final StringBuilder builder = new StringBuilder();
+            builder.append("src;mps;cpu;mem\n");
+            for (BenchmarkMeterReport r : reports) {
+                builder
+                    .append(r.getName())
+                    .append(";")
+                    .append(r.getMps().getMpsAsString())
+                    .append(";")
+                    .append(r.getCpuLoad().getMeanLoadAsString())
+                    .append(";")
+                    .append(r.getMemoryUsage().getMeanBytesAsString())
+                    .append("\n");
+            }
+            return builder.toString();
+        }
     }
 
     private void ensureFinished() {

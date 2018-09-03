@@ -1,8 +1,5 @@
 package echo.core;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.rometools.modules.activitystreams.types.Video;
 import echo.core.benchmark.FeedProperty;
 import echo.core.benchmark.FeedPropertyUtil;
 import echo.core.domain.dto.*;
@@ -18,10 +15,11 @@ import echo.core.parse.rss.RomeFeedParser;
 import echo.core.util.DocumentFormatter;
 import echo.core.util.ExoGenerator;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;

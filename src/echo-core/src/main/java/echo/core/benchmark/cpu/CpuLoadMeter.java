@@ -105,28 +105,6 @@ public class CpuLoadMeter extends Thread implements BenchmarkMeter {
             .orElseThrow(() -> new RuntimeException(name + " : CPU load result not yet available"));
     }
 
-    /* TODO delete?
-    public List<Double> getDataPoints() {
-        synchronized (dataPoints) {
-            return dataPoints;
-        }
-    }
-
-    public synchronized double getMeanCpuLoad() {
-        double result = 0;
-        synchronized (dataPoints) {
-            if (dataPoints.size() > 0) {
-                final double sum = dataPoints.stream()
-                    .mapToDouble(Double::doubleValue)
-                    .sum();
-
-                result = sum / dataPoints.size();
-            }
-        }
-        return result;
-    }
-    */
-
     private synchronized double getProcessCpuLoad() {
         final Object value = invokeOperatingSystemMXBeanMethod("getProcessCpuLoad");
         return (value == null) ? 0.0 : (double) value;

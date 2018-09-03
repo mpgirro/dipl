@@ -53,9 +53,6 @@ public interface IndexDocDTO {
     @Nullable
     String getPodcastTitle(); // will be the same as the title if marshalled from a PodcastDTO
 
-    //@Nullable
-    //Set<String> getItunesCategories();
-
     @Nullable
     String getChapterMarks();
 

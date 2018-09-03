@@ -101,37 +101,6 @@ public class MemoryUsageMeter extends Thread implements BenchmarkMeter {
             .orElseThrow(() -> new RuntimeException(name + " : Memory usage result not yet available"));
     }
 
-    /* TODO delete?
-    public List<Long> getDataPoints() {
-        synchronized (dataPoints) {
-            return dataPoints;
-        }
-    }
-
-    public synchronized double getMeanMemoryUsage() {
-        double result = 0;
-        synchronized (dataPoints) {
-            if (dataPoints.size() > 0) {
-                final long sum = dataPoints.stream()
-                    .mapToLong(Long::longValue)
-                    .sum();
-
-                result = ((double) sum) / dataPoints.size();
-            }
-        }
-        return result;
-    }
-
-    private long bytesToMegabytes(long bytes) {
-        return bytes / MEGABYTE;
-    }
-
-    public synchronized String getMeanMemoryUsageStr() {
-        return bytesToMegabytes((long) getMeanMemoryUsage()) + " MB";
-    }
-
-    */
-
     private synchronized long getCurrentMemoryUsage() {
         return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
             + ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();

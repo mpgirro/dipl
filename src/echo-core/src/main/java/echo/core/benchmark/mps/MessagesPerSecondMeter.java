@@ -96,17 +96,4 @@ public class MessagesPerSecondMeter implements BenchmarkMeter {
             .orElseThrow(() -> new RuntimeException(name + " : Messages per second result not yet available"));
     }
 
-    /*
-    public synchronized double getMessagesPerSecond() {
-        final long elaspedTime = stopTime - startTime;
-        if (elaspedTime > 0 && counter > 0) {
-            final double c = (double) counter;
-            final double t = ((double) elaspedTime) / 1000;
-            return c / t;
-        } else {
-            return 0;
-        }
-    }
-    */
-
 }
