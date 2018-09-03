@@ -26,7 +26,6 @@ public class UpdaterQueueSender {
     private String routingKey;
 
     public void produceMsg(UpdaterJob job){
-        //log.debug("Send msg : {}", job);
         amqpTemplate.convertAndSend(exchange, routingKey, job);
     }
 

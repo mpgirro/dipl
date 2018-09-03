@@ -1,9 +1,7 @@
 package echo.microservice.catalog.service;
 
 import echo.core.domain.dto.ChapterDTO;
-import echo.core.domain.dto.ImmutableChapterDTO;
 import echo.core.domain.dto.ModifiableChapterDTO;
-import echo.core.domain.entity.ChapterEntity;
 import echo.core.mapper.ChapterMapper;
 import echo.microservice.catalog.repository.ChapterRepository;
 import org.slf4j.Logger;

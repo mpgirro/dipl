@@ -1,18 +1,14 @@
 package echo.microservice.searcher.web.rest;
 
-import echo.core.benchmark.cpu.CpuLoadMeter;
-import echo.core.benchmark.memory.MemoryUsageMeter;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ImmutableResultWrapperDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.searcher.service.BenchmarkService;
 import echo.microservice.searcher.service.SearchService;
-import echo.microservice.searcher.web.client.BenchmarkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

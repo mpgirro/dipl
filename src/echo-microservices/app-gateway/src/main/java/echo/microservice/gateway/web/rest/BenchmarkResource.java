@@ -1,6 +1,5 @@
 package echo.microservice.gateway.web.rest;
 
-import echo.core.benchmark.BenchmarkSearchRequest;
 import echo.core.benchmark.mps.MessagesPerSecondMeter;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.domain.dto.ResultWrapperDTO;
@@ -95,31 +94,6 @@ public class BenchmarkResource {
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
-
-    /*
-    @RequestMapping(
-        value    = "/search",
-        method   = RequestMethod.POST,
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultWrapperDTO> benchmarkSearchRequest(@RequestBody BenchmarkSearchRequest request) {
-        log.info("REST request to search for request : {}", request);
-        mpsMeter.tick();
-        final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(request.getQuery(), request.getPage(), request.getSize(), request.getRtt());
-
-        if (resultWrapper.isPresent()) {
-            sendRttReport(resultWrapper.get().getRTT().bumpRTTs());
-        } else {
-            log.warn("No result present");
-            sendRttReport(request.getRtt().bumpRTTs());
-        }
-
-        return resultWrapper
-            .map(result -> new ResponseEntity<>(
-                result,
-                HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-    }
-    */
 
     @Async
     public void sendRttReport(RoundTripTime rtt) {

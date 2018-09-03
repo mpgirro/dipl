@@ -4,10 +4,7 @@ import echo.core.async.catalog.ImmutableRegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.ImmutableUpdatePodcastCatalogJob;
 import echo.core.async.catalog.RegisterEpisodeIfNewJobCatalogJob;
 import echo.core.async.catalog.UpdatePodcastCatalogJob;
-import echo.core.async.parser.ParserJob;
 import echo.core.benchmark.rtt.RoundTripTime;
-import echo.core.domain.dto.EpisodeDTO;
-import echo.core.domain.dto.ModifiableEpisodeDTO;
 import echo.core.domain.dto.ModifiablePodcastDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
@@ -23,9 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -61,17 +60,11 @@ public class IndexService {
         synchronized (cache) {
             cache.add(doc);
         }
-        //indexCommitter.add(doc);
-        //indexCommitter.commit();
     }
 
     public ResultWrapperDTO search(String query, Integer page, Integer size, RoundTripTime rtt) throws SearchException {
-        //final long beforeRefresh = System.currentTimeMillis();
         indexSearcher.refresh();
-        //final long afterRefresh = System.currentTimeMillis();
         final ImmutableResultWrapperDTO result = (ImmutableResultWrapperDTO) indexSearcher.search(query, page, size);
-        //final long afterSearch = System.currentTimeMillis();
-        //log.info("[BENCH] Refresh took : {}ms ; Search took : {}ms", afterRefresh-beforeRefresh, afterSearch-afterRefresh);
         return result.withRTT(rtt.bumpRTTs());
     }
 

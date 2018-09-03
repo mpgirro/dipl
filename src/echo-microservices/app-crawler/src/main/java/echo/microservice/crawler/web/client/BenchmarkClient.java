@@ -29,7 +29,6 @@ public interface BenchmarkClient {
     @PostMapping(value = "/benchmark/memory-report")
     void sendMemoryReport(@RequestParam("name") String name, @RequestBody MemoryUsageResult memoryUsageResult);
 
-    //@PostMapping(value = "/benchmark/benchmark-report")
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/benchmark/benchmark-report",

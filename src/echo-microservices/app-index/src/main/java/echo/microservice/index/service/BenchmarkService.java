@@ -63,17 +63,6 @@ public class BenchmarkService {
         log.info("Sending benchmark report");
         log.debug("{}", report);
         benchmarkClient.sendBenchmarkReport(report);
-
-        /*
-        log.info("Sending MPS report : {}", mpsMeter.getResult());
-        benchmarkClient.sendMpsReport(applicationName, mpsMeter.getResult());
-
-        log.info("Sending CPU load report : {}", cpuLoadMeter.getResult());
-        benchmarkClient.sendCpuReport(applicationName, cpuLoadMeter.getResult());
-
-        log.info("Sending memory usage report : {}", memoryUsageMeter.getResult());
-        benchmarkClient.sendMemoryReport(applicationName, memoryUsageMeter.getResult());
-        */
     }
 
     @Async

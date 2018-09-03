@@ -69,5 +69,4 @@ public class IndexResource {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-
 }

@@ -95,16 +95,6 @@ public class CrawlerService {
             log.error("Unhandled Exception on {} : {}", feedUrl, Optional.ofNullable(e.getMessage()).orElse("NO REASON GIVEN IN EXCEPTION"));
             e.printStackTrace();
         }
-
-        /*
-        // TODO
-        log.debug("Retrieving feed-data as String : {}", feedUrl);
-        final String feedData = restTemplate.getForObject(feedUrl, String.class);
-        */
-
-        // TODO
-        // assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
-
     }
 
     @Async

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 )
 public interface BenchmarkClient {
 
-    //@PostMapping(value = "/benchmark/rtt-report")
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/benchmark/rtt-report",
@@ -37,7 +36,6 @@ public interface BenchmarkClient {
     @PostMapping(value = "/benchmark/memory-report")
     void sendMemoryReport(@RequestParam("name") String name, @RequestBody MemoryUsageResult memoryUsageResult);
 
-    //@PostMapping(value = "/benchmark/benchmark-report")
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/benchmark/benchmark-report",

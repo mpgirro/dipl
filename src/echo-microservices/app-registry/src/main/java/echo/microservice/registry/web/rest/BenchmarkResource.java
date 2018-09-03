@@ -2,15 +2,11 @@ package echo.microservice.registry.web.rest;
 
 import com.google.common.collect.ImmutableList;
 import echo.core.benchmark.*;
-import echo.core.benchmark.cpu.CpuLoadResult;
-import echo.core.benchmark.memory.MemoryUsageResult;
 import echo.core.benchmark.mps.MessagesPerSecondMonitor;
-import echo.core.benchmark.mps.MessagesPerSecondResult;
 import echo.core.benchmark.rtt.RoundTripTime;
 import echo.core.benchmark.rtt.RoundTripTimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,13 +56,6 @@ public class BenchmarkResource {
         if (rttMonitor.isFinished()) {
             sendStopMessagePerSecondMonitoringMessages();
 
-            /*
-            //rttMonitor.getAllRTTs().stream().forEach(r -> log.info(r.getRtts().toString()));
-            log.info("RTT reporting finished; results in CSV format :");
-            System.out.println(rttMonitor.toCsv());
-            rttMonitor.printSumEvals();
-            */
-
             final int size = rttMonitor.getAllRTTs().size();
 
             String progressFile = "msa-rtt-progress-not-set.txt";
@@ -81,58 +70,14 @@ public class BenchmarkResource {
                 log.warn("Unhandled Workflow : {}", rttMonitor.getWorkflow());
             }
 
-            //log.info("RTT progress CSV :");
             final String progressCSV = rttMonitor.getProgressCSV();
             benchmarkUtil.writeToFile(progressFile, progressCSV);
 
-            //log.info("RTT overall CSV :");
             final String overallCSV = rttMonitor.getOverallCSV();
             benchmarkUtil.appendToFile(overallFile, overallCSV);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    /*
-    @RequestMapping(
-        value  = "/mps-report",
-        method = RequestMethod.POST,
-        params = { "name" })
-    public ResponseEntity<Void> mpsReport(@RequestParam("name") String name, @RequestBody MessagesPerSecondResult mps) throws URISyntaxException {
-        log.debug("REST request to report {} MPS : {}", name, mps);
-        mpsMonitor.addMetric(name, mps.getMps()); // TODO
-        if (mpsMonitor.isFinished()) {
-            log.info("MPS reporting finished; results in CSV format :");
-            System.out.println(mpsMonitor.toCsv());
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(
-        value  = "/cpu-report",
-        method = RequestMethod.POST,
-        params = { "name" })
-    public ResponseEntity<Void> cpuReport(@RequestParam("name") String name, @RequestBody CpuLoadResult cpuLoadResult) throws URISyntaxException {
-        log.debug("REST request to report {} CPU load : {}", name, cpuLoadResult);
-
-        // TODO
-        log.info("{} : {}", name, cpuLoadResult.getMeanLoadStr());
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(
-        value  = "/memory-report",
-        method = RequestMethod.POST,
-        params = { "name" })
-    public ResponseEntity<Void> memoryReport(@RequestParam("name") String name, @RequestBody MemoryUsageResult memoryUsageResult) throws URISyntaxException {
-        log.debug("REST request to report {} memory load : {}", name, memoryUsageResult);
-
-        // TODO
-        log.info("{} : {}", name, memoryUsageResult.getMeanBytesStr());
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    */
 
     @RequestMapping(
         value  = "/benchmark-report",
@@ -141,16 +86,6 @@ public class BenchmarkResource {
     public ResponseEntity<Void> benchmarkReport(@RequestBody BenchmarkMeterReport report) throws URISyntaxException {
         log.info("REST request to report benchmark results for : {}", report.getName());
         log.debug("{}", report);
-
-        /* for Microservices, the MPS reports are equal to overall reports, so no special handling I guess?
-        mpsMonitor.addMetric(report.getName(), report.getMps().getMps());
-        System.out.println(report.getName() + "\t: " + report.getMemoryUsage().getMeanBytesStr());
-        System.out.println(report.getName() + "\t: " + report.getCpuLoad().getMeanLoadStr());
-        if (mpsMonitor.isFinished()) {
-            log.info("MPS reporting finished; results in CSV format :");
-            System.out.println(mpsMonitor.toCsv());
-        }
-        */
 
         reportMonitor.addReport(report);
         if (reportMonitor.isFinished()) {
@@ -207,7 +142,6 @@ public class BenchmarkResource {
 
 
     private void sendStartMessagePerSecondMonitoringMessages(Boolean mps) {
-        //HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
         log.info("Informing all MS to start monitoring MPS");
         startGatewayMps(mps);
         startCatalogMps(mps);
@@ -221,7 +155,6 @@ public class BenchmarkResource {
     private void sendStopMessagePerSecondMonitoringMessages() {
         log.info("Informing all MS to stop monitoring MPS and report results");
         final boolean mps = false;
-        //HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
         stopGatewayMps(mps);
         stopCatalogMps(mps);
         stopIndexMps(mps);

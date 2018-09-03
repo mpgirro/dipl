@@ -26,7 +26,6 @@ public class CatalogQueueSender {
     private String routingKey;
 
     public void produceMsg(CatalogJob job){
-        //log.debug("Send msg : {}", job);
         amqpTemplate.convertAndSend(exchange, routingKey, job);
     }
 

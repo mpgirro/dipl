@@ -1,20 +1,14 @@
 package echo.microservice.gateway.service;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import echo.core.benchmark.rtt.RoundTripTime;
-import echo.core.domain.dto.ImmutableResultWrapperDTO;
-import echo.core.domain.dto.IndexDocDTO;
 import echo.core.domain.dto.ResultWrapperDTO;
 import echo.microservice.gateway.web.client.SearcherClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
