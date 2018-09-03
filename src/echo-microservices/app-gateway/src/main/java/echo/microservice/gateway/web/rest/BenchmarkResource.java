@@ -74,6 +74,33 @@ public class BenchmarkResource {
         value    = "/search",
         method   = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultWrapperDTO> searchQuery(@RequestParam("q") String query,
+                                                        @RequestParam("p") Optional<Integer> page,
+                                                        @RequestParam("s") Optional<Integer> size,
+                                                        @RequestBody RoundTripTime rtt) {
+        log.info("REST request to search for q/p/s : ('{}',{},{})", query, page, size);
+        mpsMeter.tick();
+        final Optional<ResultWrapperDTO> resultWrapper = searcherService.searchBenchmark(query, page, size, rtt);
+
+        if (resultWrapper.isPresent()) {
+            sendRttReport(resultWrapper.get().getRTT().bumpRTTs());
+        } else {
+            log.warn("No result present");
+            sendRttReport(rtt.bumpRTTs());
+        }
+
+        return resultWrapper
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    /*
+    @RequestMapping(
+        value    = "/search",
+        method   = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultWrapperDTO> benchmarkSearchRequest(@RequestBody BenchmarkSearchRequest request) {
         log.info("REST request to search for request : {}", request);
         mpsMeter.tick();
@@ -92,6 +119,7 @@ public class BenchmarkResource {
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
+    */
 
     @Async
     public void sendRttReport(RoundTripTime rtt) {
