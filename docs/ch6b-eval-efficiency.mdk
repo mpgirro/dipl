@@ -7,7 +7,13 @@ Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
 ~
 
 
-We've compared the expressiveness and conceptual capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency of each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. The results allow us to draw conclusions about the underlying concurrency concepts. Therefore, we require some metrics to gather in the benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we gather must be viable in both programming models, such that we can compare the values.
+We've compared the expressiveness and conceptual capabilities of actors and microservices and demonstrated that both can meet similar concerns. Now we are interested in the efficiency we can leverage from each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. The results allow us to draw conclusions about the underlying concurrency concepts. 
+
+---
+
+UNTEN HINSCHREIBEN:
+
+Therefore, we require some metrics to gather in the benchmark. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. Instead, we want to measure the efficiency in terms of system performance. The common metrics we gather must be viable in both programming models, such that we can compare the values.
 
 
 ### Performance Metrics
@@ -54,12 +60,18 @@ Therefore we must design our own dataset collection. In general, we are faced wi
 [^fn-fyyd]: <https://fyyd.de>
 
 
-### Experiment Setup and Test Environment
+### Experiment Setup
 
 
 All evaluation results are measured on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6.
 
-All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on filled index. To avoid interferences of non-model specific parameters (latencies, etc.), we use the same database API in both architectures. Hence, the Akka implementation uses the Spring Data JPA binding that fits naturally into the CatalogStore microservice. Crawlers load the benchmark feeds from the local file system, and therefore are not subject to network induced latencies. 
+~ todo
+We use the H2 database system (version XY) in the experiment setup; Lucene Version XY
+~
+
+All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on filled index. [To avoid interferences of non-model specific parameters (latencies, etc.), we use the same database API in both architectures. Hence, the Akka implementation uses the Spring Data JPA binding that fits naturally into the CatalogStore microservice.]{.red} Crawlers load the benchmark feeds from the local file system, and therefore are not subject to network induced latencies. 
+
+To eliminate a threat to the validity of the benchmark (discussed below), the CatalogStores of each system implementation use the Spring Data JPA library for database interaction. Usually, Spring Data JPA expects a Spring IoC container to handle concurrent connections and transaction management. To be able to handle concurrent database interaction directly via actors, the Akka implementation uses Spring Data JPA without an IoC container. The respective CatalogStore therefore has to manage transactions manually.
 
 <!--
 ...
@@ -69,17 +81,11 @@ In this benchmark, we will merely explore effects related to vertical scalabilit
 ...
 -->
 
-To ensure that both implementation variants have the same resources available, we assign each architecture component with a fixed number of threads. The Akka components use a `Dispatcher`{language:scala} backed by a `ThreadPoolExecutor`{language:java} (in contrast to a so-called `ForkJoinExecutor`{language:scala} with dynamic pool size). Subsequently, the Spring IoC container is configured to use a `ThreadPoolTaskExecutor`{language:java}, where the `corePoolSize` is equal to the `maxPoolSize`. If not stated otherwise, we use 16 threads per component.
+To ensure that both implementation variants have the same resources for concurrent execution available to them, we assign each architecture component with a fixed number of threads. The Akka components use a `Dispatcher`{language:scala} backed by a `ThreadPoolExecutor`{language:java} (in contrast to the default `ForkJoinExecutor`{language:scala} with a dynamic pool size). The Spring IoC containers of the microservices are configured to use a `ThreadPoolTaskExecutor`{language:java}, where the `corePoolSize` is equal to the `maxPoolSize`. If not stated otherwise, we use 16 threads per component. This way, the benchmark results indicate which programming model better utilizes the available thread resources.
 
-~ todo
-We use the H2 database system in the experiment setup.
-~
+
 
 ### Benchmark Results
-
-HINWEIS: Alle components haben 16 fixe threads
-
-For the benchmark, we provide each architecture component with a fixed number of threads available to them. If not states otherwise, the default thread-pool size for every component is 16. This way, we can reason about which underlying programming model better utilizes the available thread resources. 
 
 
 #### Experiment 1: Indexing Subsystem
@@ -88,7 +94,7 @@ For the benchmark, we provide each architecture component with a fixed number of
 ![img-eval-index-overall]
 ~
 
-[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { height:8cm; vertical-align:middle; padding-bottom:1em; }
+[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:70%; vertical-align:middle; padding-bottom:1em; }
 
 ...
 
@@ -129,7 +135,7 @@ We reconfigure the previous components in the pipeline with significantely more 
 ![img-eval-search-overall]
 ~
 
-[img-eval-search-overall]: graphics/eval-search-overall.[pdf,png] "Image about eval-search-overall" { height:7cm; vertical-align:middle; padding-bottom:1em; }
+[img-eval-search-overall]: graphics/eval-search-overall.[pdf,png] "Image about eval-search-overall" { width:70%; vertical-align:middle; padding-bottom:1em; }
 
 ...
 
@@ -153,7 +159,7 @@ We reconfigure the previous components in the pipeline with significantely more 
 ### Relevance of the Benchmark
 
 
-To the authors knowledge, there exists not benchmark comparing Akka actors and Spring-based microservices yet. We were only able to find one project on GitHub [^fn-msa-framework-benchmark] which benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely used to serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
+To the authors knowledge, there exists not benchmark comparing Akka actors and Spring-based microservices yet. We were only able to find one project on GitHub [^fn-msa-framework-benchmark] which benchmarks popular microservices frameworks using latency (RTT of a single request/work package), throughput and transfered data. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks are merely serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
 
 ...
 
@@ -173,7 +179,7 @@ hier ein paar Blabla worte
 #### External Threats to Validity 
 
 
-The external threats concern how much our results are generalizable. The domain-specific actions of our scenario have an influence on the performance. Examples are the HTTP retrieval of RSS feeds, XML parsing and database IO. These actions dampen e.g.\ the throughput. The performance of these actions is influenced by the utilized underlying technologies (HTTP library, XML parser, database system). The comparability of benchmark metrics across systems is threatended. We mitigated this threat by founding all task units on the JVM. We provide all components with the same Core library, which implements the domain-specifiy functionality. The Catalog access the same kind of database system, and both implementations use the Spring Data JPA library for database interaction. Platform- and domain-specific effects are therefore uniform across the system implementations. Nevertheless, due to the domain influence, no general statement about the performance of Akka or Spring-based services is possible. Other metrics are not even measureable in the scenario. Examples are the creation time and maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence these metrics require an experiment outside the bounds of our scenario. 
+The external threats concern how much our results are generalizable. The domain-specific actions of our scenario have an influence on the performance. Examples are the HTTP retrieval of RSS feeds, XML parsing and database IO. These actions dampen e.g.\ the throughput. The performance of these actions is influenced by the utilized underlying technologies (HTTP library, XML parser, database system). The comparability of benchmark metrics across systems is threatened. We mitigated this threat by founding all task units on the JVM. We provide all components with the same Core library, which implements the domain-specifiy functionality. The CatalogStores access the same kind of database system, and both implementations use the Spring Data JPA library for database interaction. Platform- and domain-specific effects are therefore uniform across the system implementations. Nevertheless, due to the domain influence, no general statement about the performance of Akka or Spring-based services is possible. Other metrics are not even measureable in the scenario. Examples are the creation time and maximum process support as reported in [@Val18]. The static configuration of our scenario does not intend elasticity, i.e.\ a dynamic creation of task units. Hence these metrics require an experiment outside the bounds of our scenario. 
 
 Additionally, we conducted the experiments merely on a single multicore machine. The experiments therefore only incorporate the effect of vertical scalability leveraged from general concurrency and parallelism on one single machine. Also, the multicore machine has a very small number of cores. The test setup does not take into account the horizontal scalability effects of distribution-induced concurrency.
 
@@ -188,7 +194,7 @@ Microservices are not a model of classic concurrency theory, and common benchmar
 
 The internal threats to the validity of this benchmark concern the accuracy of our data collection tool. Since we did not find a tool that is sufficient to collect the data for Akka actors and Spring-based microservices, we developed a custom benchmark framework. This toolkit is implemented to the best of our knowledge, but we have to assume that its efficiency is not state of the art. This threat is mitigated since both systems are subject to the same suspected inefficiency, which does not distort the relative comparison of metrics.  
 
-An additional threat is resulting from the fixed amount of threads we provide for each component in the benchmark. Actor-based components can fully leverage all these threads, e.g.\ for child actors or futures. We've discussed in Section [#sec-internal-service-concurrency] that the microservices use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool of Spring's IoC container. To ensure the thread limit for the component, we have to split up the threads between the two thread-pools. There is the threat that a service's implementation does not distribute the computational load equally between the two thread-pools. We did not measure the thread-partitioning required for ideal thread utilization. Instead, we distributed the available threads evenly between both pools for all services. This threat is only mitigated for services which do not apply asynchrony internally. Then there is only the standard `TaskExecutor`{language:java} with the full amount of threads in place. 
+An additional threat is resulting from the fixed amount of threads we provide for each component in the benchmark. Actor-based components can fully leverage all these threads, e.g.\ for child actors or futures. We've discussed in Section [#sec-internal-service-concurrency] that the microservices use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool of Spring's IoC container. To ensure the thread limit for the component, we have to split up the threads between the two thread-pools. There is the threat that a service's implementation does not distribute the computational load equally between the two thread-pools. We did not measure the thread-partitioning required for ideal thread utilization for each microservice. Instead, we distributed the available threads evenly between both pools for all services. This threat is only mitigated for services which do not apply asynchrony internally. Then there is only the standard `TaskExecutor`{language:java} with the full amount of threads in place. 
 
 Furtermore, Akka does not serialize messages [REF?]{.red} if the sending and receiving actors are inside the same JVM. Every actor message is then simple in-memory reference sharing of immutable objects, while each microservice message is definitely serialized and sent via a network interface (although the message is always delivered on the same machine).
 
