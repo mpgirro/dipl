@@ -30,9 +30,9 @@ Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 Bib style         : style/keynat.bst
-name-references   : Bibliography
-name-figures      : List of Figures
-name-tables       : List of Tables
+Name References   : Bibliography
+Name Figures      : List of Figures
+Name Tables       : List of Tables
 
 <!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
 <!--Bib style : plainnat-->
@@ -96,9 +96,9 @@ Bibl {
 -->
 
 
-.abbrv-table { list-style-type:none; margin-left:0; tex-env: "itemize[leftmargin=*]"}
+.abbrv-table    { list-style-type:none; margin-left:0; tex-env: "itemize[leftmargin=*]"}
 .abbrv-table-li { margin-bottom:0.2ex; }
-.abbrv-item { font-family: sans-serif; font-weight: bold; width:8ex; }
+.abbrv-item     { font-family: sans-serif; font-weight: bold; width:8ex; }
 
 
 <!-- change some fonts used in latex, my personal preference -->
@@ -117,27 +117,25 @@ blockquote   { font-style: italic; }
 .tocblock2   { margin-bottom:1em }
 .figureline  { display: none }
 
+<!-- DOES NOT WORK IN LATEX
+.heading-contents { text-align:right }
+.heading-figures  { text-align:right }
+.heading-tables   { text-align:right }
+-->
+
 <!-- arbitrary helper classes, while work in progress -->
-.findings { border: solid black 1px; padding:1rem }
+.findings       { border: solid black 1px; padding:1rem }
 .findings-title { font-family: sans-serif; font-weight: bold; margin-left:1rem; }
-.findings-list { margin-top: 1ex; padding-top: 0ex; margin-right:1rem; }
-.example-title { font-family: sans-serif; font-weight: bold; }
+.findings-list  { margin-top: 1ex; padding-top: 0ex; margin-right:1rem; }
+.example-title  { font-family: sans-serif; font-weight: bold; }
 .litnote, .lit, .literature { 
   background-color: LightGray;
   padding: 1ex;
 }
-.mind {
-  background-color: #cbffcb;
-  before="[";
-  after="]"
-}
-.quelle {
-  color: red;
-  before="[";
-  after="]"
-}
-.todo, .important, .delete, .red {
-  color:red
+.mind   { background-color: #cbffcb; before="["; after="]" }
+.quelle { color: red; before="["; after="]" }
+.todo, .important, .delete, .red { 
+  color:red 
 }
 .green  { color: green }
 .greenb { color: green; font-weight: bold }
@@ -512,6 +510,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [API]{.abbrv-item} Application Programming Interface
 * [DTO]{.abbrv-item} Data Transfer Object
 * [FIFO]{.abbrv-item} First In First Out
+* [fJAR]{.abbrv-item} fat JAR
 * [HTTP]{.abbrv-item} Hypertext Transfer Protocol 
 * [IPC]{.abbrv-item} Inter-Process Communication
 * [IO]{.abbrv-item} Input/Output
@@ -527,11 +526,13 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [PID]{.abbrv-item} Process Identifier
 * [REST]{.abbrv-item} Representational State Transfer
 * [RPC]{.abbrv-item} Remote Procedure Call
+* [sJAR]{.abbrv-item} skinny JAR
 * [SOA]{.abbrv-item} Service-oriented Architecture
 * [SoC]{.abbrv-item} Separation of Concerns
 * [SOC]{.abbrv-item} Service-oriented Computing
 * [SOP]{.abbrv-item} Service-oriented Programming
 * [SRP]{.abbrv-item} Single Responsibility Principle
+* [ST]{.abbrv-item} Startup Time
 * [STM]{.abbrv-item} Software Transactional Memory
 * [URI]{.abbrv-item} Uniform Resource Identifier
 * [URL]{.abbrv-item} Uniform Resource Locator

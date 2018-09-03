@@ -53,7 +53,7 @@ The actor model achieves the same capabilities in a single codebase. This single
 ## Future Work
 
 
-In this thesis, we did not benchmark the effects of distribution due to limitations on available hardware resources. Also, although we've motivated the integration of Akka actors and Spring-based microservices in Section [#sec-combining-akka-spring], we did not investigate the effects on efficiency within a mixed architecture integrating actors and microservices as equal concurrent task units.
+In this thesis, we did not benchmark the effects of distribution due to our limited access to hardware resources. Also, although we've motivated the integration of Akka actors and Spring-based microservices in Section [#sec-combining-akka-spring], we did not investigate the effects on efficiency within a mixed architecture integrating actors and microservices as equal concurrent task units.
 
 A major limitation of both actors and microservices is the lack of checkable compatibility (design by contract). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented programming languages incorporate the microservice model into the language level, and sometimes build upon a process calculus. We deem it worth to fathom into contract verification techniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
 
