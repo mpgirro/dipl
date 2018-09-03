@@ -83,14 +83,11 @@ class IndexBroker extends Actor with ActorLogging {
             mpsMonitor.reset()
             mpsMeter.startMeasurement()
             broadcastRouter.route(StartMessagePerSecondMonitoring, sender())
-            //roundRobinRouter.routees.foreach(r => r.send(StartMessagePerSecondMonitoring, sender()))
 
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             broadcastRouter.route(StopMessagePerSecondMonitoring, sender())
-            //roundRobinRouter.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
 
         case ChildMpsReport(childReport) =>
             log.debug("Received ChildMpsReport({})", childReport)

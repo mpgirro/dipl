@@ -89,7 +89,6 @@ class CatalogBroker extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             broadcastRouter.route(StopMessagePerSecondMonitoring, sender())
 
         case ChildMpsReport(childReport) =>

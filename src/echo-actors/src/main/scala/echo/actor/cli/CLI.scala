@@ -1,7 +1,6 @@
 package echo.actor.cli
 
 import java.util
-import java.util.Collections
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
@@ -16,8 +15,7 @@ import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
 import echo.core.util.{DocumentFormatter, UrlUtil}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Await
-import scala.concurrent.blocking
+import scala.concurrent.{Await, blocking}
 import scala.concurrent.duration._
 import scala.io.{Source, StdIn}
 import scala.language.postfixOps

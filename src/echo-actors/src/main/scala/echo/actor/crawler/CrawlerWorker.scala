@@ -231,7 +231,6 @@ class CrawlerWorker extends Actor with ActorLogging {
                             // if the feed moved to a new URL, we will inform the directory, so
                             // it will use the new location starting with the next update cycle
                             if (!url.equals(href)) {
-                                //directoryStore ! UpdateFeedUrl(url, href)
                                 val catalogEvent = UpdateFeedUrl(url, href)
                                 emitCatalogEvent(catalogEvent)
                             }
@@ -242,7 +241,6 @@ class CrawlerWorker extends Actor with ActorLogging {
                              * determine weither the feed changed and I really need to redownload
                              */
                             self ! DownloadContent(exo, href, job, encoding, rtt) // TODO
-                            //fetchContent(exo, href, job, encoding)
                     }
                 case None =>
                     log.error("We did not get any location-url after evaluating response --> cannot proceed download without one")

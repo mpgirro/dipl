@@ -2,17 +2,16 @@ package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Put, Send}
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
-import akka.http.scaladsl.model.StatusCodes.{InternalServerError, TooManyRequests}
+import akka.cluster.pubsub.DistributedPubSubMediator.Put
+import akka.http.scaladsl.model.StatusCodes.TooManyRequests
 import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import com.google.common.base.Strings.isNullOrEmpty
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
-import echo.actor.index.IndexProtocol.{IndexQuery, IndexResultsFound, NoIndexResultsFound, SearchIndex}
+import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound, SearchIndex}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.mps.MessagesPerSecondMeter
-import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist

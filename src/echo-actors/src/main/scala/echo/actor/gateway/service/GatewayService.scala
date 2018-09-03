@@ -1,8 +1,7 @@
 package echo.actor.gateway.service
 
 import akka.dispatch.MessageDispatcher
-import akka.http.scaladsl.server.{Directives, Route}
-import echo.actor.gateway.json.JsonSupport
+import akka.http.scaladsl.server.Route
 
 /**
   * @author Maximilian Irro

@@ -1,11 +1,8 @@
 package echo.actor.gateway.json
 
-import echo.actor.gateway.json.ChapterJsonProtocol.ChapterJsonFormat
 import echo.core.domain.dto.{EpisodeDTO, ImmutableEpisodeDTO}
 import echo.core.mapper.DateMapper
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsArray, JsNull, JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
-
-import scala.collection.JavaConverters._
 
 /**
   * @author Maximilian Irro

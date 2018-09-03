@@ -59,8 +59,6 @@ class FeedCatalogService(log: LoggingAdapter,
     @Transactional
     def findAll(page: Int, size: Int): List[FeedDTO] = {
         log.debug("Request to get all Feeds by page : {} and size : {}", page, size)
-        //val sort = new Sort(new Sort.Order(Direction.ASC, "registration_timestamp"))
-        //val pageable = new PageRequest(page, size, sort)
         val pageable = new PageRequest(page, size)
         feedRepository.findAll(pageable)
             .asScala

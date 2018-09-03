@@ -14,8 +14,6 @@ import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.domain.dto.FeedDTO
 import io.swagger.annotations._
 
-import scala.concurrent.duration.FiniteDuration
-
 /**
   * @author Maximilian Irro
   */

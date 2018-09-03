@@ -1,7 +1,6 @@
 package echo.actor.catalog.repository
 
-import echo.core.domain.entity.{PodcastEntity}
-import echo.core.domain.feed.FeedStatus
+import echo.core.domain.entity.PodcastEntity
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param

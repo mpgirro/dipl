@@ -90,7 +90,6 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
         case StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
 
         case ChildMpsReport(childReport) =>
@@ -104,22 +103,6 @@ class CatalogStore(databaseUrl: String) extends Actor with ActorLogging {
             }
 
         case Terminated(corpse) =>
-            /* TODO at some point we want to simply restart replace the worker
-            router = router.removeRoutee(corpse)
-            val directoryStore = createDirectoryActor()
-            context watch directoryStore
-            router = router.addRoutee(directoryStore)
-            */
-
-            /*
-            router = router.removeRoutee(corpse)
-            if(router.routees.isEmpty) {
-                log.info("No more workers available")
-                context.stop(self)
-            }
-            log.info("We do not re-create terminated crawlers for now")
-            */
-
             log.error(s"A ${self.path} worker died : {}", corpse.path.name)
             context.stop(self)
 

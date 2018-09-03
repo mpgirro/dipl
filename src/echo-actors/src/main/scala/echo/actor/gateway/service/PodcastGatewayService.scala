@@ -166,14 +166,7 @@ class PodcastGatewayService (private val log: LoggingAdapter, private val breake
 
             mpsMeter.tick()
 
-            /*
-            onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
-                case UserRepository.UserAdded(_)  => complete(StatusCodes.Created)
-                case UserRepository.UserExists(_) => complete(StatusCodes.Conflict)
-            }
-            */
-
-          complete(StatusCodes.NotImplemented)
+            complete(StatusCodes.NotImplemented)
         }
     }
 

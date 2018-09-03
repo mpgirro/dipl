@@ -283,9 +283,7 @@ class CatalogStoreHandler(workerIndex: Int,
                             idMapper.clearImmutable(f))
                         emitCatalogEvent(catalogEvent)
 
-                        // crawler ! FetchFeedForNewPodcast(podcastId, f.getUrl)
                         updater ! ProcessFeed(podcastExo, f.getUrl, NewPodcastFetchJob(), rtt.bumpRTTs())
-                        //crawler ! DownloadWithHeadCheck(podcastExo, f.getUrl, NewPodcastFetchJob())
                     })
                 })
             } else {
@@ -394,7 +392,6 @@ class CatalogStoreHandler(workerIndex: Int,
                 //val chapters = update.getChapters.asScala
                 //update.setChapters(null)
 
-                //log.info("Persisting : {}", update) // TODO delete
                 val saved = episodeService.save(update).get
 
                 // TODO we'll have to check if an episode is yet known and in the database!
@@ -554,9 +551,7 @@ class CatalogStoreHandler(workerIndex: Int,
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             val feeds = feedService.findAllByPodcast(podcastId)
             if(feeds.nonEmpty){
-                // crawler ! FetchFeedForUpdateEpisodes(podcastId, feeds.head.getUrl)
                 val f = feeds.head
-                //crawler ! DownloadWithHeadCheck(podcastId, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                 val b = ImmutableRoundTripTime.builder()
                     .setId(f.getUrl)
                     .setLocation(f.getUrl)
@@ -575,7 +570,6 @@ class CatalogStoreHandler(workerIndex: Int,
             // TODO hier muss ich irgendwie entscheiden, wass für einen feed ich nehme um zu updaten
             feedService.findOneByExo(feedId).map(f => {
                 podcastService.findOneByFeed(feedId).map(p => {
-                    //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                     val b = ImmutableRoundTripTime.builder()
                         .setId(f.getUrl)
                         .setLocation(f.getUrl)
@@ -600,7 +594,6 @@ class CatalogStoreHandler(workerIndex: Int,
                 val feeds = feedService.findAllByPodcast(p.getExo)
                 if(feeds.nonEmpty){
                     val f = feeds.head
-                    //crawler ! DownloadWithHeadCheck(p.getExo, feeds.head.getUrl, UpdateEpisodesFetchJob(null, null)) // TODO set etag and lastMod
                     val b = ImmutableRoundTripTime.builder()
                         .setId(f.getUrl)
                         .setLocation(f.getUrl)
@@ -620,7 +613,6 @@ class CatalogStoreHandler(workerIndex: Int,
         def task = () => {
             feedService.findAll(page, size).foreach(f => {
                 podcastService.findOneByFeed(f.getExo).map{p => {
-                    //crawler ! DownloadWithHeadCheck(p.getExo, f.getUrl, NewPodcastFetchJob())
                     val b = ImmutableRoundTripTime.builder()
                         .setId(f.getUrl)
                         .setLocation(f.getUrl)
@@ -702,7 +694,6 @@ class CatalogStoreHandler(workerIndex: Int,
                 // request that the website will get added to the episodes index entry as well
                 Option(e.getLink) match {
                     case Some(link) =>
-                        //crawler ! DownloadWithHeadCheck(e.getExo, link, WebsiteFetchJob())
                         updater ! ProcessFeed(e.getExo, link, WebsiteFetchJob(), RoundTripTime.empty())
                     case None => log.debug("No link set for episode {} --> no website data will be added to the index", episode.getExo)
                 }

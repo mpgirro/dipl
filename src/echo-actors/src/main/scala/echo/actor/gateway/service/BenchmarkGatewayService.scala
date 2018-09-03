@@ -5,8 +5,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Send
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
-import akka.http.scaladsl.model.StatusCodes.{InternalServerError, TooManyRequests}
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
@@ -14,7 +13,6 @@ import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRequest, SearchResults}
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
-import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark._
 import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
@@ -43,8 +41,6 @@ class BenchmarkGatewayService (private val log: LoggingAdapter, private val brea
 
     override implicit val blockingDispatcher: MessageDispatcher = context.system.dispatchers.lookup(DISPATCHER_ID)
 
-    //override val route: Route = pathPrefix("search") { pathEndOrSingleSlash { benchmarkSearch } }
-
     override val route: Route = pathPrefix("benchmark-search") { pathEndOrSingleSlash { benchmarkSearchRoute } }
 
 
@@ -53,32 +49,8 @@ class BenchmarkGatewayService (private val log: LoggingAdapter, private val brea
     def setBenchmarkMonitorActorRef(benchmarkMonitor: ActorRef): Unit = this.benchmarkMonitor = benchmarkMonitor
 
     def benchmarkSearch(query: String, page: Option[Int], size: Option[Int], rtt1: RoundTripTime): Unit = {
-
         // in benchmark mode, we do not use futures, but instead simply fire and forget
         searcher.tell(SearchRequest(query, page, size, rtt1.bumpRTTs()), gateway)
-        /*
-        (searcher ? SearchRequest(query, page, size, rtt1.bumpRTTs()))
-            .onComplete {
-                case Success(res) =>
-                    res match {
-                        case SearchResults(results, rtt2) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt2.bumpRTTs())
-                        case NoIndexResultsFound(q, rtt2) => benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt2.bumpRTTs())
-                        case _ =>
-                            log.error("[BENCH] Received unhandled message on search request")
-                            benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
-                    }
-                //Circuit breaker opened handling
-                case Failure(ex: CircuitBreakerOpenException) =>
-                    log.error("[BENCH] CircuitBreakerOpenException calling Searcher")
-                    benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
-
-                //General exception handling
-                case Failure(ex) =>
-                    log.error("[BENCH] Exception while calling Searcher with query : {}", query)
-                    ex.printStackTrace()
-                    benchmarkMonitor ! RetrievalSubSystemRoundTripTimeReport(rtt1.bumpRTTs())
-            }
-        */
     }
 
     private def benchmarkSearchRoute: Route = get {
@@ -94,35 +66,7 @@ class BenchmarkGatewayService (private val log: LoggingAdapter, private val brea
 
             searcher.tell(SearchRequest(query, page, size, rtt.bumpRTTs()), gateway)
 
-            /*
-            onCompleteWithBreaker(breaker)(searcher ? SearchRequest(query, page, size, rtt)) {
-                case Success(res) =>
-                    res match {
-                        case SearchResults(results,_) => complete(StatusCodes.OK, results)    // 200 all went well and we have results
-                        case NoIndexResultsFound(_,_) => complete(StatusCodes.NoContent)      // 204 we did not find anything
-                        case IndexRetrievalTimeout  =>
-                            log.error("Timeout during search in SearchService")
-                            complete(StatusCodes.RequestTimeout)                            // 408 search took too long
-                        case _ =>
-                            log.error("Received unhandled message on search request")
-                            complete(StatusCodes.InternalServerError)                       // 500 generic server side error
-                    }
-
-                //Circuit breaker opened handling
-                case Failure(ex: CircuitBreakerOpenException) =>
-                    log.error("CircuitBreakerOpenException calling Searcher -- returning {}: {}", TooManyRequests.intValue, TooManyRequests.defaultMessage)
-                    complete(HttpResponse(TooManyRequests).withEntity("Server Busy"))
-
-                //General exception handling
-                case Failure(ex) =>
-                    log.error("Exception while calling Searcher with query : {}", query)
-                    ex.printStackTrace()
-                    complete(InternalServerError)
-            }
-            */
-
             complete(StatusCodes.OK)
-
         }
     }
 

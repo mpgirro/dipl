@@ -83,7 +83,6 @@ class Parser extends Actor with ActorLogging {
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             if (mpsMeter.isMeasuring) {
                 mpsMeter.stopMeasurement()
-                //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
                 router.routees.foreach(r => r.send(StopMessagePerSecondMonitoring, sender()))
             }
 

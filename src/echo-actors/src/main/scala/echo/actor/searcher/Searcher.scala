@@ -63,7 +63,6 @@ class Searcher extends Actor with ActorLogging {
         case msg @ StopMessagePerSecondMonitoring =>
             log.debug("Received StopMessagePerSecondMonitoring(_)")
             mpsMeter.stopMeasurement()
-            //benchmarkMonitor ! MessagePerSecondReport(mpsMeter.getResult)
             router.routees.foreach(r => r.send(msg, sender()))
 
         case ChildMpsReport(childReport) =>

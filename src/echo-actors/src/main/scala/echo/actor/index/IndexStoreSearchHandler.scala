@@ -6,7 +6,7 @@ import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound, S
 import echo.actor.index.IndexStoreSearchHandler.RefreshIndexSearcher
 import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.benchmark.rtt.RoundTripTime
-import echo.core.domain.dto.{IndexDocDTO, ResultWrapperDTO}
+import echo.core.domain.dto.ResultWrapperDTO
 import echo.core.exception.SearchException
 import echo.core.index.IndexSearcher
 

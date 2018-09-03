@@ -1,7 +1,5 @@
 package echo.actor.gateway.service
 
-import javax.ws.rs.Path
-
 import akka.actor.{ActorContext, ActorRef}
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
@@ -21,12 +19,6 @@ import scala.util.{Failure, Success}
 /**
   * @author Maximilian Irro
   */
-
-/*
-@Path("/api/episode")  // @Path annotation required for Swagger
-@Api(value = "/api/episode",
-     produces = "application/json")
-*/
 class EpisodeGatewayService (private val log: LoggingAdapter, private val breaker: CircuitBreaker, private val mpsMeter: MessagesPerSecondMeter)
                             (private implicit val context: ActorContext, private implicit val timeout: Timeout) extends GatewayService with Directives with JsonSupport {
 
@@ -58,24 +50,6 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
         complete(NotImplemented)
     }
 
-    /*
-    @Path("/episode/{exo}")
-    @ApiOperation(
-        value = "Return the episode corresponding to the EXO.",
-        nickname = "getEpisode",
-        httpMethod = "GET")
-    @ApiImplicitParams(Array(
-        new ApiImplicitParam(
-            name = "exo",
-            value = "The EXO (= external ID) for an episode, which you find in the url https://exo.fm/e/___EXO___",
-            example = "bhAShaNAni",
-            required = true,
-            dataType = "string",
-            paramType = "path")))
-    @ApiResponses(Array(
-        new ApiResponse(code = 200, message = "Return episode", response = classOf[EpisodeDTO]),
-        new ApiResponse(code = 500, message = "Internal server error")))
-    */
     def getEpisode(exo: String): Route = get {
         log.info("GET /api/episode/{}", exo)
         mpsMeter.tick()
@@ -133,17 +107,8 @@ class EpisodeGatewayService (private val log: LoggingAdapter, private val breake
     ))
     def postEpisode: Route = post {
         entity(as[EpisodeDTO]) { episode =>
-
             mpsMeter.tick()
-
-            /*
-            onSuccess(userRepository ? UserRepository.AddUser(user.name)) {
-                case UserRepository.UserAdded(_)  => complete(StatusCodes.Created)
-                case UserRepository.UserExists(_) => complete(StatusCodes.Conflict)
-            }
-            */
-
-          complete(NotImplemented)
+            complete(NotImplemented)
         }
     }
 

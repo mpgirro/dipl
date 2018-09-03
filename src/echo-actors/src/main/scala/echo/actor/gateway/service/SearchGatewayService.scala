@@ -13,16 +13,15 @@ import akka.http.scaladsl.server.{Directives, Route}
 import akka.pattern.{CircuitBreaker, CircuitBreakerOpenException, ask}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
-import echo.actor.ActorProtocol.{RetrievalSubSystemRoundTripTimeReport, SearchRequest, SearchResults}
+import echo.actor.ActorProtocol.{SearchRequest, SearchResults}
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.mps.MessagesPerSecondMeter
 import echo.core.benchmark.rtt.RoundTripTime
-import echo.core.domain.dto.ResultWrapperDTO
 import io.swagger.annotations._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
@@ -89,44 +88,6 @@ class SearchGatewayService (private val log: LoggingAdapter, private val breaker
         }
     }
 
-    /*
-    @Path("/search")
-    @ApiOperation(
-        value = "Return the search results found for the given query",
-        nickname = "search",
-        httpMethod = "GET",
-        responseContainer = "Set")
-    @ApiImplicitParams(Array(
-        new ApiImplicitParam(
-            name = "q",
-            value = "The query for which will be searched",
-            example = "freak show",
-            defaultValue = "",
-            required = true,
-            dataType = "string",
-            paramType = "query"),
-        new ApiImplicitParam(
-            name = "p",
-            value = "The page of the search results, that should be returned",
-            example = "1",
-            defaultValue = "1",
-            required = false,
-            dataType = "number",
-            paramType = "query"),
-        new ApiImplicitParam(
-            name = "s",
-            value = "The size (= number of items) of the search result page",
-            example = "20",
-            defaultValue = "20",
-            required = false,
-            dataType = "number",
-            paramType = "query")
-    ))
-    @ApiResponses(Array(
-        new ApiResponse(code = 200, message = "Return search results", response = classOf[IndexResult]),
-        new ApiResponse(code = 500, message = "Internal server error")
-    ))
-    */
     def distributedSearch: Route = get {
         parameters('q, 'p.as[Int].?, 's.as[Int].?) { (query, page, size) =>
             log.info("GET /api/search/?q={}&p={}&s={}", query, page.getOrElse(DEFAULT_PAGE), size.getOrElse(DEFAULT_SIZE))

@@ -1,6 +1,6 @@
 package echo.actor.catalog.repository
 
-import echo.core.domain.entity.{FeedEntity}
+import echo.core.domain.entity.FeedEntity
 import org.springframework.data.jpa.repository.{JpaRepository, Query}
 import org.springframework.data.repository.query.Param
 

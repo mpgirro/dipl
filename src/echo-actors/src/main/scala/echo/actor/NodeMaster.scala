@@ -1,9 +1,5 @@
 package echo.actor
 
-import java.io.{FileWriter, PrintWriter}
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
-
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
 import akka.cluster.Cluster
 import com.typesafe.config.ConfigFactory
@@ -14,7 +10,7 @@ import echo.actor.crawler.Crawler
 import echo.actor.gateway.Gateway
 import echo.actor.index.IndexBroker
 import echo.actor.parser.Parser
-import echo.actor.searcher.{DelegationSearcherWorker, Searcher}
+import echo.actor.searcher.Searcher
 import echo.actor.updater.Updater
 import echo.core.benchmark._
 import echo.core.benchmark.cpu.CpuLoadMeter
@@ -22,7 +18,6 @@ import echo.core.benchmark.memory.MemoryUsageMeter
 import echo.core.benchmark.mps.MessagesPerSecondMonitor
 import echo.core.benchmark.rtt.{RoundTripTime, RoundTripTimeMonitor}
 
-import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -209,10 +204,6 @@ class NodeMaster extends Actor with ActorLogging {
 
             log.info("Mean memory usage : {}", memoryUsageMeter.getResult.getMeanBytesAsStringWithUnit)
             log.info("Mean CPU load     : {}", cpuLoadMeter.getResult.getMeanLoadAsString)
-            //log.info("Memory usage datapoints : {}", memoryUsageMeter.getDataPoints)
-            //log.info("CPU load datapoints : {}", cpuLoadMeter.getDataPoints)
-
-            //rttMonitor.getAllRTTs.stream().forEach(rtt => log.info(rtt.getRtts.toString))
 
             val size = rttMonitor.getAllRTTs.size()
 
@@ -228,11 +219,9 @@ class NodeMaster extends Actor with ActorLogging {
                 log.warning("Unhandled Workflow : {}", rttMonitor.getWorkflow)
             }
 
-            //log.info("RTT progress CSV :")
             val progressCSV = rttMonitor.getProgressCSV
             benchmarkUtil.writeToFile(progressFile, progressCSV)
 
-            //log.info("RTT overall CSV :")
             val overallCSV = rttMonitor.getOverallCSV
             benchmarkUtil.appendToFile(overallFile, overallCSV)
         }

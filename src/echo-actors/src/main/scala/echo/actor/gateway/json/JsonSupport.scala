@@ -1,7 +1,6 @@
 package echo.actor.gateway.json
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import echo.actor.gateway.FeedJsonProtocol
 import spray.json.{DefaultJsonProtocol, JsonFormat}
 
 /**

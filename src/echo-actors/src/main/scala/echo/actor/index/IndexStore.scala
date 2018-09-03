@@ -17,7 +17,7 @@ import echo.core.index.{IndexCommitter, IndexSearcher, LuceneCommitter, LuceneSe
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -55,8 +55,6 @@ class IndexStore (indexPath: String,
     private val updateImageQueue: mutable.Queue[(String,String)] = new mutable.Queue
     private val updateLinkQueue: mutable.Queue[(String,String)] = new mutable.Queue
 
-    //private var currQuery: String = ""
-
     private implicit val executionContext: ExecutionContext = context.system.dispatchers.lookup("echo.index.dispatcher")
 
     private var benchmarkMonitor: ActorRef = _
@@ -66,7 +64,6 @@ class IndexStore (indexPath: String,
     private val mpsMonitor = new MessagesPerSecondMonitor(ArchitectureType.ECHO_AKKA, WORKER_COUNT)
 
     // kickoff the committing play
-    //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
     context.system.scheduler.schedule(COMMIT_INTERVAL, COMMIT_INTERVAL, self, CommitIndex)
 
     private var router: Router = {
@@ -145,8 +142,6 @@ class IndexStore (indexPath: String,
         case CommitIndex =>
             commitIndexIfChanged()
 
-            //context.system.scheduler.scheduleOnce(COMMIT_INTERVAL, self, CommitIndex)
-
         case AddDocIndexEvent(doc, rtt) =>
             log.debug("Received IndexStoreAddDoc({})", doc.getExo)
             mpsMeter.tick()
@@ -155,8 +150,6 @@ class IndexStore (indexPath: String,
             benchmarkMonitor ! IndexSubSystemRoundTripTimeReport(rtt.bumpRTTs())
 
             cache.enqueue(doc)
-            //indexCommitter.add(doc)
-            //indexChanged = true
 
         case UpdateDocWebsiteDataIndexEvent(exo, html) =>
             log.debug("Received IndexStoreUpdateDocWebsiteData({},_)", exo)
@@ -176,46 +169,7 @@ class IndexStore (indexPath: String,
 
         case SearchIndex(query, page, size, rtt) =>
             log.debug("Received SearchIndex('{}',{},{}) message", query, page, size)
-            //mpsMeter.tick()
-
             router.route(SearchIndex(query, page, size, rtt.bumpRTTs()), sender())
-
-            /*
-            val origSender = sender()
-            Future {
-                currQuery = query // make a copy in case of an exception
-                //val beforeRefresh = System.currentTimeMillis()
-                //indexSearcher.refresh()
-                val beforeSearch = System.currentTimeMillis()
-                val results = indexSearcher.search(query, page, size)
-                val afterSearch = System.currentTimeMillis()
-                log.info("[BENCH] Search took : {}ms", afterSearch-beforeSearch)
-
-                if(results.getTotalHits > 0){
-                    origSender ! IndexResultsFound(query,results, rtt.bumpRTTs())
-                } else {
-                    log.warning("No Podcast matching query: '{}' found in the index", query)
-                    origSender ! NoIndexResultsFound(query, rtt.bumpRTTs())
-                }
-
-                mpsCounter.incrementCounter()
-                currQuery = "" // wipe the copy
-            }
-            */
-
-            /*
-            currQuery = query // make a copy in case of an exception
-            indexSearcher.refresh()
-            val results = indexSearcher.search(query, page, size)
-            if(results.getTotalHits > 0){
-                sender ! IndexResultsFound(query,results, rtt.bumpRTTs())
-            } else {
-                log.warning("No Podcast matching query: '{}' found in the index", query)
-                sender ! NoIndexResultsFound(query, rtt.bumpRTTs())
-            }
-
-            currQuery = "" // wipe the copy
-            */
 
     }
 

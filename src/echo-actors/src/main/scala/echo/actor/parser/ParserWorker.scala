@@ -1,16 +1,10 @@
 package echo.actor.parser
 
-import java.awt.image.BufferedImage
-import java.io.{ByteArrayOutputStream, IOException}
-import java.net.URL
 import java.time.LocalDateTime
-import java.util.Base64
-import javax.imageio.ImageIO
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send}
-import com.mortennobel.imagescaling.ResampleOp
 import com.typesafe.config.ConfigFactory
 import echo.actor.ActorProtocol._
 import echo.actor.catalog.CatalogBroker

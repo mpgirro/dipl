@@ -1,12 +1,10 @@
 package echo.actor.searcher
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
-import akka.event.LoggingReceive
-import akka.util.Timeout
 import echo.actor.ActorProtocol.SearchResults
 import echo.actor.index.IndexProtocol.{IndexResultsFound, NoIndexResultsFound}
 import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
-import echo.core.benchmark.rtt.{ImmutableRoundTripTime, RoundTripTime}
+import echo.core.benchmark.rtt.RoundTripTime
 import echo.core.domain.dto.{ModifiableIndexDocDTO, ResultWrapperDTO}
 import org.jsoup.Jsoup
 import org.jsoup.safety.Whitelist

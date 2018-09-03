@@ -1,6 +1,4 @@
-package echo.actor.gateway
-
-import java.time.LocalDateTime
+package echo.actor.gateway.json
 
 import echo.core.domain.dto.{FeedDTO, ImmutableFeedDTO}
 import echo.core.domain.feed.FeedStatus

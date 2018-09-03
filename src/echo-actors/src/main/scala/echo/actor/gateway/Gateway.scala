@@ -17,7 +17,6 @@ import echo.actor.ActorProtocol._
 import echo.actor.gateway.json.JsonSupport
 import echo.actor.gateway.service._
 import echo.actor.index.IndexProtocol.NoIndexResultsFound
-import echo.actor.searcher.IndexStoreReponseHandler.IndexRetrievalTimeout
 import echo.core.benchmark.mps.MessagesPerSecondMeter
 
 import scala.concurrent.Future
@@ -149,7 +148,6 @@ class Gateway extends Actor with ActorLogging with JsonSupport {
         case BenchmarkSearchRequest(q, p, s, rtt) =>
             log.debug("Received BenchmarkSearchRequest('{}',{},{},_)", q, p, s)
             mpsMeter.tick()
-            //searchService.benchmarkDistributedSearch(q, p, s, rtt)
             benchmarkService.benchmarkSearch(q, p, s, rtt)
 
         // when doing benchmarks, we can receive such messages

@@ -5,16 +5,13 @@ import javax.persistence.{EntityManager, EntityManagerFactory}
 import javax.sql.DataSource
 
 import org.springframework.aop.framework.ProxyFactory
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
-import org.springframework.data.repository.core.RepositoryInformation
-import org.springframework.jdbc.datasource.DriverManagerDataSource
-import org.springframework.orm.jpa.vendor.HibernateJpaDialect
-import org.springframework.transaction.interceptor.{MatchAlwaysTransactionAttributeSource, TransactionInterceptor}
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
+import org.springframework.data.repository.core.RepositoryInformation
 import org.springframework.data.repository.core.support.RepositoryProxyPostProcessor
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import org.springframework.jdbc.datasource.DriverManagerDataSource
+import org.springframework.orm.jpa.vendor.{HibernateJpaDialect, HibernateJpaVendorAdapter}
 import org.springframework.orm.jpa.{JpaTransactionManager, LocalContainerEntityManagerFactoryBean}
-import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.interceptor.{MatchAlwaysTransactionAttributeSource, TransactionInterceptor}
 
 import scala.collection.JavaConverters._
 

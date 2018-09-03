@@ -4,7 +4,6 @@ import javax.persistence.EntityManager
 
 import akka.event.LoggingAdapter
 import echo.actor.catalog.repository.{EpisodeRepository, RepositoryFactoryBuilder}
-import echo.actor.catalog.repository.EpisodeRepository
 import echo.core.domain.dto.{EpisodeDTO, PodcastDTO}
 import echo.core.mapper.{EpisodeMapper, PodcastMapper, TeaserMapper}
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory
