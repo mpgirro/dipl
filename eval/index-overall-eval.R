@@ -1,8 +1,6 @@
 
-quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", 
-                         "CMU Sans Serif BoldOblique"))
-#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", 
-#                          "CMU Serif BoldItalic"))
+quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", "CMU Sans Serif BoldOblique"))
+#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", "CMU Serif BoldItalic"))
 
 library(extrafont)
 font_import(pattern = "CM")
@@ -26,16 +24,17 @@ b <- aggregate(index_msa_data$overallRT, list(input_size=index_msa_data$input_si
 
 # this function plots the graphic of the data
 g <- function() {
+  par(mar=c(4,4,4,2))
   plot(b$input_size, b$x, 
-       type="l", pch=18, col="blue", lty=2, lwd=2,
-       cex.axis = 1.3, cex.lab = 1.3,
-       xlab = "Number of Feeds", ylab = "Overall Runtime [seconds]",
+       type="l", pch=18, col="dodgerblue1", lty=2, lwd=2,
+       cex.axis = 1.1, cex.lab = 1.1,
+       xlab = "Number of Feeds", ylab = "Overall Runtime [Seconds]",
        #xlab="", ylab="",
-       xlim=c(0,500), ylim=c(0, 400))
-  #xaxt="n", yaxt="n")
-  lines(a$input_size, a$x, pch=19, col="red", type="l", lwd=2)	
+       xlim=c(0,500), ylim=c(0, 400), las=1)
+       #xaxt="n", yaxt="n")
+  lines(a$input_size, a$x, pch=19, col="tomato1", type="l", lwd=2)	
   legend("topleft", legend=c("Akka", "MSA"),
-         col=c("red", "blue"), lty=1:2, cex=1.3, lwd=2)
+         col=c("tomato1", "dodgerblue1"), lty=1:2, cex=1.1, lwd=2)
 }
 
 # execute this to show in Rstudio

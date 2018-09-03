@@ -1,8 +1,6 @@
 
-quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", 
-                         "CMU Sans Serif BoldOblique"))
-#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", 
-#                          "CMU Serif BoldItalic"))
+quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", "CMU Sans Serif BoldOblique"))
+#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", "CMU Serif BoldItalic"))
 
 library(extrafont)
 font_import(pattern = "CM")
@@ -12,49 +10,100 @@ loadfonts()
 
 search_akka_delegation_data <- read.table("data/search-akka-delegation-rtt-overall.csv", header=T, sep=";")
 search_akka_future_data <- read.table("data/search-akka-future-rtt-overall.csv", header=T, sep=";")
+search_msa_data <- read.table("data/search-msa-rtt-overall.csv", header=T, sep=";")
 
 # milliseconds -> seconds
 search_akka_delegation_data$overallRT = search_akka_delegation_data$overallRT / 1000
 search_akka_future_data$overallRT = search_akka_future_data$overallRT / 1000
+search_msa_data$overallRT = search_msa_data$overallRT / 1000
 
 # aggregate the values for every X, so we'll just show the means of them
 a <- aggregate(search_akka_delegation_data$overallRT, list(input_size=search_akka_delegation_data$input_size), mean)
 b <- aggregate(search_akka_future_data$overallRT, list(input_size=search_akka_future_data$input_size), mean)
+c <- aggregate(search_msa_data$overallRT, list(input_size=search_msa_data$input_size), mean)
 
-# this function plots the graphic of the data
-g <- function() {
-  plot(b$input_size, b$x, 
-       type="l", pch=18, col="chartreuse4", lty=3, lwd=2,
-       cex.axis = 1.3, cex.lab = 1.3,
-       xlab = "Search Requests", ylab = "Overall Runtime [seconds]",
+# this functions plots the graphic of the data
+g1 <- function() {
+  par(mar=c(4,4,4,2))
+  plot(c$input_size, c$x, 
+       type="l", pch=18, col="forestgreen", lty=2, lwd=2,
+       cex.axis = 1.1, cex.lab = 1.1,
+       xlab = "Search Requests", ylab = "Overall Runtime [Seconds]",
        #xlab="", ylab="",
-       xlim=c(0,3000), ylim=c(0, 20))
+       xlim=c(0,3000), ylim=c(0, 150), las=1)
   #xaxt="n", yaxt="n")
-  lines(a$input_size, a$x, pch=19, col="red", type="l", lwd=2)	
-  legend("topleft", legend=c("Akka (Delegation)", "Akka (Future)"),
-         col=c("red", "chartreuse4"), lty=1:3, cex=1.3, lwd=2)
+  lines(a$input_size, a$x, pch=19, col="tomato1", type="l", lty=1, lwd=2)	
+  #lines(b$input_size, b$x, pch=19, col="tomato1", type="l", lty=4, lwd=2)	
+  legend("topleft", legend=c("Akka", "MSA"),
+         col=c("tomato1", "dodgerblue1"), lty=1:2, cex=1.1, lwd=2)
 }
+
+g2 <- function() {
+  par(mar=c(4,4,4,2))
+  plot(b$input_size, b$x, 
+       type="l", pch=18, col="forestgreen", lty=4, lwd=2,
+       cex.axis = 1.1, cex.lab = 1.1,
+       xlab = "Search Requests", ylab = "Overall Runtime [Seconds]",
+       #xlab="", ylab="",
+       xlim=c(0,3000), ylim=c(0, 20), las=1)
+  #xaxt="n", yaxt="n")
+  lines(a$input_size, a$x, pch=19, col="tomato1", type="l", lwd=2)	
+  legend("topleft", legend=c("Akka (Delegation)", "Akka (Future)"),
+         col=c("tomato1", "forestgreen"), lty=1:4, cex=1.1, lwd=2)
+}
+
+save_akka_msa_images <- function() {
+  dest <- "out/eval-search-comparison-akka-delegation-future"
+  
+  # output PNG
+  png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
+  par(family = "cmu_sans")
+  g2()
+  dev.off()
+  
+  # output PDF
+  pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
+  par(family = "CM Sans")
+  g2()
+  dev.off()
+  # embed the CM Sans font into the PDF, or printing might become a problem
+  embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
+}
+
+save_akka_delegation_future_images <- function() {
+  dest <- "out/eval-search-akka-msa"
+  
+  # output PNG
+  png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
+  par(family = "cmu_sans")
+  g1()
+  dev.off()
+  
+  # output PDF
+  pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
+  par(family = "CM Sans")
+  g1()
+  dev.off()
+  # embed the CM Sans font into the PDF, or printing might become a problem
+  embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
+}
+
 
 # execute this to show in Rstudio
 par(family = "cmu_sans")
-g()
+g1()
 
 
-dest <- "out/eval-search-comparison-akka-delegation-future"
-
-# output PNG
-png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
 par(family = "cmu_sans")
-g()
-dev.off()
+g2()
 
-# output PDF
-pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
-par(family = "CM Sans")
-g()
-dev.off()
-# embed the CM Sans font into the PDF, or printing might become a problem
-embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
+
+par(family = "cmu_sans")
+save_akka_msa_images()
+
+
+par(family = "cmu_sans")
+save_akka_delegation_future_images()
 
 
 

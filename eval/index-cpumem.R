@@ -1,13 +1,56 @@
-index_cpumem <- read.table("../src/benchmark/cpu-mem-index-i70-f100.csv", header=T, sep=";");
+
+quartzFonts(cmu_sans = c("CMU Sans Serif", "CMU Sans Serif Bold", "CMU Sans Serif Oblique", "CMU Sans Serif BoldOblique"))
+#quartzFonts(cmu_serif = c("CMU Serif Roman", "CMU Serif Bold", "CMU Serif Italic", "CMU Serif BoldItalic"))
+
+library(extrafont)
+font_import(pattern = "CM")
+loadfonts()
+#par(family = "CM Sans")
+
+index_cpumem <- read.table("data/index-cpumem.csv", header=T, sep=";");
+
+# this function plots the graphic of the data
+g <- function() {
+  par(mar=c(8,4,4,2))
+  barplot(index_cpumem$mem, 
+          names.arg=index_cpumem$artefact, 
+          space=c(1, 2),
+          col=c("tomato1","dodgerblue1","dodgerblue1","dodgerblue1","dodgerblue1","dodgerblue1","dodgerblue1","dodgerblue1"),
+          ylim = c(0, 200), ylab = "Memory Usage [Megabytes]", las=2)
+}
+
+# execute this to show in Rstudio
+par(family = "cmu_sans")
+g()
+
+
+dest <- "out/eval-index-mem"
+
+# output PNG
+png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
+par(family = "cmu_sans")
+g()
+dev.off()
+
+# output PDF
+pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
+par(family = "CM Sans")
+g()
+dev.off()
+# embed the CM Sans font into the PDF, or printing might become a problem
+embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
+
+
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+
 
 # CPU
-par(mar=c(7,4,4,2))
+#par(mar=c(8,4,4,2))
 barplot(index_cpumem$cpu, names.arg=index_cpumem$artefact, ylim = c(0, 1), las=2)
 
 
-# MEM
-par(mar=c(7,4,4,2))
-barplot(index_cpumem$mem, names.arg=index_cpumem$artefact, ylim = c(0, 200), las=2)
 
 
 # - - - - 
