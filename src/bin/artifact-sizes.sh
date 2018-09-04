@@ -28,6 +28,8 @@ declare -a arr=(
 	"echo-microservices/app-updater/build/libs/app-updater-1.0-SNAPSHOT-all.jar"
 	"echo-microservices/app-registry/build/libs/app-registry-1.0-SNAPSHOT.jar.original"
 	"echo-microservices/app-registry/build/libs/app-registry-1.0-SNAPSHOT-all.jar"
+	"echo-microservices/app-gateway/build/libs/app-gateway-1.0-SNAPSHOT.jar.original"
+	"echo-microservices/app-gateway/build/libs/app-gateway-1.0-SNAPSHOT-all.jar"
 )
 
 
