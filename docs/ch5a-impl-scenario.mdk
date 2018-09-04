@@ -98,7 +98,7 @@ Note that Figure [#fig-task-units] shows an interaction between the Gateway and 
 #### Indexing Pipeline
 
 
-~ Figure { #fig-indexing-pipeline; caption: "Indexing pipeline"; width:100%; float:left;  }
+~ Figure { #fig-indexing-pipeline; caption: "Indexing pipeline"; width:100%; }
 ![img-indexing-pipeline]
 ~
 
@@ -112,7 +112,7 @@ Feeds get either processed when they are initially indexed, or updated to check 
 #### Retrieval Pipeline
 
 
-~ Figure { #fig-retrieval-pipeline; caption: "Retrieval pipeline"; width:100%; float:left;  }
+~ Figure { #fig-retrieval-pipeline; caption: "Retrieval pipeline"; width:100%; }
 ![img-retrieval-pipeline]
 ~
 
