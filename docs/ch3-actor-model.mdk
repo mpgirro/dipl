@@ -32,7 +32,7 @@ Changing internal state within an actor is realized through the third of the bas
 
 Additionally, state can only be changed while processing a message. Therefore, as De Koster *et al.*\ illustrate in detail, we can view the processing of a single message as an isolated operation. This is important when reasoning about actors, because it is done with respect to the single-threaded semantics which is providing the granularity of a turn[^fn-isolated-turn-principle] [@Kos16;@Ber14]. They call this *isolated turn principle*. The principle guarantees the safety of actors, because they are free of low-level data races (for only one message is processed at a time, and each message belongs to a single actor). However, high-level races (depending on the interleaving of messages within the mailbox) can still occur. The isolated turn principle also guarantees computation progress with each turn [@Agh97], and thus liveness. 
 
-[^fn-isolated-turn-principle]: In this context, *turn* is used to refer to the processing of a single message. Various terminologies have been used for this over the decades. A good overview of Actor model taxonomy and the equivalence of various terms is given in [@Kos16].
+[^fn-isolated-turn-principle]: In this context, *turn* is used to refer to the processing of a single message. Various terminologies have been used for this over the decades. A good overview of actor model taxonomy and the equivalence of various terms is given in [@Kos16].
 
 
 ## Unified Abstraction

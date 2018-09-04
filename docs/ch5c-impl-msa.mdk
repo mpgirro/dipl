@@ -104,7 +104,7 @@ Each microservice is by definition instantiated as a system level process. The i
 
 Persisting information can be implemented in many different strategies. Database systems are one well established approach. If we share a database between several microservices, every service gets access to all other component's persistent state. Database sharing pose a simple way to skip isolation mechanisms and bypass the service interfaces, thus breaking the encapsulation principle. Therefore, one convention of the microservice principles is that each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptionally relates to sharing state, which introduces an implicit form of shared state communication [@Cou05].
 
-As a consequence, we must provide each component with a very own database if we require persistence. Every CatalogStore instance is deployed with a dedicated PostgreSQL database system, and every IndexStore is accessing a separate Lucene reverse index datastructure. 
+As a consequence, we must provide each component with a very own database if we require persistence. Every CatalogStore instance is deployed with a dedicated database instance, and every IndexStore is accessing a separate Lucene reverse index datastructure. 
 
 Persistance is a form of IO and as such a potential performance limiting factor. Hence, Database management systems usually support concurrent access to the database . As with actors, concurrent connections increase throughput significantly. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 

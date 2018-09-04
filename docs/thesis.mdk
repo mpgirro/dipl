@@ -29,7 +29,13 @@ Script            : style/mathjax-font.js
 Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
-Bib style         : style/keynat.bst
+Bib Style         : plainnat
+<!--Bib style         : style/keynat.bst-->
+<!--Csl Style         : style/custom.csl-->
+
+<!--Csl Style         : style/chinese-journal-of-aeronautics.csl -->
+<!--Csl Style         : style/elsevier-with-titles.csl-->
+<!--Csl Style         : style/association-for-computing-machinery.csl-->
 Name References   : Bibliography
 Name Figures      : List of Figures
 Name Tables       : List of Tables
@@ -240,7 +246,7 @@ CSS Header      :
   .findings > ul {
     -webkit-margin-after: 0;
   }
-  /* TODO do I want the paper style for paragraphs?  
+  /* TODO do I want the paper style for paragraphs?
   p {
     margin-bottom: 0;
   }
@@ -515,6 +521,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [IPC]{.abbrv-item} Inter-Process Communication
 * [IO]{.abbrv-item} Input/Output
 * [IoC]{.abbrv-item} Inversion of Control
+* [IR]{.abbrv-item} Information Retrieval
 * [JAR]{.abbrv-item} Java Archive
 * [JVM]{.abbrv-item} Java Virtual Machine
 * [LB]{.abbrv-item} Load Balancing
@@ -538,6 +545,10 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [URL]{.abbrv-item} Uniform Resource Locator
 * [VM]{.abbrv-item} Virtual Machine
 { .abbrv-table }
+
+* HTTP
+* XML: Extensible Markup Language
+* RSS: Rich Site Summary
 
 
 <!--

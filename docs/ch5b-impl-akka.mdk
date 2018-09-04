@@ -145,7 +145,7 @@ Although simple RPC-styled retrieval did limit throughput, we've found this to a
 ~
 
 
-### Communication Abstractions
+### Communication Abstractions {#sec-actor-communication-abstractions}
 
 
 The actor model is solely built on the concept of *asynchronous* message passing. Akka provides a respective method called `tell`, with an additional alias `!`\ for Scala, on `ActorRef`{language:scala}. We can use the method to dispatch a message object to an actor. However, many real-life scenarios expect communication to be synchronous, i.e.\ to only proceed once an answer has been received and not perform any processing in-between. Echo faces this problem whenever a user is requesting information. Fortunately, synchronous communication can be modeled with an asynchronous information flow [@Agh97].
@@ -210,7 +210,7 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 
 The actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
 
-[^fn-2nd-tell-argument]: Note that its alias `!`\ does not allow for more than one parameter.
+[^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
 
 As synchronous communication is constraint by time in general, it is important that the messages for a cameo delegation are processed swiftly. The actor model's mailbox construct however buffers all incoming messages to an actor in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order. Large mailboxes with many messages queued up prevent timely message processing. Influencing the order of message reception is therefore a common property for actor systems [@Kos16]. Akka provides the concept of a `PriorityMailbox`{language:scala}, which is utilizing the pattern matching syntax of Scala to assign priority levels to messages based on their type. IndexStores and CatalogStores are facilitating priority mailboxes to process all messages involved in synchronous flows first, regardless of the current mailbox size.  
 

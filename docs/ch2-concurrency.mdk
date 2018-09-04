@@ -129,7 +129,7 @@ Operating systems (OS) use the *process* as their computational model. A process
 
 In contrast, *threads* are tasks *inside* a process. One process can have numerous threads which all share the same memory space [@Tan07]. Since threads can access the same memory locations, we are free to introduce shared state among them. In the Java case study we already demonstrated the synchronization required for shared state. In contrast, the memory boundaries between processes however are strict and enforced by the OS. Communication between two processes requires either an explicit arrangement of so-called *shared memory*, or another means of message passing communication subsumed as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. Since we will regard an extended focus on operating system conceived concurrent tasks relying on IPC in due course, a consolidating example for future reference is in order.
 
-[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as we've mentioned. Therefore, often all communication between concurrent units is subsumed as *inter-process communication* in the literature. To avoid confusion, we will use this designation only for communication mechanisms between OS processes.
+[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as we've mentioned. Therefore, often all communication between concurrent units is subsumed as *inter-process communication* in the literature. To avoid confusion, we use this designation only for communication mechanisms between OS processes.
 
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}

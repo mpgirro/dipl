@@ -1020,7 +1020,7 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 -->
 
 
-### Software Artifact Metrics Analysis
+### Software Artifact Analysis
 
 
 Sections [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies expressable by programming actors and microservices. The previous sections of this chapter compared the capabilities resulting from model properties and the expressed strategies. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts.
@@ -1044,25 +1044,25 @@ Table [#tab-artifact-metrics] gives the measured metrics for our Echo artifacts.
 |-------------------|------|-----------| ----------| ---------|
 | Artifact          | LoC  | sJAR (KB) | fJAR (KB) | ST (sec) |
 +-------------------+-----:+----------:+----------:+---------:+
-| Akka monolith     | 4445 | 965.3     | 76 688.8  | 5.5      |
+| Akka monolith     | 4487 | 1004.3     | 76 775.1  | 5.5      |
 | ------------------|------|-----------|-----------|----------|
-| CatalogStore (MS) | 1739 | 53.9      | 89 176.3  | 14.6     |
+| CatalogStore (MS) | 1838 | 56.1      | 89 225.8  | 14.6     |
 | ------------------|------|-----------|-----------|----------|
-| IndexStore (MS)   | 619  | 21.5      | 83 468.7  | 8.8      |
+| IndexStore (MS)   | 724  | 23.8      | 83 518.2  | 8.8      |
 | ------------------|------|-----------|-----------|----------|
-| Searcher (MS)     | 570  | 20.1      | 81 705.1  | 8.0      |
+| Searcher (MS)     | 656  | 22.2      | 81 754.4  | 8.0      |
 | ------------------|------|-----------|-----------|----------|
-| Web Crawler (MS)  | 614  | 21.3      | 83 468.5  | 9.0      |
+| Web Crawler (MS)  | 716  | 23.5      | 83 517.9  | 9.0      |
 | ------------------|------|-----------| ----------|----------|
-| Parser (MS)       | 606  | 22.0      | 83 469.6  | 8.3      |
+| Parser (MS)       | 703  | 24.2      | 83 519.1  | 8.3      |
 | ------------------|------|-----------| ----------|----------|
-| Registry (MS)     | 290  | 9.4       | 90 652.0  | 9.5      |
+| Registry (MS)     | 334  | 9.9       | 90 699.7  | 9.5      |
 | ------------------|------|-----------| ----------|----------|
-| Gateway (MS)     | [??]{.red}  | [??]{.red}       | [??]{.red}  | [??]{.red}     |
+| Gateway (MS)     | 889  | 30.5       | 83 655.1  | [??]{.red}     |
 | ------------------|------|-----------|-----------|----------|
-| Updater (MS)      | 577  | 20.9      | 83 468.1  | 8.8      |
+| Updater (MS)      | 693  | 23.9      | 83 518.3  | 8.8      |
 | ------------------|------|-----------| ----------|----------|
-| Core (library)    | 4614 | 275.9     | &mdash;   | &mdash;  |
+| Core (library)    | 5203 | 323.1     | &mdash;   | &mdash;  |
 | ------------------|------|-----------| ----------|----------|
 | Web (frontend)    | 3144 | &mdash;   | &mdash;   | &mdash;  |
 | ------------------|------|-----------| ----------|----------|

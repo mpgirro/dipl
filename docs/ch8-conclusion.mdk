@@ -49,6 +49,8 @@ The actor model achieves the same capabilities in a single codebase. This single
 
 [TODO ein paar Sätze zu den Ergebnissen des Benchmarks]{.red}
 
+The benchmark results show that, in the context of our scenario, the performance of actors is generally better than the performance of microservices. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors, [which is a result of the communication mechanism and the programming model]{.red}. However, the benchmark also exposed that strictly synchronous communication (request/response) among services shows a clear [?nachteil/verschlechterung?]{.red} compared to the request/asynchronous response style facilitated by actors. 
+
 
 ## Future Work
 
