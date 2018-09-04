@@ -132,7 +132,11 @@ Tex Header    :
     % remove the numbers so they wont appear in \leftmark and \rightmark
     \renewcommand{\sectionmark}[1]{\markright{#1}}%
     \renewcommand{\chaptermark}[1]{\markboth{#1}{}}%
-
+    %
+    % Prevent the "Chapter 1", "Chapter 2", etc. texts at the beginning of a chapter
+    \renewcommand{\printchaptername}{}%
+    \renewcommand*{\chapternamenum}{}%
+    \renewcommand{\printchapternum}{}%
 
 
 Tex Doc Header  :

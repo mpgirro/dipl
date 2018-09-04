@@ -263,9 +263,6 @@ CSS Header      :
   .li {
     text-align: justify;
   }
-  h1 {
-    text-align: end;
-  }
   .toc>h1 {
     text-align: start;
   }

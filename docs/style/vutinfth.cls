@@ -50,7 +50,7 @@
 }%
 \ProcessOptions\relax
 \LoadClass[a4paper,11pt]{memoir}%
-\chapterstyle{veelo}%
+%\chapterstyle{veelo}%
 \RequirePackage[scaled]{helvet}%
 \RequirePackage{lmodern}%
 \RequirePackage{courier}%
