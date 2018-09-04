@@ -23,10 +23,10 @@ b <- aggregate(search_akka_future_data$overallRT, list(input_size=search_akka_fu
 c <- aggregate(search_msa_data$overallRT, list(input_size=search_msa_data$input_size), mean)
 
 # this functions plots the graphic of the data
-g1 <- function() {
+eval_search <- function() {
   par(mar=c(4,4,4,2))
   plot(c$input_size, c$x, 
-       type="l", pch=18, col="forestgreen", lty=2, lwd=2,
+       type="l", pch=18, col="dodgerblue1", lty=2, lwd=2,
        cex.axis = 1.1, cex.lab = 1.1,
        xlab = "Search Requests", ylab = "Overall Runtime [Seconds]",
        #xlab="", ylab="",
@@ -38,7 +38,7 @@ g1 <- function() {
          col=c("tomato1", "dodgerblue1"), lty=1:2, cex=1.1, lwd=2)
 }
 
-g2 <- function() {
+eval_akka_delegation_future <- function() {
   par(mar=c(4,4,4,2))
   plot(b$input_size, b$x, 
        type="l", pch=18, col="forestgreen", lty=4, lwd=2,
@@ -52,37 +52,37 @@ g2 <- function() {
          col=c("tomato1", "forestgreen"), lty=1:4, cex=1.1, lwd=2)
 }
 
-save_akka_msa_images <- function() {
+save_eval_akka_delegation_future_images <- function() {
   dest <- "out/eval-search-comparison-akka-delegation-future"
   
   # output PNG
   png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
   par(family = "cmu_sans")
-  g2()
+  eval_akka_delegation_future()
   dev.off()
   
   # output PDF
   pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
   par(family = "CM Sans")
-  g2()
+  eval_akka_delegation_future()
   dev.off()
   # embed the CM Sans font into the PDF, or printing might become a problem
   embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
 }
 
-save_akka_delegation_future_images <- function() {
-  dest <- "out/eval-search-akka-msa"
+save_eval_search_images <- function() {
+  dest <- "out/eval-search-rtt-overall"
   
   # output PNG
   png(paste(dest, ".png", sep=""), width = 5, height = 5, units = 'in', res = 300)
   par(family = "cmu_sans")
-  g1()
+  eval_akka_msa()
   dev.off()
   
   # output PDF
   pdf(paste(dest, ".pdf", sep=""), family="CM Sans", width = 5, height = 5)
   par(family = "CM Sans")
-  g1()
+  eval_akka_msa()
   dev.off()
   # embed the CM Sans font into the PDF, or printing might become a problem
   embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
@@ -91,19 +91,18 @@ save_akka_delegation_future_images <- function() {
 
 # execute this to show in Rstudio
 par(family = "cmu_sans")
-g1()
+eval_search()
+
+par(family = "cmu_sans")
+save_eval_search_images()
+
 
 
 par(family = "cmu_sans")
-g2()
-
-
-par(family = "cmu_sans")
-save_akka_msa_images()
-
+eval_akka_delegation_future()
 
 par(family = "cmu_sans")
-save_akka_delegation_future_images()
+save_eval_akka_delegation_future_images()
 
 
 
