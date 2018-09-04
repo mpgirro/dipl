@@ -29,9 +29,9 @@ Script            : style/mathjax-font.js
 Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
-Bib Style         : plainnat
+<!--Bib Style         : plainnat-->
 <!--Bib style         : style/keynat.bst-->
-<!--Csl Style         : style/custom.csl-->
+Csl Style         : style/custom.csl
 
 <!--Csl Style         : style/chinese-journal-of-aeronautics.csl -->
 <!--Csl Style         : style/elsevier-with-titles.csl-->

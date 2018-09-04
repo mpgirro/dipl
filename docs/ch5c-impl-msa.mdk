@@ -16,7 +16,7 @@ This section covers the strategies applied by programming with the microservice 
 
 Service-oriented programming languages seem to be a good choice for a microservice architecture. Though some languages are theoretically matured, from a practical point SOP languages are as of yet still at an early, prototypical stage. Jolie for example still misses an ecosystem and tool support we are looking for compared to Akka. Therefore, we refrained from using Jolie to implement Echo. 
 
-Instead, we compose microservices using a more traditional technology stack. We use Java as the programming language for all services and the *Spring* [@PivotalSpring] framework, most notably its *Spring Boot* [@SpringBootDoc] module, for application fundamentals. Additionally, we apply many libraries of the *Spring Cloud* [@SpringCloudDoc] collection, which have proven very effective for microservice development in industrial applications [@Car17]. 
+Instead, we compose microservices using a more traditional technology stack. We use Java as the programming language for all services and the *Spring* [@PivotalSpring] framework, most notably its *Spring Boot* [@SpringBootDoc] module, for application fundamentals. Additionally, we apply many libraries of the *Spring Cloud* [@SpringCloudDoc] collection, which have proven very effective for microservice development in industrial applications [@Car17]. For the webserver, we configured Spring to use *Undertow* [@JBossUndertow].
 
 Spring is based around the concept of *inversion of control* (IoC). Spring's IoC variant applies *dependency injection*. We do not instantiate objects directly, but instead define for certain classes what kinds of dependencies they need (i.e.\ we declare fields but do not initialize them directly). These kinds of classes are called *beans*. A so-called IoC *container* instantiates these beans and *injects* their dependencies through constructor arguments, factory methods or setter methods. An IoC container's primary responsibility is therefore the management of beans[^fn-managed-objects]. We call this *lifecycle management*. The actual execution logic of a bean, i.e.\ the scheduling on a thread-pool, is also left to the IoC container [@SpringDoc;@Wal07]. Therefore, Spring's IoC container is the internal concurrency managing system of each of our microservices. Conceptually, IoC management has a certain resemblance to the execution of actors by an actor runtime [@Hal06].
 
@@ -28,9 +28,6 @@ Spring Cloud is a set of libraries which focus on features like data access, mes
 
 As we did with the actor implementation, in subsequent sections we will pay attention to the linguistic support provided by the framework regarding the expression of service requirements.
 
-~ todo 
-Hinweis: We configured Spring to use *Undertow* [@JBossUndertow] as the webserver
-~
 
 ~ Findings
 [Main findings]{.findings-title}

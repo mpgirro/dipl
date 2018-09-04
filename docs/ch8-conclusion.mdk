@@ -52,6 +52,25 @@ The actor model achieves the same capabilities in a single codebase. This single
 The benchmark results show that, in the context of our scenario, the performance of actors is generally better than the performance of microservices. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors, [which is a result of the communication mechanism and the programming model]{.red}. However, the benchmark also exposed that strictly synchronous communication (request/response) among services shows a clear [?nachteil/verschlechterung?]{.red} compared to the request/asynchronous response style facilitated by actors. 
 
 
+## Contributions
+
+
+~ todo
+Hier nochmal drüberlesen und überarbeitet. Vll etwas hochgegriffen?
+~
+
+
+We give answers to the research questions be providing the following contributions:
+
+* We give a survey of the model characteristics of actors and microservices. [Kann ich das so sagen? Ist "survey" nicht eine ganze eigene Studie mit allem PiPaPo?]{.red}
+
+* We design a scenario for a prototypical concurrent system.
+
+* We fill the current gap in the literature and describe the interrelations of actors and microservices. We evaluation key capabilities regarding concurrent programming  (parallelization/distribution, communication, persistence/IO, location transparency, isolation/independence, and scalability) that can be expressed by actors and microserices. Our findings are relative to our concurrent system scenario.
+
+* We provide an actor and a microservice implementation of the concurrent system scenario. We also provide a benchmark and performance comparison for both system implementations and reflect on the efficiency leveraged through each model. 
+
+
 ## Future Work
 
 
