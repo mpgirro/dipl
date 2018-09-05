@@ -1,4 +1,6 @@
 
+&pagebreak;
+
 ## Actor-based Implementation {#ch-actor-impl}
 
 
@@ -368,7 +370,7 @@ Hier schreiben das ich Delegation verwende wegen meinem Benchmark; für "gleiche
 
 Alternatively, the author has found that the delegation principle we've discussed for synchronous message handling is also an efficient strategy. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
-~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:45%; float:left; margin-right: 1ex; }
+~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:100%; }
 ![img-persistence-actor]
 ~
 

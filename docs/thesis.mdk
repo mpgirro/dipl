@@ -461,7 +461,7 @@ Maximilian Irro
 \appendix
 ~
 
-# RSS 2.0 Feed Structure { @h1="A"; #ch-benchmark-feed }
+# Example Feed Structure { @h1="A"; #ch-benchmark-feed }
 
 
 An RSS 2.0 [@Win03] feed is an XML document. It defines the `<rss>` tag. Atom [@RFC4287] feeds additionally apply the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"` to the `<rss>` tag. The `<channel>` encloses the metadata of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item of a podcast feed is the `<enclosure>`, which provides the URL to the episode's media file. Some feeds of the domain also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
@@ -532,6 +532,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [PID]{.abbrv-item} Process Identifier
 * [REST]{.abbrv-item} Representational State Transfer
 * [RPC]{.abbrv-item} Remote Procedure Call
+* [RSS]{.abbrv-item} Rich Site Summary
 * [sJAR]{.abbrv-item} skinny JAR
 * [SOA]{.abbrv-item} Service-oriented Architecture
 * [SoC]{.abbrv-item} Separation of Concerns
@@ -543,11 +544,8 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [URI]{.abbrv-item} Uniform Resource Identifier
 * [URL]{.abbrv-item} Uniform Resource Locator
 * [VM]{.abbrv-item} Virtual Machine
+* [XML]{.abbrv-item} Extensible Markup Language
 { .abbrv-table }
-
-* HTTP
-* XML: Extensible Markup Language
-* RSS: Rich Site Summary
 
 
 <!--

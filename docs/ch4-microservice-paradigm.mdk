@@ -74,12 +74,12 @@ This satisfies the channel requirements given above. Therefore, pipes are a vali
 ## Concurrent and Distributed Building Blocks
 
 
-As independently deployable applications, each microservice is by design a dedicated process. Such are inherently concurrent on the operating system level and also facilitate parallelization on multiple cores transparently. Every communication mechanism has to be able to send data across the distinct address spaces which strictly isolate the states. Recalling the case study on process system programming in C, fork/pipe-based applications utilize Unix pipes to cross memory boundries. Their components too are concurrently executed through the process scheduling of the OS. It's therefore worth debating whether such systems qualify for microservice architectures.
+As independently deployable applications, each microservice is by design a dedicated process. Such are inherently concurrent on the operating system level and also facilitate parallelization on multiple cores transparently. Every communication mechanism has to be able to send data across the distinct address spaces which strictly isolate the states. Recalling the case study on process system programming in C, fork/pipe-based applications utilize Unix pipes to cross memory boundaries. Their components too are concurrently executed through the process scheduling of the OS. It's therefore worth debating whether such systems qualify for microservice architectures.
 
 <!--
 Any communication mechanism thus has to be able to send data between processes. Yet some valid channels (like Unix pipes) are only capable of sending messages between processes on the same operating system. 
 
-Recalling the case study on process system programming in C, fork/pipe based applications are also executed concurrentlyy through the process scheduling of the OS. For these concurrent components have strictly isolated states through the boundries of their distinct address spaces and the communication mechanism is viable in general, it's worth debating weither such systems qualify for Microservice Architectures.
+Recalling the case study on process system programming in C, fork/pipe based applications are also executed concurrentlyy through the process scheduling of the OS. For these concurrent components have strictly isolated states through the boundaries of their distinct address spaces and the communication mechanism is viable in general, it's worth debating weither such systems qualify for Microservice Architectures.
 -->
 
 
@@ -90,7 +90,7 @@ Recalling the case study on process system programming in C, fork/pipe based app
 
 Each Microservice is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
 
-In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. However, recalling the case study on process system programming in C from section [#sec-concurrent-c], such fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. For the concurrent components have strictly isolated states through the boundries of their distinct address spaces and the communication mechanism is sufficient in general, it's worth debating weither such systems apply for a Microservice Architecture.
+In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. However, recalling the case study on process system programming in C from section [#sec-concurrent-c], such fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. For the concurrent components have strictly isolated states through the boundaries of their distinct address spaces and the communication mechanism is sufficient in general, it's worth debating weither such systems apply for a Microservice Architecture.
 -->
 
 The fork pattern spawns processes in a tree-like fashion. All components rely on a shared ancestor. Every child is easily able to replace itself by an arbitrary other program image using `exec`. However, the setup of the communication routes relies on an instantiation of the pipe before the fork, so that both parent and child have access to the pipe. This fact limits the possibility to take down or add new components independently. Hence, pipes are rather restrictive and present a certain degree of coupling [@Bac03]. It is difficult to replace the system's components independently.
@@ -99,7 +99,7 @@ To overcome this restriction, the construct of *named pipes* were introduced int
 
 
 <!--
-The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
+The concurrent components have strictly isolated states through the boundraies of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
 -->
 
 <!--
@@ -107,7 +107,7 @@ We've argued that Unix pipes are a viable queue-like mechanism sufficing the req
 -->
 
 <!--
-Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
+Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundaries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
 -->
 
 <!--

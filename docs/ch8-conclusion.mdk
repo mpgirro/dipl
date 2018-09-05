@@ -28,28 +28,23 @@ Actors and microservices encapsulate their state exlusively and all their commun
 
 The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally concurrency sources. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
 
-Microservices are free to employ internal concurrency using every model available to their technology stack.
-
-[TODO more]{.red}
+Microservices are free to employ internal concurrency using every model available to their technology stack. Unlike actors, microservices are therefore not free of internal synchronization.
 
 
 ### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability? { -; toc:clear }
 
-[TODO]{.red}
 
 We've shown that both models have to apply different implementation strategies, but can achieve the same capabilities in general. Their implementation strategies come with different trade-offs for each model.
 
-In general, we can expect larger executable artifacts and more resource consumption from the microservice approach, since the model produces independent programs. The author initially expected that the microservice style would also show a significantely higher programming effort, e.g.\ in lines of code. The suspected reason was the need to maintain a dedicated codebase for each service. However, we demonstrated how a declarative programming styles can significantely reduce the programming effort. The price is the resulting size of the executable artifacts.  
+In general, we can expect larger executable artifacts and more resource consumption from the microservice approach, since the model produces independent programs. The author initially expected that the microservice style would also show a significantely higher programming effort, e.g.\ in lines of code. The suspected reason was the need to maintain a dedicated codebase for each service. However, we demonstrated how a declarative programming styles significantely reduces the programming effort. The price is the resulting size of the executable artifacts.  
 
-The actor model achieves the same capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed deployment) exist within the same process and memory boundires. Much of the programmer's effort results from the liability of guaranteeing that no mutable state is accessible through reference sharing among any two actors to ensure the model semantics.
+The actor model achieves the same capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed deployment) exist within the same process and memory boundires. Much of the programmer's effort results from the liability to guarantee that no mutable state is accessible through reference sharing among any two actors, in order to ensure the model semantics.
 
 
 ### RQ4: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { -; toc:clear }
 
 
-[TODO ein paar Sätze zu den Ergebnissen des Benchmarks]{.red}
-
-The benchmark results show that, in the context of our scenario, the performance of actors is generally better than the performance of microservices. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors, [which is a result of the communication mechanism and the programming model]{.red}. However, the benchmark also exposed that strictly synchronous communication (request/response) among services shows a clear [?nachteil/verschlechterung?]{.red} compared to the request/asynchronous response style facilitated by actors. 
+The benchmark results show that, in the context of our scenario, the performance of actors is generally better than the performance of microservices. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors, [which is a result of the communication mechanism and the programming model]{.red}. However, the benchmark also exposed that strictly synchronous communication (request/response) among services is clearly inferior to the request/asynchronous response style that actors facilitate. 
 
 
 ## Contributions

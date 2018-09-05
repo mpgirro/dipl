@@ -1,4 +1,6 @@
 
+&pagebreak;
+
 ## Microservice-based Implementation {#ch-microservice-impl}
 
 
@@ -99,7 +101,7 @@ We can persist information with many different strategies. Database systems are 
 
 Persistance is a form of IO and a potential performance limiting factor. Hence, database management systems usually support concurrent access to the database . As with actors, concurrent connections increase the throughput of the component. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
-~ Figure { #fig-persistence-microservice; caption: "A microservice maintains several connections to an exclusive database"; width:45%; float:left; margin-right: 1ex; }
+~ Figure { #fig-persistence-microservice; caption: "A microservice maintains several connections to an exclusive database"; width:100%; }
 ![img-persistence-microservice]
 ~
 
@@ -227,7 +229,7 @@ Using discovery mechanisms can impacts the response times of services. It can be
 
 Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Susequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
-~ Figure { #fig-service-discovery; caption: "Example of service discovery. The consecutive lookups deplay the overall synchronous communications"; width:100%; float:left; margin-right: 1ex; }
+~ Figure { #fig-service-discovery; caption: "Example of service discovery. The consecutive lookups deplay the overall synchronous communications"; width:100%; }
 ![img-service-discovery]
 ~
 
