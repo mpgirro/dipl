@@ -31,7 +31,8 @@ Cite All          : False
 Bibliography      : dipl
 <!--Bib Style         : plainnat-->
 <!--Bib style         : style/keynat.bst-->
-Csl Style         : style/custom.csl
+<!--Csl Style         : style/custom.csl-->
+Csl Style         : style/elsevier-with-titles.csl
 
 <!--Csl Style         : style/chinese-journal-of-aeronautics.csl -->
 <!--Csl Style         : style/elsevier-with-titles.csl-->
@@ -520,6 +521,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [IoC]{.abbrv-item} Inversion of Control
 * [IR]{.abbrv-item} Information Retrieval
 * [JAR]{.abbrv-item} Java Archive
+* [JSON]{.abbrv-item} JavaScript Object Notation
 * [JVM]{.abbrv-item} Java Virtual Machine
 * [LB]{.abbrv-item} Load Balancing
 * [MPS]{.abbrv-item} Messages per Second
