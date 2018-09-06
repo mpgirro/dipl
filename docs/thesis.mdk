@@ -30,9 +30,9 @@ Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 <!--Bib Style         : plainnat-->
-<!--Bib style         : style/keynat.bst-->
+Bib style         : style/keynat.bst
 <!--Csl Style         : style/custom.csl-->
-Csl Style         : style/elsevier-with-titles.csl
+<!--Csl Style         : style/elsevier-with-titles.csl-->
 
 <!--Csl Style         : style/chinese-journal-of-aeronautics.csl -->
 <!--Csl Style         : style/elsevier-with-titles.csl-->
@@ -103,9 +103,9 @@ Bibl {
 -->
 
 
-.abbrv-table    { list-style-type:none; margin-left:0; tex-env: "itemize[leftmargin=*]"}
-.abbrv-table-li { margin-bottom:0.2ex; }
-.abbrv-item     { font-family: sans-serif; font-weight: bold; width:8ex; }
+.abbrv-table    { list-style-type:none; margin-left:0; paddding-left:0; tex-env: "itemize[leftmargin=*]"}
+.abbrv-table-li { margin-bottom:0.1ex; }
+.abbrv-item     { font-family: sans-serif; font-weight: bold; width:15ex; }
 
 
 <!-- change some fonts used in latex, my personal preference -->
@@ -507,7 +507,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 ```
 
 
-# List of Abbreviations { - }
+# Acronyms and Abbreviations { - }
 
 * [AMQP]{.abbrv-item} Advanced Message Queue Protocol
 * [AO]{.abbrv-item} Active Object

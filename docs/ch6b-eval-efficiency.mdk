@@ -2,18 +2,13 @@
 ## Benchmark and Efficiency {#sec-eval-efficiency}
 
 
-~ todo
-Ich soll Zahlen produzieren, also mus sich Dinge "messen". Also bitte...
-~
-
-
-We've compared the expressiveness and conceptual capabilities of actors and microservices, and demonstrated that both can meet similar concerns. Now we are interested in the efficiency we can leverage from each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. [The results allow us to draw conclusions about the underlying concurrency concepts]{.green}. 
+We've compared the expressiveness and conceptual capabilities of actors and microservices, and demonstrated that both can meet similar concerns. Now we are interested in the efficiency we can leverage from each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. 
 
 
 ### Performance Metrics
 
 
-A benchmark requires measureable and comparable metrics of systems. As we've already mentioned, information retrieval traditionally uses the metrics of precision and recall to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. We require metrics which reflect efficiency. These metrics must be applicable to actors, microservices, and our scenario. 
+A benchmark requires measureable and comparable metrics. As we've already mentioned, information retrieval traditionally uses precision and recall metrics to evaluate search engines. However, precision and recall assess the effectiveness of the retrieval techniques. IR effectiveness is not withing the scope of this thesis. We require metrics which reflect efficiency. These metrics must be applicable to actors, microservices, and our scenario. 
 
 *Savina* is a benchmark suit specifically designed for evaluating actor libraries [@Ima14]. Profiling studies have used Savina to gather detailed metrics for Akka [@Ros16a;@Ros16b]. However, the benchmark suit as well as the profiling tools are actor model and Akka specific. Hence, the metrics provided by the profiling are tailored to the actor model. 
 
@@ -25,22 +20,22 @@ The Echo search engine resembles a web-server application. Therefore we can simp
 [^fn-concurrent-process]: In this context, *process* referes to a task unit in concurrency theory, and not an OS process.
 -->
 
-Lillis *et al.* [@Lil09] as well as Pedzai & Suleman [@Ped06] each use techniques we've discussed in this work, like synchronous/asynchronous and one-to-one/one-to-many communication styles, broker functionalities, lifecycle management (cf. Akka runtime, Spring IoC), to improve the performance of search engines. Among other things, they evaluate the performance by measuring the time it takes a system to index a given number of documents. [We can use this simulation to benchmark the general efficiency as specifically the messages per second]{.green}. The retrieval subsystem's performance is the time it takes to process a given number of queries. [We can use this simulation to benchmark the response time (= response latency / round trip time)]{.green}. We take this experiment design and apply it to assess the efficiency of our actor and microservice implementations.
+Lillis *et al.* [@Lil09] as well as Pedzai & Suleman [@Ped06] each use techniques we've discussed in this work, like synchronous/asynchronous and one-to-one/one-to-many communication styles, message brokers, and lifecycle management (cf. Akka runtime, Spring IoC) to improve the performance of search engines. Among other things, they evaluate the performance by measuring the time it takes a system to index a given number of documents. The Retrieval subsystem's performance is the time it takes to process a given number of queries. We take this experiment design and use it to assess the efficiency of our actor and microservice implementations.
 
 
 ### Simulation Workloads 
 
 
-Echo has two essential subsystems: the indexing subsystem and the retrieval subsystem. Since the indexing subsystem is not affected by the rate of search requests, we can evaluate both subsystems separately [@Lil09]. Each subsystem requires a different kind of input data. For benchmarking a subsystem, we need to simulate a workload scenario with appropriate input data. Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for workload data. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
+Echo has two essential subsystems: the Indexing subsystem and the Retrieval subsystem. Since the Indexing subsystem is not affected by the rate of search requests to the Retrieval subsystem and vice versa, we can evaluate both subsystems separately [@Lil09]. Each subsystem requires a different kind of input data. For benchmarking a subsystem, we need to simulate a workload scenario with appropriate input data. Although we are not interrested in evaluating the effectiveness, we can still look to information retrieval for workload data. IR uses standardized dataset collections for evaluations. These dataset collections usually consist of three parts [@Man08]:
 
 * Part 1: Set of documents
 * Part 2: Set of queries
 * Part 3: Relevance assessment between queries and documents 
 { list-style-type:none }
 
-We are interrested in Part 1 as input for the indexing subsystem and Part 2 as input for the retrieval subsystem. Part 3 is required for effectivness evaluation, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
+We are interrested in Part 1 as the input for the Indexing subsystem and in Part 2 as the input for the Retrieval subsystem. Effectivness evaluation uses Part 3, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
 
-Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to (wrt.) the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern the actual information within either feeds nor queries, we can simply create custom feeds and queries using simple placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation. We've analyzed 500 arbitrary feeds obtained from the Fyyd[^fn-fyyd] podcast directory and found that the average feed has 70 episodes. To make the simulation workloads more realistic, the test feeds also have 70 elements.
+Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern to the actual information within either the feeds, the queries, nor the quality of search results, we can simply create custom feeds and queries using placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation. We've analyzed 500 arbitrary feeds obtained from the Fyyd[^fn-fyyd] podcast directory and found that the average feed has 70 episodes. To make the simulation workloads more realistic, the test feeds also have 70 elements.
 
 [^fn-lorem-ipsum]: <https://lipsum.com>
 [^fn-fyyd]: <https://fyyd.de>
@@ -49,11 +44,11 @@ Therefore we must design our own dataset collection. In general, we are faced wi
 ### Experiment Setup
 
 
-All evaluation results are measured on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6. The components with persistent states are deployed with a H2 database engine [@Mue04] version 1.4.196 (in-memory persistence mode) and Lucene version 7.2 respectively.
+All evaluation results are measured on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6. The components with persistent states are deployed with an H2 [@Mue04] database engine version 1.4.196 (in-memory persistence mode) and Lucene version 7.2 respectively.
 
-All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on filled index. Crawlers load the benchmark feeds from the local file system, and therefore are not subject to network induced latencies. 
+All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on a filled index. Crawlers load the benchmark feeds from the local file system, and are therefore not subject to network induced latencies. 
 
-To eliminate a threat to the validity of the benchmark (discussed in Section [#sec-threats-to-validity]), the CatalogStores of each system implementation use the Spring Data JPA library for database interaction. Usually, Spring Data JPA expects a Spring IoC container to handle concurrent connections and transaction management. To be able to handle concurrent database interaction directly via actors, the Akka implementation uses Spring Data JPA without an IoC container. The respective CatalogStore therefore has to manage transactions manually.
+To eliminate a threat to the validity of the benchmark (discussed in Section [#sec-threats-to-validity] below), the CatalogStores of each system implementation use the Spring Data JPA library for database interaction. Usually, Spring Data JPA expects a Spring IoC container to handle concurrent connections and transaction management. To be able to handle concurrent database interaction directly via actors, the Akka implementation uses Spring Data JPA without an IoC container. The respective CatalogStore therefore has to manage transactions manually.
 
 <!--
 ...
@@ -70,6 +65,9 @@ To ensure that both implementation variants have the same resources for concurre
 ### Benchmark Results
 
 
+... all benchmark results are for static system configurations, therefore do not reflect any forms of structural scalability. Also, due to the single multicore host, we cannot draw conclusion to the horizontal scalability behavior of the architectures.
+
+
 #### Experiment 1: Indexing Subsystem
 
 ~ Figure { #fig-eval-index-overall; caption: "Overall processing time of indexing feeds"; width:100%; }
@@ -77,6 +75,11 @@ To ensure that both implementation variants have the same resources for concurre
 ~
 
 [img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:70%; vertical-align:middle; padding-bottom:1ex; }
+
+... the figure also describes the load scalability behavior of the systems. With an increased load for the Indexing subsystem, both implementations scale uniformly, which is the desired behavior. This uniform behavior is the result of good vertical scalability, since the architectures are able to uniformly leverage the resources of the single multicore host used for the benchmark.
+
+
+
 
 ...
 
@@ -87,7 +90,9 @@ To ensure that both implementation variants have the same resources for concurre
 
 [img-eval-index-mem]: graphics/eval-index-mem.[pdf,png] "Image about eval-index-mem" { width:70%; vertical-align:middle; padding-bottom:1em; }
 
-We see, every microservice consumes separate system resources, even those who do not perform any work in the Indexing phase (Gateway, Searcher). The Akka monolith that implements the entire Echo system consumes only slightly more memory resources as a single Spring-based microservice. The entire MSA has a considerably higher memory demand than the entire actor-based system. There is a simple explanation. The JVM is a relatively heavy-weight VM. Every process incarnation of a Java-based microservices must be deployed in its own separate VM, which poses a considerable impact on the system resources. 
+In Section [#sec-conception-concurrent-execution] we've discussed the issue of fairness and the implications on resource consumption. Figure [#fig-eval-index-mem] shows the memory resource consumption of the Echo implementations in the Indexing phase. We see, every microservice consumes separate system resources, even those who do not perform any work in the Indexing phase (Gateway, Searcher). The Akka monolith that implements the entire Echo system consumes only slightly more memory resources as a single Spring-based microservice. The entire MSA has a considerably higher memory demand than the entire actor-based system. 
+
+The figure also illistrates the impact of the JVM as a microservice plattform. The JVM is a relatively heavy-weight VM. Every process incarnation of a Java-based microservices must be deployed in its own separate VM, which poses a considerable impact on the system resources. The operating system always allocates resources towards every process on a regular basis. In contrast, Akka actors, besides being more lightweight constructs in general, only get scheduled and thus consume resources when they have messages in their mailbox.
 
 ...
 
@@ -121,6 +126,10 @@ Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to ass
 
 ...
 
+... the figure also describes the load scalability behavior of the Retrieval subsystems. Both implementations scale uniformly as desired. We can again trace this result back to the fact that the implementations can leverage the available system resources well of the single multicore host (vertical scalability). However, the microservice variant shows considerably lower efficient. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of a MSA. Our benchmark result support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
+
+...
+
 In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication provided by Akka. One variant is based in futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response was received. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance.
 
 To evaluate the future- and delegation-based modelling of (semi-)synchronous communication, we've conducted the retrieval experiment also with futures. Figure [#fig-eval-search-comparison-akka-delegation-future] illustrates the future results in contrast to the delegation results.
@@ -144,7 +153,7 @@ To the authors knowledge, there exists no benchmark comparing Akka actors and Sp
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
-Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion. Our experiences do not reflect any problems from the asynchronous style. In contrast, we've found that the synchronous style is considerably less performant than the asynchronous style.
+Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the Indexing subsystem is modeled in an asynchronous fashion, and the Retrieval subsystem in a synchronous fashion. Our experiences do not reflect any problems from the asynchronous style. In contrast, we've found that the synchronous style is considerably less performant than the asynchronous style.
 
 Interrestingly, Bonér, the creator of Akka, advocates in his recent works [@Bon16;@Bon17] for what he calls *reactive microservices*. Essentially, a reactive microservice is a service that orients itself on the actor principles, especially asynchronous messaging and the lack of global consistency (cf. eventual consistency). Bonér argues that reactive microservices are more performant than tightly-coupled synchronous services facilitating global consistency (e.g.\ via a transactions mechanism). However, he provides no benchmark results to back his claim. The subsystems of our microservice implementation reflect a reactive microservice style (Indexing pipeline) and a more "traditional" synchronous style (Retrieval pipeline). The Akka implementation provides the reference to a purely reactive (asynchronous) system. Our benchmark results support Bonér's argumentation that the reactive style is more performant.
 
