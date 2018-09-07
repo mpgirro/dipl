@@ -6,28 +6,6 @@
 I think the computer is the world's greatest toy. You can invent wonderful things and actually make them happen.
 ~
 
-<!--
-~ Epigraph { caption: "Terry Winograd"}
-The main activity of programming is not the origination of new independent programs, but in the integration, modification, and explanation of existing ones.
-~
-
-~ Epigraph { caption: "Ellen Ullman"}
-We build our computer (systems) the way we build our cities: over time, without a plan, on top of ruins.
-~
-
-~ Epigraph { caption: "Butler Lampson"}
-I think the computer is the world's greatest toy. You can invent wonderful things and actually make them happen.
-~
-
-~ Epigraph { caption: "Pamela Zave"}
-The purpose of software engineering is to control complexity, not to create it.
-~
-
-~ Epigraph { caption: "Unknown"}
-Distributed is truely concurrent
-~
--->
-
 
 The physical world is a composition of simultaneous activities. Programmers experience nature as a concurrent environment. As such, the idea of simultaneous actions has not been absent from the immaterial world of computer programming. Numerous models to conceive concurrent execution have been proposed over the decades. Now that manycore machines are widespread and distribution is popular in the current trend of *cloud computing*, concurrent programming techniques have become essential. Many of the proposed models are therefore now heavily applied in practice.
 
@@ -39,10 +17,6 @@ In this thesis, we merit attention to two approaches to concurrent programming. 
 
 Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and the microservice model. This work is aiming to fill this gap, with a focus on the concurrent programming aspects regarding these concepts. Specifically, we ask the following research questions:
 
-<!--
-> (__RQ__: What are the key characteristics of actors and microserices?)
--->
-
 > __RQ1__: Why do actors and microservices qualify for programming concurrency?
 
 > __RQ2__: How do the actor and microservice model facilitate concurrent execution?
@@ -50,53 +24,6 @@ Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature e
 > __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
 
 > __RQ4__: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
-
-<!--
-> (__RQ__: How do actors and microservices compare against regarding efficiency [unmissverständlicher formulieren]{.red})
--->
-
-
-
-<!--
-
-* What are the interrelations between actor features/primitives and microservice features/primitives
-
-~ red
-* 1 MS mit X worker-threads ?= X actors on thread-pool with X threads
-
-* 2 MS mit X/2 worker-threads ?= X actors on thread-pool with X threads
-~
-
-
-
-## Aim and Scope of the Work
-
-~ todo
-Hier soll kurz Erklärt werden worum es mir bei der Erarbeitung der Antwort auf die Forschungsfrage geht. Vor allem soll auch abgegrenzt werden wieso es praktische Implementierungen gibt und welchen Zweck diese erfüllen, d.h. dass diese nicht auf ihre Leistung bzgl. der Domäne evaluiert werden.
-~
-
-~ begin green
-
-...
-
-The goal of this work is to provide an
-
-~LitNote
-- Clear separation between search engine and domain specific tasks (writing to index and search, fetching and parsing feeds, etc) and the communication and coordination specific parts (actors architecture and microservice architecture). Therefore a core library was developed for the first, and for the second "only" backends utilizing this lib was needed. It allows easy analysis/argumentation about the concurrent programming vs MSA aspect of the thesis, because all test scenario specific parts are part of core-lib, and could therefore be replaced by other domain specific code or non-search engine code
-
-Important that core-lib does not introduce any own concurrent aspect, all concurrency should be done via actors/microservices
-
-* core-lib is for demonstration
-* actor-backend and microservice-backend are for scientific work
-* will not focus on any specific search engine improvement
-~
-
-~ end green
-
-...
-
-We are conducting a *conceptual* analysis and will therefore refrain from giving formal definitions of all concepts, which would tend to become rather excessive. Instead, we confine on describing the concept semantics in an informal way sufficient for comparative evaluation.
--->
 
 
 ## Methodological Approach

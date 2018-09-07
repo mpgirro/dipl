@@ -1,13 +1,10 @@
 
-The Actor Model {#ch-actor-model}
-===============
+# The Actor Model {#ch-actor-model}
+
 
 ~ Epigraph { caption: "C.A.R. (Tony) Hoare"}
 Some problems are better evaded than solved.
 ~
-
-
-<!--## A Model of Computation {#sec-actor-primitives}-->
 
 
 In this thesis, we will focus on one particular model of concurrent computation. The *actor model* is based on a formalism Hewitt *et al.*\ [@Hew73] introduced in the 1970s. As the model's name suggests, it builds upon the concept of *actors* as basic building blocks. Agha describes them a self-contained, interactive and independent components that are communicating via asynchronous message passing [@Agh90]. He also reformulated the actor model into three basic primitives an actor can perform upon receiving a message [@Agh85a]:
@@ -36,7 +33,6 @@ Additionally, state can only be changed while processing a message. Therefore, a
 
 
 ## Unified Abstraction
-<!--## Unifying Concurrent, Parallel and Distributed Computation-->
 
 
 Until now, we've described the actor model as a general model of computation. The abstraction of actors provides a strict separation of components state, as well as a loose coupling via asynchronous message passing. Actors encapsulate not only data and functionality, but also their own *thread of control*, making actors autonomous [@Agh99]. This autonomy allows for a concurrent execution of actors components, effectively making the actor abstraction into a model of *inherent concurrent computation* [@Agh91]. 
@@ -131,23 +127,6 @@ The active object method signatures do not only define communication with a cert
   : The sender's thread of control immediately returns, but receives a reference to the result that will be available at some point in the future. The actual result becomes available once the receiving object has processed the message and replied.
 
 The example above illustrates two of these behaviors of method invocation of active objects. `void add(int)`{language:java} only dispatches a message and immediately returns (past type). In contrast, `int get(void)`{language:java} actually waits for a result (now type). Using the future type requires us to include an additional model of concurrency, the *future*. 
-
-<!--
-Table [#tab-actor-ao-comparison] gives an overview of the major differences relevant to our considerations between actors and active objects.
-
-~ Begin TableFigure { #tab-actor-ao-comparison; caption: "Major differences between actors and active objects"; page-align:here}
-|-------------------------|-------------------|----------------------------------|
-| Characteristic          | Actors            | Active Objects                   |
-+-------------------------+-------------------+----------------------------------+
-| Basic construct         | Arbitrary "actor" | Object                           |
-| ------------------------|-------------------|----------------------------------|
-| Message typization      | Dynamic           | Static                           |
-| ------------------------|-------------------|----------------------------------|
-| Message synchronization | Asynchronous      | Synchronous/asynchronous/future, |
-|                         |                   | depends on method signature      |
-| ------------------------|-------------------|----------------------------------|
-~ End TableFigure
--->
 
 
 ## Integration of other Concurrency Abstractions {#sec-actor-concurrency-combination}

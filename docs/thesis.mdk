@@ -42,12 +42,6 @@ Name References   : Bibliography
 Name Figures      : List of Figures
 Name Tables       : List of Tables
 
-<!--Bib style : plainurl <!-- TODO shows __all__ URLs + DOIs (ungly) -->
-<!--Bib style : plainnat-->
-<!--bib style: unsrtnat <!-- TODO remove URLs in bibtex when there is a DOI -->
-
-
-
 
 [INCLUDE=style/vutinfth]
 
@@ -128,12 +122,6 @@ blockquote   { font-style: italic; }
 toc.toc-figures   { -; before: "# &name-figures;  { -; .heading-figures }&nl;" }
 toc.toc-tables    { -; before: "# &name-tables;   { -; .heading-tables }&nl;" }
 
-<!-- DOES NOT WORK IN LATEX
-.heading-contents { text-align:right }
-.heading-figures  { text-align:right }
-.heading-tables   { text-align:right }
--->
-
 <!-- arbitrary helper classes, while work in progress -->
 .findings       { border: solid black 1px; padding:1rem }
 .findings-title { font-family: sans-serif; font-weight: bold; margin-left:1rem; }
@@ -151,43 +139,10 @@ toc.toc-tables    { -; before: "# &name-tables;   { -; .heading-tables }&nl;" }
 .green  { color: green }
 .greenb { color: green; font-weight: bold }
 
-<!-- TODO do I want to have the same color in PDF and HTML?
-.cite-number {
-  color:navy;
-}
--->
-
-<!-- TODO brauch ich das hier?
-@if html {
-  Name Contents   : \/
-
-  Section Depth : 1
-  Css           : style/webpaginated.css
-  Script*       : style/webpaginated.js
-}
--->
-
-<!--
-@if not html {
-  Name Contents   : Inhaltsverzeichnis
-}
--->
 
 @if not (tex) {
   Bib Search Url : scholar.google.at
 }
-
-<!-- Rewrite the H1 rules for PDF output, to fix the template -->
-<!--
-@if tex {
-  h1-endperiod :
-  h1-format    : 
-  h1 { before: "[&h1-format;]{.h1-before}" }
-}
-@if html {
-  h1 { label:"@h1"; before:"&label;.&ensp;" }
-}
--->
 
 CSS Header      :
   /*
@@ -365,27 +320,6 @@ Es gilt einigen wenigen meinen Dank auszusprechen:
 
 Common problems require applications to manage multiple concerns simultaneously. A convenient approach is the concept of *concurrent programming*. In this thesis, we investigate two different models for introducing concurrent computational units into software architectures. One approach is the *actor model* that defines theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The other approach is an architectural style based on so-called *microservices*, a recent trend that gained academic and industrial popularity. Microservices facilitate many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables. These programs interoperate via lightweight, technology heterogenous messaging channels. The deployment modality of microservices conceives concurrent execution through the operating system scheduler. This thesis compares the programming of concurrent computation through actors and microservices with respect to a non-trivial concurrent system scenario. We argue that both approaches share many conceptual similarities and [few but significant]{.red} differences. Both models have the same expressive capabilities regarding concurrent programming concerns like communication and scalability, but suffer from different trade-offs. We provide implementations of the system scenario based on actor and microservice architectures. Benchmark results of these implementations suggests that actors provide better system efficiency through a smaller codebase. Microservice architectures consume significantly more system resources and suffer especially from purely synchronous communication mechanisms. 
 
-<!--
-With respect to a non-trivial scenario for a concurrent system, we compare the programming of concurrent computation with the actor and microservice model. We argue that both programming models have the same expressive capabilities, but suffer from different trade-offs. Actor- and microservice-based implementations of the scenario provide the foundation of system benchmarks. Our results indicate that actors provide better system efficiency and a smaller codebase. Microservice architectures consume more system resources and suffer especially from purely synchronous communication mechanisms. 
-
-<!--
-
-...We argue that both approaches share many conceptual similarities and few but significant differences which are affecting concurrent programming concerns. 
-
-While actors follow a strict theoretical concept,  microservices, in their current deployment focused perception, are constrained merely by a set of rather loose principles, not more than best practices. Based on an exemplary scenario, we evaluate the conceptual capabilities for meeting concerns like communication, distribution, scalability and [??]{.red}. Additionally, we assess the efficiency of programming concurrency with actors and microservices by measuring the scenario implementation performance. We've found that [???]{.red}
-
-... we evaluate the conceptual 
-
-... we developed a benchmark application in two system models: actor-based and microservice-based. 
-
-...it is evaluated how concurrent software systems can be composed with Actors or Microservices utilizing their respective characteristics and resulting possibilities. Finally, argumentations for both approaches to concurrent programming are formulated and a shift in the notion of conceiving Microservices towards a stricter theoretical foundation we see closer to the Actor model is motivated. 
-
-...
-
-... We design and implement a search engine architecture...we leverage the concurrency as well as isolation, distribution, scalability and XY capabilities of actors and microservices...once with actors and once with microservices... once using actors for concurrency and concurrency  
--->
-
-
 <!-- TeX -->
 ~ TexOnly
 ~~ TexRaw
@@ -466,8 +400,7 @@ Maximilian Irro
 [INCLUDE=ch5c-impl-msa]
 [INCLUDE=ch6a-eval-expressivness]
 [INCLUDE=ch6b-eval-efficiency]
-<!--[INCLUDE=ch7-discussion]-->
-[INCLUDE=ch8-conclusion]
+[INCLUDE=ch7-conclusion]
 
 ~TexRaw
 \appendix
@@ -562,55 +495,5 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 { .abbrv-table }
 
 
-
-
-<!--
-|:~~~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| AMQP | Advanced Message Queue Protocol |
-| AO   | Active Object                   |
-| FIFO | First In First Out              |
-| IPC  | Inter-Process Communication     |
-| IoC  | Inversion of Control            |
-| JVM  | Java Virtual Machine            |
-| LB   | Load Balancing                  |
-| MS   | Microservice                    |
-| MSA  | Microservice Architecture       |
-| OOP  | Object-oriented Programming     |
-| OS   | Operating System                |
-| PID  | Process Identifier              |
-| REST | Representational State Transfer |
-| RPC  | Remote Procedure Call           |
-| SOA  | Service-oriented Architecture   |
-| SOC  | Service-oriented Computing      |
-| SOP  | Service-oriented Programming    |
-| SRP  | Single Responsibility Principle |
-| STM  | Software Transactional Memory   |
-| URI  | Uniform Resource Identifier     |
-| URL  | Uniform Resource Locator        |
-| VM   | Virtual Machine                 |
-{ width:100%; border-style:none; col-first-font-weight:bold; tr-margin-top:1ex }
--->
-
-<!--
-[TOC=figures]
-[TOC=tables]
--->
-
-<!--
-# Glossary { - }
-
-* Akka
-  : TODO
-
-* Microservice Architecture (MSA)
-  : TODO
-
-* Message oriented middleware (MOM)
-  : TODO
-
--->
-
 [BIB]
-
-<!-- TODO glossar, nomenclature, index -->
 

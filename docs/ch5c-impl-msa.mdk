@@ -2,14 +2,8 @@
 ## Microservice-based Implementation {#ch-microservice-impl}
 
 
-<!--
-~ Epigraph { caption: "Ian Robinson"}
-Be of the web, not behind the web.
-~
--->
-
-
 This section covers the strategies applied by programming with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All discussed concepts are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
+
 
 ### Service Technology Stack
 
@@ -65,31 +59,6 @@ Although Spring's declarative programming style for concurrency is very powerful
 ~
 
 
-<!-- TODO delete?
-## (Data Coupling)
-
-[DIESES UNTERKAPITEL EINFACH WEGLASSEN?]{.red}
-
-~LitNote
-No direct referencing via REST, async messages same temporal decoupling as with Actors; dadurch das nachrichten idR durch praktisch jeden kommunikationskanal immer serialisiert werden (weil immer der process-scope verlassen wird) sind die nachrichten immer immutable, da es kein pass by reference gibt (anders als bei Akka zB)
-~    
-
-From the strict notion of isolation the Microservice paradigm provides follows a high form of cohesion. It is generally agreed upon that cohesion and coupling are contrary. By implications, high cohesion leads to lower coupling [zitieren, da gibts mehrere stellen bei den OOP sachen irgendwo]{.mind}. 
-
-The abstinence from mutable shared memory and the emphasise on open, well defined communication protocols adds to the loosening of coupling. Any open protocol offers good technological heterogenity, as we discussed in section [#sec-technological-heterogeneity]. This requires data to be transmitted in a serialized form, that is readyable by all endpoints [citation needed]{.mind}.
-
-REST-based communication is a good example. Data is transmitted using HTTP, therefore basically plain text. To formalize (de-)serialization, usually an open format is used ontop, e.g.\ XML, JSON or YAML [citation needed]{.mind}.
-
-Message passing through MOMs is also...
-
-The combination of no shared memory and well-defined serialized data exchange frees Microservice Architectures from the risk of accidentially sharing references to state that introduces the risk of 
-
-~Todo
-Im Prinzip verhindert das auch alle formen von Aliasing, was am Franz gefällt, und ich kann darüber auch bei Actors vll etwas schreiben? Nur brauche ich dazu eine Literaturquelle
-~   
--->
-
-
 ### Isolation and Persistence
 
 
@@ -135,23 +104,7 @@ We require a technology heterogenous message queue standard. AMQP (__A__dvanced 
 * Message Queues (Q)
   : are distributed point-to-point communication channels offering message delivery from a sender to a qualified receiver (possibly unknown to the sender) decoupled in time and space (asynchronous) [@Cou05]. 
 
-<!--
-~ Figure { #fig-ms-channels; caption: "Microservice communication channels"; width:50%; float:left; margin-right: 1ex; }
-![img-ms-channels]
-~
-
-[img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
--->
-
 The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For examole, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, the Crawler pushes a message `W` &rarr; `Q`. At some later point and idle Parser pulls this message `P` &larr; `Q`. The message travels asynchronously. The actively communicating components are `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
-
-<!--
-~ Figure { #fig-message-queue; caption: "Message queue"; width:50%; float:left; margin-right: 1ex; }
-![img-message-queue]
-~
-
-[img-message-queue]: graphics/message-queue.[svg,png] "Image about a message queue" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
--->
 
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. Since every interface produces and consumes messages in JSON (__J__ava__S__cript __O__bject __N__otation) format, there are no datatype incompatibility problems. Echo's microservices provide a REST interface for every message a service consumes from the AMQP queue. We can therefore also send a message to a service directly via HTTP. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for development, production, and maintenance. 
 
@@ -187,30 +140,6 @@ This approach models a remote procedure call between the two components. Calling
 
 We can express message queue interaction in a similar fashion through respective AMQP stereotype annotations. The resulting beans are able to interact using AMQP. While the above REST example declares a synchronous API, the AMQP annotations declare asynchronous APIs. An interface method call on the client-side returns before the server-side receives and processes the message.
 
-<!--
-### Circuit Breaker
-
-
-~LitNote
-* Circuit Breaker/Hysterix for synch. communication, MQ for save decoupling in time 
-* [@Mon16a] "Circuit Breakers, Discovery, and API Gateways in Microservices"
-    * "Akka provides a circuit breaker implementation that supports basic configuration parameters, such as call time- out, failure threshold and reset threshold"
-    * "Hystrix is much more flexible and is currently one of the reference so- lutions: it supports rolling statistics, fallback mechanisms, resource control, and control over the states and transitions of circuit breakers"
-* [@Car17] "Spring Microservices in Action"
-* [@NetflixHysterix]
-* [@Fow14, p.12] "Microservices: a definition of this new architectural term"
-  * "Synchronous calls considered harmful: ...."
-~
-
-~ todo
-Circuit breaker sind die am öftesten in der Literatur beschriebene Fault tolerance / Resilience Methode for Microservices. Daher dient eine kurze Illustration an dieser Stelle als Grundlage für die spätere Evaluierung im Vergleich zur Actor fault tolerance. Vor allem bietet Spring auch eine gute linguistische Abstraktionen an, welche auf dem REST Beispiel von oben aufbaut und dieses erweitert.
-~
-
-~ todo
-Bsp bzgl. Hysterix welches das Feign Bsp oben erweitert
-~
--->
-
 
 #### Service Discovery
 
@@ -221,9 +150,6 @@ Message queues decouple the sender from the receiver. Therefore, the sender neit
   : are centralized services and provide address information for dynamic connections. Services need to register with the registry service with a name and their address. Clients can then lookup the current address of registered services for a given name.
 
 The `name` argument of the `@FeignClient` annotation in the REST example we gave before relates to the designation we use to register the IndexStore unit. The advantage of Feign is that it automatically integrates with discovery mechanisms. Examples for service registry technologies are *Consul* [@HashicorpConsul], a standalone registry service solution, and *Eureka* [@NetflixEureka], a module of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default. The author of this thesis found Consul to be very resource consuming in comparison. 
-<!--
-Eureka, on the other hand, tends to require extensive time for initial discovery and shows this behavior also rarely on refreshes. In the call chain `G` &rarr; `S` &rarr; `I` we've experienced that the circuit breaker can trigger before the discovery has finished. We can increase the timeout of the circuit breaker, but this reduces the breaker's fail-fast intention.
--->
 
 Using discovery mechanisms can impacts the response times of services. It can become necessary to lookup an address before a service can make a request, e.g.\ when performing a search query. The service must then make additional RPCs for registry lookups, in the worst case for each of the involved services.
 
@@ -256,52 +182,6 @@ Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for c
 
 [img-client-side-load-balancing]: graphics/load-balancing-client-side.[svg,png] "Image about client-side load balancing" { height:4cm; vertical-align:middle; padding-bottom:1em; }
 
-<!--
-In contrast, server-side load balancing requires a dedicated balancing service for recipient selection (Figure [#fig-server-side-load-balancing]). *Zuul* [@NetflixZuul] is another Spring Cloud module for creating balancing server services. The approach requires us to add a new concurrent balancing component to the system architecture:
-
-* Load Balancer (L)
-  : [TODO]{.red} are centralized services dedicated to distribute messages between a set of equal instances. This load-balancing components integrates with a discovery service 
-
-~ Begin Figure { #fig-server-side-load-balancing; caption: "Server-side load balancing (right)"; width:100%; }
-
-![img-server-side-load-balancing]{margin-left:1cm}
-
-~ End Figure
-
-[img-server-side-load-balancing]: graphics/load-balancing-server-side.[svg,png] "Image about server-side load balancing" { height:4cm; vertical-align:middle; padding-bottom:1em; }
--->
-
-<!--
-~ Begin Figure { #fig-load-balancing; caption: "Client-side load balancing (left) and server-side load balancing (right)"; width:100%; }
-~ Begin Columns
-~ Begin Column { width:50% }
-~ Begin Center
-![img-client-side-load-balancing]{margin-right:2cm}
-~ End Center
-~ End Column
-
-~ Begin Column { width:50% }
-~ Begin Center
-![img-server-side-load-balancing]{margin-left:1cm}
-~ End Center
-~ End Column
-~ End Columns
-
-~ End Figure
--->
-
-<!--
-~ Figure { #fig-client-side-load-balancing; caption: "Client-side load balancing: The client (S) directly maintains a list of recipients (I) directly from the discovery service (D)"; width:45%; float:left; margin-right: 1ex; }
-![img-client-side-load-balancing]
-~
-
-
-
-~ Figure { #fig-server-side-load-balancing; caption: "Server-side load balancing: A separate load balancer (L) maintains a list of recipients (I) from the discovery service (D)"; width:45%; float:left; margin-right: 1ex; }
-![img-server-side-load-balancing]
-~
--->
-
 
 ~ Findings
 [Main findings]{.findings-title}
@@ -313,37 +193,3 @@ In contrast, server-side load balancing requires a dedicated balancing service f
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
 ~
-
-<!-- Diese Sections habe ich nie ausformuliert, und ich glaube am Ende brauche ich sie auch gar nicht
-
-### Fault tolerance
-
-Since the microservice model generally lacks a supervision concept, fault tolerance is a concern that must be handled directly by each service individually.
-
-~ todo
-Hier bisi was zu Fault tolerance schreiben. Kann ich auch ein Hysterix Bsp bringen. Damit das Kaputel nicht all zu kurz ist. Immerhin hab ich supervision auch bei Actors
-~
-
-
-### Deployment {#sec-ms-deployment}
-
-
-~ todo
-Hier soll dargelegt werden, wie Microservices eigentlich in die Welt gebracht werden, und welche Herausforderungen dies mit sich bringt.
-~
-
-~ todo
-Dieses Unterkapitel ist noch sehr unvollständig.
-~
-
-~LitNote
-* depending on specific need, some sort of cloud management framework (or a combination of more) is required. multiple instances easy with container technology (e.g.\ Docker), but no guarantee for singleton usage
-* [@New15] "Building Microservices"
-~
-
-As was already mentioned, approaching Microservices at the moment is focused on a deployment view. It is not important *how* services are being implemented, as long as they are composed correctly. Note that this is however not the theoretical notion of *correctness* such that it could be asserted by applying proof techniques, e.g.\ by showing safety and liveness properties, or interface type compatibility, but a mere practical understanding of "executing and interlinking services such that the system works" [andere bezeichnung?]{.red}.
-
-For Microservices, *container* technology has been shown to be a promising approach for deployment. It builds upon....
-
-*Docker* [@Docker] is a prominent example of a container tool. It is especially convenient, since it facilitates...
--->

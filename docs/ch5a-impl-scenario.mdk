@@ -1,7 +1,5 @@
 
-Implementation {#ch-implementation}
-============================
-
+# Implementation {#ch-implementation}
 
 
 ~ Epigraph { caption: "Eric S. Raymond"}
@@ -128,41 +126,3 @@ The IndexStore propagates the found results back via the Searcher (`I` &rarr; `S
 ~
 
 [img-retrieval-pipeline]: graphics/pipeline-retrieval.[svg,png] "Image about retrieval pipeline" { height:1.3cm; vertical-align:middle; padding-bottom:1em; }
-
-
-
-<!--
-Minor work flows:
-
-* Exploring the Catalog
-  : The search engine provides besides searching index data records also a database of all known podcast and episode metadata. The web UI offers basic support for exploring such data, e.g.\ by viewing info pages for podcasts or episodes. Thus, REST requests have to be forwarded from the Gateway to the CatalogStore (`G` &rightleftarrows; `C`) in a timely fashion.
-
-* Adding and updating feeds
-  : Feeds can be proposed so that the engine will check whether it is already known and issue an indexation if not. Proposing can either be done manually by a user, or as a result of crawled data from existing directories. Thus the Updater issues regular crawling for supported Podcast directories.
-
-...
-
-For example, the initial fetching or updating of a feed, and subsequent processing of the feed's data involves nearly all system components. Updating is a regular task. In a large enough database of feeds, we can expect that nearly all the time there is an update in progress. These update tasks however should not interfere or limit other regular tasks, especially those with time constraints. All user interactions is constraint by time, therefore [ACHTUNG: hier habe ich den satz verändet, daher liest sich das jetzt so als würde sich die sync. und trans. negation of die time constraint tasks beziehen]{.red} synchronization or transactions are generally an undesirable and less expedient path  [@Cou05].
--->
-
-
-
-
-<!--
-### Scope and Limitations
-
-~ todo
-Hier beschreiben was die Implementierungen leisten können sollen, und was nicht
-~
-
-~ green
-* static configuration of components
-  * KEINE elasticity
-  * KEINE mobility at runtime 
-  * keine notwendigkeit von event sourcing
-~
-
-~ todo
-Hier könnte eine hübsche +/- Tabelle stehen
-~
--->

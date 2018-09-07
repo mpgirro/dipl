@@ -1,6 +1,5 @@
 
-The Microservice Paradigm {#ch-microservice-paradigm}
-=========================
+# The Microservice Paradigm {#ch-microservice-paradigm}
 
 
 ~ Epigraph { caption: "Groucho Marx"}
@@ -25,24 +24,6 @@ Modules naturally introduce a relative strong form of coupling. In-memory call c
 Most importantly, the main issue given against monoliths is scalability [@Dra17a]. Each single instantiation of a program executable can intrinsically merely run on a single machine. Hence, there is a natural upper bound to the application's performance due to limitations of the hardware. Many approaches to overcome this limit(s) were proposed over the years. Previously, the *service-oriented architecture* (SOA) approach gained popularity. SOA is based on the idea of combining the capabilities of multiple monoliths, either based on the same or different program images, by integrating them through a uniform communication channel like an *enterprise-service bus* (ESB) [@Fow14;@Sal16]. This approach allows us to link heterogenous technologies and independent deployment, as it does not require in-memory call between these services anymore. However, SOA still facilitates large monolithic applications which have to be scaled by duplicating entire application instances [@Dra17b]. 
 
 In order to overcome these limitations, the microservice paradigm aims for separating the modules into small services in the form of dedicated applications. SOAs have been called the "first generation" services, while microservices are subsequently the "second generation" of services. As microservices evolved from SOA, they are also part of the general *service-oriented computing* (SOC) paradigm [@Maz16;@Dra17a]. For an in depth review on how microservices historically evolved from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and service-oriented architectures, we refer the interested reader to Salah *et al.*\ [@Sal16].
-
-<!--
-...
-
-With increasing coupling and therefore interweaving, it becomes hard to maintain. Software evolution is also hindered due to growing complexity [@Dra17a], and all modules of a monolith need to be upgraded simultaniously. 
-
-Especially modelling concurrent aspects introduces complexity due to the need for synchronization of shared state, or nondeterminism introduced by event-based approaches (like Actors) [citation needed für diesen satz]{.mind}. Strongly coupled modules tend to have a less strictly separated [wie sagt man: hier können alle möglichen dinge verschmischt werden, was die sache noch viel komplizierter macht?]{.mind}.
-
-...
-
-Scholars identified many more issues that come with monolithic applications [mehr? citation?]{.mind}. Such have been first encountered in the more early days in computing history. Therefore, from the early 1970s, an interrest in distributing applications accross multiple host machines arose, originally due to the limits of the machines back than [citation needed. hab ich irgendwas zu concurrency history?]{.mind}. However, with growing performance, focus shifted on concurrent programming approaches due to Moore's law, stating that the number of transistors in a processing unit (e.g.\ CPU) "roughly" doubles every two years. 
-
-This does not hold exactly true anymore[^fn-moores-law] since the 2000s, for speed increasment since than is not backed by increasing transistors inside a processor, but to the trend of including multiple cores into a single CPU [@Mac11]. The importance of multicore programming increased significantely since then [citation needed?]{.mind}. 
-
-[^fn-moores-law]: In fact, Moores original empirical observation about *doubling of components per chip* never held true very long. But over the decades various trends in semiconductor manufacturing still resulted in a rough doubling of processing power. Mack [@Mac11] gives an interresting analysis on this being simply the result of an economic will to make the law come true.
-
-Even though the processing power increases all the time, any monolith inevidently reaches a limit when it comes to scalability. This limit is influenced by many factors, e.g.\ [wie gut man es eben monolith. scalieren kann??]{.mind}, but eventually reaches an upper bound based on hardware limitations of the host machine [citation]{.mind}.
--->
 
 
 ## Term Ambiguity
@@ -76,43 +57,9 @@ This satisfies the channel requirements given above. Therefore, pipes are a vali
 
 As independently deployable applications, each microservice is by design a dedicated process. Such are inherently concurrent on the operating system level and also facilitate parallelization on multiple cores transparently. Every communication mechanism has to be able to send data across the distinct address spaces which strictly isolate the states. Recalling the case study on process system programming in C, fork/pipe-based applications utilize Unix pipes to cross memory boundaries. Their components too are concurrently executed through the process scheduling of the OS. It's therefore worth debating whether such systems qualify for microservice architectures.
 
-<!--
-Any communication mechanism thus has to be able to send data between processes. Yet some valid channels (like Unix pipes) are only capable of sending messages between processes on the same operating system. 
-
-Recalling the case study on process system programming in C, fork/pipe based applications are also executed concurrentlyy through the process scheduling of the OS. For these concurrent components have strictly isolated states through the boundaries of their distinct address spaces and the communication mechanism is viable in general, it's worth debating weither such systems qualify for Microservice Architectures.
--->
-
-
-<!--
-....
-
----
-
-Each Microservice is by design a dedicated process. As we discussed in section [#sec-concurrency-os-level], processes are inherently concurrent on the operating system level, which facilitates parallelization by default. Any microservice architecture is therefore an inherently concurrent system.
-
-In section [#sec-ms-communication] we discussed the requirements on a communication channel between services. Any mechanism has to be able to send data between processes. Some valid channels (like Unix pipes) are also only capable of sending messages between processes on the same operating system. However, recalling the case study on process system programming in C from section [#sec-concurrent-c], such fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. For the concurrent components have strictly isolated states through the boundaries of their distinct address spaces and the communication mechanism is sufficient in general, it's worth debating weither such systems apply for a Microservice Architecture.
--->
-
 The fork pattern spawns processes in a tree-like fashion. All components rely on a shared ancestor. Every child is easily able to replace itself by an arbitrary other program image using `exec`. However, the setup of the communication routes relies on an instantiation of the pipe before the fork, so that both parent and child have access to the pipe. This fact limits the possibility to take down or add new components independently. Hence, pipes are rather restrictive and present a certain degree of coupling [@Bac03]. It is difficult to replace the system's components independently.
 
 To overcome this restriction, the construct of *named pipes* were introduced into later Unix variants. Named pipes allow processes to hook into a common pipe without a shared ancestor [@Bac03]. However, every communication route fixed at compile time, generally called *static channel naming*, limits the ability for changing topologies [@And83]. In any case, this IPC mechanism definitely does not provide communication outside the boundary of the common operating system. Pipes therefore limit scalability by restricting the service architecture onto a single host machine, at least for the subset of services facilitating this mechanism. Network-based IPC mechanisms overcome this restriction inherently and are subsequently preferential for MSAs in general. These IPCs provide higher degrees of freedom regarding deployment as well as technology integration at the price of more costly data transfers (cf.\ Fallacy 7: *transport cost is zero*) [@Cou05]. As a result, we always presume microservices to be concurrent components supporting parallel execution. However, whether they qualify for distributed components within their respective architecture is subject to the employed communication mechanism(s).
-
-
-<!--
-The concurrent components have strictly isolated states through the boundraies of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
--->
-
-<!--
-We've argued that Unix pipes are a viable queue-like mechanism sufficing the requirements on communication channels for Microservices. 
--->
-
-<!--
-Fork/pipe based systems are executed in a concurrent fashion through the process scheduling of the operating system. The concurrent components have strictly isolated states through the boundaries of their distinct address spaces (all child states are full replicas of their parents state) and employ a communication mechanism that [...TODO...]{.mind}. Thus it is worth debating weither such systems apply for a Microservice Architecture.
--->
-
-<!--
-Though isolation is ensured and communication adequate, it is still difficult to replace the systems components independently. The fork pattern spawns processes in a tree-like fashion, thus all components rely on a shared ancestor. Despite any child could easily replace itself by an arbitrary other program image using `exec`, the setup of the communication routes relies on an instantiation of the pipe before the fork, such that both parent and child know about it. Thus it limits the possibility to take down or add new components independently. Pipes are still rather restrictive and  present a certain degree of coupling [@Bac03]. 
--->
 
 
 ## Size, Scope and Granularity {#sec-ms-granularity}

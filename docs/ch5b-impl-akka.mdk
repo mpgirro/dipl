@@ -2,12 +2,6 @@
 ## Actor-based Implementation {#ch-actor-impl}
 
 
-<!--
-~ Epigraph { caption: "Carl Hewitt"}
-One actor is no actor. Actors come in systems.
-~
--->
-
 This section covers the strategies applied by programming with the actor model. We implement the backend of the concurrent system we outlined in Section [#sec-scenario]. All discussed concepts are with respect to the specific actor variant we use. The focus is on the linguistic support provided by the actor library. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 It is important to realize that although there is *the* conceptual actor model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language or as a library [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations are relevant when evaluating linguistic support.
@@ -95,7 +89,6 @@ It is worth pointing out that though the actor model is Scala's standard concurr
 + Programming language features can jeopardize actor state encapsulation. 
 + Library-based actor systems cannot ensure isolation by themselves.
 + Guaranteeing message immutability is the obligation of the programmer.
-<!--+ Message interoperability between programming languages is challenged by data type compatibility.-->
 {.findings-list}
 ~
 
@@ -310,41 +303,6 @@ Conceptually, we can do the routing directly inside the sending actor by replaci
 * Message Routers (R)
   : distribute received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers are intermediate units and supervise their routees. They only forward messages to living children. 
 
-<!--
-~ Figure { #fig-message-router; caption: "Message router"; width:45%; float:left; margin-right: 1ex; }
-![img-message-router]
-~
-
-[img-message-router]: graphics/message-router.[svg,png] "Image about a message router" { width: 70%; vertical-align:middle; padding-bottom:1em; }
--->
-
-<!--
-[Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Figure [#fig-message-router] (left) shows that the actual information flow incorporates an intermediate router: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
-
-
-~ Begin Figure { #fig-message-router; caption: "Message routers (R) with different routing logics: `RoundRobinRoutingLogic`{language:scala} (left) and `BroadcastRoutingLogic`{language:scala} (right)"; width:100%; }
-
-~ Begin Columns
-~ Begin Column { width:50% }
-~ Begin Center
-![img-message-router-roundrobin]
-~ End Center
-~ End Column
-
-~ Begin Column { width:50% }
-~ Begin Center
-![img-message-router-broadcast]{margin-left:4rem}
-~ End Center
-~ End Column
-~ End Columns
-
-~ End Figure
-
-[img-message-router-roundrobin]: graphics/message-router-roundrobin.[svg,png] "Image about a message router (roundrobin)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
-
-[img-message-router-broadcast]: graphics/message-router-broadcast.[svg,png] "Image about a message router (broadcast)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
--->
-
 Alternatively, routees are part of a so-called *group* when the router is not supervising the routees [@Roe15]. Akka provides the so-called *actor selection* mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when the runtime cannot deliver the message. 
 
 Delivery reliability is also a general concern of sending messages to actors, besides the context of routing. The theoretical actor model guarantees that all messages are always delivered [@Agh85b]. Conceptually, this insurance is important since it implies that no actor can permanently starve [@Kar09]. In practice however, we cannot safely assume perfect delivery reliability to hold. Because we consider actors in a potentially distributed context, message delivery can be subject to a network link. Recalling Fallacy 1: *The network is reliable* warns us that we cannot trust the network the transport the data in general. As a result, neither can we assume actor message delivery. Akka therefore provides a weaker insurances regarding message delivery reliability than the theoretical actor model. Particularly, all messages are merely guaranteed to be delivered *at-most-once*. Additionally, when several actors send messages to the same recipient, there is no guarantee of a general order of the messages in the mailbox. Merely the messages of each particular sender are enqueued into the receivers mailbox in the same order as the sender dispatched the messages (FIFO order) [@AkkaMDR].
@@ -387,26 +345,3 @@ Each CatalogStore actor has a database. Conceptually, we wanted to use the datab
 + Concurrent database interaction via delegation forces us to intentionally weaken the conceptual encapsulation of actor state.
 {.findings-list}
 ~
-
-<!--
-## Clustering
-
-~ todo
-Hier kurz die Unterschiede und benötigten Erweiterung zwischen Actors in einem rein lokalen system (single-node) und einem verteilten Setup (distributed nodes) beschreiben. Akka hat hierfür sehr gute Konzepte, welche allerdings Verlangen auf ein paar Dinge zu achten.
-~
-
-~LitNote
-* Cluster / Remoting of Akka, built in discovery system among nodes  
-* Cluster Singleton required by Updater, Cluster Sharding
-~
-
-~ green
-The capabilities of the Actor model to support distribution was first described by Agha [REF-diss]{.red}, and since it was introduced in many variants of Actors [REF1, REF2, REF3]{.red}. 
-
-...Erlang auch sehr wichtig
-
-...die Erlang deutung auch sehr viel in Akka drinnen
-
-...wichtig das die mechanismen die lokal für actos gehen auch verteil gelten 
-~
--->
