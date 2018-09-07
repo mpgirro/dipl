@@ -137,7 +137,14 @@ Tex Header    :
     \renewcommand{\printchaptername}{}%
     \renewcommand*{\chapternamenum}{}%
     \renewcommand{\printchapternum}{}%
-
+    %
+    % adjust colors of hyperlinks
+    \hypersetup{
+      colorlinks,
+      citecolor=Violet,
+      linkcolor=Black,
+      urlcolor=Blue
+    }
 
 Tex Doc Header  :
     \frontmatter % Switches to roman numbering.

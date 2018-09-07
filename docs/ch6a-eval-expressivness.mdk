@@ -67,10 +67,6 @@ Actor and microservice semantics rely on the strict separation of component stat
 
 Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of the messages the actor understands through its behavior. For microservices, the interface is based on the sum of the facilitated communication channels, e.g.\ the REST interfaces the service exposes and the messages it consumes from a message queue. Only through the interfaces can we access or modify the service's state.
 
-~ todo
-Hinweis das es in dieser Section jetzt auch um Modularity geht (folgt aus Excapsulation/Isolation etc.)
-~
-
 Table [#tab-comparison-encapsulation] at the end of this section summarizes the encapsulation- and modularity-related matters as they are facilitated by Akka actors and Spring-based microservices.  
 
 
@@ -1098,7 +1094,7 @@ Table [#tab-artifact-metrics] gives the measured metrics for the Echo artifacts.
 ~ End TableFigure
 ~ End Center
 
-The Akka monolithic engine has of course by far the most lines of code. A monolith implements the whole system within a single artifact, while each microservice merely implements a part of the overall system. Note that the DTO classes used to send asynchronous messages via AMQP are implemented in Core rather than directly within the service codebases. The resulting overall LoC sum of all microservices is 6553. We see, although Spring provides very expressive declarative programming APIs, the Akka interface is still less verbose. However, more compact syntax of Scala compared to Java is also contributing to the difference. Even more interrestingly, each microservice engine takes considerably more time to startup than the entire Akka monolithic engine. The inversion of control model that powers the declarative programming style of Spring adds considerable runtime overhead. 
+The Akka monolithic engine has of course by far the most lines of code. A monolith implements the whole system within a single artifact, while each microservice merely implements a part of the overall system. Note that the DTO classes used to send asynchronous messages via AMQP are implemented in Core rather than directly within the service codebases. The resulting overall LoC sum of all microservices is 6553. This makes the microservice codebase about [X %]{.red} larger than the actor codebase. We see, although Spring provides very expressive declarative programming APIs, the Akka interface is still less verbose. However, more compact syntax of Scala compared to Java is also contributing to the difference. Even more interrestingly, each microservice engine takes considerably more time to startup than the entire Akka monolithic engine. The inversion of control model that powers the declarative programming style of Spring adds considerable runtime overhead. 
 
 <!--
 This is contrary to the microservice paradigm in principle, which states that shared code bases should be avoided [(hab ich das eigentlich im Kapitel 4 beschrieben?!)]{.red}. As a result, we usually have to expect duplicate DTO class code between the services.  
@@ -1129,7 +1125,7 @@ Bar plot der fat JAR sizes und startup time, mit 2 Achsen. Falls ich das noch ir
 [Main findings]{.findings-title}
 
 + Programming actors demands less program code than microservices. Even compact programming styles cannot compensate the overhead in LoC from several codebases.  
-+ Spring produces huge executable artifacts. Their size and the runtime overhead (at startup) is the price for the reduced programming effort.
++ Spring produces huge executable artifacts. Their bytecode size and the runtime overhead (at startup) is the price for the reduced programming effort.
 + Microservice architectures are drastically larger in terms of executable component sizes compared to a monolithic actor architecture.
 {.findings-list}
 ~

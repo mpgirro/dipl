@@ -2,54 +2,64 @@
 # Conclusion {#ch-conclusion}
 
 
+~ Epigraph { caption: "Peter Landin"}
+Most papers in computer science describe how their author learned what someone else already knew.
+~
+
+<!--
 ~ Epigraph { caption: "Henry David Thoreau"}
 The price of anything is the amount of life you exchange for it.
 ~
+-->
 
 
-In this thesis, we compared the programming of concurrent computation with the actor and microservice model. We've explored the interrelations of the two models and filled a gap in the literature. In order to do so and answer our research questions, we've designed Echo, a domain-specific search engine as a concurrent system prototype scenario. We also provide an actor implementation based on Akka as well as a microservice implementation based on the Spring framework of this system scenario. Finally, we gave an [evaluation/comparison]{.red} of the expressable capabilities of each model, and an efficiency benchmark of the system implementations.
+~ todo
+Hier würde ein Satz nicht schaden
+~
 
 
 ## Research Questions Revisited
 
 
-[TODO]{.red}
+In the beginning of this thesis we asked a set of research questions. It is now time to give our conclusive answers to these questions.
 
 
 ### RQ1: Why do actors and microservices qualify for programming concurrency? { -; toc:clear }
 
 
-Actors and microservices encapsulate their state exlusively and all their communication solely facilitates message passing semantics. These properties provide a temporal and spacial decoupling, which allows for their implicit concurrent execution through an actor runtime or an operating system respectively.  
+Actors and microservices encapsulate their state exlusively and all their communication solely facilitates message passing semantics. These properties make the task units highly cohesive and provide a temporal and spacial decoupling. The resulting independence is the foundation that enables an actor runtime or respectively an operating system to execute the task units in a concurrent fashion implicitely.
 
 
-### RQ2: How is concurrency facilitated in the actor and microservice programming model? { -; toc:clear }
+### RQ2: How do the actor and microservice model facilitate concurrent execution? { -; toc:clear }
 
 
+The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally sources of concurrency. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
 
-The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally concurrency sources. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
-
-Microservices are free to employ internal concurrency using every model available to their technology stack. Unlike actors, microservices are therefore not free of internal synchronization.
-
-
-### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability? { -; toc:clear }
+Microservices are free to employ internal concurrency using every model available to their technology stack. Unlike actors, microservices are therefore not free of internal synchronization in general. Our scenario implementation leverages the implicit scheduling of requests on thread-pools through an inversion of control contrainer. Software transactional memory controls the required synchronization. 
 
 
-We've shown that both models have to apply different implementation strategies, but can achieve the same capabilities in general. Their implementation strategies come with different trade-offs for each model.
-
-In general, we can expect larger executable artifacts and more resource consumption from the microservice approach, since the model produces independent programs. The author initially expected that the microservice style would also show a significantely higher programming effort, e.g.\ in lines of code. The suspected reason was the need to maintain a dedicated codebase for each service. However, we demonstrated how a declarative programming styles significantely reduces the programming effort. The price is the resulting size of the executable artifacts.  
-
-The actor model achieves the same capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed deployment) exist within the same process and memory boundires. Much of the programmer's effort results from the liability to guarantee that no mutable state is accessible through reference sharing among any two actors, in order to ensure the model semantics.
+### RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns? { -; toc:clear }
 
 
-### RQ4: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { -; toc:clear }
+We've shown that both models have to apply different implementation strategies, but can achieve the same capabilities for concerns like parallelization/distribution, communication, isolation, location transparency, persistence/IO, and scalability in general. The du implementation strategies come with different trade-offs for each model.
+
+In general, we expect larger executable artifacts and more resource consumption from the microservice approach, since the model produces independent programs. The author initially expected that the microservice style would also show a significantely higher programming effort, e.g.\ in lines of code. The suspected reason was the need to maintain a dedicated codebase for each service. Indeed, our overall microservice codebase is about [X %]{.red} larger compared to the actor codebase, although the declarative programming style we applied for the microservices already reduced our programming effort significantely. The price for this reduction is the resulting size of the executable artifacts.  
+
+The actor model achieves all capabilities in a single codebase. This single codebase implies that at least a portion of the actors (in a distributed cluster deployment) exist within the same process and memory boundires. Much of the programmer's effort is the liability to guarantee that no mutable state is accessible through reference sharing among any two actors in order to ensure the model semantics.
 
 
-The benchmark results show that, in the context of our scenario, the performance of actors is generally better than the performance of microservices. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors, [which is a result of the communication mechanism and the programming model]{.red}. However, the benchmark also exposed that strictly synchronous communication (request/response) among services is clearly inferior to the request/asynchronous response style that actors facilitate. 
+### RQ4: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario? { -; toc:clear }
+
+
+The benchmark results show that, with respect to our non-trivial scenario, the performance of and actor-based system is generally better than the performance of a microservice system. Since we've ensured that the domain-induced impact on the performance is uniform between both system implementations, the difference in the performance results from the efficiency leveraged from the underlying concurrent programming model. We've also shown that microservices facilitating an asynchronous communication style have merely a slight overhead compared to actors. However, the benchmark also exposed that strictly synchronous communication (request/response) among services is clearly inferior to the request/asynchronous response style that actors facilitate. It is therefore suprising to the author that the scientific literature emphasizes REST as the primary microservice IPC mechanism. 
 
 
 ## Contributions
 
 
+In this thesis, we compared the programming of concurrent computation with the actor and microservice model. We've explored the interrelations of the two models and filled a gap in the literature. In order to answer our research questions, we designed Echo, a non-trivial scenario for a concurrent domain-specific search engine prototype. We also provide an actor implementation based on Akka, as well as a microservice implementation based on the Spring framework of this system scenario. We evaluated the expressable capabilities of each model regarding concurrent programming concerns like parallelization/distribution, communication, persistence/IO, location transparency, isolation/independence, and scalability. Finally, we reported the results of an efficiency benchmark of the system implementations.
+
+<!--
 ~ todo
 Hier nochmal drüberlesen und überarbeitet. Vll etwas hochgegriffen?
 ~
@@ -64,16 +74,17 @@ We give answers to the research questions be providing the following contributio
 * We fill the current gap in the literature and describe the interrelations of actors and microservices. We evaluation key capabilities regarding concurrent programming  (parallelization/distribution, communication, persistence/IO, location transparency, isolation/independence, and scalability) that can be expressed by actors and microserices. Our findings are relative to our concurrent system scenario.
 
 * We provide an actor and a microservice implementation of the concurrent system scenario. We also provide a benchmark and performance comparison for both system implementations and reflect on the efficiency leveraged through each model. 
+-->
 
 
 ## Future Work
 
 
-In this thesis, we did not benchmark the effects of distribution due to our limited access to hardware resources. Also, although we've motivated the integration of Akka actors and Spring-based microservices in Section [#sec-combining-akka-spring], we did not investigate the effects on efficiency within a mixed architecture integrating actors and microservices as equal concurrent task units.
+The benchmark in this thesis is limited to a single multicore host. We did not benchmark the effects of distribution and horizontal scalability due to our limited access to hardware resources. Also, although we've motivated the integration of Akka actors and Spring-based microservices in Section [#sec-actor-ms-integration], we did not investigate the effects on efficiency within a mixed architecture integrating actors and microservices as equal concurrent task units.
 
-A major limitation of both actors and microservices is the lack of checkable compatibility (design by contract). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented programming languages incorporate the microservice model into the language level, and sometimes build upon a process calculus. We deem it worth to fathom into contract verification techniques for the actor model and SOC calculi, towards a theoretical foundation for integrating actors and microservices.
+From our literature readings and practical experience, it is our believe that one major limitation of both actors and microservices is the lack of checkable compatibility (design by contract). Some work on static analysis for actors has been done in the literature. The work by D'Osualdo *et al.* [@DOs13] for example defines a checkable model for Erlang-styled concurrency. This model can be also expressed as processes of a suitable calculus. Recall that service-oriented programming languages incorporate the microservice model into the language level, and sometimes build upon a process calculus. We deem it worth to fathom into contract verification techniques for the actor model and SOC calculi, for example towards a more theoretical foundation for integrating actors and microservices.
 
-Besides, from our experiences in this work, it is the authors general believe that the microservice styles suffers from the lack of a theoretical framework. We therefore think that service-oriented programming languages are a highly promising evolutionary step, which is worth further investigation.
+Besides, from our experiences in this work, it is the authors general believe that the microservice styles suffers from the lack of a theoretical framework. We therefore think that service-oriented programming languages are a highly promising evolutionary step worth of further investigation.
 
 <!--
 

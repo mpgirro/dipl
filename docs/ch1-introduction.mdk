@@ -2,8 +2,8 @@
 # Introduction
 
 
-~ Epigraph { caption: "Peter Landin"}
-Most papers in computer science describe how their author learned what someone else already knew.
+~ Epigraph { caption: "Butler Lampson"}
+I think the computer is the world's greatest toy. You can invent wonderful things and actually make them happen.
 ~
 
 <!--
@@ -29,7 +29,7 @@ Distributed is truely concurrent
 -->
 
 
-The physical world consist of infinit simultaneous activities in every moment of time. Programmers experience nature as a concurrent environment. As such, the idea of simultaneous actions has not been absent from the immaterial world of computer programming. Numerous models to conceive concurrent execution have been proposed over the decades. Now that manycore machines are widespread and distribution is popular in the current trend of *cloud computing*, concurrent programming has become essential. Many of the proposed models are therefore now heavily applied in practice.
+The physical world is a composition of simultaneous activities. Programmers experience nature as a concurrent environment. As such, the idea of simultaneous actions has not been absent from the immaterial world of computer programming. Numerous models to conceive concurrent execution have been proposed over the decades. Now that manycore machines are widespread and distribution is popular in the current trend of *cloud computing*, concurrent programming techniques have become essential. Many of the proposed models are therefore now heavily applied in practice.
 
 In this thesis, we merit attention to two approaches to concurrent programming. The first approach is the so-called *actor model of computation* [@Hew73], a decade-old model dedicated to expressing concurrency. The second approach is based on the *microservice paradigm* [@Fow14], originally an architectural style for software systems that adds concurrent execution implicitely. 
 
@@ -37,19 +37,21 @@ In this thesis, we merit attention to two approaches to concurrent programming. 
 ## Problem Statement
 
 
-Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and microservices. This work is aiming to fill this gap, with a focus on the concurrent programming aspects of these concepts. Specifically, we ask the following research questions:
+Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and the microservice model. This work is aiming to fill this gap, with a focus on the concurrent programming aspects regarding these concepts. Specifically, we ask the following research questions:
 
 <!--
 > (__RQ__: What are the key characteristics of actors and microserices?)
 -->
 
-> __RQ1__: Why do actors and microservices qualify for programming concurrency? How do both models conceive concurrent execution?
+> __RQ1__: Why do actors and microservices qualify for programming concurrency?
 
-> __RQ2__: How is concurrency facilitated in the actor and microservice programming model?
+> __RQ2__: How do the actor and microservice model facilitate concurrent execution?
 
-> __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns like parallelization/distribution, communication, and scalability?
+> __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
 
-> __RQ4__: How does the performance between actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+<!-- ... like parallelization/distribution, communication, and scalability -->
+
+> __RQ4__: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
 
 <!--
 > (__RQ__: How do actors and microservices compare against regarding efficiency [unmissverständlicher formulieren]{.red})
@@ -104,12 +106,12 @@ We are conducting a *conceptual* analysis and will therefore refrain from giving
 
 We conducted our research using the following methodological steps:
 
-1. Identify the key characteristics of actors and microservices through literature review. 
+1. Identify the key characteristics and resulting model semantics of actors and microservices through literature review. 
 2. Define a scenario for a concurrent system. 
-3. Develop an implementation of this scenario based on actors and another implementation based on microservices.
-4. Using the knowledge gained from implementing the systems, evaluate the expressive capabilities of both models that result from the key characteristics and applied solution strategies.
-5. Perform a system efficiency benchmark of both implementations.
-6. Evaluate the benchmark reasults and draw conclusions about the efficiency of the concurrent execution resulting from programming with actors and microservices.
+3. Develop two implementations of this scenario. One implementation is based on actors and the other implementation is based on microservices.
+4. Using the knowledge gained from implementing the systems, evaluate the expressive capabilities of both models.
+5. Perform an efficiency benchmark of both system implementations.
+6. Evaluate the benchmark reasults, and answer the research questions.
 
 
 ## Structure of the Thesis

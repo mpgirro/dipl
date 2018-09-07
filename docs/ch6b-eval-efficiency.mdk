@@ -35,10 +35,7 @@ Echo has two essential subsystems: the Indexing subsystem and the Retrieval subs
 
 We are interrested in Part 1 as the input for the Indexing subsystem and in Part 2 as the input for the Retrieval subsystem. Effectivness evaluation uses Part 3, hence we do not require this data. To our knowledge, there is only one available dataset collection provided by Spina *et al.* [@Spi17] for the podcast domain. This collection contains audio files, manual and automatic audio transcripts, queries, and relevance assessments. Since the collection misses RSS feed data, the input documents are incompatible for the Echo implementations.
 
-Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern to the actual information within either the feeds, the queries, nor the quality of search results, we can simply create custom feeds and queries using placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation. We've analyzed 500 arbitrary feeds obtained from the Fyyd[^fn-fyyd] podcast directory and found that the average feed has 70 episodes. To make the simulation workloads more realistic, the test feeds also have 70 elements.
-
-[^fn-lorem-ipsum]: <https://lipsum.com>
-[^fn-fyyd]: <https://fyyd.de>
+Therefore we must design our own dataset collection. In general, we are faced with two problems: selecting documents (RSS feeds) and determining suitable queries. Performance is affected by the execution time of operations (e.g.\ parsing a feed). The literature usually assesses execution time with respect to the input size. Real world RSS feeds have arbitrary data and therefore we have no control over the input size per feed. Since we do not pay any concern to the actual information within either the feeds, the queries, nor the quality of search results, we can simply create custom feeds and queries using placeholder text. Appendix [#ch-benchmark-feed] shows the feed structure we use for evaluation. We've analyzed 500 arbitrary feeds obtained from the Fyyd [@FyydDirectory] Podcast Directory and found that the average feed has 70 episodes. To make the simulation workloads more realistic, the test feeds also have 70 elements.
 
 
 ### Experiment Setup
@@ -65,7 +62,11 @@ To ensure that both implementation variants have the same resources for concurre
 ### Benchmark Results
 
 
+~ green
 ... all benchmark results are for static system configurations, therefore do not reflect any forms of structural scalability. Also, due to the single multicore host, we cannot draw conclusion to the horizontal scalability behavior of the architectures.
+~
+
+... to reduce the effects of outliers, we've conducted each experiment 3 times. Each datapoint in the following results is the mean of the three measured values.
 
 
 #### Experiment 1: Indexing Subsystem
@@ -76,7 +77,7 @@ To ensure that both implementation variants have the same resources for concurre
 
 [img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:70%; vertical-align:middle; padding-bottom:1ex; }
 
-... the figure also describes the load scalability behavior of the systems. With an increased load for the Indexing subsystem, both implementations scale uniformly, which is the desired behavior. This uniform behavior is the result of good vertical scalability, since the architectures are able to uniformly leverage the resources of the single multicore host used for the benchmark.
+... the figure also describes the load scalability behavior of the systems. With an increasing load for the Indexing subsystem, both implementations scale uniformly, which is the desired behavior. This uniform behavior is the result of good vertical scalability, since the architectures are able to uniformly leverage the resources of the single multicore host used for the benchmark.
 
 
 
@@ -122,15 +123,15 @@ We reconfigure the previous components in the pipeline with significantely more 
 [img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:70%; vertical-align:middle; padding-bottom:1ex; }
 
 
-Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to asssess the Retrieval subsystem performance. It clearly indicates that the request/asynchronous response style of Akka actors is superior to the synchronous REST-based communication of the microservices. Since the Akka implementation processes heavy loads of requests considerably faster, this subsystem is more available and thus has better liveness.  
+Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to assessing the Retrieval subsystem's performance. It clearly indicates that the request/asynchronous response style of Akka actors is superior to the synchronous REST-based communication of the microservices. Since the Akka implementation processes heavy loads of requests considerably faster, this subsystem is more available and thus has better liveness.  
 
 ...
 
-... the figure also describes the load scalability behavior of the Retrieval subsystems. Both implementations scale uniformly as desired. We can again trace this result back to the fact that the implementations can leverage the available system resources well of the single multicore host (vertical scalability). However, the microservice variant shows considerably lower efficient. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of a MSA. Our benchmark result support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
+... the figure also describes the load scalability behavior of the Retrieval subsystems. Both implementations scale uniformly as desired. Again, we can trace this result back to the fact that the implementations leverage the available system resources of the single multicore host well (vertical scalability). However, the microservice variant shows considerably lower efficient. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of a MSA. Our benchmark result support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
 
 ...
 
-In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication provided by Akka. One variant is based in futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response was received. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance.
+In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication provided by Akka. One variant is based on futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response was received. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance.
 
 To evaluate the future- and delegation-based modelling of (semi-)synchronous communication, we've conducted the retrieval experiment also with futures. Figure [#fig-eval-search-comparison-akka-delegation-future] illustrates the future results in contrast to the delegation results.
 
@@ -184,5 +185,6 @@ The internal threats to the validity of this benchmark concern the accuracy of o
 
 An additional threat is resulting from the fixed amount of threads we provide for each component in the benchmark. Actor-based components can fully leverage all these threads, e.g.\ for child actors or futures. We've discussed in Section [#sec-internal-service-concurrency] that the microservices use a different `TaskExecutor`{language:java} for asynchronous tasks than the standard thread-pool of Spring's IoC container. To ensure the thread limit for the component, we have to split up the threads between the two thread-pools. There is the threat that a service's implementation does not distribute the computational load equally between the two thread-pools. We did not measure the thread-partitioning required for ideal thread utilization for each microservice. Instead, we distributed the available threads evenly between both pools for all services. This threat is only mitigated for services which do not apply asynchrony internally. Then there is only the standard `TaskExecutor`{language:java} with the full amount of threads in place. 
 
+<!--
 Furtermore, Akka does not serialize messages [REF?]{.red} if the sending and receiving actors are inside the same JVM. Every actor message is then simple in-memory reference sharing of immutable objects, while each microservice message is definitely serialized and sent via a network interface (although the message is always delivered on the same machine).
-
+-->

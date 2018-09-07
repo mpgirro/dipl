@@ -101,7 +101,7 @@ We can persist information with many different strategies. Database systems are 
 
 Persistance is a form of IO and a potential performance limiting factor. Hence, database management systems usually support concurrent access to the database . As with actors, concurrent connections increase the throughput of the component. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
-~ Figure { #fig-persistence-microservice; caption: "A microservice maintains several connections to an exclusive database"; width:100%; }
+~ Figure { #fig-persistence-microservice; caption: "A microservice maintains several connections to an exclusive database concurrently"; width:100%; }
 ![img-persistence-microservice]
 ~
 
