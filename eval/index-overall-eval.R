@@ -24,17 +24,17 @@ b <- aggregate(index_msa_data$overallRT, list(input_size=index_msa_data$input_si
 
 # this function plots the graphic of the data
 g <- function() {
-  par(mar=c(4,4,4,2))
+  par(mar=c(4,4,1,1))
   plot(b$input_size, b$x, 
-       type="l", pch=18, col="dodgerblue1", lty=2, lwd=2,
-       cex.axis = 1.1, cex.lab = 1.1,
+       type="l", pch=18, col="dodgerblue1", lty=2, lwd=3,
+       cex.axis = 1.3, cex.lab = 1.3,
        xlab = "Number of Feeds", ylab = "Overall Runtime [Seconds]",
        #xlab="", ylab="",
        xlim=c(0,500), ylim=c(0, 400), las=1)
        #xaxt="n", yaxt="n")
-  lines(a$input_size, a$x, pch=19, col="tomato1", type="l", lwd=2)	
+  lines(a$input_size, a$x, pch=19, col="tomato1", type="l", lwd=3)	
   legend("topleft", legend=c("Akka", "MSA"),
-         col=c("tomato1", "dodgerblue1"), lty=1:2, cex=1.1, lwd=2)
+         col=c("tomato1", "dodgerblue1"), lty=1:2, cex=1.3, lwd=3)
 }
 
 # execute this to show in Rstudio
@@ -57,88 +57,3 @@ g()
 dev.off()
 # embed the CM Sans font into the PDF, or printing might become a problem
 embed_fonts(paste(dest, ".pdf", sep=""), outfile=paste(dest, "_embed.pdf", sep=""))
-
-
-
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-
-
-
-pdf("out/eval-index-overall.pdf")
-#png("out/eval-index-overall.png", width=400, height=350, res=72)
-
-par(family = "cmu_sans")
-
-
-# draw an axis on the left 
-#axis(2, at=b$x,labels=b$x, col.axis="red", las=2)
-
-# draw an axis on the bottom 
-#axis(1, at=c(0,100,200,300,400,500),labels=c(0,100,200,300,400,500), cex=1.2)
-
-#title(main="My Title", col.main="red", 
-#      sub="My Sub-title", col.sub="blue", 
-#      xlab="My X label", ylab="My Y label",
-#      col.lab="green", cex.lab=1.5)
-
-
-dev.off();
-
-
-#
-# Plot the data points and draw approximation line
-#
-x1 <- index_akka_data$input_size;
-y1 <- index_akka_data$overallRT;
-x1.lm <- lm(y1~x1);
-
-x2 <- index_msa_data$input_size;
-y2 <- index_msa_data$overallRT;
-x2.lm <- lm(y2~x2);
-
-
-search_overall_data <- rbind( index_akka_data, index_msa_data);
-
-
-plot(search_overall_data$input_size,search_overall_data$overallRT, 
-     col=search_overall_data$color, 
-     pch = 4,
-     main = "Overall Round Trip Time for Search",
-     xlab = "Input Feeds", ylab = "Overall Processing Time [seconds]",
-     xlim=c(0,500), ylim=c(0, 400));
-abline(x1.lm, col="red");
-abline(x2.lm, col="blue", lty=2);
-legend("topleft", legend=c("Akka", "MSA"),
-       col=c("red", "blue"), lty=1:2, cex=1)
-
-
-
-pdf("eval-index-overall.pdf");
-
-plot(x2, y2, 
-     type="l", pch=18, col="blue", lty=2, cex=1.2, 
-     xlab = "Input Feeds", ylab = "Overall Processing Time [seconds]",
-     xlim=c(0,500), ylim=c(0, 400))
-lines(x1, y1, pch=19, col="red", type="l")			   
-legend("topleft", legend=c("Akka", "MSA"),
-       col=c("red", "blue"), lty=1:2, cex=1)
-
-dev.off();	   
-
-
-#png("index-overall-eval.png", width = 960, height = 960, units = "px", res=120, pointsize = 12);
-pdf("eval-index-overall.pdf");
-
-
-dev.off();
-
-# Generate some data
-#x<-1:10; y1=x*x; y2=2*y1
-#plot(x, y1, type="b", pch=19, col="red", xlab="x", ylab="y")
-# Add a line
-#lines(x, y2, pch=18, col="blue", type="b", lty=2)
-# Add a legend
-#legend(1, 95, legend=c("Line 1", "Line 2"),
-#       col=c("red", "blue"), lty=1:2, cex=0.8)

@@ -1,0 +1,9 @@
+artefact;threads;input_size;cpu;mem
+Akka monolith;16;1000;0.7789;154
+CatalogStore (MS);16;1000;0.2807;163
+Web Crawler (MS);16;1000;0.0711;131
+IndexStore (MS);16;1000;0.1374;135
+Parser (MS);16;1000;0.0746;133
+Updater (MS);16;1000;0.0749;132
+Gateway (MS);16;1000;0.0700;109
+Searcher (MS);16;1000;0.0696;112
