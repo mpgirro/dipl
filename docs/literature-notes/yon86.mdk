@@ -1,9 +1,0 @@
-# [@Yon86] Object-oriented concurrent programming ABCL/1
-
-* Parallelism is ubiquitous in our problem domains.
-* by using various metaphors found in such systems
-* Each object in our computation model has its own (autonomous) processing power and it my have its local persistent memory,thecontentsofwhichmpcesentitsstate.Anobjectis always in one of three modes: dormant, active, or waiting. An object is initially dormant. It becomes active when it receives a message that satisfies one of the specified patterm and constraints.
-* When an active object completes the sequence of actions that are performed in response to an accepted message, if no subsequent messages have arrived, it becomes dormant again. An object in the active mode sometimes needs to stop its current activity in order to wait for a message with specified patm'ns to arrive. In such a case, an active object changes into the waiting mode. An object in the waiting mode becomes active again when it receives a n~quired message.
-* Thus message passing takes place in a point-to-point (object-to-object)fashion.No message can be broadcast.
-* [Assumption for Preservation of Transmission Ordering]When two messages are sent to an object T by the same object O, the temporal ordering of the two message transmissions (according to O's clock) must be preserved in the temporal ordering of the two message arrivals (according to T's clock).
-* This assumption was not made in the Actor model of computa-tion. Without this, however, it is difficult to model even simple things as objects.
