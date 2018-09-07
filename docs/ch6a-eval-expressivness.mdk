@@ -46,18 +46,7 @@ This section conducts a conceptual evaluation. We compare the capabilities and e
 ...
 -->
 
-In this section we compare and evaluate the key properties of the actor and microservice programming models, as well as the capabilities we can express with these models. 
-
-
-~ todo
-Der Teil unten braucht dringend irgendeine Literatur Grundlage. Sonst bin ich auf zu dünnem Eis.
-~
-
-Expressiveness in the literature is often discussed in the light of formal methods to reduce syntax while preserving the expressed semantics. [CITATION NEEDED!!]{.red}
-
-We employ a slightly different view of expressivness. Since we regard two programming models, we will assess the capabilities that can be expressed using the actor and microservice programming models.
-
-
+In this section we compare and evaluate the key properties of the actor and microservice programming models, as well as the capabilities we can express with these models. Programming language theory knows a concept called *expressiveness* or *expressive power*. This concept also becomes more and more relevant in the light of concurrency theory. There, the *relative expressive power* is used to compare two formel concurrency models [@Fel91;@Gor16]. Evaluations on a strictly formal level require the rules and boundaries of formal frameworks. Therefore, often programming languages are analyzed. Concurrency theory focuses on what ot calls *process languages*. These languages are founded on the formal frameworks of so-called *process calculi* [@Per16], which we briefly discuss in due course. Here, we do not concern ourself with formal proofs of behavioral equivalence however. Instead, we revert to informal discussions about the observational equivalence of concepts we can express in the actor and microservice model, as has been often done in the literature before [@Fel91]. All strategies that we express in both models are essentially encodings of ideas [@Gor16]. Ultimately, we are interessted if actor and microservices have the expressive power to convey the same ideas. The two models are therefore equally capable to express a concept if the solution of one model produces the equally powerful functionality (informally) as the solution of the other model.
 
 
 ### Encapsulation and Isolation
@@ -697,7 +686,7 @@ Echo facilitates Java and the Spring framework for all microservice components. 
 |-------------------------|-----------------------------------|----------------------------------|
 | Characteristic          | Akka                              | Spring MSA                       |
 +-------------------------+-----------------------------------+----------------------------------+
-| Extensibility           | static (phased)                   | dynamic                          |
+| Extensibility           | static (phased restarts)                   | dynamic                          |
 | ------------------------|-----------------------------------|----------------------------------|
 | Technological           | Compatible to the Akka interface  | Open for arbitrary technology    |
 | Diversity               | (JVM technologies), no compatible | stacks due to open interfaces    |

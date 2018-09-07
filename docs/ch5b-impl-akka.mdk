@@ -49,7 +49,7 @@ public class Foo extends UntypedActor {
 }
 ```
 
-We extend `UntypedActor`{language:java}, the base class for classic actors which do not provide type-safety for messages. In contrast, Akka's `TypedActor`{language:java} is the base class for active objects, which do provide type-safety for messages [irgendwas REF]{.red}. We give the field `bar` in class `Foo`{language:java} *external visibility* by declaring it `public`{language:java}. The field is therefore part of every object of type `Foo`{language:java} and influences the object's encapsulation [@Kni96]. From visibility follows accessibility, such that `bar` is also accessible from outside the scope of `Foo`{language:java}. Since `bar` is not `final`{language:java}, we can also modify `bar` from outside the object's scope, which violates the exclusive state modification requirement of the actor semantics. 
+We extend `UntypedActor`{language:java}, the base class for classic actors which do not provide type-safety for messages. In contrast, Akka's `TypedActor`{language:java} is the base class for active objects, which do provide type-safety for messages [@Sub11]. We give the field `bar` in class `Foo`{language:java} *external visibility* by declaring it `public`{language:java}. The field is therefore part of every object of type `Foo`{language:java} and influences the object's encapsulation [@Kni96]. From visibility follows accessibility, such that `bar` is also accessible from outside the scope of `Foo`{language:java}. Since `bar` is not `final`{language:java}, we can also modify `bar` from outside the object's scope, which violates the exclusive state modification requirement of the actor semantics. 
 
 All Java-based actor implementations therefore face the problem that custom-written actor classes can easily break the required model semantics. In order to cope with this problem, object-oriented implementations can offer APIs where interaction with an actor instance is not issued directly through the instances method interfaces, but instead via proxy constructs like [@Hal12]:
 
@@ -152,13 +152,13 @@ The actor model is solely built on the concept of *asynchronous* message passing
 
 Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell [!]` command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. We can use `ask` to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` is free to either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
-~ Figure { #fig-pipeline-search-future; caption: "Example message flow of a future-based synchronous call"; width:50%; float:left; margin-right: 1ex; margin-top:1em; }
+~ Figure { #fig-pipeline-search-future; caption: "Example message flow of a future-based synchronous call"; width:100%; }
 ![img-pipeline-search-future]
 ~
 
-[img-pipeline-search-future]: graphics/search-future.[svg,png] "Image about pipeline of a search request using futures" { height:1.3cm; vertical-align:middle; padding-bottom:1em; }
+[img-pipeline-search-future]: graphics/search-future.[svg,png] "Image about pipeline of a search request using futures" { height:1.2cm; vertical-align:middle; padding-bottom:1em; }
 
-[Scenario Example]{.example-title}: A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to a Searcher and finally to an IndexStore. The results are propagated back from `I` via `S` to `G`. The results are wrapped in a `Future`{language:scala} until it is resolved. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other request until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
+A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to a Searcher and finally to an IndexStore. The results are propagated back from `I` via `S` to `G`. The results are wrapped in a `Future`{language:scala} until it is resolved. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other request until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we can use to define subsequent computation once the result becomes available. This methods can also be utilized when dispatching several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
 ```{language:scala}
 val f1: Future[Int] = actor1 ? msg1
@@ -198,15 +198,15 @@ Using `context.actorOf` instead of `system.actorOf` makes the response handler a
 * Response Handlers (H)
   : exist with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receive an answer in a purely asynchronous fashion, or detect a timeout. Upon message receival, they pass on the result and deconstruct. 
 
-~ Begin Figure { #fig-pipeline-search-delegation; caption: "Example message flow of a delegation-based synchronous call"; width:50%; float:left; margin-right: 1ex; margin-top:1em; }
+In the retrieval subsystem, the actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
+
+[^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
+
+~ Begin Figure { #fig-pipeline-search-delegation; caption: "Example message flow of a delegation-based synchronous call"; width:100%; }
 ![img-pipeline-search-delegation]
 ~ End Figure
 
-[img-pipeline-search-delegation]: graphics/search-delegation.[svg,png] "Image about pipeline of a search request using delegation" { height:3.9cm; vertical-align:middle; padding-bottom:1em; }
-
-The actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The cameo pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if no handy concept like futures are offered by the actor variant.
-
-[^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
+[img-pipeline-search-delegation]: graphics/search-delegation.[svg,png] "Image about pipeline of a search request using delegation" { height:3cm; vertical-align:middle; padding-bottom:1em; }
 
 As synchronous communication is constraint by time in general, it is important that the messages for a cameo delegation are processed swiftly. The actor model's mailbox construct however buffers all incoming messages to an actor in a strict FIFO (__F__irst __I__n __F__irst __O__ut) order. Large mailboxes with many messages queued up prevent timely message processing. Influencing the order of message reception is therefore a common property for actor systems [@Kos16]. Akka provides the concept of a `PriorityMailbox`{language:scala}, which is utilizing the pattern matching syntax of Scala to assign priority levels to messages based on their type. IndexStores and CatalogStores are facilitating priority mailboxes to process all messages involved in synchronous flows first, regardless of the current mailbox size.  
 
@@ -301,7 +301,7 @@ val router: Router = {
 router.route(queryMsg, sender())
 ```
 
-Routing to potential recipients can follow various strategies, depending on the used `RoutingLogic`{language:scala}. The `RoundRobinRoutingLogic`{language:scala} of the example redirects the message to the next routee in a cyclic order. Many alternative routing strategies are available, e.g.\ `RandomRoutingLogic`{language:scala} for a random recipient, and `BroadcastRoutingLogic`{language:scala} to distribute the message to all routees [@All13].
+When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. The actual information flow incorporates an intermediate routing actor: `W` &rarr; `R` which then distributes the message from `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$. The selection of recipients follows a strategy that depends on the used `RoutingLogic`{language:scala}. The `RoundRobinRoutingLogic`{language:scala} of the example redirects the message to the next routee in a cyclic order. Many alternative routing strategies are available, e.g.\ `RandomRoutingLogic`{language:scala} for a random recipient, and `BroadcastRoutingLogic`{language:scala} to distribute the message to all routees [@All13].
 
 Conceptually, we can do the routing directly inside the sending actor by replacing the `tell(m,s)` call with `router.route(m,s)`. Alternatively, we can also employ an intermediate actor. The decision is based on the burden of managing the routees. The set of routees has to be kept up to date, since actors can fail and no message must be sent to a terminated actor. If the routees are children of the routing actor, then the router gets informed through its supervision obligation in the case of a subordinates demise. A supervision-managed set of routees is called a *pool* [@Roe15]. Since supervision is the foundation of a pool, it can be useful to use a separate component for routing, especially if actors are part of several router pools, or a parent-child relationship is otherwise logically inadequate:
 
@@ -316,6 +316,7 @@ Conceptually, we can do the routing directly inside the sending actor by replaci
 [img-message-router]: graphics/message-router.[svg,png] "Image about a message router" { width: 70%; vertical-align:middle; padding-bottom:1em; }
 -->
 
+<!--
 [Example]{.example-title}: When a Web Crawler needs to pass on a downloaded XML feed to an arbitrary Parser, the Crawler does not directly select the recipient. Figure [#fig-message-router] (left) shows that the actual information flow incorporates an intermediate router: `W` &rarr; `R` which then distributes it `R` &rarr; `P` for some `P` $\in \{$`P`~1~$\cdots$`P`~n~$\}$  selected on the basis of the routing logic. An appropriate logic in this particular case is `RoundRobinRoutingLogic`{language:scala}.
 
 
@@ -340,6 +341,7 @@ Conceptually, we can do the routing directly inside the sending actor by replaci
 [img-message-router-roundrobin]: graphics/message-router-roundrobin.[svg,png] "Image about a message router (roundrobin)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
 
 [img-message-router-broadcast]: graphics/message-router-broadcast.[svg,png] "Image about a message router (broadcast)" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
+-->
 
 Alternatively, routees are part of a so-called *group* when the router is not supervising the routees [@Roe15]. Akka provides the so-called *actor selection* mechanism to send a message to an address matching a certain pattern. When no supervision relationship exists, message delivery reliability becomes a special concern. Actor selection does not guarantee that a recipient conforming to the pattern exists. Therefore, a message can become a so-called *dead letter* when the runtime cannot deliver the message. 
 
@@ -364,21 +366,15 @@ We must employ some kind of data persistence mechanism, e.g.\ a database, in ord
 
 We can overcome the single-threaded limitation by utilizing a non-blocking API for database connections. These APIs provide a `Future`{language:scala} reference to an eventual result at the cost of stressing the actor's thread-pool. With the monadic methods of `Future`{language:scala} we can then define further computation on the result once it becomes available. The price is the immanent risk of accidental data races by passing mutable state into the `Future`{language:scala}'s scope.  
 
-~ todo
-Hier schreiben das ich Delegation verwende wegen meinem Benchmark; für "gleiche Vorraussetzungen"
-~
+An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
-Alternatively, the author has found that the delegation principle we've discussed for synchronous message handling is also an efficient strategy. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
-
-~ Figure { #fig-persistence-actor; caption: "Logical task unit composed of several actors interacting with a shared database"; width:100%; }
+~ Figure { #fig-persistence-actor; caption: "An actor shares its persistence state with several child actors, to whoom all database interaction operations are delegated"; width:100%; }
 ![img-persistence-actor]
 ~
 
 [img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width:5cm; vertical-align:middle; padding-bottom:1em; }
 
-[Example]{.example-title}: A CatalogStore actor has a database. Conceptually we wanted to use the database to persist the state of a single actor. If the database is managed by several actors, the state is not exclusive anymore. However, we need several actors for concurrent interaction. We see, we must intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The interaction tasks are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}.
-
-[This strategie breaks with our specification that each architecture component is a concurrent task unit of the programming model.]{.red} Now, the CatalogStore component consist of several task units of the actor model, which conceptually share a single persistent state. We must not break the isolation of each actors however. Therefore, these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
+Each CatalogStore actor has a database. Conceptually, we wanted to use the database to persist the state of a single actor. If the database is managed by several actors, the state is not exclusive anymore. However, we need several actors for concurrent interaction. We see, we have to intentionally weaking the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). The database interaction operations are distributed between the children using a `RoundRobinRoutingLogic`{language:scala}. Now, the CatalogStore component consist of several task units of the actor model. All these actors conceptually share a single persistent state. We must not break the isolation of each actor however. Therefore, these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13].
 
 ~ Findings
 [Main findings]{.findings-title}

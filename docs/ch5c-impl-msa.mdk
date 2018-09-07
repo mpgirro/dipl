@@ -128,7 +128,7 @@ Communication in microservice architectures happens via inter-process communicat
 
 We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as the prime (and often sole) example of valid communication channels throughout the literature. However, the author has experienced that REST is practical only in certain situations. As REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo facilitates REST for search requests through the Web application (`G` &rightleftarrows; `S` &rightleftarrows; `I`), as well as metadata retrieval from the CatalogStore (`G` &rightleftarrows; `D`).
 
-As even Fowler & Lewis [@Fow14] in their seminal work on microservices point out, other mechanism are applicable as well, as long as they are lightweight and do not apply logic of their own. The Indexing subsystem is more predestined for an asynchronous workflow. Therefore, we desire a message queue-like mechanism. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
+As even Fowler & Lewis [@Fow14] in their seminal work on microservices point out, other mechanisms are applicable as well, as long as they are lightweight and do not apply logic of their own. The indexing subsystem is more predestined for an asynchronous workflow. Therefore, we desire a message queue-like mechanism. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
 
 We require a technology heterogenous message queue standard. AMQP (__A__dvanced __M__essage __Q__ueue __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. Therefore, different implementations are possible which we can interchange freely. Various AMQP compatible technologies, so-called *providers*, do exist. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that has proven to integrate well into MSAs [@Dra17c]. Message queues conceptually introduce new concurrent components into the architecture:
 
@@ -143,15 +143,15 @@ We require a technology heterogenous message queue standard. AMQP (__A__dvanced 
 [img-ms-channels]: graphics/ms-channels.[pdf,svg,png] "Image about Microservice communication channels" { width: 85%; vertical-align:middle; padding-bottom:1em; }
 -->
 
-The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue.
+The queue becomes an intermediate for all asynchronous messages. Senders push messages to the queue, and receivers subsequently pull those messages from the queue. For examole, we do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, the Crawler pushes a message `W` &rarr; `Q`. At some later point and idle Parser pulls this message `P` &larr; `Q`. The message travels asynchronously. The actively communicating components are `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
 
+<!--
 ~ Figure { #fig-message-queue; caption: "Message queue"; width:50%; float:left; margin-right: 1ex; }
 ![img-message-queue]
 ~
 
 [img-message-queue]: graphics/message-queue.[svg,png] "Image about a message queue" { height:3.5cm; vertical-align:middle; padding-bottom:1em; }
-
-[Example]{.example-title}: We do not send a message directly from a Web Crawler to a Parser (`W` &rarr; `P`), where the active component is only `W`. Instead, Figure [#fig-message-queue] shows how the Crawler pushes a message `W` &rarr; `Q`. At some later point and idle Parser pulls this message `P` &larr; `Q`. The message travels asynchronously. The actively communicating components are `W` and `P`. The queue is merely invoked by other components and performs routing logic internally. The queue also decouples the sender `W` from the actual receiver `P`, i.e.\ `W` does not know which concrete `P` will receive and process the message.
+-->
 
 In general, a service can have several different interfaces, based on heterogenous technologies. As a result, this allows the service to provide the *same* functionality on *different* interfaces. Since every interface produces and consumes messages in JSON (__J__ava__S__cript __O__bject __N__otation) format, there are no datatype incompatibility problems. Echo's microservices provide a REST interface for every message a service consumes from the AMQP queue. We can therefore also send a message to a service directly via HTTP. The additional option to invoke service functionality turned out especially useful for testing and debugging purposes. This suggests that it is valuable to maintain different interfaces for development, production, and maintenance. 
 

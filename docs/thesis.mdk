@@ -369,7 +369,7 @@ Es gilt einigen wenigen meinen Dank auszusprechen:
 # Abstract { -; toc:clear }
 ~ End HtmlOnly
 
-Common problems require applications to manage multiple concerns simultaneously. A convenient approach is the concept of *concurrent programming*. In this thesis, we investigate two different models for introducing concurrent computational units into software architectures. One approach is the *actor model* that defines theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The other approach is an architectural style based on so-called *microservices*, a recent trend that gained academic and industrial popularity. Microservices facilitate many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables. These programs interoperate via lightweight, technology heterogenous messaging channels. The deployment modality of microservices conceives concurrent execution through the operating system scheduler. This thesis compares the programming of concurrent computation through actors and microservices with respect to a non-trivial concurrent system scenario. We argue that both approaches share many conceptual similarities and few but significant differences. Both models have the same expressive capabilities regarding concurrent programming concerns like communication and scalability, but suffer from different trade-offs. We provide implementations of the system scenario based on actor and microservice architectures. Benchmark results of these implementations suggests that actors provide better system efficiency through a smaller codebase. Microservice architectures consume significantly more system resources and suffer especially from purely synchronous communication mechanisms. 
+Common problems require applications to manage multiple concerns simultaneously. A convenient approach is the concept of *concurrent programming*. In this thesis, we investigate two different models for introducing concurrent computational units into software architectures. One approach is the *actor model* that defines theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The other approach is an architectural style based on so-called *microservices*, a recent trend that gained academic and industrial popularity. Microservices facilitate many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables. These programs interoperate via lightweight, technology heterogenous messaging channels. The deployment modality of microservices conceives concurrent execution through the operating system scheduler. This thesis compares the programming of concurrent computation through actors and microservices with respect to a non-trivial concurrent system scenario. We argue that both approaches share many conceptual similarities and [few but significant]{.red} differences. Both models have the same expressive capabilities regarding concurrent programming concerns like communication and scalability, but suffer from different trade-offs. We provide implementations of the system scenario based on actor and microservice architectures. Benchmark results of these implementations suggests that actors provide better system efficiency through a smaller codebase. Microservice architectures consume significantly more system resources and suffer especially from purely synchronous communication mechanisms. 
 
 <!--
 With respect to a non-trivial scenario for a concurrent system, we compare the programming of concurrent computation with the actor and microservice model. We argue that both programming models have the same expressive capabilities, but suffer from different trade-offs. Actor- and microservice-based implementations of the scenario provide the foundation of system benchmarks. Our results indicate that actors provide better system efficiency and a smaller codebase. Microservice architectures consume more system resources and suffer especially from purely synchronous communication mechanisms. 
@@ -406,7 +406,7 @@ While actors follow a strict theoretical concept,  microservices, in their curre
 ~ End HtmlOnly
 
 
-Applikationen benötigen häufig eine simultane Bearbeitung mehrere Aufgaben. *Nebenläufige Programmierung* ist hierfür ein verbreitetes Konzept. Diese Arbeit beschäftigt sich mit zwei Modellen zur Definition nebenläufiger Programmeinheiten innerhalb von Softwarearchitekturen. Eines dieser Modelle ist das sog.\ *Actor Model*. Es definiert theoretisch wohlfundierte Konstrukte, welche transparent eine nebenläufige, parallele sowie verteilte Ausführung ermöglichen. Bei dem andere Modell handelt es sich um einen relativ neuen Architekturstil unter Verwendung sog.\ *Microservices*, welche sich kürzlich im akademischen und industriellen Umfeld großer Beliebtheit erfreuen. Microservices bauen auf viele Prinzipien der alten Unix-Philosophie, indem sie komplexe Funktionalität durch den Zusammenschluss kleiner, unabhängiger, kohäsiver und lose gekoppelter Programme konzipieren. Diese Programme interagieren über leichtgewichtige, auf Nachrichtenaustausch basierende, technologisch heterogene Kommunikationskanäle. Microservices unterliegen einer implizit nebenläufigen Ausführungsmodalität durch den Prozess-Scheduler des Betriebssystems. Diese Arbeit vergleich die Programmierung von nebenläufiger Ausführung mittels Actors und Microservices relativ zu einem nichttrivialen Fallbeispiel eines nebenläufigen Systems. Wir argumentieren, [dass]{.red} beide Ansätze viele Gemeinsamkeiten und wenige aber wichtige konzeptionelle Unterschiede besitzen. Beide Modelle haben gleichwertige Möglichkeiten um typische Anliegen der nebenläufigen Programmierung wie Kommunikation und Skalierbarkeit auszudrücken. Jedoch unterliegen die Modelle unterschiedlichen Trade-offs. Wir stellen Implementierungen des Fallbeispiels bereit, welche jeweils auf Actors bzw. Microservices basieren. Die Resultate eines Benchmarkings dieser Implementierungen legen nahe, [dass]{.red} Actors eine bessere Systemeffizienz verbunden mit einer kleineren Codebasis ermöglichen. Microservice-Architekturen hingegen konsumieren erheblich mehr Systemresourcen und leider vor allem unter den Auswirkungen rein synchroner Kommunikationsmechanismen.
+Applikationen benötigen häufig eine simultane Bearbeitung mehrere Aufgaben. *Nebenläufige Programmierung* ist hierfür ein verbreitetes Konzept. Diese Arbeit beschäftigt sich mit zwei Modellen zur Definition nebenläufiger Programmeinheiten innerhalb von Softwarearchitekturen. Eines dieser Modelle ist das sog.\ *Actor Model*. Es definiert theoretisch wohlfundierte Konstrukte, welche transparent eine nebenläufige, parallele und verteilte Ausführung ermöglichen. Bei dem andere Modell handelt es sich um einen relativ neuen Architekturstil unter Verwendung sog.\ *Microservices*, welche sich kürzlich im akademischen und industriellen Umfeld gro&szlig;er Beliebtheit erfreuen. Microservices bauen auf viele Prinzipien der alten Unix-Philosophie, indem sie komplexe Funktionalität durch den Zusammenschluss kleiner, unabhängiger, kohäsiver und lose gekoppelter Programme konzipieren. Diese Programme interagieren über leichtgewichtige, auf Nachrichtenaustausch basierende, technologisch heterogene Kommunikationskanäle. Microservices unterliegen einer implizit nebenläufigen Ausführungsmodalität durch den Prozess-Scheduler des Betriebssystems. Diese Arbeit vergleich die Programmierung von nebenläufiger Ausführung mittels Actors und Microservices relativ zu einem nichttrivialen Fallbeispiel eines nebenläufigen Systems. Wir argumentieren, [dass]{.red} beide Ansätze viele Gemeinsamkeiten und wenige aber wichtige konzeptionelle Unterschiede besitzen. Beide Modelle haben gleichwertige Möglichkeiten um typische Anliegen der nebenläufigen Programmierung wie Kommunikation und Skalierbarkeit auszudrücken. Jedoch unterliegen die Modelle unterschiedlichen Trade-offs. Wir stellen Implementierungen des Fallbeispiels bereit, welche jeweils auf Actors bzw.\ Microservices basieren. Die Resultate eines Benchmarkings dieser Implementierungen legen nahe, [dass]{.red} Actors eine bessere Systemeffizienz verbunden mit einer kleineren Codebasis ermöglichen. Microservice-Architekturen hingegen konsumieren erheblich mehr Systemresourcen und leider vor allem unter den Auswirkungen rein synchroner Kommunikationsmechanismen.
 
 ~ TexOnly
 ~~ TexRaw
@@ -454,10 +454,10 @@ Maximilian Irro
 
 &pagebreak;
 
-[TOC=figures]
-[TOC=tables]
-
 ~~ TexRaw
+\listoffigures
+\listoftables
+
 % Switch to arabic numbering and start the enumeration of chapters in the table of content.
 \mainmatter
 ~~
@@ -544,7 +544,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [JSON]{.abbrv-item} JavaScript Object Notation
 * [JVM]{.abbrv-item} Java Virtual Machine
 * [LB]{.abbrv-item} Load Balancing
-* [MPS]{.abbrv-item} Messages per Second
+* [MPS]{.abbrv-item} Messages per Second [(in Verwendung?)]{.red}
 * [MS]{.abbrv-item} Microservice
 * [MSA]{.abbrv-item} Microservice Architecture
 * [OOP]{.abbrv-item} Object-oriented Programming
@@ -566,6 +566,8 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [VM]{.abbrv-item} Virtual Machine
 * [XML]{.abbrv-item} Extensible Markup Language
 { .abbrv-table }
+
+
 
 
 <!--
