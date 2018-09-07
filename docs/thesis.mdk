@@ -30,8 +30,8 @@ Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
 <!--Bib Style         : plainnat-->
-Bib style         : style/keynat.bst
-<!--Csl Style         : style/custom.csl-->
+<!--Bib style         : style/keynat.bst-->
+Csl Style         : style/custom.csl
 <!--Csl Style         : style/elsevier-with-titles.csl-->
 <!--Csl Style         : style/iso690-cs.csl-->
 
@@ -296,9 +296,7 @@ CSS Header      :
 [TITLE]
 
 <!-- 
-~ Begin Abstract
-TODO
-~ End Abstract
+A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](http://max.irro.at/pub/dipl/thesis.pdf)
 -->
 
 [TOC]
@@ -307,11 +305,7 @@ TODO
 [TOC=tables]
 ~ End HtmlOnly
 
-<!--
-~ HtmlOnly
-A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](http://max.irro.at/pub/dipl/thesis.pdf)
-~
--->
+
 
 &pagebreak;
 ~ Begin TexOnly
@@ -345,7 +339,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~ End HtmlOnly
 
 ~ todo
-Ich danke meiner Kaffeemaschine und der Guiness Brauerei
+Ich danke meiner Kaffeemaschine, Petzi Bär und der Guiness Brauerei
 ~
 
 <!--
@@ -482,7 +476,7 @@ Maximilian Irro
 # Example Feed Structure { @h1="A"; #ch-benchmark-feed }
 
 
-An RSS 2.0 [@Win03] feed is an XML document. The feed's top level element is the `<rss>` tag. Atom [@RFC4287] feeds additionally apply the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"` to the `<rss>` tag. The `<channel>` encloses the metadata entries of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item of a podcast feed is the `<enclosure>`, which provides the URL to the media file. Some feeds of the domain also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
+An RSS 2.0 [@Win03] feed is an XML document. The feed's top level element is the `<rss>` tag. A feed becomes an Atom [@RFC4287] if the `<rss>` element additionally has the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"`. The `<channel>` encloses the metadata entries of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item of a podcast feed is the `<enclosure>`, which provides the URL to the media file. Some feeds of the domain also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
 
 * `xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"` for metadata used in the iTunes Podcast Directory [@iTunesDirectory].
 * `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark information in the Simple Chapters [@PotloveSimpleChapters] format.
@@ -544,7 +538,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [JSON]{.abbrv-item} JavaScript Object Notation
 * [JVM]{.abbrv-item} Java Virtual Machine
 * [LB]{.abbrv-item} Load Balancing
-* [MPS]{.abbrv-item} Messages per Second [(in Verwendung?)]{.red}
+<!--* [MPS]{.abbrv-item} Messages per Second [(in Verwendung?)]{.red}-->
 * [MS]{.abbrv-item} Microservice
 * [MSA]{.abbrv-item} Microservice Architecture
 * [OOP]{.abbrv-item} Object-oriented Programming
@@ -555,13 +549,13 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [RSS]{.abbrv-item} Rich Site Summary
 * [sJAR]{.abbrv-item} skinny JAR
 * [SOA]{.abbrv-item} Service-oriented Architecture
-* [SoC]{.abbrv-item} Separation of Concerns
+<!--* [SoC]{.abbrv-item} Separation of Concerns-->
 * [SOC]{.abbrv-item} Service-oriented Computing
 * [SOP]{.abbrv-item} Service-oriented Programming
 * [SRP]{.abbrv-item} Single Responsibility Principle
-* [ST]{.abbrv-item} Startup Time
+<!--* [ST]{.abbrv-item} Startup Time-->
 * [STM]{.abbrv-item} Software Transactional Memory
-* [URI]{.abbrv-item} Uniform Resource Identifier
+<!--* [URI]{.abbrv-item} Uniform Resource Identifier-->
 * [URL]{.abbrv-item} Uniform Resource Locator
 * [VM]{.abbrv-item} Virtual Machine
 * [XML]{.abbrv-item} Extensible Markup Language

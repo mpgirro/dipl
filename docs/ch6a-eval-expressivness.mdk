@@ -1046,39 +1046,41 @@ In general, behavioral type theoretical concepts do not seem to be widely applie
 ### Software Artifact Analysis
 
 
-Sections [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies when programming with actors and microservices. The previous sections of this chapter compared the resulting capabilities. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts when we express these capabilities. We concern ourself with three metrics: the *lines of code* (LoC) it takes to express the respective functionality, the size of the resulting artifacts, and the *startup time* (ST) of each artifact. 
+Sections [#ch-actor-impl] and [#ch-microservice-impl] covered the solution strategies when programming with actors and microservices. The previous sections of this chapter compared the resulting capabilities. Now we want to merit attention to the effects that the programming models have on the resulting software artifacts when we express these capabilities. We concern ourself with three metrics: the *lines of code* (LoC) it takes to express the respective functionality, the size of the resulting artifacts, and the *startup time* of each artifact. 
 
 All Akka actors are compiled into a single monolithic application. Therefore, the respective Akka metrics refere to the resulting monolith. The Spring-based microservices are independent programs, so we give the metrics for each service engine separately. The LoC give us an indication of the programming effort is takes to implement a given functionality. We've counted the LoC using the CLOC [@CLOC] tool. Since Spring Boot relies heavily on configuration to adapt it's default behavior, we've counted the content of configuration files as source code. We measure size in terms of the bytes of each JAR (__J__ava __Ar__chive) file. There are several ways to package a JAR. Two kinds are of relevance to us. We define a *skinny JAR* (sJAR) as the archive containing merely the byte code and direct resources (e.g.\ property files) of a program's source code. Subsequently, we use *fat JAR* (fJAR) for an archive containing the data of the skinny JAR version, together with it's direct dependencies (e.g.\ other libraries in their skinny JAR version), and the deployment information required to execute the application on a standard Java runtime environment. Fat JARs are therefore executable artifacts. The startup time is the time from process incarnation until the application is fully operational.
 
 Table [#tab-artifact-metrics] gives the measured metrics for the Echo artifacts. As a reminder, the Core artifact is the library implementing the domain specific logic. Hence, Core's skinny JAR is part of all fat JARs of the microservice engines as well as the Akka monolithic engine. The Web application is the frontend client that connects to both Echo system implementations. We give the LoC metric of the Web application merely as a reference relative to the other artifacts.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-artifact-metrics; caption: "Lines of code, byte code sizes, and startup times of software artifacts"; page-align:here }
-|-------------------|------|-----------| ----------| ---------|
-| Artifact          | LoC  | sJAR (KB) | fJAR (KB) | ST (sec) |
-+-------------------+-----:+----------:+----------:+---------:+
-| Akka monolith     | 4487 | 1004.3     | 76 775.1  | 5.5      |
-| ------------------|------|-----------|-----------|----------|
-| CatalogStore (MS) | 1838 | 56.1      | 89 225.8  | 14.6     |
-| ------------------|------|-----------|-----------|----------|
-| IndexStore (MS)   | 724  | 23.8      | 83 518.2  | 8.8      |
-| ------------------|------|-----------|-----------|----------|
-| Searcher (MS)     | 656  | 22.2      | 81 754.4  | 8.0      |
-| ------------------|------|-----------|-----------|----------|
-| Web Crawler (MS)  | 716  | 23.5      | 83 517.9  | 9.0      |
-| ------------------|------|-----------| ----------|----------|
-| Parser (MS)       | 703  | 24.2      | 83 519.1  | 8.3      |
-| ------------------|------|-----------| ----------|----------|
-| Registry (MS)     | 334  | 9.9       | 90 699.7  | 9.5      |
-| ------------------|------|-----------| ----------|----------|
-| Gateway (MS)     | 889  | 30.5       | 83 655.1  | [??]{.red}     |
-| ------------------|------|-----------|-----------|----------|
-| Updater (MS)      | 693  | 23.9      | 83 518.3  | 8.8      |
-| ------------------|------|-----------| ----------|----------|
-| Core (library)    | 5203 | 323.1     | &mdash;   | &mdash;  |
-| ------------------|------|-----------| ----------|----------|
-| Web (frontend)    | 3144 | &mdash;   | &mdash;   | &mdash;  |
-| ------------------|------|-----------| ----------|----------|
+~ Begin TableFigure { #tab-artifact-metrics; \
+                     caption: "Lines of code, byte code sizes, and startup times of software artifacts"; \
+                     page-align:here }
+|-------------------|------|-----------| ----------| --------------|
+| Artifact          | LoC  | sJAR (KB) | fJAR (KB) | Startup (sec) |
++-------------------+-----:+----------:+----------:+--------------:+
+| Akka monolith     | 4487 | 1004.3    | 76 775.1  | 5.5           |
+| ------------------|------|-----------|-----------|---------------|
+| CatalogStore (MS) | 1838 | 56.1      | 89 225.8  | 14.6          |
+| ------------------|------|-----------|-----------|---------------|
+| IndexStore (MS)   | 724  | 23.8      | 83 518.2  | 8.8           |
+| ------------------|------|-----------|-----------|---------------|
+| Searcher (MS)     | 656  | 22.2      | 81 754.4  | 8.0           |
+| ------------------|------|-----------|-----------|---------------|
+| Web Crawler (MS)  | 716  | 23.5      | 83 517.9  | 9.0           |
+| ------------------|------|-----------| ----------|---------------|
+| Parser (MS)       | 703  | 24.2      | 83 519.1  | 8.3           |
+| ------------------|------|-----------| ----------|---------------|
+| Registry (MS)     | 334  | 9.9       | 90 699.7  | 9.5           |
+| ------------------|------|-----------| ----------|---------------|
+| Gateway (MS)      | 889  | 30.5      | 83 655.1  | [??]{.red}    |
+| ------------------|------|-----------|-----------|---------------|
+| Updater (MS)      | 693  | 23.9      | 83 518.3  | 8.8           |
+| ------------------|------|-----------| ----------|---------------|
+| Core (library)    | 5203 | 323.1     | &mdash;   | &mdash;       |
+| ------------------|------|-----------| ----------|---------------|
+| Web (frontend)    | 3144 | &mdash;   | &mdash;   | &mdash;       |
+| ------------------|------|-----------| ----------|---------------|
 {  }
 ~ End TableFigure
 ~ End Center

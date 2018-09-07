@@ -69,18 +69,22 @@ To reduce the effects of outliers, we've conducted each experiment 3 times. Each
 
 Figure [#fig-eval-index-overall] shows the benchmark results of the indexing subsystems for the overall time it takes the implementations to process the workload with respect to the input size. 
 
-~ Figure { #fig-eval-index-overall; caption: "Benchmark results for the overall processing time of the indexing subsystem with respect to the amount of feeds"; width:100%; }
+~ Figure { #fig-eval-index-overall; \
+           caption: "Benchmark results for the overall processing time of the indexing subsystem with respect to the amount of feeds"; \
+           width:100%; page-align:here; }
 ![img-eval-index-overall]
 ~
 
-[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:60%; vertical-align:middle; padding-bottom:1ex; }
+[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:60%; vertical-align:middle; padding-bottom:1em; }
 
 The figure also describes the load scalability behavior of the systems. With an increasing load for the indexing subsystem, both implementations scale uniformly, which is the desired behavior. This uniform behavior is the result of good vertical scalability, since the architectures are able to uniformly leverage the resources of the single multicore host used for the benchmark.
 
-In Section [#sec-conception-concurrent-execution] we've discussed the issue of fairness and the implications on resource consumption. Figure [#fig-eval-index-mem] shows the mean memory resource consumption of the Echo implementations in the indexing phase. We've measured the memory usage (heap memory $+$ non-heap memory) using the `MemoryMXBean`{language:java} that every JVM provides. The results illustrates how every microservice consumes separate system resources, even those who do not perform any work in the indexing phase (Gateway, Searcher). The Akka monolith that implements the entire Echo system consumes only slightly more memory resources as a single Spring-based microservice. The CatalogStore MS in an exception. The author suspects that the reason for the CatalogStore service's memory demand is that the IoC container of this service has to extend the STM to the database. The entire MSA has a considerably higher memory requirement than the entire actor-based system. The figure also illistrates the impact of the JVM as a microservice plattform. The JVM is a relatively heavy-weight VM. Every process incarnation of a Java-based microservices must be deployed in its own separate VM, which poses a considerable impact on the system resources. The operating system always allocates resources towards every process on a regular basis. In contrast, Akka actors, besides being more lightweight constructs in general, only get scheduled and thus consume resources when they have messages in their mailbox.
+In Section [#sec-conception-concurrent-execution] we've discussed the issue of fairness and the implications on resource consumption. Figure [#fig-eval-index-mem] shows the mean memory resource consumption of the Echo implementations in the indexing phase. We've measured the memory usage (heap memory $+$ non-heap memory) using the `java.lang.management.MemoryMXBean`{language:java} that every JVM provides. The results illustrates how every microservice consumes separate system resources, even those who do not perform any work in the indexing phase (Gateway, Searcher). The Akka monolith that implements the entire Echo system consumes only slightly more memory resources as a single Spring-based microservice. The CatalogStore MS in an exception. The author suspects that the reason for the CatalogStore service's memory demand is that the IoC container of this service has to extend the STM to the database. The entire MSA has a considerably higher memory requirement than the entire actor-based system. The figure also illistrates the impact of the JVM as a microservice plattform. The JVM is a relatively heavy-weight VM. Every process incarnation of a Java-based microservices must be deployed in its own separate VM, which poses a considerable impact on the system resources. The operating system always allocates resources towards every process on a regular basis. In contrast, Akka actors, besides being more lightweight constructs in general, only get scheduled and thus consume resources when they have messages in their mailbox.
 
 
-~ Figure { #fig-eval-index-mem; caption: "Memory consumption of the executable artifact's VMs in the indexing phase"; width:100%; }
+~ Figure { #fig-eval-index-mem; \
+           caption: "Memory consumption of the executable artifact's VMs in the indexing phase"; \
+           width:100%; page-align:here; }
 ![img-eval-index-mem]
 ~
 
@@ -108,20 +112,24 @@ We reconfigure the previous components in the pipeline with significantely more 
 
 Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to assess the retrieval subsystem's performance. It clearly indicates that the request/asynchronous response style of Akka actors is superior to the synchronous REST-based communication of the microservices. Since the Akka implementation processes heavy loads of requests considerably faster, this subsystem is more available and thus has better liveness. The figure also describes the load scalability behavior of the retrieval subsystems. Both implementations scale uniformly as desired. Again, we can trace this result back to the fact that the implementations leverage the available system resources of the single multicore host well (vertical scalability). However, the microservice variant shows considerably lower overall efficiency. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of an MSA. Our benchmark results support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
 
-~ Figure { #fig-eval-search-rtt-overall; caption: "Benchmark results for the overall processing time of the Retrieval subsystem with respect to the amount of search requests"; width:100%; }
+~ Figure { #fig-eval-search-rtt-overall; \
+           caption: "Benchmark results for the overall processing time of the Retrieval subsystem with respect to the amount of search requests"; \
+           width:100%; page-align:here; }
 ![img-eval-search-rtt-overall]
 ~
 
-[img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:60%; vertical-align:middle; padding-bottom:1ex; }
+[img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:60%; vertical-align:middle; padding-bottom:1em; }
 
 
 In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication with Akka. One variant is based on futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response is available in the mailbox. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance. To evaluate the future- and delegation-based modelling of (semi-)synchronous communication, we've conducted the retrieval experiment also with futures. Figure [#fig-eval-search-comparison-akka-delegation-future] illustrates the future results in contrast to the delegation results.
 
-~ Figure { #fig-eval-search-comparison-akka-delegation-future; caption: "Comparison of the benchmark reasults of the retrieval subsystem using either delegation or futures for request/response communication in the Akka-based implementation"; width:100%; }
+~ Figure { #fig-eval-search-comparison-akka-delegation-future; \
+           caption: "Comparison of the benchmark reasults of the retrieval subsystem using either delegation or futures for request/response communication in the Akka-based implementation"; \
+           width:100%; page-align:here; }
 ![img-eval-search-comparison-akka-delegation-future]
 ~
 
-[img-eval-search-comparison-akka-delegation-future]: graphics/eval-search-comparison-akka-delegation-future.[pdf,png] "Image about eval-search-comparison-akka-delegation-future" { width:60%; vertical-align:middle; padding-bottom:1ex; }
+[img-eval-search-comparison-akka-delegation-future]: graphics/eval-search-comparison-akka-delegation-future.[pdf,png] "Image about eval-search-comparison-akka-delegation-future" { width:60%; vertical-align:middle; padding-bottom:1em; }
 
 We see, neither request/async. response style shows a considerable performance advantage. Recall that the future and delegation strategies are also applicable for database interaction and IO. The results of Figure [#fig-eval-search-comparison-akka-delegation-future] suggest that each strategy is also equally efficient for database interaction. Therefore, we assume that the actor implementation does not suffer from a negative impact because it has to use the Spring Data JPA library for database access in these benchmark experiments.
 

@@ -72,7 +72,9 @@ The two high-level subsystems we've given above, indexing and retrieval, are int
 
 Task units ending in *\*Store* are stateful, all others stateless. The components form the complete architecture of our search engine by the interaction model according to Figure [#fig-task-units].
 
-~ Figure { #fig-task-units; caption: "Task unit interaction model of the Echo search engine"; width:100%; margin-right: 1ex; }
+~ Figure { #fig-task-units; \
+           caption: "Task unit interaction model of the Echo search engine"; \
+           width:100%; page-align:here; }
 ![img-task-units]
 ~
 
@@ -103,7 +105,9 @@ Feeds get either processed when they are initially indexed, or updated to check 
 [^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore we do not include it in the search index. 
 
 
-~ Figure { #fig-indexing-pipeline; caption: "The indexing pipeline: The Updater uses the CatalogStore's metadata to determine feed that require updating (`U` &rarr; `C` &rarr; `U`). The Crawler (`C`) loads the XML from the web, the Parser (`P`) transforms the feed data to domain objects. The CatalogStore persists the new data and forwards selected metadata to the IndexStore (`I`)"; width:100%; }
+~ Figure { #fig-indexing-pipeline; \
+           caption: "The indexing pipeline: The Updater uses the CatalogStore's metadata to determine feed that require updating (`U` &rarr; `C` &rarr; `U`). The Crawler (`C`) loads the XML from the web, the Parser (`P`) transforms the feed data to domain objects. The CatalogStore persists the new data and forwards selected metadata to the IndexStore (`I`)"; \
+           width:100%; page-align:here; }
 ![img-indexing-pipeline]
 ~
 
@@ -117,7 +121,9 @@ The essential purpose of the engine is search. The Web UI offers an interface si
 
 The IndexStore propagates the found results back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web UI. This message flow has to happen in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`.
 
-~ Figure { #fig-retrieval-pipeline; caption: "The retrieval pipeline: The Gateway (`G`) registers requests, forwards each query to the Searcher (`S`), who retrieves data from the IndexStore (`I`). The respective results travel back via `S` to `G`"; width:100%; }
+~ Figure { #fig-retrieval-pipeline; \
+           caption: "The retrieval pipeline: The Gateway (`G`) registers requests, forwards each query to the Searcher (`S`), who retrieves data from the IndexStore (`I`). The respective results travel back via `S` to `G`"; \
+           width:100%; page-align:here; }
 ![img-retrieval-pipeline]
 ~
 

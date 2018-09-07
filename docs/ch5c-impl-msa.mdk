@@ -1,6 +1,4 @@
 
-&pagebreak;
-
 ## Microservice-based Implementation {#ch-microservice-impl}
 
 
@@ -101,7 +99,9 @@ We can persist information with many different strategies. Database systems are 
 
 Persistance is a form of IO and a potential performance limiting factor. Hence, database management systems usually support concurrent access to the database . As with actors, concurrent connections increase the throughput of the component. The *Spring Data* module offers a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
-~ Figure { #fig-persistence-microservice; caption: "A microservice maintains several connections to an exclusive database concurrently"; width:100%; }
+~ Figure { #fig-persistence-microservice; \
+           caption: "A microservice maintains several connections to an exclusive database concurrently"; \
+           width:100%; page-align:here; }
 ![img-persistence-microservice]
 ~
 
@@ -229,7 +229,9 @@ Using discovery mechanisms can impacts the response times of services. It can be
 
 Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Susequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
-~ Figure { #fig-service-discovery; caption: "Example of service discovery. The consecutive lookups deplay the overall synchronous communications"; width:100%; }
+~ Figure { #fig-service-discovery; \
+           caption: "Example of service discovery. The consecutive lookups deplay the overall synchronous communications"; \
+           width:100%; page-align:here; }
 ![img-service-discovery]
 ~
 
@@ -245,8 +247,9 @@ The idea of distributing work (*load*) between several instances of the same tas
 
 Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for client-side load balancing. The main reason for Eureka over Consul as the Discovery service is that Ribbon integrates with Eureka. A Ribbon client does not dispatch a message directly to an address. Instead, Ribbon uses a static name to lookup the current address of a server from the Discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument for the `@FeignClient` annotation of the declarative REST interface, since Ribbon integrates transparently into Feign. Figure [#fig-client-side-load-balancing] shows an example for a client-side load balancing interaction model in Echo. 
 
-~ Begin Figure { #fig-client-side-load-balancing; caption: "Example for client-side load balancing: A Searcher is distributing requests among several IndexStores. The addresses of the stores are regularly fetched from the Discovery service"; width:100%; }
-
+~ Begin Figure { #fig-client-side-load-balancing; \
+                 caption: "Example for client-side load balancing: A Searcher is distributing requests among several IndexStores. The addresses of the stores are regularly fetched from the Discovery service"; \
+                 width:100%; page-align:here; }
 ![img-client-side-load-balancing]{margin-right:2cm}
 
 ~ End Figure

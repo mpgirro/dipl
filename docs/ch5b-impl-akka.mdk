@@ -1,6 +1,4 @@
 
-&pagebreak;
-
 ## Actor-based Implementation {#ch-actor-impl}
 
 
@@ -152,7 +150,9 @@ The actor model is solely built on the concept of *asynchronous* message passing
 
 Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell [!]` command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. We can use `ask` to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` is free to either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
-~ Figure { #fig-pipeline-search-future; caption: "Example message flow of a future-based synchronous call"; width:100%; }
+~ Figure { #fig-pipeline-search-future; \
+           caption: "Example message flow of a future-based synchronous call"; \
+           width:100%; page-align:here; }
 ![img-pipeline-search-future]
 ~
 
@@ -202,7 +202,9 @@ In the retrieval subsystem, the actual information flow turns from the concept d
 
 [^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
 
-~ Begin Figure { #fig-pipeline-search-delegation; caption: "Example message flow of a delegation-based synchronous call"; width:100%; }
+~ Begin Figure { #fig-pipeline-search-delegation; \
+                 caption: "Example message flow of a delegation-based synchronous call"; \
+                 width:100%; page-align:here; }
 ![img-pipeline-search-delegation]
 ~ End Figure
 
@@ -368,7 +370,9 @@ We can overcome the single-threaded limitation by utilizing a non-blocking API f
 
 An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
-~ Figure { #fig-persistence-actor; caption: "An actor shares its persistence state with several child actors, to whoom all database interaction operations are delegated"; width:100%; }
+~ Figure { #fig-persistence-actor; \
+           caption: "An actor shares its persistence state with several child actors, to whoom all database interaction operations are delegated"; \
+           width:100%; page-align:here; }
 ![img-persistence-actor]
 ~
 
