@@ -15,7 +15,7 @@ Section [#sec-eval-expressiveness] compares the key properties that are the foun
 ## Capabilities and Expressiveness {#sec-eval-expressiveness}
 
 
-In this section we compare and evaluate the key properties of the actor and microservice programming models, as well as the capabilities we can express with these models. Programming language theory knows a concept called *expressiveness* or *expressive power*. This concept also becomes more and more relevant in the light of concurrency theory. There, the *relative expressive power* is used to compare two formel concurrency models [@Fel91;@Gor16]. Evaluations on a strictly formal level require the rules and boundaries of formal frameworks. Therefore, often programming languages are analyzed. Concurrency theory focuses on what ot calls *process languages*. These languages are founded on the formal frameworks of so-called *process calculi* [@Per16], which we briefly discuss in due course. Here, we do not concern ourself with formal proofs of behavioral equivalence however. Instead, we revert to informal discussions about the observational equivalence of concepts we can express in the actor and microservice model, as has been often done in the literature before [@Fel91]. All strategies that we express in both models are essentially encodings of ideas [@Gor16]. Ultimately, we are interessted if actors and microservices have the expressive power to convey the same ideas. The two models are therefore equally capable to express a concept if the solution of one model produces the equally powerful functionality (informally) as the solution of the other model.
+In this section we compare and evaluate the key properties of the actor and microservice programming models, as well as the capabilities we can express with these models. Programming language theory knows a concept called *expressiveness* or *expressive power*. This concept also becomes more and more relevant in the light of concurrency theory. There, the *relative expressive power* is used to compare two formel concurrency models [@Fel91;@Gor16]. Evaluations on a strictly formal level require the rules and boundaries of formal frameworks. Therefore, often programming languages are analyzed. Concurrency theory focuses on what it calls *process languages*. These languages are founded on the formal frameworks of so-called *process calculi* [@Per16], which we briefly discuss in due course. Here, we do not concern ourself with formal proofs of behavioral equivalence however. Instead, we revert to informal discussions about the observational equivalence of concepts we can express in the actor and microservice model, as has been often done in the literature before [@Fel91]. All strategies that we express in both models are essentially encodings of ideas [@Gor16]. Ultimately, we are interessted if actors and microservices have the expressive power to convey the same ideas. The two models are therefore equally capable to express a concept if the solution of one model produces an equally powerful functionality (informally) as the solution of the other model.
 
 
 ### Encapsulation and Isolation
@@ -25,7 +25,7 @@ Actor and microservice semantics rely on the strict separation of component stat
 
 Both actors and microservices offer well-defined interfaces in their own way. For an actor the interface is the sum of the messages the actor understands through its behavior. For microservices, the interface is based on the sum of the facilitated communication channels, e.g.\ the REST interfaces the service exposes and the messages it consumes from a message queue. Only through the interfaces can we access or modify the service's state.
 
-Table [#tab-comparison-encapsulation] at the end of this section summarizes the encapsulation- and modularity-related matters as they are facilitated by Akka actors and Spring-based microservices.  
+Table [#tab-comparison-encapsulation] at the end of this section summarizes the encapsulation-related matters as they are facilitated by Akka actors and Spring-based microservices.  
 
 
 #### Shared and Mutable State
@@ -118,7 +118,7 @@ One-to-many communication is neither inherent as a primitive to actors nor micro
 
 Akka has message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. Echo implements the routing logic inside a separat actor. In Echo's MSA, the RabbitMQ service does not suffice for one-to-many message distribution. AMQP only supports what the JMS terminology calls *queue* semantic (one-to-one), but not the JMS *topics* (one-to-many). We must employ another messaging technology. *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming system with very lightweight message constructs, and therefore appropriate for the microservice paradigm. 
 
-One important realization is the difference in messaging interfaces. While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`, and routes for `RoutingLogic`{language:scala}s) across all language bindings, the microservice model does not enforce any kind of interface. REST, AMQP and Kafka all have different interfaces. Since all Echo services are based on Spring, at least we express the interaction with each comminication mechanism in the same way within each service. But the microservice paradigm is also open for arbitrary technologie stacks, and every stack provides its own interface for each mechanism.   
+One important realization is the difference in messaging interfaces. While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`, and `RoutingLogic`{language:scala}s) across all language bindings, the microservice model does not enforce any kind of interface. REST, AMQP and Kafka all have different interfaces. Since all Echo services are based on Spring, at least we express the interaction with each comminication mechanism in the same way within each service. But the microservice paradigm is also open for arbitrary technologie stacks, and every stack provides its own interface for each mechanism.   
 
 ~ Begin Center
 ~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication style expressions in Akka and a Spring-based MSA"; page-align:here; width:100%}
@@ -191,7 +191,7 @@ Table [#tab-fundamental-concurrency-issues] gives an overview of how actors and 
 ~ Begin Center
 ~ Begin TableFigure { #tab-fundamental-concurrency-issues; caption: "Comparison of Akka actors and Spring-based microservices meeting fundamental issues of concurrent execution"; width:100%}
 |-----------------|--------------------------------|---------------------------------|
-| Issue           | Actors                         | Microservices                   |
+| Issue           | Akka                           | Spring MSA                      |
 +-----------------+--------------------------------+---------------------------------+
 | Expression      | Actor object, concurrent       | Service program execution,      |
 |                 | execution by runtime           | concurrent scheduling by OS     |

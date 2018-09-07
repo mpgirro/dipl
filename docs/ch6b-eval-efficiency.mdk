@@ -56,12 +56,12 @@ To reduce the effects of outliers, we've conducted each experiment 3 times. Each
 Figure [#fig-eval-index-overall] shows the benchmark results of the indexing subsystems for the overall time it takes the implementations to process the workload with respect to the input size. 
 
 ~ Figure { #fig-eval-index-overall; \
-           caption: "Benchmark results for the overall processing time of the indexing subsystem with respect to the amount of feeds"; \
+           caption: "Benchmark results for the overall processing time of the indexing subsystem"; \
            width:100%; page-align:here; }
 ![img-eval-index-overall]
 ~
 
-[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:60%; vertical-align:middle; padding-bottom:1em; }
+[img-eval-index-overall]: graphics/eval-index-overall.[pdf,png] "Image about eval-index-overall" { width:8cm; vertical-align:middle; padding-bottom:1em; }
 
 The figure also describes the load scalability behavior of the systems. With an increasing load for the indexing subsystem, both implementations scale uniformly, which is the desired behavior. This uniform behavior is the result of good vertical scalability, since the architectures are able to uniformly leverage the resources of the single multicore host used for the benchmark.
 
@@ -74,7 +74,7 @@ In Section [#sec-conception-concurrent-execution] we've discussed the issue of f
 ![img-eval-index-mem]
 ~
 
-[img-eval-index-mem]: graphics/eval-index-mem.[pdf,png] "Image about eval-index-mem" { width:60%; vertical-align:middle; padding-bottom:1em; }
+[img-eval-index-mem]: graphics/eval-index-mem.[pdf,png] "Image about eval-index-mem" { width:8cm; vertical-align:middle; padding-bottom:1em; }
 
 
 #### Experiment 2: Retrieval Subsystem
@@ -83,12 +83,12 @@ In Section [#sec-conception-concurrent-execution] we've discussed the issue of f
 Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to assess the retrieval subsystem's performance. It clearly indicates that the request/asynchronous response style of Akka actors is superior to the synchronous REST-based communication of the microservices. Since the Akka implementation processes heavy loads of requests considerably faster, this subsystem is more available and thus has better liveness. The figure also describes the load scalability behavior of the retrieval subsystems. Both implementations scale uniformly as desired. Again, we can trace this result back to the fact that the implementations leverage the available system resources of the single multicore host well (vertical scalability). However, the microservice variant shows considerably lower overall efficiency. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of an MSA. Our benchmark results support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
 
 ~ Figure { #fig-eval-search-rtt-overall; \
-           caption: "Benchmark results for the overall processing time of the Retrieval subsystem with respect to the amount of search requests"; \
+           caption: "Benchmark results for the overall processing time of the Retrieval subsystem"; \
            width:100%; page-align:here; }
 ![img-eval-search-rtt-overall]
 ~
 
-[img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:60%; vertical-align:middle; padding-bottom:1em; }
+[img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:8cm; vertical-align:middle; padding-bottom:1em; }
 
 
 In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication with Akka. One variant is based on futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response is available in the mailbox. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance. To evaluate the future- and delegation-based modelling of (semi-)synchronous communication, we've conducted the retrieval experiment also with futures. Figure [#fig-eval-search-comparison-akka-delegation-future] illustrates the future results in contrast to the delegation results.
@@ -99,7 +99,7 @@ In Section [#sec-actor-communication-abstractions] we've actually discussed two 
 ![img-eval-search-comparison-akka-delegation-future]
 ~
 
-[img-eval-search-comparison-akka-delegation-future]: graphics/eval-search-comparison-akka-delegation-future.[pdf,png] "Image about eval-search-comparison-akka-delegation-future" { width:60%; vertical-align:middle; padding-bottom:1em; }
+[img-eval-search-comparison-akka-delegation-future]: graphics/eval-search-comparison-akka-delegation-future.[pdf,png] "Image about eval-search-comparison-akka-delegation-future" { width:8cm; vertical-align:middle; padding-bottom:1em; }
 
 We see, neither request/async. response style shows a considerable performance advantage. Recall that the future and delegation strategies are also applicable for database interaction and IO. The results of Figure [#fig-eval-search-comparison-akka-delegation-future] suggest that each strategy is also equally efficient for database interaction. Therefore, we assume that the actor implementation does not suffer from a negative impact because it has to use the Spring Data JPA library for database access in these benchmark experiments.
 

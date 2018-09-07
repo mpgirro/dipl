@@ -97,11 +97,8 @@ Bibl {
 }
 -->
 
-
-.abbrv-table    { list-style-type:none; margin-left:0; paddding-left:0; tex-env: "itemize[leftmargin=*]"}
-.abbrv-table-li { margin-bottom:0.1ex; }
-.abbrv-item     { font-family: sans-serif; font-weight: bold; width:15ex; }
-
+.acronym       { font-family: sans-serif; font-weight: bold; width:15ex; }
+.acronym-table { list-style-type:none; margin-left:0; paddding-left:0; tex-env: "itemize[leftmargin=*]"}
 
 <!-- change some fonts used in latex, my personal preference -->
 @if tex {
@@ -226,8 +223,6 @@ CSS Header      :
   .toc>h1 {
     text-align: start;
   }
-  /*
-  */
   .h1, .h2, .h3, .h4, .h5, .h6,
   .title {
     font-family: "Computer Modern Sans" !important;
@@ -235,10 +230,10 @@ CSS Header      :
   dt {
     font-family: "Computer Modern Sans" !important;
   }
-  .abbrv-item { 
+  .acronym-item { 
     font-family: "Computer Modern Sans" !important;
   }
-  .abbrv-table {
+  .acronym-table {
     -webkit-padding-start: 0;
   }
   .madoko .footnotes code {
@@ -412,7 +407,7 @@ Maximilian Irro
 An RSS 2.0 [@Win03] feed is an XML document. The feed's top level element is the `<rss>` tag. A feed becomes an Atom [@RFC4287] if the `<rss>` element additionally has the XML namespace `xmlns:atom="http://www.w3.org/2005/Atom"`. The `<channel>` encloses the metadata entries of the feed (`<title>`, `link`, `<description>`, etc.) as well as a set of `<item>` elements. Each item has it's own set of metadata elements (`<title>`, `pubDate`, `<description>`, `<guid>`, etc.). The most important element of each item of a podcast feed is the `<enclosure>`, which provides the URL to the media file. Some feeds of the domain also apply additional XML namespaces to provide a wider range of metadata. Two prominent examples of such namespaces we also support in Echo's parsers are:
 
 * `xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"` for metadata used in the iTunes Podcast Directory [@iTunesDirectory].
-* `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark information in the Simple Chapters [@PotloveSimpleChapters] format.
+* `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark metadata information in the Simple Chapters [@PotloveSimpleChapters] format.
 
 Below is a complete example of an RSS 2.0 feed. It provides some few metadata elements. The feed merely has a single `<item>` element. In general, a feeds has several items. All metadata in this example is text of the so-called *Lorem ipsum*, a well-known placeholder text snippet [^fn-lorem-ipsum]. The text is not intended to transport any meaning. Instead, the text is used to demonstrate a text structure or visual form in the design and publishing industries. Hence, the Lorem ipsum is also suitable to illustrate the RSS feed structure, without providing actual meaningful content.
 
@@ -456,43 +451,43 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 
 # Acronyms and Abbreviations { - }
 
-* [AMQP]{.abbrv-item} Advanced Message Queue Protocol
-* [AO]{.abbrv-item} Active Object
-* [API]{.abbrv-item} Application Programming Interface
-* [DTO]{.abbrv-item} Data Transfer Object
-* [FIFO]{.abbrv-item} First In First Out
-* [fJAR]{.abbrv-item} fat JAR
-* [HTTP]{.abbrv-item} Hypertext Transfer Protocol 
-* [IPC]{.abbrv-item} Inter-Process Communication
-* [IO]{.abbrv-item} Input/Output
-* [IoC]{.abbrv-item} Inversion of Control
-* [IR]{.abbrv-item} Information Retrieval
-* [JAR]{.abbrv-item} Java Archive
-* [JSON]{.abbrv-item} JavaScript Object Notation
-* [JVM]{.abbrv-item} Java Virtual Machine
-* [LB]{.abbrv-item} Load Balancing
-<!--* [MPS]{.abbrv-item} Messages per Second [(in Verwendung?)]{.red}-->
-* [MS]{.abbrv-item} Microservice
-* [MSA]{.abbrv-item} Microservice Architecture
-* [OOP]{.abbrv-item} Object-oriented Programming
-* [OS]{.abbrv-item} Operating System
-* [PID]{.abbrv-item} Process Identifier
-* [REST]{.abbrv-item} Representational State Transfer
-* [RPC]{.abbrv-item} Remote Procedure Call
-* [RSS]{.abbrv-item} Rich Site Summary
-* [sJAR]{.abbrv-item} skinny JAR
-* [SOA]{.abbrv-item} Service-oriented Architecture
-<!--* [SoC]{.abbrv-item} Separation of Concerns-->
-* [SOC]{.abbrv-item} Service-oriented Computing
-* [SOP]{.abbrv-item} Service-oriented Programming
-* [SRP]{.abbrv-item} Single Responsibility Principle
-<!--* [ST]{.abbrv-item} Startup Time-->
-* [STM]{.abbrv-item} Software Transactional Memory
-<!--* [URI]{.abbrv-item} Uniform Resource Identifier-->
-* [URL]{.abbrv-item} Uniform Resource Locator
-* [VM]{.abbrv-item} Virtual Machine
-* [XML]{.abbrv-item} Extensible Markup Language
-{ .abbrv-table }
+* [AMQP]{.acronym}  Advanced Message Queue Protocol
+* [AO]{.acronym}    Active Object
+* [API]{.acronym}   Application Programming Interface
+* [DTO]{.acronym}   Data Transfer Object
+* [FIFO]{.acronym}  First In First Out
+* [fJAR]{.acronym}  fat JAR
+* [HTTP]{.acronym}  Hypertext Transfer Protocol 
+* [IPC]{.acronym}   Inter-Process Communication
+* [IO]{.acronym}    Input/Output
+* [IoC]{.acronym}   Inversion of Control
+* [IR]{.acronym}    Information Retrieval
+* [JAR]{.acronym}   Java Archive
+* [JSON]{.acronym}  JavaScript Object Notation
+* [JVM]{.acronym}   Java Virtual Machine
+* [LB]{.acronym}    Load Balancing
+<!--* [MPS]{.acronym} Messages per Second [(in Verwendung?)]{.red}-->
+* [MS]{.acronym}    Microservice
+* [MSA]{.acronym}   Microservice Architecture
+* [OOP]{.acronym}   Object-oriented Programming
+* [OS]{.acronym}    Operating System
+* [PID]{.acronym}   Process Identifier
+* [REST]{.acronym}  Representational State Transfer
+* [RPC]{.acronym}   Remote Procedure Call
+* [RSS]{.acronym}   Rich Site Summary
+* [sJAR]{.acronym}  skinny JAR
+* [SOA]{.acronym}   Service-oriented Architecture
+<!--* [SoC]{.acronym} Separation of Concerns-->
+* [SOC]{.acronym}   Service-oriented Computing
+* [SOP]{.acronym}   Service-oriented Programming
+* [SRP]{.acronym}   Single Responsibility Principle
+<!--* [ST]{.acronym} Startup Time-->
+* [STM]{.acronym}   Software Transactional Memory
+<!--* [URI]{.acronym} Uniform Resource Identifier-->
+* [URL]{.acronym}   Uniform Resource Locator
+* [VM]{.acronym}    Virtual Machine
+* [XML]{.acronym}   Extensible Markup Language
+{ .acronym-table }
 
 
 [BIB]

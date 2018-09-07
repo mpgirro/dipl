@@ -76,7 +76,7 @@ Task units ending in *\*Store* are stateful, all others stateless. The component
 ![img-task-units]
 ~
 
-[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.5cm; vertical-align:middle; padding-bottom:1em; margin-top:0; padding-top:0;}
+[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.5cm; vertical-align:middle; padding-bottom:1em; padding-top:0; margin-top:0; }
 
 When we discuss dataflow examples in due course, we use the following shorthand notation for arbitrary components `X` and `Y`, that will be substituted with the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`). `X` &rarr; `Y` is expressing `X` sending a message to `Y` (push), while `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` which in turn replies with a response (synchronous call, RPC).
 
@@ -109,7 +109,7 @@ Feeds get either processed when they are initially indexed, or updated to check 
 ![img-indexing-pipeline]
 ~
 
-[img-indexing-pipeline]: graphics/pipeline-indexation.[svg,png] "Image about indexing pipeline" { height:3.2cm; vertical-align:middle; padding-bottom:1em; }
+[img-indexing-pipeline]: graphics/pipeline-indexation.[svg,png] "Image about indexing pipeline" { height:3.2cm; vertical-align:middle; padding-top:1em; padding-bottom:1em; }
 
 
 #### Retrieval Pipeline
@@ -125,4 +125,4 @@ The IndexStore propagates the found results back via the Searcher (`I` &rarr; `S
 ![img-retrieval-pipeline]
 ~
 
-[img-retrieval-pipeline]: graphics/pipeline-retrieval.[svg,png] "Image about retrieval pipeline" { height:1.3cm; vertical-align:middle; padding-bottom:1em; }
+[img-retrieval-pipeline]: graphics/pipeline-retrieval.[svg,png] "Image about retrieval pipeline" { height:1.3cm; vertical-align:middle; padding-top:1em; padding-bottom:1em; }
