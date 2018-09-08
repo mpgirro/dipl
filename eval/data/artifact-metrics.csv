@@ -2,9 +2,9 @@ artifact;loc;sjar;fjar;startup
 Akka monolith;4487;1004.3;76775.1;5.5
 CatalogStore (MS);1838;56.1;89225.8;14.6
 IndexStore (MS);724;23.8;83518.2;8.8
-Searcher (MS);656;22.2;81754.4;8.0
-Web Crawler (MS);716;23.5;83517.9;9.0
-Parser (MS);703;24.2;83519.1;8.3
-Registry (MS);334;9.9;90699.7;9.5
-Gateway (MS);889;30.5;83655.1;0.0
-Updater (MS);693;23.9;83518.3;8.8
+Searcher (MS);656;22.2;81754.4;8.1
+Web Crawler (MS);716;23.5;83517.9;9.2
+Parser (MS);703;24.2;83519.1;8.6
+Registry (MS);334;9.9;90699.7;9.4
+Gateway (MS);889;30.5;83655.1;9.7
+Updater (MS);693;23.9;83518.3;8.7
