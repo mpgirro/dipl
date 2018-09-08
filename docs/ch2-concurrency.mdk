@@ -26,7 +26,7 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
 * Synchronization
   : Although ordering in concurrent execution is merely partial, communication still requires some order constraints. An action must be performed before its effect can be detected. *Synchronization* refers to mechanisms used to ensure such constraints [@And83;@Mey97]. *Semaphores*, *locks* and *transactional memory* are prominent examples. They are mostly discussed regarding the shared state scenario, as the communication requires state to be modified by the sender before it gets read by the receiver. Also, only one task can modify state at a time to avoid unexpected behavior due to low-level data races. The modification or evaluation of shared state occurs within a *critical section*. Synchronization mechanisms realize *mutual exclusion* where no task can access the shared state while another is within its critical section [@Ben90;@Sco06].
 
-  : Message passing on the other hand provides an implicit form of synchronization. Each message intrinsically has to be written and sent before it can be received. As a result, the order is constraint by design [@And83]. Synchronous passing additionally constraints the sender from resuming computation until the message has been answered.  
+  : Message passing on the other hand provides an implicit form of synchronization. Each message intrinsically has to be written and sent before it can be received. As a result, the order is constraint by design [@And83]. Synchronous passing additionally constraints the sender from resuming computation until the message has been answered.
 
   : There are two kinds of synchronization mechanisms. *Enforced primitives* guarantee no access to the state outside the primitive, thus ensuring order. *Unenforced primitives* 8grant a certain degree of freedom in their usage and therefore provide no guarantee of mutual exclusion, as do e.g.\ semaphores [@Fel90]. 
 
@@ -46,7 +46,7 @@ The argument suggests that parallel tasks are also distributed tasks in a certai
 
 Due to this physical separation, distributed tasks are executed on different locations (host machines). We will also refer to these hosts as *nodes* [@Ben90]. A single node can have one or more processors on which one or more tasks are executed concurrently. 
 
-As a result, we make three fundamental overvations about the interrelations of concurrency, parallelism, and distribution:
+As a result, we make three fundamental observations about the interrelations of concurrency, parallelism, and distribution:
 
 1. Concurrent systems can be parallel and distributed.
 2. Parallel and distributed systems are inherently concurrent.
@@ -82,7 +82,7 @@ We've found the role of *deadlocks* (blocking operations which for some reason d
 ## Programming Abstractions {#sec-concurrency-programming-abstractions}
 
 
-Most programs are concurrent in some way. An example of *implicit concurrency* is *input/output* (IO), where devices are triggered to perform operations simultanious to the executing program [@Bus90]. Also, compilers and interpreters can exploit the concurrency inherent to a language's constructs. On the other hand, *explicit concurrency* has to be indicated. We require appropriate programming abstractions. In general, concurrency abstractions are desired to be powerful and expressive models, fit harmoniously into the programming language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
+Most programs are concurrent in some way. An example of *implicit concurrency* is *input/output* (IO), where devices are triggered to perform operations simultaneous to the executing program [@Bus90]. Also, compilers and interpreters can exploit the concurrency inherent to a language's constructs. On the other hand, *explicit concurrency* has to be indicated. We require appropriate programming abstractions. In general, concurrency abstractions are desired to be powerful and expressive models, fit harmoniously into the programming language in terms of their interface, and exploit the underlying hardware resources efficiently [@Shi97]. 
 
 
 ### Language-Construct Approach {#sec-concurrency-language-level}
@@ -191,4 +191,4 @@ Fallacies 4.\ and 6.\ are outside the scope of this thesis, but the remaining as
 
 [^fn-8th-fallacy]: Fallacy 8.\ was not part of Deutsch's original proposal, but later added by Gosling. Hence, the literature sometimes refers to merely seven fallacies. 
 
-Distribution conceived concurrency is affected by the Fallacies in general. Network programming interfaces are depending on the used network mechanism. A very basic example is the concept of *sockets* that Unix introduced. The standard interface of sockets provides a means to write data that will be sent through the network. Alternatively, we can use a socket toread received data from the network [@Tan07;@Bac03]. Sockets are provided by practically every operating system and bindings exist for almost all programming languages. Therefore, sockets are a technology heterogenous mechanism, although rather low-level (transport layer). More high-level is for example HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), a generic, originally stateless and text-based communication protocol providing platform-neutral data transfer on the application-level [@Cou05].
+Distribution conceived concurrency is affected by the Fallacies in general. Network programming interfaces are depending on the used network mechanism. A very basic example is the concept of *sockets* that Unix introduced. The standard interface of sockets provides a means to write data that will be sent through the network. Alternatively, we can use a socket to read received data from the network [@Tan07;@Bac03]. Sockets are provided by practically every operating system and bindings exist for almost all programming languages. Therefore, sockets are a technology heterogenous mechanism, although rather low-level (transport layer). More high-level is for example HTTP (__H__yper__t__ext __T__ransfer __P__rotocol), a generic, originally stateless and text-based communication protocol providing platform-neutral data transfer on the application-level [@Cou05].
