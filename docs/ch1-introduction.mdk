@@ -17,6 +17,13 @@ In this thesis, we merit attention to two approaches to concurrent programming. 
 
 Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and the microservice model. This work is aiming to fill this gap, with a focus on the concurrent programming aspects regarding these concepts. Specifically, we ask the following research questions:
 
+- __RQ1__: *Why do actors and microservices qualify for programming concurrency?*
+* __RQ2__: *How do the actor and microservice model facilitate concurrent execution?*
+* __RQ3__: *What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?*
+* __RQ4__: *How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?*
+{ list-style-type:none }
+
+<!--
 > __RQ1__: Why do actors and microservices qualify for programming concurrency?
 
 > __RQ2__: How do the actor and microservice model facilitate concurrent execution?
@@ -24,6 +31,7 @@ Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature e
 > __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
 
 > __RQ4__: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+-->
 
 
 ## Methodological Approach

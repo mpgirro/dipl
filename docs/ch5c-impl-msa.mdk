@@ -176,7 +176,7 @@ Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for c
 
 + Different communication styles require different communication channels. REST is for synchronous and AMQP for asynchronous messages.
 + Microservices are free to serve the same functionality on different communication interfaces and technologies at the same time. 
-+ Microservices always serialize and exchange data in a technology neutral format (JSON). This omits data type compatibility issues.
++ Microservices always serialize and exchange data in a technology neutral format (e.g.\ JSON or XML). This prevents data type compatibility issues.
 + Location transparency is not intrinsically available in MSAs. Network communication coupled with discovery technology adds this feature.
 + Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
