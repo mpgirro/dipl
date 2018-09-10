@@ -289,7 +289,7 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~ End HtmlOnly
 
 ~ todo
-Ich danke meiner Kaffeemaschine, Petzi Bär und der Guiness Brauerei
+Ich danke meiner Kaffeemaschine, dem Petzi Bär und der Guiness Brauerei.
 ~
 
 <!--
@@ -339,6 +339,7 @@ Applikationen benötigen häufig eine simultane Bearbeitung mehrere Aufgaben. *N
 ~~
 ~ 
 
+<!--
 # Preface / Authors Note { -; toc:clear; }
 
 Back in early 2016, I came across a comment thread discussion[^fn-hackernews] on the famouse "HackerNews" board (*news.ycombinator.com*) where someone eventually claimed:
@@ -370,7 +371,7 @@ Maximilian Irro
 [^fn-hackernews]: <https://news.ycombinator.com/item?id=8665690>
 [^fn-xkcd]: <https://xkcd.com/285/>
 [^fn-qcon]: <https://www.infoq.com/news/2017/03/distributed-programming-qcon>
-
+-->
 
 ~ TexOnly
 [TOC]

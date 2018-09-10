@@ -29,13 +29,13 @@ The design of search engine architectures is generally led by two basic requirem
 * Efficiency
   : Factors like the response time and the throughput determine the *efficiency* of a search engine. These factors are highly affected by the concurrent processing capabilities of the system.
 
-The optimization of effectiveness is not within the scope of this thesis. We therefore merely apply a basic scoring method provided by the utilized information retrieval library for determining search results. Our sole goal is to increase the efficiency of the system by leveraging concurrent programming techniques.
+The optimization of effectiveness is not within the scope of this thesis. We merely apply a basic scoring method of the utilized information retrieval library. Our sole goal is to increase the efficiency of the system by leveraging concurrent programming techniques.
 
 
 ### Domain Description
 
 
-We build our domain specific search engine for the *podcast* domain. On the one hand, the term is used to refer to an episodic series of digital media. The media is usually audio, more seldomly video.  On the other hand, "podcast" can also refer to the distribution mechanism. The distribution builds upon XML (E__x__tensible __M__arkup __L__anguage) web feeds. RSS 2.0 [@Win03] (__R__ich __S__ite __S__ummary) or Atom [@RFC4287] are the established syndication formats. Since RSS 2.0 has always been the more dominantly used format, we keep referring to simply *RSS feeds* from here on. Both formats gained popularity in the 2000s as an effective, decentralized mechanism to publish the updates to a website's content. Podcasts build upon the same principle. Yet they utilize an otherwise optional field for items of an RSS feed, the `<enclosure>` tag. This tag provides an URL (__U__niform __R__esource __L__ocator) to the media file. Subscribers to the feed can download the file behind the URL and listen/watch to the media, usually through a specialized software application. The `<enclosure>` is therefore the main content of each item in a podcast RSS feed. Additionally, there are other fields within the feed. Some of these fields contain human readable information about the linked media file, so-called *metadata* [@Pat06]. Appendix [#ch-benchmark-feed] gives an example XML feed structure with dummy metadata.
+We build our domain specific search engine for the *podcast* domain. On the one hand, the term refers to the content, that is an episodic series of digital media. The media is usually audio, more seldomly video.  On the other hand, "podcast" can also refer to the distribution mechanism. The distribution builds upon XML (E__x__tensible __M__arkup __L__anguage) web feeds. RSS 2.0 [@Win03] (__R__ich __S__ite __S__ummary) or Atom [@RFC4287] are the established syndication formats. Since RSS 2.0 has always been the more dominantly used format, we keep referring to simply *RSS feeds* from here on. Both formats gained popularity in the 2000s as an effective, decentralized mechanism to publish the updates to a website's content. Podcasts build upon the same principle. Yet they utilize an otherwise optional field for items of an RSS feed, the `<enclosure>` tag. This tag provides an URL (__U__niform __R__esource __L__ocator) to the media file. Subscribers to the feed can download the file behind the URL and listen/watch to the media, usually through a specialized software application. The `<enclosure>` is therefore the main content of each item in a podcast RSS feed. Additionally, there are other fields within the feed. Some of these fields contain human readable information about the linked media file, so-called *metadata* [@Pat06]. Appendix [#ch-benchmark-feed] gives an example XML feed structure with dummy metadata.
 
 Our search engine is designed to regularly analyze RSS feeds for podcasts. The metadata allows us to add information for every media file to the search index. Although we do not analyze the media itself, we can still provide search functionality based on the metadata information. The domain is very suitable for concurrent processing, since the RSS feeds are decentralized. Every podcast content creator is publishing a separate feed. There is no interrelation between feeds. We can process each feed separately and therefore concurrently.
 
@@ -76,7 +76,7 @@ Task units ending in *\*Store* are stateful, all others stateless. The complete 
 ![img-task-units]
 ~
 
-[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.5cm; vertical-align:middle; padding-bottom:1em; padding-top:0; margin-top:0; }
+[img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.2cm; vertical-align:middle; padding-bottom:1em; padding-top:0; margin-top:0; }
 
 When give some basic dataflow examples in due course. We use the following shorthand notation for arbitrary components `X` and `Y`, where `X` and `Y` get substituted by the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`). `X` &rarr; `Y` expresses `X` sending a message to `Y` (push). `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` with a direct response (synchronous remote procedure call, RPC).
 
@@ -107,7 +107,7 @@ We process feeds either when they are new to us (initial indexing), or to check 
 ![img-indexing-pipeline]
 ~
 
-[img-indexing-pipeline]: graphics/pipeline-indexing.[svg,png] "Image about indexing pipeline" { height:3.2cm; vertical-align:middle; padding-top:1em; padding-bottom:1em; }
+[img-indexing-pipeline]: graphics/pipeline-indexing.[svg,png] "Image about indexing pipeline" { height:3.1cm; vertical-align:middle; padding-top:1em; padding-bottom:1em; }
 
 
 #### Retrieval Pipeline

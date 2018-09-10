@@ -37,7 +37,7 @@ Therefore we must design our own dataset collection. In general, we are faced wi
 
 All evaluation results are measured on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6. The components with persistent states are deployed with an H2 [@Mue04] database engine version 1.4.196 (in-memory persistence mode) and Lucene version 7.2 respectively.
 
-All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. Indexing experiments are started on empty catalog/index. Retrieval experiments are started on a filled index. Crawlers load the benchmark feeds from the local file system, and are therefore not subject to network induced latencies. 
+All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. The indexing experiments start on empty catalog/index. The retrieval experiments start on a filled index. Crawlers load the benchmark feeds from the local file system, and are therefore not subject to network induced latencies. 
 
 To eliminate a threat to the validity of the benchmark (discussed in Section [#sec-threats-to-validity] below), the CatalogStores of each system implementation use the Spring Data JPA library for database interaction. Usually, Spring Data JPA expects a Spring IoC container to handle concurrent connections and transaction management. To be able to handle concurrent database interaction directly via actors, the Akka implementation uses Spring Data JPA without an IoC container. The respective CatalogStore therefore has to manage transactions manually.
 
@@ -69,7 +69,7 @@ In Section [#sec-conception-concurrent-execution] we've discussed the issue of f
 
 
 ~ Figure { #fig-eval-index-mem; \
-           caption: "Memory consumption of the executable artifact's VMs in the indexing phase"; \
+           caption: "Memory consumption of the executable artifact VMs in the indexing phase"; \
            width:100%; page-align:here; }
 ![img-eval-index-mem]
 ~
@@ -83,7 +83,7 @@ In Section [#sec-conception-concurrent-execution] we've discussed the issue of f
 Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to assess the retrieval subsystem's performance. It clearly indicates that the request/asynchronous response style of Akka actors is superior to the synchronous REST-based communication of the microservices. Since the Akka implementation processes heavy loads of requests considerably faster, this subsystem is more available and thus has better liveness. The figure also describes the load scalability behavior of the retrieval subsystems. Both implementations scale uniformly as desired. Again, we can trace this result back to the fact that the implementations leverage the available system resources of the single multicore host well (vertical scalability). However, the microservice variant shows considerably lower overall efficiency. Section [#sec-scalability-modularity] gave the synchronous nature of RPC as a major factor limiting the scalability of an MSA. Our benchmark results support this claim. The request/asynchronous response style of Akka is clearly more efficient than REST-based communication.
 
 ~ Figure { #fig-eval-search-rtt-overall; \
-           caption: "Benchmark results for the overall processing time of the Retrieval subsystem"; \
+           caption: "Benchmark results of the overall processing time for the retrieval subsystem"; \
            width:100%; page-align:here; }
 ![img-eval-search-rtt-overall]
 ~
@@ -94,7 +94,7 @@ Figure [#fig-eval-search-rtt-overall] shows the results of the experiment to ass
 In Section [#sec-actor-communication-abstractions] we've actually discussed two different variants to model request/asynchronous response communication with Akka. One variant is based on futures, the other on custom child actors and delegation. The author expected that the delegation approach would show better performance, since a future always stresses the thread-pool, while the actor runtime must only schedule a delegation child once the response is available in the mailbox. The Akka result in Figure [#fig-eval-search-rtt-overall] therefore shows the delegation performance. To evaluate the future- and delegation-based modelling of (semi-)synchronous communication, we've conducted the retrieval experiment also with futures. Figure [#fig-eval-search-comparison-akka-delegation-future] illustrates the future results in contrast to the delegation results.
 
 ~ Figure { #fig-eval-search-comparison-akka-delegation-future; \
-           caption: "Comparison of the benchmark reasults of the retrieval subsystem using either delegation or futures for request/response communication in the Akka-based implementation"; \
+           caption: "Comparison of the benchmark reasults for the retrieval subsystem using either delegation or futures for request/response communication in the Akka-based implementation"; \
            width:100%; page-align:here; }
 ![img-eval-search-comparison-akka-delegation-future]
 ~
@@ -107,13 +107,13 @@ We see, neither request/async. response style shows a considerable performance a
 ### Relevance of the Benchmark
 
 
-To the authors knowledge, there exists no benchmark comparing Akka actors and Spring-based microservices yet. We were only able to find one project on GitHub [^fn-msa-framework-benchmark] which benchmarks popular microservices frameworks. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks merely serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario. [Their results show a 3.18 times faster average latency and 2.98 times more throughput.]{.red}
+To the authors knowledge, there exists no benchmark comparing Akka actors and Spring-based microservices yet. We were only able to find one project on GitHub [^fn-msa-framework-benchmark] which benchmarks popular microservices frameworks. The benchmark results include Spring Boot with the Undertow webserver and Akka HTTP. The used experiment setup is rather simple. The frameworks merely serve "*Hello World!*" on a REST interface as the workload, which does not resemble a real world workload scenario.
 
 [^fn-msa-framework-benchmark]: <https://github.com/networknt/microservices-framework-benchmark>
 
-Especially a lack of different interaction modes in microservice architecture benchmarks has been reported [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion. Our experiences do not reflect any problems from the asynchronous style. In contrast, we've found that the synchronous style is considerably less performant than the asynchronous style.
+The literature reports especially a lack of different interaction modes in microservice architecture benchmarks [@Zho18]. Most available benchmarks merely focus on one interaction mode, while MSA-related problems have been found to originate from asynchronous and mixed communication setups. Echo's subsystems engage this circumstance, since the indexing subsystem is modeled in an asynchronous fashion, and the retrieval subsystem in a synchronous fashion. Our experiences do not reflect problems with the asynchronous style. In contrast, we've found that the synchronous style is considerably less performant than the asynchronous style.
 
-Interestingly, Bonér, the creator of Akka, advocates in his recent works [@Bon16;@Bon17] for what he calls *reactive microservices*. Essentially, a reactive microservice is a service that orients itself on the actor principles, especially asynchronous messaging and the lack of global consistency (cf. eventual consistency). Bonér argues that reactive microservices are more performant than tightly-coupled synchronous services facilitating global consistency (e.g.\ via a transactions mechanism). However, he provides no benchmark results to back his claim. The subsystems of our microservice implementation reflect a reactive microservice style (Indexing pipeline) and a more "traditional" synchronous style (Retrieval pipeline). The Akka implementation provides the reference to a purely reactive (asynchronous) system. Our benchmark results support Bonér's argumentation that the reactive style is more performant.
+Interestingly, Bonér, the creator of Akka, advocates in his recent works [@Bon16;@Bon17] for what he calls *reactive microservices*. Essentially, a reactive microservice is a service that orients itself on the actor principles, especially asynchronous messaging and the lack of global consistency (cf. eventual consistency). Bonér argues that reactive microservices are more performant than tightly-coupled synchronous services facilitating global consistency (e.g.\ via a transactions mechanism). However, he provides no benchmark results to back his claim. The subsystems of our microservice implementation reflect a reactive microservice style (indexing pipeline) and a more "traditional" synchronous style (retrieval pipeline). The Akka implementation provides the reference to a purely reactive (asynchronous) system. Our benchmark results support Bonér's argumentation that the reactive style is more performant.
 
 
 ### Threats to Validity {#sec-threats-to-validity}
