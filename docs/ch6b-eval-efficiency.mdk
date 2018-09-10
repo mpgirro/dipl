@@ -2,7 +2,7 @@
 ## Benchmark and Efficiency {#sec-eval-efficiency}
 
 
-We've compared the expressiveness and conceptual capabilities of actors and microservices, and demonstrated that both can meet similar concerns. Now we are interested in the efficiency we can leverage from each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. 
+We've compared the expressiveness and conceptual capabilities of actors and microservices, and demonstrated that both are able to meet similar concerns. Now we are interested in the efficiency we can leverage from each programming model. The Echo system implementations provide us with the foundation for a benchmark of the two models. 
 
 
 ### Performance Metrics
