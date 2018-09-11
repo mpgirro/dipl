@@ -15,7 +15,7 @@ In this thesis, we merit attention to two approaches to concurrent programming. 
 ## Problem Statement
 
 
-Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and the microservice model. This work is aiming to fill this gap, with a focus on the concurrent programming aspects regarding these concepts. Specifically, we ask the following research questions:
+Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature emphasizing the connections of the actor model and the microservice model. This work aims to fill this gap, with a focus on the concurrent programming aspects regarding these concepts. Specifically, we ask the following research questions:
 
 <!--
 - __RQ1__: *Why do actors and microservices qualify for programming concurrency?*
@@ -27,21 +27,21 @@ Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature e
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ1__         | Why do actors and microservices qualify for programming concurrency?       |
-{}
+{ }
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ2__         | How do the actor and the microservice model facilitate concurrent execution?   |
-{}
+{ }
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ3__         | What are the expressive capabilities of actors and microservices regarding |
 |                 | concurrent programming concerns?                                           |
-{}
+{ }
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ4__         | How does the performance of actors and microservices compare in a multi-   |
 |                 | core environment relative to a concurrent system scenario?                 |
-{}
+{ }
 
 <!--
 > __RQ1__: Why do actors and microservices qualify for programming concurrency?
@@ -70,4 +70,4 @@ We conducted our research using the following methodological steps:
 ## Structure of the Thesis
 
 
-The following thesis is ordered as follows: Chapter [#ch-concurrency] discusses *concurrency* in general with a focus on the concerns relevant for our subsequent discussion. Chapter [#ch-actor-model] introduces the *actor model of computation*  and subsequently Chapter [#ch-microservice-paradigm] the *microservice architecture style*. Chapter [#ch-implementation] concerns programming with actors and microservices, where Section [#sec-scenario] describes a scenario system we implement, Section [#ch-actor-impl] the implementation strategies with actors, and Section [#ch-microservice-impl] the implementation strategies with microservices. Chapter [#ch-evaluation] evaluates both programming models based on the implementations. Chapter [#ch-conclusion] gives a conclusive view.
+The thesis is ordered as follows: Chapter [#ch-concurrency] discusses *concurrency* in general with a focus on the concerns relevant for our subsequent discussion. Chapter [#ch-actor-model] introduces the *actor model of computation*  and subsequently Chapter [#ch-microservice-paradigm] the *microservice architecture style*. Chapter [#ch-implementation] concerns programming with actors and microservices, where Section [#sec-scenario] describes a scenario system we implement, Section [#ch-actor-impl] the implementation strategies with actors, and Section [#ch-microservice-impl] the implementation strategies with microservices. Chapter [#ch-evaluation] evaluates both programming models based on the implementations. Chapter [#ch-conclusion] gives a conclusive view.

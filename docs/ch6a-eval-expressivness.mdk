@@ -98,14 +98,14 @@ We've identified various forms of information flows offered by channel concepts 
 
 ~ Begin Center
 ~ Begin TableFigure { #tab-communication-styles-overview; caption: "Communication Styles";}
-|------------------|------------------------|-------------------------|
-|                  | One-to-One             | One-to-Many             |
-+------------------+------------------------+-------------------------+
-| **Synchronous**  | Request/response       | &mdash;                 |
-| -----------------|------------------------|-------------------------|
-| **Asynchronous** | Notification           | Publish/subscribe       |
-|                  | Request/async. response | Publish/async. responses |
-|------------------|------------------------|-------------------------|
+|------------------|--------------------------|---------------------------|
+|                  | One-to-One               | One-to-Many               |
++------------------+--------------------------+---------------------------+
+| **Synchronous**  | Request/response         | &mdash;                   |
+| -----------------|--------------------------|---------------------------|
+| **Asynchronous** | Notification             | Publish/subscribe         |
+|                  | Request/async.\ response | Publish/async.\ responses |
+|------------------|--------------------------|---------------------------|
 {  }
 ~ End TableFigure
 ~ End Center
@@ -399,7 +399,7 @@ Table [#tab-artifact-metrics] gives the metrics for our Echo artifact implementa
 |-------------------|------|-----------| ----------| --------------|
 | Artifact          | LoC  | sJAR (KB) | fJAR (KB) | Startup (sec) |
 +-------------------+-----:+----------:+----------:+--------------:+
-| Akka monolith     | 4487 | 1004.3    | 76 775.1  | 5.5           |
+| Akka backend      | 4487 | 1004.3    | 76 775.1  | 5.5           |
 | ------------------|------|-----------|-----------|---------------|
 | CatalogStore (MS) | 1838 | 56.1      | 89 225.8  | 14.6          |
 | ------------------|------|-----------|-----------|---------------|
