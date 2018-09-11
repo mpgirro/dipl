@@ -123,7 +123,7 @@ One-to-many communication is neither inherent as a primitive to actors nor micro
 One important realization is the difference in messaging interfaces. While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`, and `RoutingLogic`{language:scala}s) across all language bindings, the microservice model does not enforce any kind of interface. REST, AMQP and Kafka all have different interfaces. Since all Echo services are based on Spring, at least we express the interaction with each communication mechanism in the same way within each service. But the microservice paradigm is also open for arbitrary technology stacks, and every stack provides its own interface for each mechanism.   
 
 ~ Begin Center
-~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication style expressions in Akka and a Spring-based MSA"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication styles and their implementation constructs as we express them Akka and a Spring-based MSA"; page-align:here; width:100%}
 |-------------------------|---------------------------------------------|---------------------------|
 | Communication Style     | Akka                                        | Spring MSA                |
 +-------------------------+---------------------------------------------+---------------------------+
@@ -246,7 +246,7 @@ In general, we deem the concerns related to dynamic reconfiguration more easily 
 Table [#tab-scalability-compatibility-matrix] summarizes the capabilities for each scalability variant provided through Akka and Spring.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants of Akka actors and Spring-based microservices"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants and their support by Akka actors and Spring-based microservices"; page-align:here; width:100%}
 |------------------------|-----------------------------------|---------------------------------|
 | Scalability Form       | Akka                              | Spring MSA                      |
 +------------------------+-----------------------------------+---------------------------------+
