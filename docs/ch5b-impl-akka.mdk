@@ -2,7 +2,7 @@
 ## Actor-based Implementation {#ch-actor-impl}
 
 
-This section covers the strategies we apply when programming with the actor model. We implement the backend of the concurrent system we outlined in Section [#sec-scenario]. All discussed concepts are with respect to the specific actor variant we use. The focus is on the linguistic support provided by the actor library. Efficiency considerations are part of Chapter [#ch-evaluation].
+This section covers the strategies we apply when we porgram with the actor model. We implement the backend of the concurrent system we outlined in Section [#sec-scenario]. All discussed concepts are with respect to the specific actor variant we use. The focus is on the linguistic support provided by the actor library. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 It is important to realize that although there is *the* conceptual actor model, there are numerous system implementations available through various forms of interfaces, either integrated into the programming language or as a library [@Kos16]. These systems are all based on the theoretical model, but may choose to compromise some of the semantic properties in order to increase efficiency [@Kar09]. Such considerations are relevant when evaluating linguistic support.
 
@@ -335,7 +335,7 @@ We can overcome the single-threaded limitation when we utilize a non-blocking AP
 An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
 ~ Figure { #fig-persistence-actor; \
-           caption: "The store actor shares its persistence state with several child actors, to whoom the store delegates all database interaction operations"; \
+           caption: "The store actor shares its persistent state with several child actors, to whom the store delegates all database interaction operations"; \
            width:100%; page-align:here; }
 ![img-persistence-actor]
 ~
