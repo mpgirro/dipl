@@ -1,5 +1,5 @@
 artefact;threads;input_size;cpu;mem
-Akka monolith;16;1000;0.7789;154
+Akka backend;16;1000;0.7789;154
 CatalogStore (MS);16;1000;0.2807;163
 Web Crawler (MS);16;1000;0.0711;131
 IndexStore (MS);16;1000;0.1374;135
