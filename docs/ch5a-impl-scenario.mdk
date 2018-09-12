@@ -85,7 +85,7 @@ The system shown by Figure [#fig-task-units] merely forms the concurrent indexin
 Since our scientific focus is on the concurrent programming aspect and not the information retrieval aspect, we want to implement the domain specific logic only once. Therefore, we provide each backend with a common *Core* library written in Java. The Core offers most domain-specific functionality, so that each backend codebase can focus on the concurrent execution and interaction. For example, the actual searching is done through a specialized data structure, the reverse index. We use Lucene [@ApacheLucene] to create this structure. Lucene offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is done using ROME [@ROME], enriched by an extension we wrote to support additional *Simple Chapter* [@PotloveSimpleChapters] metadata information.
 
 
-### Subsystem Processing Pipelines {#sec-subsystem-pipelines}
+### Processing Pipelines {#sec-subsystem-pipelines}
 
 
 In this section, we give a brief outline of the data processing pipelines which make up the two subsystems. The processing pipelines are the result of the composition of the architecture components.
