@@ -51,8 +51,8 @@
         <text variable="container-title" form="short" font-style="italic"/>
         <text variable="volume" suffix=","/>
         <group>
-          <text variable="issue" suffix=" "/>
-          <date date-parts="year-month" form="text" variable="issued" prefix="(" suffix=")"/>
+          <text variable="issue"/>
+          <!--<date date-parts="year-month" form="text" variable="issued" prefix="(" suffix=")"/>-->
         </group>
       </group>
     </group>
@@ -74,6 +74,8 @@
     <group delimiter=", ">
       <text variable="publisher"/>
       <text variable="publisher-place"/>
+      <!--<text macro="isbn"/>-->
+      <text prefix=" ISBN&#160;" variable="ISBN"/>
     </group>
   </macro>
   <macro name="access">
@@ -81,13 +83,15 @@
       <if variable="DOI">
         <text variable="DOI" prefix="DOI:"/>
       </if>
+      <else-if variable="ISBN">
+        <text variable="ISBN" prefix="ISBN&#160;"/>
+      </else-if>
+      <else-if variable="ISSN">
+        <text variable="ISSN" prefix="ISSN&#160;"/>
+      </else-if>
       <else-if variable="URL">
         <group delimiter=" ">
-          <!--
-          <text term="retrieved" text-case="capitalize-first"/>
-          <date variable="accessed" form="text"/>
-          <text term="from"/>
-          -->
+          <text variable="note"/>
           <text variable="URL"/>
         </group>
       </else-if>
@@ -113,13 +117,14 @@
       <text variable="citation-number" prefix="[" suffix="]"/>
       <group delimiter=". " suffix=". ">
         <text macro="author"/>
-        <text macro="year"/>
         <text macro="title"/>
+        <text macro="year"/>
       </group>
       <group suffix=".">
         <choose>
-          <if type="bill book graphic legal_case legislation motion_picture report song thesis" match="any">
+          <if type="bill book graphic legal_case legislation motion_picture report song techreport thesis" match="any">
             <text macro="book-publisher" suffix="."/>
+            <text prefix=" ISBN&#160;" variable="ISBN"/>
           </if>
           <else-if type="paper-conference">
             <group suffix="." delimiter=", ">
@@ -164,6 +169,7 @@
               <group delimiter=", " suffix=".">
                 <text macro="book-publisher"/>
                 <text variable="page"/>
+                <text prefix=" ISBN&#160;" variable="ISBN"/>
               </group>
             </group>
           </else-if>
