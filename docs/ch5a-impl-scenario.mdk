@@ -45,7 +45,7 @@ Our search engine is designed to regularly analyze RSS feeds for podcasts. The m
 
 At the core, the basic architecture and the components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy", as well as more modern interpretations of associated design principles given in [@Cou05] and [@Ped06].  
 
-The two high-level subsystems we've given above, indexing and retrieval, are internally composed of several smaller components. We specify that each of these components has to be a concurrent task units of the programming model, i.e.\ an actor or a microservice. The respective units are:  
+The two high-level subsystems we've given above, indexing and retrieval, are internally composed of several smaller components. We specify that each of these components has to be a concurrent task unit of the programming model, i.e.\ an actor or a microservice. The respective units are:  
 
 * CatalogStore (C)
   : holds a catalog of all metadata information we gather about podcasts, their feeds and episodes. The Store persists this information in a relational database.
@@ -57,7 +57,7 @@ The two high-level subsystems we've given above, indexing and retrieval, are int
   : acquires the information that the search engine stores by downloading data from URLs. These URLs relate to feed files.
 
 * Parser (P)
-  : transforms the XML data into internal representation formats. This extracted data is what we take into account when running search queries and subsequently display in the Web application.
+  : transforms the XML data into internal representation formats. This extracted data is what we consider when running search queries and subsequently display in the Web application.
 
 * Searcher (S)
   : performs the search operations. This component applies some basic query pre-processing and delegate the retrieval of relevant documents to the IndexStore with its inverted index. The Searcher communicates the results from the IndexStore back to the Gateway.
@@ -98,7 +98,7 @@ Note that Figure [#fig-task-units] shows an interaction between the Gateway and 
 
 We process feeds either when they are new to us (initial indexing), or to check for new episodes (update). Hence, there are two cases when the indexing pipeline gets triggered. Either we add a new feed, or the Updater determines that a feed requires a check for new episodes. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the update candidates to the Web Crawler. The Crawler retrieves the XML data of the feed via HTTP. Then the Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML into domain objects. The Parser forwards all metadata objects to the CatalogStore. The database of the Store persists the complete metadata. The Catalog also sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, which adds the data to the Lucene reverse index data structure. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
 
-[^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore we do not include it in the search index. 
+[^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore, the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore we do not include it in the search index. 
 
 
 ~ Figure { #fig-indexing-pipeline; \

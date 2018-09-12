@@ -410,7 +410,7 @@ An RSS 2.0 [@Win03] feed is an XML document. The feed's top level element is the
 * `xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"` for metadata used in the iTunes Podcast Directory [@iTunesDirectory].
 * `xmlns:psc="http://podlove.org/simple-chapters/"` for chaptermark metadata information in the Simple Chapters [@PotloveSimpleChapters] format.
 
-Below is a complete example of an RSS 2.0 feed. It provides some few metadata elements. The feed merely has a single `<item>` element. In general, a feeds has several items. All metadata in this example is text of the so-called *Lorem ipsum* [^fn-lorem-ipsum], a well-known placeholder text snippet. The text is not intended to transport any meaning. Instead, the design and publishing industries use the text to demonstrate a text structure or visual form. Hence, the Lorem ipsum is also suitable to illustrate the RSS feed structure, without providing actual meaningful content.
+Below is a complete example of an RSS 2.0 feed. It provides some few metadata elements. The feed merely has a single `<item>` element. In general, a feed has several items. All metadata in this example is text of the so-called *Lorem ipsum* [^fn-lorem-ipsum], a well-known placeholder text snippet. The text is not intended to transport any meaning. Instead, the design and publishing industries use the text to demonstrate a text structure or visual form. Hence, the Lorem ipsum is also suitable to illustrate the RSS feed structure, without providing actual meaningful content.
 
 [^fn-lorem-ipsum]: <https://lipsum.com>
 

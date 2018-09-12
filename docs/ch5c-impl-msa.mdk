@@ -2,7 +2,7 @@
 ## Microservice-based Implementation {#ch-microservice-impl}
 
 
-This section covers the strategies we apply when we porgram with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All discussed concepts are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
+This section covers the strategies we apply when we program with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All discussed concepts are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 
 ### Service Technology Stack
@@ -33,7 +33,7 @@ As we did with the actor implementation, in subsequent sections we pay attention
 ### Internal Service Concurrency {#sec-internal-service-concurrency}
 
 
-The microservice model paradigm does not dictate restrictions on the internal service structure. A service is free to apply concurrency internally, and to utilize every concurrency mechanism it sees fit (including actors). We build the Echo services ontop the Spring framework and utilize the concurrent programming structure that Spring's IoC container provides. Spring-based microservices receive requests as method calls to beans (we discuss the concrete communication mechanism in Section [#sec-ms-communication-mechanisms] below). The respective bean classes have a so-called *stereotype annotation*[^fn-spring-stereotype] decoration (e.g.\ `@Component`, `@Controller`, etc.). The IoC container turns each of these method calls into a so-called *task* by wrapping the call into a `Runnable`{language:java}. Ever task gets appended to a task queue. We've already demonstrated how to wrap method calls into a `Runnable`{language:java} in the Java concurrency case study of Chapter [#ch-concurrency]. Spring's `TaskExecutor`{language:java} constantly processes the task queue. An `Executor`{language:java} is Java's variant of a thread-pool. An allocated thread of the thread-pool eventually executes eacch task [@SpringDoc].
+The microservice model paradigm does not dictate restrictions on the internal service structure. A service is free to apply concurrency internally, and to utilize every concurrency mechanism it sees fit (including actors). We build the Echo services on top the Spring framework and utilize the concurrent programming structure that Spring's IoC container provides. Spring-based microservices receive requests as method calls to beans (we discuss the concrete communication mechanism in Section [#sec-ms-communication-mechanisms] below). The respective bean classes have a so-called *stereotype annotation*[^fn-spring-stereotype] decoration (e.g.\ `@Component`, `@Controller`, etc.). The IoC container turns each of these method calls into a so-called *task* by wrapping the call into a `Runnable`{language:java}. Ever task gets appended to a task queue. We've already demonstrated how to wrap method calls into a `Runnable`{language:java} in the Java concurrency case study of Chapter [#ch-concurrency]. Spring's `TaskExecutor`{language:java} constantly processes the task queue. An `Executor`{language:java} is Java's variant of a thread-pool. An allocated thread of the thread-pool eventually executes eacch task [@SpringDoc].
 
 [^fn-spring-stereotype]: Stereotypes in Spring describe certain patterns for beans. We can therefore expect special behaviors of stereotype-annotated beans.
 
@@ -50,7 +50,7 @@ Although Spring's declarative programming style for concurrency is very powerful
 [Main findings]{.findings-title}
 
 + The IoC container builds on Java's standard concurrency constructs (threads), but exposes a completely different programming interface (implicit concurrency, STM, `@Async`).
-+ We can leverage a declarative programming style even in an imperative programming languages to simplify the handling of concurrency issues.
++ We can leverage a declarative programming style even in an imperative programming language to simplify the handling of concurrency issues.
 {.findings-list}
 ~
 
@@ -62,7 +62,7 @@ The incarnation of a microservice is by definition a system level process. The i
 
 We can persist information with many different strategies. Database systems are one well established approach. If we share a database between several microservices, every service gets access to all other component's persistent state. Shared databases are a simple way to skip isolation mechanisms and bypass the service interfaces, thus breaking the encapsulation principle. Therefore, one convention of the microservice principles is that each service owns its databases exclusively [@Dra17a]. Sharing a persistence mechanism conceptually relates to sharing state, which introduces an implicit form of shared state communication [@Cou05]. As a consequence, we must provide each component with a very own database instance if we require persistence. We deploy every CatalogStore instance with a dedicated database instance, and every IndexStore has a separate Lucene reverse index data structure. 
 
-Persistence is a form of IO and a potentially performance limiting factor. Hence, database management systems usually support concurrent access to the database . As with actors, concurrent connections increase the throughput of the component. The *Spring Data* module offers us a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
+Persistence is a form of IO and a potentially performance limiting factor. Hence, database management systems usually support concurrent access to the database. As with actors, concurrent connections increase the throughput of the component. The *Spring Data* module offers us a good interface as well as a transparent abstraction to interact with the database in a concurrent way [@Wal07]. 
 
 ~ Figure { #fig-persistence-microservice; \
            caption: "Example of a microservice maintaining several concurrent connections to an exclusive database"; \
@@ -128,7 +128,7 @@ public class IndexResource {
 }
 ```
 
-This approach models a remote procedure call between the two components. The call `query("TU Wien")`{language:java} of the `IndexClient`{language:java} in the Searcher results in a call of `query(String)`{language:java} method with argument `"TU Wien"`{language:java} of the IndexStore's `IndexResource`{language:java}. The service's programmer invoces the method on the client-side. Then, the receiver's inversion of control container registers the request on the transparently exposed REST interface and calls the method on the server-side. We can express message queue interaction in a similar fashion through respective AMQP stereotype annotations. The resulting beans interact then via RabbitMQ. While the above REST example declares a synchronous API, the AMQP annotations declare asynchronous APIs. An interface method call on the client-side returns before the server-side receives and processes the message.
+This approach models a remote procedure call between the two components. The call `query("TU Wien")`{language:java} of the `IndexClient`{language:java} in the Searcher results in a call of `query(String)`{language:java} method with argument `"TU Wien"`{language:java} of the IndexStore's `IndexResource`{language:java}. The service's programmer invokes the method on the client-side. Then, the receiver's inversion of control container registers the request on the transparently exposed REST interface and calls the method on the server-side. We can express message queue interaction in a similar fashion through respective AMQP stereotype annotations. The resulting beans interact then via RabbitMQ. While the above REST example declares a synchronous API, the AMQP annotations declare asynchronous APIs. An interface method call on the client-side returns before the server-side receives and processes the message.
 
 
 #### Service Discovery
@@ -144,7 +144,7 @@ The `name` argument of the `@FeignClient` annotation in the REST example we gave
 Discovery mechanisms impact the response times of services. It can become necessary to lookup an address before a service is able to make a request. The service must then make additional RPCs for registry lookups, in the worst case for each of the involved services. Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Subsequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
 ~ Figure { #fig-service-discovery; \
-           caption: "Example of service discovery usage in the retrieval phase. The consecutive lookups deplay the overall synchronous communications"; \
+           caption: "Example of service discovery usage in the retrieval phase. The consecutive lookups delay the overall synchronous communications"; \
            width:100%; page-align:here; }
 ![img-service-discovery]
 ~
