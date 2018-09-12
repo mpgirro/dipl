@@ -25,9 +25,7 @@ Many different approaches to concurrency exist. Regardless of the chosen notion,
 
 * Synchronization
   : Although concurrent execution has merely a partial ordering, communication still requires some order constraints. We must perform an action before we can detect its effect. *Synchronization* refers to mechanisms we use to ensure such constraints [@And83;@Mey97]. *Semaphores*, *locks* and *transactional memory* are prominent examples. The literature mostly discusses synchronization techniques regarding the shared state scenario, since the communication requires state modification by the sender before the receiver is allowed to read the information. Also, only one task can modify state at a time to avoid unexpected behavior due to low-level data races. The modification or evaluation of shared state occurs within a *critical section*. Synchronization mechanisms realize *mutual exclusion* where no task can access the shared state while another is within its critical section [@Ben90;@Sco06].
-
   : Message passing on the other hand provides an implicit form of synchronization. Intrinsically, a message must be sent before it can be received. As a result, the semantics of message passing constrains the order by design [@And83]. Synchronous passing additionally constraints the sender from resuming its computation until it receives an answer.
-
   : There are two kinds of synchronization mechanisms. *Enforced primitives* guarantee no access to the state outside the primitive, thus ensuring order. *Unenforced primitives* grant a certain degree of freedom in their usage and therefore provide no guarantee of mutual exclusion, as do e.g.\ semaphores [@Fel90]. 
 
 
