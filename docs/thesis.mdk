@@ -276,14 +276,14 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 &pagebreak;
 
 
-<!-- TeX -->
+<!-- DANKSAGUNG
 ~ Begin TexOnly
 ~ Begin TexRaw
 \begin{danksagung*}
 ~ End TexRaw
 ~ End TexOnly
 
-<!-- HTML -->
+
 ~ Begin HtmlOnly
 # Danksagung { -; toc:clear }
 ~ End HtmlOnly
@@ -292,18 +292,24 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 Ich danke meiner Kaffeemaschine, dem Petzi Bär und der Guiness Brauerei.
 ~
 
-<!--
+
 Es gilt einigen wenigen meinen Dank auszusprechen:
 
 * Meinen Eltern und meiner Schwester, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
 * Meinem Betreuer, Franz Puntigam, für die guten Ratschläge durch die diese Arbeit entstanden ist.
 * Theresa und Alex, für ihr Durchhaltevermögen beim Korrekturlesen.
--->
 
-<!-- TeX -->
+
+
 ~ Begin TexOnly
 ~ Begin TexRaw
 \end{danksagung*}
+~ End TexRaw
+~ End TexOnly
+-->
+
+~ Begin TexOnly
+~ Begin TexRaw
 \begin{abstract}
 ~ End TexRaw
 ~ End TexOnly

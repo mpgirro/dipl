@@ -71,7 +71,7 @@ The two high-level subsystems we've given above, indexing and retrieval, are int
 Task units ending in *\*Store* are stateful, all others stateless. The complete search engine architecture is the composition of all these components according to the interaction model shown in Figure [#fig-task-units].
 
 ~ Figure { #fig-task-units; \
-           caption: "Task unit interaction model of the Echo search engine"; \
+           caption: "Complete interaction model of the task units in the Echo search engine"; \
            width:100%; page-align:here; }
 ![img-task-units]
 ~

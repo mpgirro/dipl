@@ -142,7 +142,7 @@ The actor model is solely built on the concept of *asynchronous* message passing
 Akka provides a primitive to introduce synchronous information flow. In addition to the asynchronous `tell [!]` command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. We use `ask` to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value, respectively the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` is free to either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
 ~ Figure { #fig-pipeline-search-future; \
-           caption: "Example message flow of a future-based synchronous call"; \
+           caption: "Example flow of a future-based synchronous call in the retrieval"; \
            width:100%; page-align:here; }
 ![img-pipeline-search-future]
 ~
@@ -195,7 +195,7 @@ In the retrieval subsystem, the actual information flow turns from the concept d
 [^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
 
 ~ Begin Figure { #fig-pipeline-search-delegation; \
-                 caption: "Example message flow of a delegation-based synchronous call"; \
+                 caption: "Example flow of a delegation-based synchronous call in the retrieval"; \
                  width:100%; page-align:here; }
 ![img-pipeline-search-delegation]
 ~ End Figure
@@ -288,6 +288,8 @@ A supervisor's failure notification has the sole form of an exception. The actor
 
 We must frequently send a message not to one actor specifically, but to distribute the message among a set of equivalent instances. Akka provides an appropriate concept called *routers*:
 
+&pagebreak;
+
 ```{language:scala}
 val router: Router = {
     val routees = Seq(parser1, parser2, parser3)
@@ -335,7 +337,7 @@ We can overcome the single-threaded limitation when we utilize a non-blocking AP
 An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
 ~ Figure { #fig-persistence-actor; \
-           caption: "Example of a store actor sharing its persistent state with several child actors, to whom the store delegates all database interaction operations"; \
+           caption: "Example of a store actor sharing its persistent state with several child actors: The stores delegates all database interactions to the child actors"; \
            width:100%; page-align:here; }
 ![img-persistence-actor]
 ~

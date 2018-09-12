@@ -122,6 +122,8 @@ The active object method signatures do not only define communication with a cert
 * Now Type
   : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replies with the result. This behavior is equal to a method call (with a return value) on passive objects.
 
+&pagebreak;
+
 * Future Type
   : The sender's thread of control immediately returns with a reference to the result that will be available at some point in the future. The actual result becomes available once the receiving object has processed the message and replies with a result.
 
@@ -157,7 +159,7 @@ There is a long tradition of combining actors with futures. Agha describes that 
 ### Software Transactional Memory
 
 
-The asynchronous messaging style of actors becomes a burden when we need some sort of consensus between several actors. The model does not provide an adequate mechanism to abstract operations involving multiple messages [@Sub11]. We need an additional high-level model on top of the messages.
+The asynchronous messaging style of actors becomes a burden when we need some sort of consensus between several actors. The model does not provide an adequate mechanism to abstract operations involving several messages [@Sub11]. We need an additional high-level model on top of the messages.
 
 The *transaction* is a well-known concept to provide a single-threaded appearance to the access of state or memory that is concurrently accessible. A transaction encapsulates a computation that does not have to be atomic by itself (e.g.\ code block). The effects of the computation still logically appear to happen within a single instant in time [@Les09]. Therefore, all memory modifications done inside the transaction become atomic from the outside perspective. If a transaction becomes invalid, the transaction roles back all state modifications across the entire code segments involved in the transaction. Write collisions are one reason for transactions to become invalid. Upon a collision, the transaction cannot guarantee the isolation anymore [@Sub11]. *Software transactional memory* (STM) refers to transactional semantics realized in software[^fn-hardware-transaction]. In the scope of this thesis, STM is the only considered transaction mechanism.
 

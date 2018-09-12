@@ -62,7 +62,10 @@ Microservices have an inherent advantage regardless of the chosen programming mo
 These two notions, high cohesion and low coupling, allow us to reason about the *independence* of task units. Independence is one of the primary concepts of the microservice paradigm. The literature describes independence as a direct consequence of high cohesion and low coupling [@Dra17a;@Dra17b;@Dra17c;@Sha17b]. We deem the strong process-based form of independence superior to the notion provided by the actor construct. Actors are passive tasks which react to messages. An actor can only perform actions when the runtime executes the actor. Microservices can show active behavior on their own.
 
 
-~ Begin TableFigure { #tab-comparison-encapsulation; caption: "Comparison of encapsulation-related matters in Akka and a Spring-based MSA"; page-align:here}
+~ Begin Center
+~ Begin TableFigure { #tab-comparison-encapsulation; \
+                      caption: "Comparison of encapsulation-related matters in Akka and a Spring-based MSA"; \
+                      page-align:here; }
 
 |----------------|------------------------------------|------------------------------|
 | Characteristic | Akka                               | Spring MSA                   |
@@ -87,6 +90,7 @@ These two notions, high cohesion and low coupling, allow us to reason about the 
 | ---------------|------------------------------------|------------------------------|
 
 ~ End TableFigure
+~ End Center
 
 
 ### Communication and Message Routing
@@ -97,7 +101,10 @@ According to the general concerns of concurrent computation, tasks without mutab
 We've identified various forms of information flows offered by channel concepts throughout the literature [@Cou05;@Mon14;@Gui09;@Spe90;@Roe15;@Agh99;@Tan07;@Bac03]. Generally, the flows can be distinguished alongside two dimensions: number of recipients and response coupling. Authors declare varying taxonomies for the resulting combinations. Table [#tab-communication-styles-overview] provides an overview of the terminology we use in the remainder of this work. Subsequently, Table [#tab-communication-styles-comparison] summarizes the communication capabilities of Akka actors and Spring-based microservices regarding these communication styles at the end of this section.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-communication-styles-overview; caption: "Communication Styles";}
+~ Begin TableFigure { #tab-communication-styles-overview; \
+                      caption: "Communication Styles"; \
+                      page-align:here;}
+
 |------------------|--------------------------|---------------------------|
 |                  | One-to-One               | One-to-Many               |
 +------------------+--------------------------+---------------------------+
@@ -106,7 +113,7 @@ We've identified various forms of information flows offered by channel concepts 
 | **Asynchronous** | Notification             | Publish/subscribe         |
 |                  | Request/async.\ response | Publish/async.\ responses |
 |------------------|--------------------------|---------------------------|
-{  }
+
 ~ End TableFigure
 ~ End Center
 
@@ -114,7 +121,7 @@ Asynchronous one-to-one messaging is inherent to the actor model. The message-se
 
 We can model synchronous one-to-one messaging on top of the actor messaging primitive. Every synchronous communication can be expressed using asynchronous constructs in general, and vice versa [@Agh97]. Akka provides linguistic support for request/response messaging through the `ask [?]` method of `ActorRef`{language:scala}. Microservices utilize network mechanism dedicated to the synchronous interaction pattern. In the service context, REST is the most prominent example. 
 
-One-to-many communication is neither inherent as a primitive to actors nor microservices, and therefore requires additional effort. Conceptually, we model the communication style by sending a message to each intended recipient in a notification fashion (message broker). Akka has message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. Echo implements the routing logic inside a separate actor. In Echo's MSA, the RabbitMQ service does not suffice for one-to-many message distribution. AMQP only supports what the JMS terminology calls *queue* semantic (one-to-one), but not the JMS *topics* (one-to-many). We must employ another messaging technology. *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming system with very lightweight message constructs.
+One-to-many communication is neither inherent as a primitive to actors nor microservices, and therefore requires additional effort. Conceptually, we model the communication style by sending a message to each intended recipient in a notification fashion (message broker). Akka has message broker capability in their message router constructs through the respective `BroadcastRoutingLogic`{language:scala}. Echo implements the routing logic inside a separate actor. In Echo's MSA, the RabbitMQ service does not suffice for one-to-many message distribution. AMQP only supports what the JMS terminology calls *queue* semantics (one-to-one), but not the JMS *topics* (one-to-many). We must employ another messaging technology. *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming system with very lightweight message constructs.
 
 <!--
 , and therefore appropriate for the microservice paradigm. 
@@ -123,7 +130,10 @@ One-to-many communication is neither inherent as a primitive to actors nor micro
 One important realization is the difference in messaging interfaces. While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`, and `RoutingLogic`{language:scala}s) across all language bindings, the microservice model does not enforce any kind of interface. REST, AMQP and Kafka all have different interfaces. Since all Echo services are based on Spring, at least we express the interaction with each communication mechanism in the same way within each service. But the microservice paradigm is also open for arbitrary technology stacks, and every stack provides its own interface for each mechanism.   
 
 ~ Begin Center
-~ Begin TableFigure { #tab-communication-styles-comparison; caption: "Comparison of communication styles and their implementation constructs as we express them Akka and a Spring-based MSA"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-communication-styles-comparison; \
+                      caption: "Comparison of communication styles and their implementation constructs as we express them Akka and a Spring-based MSA"; \
+                      page-align:here; }
+
 |-------------------------|---------------------------------------------|---------------------------|
 | Communication Style     | Akka                                        | Spring MSA                |
 +-------------------------+---------------------------------------------+---------------------------+
@@ -143,7 +153,7 @@ One important realization is the difference in messaging interfaces. While Akka 
 | Publish/async responses | for request, responses with                 | broker, responses through |
 |                         | `tell` method of `ActorRef`{language:scala} | message queue             |
 | ------------------------|---------------------------------------------|---------------------------|
-{ width:100%  }
+
 ~ End TableFigure
 ~ End Center
 
@@ -190,7 +200,10 @@ On the other hand, scheduling is a nonconcern for microservices. Every MSA is a 
 Table [#tab-fundamental-concurrency-issues] gives an overview of how actors and microservices meet fundamental issues of concurrent programming.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-fundamental-concurrency-issues; caption: "Comparison of Akka actors and Spring-based microservices meeting fundamental issues of concurrent execution"; width:100%}
+~ Begin TableFigure { #tab-fundamental-concurrency-issues; \
+                      caption: "Comparison of Akka actors and Spring-based microservices meeting fundamental issues of concurrent execution"; \
+                      page-align:here; }
+
 |-----------------|--------------------------------|---------------------------------|
 | Issue           | Akka                           | Spring MSA                      |
 +-----------------+--------------------------------+---------------------------------+
@@ -206,8 +219,8 @@ Table [#tab-fundamental-concurrency-issues] gives an overview of how actors and 
 |                 | threaded semantics internally  | required internally             |
 | ----------------|--------------------------------|---------------------------------|
 | Progress        | Guaranteed by runtime          | Expected from operating system  |
-| ----------------|--------------------------------|---------------------------------|
-{ width:100%  }                               
+| ----------------|--------------------------------|---------------------------------|   
+
 ~ End TableFigure
 ~ End Center
 
@@ -246,7 +259,10 @@ In general, we deem the concerns related to dynamic reconfiguration more easily 
 Table [#tab-scalability-compatibility-matrix] summarizes the capabilities for each scalability variant provided through Akka and Spring.
 
 ~ Begin Center
-~ Begin TableFigure { #tab-scalability-compatibility-matrix; caption: "Capability matrix of scalability variants and their support by Akka actors and Spring-based microservices"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-scalability-compatibility-matrix; \
+                      caption: "Capability matrix of scalability variants and their support by Akka actors and Spring-based microservices"; \
+                      page-align:here; }
+
 |------------------------|-----------------------------------|---------------------------------|
 | Scalability Form       | Akka                              | Spring MSA                      |
 +------------------------+-----------------------------------+---------------------------------+
@@ -270,8 +286,8 @@ Table [#tab-scalability-compatibility-matrix] summarizes the capabilities for ea
 |                        | Requires resource control         | Requires appropriate cloud      |
 | Elasticity             | of cluster (see [@Moa17]), not    | management framework,           |
 |                        | supported by Echo                 | not supported by Echo           |
-| -----------------------|-----------------------------------|---------------------------------|
-{ width:100% }                               
+| -----------------------|-----------------------------------|---------------------------------|  
+
 ~ End TableFigure
 ~ End Center
 
@@ -293,19 +309,21 @@ Another interesting concern is the technology limitations regarding the concepti
 Echo facilitates Java and the Spring framework for all microservice components. However, we could have also written every service with a different technology stack. Even now, we can replace existing services by new versions using new technologies.  
 
 
-
 ~ Begin Center
-~ Begin TableFigure { #tab-modularity; caption: "Comparison of modularity capabilities of Akka actors and Spring-based microservices"; page-align:here; width:100%}
+~ Begin TableFigure { #tab-modularity; \
+                      caption: "Comparison of modularity capabilities of Akka actors and Spring-based microservices"; \
+                      page-align:here; }
+
 |-------------------------|-----------------------------------|----------------------------------|
 | Characteristic          | Akka                              | Spring MSA                       |
 +-------------------------+-----------------------------------+----------------------------------+
-| Extensibility           | static (phased restarts)          | dynamic                          |
+| Extensibility           | Static (phased restarts)          | Dynamic                          |
 | ------------------------|-----------------------------------|----------------------------------|
 | Technological           | Compatible to the Akka interface  | Open for arbitrary technology    |
 | Diversity               | (JVM technologies), no compatible | stacks due to open interfaces    |
 |                         | runtimes available today          | and communication channels       |
-| ------------------------|-----------------------------------|----------------------------------|
-{ width:100% }                               
+| ------------------------|-----------------------------------|----------------------------------|   
+
 ~ End TableFigure
 ~ End Center
 
@@ -396,6 +414,7 @@ Table [#tab-artifact-metrics] gives the metrics for our Echo artifact implementa
 ~ Begin TableFigure { #tab-artifact-metrics; \
                      caption: "Lines of code, byte code sizes, and startup times of software artifacts"; \
                      page-align:here }
+
 |-------------------|------|-----------| ----------| --------------|
 | Artifact          | LoC  | sJAR (KB) | fJAR (KB) | Startup (sec) |
 +-------------------+-----:+----------:+----------:+--------------:+
@@ -421,7 +440,7 @@ Table [#tab-artifact-metrics] gives the metrics for our Echo artifact implementa
 | ------------------|------|-----------| ----------|---------------|
 | Web (frontend)    | 3144 | &mdash;   | &mdash;   | &mdash;       |
 | ------------------|------|-----------| ----------|---------------|
-{  }
+
 ~ End TableFigure
 ~ End Center
 
