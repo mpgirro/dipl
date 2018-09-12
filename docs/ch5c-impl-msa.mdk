@@ -141,8 +141,6 @@ Message queues decouple the sender from the receiver. Therefore, the sender neit
 
 The `name` argument of the `@FeignClient` annotation in the REST example we gave before relates to the name we use to register the IndexStore unit. The advantage of Feign is that it automatically integrates with discovery mechanisms. Examples for service registry technologies are *Consul* [@HashicorpConsul], a standalone registry service solution, and *Eureka* [@NetflixEureka], a module of Spring Cloud to add registry capabilities to custom applications. Echo supports Consul, but uses a dedicated service based on Eureka by default. The author of this thesis experienced Consul as very resource demanding in comparison.
 
-Discovery mechanisms impact the response times of services. It can become necessary to lookup an address before a service is able to make a request. The service must then make additional RPCs for registry lookups, in the worst case for each of the involved services. Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Subsequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
-
 ~ Figure { #fig-service-discovery; \
            caption: "Example of service discovery usage in the retrieval phase: The consecutive lookups delay the overall synchronous communications"; \
            width:100%; page-align:here; }
@@ -150,6 +148,10 @@ Discovery mechanisms impact the response times of services. It can become necess
 ~
 
 [img-service-discovery]: graphics/discovery-1.[svg,png] "Image about service discovery" { height:3.2cm; vertical-align:middle; padding-bottom:1em; }
+
+Discovery mechanisms impact the response times of services. It can become necessary to lookup an address before a service is able to make a request. The service must then make additional RPCs for registry lookups, in the worst case for each of the involved services. Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Subsequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
+
+
 
 In contrast, message queues have the major benefit that a sender dispatches a message to the queue without needing the address of the receiver. This circumstance provides a lower degree of coupling as well as a notion of location transparency between sender and receiver. Therefore, when we use message queue channels, we do not need service discovery technology if we statically know the queue address. Otherwise, the queue needs to register with the discovery mechanism. The clients then simply retrieve the queue's address dynamically. 
 
@@ -159,7 +161,10 @@ In contrast, message queues have the major benefit that a sender dispatches a me
 
 The idea of distributing work (*load*) between several instances of the same task unit is called *load balancing* (LB). The goal is to optimally utilize the resources of all instances and prevent that a single unit is overloaded. Load balancing maximizes throughput and minimizes response time of the overall system [@Ben90]. There are two directions towards load balancing. A central supervising entity that distributes the work between receiving services is balancing load *server-side*. Spring Cloud offers *Zuul* [@NetflixZuul] to create balancing server. In contrast, a service that distributes the work itself is doing *client-side* balancing [@Cou05]. 
 
-Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for client-side load balancing. The main reason for Eureka over Consul as the Discovery service is that Ribbon integrates with Eureka. A Ribbon client does not dispatch a message directly to an address. Instead, Ribbon uses a static name to lookup the current address of a server from the discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument for the `@FeignClient` annotation of the declarative REST interface, since Ribbon integrates transparently into Feign. Figure [#fig-client-side-load-balancing] shows an example for a client-side load balancing interaction model in Echo. 
+Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for client-side load balancing. The main reason for Eureka over Consul as the Discovery service is that Ribbon integrates with Eureka. A Ribbon client does not dispatch a message directly to an address. Instead, Ribbon uses a static name to lookup the current address of a server from the discovery service. Ribbon can then balance individual requests directly on the client-side across server instances, as it cooperates with Eureka to maintain a set of valid instances of the respective static name [@Car17]. This name is in fact the `name` argument for the `@FeignClient` annotation of the declarative REST interface, since Ribbon integrates transparently into Feign. 
+
+<!--
+Figure [#fig-client-side-load-balancing] shows an example for a client-side load balancing interaction model in Echo. 
 
 ~ Begin Figure { #fig-client-side-load-balancing; \
                  caption: "Example for client-side load balancing: The Searcher distributes requests among several IndexStores. The Ribbon module inside the Searcher regularly fetches the addresses from the discovery service"; \
@@ -169,15 +174,14 @@ Echo's microservices use the Spring Cloud module *Ribbon* [@NetflixRibbon] for c
 ~ End Figure
 
 [img-client-side-load-balancing]: graphics/load-balancing-client-side.[svg,png] "Image about client-side load balancing" { height:4cm; vertical-align:middle; padding-bottom:1em; }
-
+-->
 
 ~ Findings
 [Main findings]{.findings-title}
 
-+ Different communication styles require different communication channels. REST is for synchronous and AMQP for asynchronous messages.
++ Different communication styles require different communication channels.
 + Microservices are free to serve the same functionality on different communication interfaces and technologies at the same time. 
 + Microservices always serialize and exchange data in a technology neutral format (e.g.\ JSON or XML). This prevents data type compatibility issues.
 + Location transparency is not intrinsically available in MSAs. Network communication coupled with discovery technology adds this feature.
-+ Centralized concerns (discovery, load balancing) require additional dedicated microservice units.
 {.findings-list}
 ~

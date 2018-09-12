@@ -457,9 +457,11 @@ The sum of skinny JAR sizes of all microservice codebases is 241.1 KB. This size
 The fat JAR sizes show the impact of the declarative programming style of Spring. The price for the relatively low LoC of each service (and subsequently the reduced effort to write many distinct programs) is that the compiler adds lots of dependencies into the fJAR executables. These dependencies come into play at runtime to realize the declared functionality. As a result, every microservice engine is larger (in bytecode size) and upon incarnation also considerably slower than the entire actor engine.
 
 
+<!--
 ~ todo
 Bar plot der fat JAR sizes und startup time, mit 2 Achsen. Falls ich das noch irgendwie hinkriegen sollte
 ~
+-->
 
 
 ~ Findings
