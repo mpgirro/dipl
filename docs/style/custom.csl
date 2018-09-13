@@ -82,10 +82,10 @@
         <text variable="DOI" prefix="DOI:"/>
       </if>
       <else-if variable="isbn">
-        <text variable="isbn" prefix="ISBN&#160;"/>
+        <text variable="isbn" prefix="ISBN "/>
       </else-if>
-      <else-if variable="ISSN">
-        <text variable="ISSN" prefix="ISSN&#160;"/>
+      <else-if variable="issn">
+        <text variable="issn" prefix="ISSN "/>
       </else-if>
       <else-if variable="URL">
         <group delimiter=" ">

@@ -2,7 +2,7 @@
 ## Microservice-based Implementation {#ch-microservice-impl}
 
 
-This section covers the strategies we apply when we program with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All discussed concepts are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
+This section covers the strategies we apply when we program with the microservice model. Again, we implement the backend of the concurrent system outlined in Section [#sec-scenario]. All concepts we discuss are with respect to a specific technology stack. The focus is on the linguistic support provided by the technology stack. Efficiency considerations are part of Chapter [#ch-evaluation].
 
 
 ### Service Technology Stack

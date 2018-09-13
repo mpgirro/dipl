@@ -99,9 +99,10 @@ class State {
 
 final State s = new State();
 final Runnable task = () -> {
+    final String name = Thread.currentThread().getName();
     synchronized(s) {
         s.x += 1;
-        out.println(Thread.currentThread().getName() + " " + s.x);
+        out.println(name + " " + s.x);
     }
 };
 

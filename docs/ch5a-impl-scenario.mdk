@@ -7,7 +7,7 @@ Every good work of software starts by scratching a developer's personal itch.
 ~
 
 
-In this chapter we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies we apply to implement this scenario using the actor model. Subsequently, Section [#ch-microservice-impl] describes the implementation of the scenario using the microservice model.
+In this chapter, we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies we apply to implement this scenario using the actor model. Subsequently, Section [#ch-microservice-impl] describes the implementation of the scenario using the microservice model.
 
 
 ## Concurrent System Scenario {#sec-scenario}
@@ -17,7 +17,7 @@ In this section, we outline a domain-specific search engine we call *Echo*[^fn-e
 
 [^fn-echo-name]: We chose the name "Echo" for its wonderful characteristics of providing a short package name and the analogy to *recalling spoken words*.
 
-Search engines are a composition of rather loosely coupled and independent subsystems [@Cou05]. Users interact with a search engine by submitting search requests in the form of so-called *queries*. The search engine then presents the user with respective results. This functionality however is merely the so-called retrieval phase performed by the *retrieval subsystem*. As the name indicates, this phase retrieves information. Subsequently, the information must have been collected and stored beforehand. A second so-called *indexing subsystem* is responsible of gathering the information and storing it in a form that is optimized for searching, the so-called *reverse index* [@Lil09;@Ped06]. The reverse index maps a *document-term* relationship -- where documents are arbitrary text collections -- into a *term-document* structure [@Man08]. 
+Search engines are a composition of rather loosely coupled and independent subsystems [@Cou05]. Users interact with a search engine by submitting search requests in the form of so-called *queries*. The search engine then presents respective results to the user. This functionality however is merely the so-called retrieval phase performed by the *retrieval subsystem*. As the name indicates, this phase retrieves information. Subsequently, the information must have been collected and stored beforehand. A second so-called *indexing subsystem* is responsible of gathering the information and storing it in a form that is optimized for searching, the so-called *reverse index* [@Lil09;@Ped06]. The reverse index maps a *document-term* relationship -- where documents are arbitrary text collections -- into a *term-document* structure [@Man08]. 
 
 Several factors contribute to the fact that search engine architectures are suitable for concurrent programming research. First, both subsystems are mostly independent. They merely make use of a common information index, where the indexing subsystem is exclusively adding information and the retrieval subsystem is exclusively reading the information. Hence, the subsystems are independent and can run concurrently. Second, since many kinds of search engines regard very large amounts of data, their construction was always led be the effort to leverage concurrency in order to improve their scalability. Especially the parallel and distributed computing research merits attention to search engines, for example to explore cluster architectures [@Ped06;@Man08]. Additionally, our specific domain we outline below is also very suitable for concurrent processing.
 
@@ -102,7 +102,7 @@ We process feeds either when they are new to us (initial indexing), or to check 
 
 
 ~ Figure { #fig-indexing-pipeline; \
-           caption: "The indexing pipeline: The Updater uses the CatalogStore's metadata to determine feed that require updating (`U` &rarr; `C` &rarr; `U`). The Crawler (`C`) loads the XML from the web, the Parser (`P`) transforms the feed data to domain objects. The CatalogStore persists the new data and forwards selected metadata to the IndexStore (`I`)"; \
+           caption: "The indexing pipeline: The Updater uses the CatalogStore's metadata to determine feeds that require updating (`U` &rarr; `C` &rarr; `U`). The Crawler (`C`) loads the XML from the web, the Parser (`P`) transforms the feed data to domain objects. The CatalogStore persists the new data and forwards selected metadata to the IndexStore (`I`)"; \
            width:100%; page-align:here; }
 ![img-indexing-pipeline]
 ~
