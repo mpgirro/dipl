@@ -29,13 +29,7 @@ Script            : style/mathjax-font.js
 Toc depth         : 3
 Cite All          : False
 Bibliography      : dipl
-<!--Bib Style         : plainnat-->
-<!--Bib style         : style/keynat.bst-->
 Csl Style         : style/custom.csl
-<!--Csl Style         : style/elsevier-with-titles.csl-->
-<!--Csl Style         : style/chinese-journal-of-aeronautics.csl -->
-<!--Csl Style         : style/elsevier-with-titles.csl-->
-<!--Csl Style         : style/association-for-computing-machinery.csl-->
 Name References   : Bibliography
 Name Figures      : List of Figures
 Name Tables       : List of Tables
@@ -423,7 +417,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 
 &pagebreak;
 
-```{language:xml}
+```{language:html}
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <rss>
   <channel>
@@ -459,7 +453,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 
 # Acronyms and Abbreviations { - }
 
-* [AMQP]{.acronym}  Advanced Message Queue Protocol
+* [AMQP]{.acronym}  Advanced Message Queuing Protocol
 * [AO]{.acronym}    Active Object
 * [API]{.acronym}   Application Programming Interface
 * [DTO]{.acronym}   Data Transfer Object

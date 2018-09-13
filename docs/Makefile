@@ -1,5 +1,5 @@
 
-# This uses Madoko (https://madoko.codeplex.com/)
+# This uses Madoko (https://github.com/koka-lang/madoko)
 proposal:
 	madoko --pdf proposal.mdk
 
@@ -9,10 +9,10 @@ thesis:
 references:
 	madoko --pdf references.mdk
 
-slides1:
+slides1: ensure-outdir
 	pdflatex -halt-on-error -output-directory out slides1.tex
 
-slides: slides1
+slides: ensure-outdir slides1
 
 poster: ensure-outdir
 	pdflatex -halt-on-error -output-directory out poster.tex
