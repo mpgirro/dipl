@@ -9,18 +9,18 @@ thesis:
 references:
 	madoko --pdf references.mdk
 
-journal:
-	madoko --pdf journal.mdk
-
-literature:
-	madoko notes-literature.mdk
-
 slides1:
 	pdflatex -halt-on-error -output-directory out slides1.tex
 
 slides: slides1
 
-all: proposal thesis references journal slides
+poster: ensure-outdir
+	pdflatex -halt-on-error -output-directory out poster.tex
+
+all: proposal thesis references slides poster
 
 clean:
 	rm -r out/
+
+ensure-outdir:
+	mkdir -p out
