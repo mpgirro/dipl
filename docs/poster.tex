@@ -28,8 +28,9 @@
 \usefolder{style}
 
 \usepackage{style/TUINFPST}
+\usepackage{ragged2e} % to specifiy justified text blocks
 
-\title[Software Engineering \& Internet Computing]{Concurrent Programming with\\Actors and Microservices}
+\title[Software Engineering \& Internet Computing]{Concurrent Programming with\\[.2\baselineskip]Actors and Microservices}
 % if you have a long title looking squeezed on the poster, just force
 % some distance:
 % \title[Computational Intelligence]{%
@@ -70,15 +71,13 @@
 
     %\rmfamily % roman font family
 
-    \vspace*{2\baselineskip}
-
     \begin{columns}[t]
       % ---------------------------------------------------------%
       % Set up a column
       \begin{column}{.45\textwidth}
         \textsf{\textbf{CONCURRENT COMPUTATION}} \\
         \vspace*{\baselineskip}
-        {\lmodern
+        {\lmodern\justify
           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
         }
       \end{column}
