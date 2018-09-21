@@ -25,7 +25,7 @@ Actors and microservices encapsulate their state exclusively and all their commu
 ### RQ2: How do the actor and the microservice model facilitate concurrent execution? { -; toc:clear }
 
 
-The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additionally sources of concurrency. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
+The execution modality of actors and microservices already introduces concurrency among the task units. Both models can also utilize additional sources of concurrency. The actor model has a long tradition of using futures, e.g.\ for (semi-)synchronous communication abstractions. In general, actors can be combined with every other concurrency model, as long as the combination does not introduce new safety or liveness issues. 
 
 Microservices are free to employ internal concurrency using every model available to their technology stack. Unlike actors, microservices are therefore not free of internal synchronization in general. Our scenario implementation leverages the implicit scheduling of requests on thread-pools through an inversion of control container. Software transactional memory controls the required synchronization. 
 

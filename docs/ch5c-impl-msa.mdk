@@ -37,7 +37,7 @@ The microservice model paradigm does not dictate restrictions on the internal se
 
 [^fn-spring-stereotype]: Stereotypes in Spring describe certain patterns for beans. Hence, we expect special behaviors of stereotype-annotated beans.
 
-Since microservices are concurrent internally, we have to pay attention to their shared internal resources. All shared resources must be either immutable like the messages in Akka, or we must synchronize the access to the resource. Spring uses software transactions for synchronization.   
+Since microservices are concurrent internally, we have to pay attention to their shared internal resources. All shared resources must be either immutable as the messages in Akka, or we must synchronize the access to the resource. Spring uses software transactions for synchronization.   
 
 Spring provides linguistic support in a *declarative programming* style for many strategies and mechanisms. This is particularly interesting since the declarative style is not intrinsic to Java's imperative programming concept. However, the language allows us to introduce declarative programming through *annotations*, so that the IoC container then applies appropriate behavior. In contrast to annotation processors, where the compiler reads annotations to influence the compilation process (e.g.\ to generate class implementations), Spring uses *reflection* at runtime. The result is a form of *aspect-oriented programming*. We leverage the declarative style for synchronization by defining software transactions on method calls using the `@Transactional` annotation. Spring also extends the STM to database transactions transparently [@SpringDoc;@Wal07].
 
@@ -49,8 +49,8 @@ Although Spring's declarative programming style for concurrency is very powerful
 ~ Findings
 [Main findings]{.findings-title}
 
-+ The IoC container builds on Java's standard concurrency constructs (threads), but exposes a completely different programming interface (implicit concurrency, STM, `@Async`).
-+ We can leverage a declarative programming style even in an imperative programming language to simplify the handling of concurrency issues.
++ The IoC container builds on Java's standard threads, but exposes a completely different programming interface (implicit concurrency, `@Async`, STM).
++ A declarative programming style can simplify the handling of concurrency issues in an imperative programming language.
 {.findings-list}
 ~
 
@@ -93,7 +93,7 @@ Communication in microservice architectures happens via inter-process communicat
 
 We've found scholars to give REST (__Re__presentational __S__tate __T__ransfer) as the prime (and often sole) example of valid communication channels throughout the literature. However, the author experienced that REST is practical only in certain situations. Since REST builds upon synchronous HTTP, it is a good solution for synchronous requirements. Echo facilitates REST for search requests through the Web application (`G` &rightleftarrows; `S` &rightleftarrows; `I`), as well as metadata retrieval from the CatalogStore (`G` &rightleftarrows; `D`). As even Fowler & Lewis [@Fow14] in their seminal work on microservices point out, other mechanisms are applicable as well, as long as they are lightweight and do not apply logic of their own. The indexing subsystem is more predestined for an asynchronous workflow. Therefore, we desire a message queue-like mechanism. JMS (__J__ava __M__essage __S__ervice) [@Cou05] is a prominent example among JVM technologies. However, JMS is also limited *to* the JVM, which contradicts the open and well-defined interface principle of microservices. 
 
-We require a technology heterogenous message queue standard. AMQP (__A__dvanced __M__essage __Q__ueuing __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. Therefore, different implementations exist which we can interchange freely. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that proved to integrate well into MSAs, according to the literature [@Dra17c]. A message queue conceptually introduces a new concurrent component into the architecture:
+We require a technology-heterogeneous message queue standard. AMQP (__A__dvanced __M__essage __Q__ueuing __P__rotocol) [@AMQP] is an open specification for asynchronous messaging. While JMS only defined the interfaces, AMQP also defines the message format. Therefore, different implementations exist which we can interchange freely. Echo builds upon *RabbitMQ* [@PivotalRabbitMQ], a messaging system that proved to integrate well into MSAs, according to the literature [@Dra17c]. A message queue conceptually introduces a new concurrent component into the architecture:
 
 * Message Queue (Q)
   : is a distributed point-to-point communication channel. The queue offers message delivery from a sender to a qualified receiver (possibly unknown to the sender), decoupled in time and space (asynchronous) [@Cou05]. 

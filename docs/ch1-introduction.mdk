@@ -9,7 +9,7 @@ I think the computer is the world's greatest toy. You can invent wonderful thing
 
 The physical world is a composition of simultaneous activities. Programmers experience nature as a concurrent environment. As such, the idea of simultaneous actions has not been absent from the immaterial world of computer programming. Numerous models to conceive concurrent execution have been proposed over the decades. Now that manycore machines are widespread and distribution is popular in the current trend of *cloud computing*, concurrent programming techniques have become essential. Many of the proposed models are therefore now heavily applied in practice.
 
-In this thesis, we merit attention to two approaches toward concurrent programming. The first approach is the so-called *actor model* [@Hew73], a decade-old model dedicated to express concurrency. The second approach is based on the *microservice paradigm* [@Fow14], originally an architectural style for software systems that adds concurrent execution implicitly. 
+In this thesis, we merit attention to two approaches toward concurrent programming. The first approach is the *actor model* [@Hew73], a decade-old model dedicated to express concurrency. The second approach is based on the *microservice paradigm* [@Fow14], originally an architectural style for software systems that adds concurrent execution implicitly. 
 
 
 ## Problem Statement
