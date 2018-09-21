@@ -108,8 +108,10 @@ blockquote   { font-style: italic; }
 .tocblock2   { margin-bottom:1em }
 .figureline  { display: none }
 
+<!--
 toc.toc-figures   { -; before: "# &name-figures;  { -; .heading-figures }&nl;" }
 toc.toc-tables    { -; before: "# &name-tables;   { -; .heading-tables }&nl;" }
+-->
 
 <!-- arbitrary helper classes, while work in progress -->
 .findings       { border: solid black 1px; padding:1rem }
@@ -227,6 +229,7 @@ CSS Header      :
   }
   .acronym-table {
     -webkit-padding-start: 0;
+    -moz-padding-start: 0;
   }
   .madoko .footnotes code {
     font-size: small !important;
@@ -243,8 +246,10 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 
 [TOC]
 
+<!--
 [TOC=figures]
 [TOC=tables]
+-->
 ~ End HtmlOnly
 
 
@@ -377,12 +382,6 @@ Maximilian Irro
 &pagebreak;
 
 ~ Begin TexRaw
-\cleardoublepage
-\listoffigures
-
-\cleardoublepage
-\listoftables
-
 % Switch to arabic numbering and start the enumeration of chapters in the table of content.
 \mainmatter
 ~ End TexRaw
@@ -456,6 +455,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [AMQP]{.acronym}  Advanced Message Queuing Protocol
 * [AO]{.acronym}    Active Object
 * [API]{.acronym}   Application Programming Interface
+* [CPU]{.acronym}   Central Processing Unit
 * [DTO]{.acronym}   Data Transfer Object
 * [FIFO]{.acronym}  First In First Out
 * [fJAR]{.acronym}  fat JAR
@@ -482,7 +482,7 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 <!--* [SoC]{.acronym} Separation of Concerns-->
 * [SOC]{.acronym}   Service-oriented Computing
 * [SOP]{.acronym}   Service-oriented Programming
-* [SRP]{.acronym}   Single Responsibility Principle
+<!--* [SRP]{.acronym}   Single Responsibility Principle-->
 <!--* [ST]{.acronym} Startup Time-->
 * [STM]{.acronym}   Software Transactional Memory
 <!--* [URI]{.acronym} Uniform Resource Identifier-->
@@ -490,6 +490,20 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [VM]{.acronym}    Virtual Machine
 * [XML]{.acronym}   Extensible Markup Language
 { .acronym-table }
+
+~ Begin TexOnly
+~ Begin TexRaw
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+~ End TexRaw
+~ End TexOnly
 
 
 [BIB]

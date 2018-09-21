@@ -123,7 +123,7 @@ The stereotype annotation `@FeignClient` is for REST clients. Feign automaticall
 public class IndexResource {
     @GetMapping("/query")
     public List<Result> query(@RequestParam("q") String q) {
-        // query index for phrase q
+        // query reverse index for phrase q
     }
 }
 ```
