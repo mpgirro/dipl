@@ -28,7 +28,9 @@
 \usefolder{style}
 
 \usepackage{style/TUINFPST}
-\usepackage{ragged2e} % to specifiy justified text blocks
+\usepackage{ragged2e}    %% provides \justifyin
+\usepackage{sidecap}     %% for images with side captions
+\usepackage{wrapfig}
 
 \title[Software Engineering \& Internet Computing]{Concurrent Programming with\\[.2\baselineskip]Actors and Microservices}
 % if you have a long title looking squeezed on the poster, just force
@@ -44,7 +46,7 @@
   Arbeitsbereich: Compilers and Languages\\[0.25\baselineskip]
   Betreuer: Ao.Univ.Prof. Dipl.-Ing. Dr. Franz Puntigam
 }
-\titlegraphic{\includegraphics[height=52mm]{complang-logo}}
+\titlegraphic{\includegraphics[height=52mm]{complang-logo-neu}}
 \date[\today]{\today}
 \subject{epilog}
 \keywords{concurrent programming, actor model, microservices}
@@ -75,10 +77,10 @@
       % ---------------------------------------------------------%
       % Set up a column
       \begin{column}{.45\textwidth}
-        \textsf{\textbf{CONCURRENT COMPUTATION}} \\
+        \textsf{\textbf{INTRODUCTION}} \\
         \vspace*{\baselineskip}
-        {\lmodern\justify
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        {\lmodern\justifying
+          Concurrent programming manages multiple concerns of an application or system simultaneously. We investigate two different models for introducing concurrent computational units into software architectures.
         }
       \end{column}
       % ---------------------------------------------------------%
@@ -90,7 +92,17 @@
         \textsf{\textbf{PROBLEM STATEMENT}} \\
         \vspace*{\baselineskip}
         {\lmodern
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+          There is yet a gap in the literature that emphasizes the connections between actors and microservices. This work fills this gap by answering these research questions:
+
+          \begin{itemize}
+            \item Why do actors and microservices qualify for programming concurrency?
+            \item How do the actor and the microservice model facilitate concurrent execution?
+            \item What are the expressive capabilities of actors and microservices regarding
+  concurrent programming concerns?
+            \item How does the performance of actors and microservices compare in a multi-
+  core environment relative to a concurrent system scenario?
+          \end{itemize}
+
         }
       \end{column}
       % ---------------------------------------------------------%
@@ -106,7 +118,7 @@
       \textsf{\textbf{ACTOR MODEL}} \\
       \vspace*{\baselineskip}
       {\lmodern
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
       }
     \end{column}
     % ---------------------------------------------------------%
@@ -118,7 +130,7 @@
       \textsf{\textbf{MICROSERVICE PARADIGM}} \\
       \vspace*{\baselineskip}
       {\lmodern
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
       }
     \end{column}
     % ---------------------------------------------------------%
@@ -126,15 +138,23 @@
   \end{columns}
 
   \vspace*{2\baselineskip}
-
+  
   \begin{columns}[t]
     % ---------------------------------------------------------%
     % Set up a column
     \begin{column}{.45\textwidth}
-      \textsf{\textbf{CONCEPTUAL CAPABILITIES}} \\
+      \textsf{\textbf{EXPRESSIVENESS \& CAPABILITIES}} \\
       \vspace*{\baselineskip}
       {\lmodern
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        
+        Encapsulation
+
+        Communication
+
+        Concurrent Execution
+
+        Scalability
+        
       }
     \end{column}
     % ---------------------------------------------------------%
@@ -143,58 +163,46 @@
     % ---------------------------------------------------------%
     % Set up a column 
     \begin{column}{.45\textwidth}
-      \textsf{\textbf{NON-TRIVIAL CONCURRENT SYSTEM}} \\
+      \textsf{\textbf{EFFICIENCY \& BENCHMARK}} \\
       \vspace*{\baselineskip}
       {\lmodern
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
       }
-    \end{column}
-    % ---------------------------------------------------------%
-    % end the column
-  \end{columns}
 
-  \vspace*{2\baselineskip}
-
-  \begin{columns}[t]
-    % ---------------------------------------------------------%
-    % Set up a column
-    \begin{column}{.45\textwidth}
-      \textsf{\textbf{BENCHMARK RESULTS}} \\
-      \vspace*{\baselineskip}
+      
       \begin{columns}[t]
-        \begin{column}{.45\textwidth}
+        \begin{column}{.4\textwidth}
           \includegraphics[width=1\textwidth]{graphics/eval-index-overall.pdf}
         \end{column}
-        \begin{column}{.45\textwidth}
+        \begin{column}{.05\textwidth}
+          % Intentionally left blank
+        \end{column}
+        \begin{column}{.55\textwidth}
           {\lmodern
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
           }
         \end{column}
       \end{columns}
-    \end{column}
-    % ---------------------------------------------------------%
-    % end the column
 
-    % ---------------------------------------------------------%
-    % Set up a column 
-    \begin{column}{.45\textwidth}
-      \textsf{\textbf{}} \\ % INTENTIONALLY LEFT BLANK!
-      \vspace*{\baselineskip}
       \begin{columns}[t]
-        \begin{column}{.45\textwidth}
+        \begin{column}{.4\textwidth}
           \includegraphics[width=1\textwidth]{graphics/eval-search-rtt-overall.pdf}
         \end{column}
-        \begin{column}{.45\textwidth}
+        \begin{column}{.05\textwidth}
+          % Intentionally left blank
+        \end{column}
+        \begin{column}{.55\textwidth}
           {\lmodern
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
           }
         \end{column}
       \end{columns}
+
+
     \end{column}
     % ---------------------------------------------------------%
     % end the column
   \end{columns}
-
 
 \end{frame}
 
