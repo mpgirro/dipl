@@ -35,7 +35,7 @@ Therefore, we must design our own dataset collection. In general, we face two pr
 ### Experiment Setup {#sec-experiment-setup}
 
 
-We measure all evaluation results on a multicore platform (Intel Kaby Lake Core i5 3.1 GHz with 2 cores, 64 MB of eDRAM, 4 MB shared level 3 cache, 16 GB of 2133 MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1 TB SDD flash storage, APFS file system). All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6. The components with persistent states are deployed with an H2 [@Mue04] database engine version 1.4.196 (in-memory persistence mode) and Lucene [@ApacheLucene] version 7.2 respectively.
+We measure all evaluation results on a multicore platform (Intel Kaby Lake Core i5 3.1\ GHz with 2 cores, 64\ MB of eDRAM, 4\ MB shared level 3 cache, 16\ GB of 2133\ MHz LPDDR3 SDRAM, Java HotSpot 64-bit server VM build 25.172-b11, macOS 10.13.6, 1\ TB SDD flash storage, APFS file system). The actor implementation uses Akka version 2.5.11 and the microservices build on Spring Boot version [1.5.10.RELEASE.]{tex-cmd-after:"\,"} All code is compiled with Java compiler version 1.8.0 update 172 and Scala compiler version 2.12.6. The components with persistent states are deployed with an H2 [@Mue04] database engine version 1.4.196 (in-memory persistence mode) and Lucene [@ApacheLucene] version 7.2 respectively.
 
 All measurements we report are for cold starts of each system. We restart all involved JVMs for each simulation. The indexing experiments start on an empty catalog/index. The retrieval experiments start on a filled index. Crawlers load the benchmark feeds from the local file system, and are therefore not subject to network induced latencies. 
 

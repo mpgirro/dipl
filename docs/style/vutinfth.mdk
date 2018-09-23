@@ -20,6 +20,8 @@ Package       : nag
 Package       : hyperref
 Package       : [acronym,toc]glossaries
 Package       : [hang,flushmargin]footmisc
+<!-- Enables the generation of glossaries and lists fo acronyms. This package has to be included last -->
+Package       : [acronym,toc]glossaries 
 Heading Endperiod   :
 <!-- IMPORTANT! make sure headings get mapped to \chapters -->
 Heading Base        : 1
@@ -145,6 +147,18 @@ Tex Header    :
       linkcolor=Black,
       urlcolor=Blue
     }
+    %
+    % Remove the Chapter Title for List of Figures/Table -> We generate them through Madoko
+    \makeatletter
+    \renewcommand\listoffigures{%
+      \@starttoc{lof}%
+    }
+    \makeatother
+    \makeatletter
+    \renewcommand\listoftables{%
+      \@starttoc{lot}%
+    }
+    \makeatother
 
 Tex Doc Header  :
     \frontmatter % Switches to roman numbering.
