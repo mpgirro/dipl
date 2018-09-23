@@ -124,7 +124,9 @@ The active object method signatures do not only define communication with a cert
 * Now Type
   : The message is dispatched and the sender waits for a result. Its thread of control blocks until the receiver processed the message and replies with the result. This behavior is equal to a method call (with a return value) on passive objects.
 
+~ TexOnly
 &pagebreak;
+~
 
 * Future Type
   : The sender's thread of control immediately returns with a reference to the result that will be available at some point in the future. The actual result becomes available once the receiving object has processed the message and replies with a result.

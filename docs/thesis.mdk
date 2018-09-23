@@ -1,6 +1,6 @@
 Title             : Concurrent Programming with Actors and Microservices
 Subtitle          :
-Author            : Maximilian Irro
+Author            : Maximilian P.G. Irro
 <!--Email             : max@irro.at-->
 Copyright         : Maximilian Irro, 2018
 Title Footer      : 2018
@@ -10,7 +10,7 @@ Author Gender     : male
 Author Pretitle   :
 Author Posttitle  : BSc BSc
 Author Address    : Pfalzstra{\ss}e 10, 5282 Ranshofen
-Regnumber         : 1026859
+Regnumber         : 01026859
 Curriculum EN     : Software Engineering \& Internet Computing
 Curriculum DE     : Software Engineering \& Internet Computing
 Advisor           : Franz Puntigam
@@ -274,10 +274,11 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 \vspace*{\fill}
 ~ End TexRaw
 ~ End TexOnly
+
+
 &pagebreak;
 
 
-<!-- DANKSAGUNG
 ~ Begin TexOnly
 ~ Begin TexRaw
 \begin{danksagung*}
@@ -289,17 +290,12 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 # Danksagung { -; toc:clear }
 ~ End HtmlOnly
 
-~ todo
-Ich danke meiner Kaffeemaschine, dem Petzi Bär und der Guiness Brauerei.
-~
-
 
 Es gilt einigen wenigen meinen Dank auszusprechen:
 
-* Meinen Eltern und meiner Schwester, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
-* Meinem Betreuer, Franz Puntigam, für die guten Ratschläge durch die diese Arbeit entstanden ist.
+* Meiner Familie, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
+* Meinem Betreuer, Franz Puntigam, für die guten Ratschläge durch welche diese Arbeit zustande kam.
 * Theresa und Alex, für ihr Durchhaltevermögen beim Korrekturlesen.
-
 
 
 ~ Begin TexOnly
@@ -307,7 +303,7 @@ Es gilt einigen wenigen meinen Dank auszusprechen:
 \end{danksagung*}
 ~ End TexRaw
 ~ End TexOnly
--->
+
 
 ~ Begin TexOnly
 ~ Begin TexRaw
@@ -315,10 +311,12 @@ Es gilt einigen wenigen meinen Dank auszusprechen:
 ~ End TexRaw
 ~ End TexOnly
 
+
 <!-- HTML -->
 ~ Begin HtmlOnly
 # Abstract { -; toc:clear }
 ~ End HtmlOnly
+
 
 Common problems require applications to manage multiple concerns simultaneously. A convenient approach is the concept of *concurrent programming*. In this thesis, we investigate two different models for introducing concurrent computational units into software architectures. One approach is the *actor model* that defines theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The other approach is an architectural style based on so-called *microservices*, a recent trend that gained academic and industrial popularity. Microservices facilitate many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables. These programs interoperate via lightweight, technology-heterogeneous messaging channels. The deployment modality of microservices conceives concurrent execution through the operating system scheduler. This thesis compares the programming of concurrent computation through actors and microservices with respect to a non-trivial concurrent system scenario. We argue that both approaches share many conceptual similarities and show few but significant differences. Both models have the same expressive capabilities regarding concurrent programming concerns like communication and scalability, but suffer from different trade-offs. We provide implementations of the system scenario based on actor and microservice architectures. Benchmark results of these implementations suggests that actors provide better system efficiency through a smaller codebase. Microservice architectures consume significantly more system resources and suffer especially from purely synchronous communication mechanisms. 
 
@@ -329,6 +327,7 @@ Common problems require applications to manage multiple concerns simultaneously.
 \begin{kurzfassung}
 ~ End TexRaw
 ~ End TexOnly
+
 
 <!-- HTML -->
 ~ Begin HtmlOnly
@@ -406,6 +405,7 @@ Maximilian Irro
 \appendix
 ~ End TexRaw
 
+
 # Feed Structure Example { @h1="A"; #apx-feed-structure-example; before:"Appendix ";  }
 
 
@@ -473,7 +473,6 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [JSON]{.acronym}  JavaScript Object Notation
 * [JVM]{.acronym}   Java Virtual Machine
 * [LB]{.acronym}    Load Balancing
-<!--* [MPS]{.acronym} Messages per Second [(in Verwendung?)]{.red}-->
 * [MS]{.acronym}    Microservice
 * [MSA]{.acronym}   Microservice Architecture
 * [OOP]{.acronym}   Object-oriented Programming
@@ -484,13 +483,9 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 * [RSS]{.acronym}   Rich Site Summary
 * [sJAR]{.acronym}  skinny JAR
 * [SOA]{.acronym}   Service-oriented Architecture
-<!--* [SoC]{.acronym} Separation of Concerns-->
 * [SOC]{.acronym}   Service-oriented Computing
 * [SOP]{.acronym}   Service-oriented Programming
-<!--* [SRP]{.acronym}   Single Responsibility Principle-->
-<!--* [ST]{.acronym} Startup Time-->
 * [STM]{.acronym}   Software Transactional Memory
-<!--* [URI]{.acronym} Uniform Resource Identifier-->
 * [URL]{.acronym}   Uniform Resource Locator
 * [VM]{.acronym}    Virtual Machine
 * [XML]{.acronym}   Extensible Markup Language
@@ -503,7 +498,9 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 ~ End TexRaw
 ~ End TexOnly
 
+
 # List of Figures { - }
+
 
 ~ Begin TexRaw
 \listoffigures
@@ -513,7 +510,9 @@ Below is a complete example of an RSS 2.0 feed. It provides some few metadata el
 [TOC=figures]
 ~ End HtmlOnly
 
+
 # List of Tables { - }
+
 
 ~ Begin TexOnly
 ~ Begin TexRaw

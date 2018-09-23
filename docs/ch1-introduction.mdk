@@ -60,7 +60,7 @@ Draoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature t
 We conduct our research using the following methodological steps:
 
 1. Identify the key characteristics and resulting model semantics of actors and microservices through literature review. 
-2. Define a scenario for a concurrent system. 
+2. Define a non-trivial scenario for a concurrent system. 
 3. Develop two implementations of this scenario. One implementation is based on actors and the other implementation is based on microservices.
 4. Using the knowledge gained from implementing the systems, evaluate the expressive capabilities of both models.
 5. Perform an efficiency benchmark of both system implementations.
