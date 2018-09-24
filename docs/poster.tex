@@ -77,22 +77,21 @@
 
     %\rmfamily % roman font family
 
-    \begin{columns}[t]
-      % ---------------------------------------------------------%
-      % Set up a column
-      \begin{column}{.45\textwidth}
+  \begin{columns}[t]
+      \begin{column}{.02\textwidth}
+        % intentionallyy left 
+      \end{column}
+      \begin{column}{.46\textwidth}
         \textsf{\textbf{INTRODUCTION}} \\
         \vspace*{\baselineskip}
         {\lmodern\justifying
           Concurrent programming manages multiple concerns of an application or system simultaneously. We investigate two different models for introducing concurrent computational units into software architectures. The \textbf{actor model} defines theoretically well-known constructs supporting concurrent, parallel and distributed execution in a transparent way. The \textbf{microservice paradigm} facilitates many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables
         }
       \end{column}
-      % ---------------------------------------------------------%
-      % end the column
-
-      % ---------------------------------------------------------%
-      % Set up a column 
-      \begin{column}{.45\textwidth}
+      \begin{column}{.04\textwidth}
+        % intentionallyy left 
+      \end{column}
+      \begin{column}{.46\textwidth}
         \textsf{\textbf{PROBLEM STATEMENT}} \\
         \vspace*{\baselineskip}
         {\lmodern
@@ -100,44 +99,46 @@
 
         }
       \end{column}
-      % ---------------------------------------------------------%
-      % end the column
-    \end{columns}
+      \begin{column}{.02\textwidth}
+        % intentionallyy left 
+      \end{column}
+  \end{columns}
 
-    \vspace*{2\baselineskip}
+  \vspace*{2\baselineskip}
 
-    \begin{columns}[t]
-    % ---------------------------------------------------------%
-    % Set up a column
-    \begin{column}{.45\textwidth}
+  \begin{columns}[t]
+    \begin{column}{.02\textwidth}
+      % intentionallyy left 
+    \end{column}
+    \begin{column}{.46\textwidth}
       \textsf{\textbf{ACTOR MODEL}} \\
       \vspace*{\baselineskip}
       {\lmodern
         Actors encapsulate state exclusively and communicate via asynchronous message passing. All actors live inside a runtime system that concurrently executes them. Actors are passive computational units, since they only react to messages. Exclusive state ownership and isolated message processing results in single-threaded semantics internally. Actors are therefore free of synchronization requirements.
       }
     \end{column}
-    % ---------------------------------------------------------%
-    % end the column
-
-    % ---------------------------------------------------------%
-    % Set up a column 
-    \begin{column}{.45\textwidth}
+    \begin{column}{.04\textwidth}
+      % intentionallyy left 
+    \end{column}
+    \begin{column}{.46\textwidth}
       \textsf{\textbf{MICROSERVICE PARADIGM}} \\
       \vspace*{\baselineskip}
       {\lmodern
         Every microservices is a dedicated operating system process. They communicate via a light-weight, technology-neutral message passing channels. Microservices are executed by an operating system scheduler, which facilitates concurrency and parallelism. Network communication channels additionally result in distribution. Microservices are active units and show behavior on their own accord.
       }
     \end{column}
-    % ---------------------------------------------------------%
-    % end the column
+    \begin{column}{.02\textwidth}
+      % intentionallyy left 
+    \end{column}
   \end{columns}
 
   \vspace*{2\baselineskip}
   
   \begin{columns}[t]
-    % ---------------------------------------------------------%
-    % Set up a column
-    \begin{column}{.45\textwidth}
+    \begin{column}{.02\textwidth}
+        % intentionallyy left 
+      \end{column}
+    \begin{column}{.46\textwidth}
       \textsf{\textbf{EXPRESSIVENESS \& CAPABILITIES}} \\
       \vspace*{\baselineskip}
       {\lmodern
@@ -164,12 +165,10 @@
         
       }
     \end{column}
-    % ---------------------------------------------------------%
-    % end the column
-
-    % ---------------------------------------------------------%
-    % Set up a column 
-    \begin{column}{.45\textwidth}
+    \begin{column}{.04\textwidth}
+        % intentionallyy left 
+      \end{column}
+    \begin{column}{.46\textwidth}
       \textsf{\textbf{EFFICIENCY \& BENCHMARK}} \\
       \vspace*{\baselineskip}
       {\lmodern
@@ -210,11 +209,10 @@
           }
         \end{column}
       \end{columns}
-
-
     \end{column}
-    % ---------------------------------------------------------%
-    % end the column
+    \begin{column}{.02\textwidth}
+        % intentionallyy left 
+      \end{column}
   \end{columns}
 
 \end{frame}
