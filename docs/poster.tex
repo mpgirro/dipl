@@ -143,24 +143,24 @@
       {\lmodern
 
         Our evaluation shows that both models have the same expressive capabilities regarding concurrent programming concerns. They merely apply different implementation strategies, which come with different trade-offs.
-        
-        \textbf{\textsf{Encapsulation}}:
 
-        Actors conceptually encapsulate state exclusively. Shared-memory environments practically threaten the isolation. Programmers must ensure that no mutable state is accessible among actors through reference sharing.
+        \vspace*{\baselineskip}
 
-        Microservices also encapsulate their state. The paradigm forbids shared memory among services. State is isolated through the strict memory boundaries of system processes that are enforced by the operating system.
+        \begin{description}
+          \item[\textbf{\textsf{Encapsulation}}] Actors conceptually encapsulate state exclusively. Shared-memory environments practically threaten the isolation. Programmers must ensure that no mutable state is accessible among actors through reference sharing. Microservices also encapsulate their state. The paradigm forbids shared memory among services. Operating systems enforce strict memory boundaries among system processes, which isolates the state.
 
-        \textbf{\textsf{Communication}}:
+          \vspace*{\baselineskip}
 
-        Actors have an asynchronous messaging primitive. Runtimes can provide additional comnunication abstractions. These abstractions have to build on top of the asynchronous primitive. All communication in actor systems is therefore at most semi-synchronous.
+          \item[\textbf{\textsf{Communication}}] Actors have an asynchronous messaging primitive. Runtimes can provide additional comnunication abstractions on top of this primitive. Communication in actor architectures is therefore at most semi-synchronous. Microservices facilitate technology-neutral communication channels in every interaction style they choose. A channel is valid as long as there is no shared memory, but message passing semantics instead.
 
-        Microservices facilitate technology-neutral communication channels in every interaction style they choose. A channel is valid as long as there is no shared memory, but message passing semantics instead.
+          \vspace*{\baselineskip}
 
-        \textbf{\textsf{Concurrent Execution}}:
+          \item[\textbf{\textsf{Concurrent Execution}}] Actors and microservices encapsulate their state exclusively and all their communication solely facilitates message passing semantics. These properties make the components highly cohesive and provide a temporal and spacial decoupling. The resulting independence is the foundation that enables an actor runtime or an operating system to execute the components in a concurrent fashion implicitly.
 
-        Actors and microservices encapsulate their state exclusively and all their communication solely facilitates message passing semantics. These properties make the task units highly cohesive and provide a temporal and spacial decoupling. The resulting independence is the foundation that enables an actor runtime or respectively an operating system to execute the task units in a concurrent fashion implicitly.
+          \vspace*{\baselineskip}
 
-        \textbf{\textsf{Scalability}}:
+          \item[\textbf{\textsf{Scalability}}] The concurrent and parallel execution capabilities and message passing interaction of actors and microservices lead to good vertical scalability. The distribution capabilities additionally enable horizontal scalability.
+        \end{description}
         
       }
     \end{column}
@@ -173,9 +173,14 @@
       \textsf{\textbf{EFFICIENCY \& BENCHMARK}} \\
       \vspace*{\baselineskip}
       {\lmodern
-        We evaluated the efficiency of the programming models with respect to a non-trivial scenario of a concurrent system. Our scenario is a domain-specific search engine, since the architecture provides many opportunities to facilitate concurrent processing. The benchmark results below are for an actor-based and a microservices-based system implementation of this scenario. We used Akka as the actor system and built the microservices on the Spring framework.
+        We evaluated the efficiency of the programming models with respect to a non-trivial scenario of a concurrent system. Our scenario is a domain-specific search engine, since the architecture provides many opportunities to facilitate concurrent processing. 
+        
+        \vspace*{\baselineskip}
+        
+        The benchmark results below are for an actor-based and a microservices-based system implementation of this scenario. We used Akka as the actor system and built the microservices on the Spring framework.
       }
 
+      \vspace*{\baselineskip}
       
       \begin{columns}[t]
         \begin{column}{.4\textwidth}
