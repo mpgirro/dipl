@@ -86,7 +86,7 @@
       \end{column}
       \begin{column}{.43\textwidth}
         \textsf{\textbf{INTRODUCTION}} \\
-        \vspace*{\baselineskip}
+        \vspace*{.5\baselineskip}
         {\lmodern\justify
           \begin{justify}
           Concurrent programming manages multiple concerns of an application or system simultaneously. We investigate two different models for introducing concurrent computational units into software architectures. The \textbf{actor model} defines theoretically well-known constructs which support concurrent, parallel and distributed execution. The \textbf{microservice paradigm} facilitates many principles of the old Unix philosophy by composing complex functionality through small, independent, highly cohesive and loosely coupled executables
@@ -98,7 +98,7 @@
       \end{column}
       \begin{column}{.43\textwidth}
         \textsf{\textbf{PROBLEM STATEMENT}} \\
-        \vspace*{\baselineskip}
+        \vspace*{.5\baselineskip}
         {\lmodern
           \begin{justify}
           There is yet a gap in the literature that emphasizes the connections between actors and microservices. This work fills this gap with a focus on the concurrent programming aspects. We investigate why actors and microservices qualify for programming concurrency, how the models facilitate concurrent execution, what the expressive capabilities of actors and microservices are, and finally we compare the performance of an actor-based and microservice-based implementation of a non-trivial concurrent system scenario.
@@ -110,7 +110,7 @@
       \end{column}
   \end{columns}
 
-  \vspace*{2\baselineskip}
+  \vspace*{3\baselineskip}
 
   \begin{columns}[t]
     \begin{column}{.04\textwidth}
@@ -118,7 +118,7 @@
     \end{column}
     \begin{column}{.43\textwidth}
       \textsf{\textbf{ACTOR MODEL}} \\
-      \vspace*{\baselineskip}
+      \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
         Actors encapsulate state exclusively and communicate via asynchronous message passing. All actors live inside a runtime system that concurrently executes them. Actors are passive computational units, since they only react to messages. Exclusive state ownership and isolated message processing results in single-threaded semantics internally. Actors are therefore free of synchronization requirements.
@@ -130,7 +130,7 @@
     \end{column}
     \begin{column}{.43\textwidth}
       \textsf{\textbf{MICROSERVICE PARADIGM}} \\
-      \vspace*{\baselineskip}
+      \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
         Every microservices is a dedicated operating system process. They communicate via a light-weight, technology-neutral message passing channels. Microservices are executed by an operating system scheduler, which facilitates concurrency and parallelism. Network communication channels additionally result in distribution. Microservices are active units and show behavior on their own accord.
@@ -142,7 +142,7 @@
     \end{column}
   \end{columns}
 
-  \vspace*{2\baselineskip}
+  \vspace*{3\baselineskip}
   
   \begin{columns}[t]
     \begin{column}{.04\textwidth}
@@ -150,7 +150,7 @@
       \end{column}
     \begin{column}{.43\textwidth}
       \textsf{\textbf{EXPRESSIVENESS \& CAPABILITIES}} \\
-      \vspace*{\baselineskip}
+      \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
         Our evaluation shows that both models have the same expressive capabilities regarding concurrent programming concerns. They merely apply different implementation strategies, which come with different trade-offs.
@@ -193,7 +193,7 @@
       \end{column}
     \begin{column}{.43\textwidth}
       \textsf{\textbf{EFFICIENCY \& BENCHMARK}} \\
-      \vspace*{\baselineskip}
+      \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
         We evaluated the efficiency of the programming models with respect to a non-trivial scenario of a concurrent system. Our scenario is a domain-specific search engine, since the architecture provides many opportunities to facilitate concurrent processing. 
@@ -207,7 +207,7 @@
       \vspace*{\baselineskip}
       
       \begin{columns}[t]
-        \begin{column}{.4\textwidth}
+        \begin{column}{.46\textwidth}
           \begin{center}
           \includegraphics[width=1\textwidth]{graphics/eval-index-overall.pdf}
           \end{center}
@@ -215,7 +215,7 @@
         \begin{column}{.08\textwidth}
           % Intentionally left blank
         \end{column}
-        \begin{column}{.52\textwidth}
+        \begin{column}{.46\textwidth}
           {\lmodern
             \begin{justify}
             The indexing phase facilitates asynchronous communication. The microservice use RabbitMQ as their channel. The results show that the execution modality of actors is more efficient. Microservices have a higher runtime overhead, since they are separate system processes. 
@@ -227,7 +227,7 @@
       \vspace*{2\baselineskip}
 
       \begin{columns}[t]
-        \begin{column}{.4\textwidth}
+        \begin{column}{.46\textwidth}
           \begin{center}
           \includegraphics[width=1\textwidth]{graphics/eval-search-rtt-overall.pdf}
           \end{center}
@@ -235,7 +235,7 @@
         \begin{column}{.08\textwidth}
           % Intentionally left blank
         \end{column}
-        \begin{column}{.52\textwidth}
+        \begin{column}{.46\textwidth}
           {\lmodern\justify
             \begin{justify}
             The retrieval phase requires request/response communication. Actors model synchronous interaction in a request/asynchronous response style. Microservices apply REST-based communication. The semi-synchronous strategy of actors results in better efficiency than strictly synchronous communication.  
