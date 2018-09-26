@@ -60,12 +60,14 @@
 %% A macro with two arguments to change ornaments and colors easily
 %% Syntax -- \sectionlinetwo{<color>}{<ornament>}
 \newcommand{\sectionlinetwo}[2]{%
-  \nointerlineskip \vspace{.5\baselineskip}\hspace{\fill}
+  \nointerlineskip 
+  \vspace{.5\baselineskip}
+  \hspace{\fill}
   {\color{#1}
-    \resizebox{0.5\linewidth}{2ex}
+    \resizebox{0.3\linewidth}{3ex}
     {{%
     {\begin{tikzpicture}
-    \node  (C) at (0,0) {};
+    \node (C) at (0,0) {};
     \node (D) at (9,0) {};
     \path (C) to [ornament=#2] (D);
     \end{tikzpicture}}}}}%
