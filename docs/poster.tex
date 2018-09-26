@@ -12,6 +12,8 @@
 % Thomas Krennwallner <tkren@kr.tuwien.ac.at>
 %
 
+\PassOptionsToPackage{svgnames}{xcolor}
+
 \documentclass[final,hyperref={pdfpagelabels=true}]{beamer}
 
 \makeatletter
@@ -31,6 +33,8 @@
 \usepackage{ragged2e}    %% provides \justifying
 \usepackage{sidecap}     %% for images with side captions
 \usepackage{wrapfig}
+\usepackage[object=vectorian]{pgfornament} %%  http://altermundus.com/pages/tkz/ornament/index.html
+\usepackage{tikz}
 
 \title[Software Engineering \& Internet Computing]{Concurrent Programming with\\[.2\baselineskip]Actors and Microservices}
 % if you have a long title looking squeezed on the poster, just force
@@ -50,6 +54,25 @@
 \date[\today]{\today}
 \subject{epilog}
 \keywords{concurrent programming, actor model, microservices}
+
+
+
+%% A macro with two arguments to change ornaments and colors easily
+%% Syntax -- \sectionlinetwo{<color>}{<ornament>}
+\newcommand{\sectionlinetwo}[2]{%
+  \nointerlineskip \vspace{.5\baselineskip}\hspace{\fill}
+  {\color{#1}
+    \resizebox{0.5\linewidth}{2ex}
+    {{%
+    {\begin{tikzpicture}
+    \node  (C) at (0,0) {};
+    \node (D) at (9,0) {};
+    \path (C) to [ornament=#2] (D);
+    \end{tikzpicture}}}}}%
+    \hspace{\fill}
+    \par\nointerlineskip \vspace{.5\baselineskip}
+  }
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,7 +165,10 @@
     \end{column}
   \end{columns}
 
-  \vspace*{3\baselineskip}
+  \vspace*{1.5\baselineskip}
+  %\hrule
+  \sectionlinetwo{Black}{88}
+  \vspace*{1.5\baselineskip}
   
   \begin{columns}[t]
     \begin{column}{.04\textwidth}
