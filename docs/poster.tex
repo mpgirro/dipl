@@ -80,6 +80,8 @@
 \setlist[description]{format=\color{Black}} 
 
 
+\newcommand*\openquote{\makebox(25,-22){\scalebox{5}{\grqq}}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display a grid to help align images 
 %\beamertemplategridbackground[1cm]
@@ -106,7 +108,7 @@
 
     %\rmfamily % roman font family
 
-    \vspace*{\baselineskip}
+    %\vspace*{.5\baselineskip}
 
   \begin{columns}[t]
       \begin{column}{.04\textwidth}
@@ -118,7 +120,7 @@
         \vspace*{.5\baselineskip}
         {\lmodern\justify
           \begin{justify}
-          Concurrent programming manages multiple concerns simultaneously. This work fills a gap in the literature that emphasizes the connections between the \textbf{actor model} and the \textbf{microservice paradigm}. Both introduce concurrent computational units into software architectures. We investigate why actors and microservices qualify for programming concurrency and how they facilitate concurrent execution. We evaluate the expressive capabilities of actors and microservices and compare their performance relative to a non-trivial scenario of a concurrent system.
+          Concurrent programming manages multiple concerns simultaneously. This work fills a gap in the literature {[1]} that emphasizes the connections between the \textbf{actor model} and the \textbf{microservice paradigm}. Both introduce concurrent computational units into software architectures. We investigate why actors and microservices qualify for programming concurrency and how they facilitate concurrent execution. We evaluate the expressive capabilities of actors and microservices and compare their performance relative to a non-trivial scenario of a concurrent system.
           \end{justify}
         }  
 
@@ -128,7 +130,7 @@
       \end{column}
   \end{columns}
 
-  \vspace*{4\baselineskip}
+  \vspace*{2\baselineskip}
 
   %\vspace*{1\baselineskip}
   %\hrule
@@ -144,7 +146,7 @@
       \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
-        The actor model defines theoretically well-known constructs which support concurrent, parallel and distributed execution. Actors encapsulate state exclusively and communicate via asynchronous message passing. All actors live inside a runtime system that concurrently executes them. Actors are passive computational units, since they only react to messages. Exclusive state ownership and isolated message processing results in single-threaded semantics internally. Actors are therefore free of synchronization requirements.
+        The actor model defines theoretically well-known constructs which support concurrent, parallel and distributed execution. Actors encapsulate state exclusively and communicate via asynchronous message passing. All actors live inside a runtime system that concurrently executes them. Actors are passive computational units, since they only react to messages. Exclusive state ownership and isolated message processing results in single-threaded semantics internally. Actors are therefore free of synchronization requirements {[2]}.
         \end{justify}
       }
     \end{column}
@@ -156,7 +158,7 @@
       \vspace*{.5\baselineskip}
       {\lmodern
         \begin{justify}
-        The microservice paradigm composes complex functionality through relatively small, independent, highly cohesive and loosely coupled executables. Every microservices is a dedicated operating system process. They communicate via light-weight, technology-neutral message passing channels. Microservices are executed by an operating system scheduler, which results in concurrency and parallelism. Network-based communication enables distribution. Microservices are active units and show behavior on their own accord.
+        The microservice paradigm composes complex functionality through relatively small, independent, highly cohesive and loosely coupled executables. Every microservices is a dedicated operating system process. They communicate via lightweight, technology-neutral message passing channels. Microservices are executed by an operating system scheduler, which results in concurrency and parallelism. Network-based communication enables distribution. Microservices are active units and show behavior on their own accord {[1]}.
         \end{justify}
       }
     \end{column}
@@ -165,7 +167,26 @@
     \end{column}
   \end{columns}
 
-  \vspace*{4\baselineskip}
+  \vspace*{2.5\baselineskip}
+
+  \begin{columns}[t]
+    \begin{column}{.04\textwidth}
+      % intentionallyy left 
+    \end{column}
+    \begin{column}{.92\textwidth}
+      \begin{center}
+        {\lmodern
+          \Large
+          \frqq\textsl{Actors and microservices have the same capabilities regarding concurrent programming concerns}\flqq
+        }
+      \end{center}
+    \end{column}
+    \begin{column}{.04\textwidth}
+      % intentionallyy left 
+    \end{column}
+  \end{columns}
+
+  \vspace*{3\baselineskip}
 
   %\vspace*{1.5\baselineskip}
   %\hrule
@@ -184,7 +205,7 @@
         Our evaluation shows that both models have the same expressive capabilities regarding concurrent programming concerns. Both models apply varying implementation strategies with different trade-offs. We focused our capability evaluations on four main concerns:
         \end{justify}
         
-        \vspace*{\baselineskip}
+        \vspace*{0.5\baselineskip}
 
         \renewcommand\sfdefault{lmss} % so the descriptions won't show Arial font
 
@@ -230,7 +251,7 @@
         
         We evaluated the efficiency of the programming models with respect to a non-trivial scenario of a concurrent system. Our scenario is a domain-specific search engine, since the architecture provides many opportunities to facilitate concurrent processing. 
 
-        \vspace*{1.4\baselineskip}
+        \vspace*{.85\baselineskip}
         
         The benchmark results below are for an actor-based and a microservices-based system implementation of this scenario. We used Akka as the actor system and built the microservices on the Spring framework.
         \end{justify}
@@ -258,7 +279,7 @@
         \end{column}
       \end{columns}
 
-      \vspace*{1.5\baselineskip}
+      \vspace*{1\baselineskip}
 
       \begin{columns}[t]
         \begin{column}{.46\textwidth}
@@ -283,6 +304,24 @@
     \begin{column}{.04\textwidth}
         % intentionallyy left 
       \end{column}
+  \end{columns}
+
+  \vspace*{.7\baselineskip}
+
+  \begin{columns}[t]
+    \begin{column}{.04\textwidth}
+      % intentionallyy left 
+    \end{column}
+    \begin{column}{.92\textwidth}
+      {\lmodern \footnotesize
+        {[1]} Dragoni, Nicola, et al. \"Microservices: yesterday, today, and tomorrow.\" Present and Ulterior Software Engineering. Springer, Cham, 2017. 195-216.
+        \\
+        {[2]} Agha, Gul A., and Wooyoung Kim. \"Actors: A unifying model for parallel and distributed computing.\" Journal of systems architecture 45.15 (1999): 1263-1277.
+      }
+    \end{column}
+    \begin{column}{.04\textwidth}
+      % intentionallyy left 
+    \end{column}
   \end{columns}
 
 \end{frame}
