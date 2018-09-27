@@ -266,13 +266,13 @@ We've found that compile-time message safety restrictions, apart from active obj
 ### Supervision and Monitoring
 
 
-In Section [#sec-actor-systems] we've pointed out that actor systems aim for higher-level constructs than the low-level basic model primitives. One example for higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is the encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling them adequately is key especially in a distributed context [@Cou05]. Orleans for example directly reports exceptions back to the message sender [@Ber14].
+In Section [#sec-actor-systems] we've pointed out that actor systems aim for higher-level constructs than the low-level basic model primitives. One example for higher-level abstractions are the different messaging styles Akka facilitates. Another important reason for providing more expressive constructs is the encapsulation of faults [@Agh90]. Being aware of the possibility of faults and handling them adequately is key, especially in a distributed context [@Cou05]. Orleans for example directly reports exceptions back to the message sender [@Ber14].
 
 The key to handling faults in Akka is its concept of *supervision*. No actor exists for itself, but is always a subordinate to its supervising actor. We call this dependency relationship a *supervision hierarchy*. The actor system provides a default supervisor at the top-level, which has the eventual supervision of all other actors [@AkkaSupervision].  
 
 The hierarchical relationship is fairly simple: a supervisor delegates work to its subordinate children, but has to *monitor* each child in return. Monitoring is the concept of getting notified of a subordinate's failures, and in turn reacting to these failures. A fault can be of arbitrary nature, i.e.\ an unhandled exception or invalid state. An actor automatically suspends itself and all its subordinates upon the occurrence of a failure. The runtime then notifies the superior, which has to provide a response to the failure [@All13;@Roe15]. 
 
-The signaling of an occurred failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. A so-called *supervison strategy* handles the failure notifications. This strategy can show one of four possible actions:
+The signaling of an occurred failure is not communicated via a "normal" actor message, but on a side channel [@AkkaSupervision]. A so-called *supervison strategy* handles the failure notifications. This strategy can take one of four possible actions:
 
 * Action 1: Resuming the suspended child, when the fault can be safely ignored.
 * Action 2: Restarting the suspended child, if its internal state is invalid.
@@ -286,7 +286,7 @@ A supervisor's failure notification has the sole form of an exception. The actor
 ### Information Routing and Delivery Reliability
 
 
-We must frequently send a message not to one actor specifically, but to distribute the message among a set of equivalent instances. Akka provides an appropriate concept called *routers*:
+We must frequently send a message not to one actor specifically, but distribute the message among a set of equivalent instances. Akka provides an appropriate concept called *routers*:
 
 &pagebreak;
 
@@ -302,7 +302,7 @@ When a Web Crawler needs to pass on the XML feed data to the Parser, the Crawler
 
 Conceptually, we can do the routing directly inside the sending actor by replacing the `tell(m,s)` call with `router.route(m,s)`. Alternatively, we can also employ an intermediate actor. The decision is based on the burden of managing the routees. 
 
-We have to manage the set of routees and keep it up to date, since actors can fail and we must not send any message to a terminated actor. If the routees are children of the routing actor, then the router gets informed through its supervision obligation in the case of a subordinates demise. A supervision-managed set of routees is called a *pool* [@Roe15]. 
+We have to manage the set of routees and keep it up to date, since actors can fail and we must not send any message to a terminated actor. If the routees are children of the routing actor, then the router gets informed through its supervision obligation in the case of a subordinate's demise. A supervision-managed set of routees is called a *pool* [@Roe15]. 
 
 <!--
 Since supervision is the foundation of a pool, it is useful to use a separate component for routing, especially if actors are part of several router pools, or a parent-child relationship is otherwise logically inadequate:
@@ -344,7 +344,7 @@ An example for a situation where we cannot apply a non-blocking API is the exper
 
 [img-persistence-actor]: graphics/persistence-actor.[svg,png] "Image about actor persistence" { width:5cm; vertical-align:middle; padding-bottom:1em; }
 
-Each CatalogStore actor has a database. Conceptually, we use the database to persist the state of a single actor. The state is not exclusive anymore, if several actors manage the database. Yet we need several actors for concurrent interaction. Hence, we have to intentionally weaken the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). A `RoundRobinRoutingLogic`{language:scala} distributes the database interaction operations between the child actors. Now, the CatalogStore architecture component consists of several task units of the actor model. All these actors conceptually share a single persistent state. We must not break the isolation of each actor however. Therefore, these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13]. The idea of actor-managed databases is not novel. Shah & Salles give an entire manifesto on what they call *actor database systems* [@Sha17c].
+Each CatalogStore actor has a database. Conceptually, we use the database to persist the state of a single actor. The state is not exclusive anymore, if several actors manage the same database. Yet we need several actors for concurrent interaction. Hence, we have to intentionally weaken the encapsulation principle. Although the database conceptually belongs to the CatalogStore, the store actor delegates all database interactions to it's children (Figure [#fig-persistence-actor]). A `RoundRobinRoutingLogic`{language:scala} distributes the database interaction operations between the child actors. Now, the CatalogStore architecture component consists of several task units of the actor model. All these actors conceptually share a single persistent state. We must not break the isolation of each actor however. Therefore, these children neither share the same database connection interface object, nor any other mutable data. We merely loosen up the restriction on encapsulating the persistent state inside one single actor. A narrow group of actors is managing the persistent state instead. All these actors must utilize the database system's transaction mechanism. We use a dedicated dispatcher for all actors involved in the logical encapsulation of the persistent state. The underlying thread-pool uses a fixed number of threads. This provides a predictable impact on performance, in contrast to Akka's default dynamically sized thread-pools. Dynamic pools add threads when demand is high, i.e.\ due to many blocking operations, and can therefore consume a lot of system resources [@All13]. The idea of actor-managed databases is not novel. Shah & Salles give an entire manifesto on what they call *actor database systems* [@Sha17c].
 
 ~ Findings
 [Main findings]{.findings-title}
