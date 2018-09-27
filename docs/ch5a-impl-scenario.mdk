@@ -45,7 +45,7 @@ Our search engine is designed to regularly analyze RSS feeds of podcasts. The me
 
 At the core, our basic architecture and the components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy", as well as more modern interpretations of associated design principles given in [@Cou05] and [@Ped06].  
 
-The two high-level subsystems we've given above, indexing and retrieval, are internally composed of several smaller components. We specify that each of these components has to be a concurrent task unit of the programming model, i.e.\ an actor or a microservice. The respective units are:  
+The two high-level subsystems we have given above, indexing and retrieval, are internally composed of several smaller components. We specify that each of these components has to be a concurrent task unit of the programming model, i.e.\ an actor or a microservice. The respective units are:  
 
 * CatalogStore (C)
   : holds a catalog of all metadata information we gather about podcasts, their feeds and episodes. The Store persists this information in a relational database.

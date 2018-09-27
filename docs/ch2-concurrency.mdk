@@ -32,7 +32,7 @@ Many different notions of concurrency exist. Regardless of the chosen approach, 
 ## Concurrency, Parallelism and Distribution
 
 
-So far, we've discussed concurrency as a generic term that denotes a simultaneous execution of activities. Yet there are more diverse notions that regard the implementation of concurrent execution. A strict distinction in our terminology is therefore in order. 
+So far, we have discussed concurrency as a generic term that denotes a simultaneous execution of activities. Yet there are more diverse notions that regard the implementation of concurrent execution. A strict distinction in our terminology is therefore in order. 
 
 We use *concurrency* to refer to the multiplexing of multiple tasks among one or more processors. We cannot make more specific assumptions in general. On a single *central processing unit* (CPU), the interleaving of computation is merely pseudo-simultaneous via time slicing, since all computation is still sequential [@Roe15].
 
@@ -64,7 +64,7 @@ On a fundamental level, the basic purpose of every program is the computation of
 
 [^fn-sequential-side-effects]: All sorts of side effects, like IO, are also forms of input to a program and must be stable as well. 
 
-Many different issues regarding concurrent computation are well-known in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we don't immerse into detailed discussions on each of these issues, as we often find it in other literature that concerns concurrency concepts. Here, simply two types of properties are relevant to us. Both types have an effect on the correctness of concurrent programs. We can classify all the issues we gave above in terms of these two property types [@Bus90;@Swa14;@Sin09]:
+Many different issues regarding concurrent computation are well-known in the literature. Examples are deadlocks, livelocks, starvation, race conditions, mutual exclusion and fairness. Due to the high-level view on concurrency in this thesis, we do not immerse into detailed discussions on each of these issues, as we often find it in other literature that concerns concurrency concepts. Here, simply two types of properties are relevant to us. Both types have an effect on the correctness of concurrent programs. We can classify all the issues we gave above in terms of these two property types [@Bus90;@Swa14;@Sin09]:
 
 * Safety
   : asserts the operations that are allowed (safe) to be performed. As a result, given correct inputs result in correct outputs, while the computation never enters an undesired state. Examples of safety properties are race conditions and mutual exclusion. Informally, safety guarantees that "nothing bad will happen".
@@ -74,7 +74,7 @@ Many different issues regarding concurrent computation are well-known in the lit
 
 Safety is *invariant*, such that a property `P` holds in *every* state of *every* execution. In contrast, liveness of `P` demands that the property holds in *some* state of *every* execution. As a result, safety and liveness have a so-called *duality* relationship. The negation of a member of one type is a member of the other [@Ben90]. Safety relates to *partial correctness* (the result is correct if the program terminates). Liveness on the other hand relates to *total correctness* (the programs terminates with a correct result) [@Bus90].
 
-We've found *deadlocks* (blocking operations which for some reason do not unblock) to have a controversial role. On the one hand, an execution path must not lead into a deadlock (safety), while a deadlock also threatens the progression of a program, thus its liveness. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly relate to liveness. The operations of a livelock are safe while the program does not progress.
+We have found *deadlocks* (blocking operations which for some reason do not unblock) to have a controversial role. On the one hand, an execution path must not lead into a deadlock (safety), while a deadlock also threatens the progression of a program, thus its liveness. In contrast, so-called *livelocks* (loops never meeting their termination condition) are, as the name suggest, clearly relate to liveness. The operations of a livelock are safe while the program does not progress.
 
 
 ## Programming Abstractions {#sec-concurrency-programming-abstractions}
@@ -116,9 +116,9 @@ The `synchronized`{language:java} primitive allows us to express mutual exclusio
 
 The mechanism behind Java's synchronization is *locking* on a common reference among all involved threads, the so-called *monitor* object [@Goe06;@Gos15]. When we use `synchronized`{language:java} as a block construct, we must provide this monitor as an argument. In our example, the state variable simply doubles as the monitor in addition to being the shared resource. Alternatively, we could have used the `synchronized`{language:java} keyword also as a part of the signature of a method in `State`{language:java} which holds the logic. A `synchronized`{language:java} method signature is equal to `synchronized(this)`{language:java} around the whole method's body, where `this`{language:java} refers to the object `s`. The method's object reference then acts as the monitor, just as in our example.
 
-A more modern alternative towards synchronization is the `Lock`{language:java} interface. The previous `synchronized`{language:java} keyword is an enforced synchronization primitive. The locks of `synchronized`{language:java} are always exclusive to one thread at a time. In contrast, the various implementations of `Lock`{language:java} don't need to be enforced. `Lock`{language:java}s can therefore offer fine-grained options to control the locking, e.g.\ for simultaneous access of multiple readers [@Sub11;@Goe06]. To provide this degree of freedom, Java neither detects shared state nor requires its synchronization per se. As a result, programmers can easily introduce data races when they simply omit access control. Alternative concurrency abstractions for Java, e.g.\ through libraries and frameworks, always have to take this into account.
+A more modern alternative towards synchronization is the `Lock`{language:java} interface. The previous `synchronized`{language:java} keyword is an enforced synchronization primitive. The locks of `synchronized`{language:java} are always exclusive to one thread at a time. In contrast, the various implementations of `Lock`{language:java} do not need to be enforced. `Lock`{language:java}s can therefore offer fine-grained options to control the locking, e.g.\ for simultaneous access of multiple readers [@Sub11;@Goe06]. To provide this degree of freedom, Java neither detects shared state nor requires its synchronization per se. As a result, programmers can easily introduce data races when they simply omit access control. Alternative concurrency abstractions for Java, e.g.\ through libraries and frameworks, always have to take this into account.
 
-Expressing concurrency on the programming language level has its perils due to the overlapping of  language concepts. We've already demonstrated the introduction of mutable state via scopes and visibility. Many concepts have an influence on concurrency considerations. Shared mutability and synchronization especially require utmost care of the programmer for handling access to the data.
+Expressing concurrency on the programming language level has its perils due to the overlapping of  language concepts. We have already demonstrated the introduction of mutable state via scopes and visibility. Many concepts have an influence on concurrency considerations. Shared mutability and synchronization especially require utmost care of the programmer for handling access to the data.
 
 
 ### Operating System Approach {#sec-concurrency-os-level}
@@ -128,7 +128,7 @@ Operating systems (OS) use the *process* as their computational model. A process
 
 In contrast, *threads* are tasks *inside* a process. One process can have numerous threads which all share the same memory space [@Tan07]. Since threads within the same process have access to the same memory locations, we are free to introduce shared state among them. In the Java case study, we already demonstrated that shared state requires synchronization. In contrast to the JVM, an operating system strictly enforces the memory boundaries between processes. Communication between two processes requires either an explicit arrangement of so-called *shared memory*, or another means of message passing communication which we subsume as *inter-process communication*[^fn-ipc] (IPC) [@Bac03;@Lov07]. We extend our focus on OS-conceived concurrent tasks which rely on IPC in due course. A consolidating example for future reference is in order.
 
-[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as we've mentioned. Therefore, the literature often denotes all communication between concurrent units as *inter-process communication*. To avoid confusion, we use the IPC designation only for communication mechanisms between OS processes.
+[^fn-ipc]: In concurrency theory, *process* is also the general term for a concurrent unit, as we have mentioned. Therefore, the literature often denotes all communication between concurrent units as *inter-process communication*. To avoid confusion, we use the IPC designation only for communication mechanisms between OS processes.
 
 
 #### Case Study: Concurrent Processes in C {#sec-concurrent-c}
@@ -171,7 +171,7 @@ By using additional Unix system calls, we install a so-called *pipe* as the IPC 
 ### Network Approach {#sec-concurrency-network-level}
 
 
-As we've outlined, distribution is another approach to the conception of concurrent execution within a system. Aside from the lack of shared memory, the distinguishing characteristic between parallel and distributed computing is the geographical distance between tasks. Therefore, the communication between distributed tasks happens via networked message passing mechanisms. Networks introduce a wide range of perils. We can neither assume that the communication links are reliable nor static. Also, messages are more costly in terms of time (latency) and effort (e.g.\ due to data serialization) [@Agh99]. The famous *Fallacies of Distributed Computing* by Deutsch subsume many of the problematic aspects [@Tan07]:
+As we have outlined, distribution is another approach to the conception of concurrent execution within a system. Aside from the lack of shared memory, the distinguishing characteristic between parallel and distributed computing is the geographical distance between tasks. Therefore, the communication between distributed tasks happens via networked message passing mechanisms. Networks introduce a wide range of perils. We can neither assume that the communication links are reliable nor static. Also, messages are more costly in terms of time (latency) and effort (e.g.\ due to data serialization) [@Agh99]. The famous *Fallacies of Distributed Computing* by Deutsch subsume many of the problematic aspects [@Tan07]:
 
 * Fallacy 1: *the network is reliable*.
 * Fallacy 2: *latency is zero*.
