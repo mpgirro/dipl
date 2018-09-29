@@ -142,7 +142,7 @@ The actor model is solely built on the concept of *asynchronous* message passing
 Akka provides a primitive to introduce a synchronous information flow. In addition to the asynchronous `tell [!]` command, `ActorRef`{language:scala} also offers the `ask` method, with alias `?`\ in Scala [@AkkaActor]. We use `ask` to model request/reply-style communication [@Hal09]. An `ask`-call resembles a `tell`-call in that it dispatches the method's argument as a message to the actor behind the reference. However, `ask` offers a result value which is the expected result of a synchronous call wrapped in a `Future`{language:scala}. The caller of `ask` is free to either proceed its computation, or go directly into blocking until the `Future`{language:scala} is resolved. This semantics resembles the future type message passing of active objects.
 
 ~ Figure { #fig-pipeline-search-future; \
-           caption: "Example flow of a future-based synchronous call in the retrieval"; \
+           caption: "Example flow of a future-based synchronous call in the retrieval phase"; \
            width:100%; page-align:here; }
 ![img-pipeline-search-future]
 ~
@@ -195,7 +195,7 @@ In the retrieval subsystem, the actual information flow turns from the concept d
 [^fn-2nd-tell-argument]: Note that the `!`\ alias of `tell` does not allow more than one parameter.
 
 ~ Begin Figure { #fig-pipeline-search-delegation; \
-                 caption: "Example flow of a delegation-based synchronous call in the retrieval"; \
+                 caption: "Example flow of a delegation-based synchronous call in the retrieval phase"; \
                  width:100%; page-align:here; }
 ![img-pipeline-search-delegation]
 ~ End Figure
@@ -227,7 +227,7 @@ The provided `Cancellable`{language:scala} reference allows us to prevent the tr
 
 One of the basic actor primitives allows actors to send messages to other actors. However, in general this does not define restrictions on the types of messages that are sent. Messages are untyped in the theoretical actor model. The behavior of an actor decides at runtime whether it is able to handle the message.
 
-The active object concept aims to provide a higher-level abstraction and provides static guarantees for message types. Active objects leverage the method signatures of the standard object model for static type checking. However, the active object model also uses the method's signature to define the method's dispatch semantics. The work of Waldo *et al.* [@Wal96] describes in detail when and why this abstraction becomes problematic, especially in a context with transparent distribution. In short, the abstraction provided by the object model does not incorporate some effects of distribution well. Examples for such effects are latency, memory access (via pointers), partial failure and concurrency effects in general. The transparent abstraction of local and remote execution is therefore problematic with active objects. The object model must explicitly distinguish local and remote interaction to be robust and reliable. The classic actor abstraction on the other hand is resilient without explicitly distinguishing between local and remote message recipients. Current developments in Akka therefore address the challenge of offering some level of type safety for messaging without using Akka's `TypedActor`{language:java}s for active objects. The APIs are summarized under the name *Akka Typed* [@AkkaTyped]. 
+The active object concept aims to provide a higher-level abstraction and provides static guarantees for message types. Active objects leverage the method signatures of the standard object model for static type checking. However, the active object model also uses the method's signature to define the method's dispatch semantics. The work of Waldo *et al.*\ [@Wal96] describes in detail when and why this abstraction becomes problematic, especially in a context with transparent distribution. In short, the abstraction provided by the object model does not incorporate some effects of distribution well. Examples for such effects are latency, memory access (via pointers), partial failure and concurrency effects in general. The transparent abstraction of local and remote execution is therefore problematic with active objects. The object model must explicitly distinguish local and remote interaction to be robust and reliable. The classic actor abstraction on the other hand is resilient without explicitly distinguishing between local and remote message recipients. Current developments in Akka therefore address the challenge of offering some level of type safety for messaging without using Akka's `TypedActor`{language:java}s for active objects. The APIs are summarized under the name *Akka Typed* [@AkkaTyped]. 
 
 One part of Akka's isolation strategy is to never expose a reference to an actual actor instance directly. Instead, all communication happens via the messaging interfaces of the `ActorRef`{language:scala} proxies (`tell`, `ask`). These interfaces take arbitrary types as messages. Akka Typed introduces a generic type parameter to the address, i.e.\ `ActorRef[U]`{language:scala}. The range of accepted messages is then limited to `U`{language:scala}-typed objects. The signatures of the messaging methods changes from `tell(msg: Any)`{language:scala} to `tell(msg: U)`{language:scala}.
 
