@@ -337,7 +337,7 @@ We can overcome the single-threaded limitation when we utilize a non-blocking AP
 An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
 ~ Figure { #fig-persistence-actor; \
-           caption: "Example of a store actor sharing its persistent state with several child actors: The store delegates all database interactions to the child actors"; \
+           caption: "Example of a stateful actor sharing its persistent state with several child actors: The store delegates all database interactions to the child actors"; \
            width:100%; page-align:here; }
 ![img-persistence-actor]
 ~
