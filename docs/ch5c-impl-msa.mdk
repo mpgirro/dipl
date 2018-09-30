@@ -151,8 +151,6 @@ The `name` argument of the `@FeignClient` annotation in the REST example we gave
 
 Discovery mechanisms impact the response times of services. It can become necessary to lookup an address before a service is able to make a request. The service must then make additional RPCs for registry lookups, in the worst case for each of the involved services. Figure [#fig-service-discovery] shows the order of interactions in the worst case for search requests in our scenario. When all location information is outdated, then `G` must first lookup `I` with `G` &rightleftarrows; `D` (1) before it can do `G` &rarr; `S` (2). Subsequently, `S` must lookup `I` with `S` &rightleftarrows; `D` (3) before it can send `S` &rarr; `I` (4). This dampens the liveness of the request flow for our search results (`G` &rightleftarrows; `S` &rightleftarrows; `I`). We also need to ensure that the information in the registry is correct and up to date. *Health checks* are a common feature of discovery services to determine if their registrees are actually up and alive [@Dra17c]. 
 
-
-
 In contrast, message queues have the major benefit that a sender dispatches a message to the queue without needing the address of the receiver. This circumstance provides a lower degree of coupling as well as a notion of location transparency between sender and receiver. Therefore, when we use message queue channels, we do not need service discovery technology if we statically know the queue address. Otherwise, the queue needs to register with the discovery mechanism. The clients then simply retrieve the queue's address dynamically. 
 
 

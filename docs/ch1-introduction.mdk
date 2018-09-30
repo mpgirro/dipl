@@ -25,12 +25,12 @@ Dragoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature 
 { list-style-type:none }
 -->
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ1__         | Why do actors and microservices qualify for programming concurrency?       |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ1__         | Why do actors and microservices qualify for programming concurrency? |
 { }
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ2__         | How do the actor and the microservice model facilitate concurrent execution?   |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ2__         | How do the actor and the microservice model facilitate concurrent execution? |
 { }
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -38,9 +38,9 @@ Dragoni *et al.*\ [@Dra17a] point out that there is yet a gap in the literature 
 |                 | concurrent programming concerns?                                           |
 { }
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ4__         | How does the performance of actors and microservices compare in a multi-   |
-|                 | core environment relative to a concurrent system scenario?                 |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ4__         | How does the performance of actors and microservices compare in a multi- |
+|                 | core environment relative to a concurrent system scenario?               |
 { }
 
 <!--
