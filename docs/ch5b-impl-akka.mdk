@@ -136,6 +136,7 @@ Although simple RPC-styled retrieval did limit throughput, we have experienced t
 
 The actor model is solely built on the concept of *asynchronous* message passing. Akka provides a method called `tell`, with an additional alias `!`\ for Scala, on `ActorRef`{language:scala}. We use the method to send a message object to an actor. However, many real-life scenarios expect synchronous communication. Echo faces this problem whenever a user requests information, i.e.\ a search request through the Web application (`G` &rightleftarrows; `S` &rightleftarrows; `I`) or metadata retrieval from the CatalogStore (`G` &rightleftarrows; `D`). Fortunately, we can model synchronous communication with an asynchronous information flow [@Agh97].
 
+
 #### Future-based Messaging
 
 
@@ -149,7 +150,7 @@ Akka provides a primitive to introduce a synchronous information flow. In additi
 
 [img-pipeline-search-future]: graphics/search-future.[svg,png] "Image about pipeline of a search request using futures" { height:1.1cm; vertical-align:middle; padding-top:1em; padding-bottom:1em; }
 
-A search request is the prime example for a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to the Searcher and finally to the IndexStore. The results travel back from `I` via `S` to `G`. On the client-side, the results are wrapped in a `Future`{language:scala} until they become available. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other requests until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect the Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we use to define subsequent computation once the results are available. We can also utilize these methods when we dispatch several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
+A search request is the prime example of a synchronous call. Figure [#fig-pipeline-search-future] shows how a request travels from the Gateway to the Searcher and finally to the IndexStore. The results travel back from `I` via `S` to `G`. On the client-side, the results are wrapped in a `Future`{language:scala} until they become available. We can resolve a `Future`{language:scala} inside an actor (e.g.\ a Searcher) in a waiting fashion, which causes the actor to block. The actor cannot process other requests until it receives the answer from the IndexStore. However, we need to avoid blocking if we expect the Searcher to process messages in reasonable time. We want to improve throughput. To prevent unnecessary blocking, Scala provides monadic methods for the `Future`{language:scala} trait that we use to define subsequent computation once the results are available. We can also utilize these methods when we dispatch several synchronous messages inside actors. Scala even offers specialized syntax through the so-called *for-comprehension* [@Hal18]:
 
 ```{language:scala}
 val f1: Future[Int] = actor1 ? msg1
@@ -188,7 +189,7 @@ index.tell(msg, handler)
 Using `context.actorOf` instead of `system.actorOf` makes the response handler a direct descendent of the current actor. Providing the obtained `ActorRef`{language:scala} as a second argument to `tell`[^fn-2nd-tell-argument] sets the response handler as the official sender of the message. This way, we set the handler as the recipient to the response of the message. This dynamically created actor poses as a temporary component in the architecture:
 
 * Response Handlers (H)
-  : exist with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion. Upon message reception, a response handler pass on the result and deconstructs. 
+  : exist with the sole purpose of posing as the original sender of a simple `tell` message dispatch and eventually receiving an answer in a purely asynchronous fashion. Upon message reception, a response handler passes on the result and deconstructs. 
 
 In the retrieval subsystem, the actual information flow turns from the concept definition `G` &rightleftarrows; `S` &rightleftarrows; `I` into the concrete realization `G` &rarr; `S` &rarr; `I` &rarr; `H` &rarr; `G` (Figure [#fig-pipeline-search-delegation]). Altering the reply destination is a form of the *delegation* concept known from object-orientation [@Yon86]. The overall approach is sometimes referred to as *cameo pattern* and mostly used for brief and simple interactions between actors [@All13]. The delegation pattern provides an asynchronous composition style to handle synchronous communication requirements. The approach is also more implementation independent, if the actor variant does not offer a handy concept like futures.
 
@@ -210,7 +211,7 @@ Time in general constrains synchronous communication. It is important that we pr
 
 Synchronous information flow requires a mechanism to implement timeouts in order to prevent starvation. Akka supports a special timing mechanism. Actors, e.g.\ newly spawned delegation-slaves, register to receive a timeout message after a given time period. The actor then simply needs to provide an appropriate message behavior to handle the timeout message. When the actor receives the expected message of the synchronous flow before the timeout message, the actor cancels the dispatch of the timeout message. However, if the actor receives the timeout message prior to the expected response message, then the timeout occurred and the actor performs a timeout reaction [@All13; @Roe15].
 
-It is interesting how timed messages are introduced into the actor system. Timers require some sort of concurrent thread that constantly checks the current time and performs registered trigger actions. Dedicated thread-based concurrency is somewhat opposed to the actor model and message passing in general, where each action happens as a reaction to a received message, decoupled from a notion of time. Therefore, offering solutions for timer mechanisms is a concern of many actor systems, e.g.\ Erlang [@Arm93] and Orleans [@Ber14]. To avoid interference of outside threads with actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each runtime system. Actors register a timed message sending operation with this `Scheduler`{language:scala}:
+It is interesting how timed messages are introduced into the actor system. Timers require some sort of concurrent thread that constantly checks the current time and performs registered trigger actions. Dedicated thread-based concurrency is somewhat opposed to the actor model and message passing in general, where each action happens as a reaction to a received message, decoupled from a notion of time. Therefore, offering solutions for timer mechanisms is a concern of many actor systems, e.g.\ also Erlang [@Arm93] and Orleans [@Ber14]. To avoid interference of outside threads with actor states, Akka provides a special `Scheduler`{language:scala} instance that is unique for each runtime system. Actors register a timed message sending operation with this `Scheduler`{language:scala}:
 
 ```{language:scala}
 val messenger: Cancellable = context.system.scheduler
@@ -280,7 +281,7 @@ The signaling of an occurred failure is not communicated via a "normal" actor me
 * Action 4: Escalating the failure, hence the supervisor fails itself.
 { list-style-type:none }
 
-A supervisor's failure notification has the sole form of an exception. The actor system does not offer state information that puts this exception into context. The reason is that state should only belong to and be processed by one actor exclusively. Let us assume that a failure results in the propagation of state from the child to the supervisor. Then a part of the child's implementation logic leaks into its supervisor. The supervisor requires the knowledge to interpret the state in order to evaluate it in a meaningful way. However, Akka isolates the failure in the child. In case the child is gets resumed (Action 1), the cleanup falls to the child itself. The runtime does not re-introduce the message on which the fault occurred into the mailbox, to avoid fault-reoccurrence. Actions 2-4 discard the child's state in any case [@Roe15;@AkkaSupervision].
+A supervisor's failure notification has the sole form of an exception. The actor system does not offer state information that puts this exception into context. The reason is that state should only belong to and be processed by one actor exclusively. Let us assume that a failure results in the propagation of state from the child to the supervisor. Then a part of the child's implementation logic leaks into its supervisor. The supervisor requires the knowledge to interpret the state in order to evaluate it in a meaningful way. However, Akka isolates the failure in the child. In case the child gets resumed (Action 1), the cleanup falls to the child itself. The runtime does not re-introduce the message on which the fault occurred into the mailbox, to avoid fault-reoccurrence. Actions 2-4 discard the child's state in any case [@Roe15;@AkkaSupervision].
 
 
 ### Information Routing and Delivery Reliability
@@ -322,7 +323,7 @@ In contrast, other actor systems like Orleans provide *at-least-once* delivery. 
 
 * Actors exist within a hierarchical supervision structure.
 * Failure is communicated along side the hierarchy while state does not leave the boundary of an actor.
-* Supervision is useful for complex message routing logics.
+* Supervision is also useful for complex message routing logics.
 { .findings-list }
 ~
 
@@ -334,7 +335,7 @@ We must employ some kind of data persistence mechanism, e.g.\ a database, in ord
 
 We can overcome the single-threaded limitation when we utilize a non-blocking API for database connections. Such APIs provide a `Future`{language:scala} reference to an eventual result at the cost of additional stress to the actor's thread-pool. With the monadic methods of `Future`{language:scala} we define further computation on the result once it becomes available. The price is the immanent risk of accidental data races when we pass mutable state into the `Future`{language:scala}'s scope.  
 
-An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe below in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
+An example for a situation where we cannot apply a non-blocking API is the experiment for the benchmark we describe later on in Section [#sec-experiment-setup]. We need an alternative strategy. The delegation principle we discussed for synchronous message handling is also applicable for database interaction. We can handle several database interactions concurrently by having as many actors communicate with the database at the same time. 
 
 ~ Figure { #fig-persistence-actor; \
            caption: "Example of a stateful actor sharing its persistent state with several child actors: The store delegates all database interactions to the child actors"; \

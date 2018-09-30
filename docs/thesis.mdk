@@ -257,21 +257,33 @@ A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](h
 ~ End HtmlOnly
 
 
-
-&pagebreak;
 ~ Begin TexOnly
 ~ Begin TexRaw
-\vspace*{\fill}
+\begin{danksagung*}
 ~ End TexRaw
 ~ End TexOnly
-~ Begin Center
 
-*To whom it may concern*
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- DANKSAGUNG -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-~ End Center
+~ Begin HtmlOnly
+# Danksagung { -; toc:clear }
+~ End HtmlOnly
+
+
+An dieser Stelle möchte ich einigen wenigen meinen Dank aussprechen:
+
+* Meiner Familie, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
+
+* Meinem Betreuer, Franz Puntigam, für die guten Ratschläge durch welche diese Arbeit zustande kam.
+
+* Theresa und Alex, die sich die Mühe gemacht haben diese Arbeit Korrektur zu lesen.
+
+
 ~ Begin TexOnly
 ~ Begin TexRaw
-\vspace*{\fill}
+\end{danksagung*}
 ~ End TexRaw
 ~ End TexOnly
 
@@ -320,33 +332,23 @@ Applikationen benötigen häufig eine simultane Bearbeitung mehrerer Aufgaben. *
 ~ End TexOnly
 
 
+
+
+
+&pagebreak;
 ~ Begin TexOnly
 ~ Begin TexRaw
-\begin{danksagung*}
+\vspace*{\fill}
 ~ End TexRaw
 ~ End TexOnly
+~ Begin Center
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- DANKSAGUNG -->
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+*To whom it may concern*
 
-~ Begin HtmlOnly
-# Danksagung { -; toc:clear }
-~ End HtmlOnly
-
-
-An dieser Stelle möchte ich einigen wenigen meinen Dank aussprechen:
-
-* Meiner Familie, die mich in meinem Studium immer unterstützt haben, obwohl ich viel zu selten anrufe.
-
-* Meinem Betreuer, Franz Puntigam, für die guten Ratschläge durch welche diese Arbeit zustande kam.
-
-* Theresa und Alex, die sich die Mühe gemacht haben diese Arbeit Korrektur zu lesen.
-
-
+~ End Center
 ~ Begin TexOnly
 ~ Begin TexRaw
-\end{danksagung*}
+\vspace*{\fill}
 ~ End TexRaw
 ~ End TexOnly
 
