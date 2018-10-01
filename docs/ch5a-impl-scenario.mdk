@@ -3,25 +3,58 @@
 
 
 ~ Epigraph { caption: "Eric S. Raymond"}
-Every good work of software starts by scratching a developer's personal itch.
+Every good work of software starts by scratching a developer's personal
+itch.
 ~
 
 
-In this chapter, we cover the practical aspects of programming with actors and microservices. Section [#sec-scenario] describes a scenario for a concurrent system. Section [#ch-actor-impl] covers the strategies we apply to implement this scenario using the actor model. Subsequently, Section [#ch-microservice-impl] describes the implementation of the scenario using the microservice model.
+In this chapter, we cover the practical aspects of programming with
+actors and microservices. Section [#sec-scenario] describes a scenario
+for a concurrent system. Section [#ch-actor-impl] covers the strategies
+we apply to implement this scenario using the actor model. Subsequently,
+Section [#ch-microservice-impl] describes the implementation of the
+scenario using the microservice model.
 
 
 ## Concurrent System Scenario {#sec-scenario}
 
 
-In this section, we outline a domain-specific search engine we call *Echo*[^fn-echo-name]. This search engine is our non-trivial scenario of a concurrent system that serves us as the reference for evaluating the programming of concurrent systems with actors and microservices.
+In this section, we outline a domain-specific search engine we call
+*Echo*[^fn-echo-name]. This search engine is our non-trivial scenario of
+a concurrent system that serves us as the reference for evaluating the
+programming of concurrent systems with actors and microservices.
 
 [^fn-echo-name]: We chose the name "Echo" for its wonderful characteristics of providing a short package name and the analogy to *recalling spoken words*.
 
-Search engines are a composition of rather loosely coupled and independent subsystems [@Cou05]. Users interact with a search engine by submitting search requests in the form of so-called *queries*. The search engine then presents respective results to the user. This functionality however is merely the so-called retrieval phase performed by the *retrieval subsystem*. As the name indicates, this phase retrieves information. By implication, the information must have been collected and stored beforehand. A second so-called *indexing subsystem* is responsible for gathering the information and storing it in a form that is optimized for searching, the so-called *reverse index* [@Lil09;@Ped06]. The reverse index maps a *document-term* relationship -- where documents are arbitrary text collections -- into a *term-document* structure [@Man08]. 
+Search engines are a composition of rather loosely coupled and
+independent subsystems [@Cou05]. Users interact with a search engine by
+submitting search requests in the form of so-called *queries*. The search
+engine then presents respective results to the user. This functionality
+however is merely the so-called retrieval phase performed by the
+*retrieval subsystem*. As the name indicates, this phase retrieves
+information. By implication, the information must have been collected and
+stored beforehand. A second so-called *indexing subsystem* is responsible
+for gathering the information and storing it in a form that is optimized
+for searching, the so-called *reverse index* [@Lil09;@Ped06]. The reverse
+index maps a *document-term* relationship -- where documents are
+arbitrary text collections -- into a *term-document* structure [@Man08].
 
-Several factors contribute to the fact that search engine architectures are suitable for concurrent programming research. First, both subsystems are mostly independent. They merely make use of a common information index, where the indexing subsystem is exclusively adding information and the retrieval subsystem is exclusively reading the information. Hence, the subsystems are independent and can run concurrently. Second, since many kinds of search engines regard very large amounts of data, their construction was always led by the effort to leverage concurrency in order to improve their scalability. Especially the parallel and distributed computing research merits attention to search engines, for example to explore cluster architectures [@Ped06;@Man08]. Additionally, our specific domain we outline below is also very suitable for concurrent processing.
+Several factors contribute to the fact that search engine architectures
+are suitable for concurrent programming research. First, both subsystems
+are mostly independent. They merely make use of a common information
+index, where the indexing subsystem is exclusively adding information and
+the retrieval subsystem is exclusively reading the information. Hence,
+the subsystems are independent and can run concurrently. Second, since
+many kinds of search engines regard very large amounts of data, their
+construction was always led by the effort to leverage concurrency in
+order to improve their scalability. Especially the parallel and
+distributed computing research merits attention to search engines, for
+example to explore cluster architectures [@Ped06;@Man08]. Additionally,
+our specific domain we outline below is also very suitable for concurrent
+processing.
 
-The design of search engine architectures is generally led by two basic requirements [@Man08]:
+The design of search engine architectures is generally led by two basic
+requirements [@Man08]:
 
 * Effectiveness
   : The quality of search results is the *effectiveness* of a search engine. Effectiveness is the sole concern of the scientific discipline called *information retrieval* (IR). *Precision* and *recall* are the two metrics that IR defines in order to assess the effectiveness. 
@@ -29,23 +62,60 @@ The design of search engine architectures is generally led by two basic requirem
 * Efficiency
   : Factors like the response time and the throughput determine the *efficiency* of a search engine. These factors are highly affected by the concurrent processing capabilities of the system.
 
-The optimization of effectiveness is not within the scope of this thesis. We merely apply a basic scoring method of the utilized information retrieval library. Our sole goal is to increase the efficiency of the system by leveraging concurrent programming techniques.
+The optimization of effectiveness is not within the scope of this thesis.
+We merely apply a basic scoring method of the utilized information
+retrieval library. Our sole goal is to increase the efficiency of the
+system by leveraging concurrent programming techniques.
 
 
 ### Domain Description
 
 
-We build our domain-specific search engine for the *podcast* domain. On the one hand, the term refers to content, that is an episodic series of digital media. The media is usually audio, more seldomly video.  On the other hand, *podcast* can also refer to the distribution mechanism. The distribution builds upon XML (E__x__tensible __M__arkup __L__anguage) web feeds. RSS 2.0 [@Win03] (__R__ich __S__ite __S__ummary) and Atom [@RFC4287] are the established syndication formats. Since RSS 2.0 has always been the more dominant format, we simply refer to *RSS feeds* from here on. Both formats gained popularity in the 2000s as an effective, decentralized mechanism to publish the updates to a website's content. Podcasts build upon the same principle. Yet they utilize an otherwise optional field for items of an RSS feed, the `<enclosure>` tag. This tag provides an URL (__U__niform __R__esource __L__ocator) to the media file. Subscribers of the feed download the file behind the URL and watch/listen to the media, usually through a specialized software application. The `<enclosure>` is therefore the main content of each item in a podcast RSS feed. Additionally, there are other fields within the feed. Some of these fields contain human readable information about the linked media file, so-called *metadata* [@Pat06]. Appendix [#apx-feed-structure-example] gives an example RSS feed structure with dummy metadata.
+We build our domain-specific search engine for the *podcast* domain. On
+the one hand, the term refers to content, that is an episodic series of
+digital media. The media is usually audio, more seldomly video. On the
+other hand, *podcast* can also refer to the distribution mechanism. The
+distribution builds upon XML (E__x__tensible __M__arkup __L__anguage) web
+feeds. RSS 2.0 [@Win03] (__R__ich __S__ite __S__ummary) and
+Atom [@RFC4287] are the established syndication formats. Since RSS 2.0
+has always been the more dominant format, we simply refer to *RSS feeds*
+from here on. Both formats gained popularity in the 2000s as an
+effective, decentralized mechanism to publish the updates to a website's
+content. Podcasts build upon the same principle. Yet they utilize an
+otherwise optional field for items of an RSS feed, the `<enclosure>` tag.
+This tag provides an URL (__U__niform __R__esource __L__ocator) to the
+media file. Subscribers of the feed download the file behind the URL and
+watch/listen to the media, usually through a specialized software
+application. The `<enclosure>` is therefore the main content of each item
+in a podcast RSS feed. Additionally, there are other fields within the
+feed. Some of these fields contain human readable information about the
+linked media file, so-called *metadata* [@Pat06].
+Appendix [#apx-feed-structure-example] gives an example RSS feed
+structure with dummy metadata.
 
-Our search engine is designed to regularly analyze RSS feeds of podcasts. The metadata allows us to add information for every media file to the search index. Although we do not analyze the media itself, we can still provide search functionality based on the metadata information. The domain is very suitable for concurrent processing, since the RSS feeds are decentralized. Every podcast content creator is publishing a separate feed. There is no interrelation between feeds. We can process each feed separately and therefore concurrently.
+Our search engine is designed to regularly analyze RSS feeds of podcasts.
+The metadata allows us to add information for every media file to the
+search index. Although we do not analyze the media itself, we can still
+provide search functionality based on the metadata information. The
+domain is very suitable for concurrent processing, since the RSS feeds
+are decentralized. Every podcast content creator is publishing a separate
+feed. There is no interrelation between feeds. We can process each feed
+separately and therefore concurrently.
 
 
 ### System Components
 
 
-At the core, our basic architecture and the components are inspired by the work of Brin & Page [@Brin98] on large scale web search engine "anatomy", as well as more modern interpretations of associated design principles given in [@Cou05] and [@Ped06].  
+At the core, our basic architecture and the components are inspired by
+the work of Brin & Page [@Brin98] on large scale web search engine
+"anatomy", as well as more modern interpretations of associated design
+principles given in [@Cou05] and [@Ped06].
 
-The two high-level subsystems we have given above, indexing and retrieval, are internally composed of several smaller components. We specify that each of these components has to be a concurrent task unit of the programming model, i.e.\ an actor or a microservice. The respective units are:
+The two high-level subsystems we have given above, indexing and
+retrieval, are internally composed of several smaller components. We
+specify that each of these components has to be a concurrent task unit of
+the programming model, i.e.\ an actor or a microservice. The respective
+units are:
 
 * CatalogStore (C)
   : holds a catalog of all metadata information we gather about podcasts, their feeds and episodes. The Store persists this information in a relational database.
@@ -68,7 +138,10 @@ The two high-level subsystems we have given above, indexing and retrieval, are i
 * Updater (U)
   : determines which feeds to re-download next in order to register new episodes, and update existing metadata.
 
-The CatalogStore and the IndexStore are stateful, all other task units are stateless. The complete search engine architecture is the composition of all these components according to the interaction model shown in Figure [#fig-task-units].
+The CatalogStore and the IndexStore are stateful, all other task units
+are stateless. The complete search engine architecture is the composition
+of all these components according to the interaction model shown in
+Figure [#fig-task-units].
 
 ~ Figure { #fig-task-units; \
            caption: "Complete interaction model of the task units in the Echo search engine"; \
@@ -78,25 +151,74 @@ The CatalogStore and the IndexStore are stateful, all other task units are state
 
 [img-task-units]: graphics/interaction-model.[svg,png] "Image about task units and message flow" { height:4.2cm; vertical-align:middle; padding-bottom:1em; padding-top:0; margin-top:0; }
 
-When we give some basic dataflow examples in due course, we use the following shorthand notation for arbitrary components `X` and `Y`, where `X` and `Y` get substituted by the component abbreviations (`C`, `I`, `W`, `P`, `S`, `G`, `U`). `X` &rarr; `Y` expresses `X` sending a message to `Y` (push). `X` &larr; `Y` denotes `X` fetching a message from `Y` (pull). `X` &rightleftarrows; `Y` is short for `X` sending a request message to `Y` with a direct response (synchronous remote procedure call, RPC).
+When we give some basic dataflow examples in due course, we use the
+following shorthand notation for arbitrary components `X` and `Y`, where
+`X` and `Y` get substituted by the component abbreviations (`C`, `I`,
+`W`, `P`, `S`, `G`, `U`). `X` &rarr; `Y` expresses `X` sending a message
+to `Y` (push). `X` &larr; `Y` denotes `X` fetching a message from `Y`
+(pull). `X` &rightleftarrows; `Y` is short for `X` sending a request
+message to `Y` with a direct response (synchronous remote procedure call,
+RPC).
 
-The system shown in Figure [#fig-task-units] merely forms the concurrent indexing and retrieval system. It is therefore a backend application only. In order to actually use the search engine, we provide the backend with a web-based user interface (UI). This *Web* application is based on the Angular [@GoogleAngular] framework. The actor and microservice implementations of the backend have to provide a REST interface within the Gateway component to allow interaction from the outside. The Web UI serves us as the proof of concept for the desired functionality of the engine's backend implementations.
+The system shown in Figure [#fig-task-units] merely forms the concurrent
+indexing and retrieval system. It is therefore a backend application
+only. In order to actually use the search engine, we provide the backend
+with a web-based user interface (UI). This *Web* application is based on
+the Angular [@GoogleAngular] framework. The actor and microservice
+implementations of the backend have to provide a REST interface within
+the Gateway component to allow interaction from the outside. The Web UI
+serves us as the proof of concept for the desired functionality of the
+engine's backend implementations.
 
-Since our scientific focus is on the concurrent programming aspect and not the information retrieval aspect, we want to implement the domain-specific logic only once. Therefore, we provide each backend with a common *Core* library written in Java. The Core offers most domain-specific functionality, so that each backend codebase can focus on the concurrent execution and interaction. For example, the actual searching is done through a specialized data structure, the reverse index. We use Lucene [@ApacheLucene] to create this structure. Lucene offers a Java interface that is interoperable with most JVM-based programming languages. RSS/Atom feed parsing is done using ROME [@ROME], enriched by an extension we wrote to support additional *Simple Chapter* [@PodloveSimpleChapters] metadata information.
+Since our scientific focus is on the concurrent programming aspect and
+not the information retrieval aspect, we want to implement the
+domain-specific logic only once. Therefore, we provide each backend with
+a common *Core* library written in Java. The Core offers most
+domain-specific functionality, so that each backend codebase can focus on
+the concurrent execution and interaction. For example, the actual
+searching is done through a specialized data structure, the reverse
+index. We use Lucene [@ApacheLucene] to create this structure. Lucene
+offers a Java interface that is interoperable with most JVM-based
+programming languages. RSS/Atom feed parsing is done using ROME [@ROME],
+enriched by an extension we wrote to support additional *Simple
+Chapter* [@PodloveSimpleChapters] metadata information.
 
 
 ### Processing Pipelines {#sec-subsystem-pipelines}
 
 
-In this section, we give a brief outline of the data processing pipelines which make up the indexing and the retrieval subsystem. The processing pipelines are the result of the composition of the architecture components.
+In this section, we give a brief outline of the data processing pipelines
+which make up the indexing and the retrieval subsystem. The processing
+pipelines are the result of the composition of the architecture
+components.
 
-Note that Figure [#fig-task-units] shows an interaction between the Gateway and the CatalogStore. The pipelines below do not mention this interaction. The Web UI can display the entire metadata of an item. Therefore we must retrieve the complete metadata from the CatalogStore. For search requests, the retrieval subsystem merely produces the reduced metadata that is stored in the search index. We nevertheless show the `G` &rightleftarrows; `C` call for completeness.
+Note that Figure [#fig-task-units] shows an interaction between the
+Gateway and the CatalogStore. The pipelines below do not mention this
+interaction. The Web UI can display the entire metadata of an item.
+Therefore we must retrieve the complete metadata from the CatalogStore.
+For search requests, the retrieval subsystem merely produces the reduced
+metadata that is stored in the search index. We nevertheless show the `G`
+&rightleftarrows; `C` call for completeness.
 
 
 #### Indexing Pipeline
 
 
-We process feeds either when they are new to us (initial indexing), or to check for new episodes (update). Hence, there are two cases when the indexing pipeline gets triggered. Either we add a new feed, or the Updater determines that a feed requires a check for new episodes. In order to determine which feeds require an update, the Updater regularly inquires the database of the CatalogStore. The Updater passes the update candidates to the Web Crawler. The Crawler retrieves the XML data of the feed via HTTP. Then the Crawler passes the raw feed data to the Parser. The Parser extracts the podcast and episodes metadata from the XML into domain objects. The Parser forwards all metadata objects to the CatalogStore. The database of the Store persists the complete metadata. The Catalog also sends the search-relevant part[^fn-relevant-metadata] of the metadata to the IndexStore, which adds the data to the Lucene reverse index data structure. The overall flow is: `U` &rarr; `C` &rarr; `U` &rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
+We process feeds either when they are new to us (initial indexing), or to
+check for new episodes (update). Hence, there are two cases when the
+indexing pipeline gets triggered. Either we add a new feed, or the
+Updater determines that a feed requires a check for new episodes. In
+order to determine which feeds require an update, the Updater regularly
+inquires the database of the CatalogStore. The Updater passes the update
+candidates to the Web Crawler. The Crawler retrieves the XML data of the
+feed via HTTP. Then the Crawler passes the raw feed data to the Parser.
+The Parser extracts the podcast and episodes metadata from the XML into
+domain objects. The Parser forwards all metadata objects to the
+CatalogStore. The database of the Store persists the complete metadata.
+The Catalog also sends the search-relevant part[^fn-relevant-metadata] of
+the metadata to the IndexStore, which adds the data to the Lucene reverse
+index data structure. The overall flow is: `U` &rarr; `C` &rarr; `U`
+&rarr; `W` &rarr; `P` &rarr; `C` &rarr; `I`
 
 [^fn-relevant-metadata]: Some parts of the metadata, like the byte size or MIME type of the `<enclosure>` file, is important to determine new entries. Therefore, the CatalogStore persist this data. This metadata is however hardly relevant for search queries, therefore we do not include it in the search index. 
 
@@ -113,7 +235,16 @@ We process feeds either when they are new to us (initial indexing), or to check 
 #### Retrieval Pipeline
 
 
-The essential purpose of the engine is search. The Web UI offers an interface similar to well-known search providers on the world wide web. The Gateway registers search requests from the UI on the REST interface and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is doing some basic query processing and then forwards the resulting query to an IndexStore (`S` &rarr; `I`). The IndexStore propagates the search results back via the Searcher (`I` &rarr; `S`) and the Gateway (`S` &rarr; `G`) to the Web [UI]{tex-cmd-after:"\,"}. We require this flow to complete in a timely manner, thus synchronous. The complete flow is: `G` &rightleftarrows; `S` &rightleftarrows; `I`.
+The essential purpose of the engine is search. The Web UI offers an
+interface similar to well-known search providers on the world wide web.
+The Gateway registers search requests from the UI on the REST interface
+and forwards the request to a Searcher (`G` &rarr; `S`). This Searcher is
+doing some basic query processing and then forwards the resulting query
+to an IndexStore (`S` &rarr; `I`). The IndexStore propagates the search
+results back via the Searcher (`I` &rarr; `S`) and the Gateway (`S`
+&rarr; `G`) to the Web [UI]{tex-cmd-after:"\,"}. We require this flow to
+complete in a timely manner, thus synchronous. The complete flow is: `G`
+&rightleftarrows; `S` &rightleftarrows; `I`.
 
 ~ Figure { #fig-retrieval-pipeline; \
            caption: "The retrieval pipeline: The Gateway (`G`) registers requests, forwards each query to the Searcher (`S`), who retrieves data from the IndexStore (`I`). The respective results travel back from `I` via `S` to `G`"; \

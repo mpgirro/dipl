@@ -7,11 +7,40 @@ These are my principles. If you don't like them, I have others.
 ~
 
 
-*Microservice architecture* (MSA) is a recent software architecture style for designing software applications as systems of loosely coupled, independently deployable, single purpose services [@Fow14]. In this chapter, we outline the motivation behind microservice architectures, the component properties and the resulting concurrent nature, problems arising from the terminology, and the service programming model.
+*Microservice architecture* (MSA) is a recent software architecture style
+for designing software applications as systems of loosely coupled,
+independently deployable, single purpose services [@Fow14]. In this
+chapter, we outline the motivation behind microservice architectures, the
+component properties and the resulting concurrent nature, problems
+arising from the terminology, and the service programming model.
 
-In contrast to a monolithic application, for a microservice architecture we split the application logic into a suite of small parts. We implement each part as a dedicated program and design it to provide a single task of the business logic. We call these programs, which pose as the application's components, *microservices* (MS). The microservice style is open for every programming language and paradigm. All services communicate with message passing semantics on the OS or network level. Therefore, we can conceive the various services in different programming languages and technologies. As long as every microservice exposes the interface that the architecture requires, the service is a suitable component [@Dra17a;@Mon16a].
+In contrast to a monolithic application, for a microservice architecture
+we split the application logic into a suite of small parts. We implement
+each part as a dedicated program and design it to provide a single task
+of the business logic. We call these programs, which pose as the
+application's components, *microservices* (MS). The microservice style is
+open for every programming language and paradigm. All services
+communicate with message passing semantics on the OS or network level.
+Therefore, we can conceive the various services in different programming
+languages and technologies. As long as every microservice exposes the
+interface that the architecture requires, the service is a suitable
+component [@Dra17a;@Mon16a].
 
-Unlike the actor model, microservices were not invented as a specific model of computation. Instead, the microservice paradigm emerged from the industrial need to break the scalability barrier that monolithic[^fn-monolith] applications inevitably reach [@Bon17]. Only later did the scientific community gain interest in this paradigm. The consequence was an explosion of contributions on this concept in recent years. Yet, academia still has some troubles to settle on a common basic definition of the essential concepts which determine this paradigm [@Has16]. Fowler & Lewis [@Fow14] give the seminal review of the microservice concept. Their work is therefore the original source most scholars refer to. But Fowler & Lewis focus on the common characteristics of microservices from a more practical engineering perspective. We refer to Dragoni *et al.*\ [@Dra17a] for further reading as well, since they give an extensive conceptual description. An overview of the publication trends is given in [@Fra17b].
+Unlike the actor model, microservices were not invented as a specific
+model of computation. Instead, the microservice paradigm emerged from the
+industrial need to break the scalability barrier that
+monolithic[^fn-monolith] applications inevitably reach [@Bon17]. Only
+later did the scientific community gain interest in this paradigm. The
+consequence was an explosion of contributions on this concept in recent
+years. Yet, academia still has some troubles to settle on a common basic
+definition of the essential concepts which determine this
+paradigm [@Has16]. Fowler & Lewis [@Fow14] give the seminal review of the
+microservice concept. Their work is therefore the original source most
+scholars refer to. But Fowler & Lewis focus on the common characteristics
+of microservices from a more practical engineering perspective. We refer
+to Dragoni *et al.*\ [@Dra17a] for further reading as well, since they
+give an extensive conceptual description. An overview of the publication
+trends is given in [@Fra17b].
 
 [^fn-monolith]: The term originates from the *monolithic kernel* style of operating system architectures. Such is a sole binary running in kernel mode and providing the process- and memory management, file system, etc.
 
@@ -19,74 +48,258 @@ Unlike the actor model, microservices were not invented as a specific model of c
 ## Limits of Centralization
 
 
-Historically, software systems are implemented in a so-called *monolithic* way. All the source code compiles into one single, central artifact that we execute on one machine. This centralization originates from the level of abstraction mainstream programming languages provide to break down the complexity of the programming task. The general term for these abstractions is the *module*, and they allow us to logically separate concerns. Yet, the transformation of modules from program code to machine code leads to a result where all modules merge into one unified construct: the (monolithic) *executable* [@Sco06]. By inversion of argument, a monolith is an application of modules that we cannot execute independently [@Dra17a].
+Historically, software systems are implemented in a so-called
+*monolithic* way. All the source code compiles into one single, central
+artifact that we execute on one machine. This centralization originates
+from the level of abstraction mainstream programming languages provide to
+break down the complexity of the programming task. The general term for
+these abstractions is the *module*, and they allow us to logically
+separate concerns. Yet, the transformation of modules from program code
+to machine code leads to a result where all modules merge into one
+unified construct: the (monolithic) *executable* [@Sco06]. By inversion
+of argument, a monolith is an application of modules that we cannot
+execute independently [@Dra17a].
 
-Modules naturally introduce a relatively strong form of coupling. In-memory call communication is a cheap and direct way to address components and we therefore apply it heavily within monoliths and their modules [@Bon17]. Every application that is subject to the tight coupling of its modules suffers from certain issues [@Sal16;@Dra17c;@Dra17a]:
+Modules naturally introduce a relatively strong form of coupling.
+In-memory call communication is a cheap and direct way to address
+components and we therefore apply it heavily within monoliths and their
+modules [@Bon17]. Every application that is subject to the tight coupling
+of its modules suffers from certain issues [@Sal16;@Dra17c;@Dra17a]:
 
 * The components are less reusable.
 * Increased interleaving becomes hard to maintain.
-* We need to upgrade all modules simultaneously and are limited in the technologies we can use.
+* We need to upgrade all modules simultaneously and are limited in the
+  technologies we can use.
 * Evolution is generally hindered due to the growing complexity.
 
-Most importantly, the main argument against monoliths is scalability [@Dra17a]. Each single instantiation of a program executable is intrinsically only able to run on a single machine. Hence, there is a natural upper bound to the application's performance due to the hardware limitations. Many approaches to overcome this limit(s) were proposed over the years. Previously, the *service-oriented architecture* (SOA) approach gained popularity. SOA builds on the idea of combining the capabilities of multiple monoliths -- either of the same or different program images -- and integrating them through a uniform communication channel like an *enterprise-service bus* [@Fow14;@Sal16]. This approach allows us to link heterogenous technologies and enables independent deployment, since we do not require in-memory calls between these services anymore. However, SOA still facilitates large monolithic applications which are only able to scale through duplicated instances of the entire application [@Dra17b]. 
+Most importantly, the main argument against monoliths is
+scalability [@Dra17a]. Each single instantiation of a program executable
+is intrinsically only able to run on a single machine. Hence, there is a
+natural upper bound to the application's performance due to the hardware
+limitations. Many approaches to overcome this limit(s) were proposed over
+the years. Previously, the *service-oriented architecture* (SOA) approach
+gained popularity. SOA builds on the idea of combining the capabilities
+of multiple monoliths -- either of the same or different program images
+-- and integrating them through a uniform communication channel like an
+*enterprise-service bus* [@Fow14;@Sal16]. This approach allows us to link
+heterogenous technologies and enables independent deployment, since we do
+not require in-memory calls between these services anymore. However, SOA
+still facilitates large monolithic applications which are only able to
+scale through duplicated instances of the entire application [@Dra17b].
 
-In order to overcome these limitations, the microservice paradigm aims for a separation of the modules into small service programs. SOAs are called the *first generation* services, while microservices are subsequently the *second generation* of services. Because microservices evolve from SOA, they are also part of the general *service-oriented computing* (SOC) paradigm [@Maz16;@Dra17a]. For an in depth review on how microservices historically emerged from a distributed systems perspective, starting with the client-server paradigm, to mobile agents technology and service-oriented architectures, we refer the interested reader to Salah *et al.*\ [@Sal16].
+In order to overcome these limitations, the microservice paradigm aims
+for a separation of the modules into small service programs. SOAs are
+called the *first generation* services, while microservices are
+subsequently the *second generation* of services. Because microservices
+evolve from SOA, they are also part of the general *service-oriented
+computing* (SOC) paradigm [@Maz16;@Dra17a]. For an in depth review on how
+microservices historically emerged from a distributed systems
+perspective, starting with the client-server paradigm, to mobile agents
+technology and service-oriented architectures, we refer the interested
+reader to Salah *et al.*\ [@Sal16].
 
 
 ## Term Ambiguity
 
 
-The literature uses the *service* term in an overloaded manner. We identify two general meanings attributed to the term. On the one hand, the term refers to a computational task unit, i.e.\ a process, as part of a service-oriented architecture. This is the predominant intention when authors refer to a *microservice*. On the other hand, a service also describes a specific functionality that we can utilize through an interface. We know this notion from object-orientation, where objects provide services in the form of procedures through their public interface [@Sny93]. 
+The literature uses the *service* term in an overloaded manner. We
+identify two general meanings attributed to the term. On the one hand,
+the term refers to a computational task unit, i.e.\ a process, as part of
+a service-oriented architecture. This is the predominant intention when
+authors refer to a *microservice*. On the other hand, a service also
+describes a specific functionality that we can utilize through an
+interface. We know this notion from object-orientation, where objects
+provide services in the form of procedures through their public
+interface [@Sny93].
 
-In order to avoid confusion, some scholars propose a clear distinction. For example, Xu *et al.*\ [@Xu16] use the term *service* exclusively for the functionality part and refer to the component as *agent*. We follow the example of Guidi & Montesi [@Gui09] and distinguish between the *service engine*, that is the component we deploy as a process, and the *service behavior* for the functionality that the service engine offers. This terminology suits us, because it highlights the resemblance between an actor's behavior and a microservice's behavior. 
+In order to avoid confusion, some scholars propose a clear distinction.
+For example, Xu *et al.*\ [@Xu16] use the term *service* exclusively for
+the functionality part and refer to the component as *agent*. We follow
+the example of Guidi & Montesi [@Gui09] and distinguish between the
+*service engine*, that is the component we deploy as a process, and the
+*service behavior* for the functionality that the service engine offers.
+This terminology suits us, because it highlights the resemblance between
+an actor's behavior and a microservice's behavior.
 
 
 ## Independence and Interaction
 
 
-From the separation of modules into dedicated service engines comes a high cohesion within the modules as well as a loose coupling among them. As a result, microservices are highly independent [@Dra17a;@Dra17b;@Gui17]. The inherent fact that each service engine is a separate application implies that the engines are independently deployable [@Fow14]. The decoupling of services also affects their state, since the state becomes conceptually isolated. Therefore, we require that services refrain from sharing any resources related to memory persistence. A database for example introduces a notion of implicit communication among all the services with access to this database. An essential principle of the microservice style is therefore the commitment to provide every service engine with its own exclusive database instance(s) [@Fow14;@Dra17a;@New15].
+From the separation of modules into dedicated service engines comes a
+high cohesion within the modules as well as a loose coupling among them.
+As a result, microservices are highly
+independent [@Dra17a;@Dra17b;@Gui17]. The inherent fact that each service
+engine is a separate application implies that the engines are
+independently deployable [@Fow14]. The decoupling of services also
+affects their state, since the state becomes conceptually isolated.
+Therefore, we require that services refrain from sharing any resources
+related to memory persistence. A database for example introduces a notion
+of implicit communication among all the services with access to this
+database. An essential principle of the microservice style is therefore
+the commitment to provide every service engine with its own exclusive
+database instance(s) [@Fow14;@Dra17a;@New15].
 
-Consequently, all communication between microservices happens across the boundaries of the service engine processes. We already know this concept from Section [#sec-concurrency-os-level] as inter-process communication. Various forms of IPC channels exist. Example mechanisms are a shared memory section between two processes within the same operating system, or Unix pipes. The microservice idiom specifies the following requirements on service engine IPCs [@Fow14]:
+Consequently, all communication between microservices happens across the
+boundaries of the service engine processes. We already know this concept
+from Section [#sec-concurrency-os-level] as inter-process communication.
+Various forms of IPC channels exist. Example mechanisms are a shared
+memory section between two processes within the same operating system, or
+Unix pipes. The microservice idiom specifies the following requirements
+on service engine IPCs [@Fow14]:
 
-1. Communication channels should be open and provide well-defined interfaces, such that heterogenous technologies are able to use them. 
-2. Communication channels should be lightweight, such that they are cheap mechanisms without much additional functionality besides basic message transportation.
-3. Communication channels should only act as message routers, such that they transport immutable messages and do not apply data processing logic on their own. 
+1. Communication channels should be open and provide well-defined
+   interfaces, such that heterogenous technologies are able to use them.
+2. Communication channels should be lightweight, such that they are cheap
+   mechanisms without much additional functionality besides basic message
+   transportation.
+3. Communication channels should only act as message routers, such that
+   they transport immutable messages and do not apply data processing
+   logic on their own.
 
-From the two example IPC mechanisms above, Unix pipes and shared memory, only the pipes qualify for a valid microservice communication mechanism. Data in the form of text strings represents serialized state information of a service. The pipe transports this data in an immutable way between the endpoints of the pipe. Raymond describes this in his Unix *rule of composition* as [@Ray03]:
+From the two example IPC mechanisms above, Unix pipes and shared memory,
+only the pipes qualify for a valid microservice communication mechanism.
+Data in the form of text strings represents serialized state information
+of a service. The pipe transports this data in an immutable way between
+the endpoints of the pipe. Raymond describes this in his Unix *rule of
+composition* as [@Ray03]:
 
 > "Text streams are to Unix tools as messages are to objects in an object-oriented setting. The simplicity of the text-stream interface enforces the encapsulation of the tools." 
 
-This satisfies the channel requirements given above. Therefore, pipes are a valid communication mechanism. However, pipes do not offer a specific structuring of the byte stream. Programmers have to specify an application-level protocol on top of the pipe mechanism [@Bac03]. Shared memory, on the other hand, faces several conceptional problems regarding a microservice communication mechanism. Services would send messages by modifying memory both services have access to. Yet the memory is not necessarily exclusive to both services. A third party that also has access to the memory can intercept a message by getting a lock to the shared state before the intended recipient. This third party is subsequently able to modify the message. Shared memory does not guarantee the delivery of the original message itself. We require that the synchronization mechanism enforces the semantically correct order of state access. This risk to correct message delivery is another argument why microservices do not use shared state communication.
+This satisfies the channel requirements given above. Therefore, pipes are
+a valid communication mechanism. However, pipes do not offer a specific
+structuring of the byte stream. Programmers have to specify an
+application-level protocol on top of the pipe mechanism [@Bac03]. Shared
+memory, on the other hand, faces several conceptional problems regarding
+a microservice communication mechanism. Services would send messages by
+modifying memory both services have access to. Yet the memory is not
+necessarily exclusive to both services. A third party that also has
+access to the memory can intercept a message by getting a lock to the
+shared state before the intended recipient. This third party is
+subsequently able to modify the message. Shared memory does not guarantee
+the delivery of the original message itself. We require that the
+synchronization mechanism enforces the semantically correct order of
+state access. This risk to correct message delivery is another argument
+why microservices do not use shared state communication.
 
 
 ## Concurrent and Distributed Building Blocks
 
 
-As independently deployable applications, each microservice is by design a dedicated process. These are inherently concurrent on the operating system level and also facilitate parallelization on multiple cores transparently. Every communication mechanism must be able to send data across the distinct address spaces which strictly isolate the states. Recall the case study of Section [#sec-concurrency-os-level] on system process programming in [C.]{tex-cmd-after:"\,"} Fork/pipe-based applications utilize Unix pipes to cross memory boundaries. Like microservices, their components execute concurrently through the process scheduling of the OS. It is therefore worth to debate whether these systems qualify as microservice architectures.
+As independently deployable applications, each microservice is by design
+a dedicated process. These are inherently concurrent on the operating
+system level and also facilitate parallelization on multiple cores
+transparently. Every communication mechanism must be able to send data
+across the distinct address spaces which strictly isolate the states.
+Recall the case study of Section [#sec-concurrency-os-level] on system
+process programming in [C.]{tex-cmd-after:"\,"} Fork/pipe-based
+applications utilize Unix pipes to cross memory boundaries. Like
+microservices, their components execute concurrently through the process
+scheduling of the OS. It is therefore worth to debate whether these
+systems qualify as microservice architectures.
 
-The fork pattern spawns processes in a tree-like fashion. All components rely on a shared ancestor. Every child can replace itself by an arbitrary other program image using `exec`. However, the setup of the communication routes relies on an instantiation of the pipe *before* the fork. Only then have both the parent and the child access to the pipe. This fact limits the possibility to take down or add new components independently. Hence, pipes are rather restrictive and present a certain degree of coupling [@Bac03]. It is difficult to replace the system's components independently.
+The fork pattern spawns processes in a tree-like fashion. All components
+rely on a shared ancestor. Every child can replace itself by an arbitrary
+other program image using `exec`. However, the setup of the communication
+routes relies on an instantiation of the pipe *before* the fork. Only
+then have both the parent and the child access to the pipe. This fact
+limits the possibility to take down or add new components independently.
+Hence, pipes are rather restrictive and present a certain degree of
+coupling [@Bac03]. It is difficult to replace the system's components
+independently.
 
-To overcome this restriction, more modern Unix variants introduce the concept of *named pipes*. This kind of IPC allows processes to hook into a common pipe without a shared ancestor [@Bac03]. However, every communication route we fix at compile time -- generally called *static channel naming* -- limits the ability for changing topologies [@And83]. In any case, the pipe mechanism definitely does not provide communication outside the boundary of the common operating system. Pipes therefore limit scalability since they restrict the service architecture onto a single host machine -- at least for the subset of services that facilitates this mechanism. Network-based IPC mechanisms overcome this restriction inherently and we subsequently prefer them for MSAs in general. Network IPCs provide higher degrees of freedom regarding deployment and heterogenous technology integration at the price of more costly data transfers (cf.\ Fallacy 7: *transport cost is zero*) [@Cou05]. As a result, we always assume that microservices are concurrent components which support parallel execution. However, whether they qualify as distributed components within their respective architecture is subject to the communication mechanism(s).
+To overcome this restriction, more modern Unix variants introduce the
+concept of *named pipes*. This kind of IPC allows processes to hook into
+a common pipe without a shared ancestor [@Bac03]. However, every
+communication route we fix at compile time -- generally called *static
+channel naming* -- limits the ability for changing topologies [@And83].
+In any case, the pipe mechanism definitely does not provide communication
+outside the boundary of the common operating system. Pipes therefore
+limit scalability since they restrict the service architecture onto a
+single host machine -- at least for the subset of services that
+facilitates this mechanism. Network-based IPC mechanisms overcome this
+restriction inherently and we subsequently prefer them for MSAs in
+general. Network IPCs provide higher degrees of freedom regarding
+deployment and heterogenous technology integration at the price of more
+costly data transfers (cf.\ Fallacy 7: *transport cost is
+zero*) [@Cou05]. As a result, we always assume that microservices are
+concurrent components which support parallel execution. However, whether
+they qualify as distributed components within their respective
+architecture is subject to the communication mechanism(s).
 
 
 ## Size, Scope and Granularity {#sec-ms-granularity}
 
 
-Bonér [@Bon17] criticizes the term *micro* since it encourages us to  debate the actual *size* of a service. Every size definition requires a metric for comparison. Only with a metric can we debate up to which limit we call an application a *micro*service. Therefore, developers focus on metrics like *lines of code* up to more obscure ones, e.g.\ the reported *two pizza team* size, where a service is written and maintained by a team that we can feed with two pizzas[^fn-two-pizza-team] [@Fow14]. These discussions are irrelevant.
+Bonér [@Bon17] criticizes the term *micro* since it encourages us to
+debate the actual *size* of a service. Every size definition requires a
+metric for comparison. Only with a metric can we debate up to which limit
+we call an application a *micro*service. Therefore, developers focus on
+metrics like *lines of code* up to more obscure ones, e.g.\ the reported
+*two pizza team* size, where a service is written and maintained by a
+team that we can feed with two pizzas[^fn-two-pizza-team] [@Fow14]. These
+discussions are irrelevant.
 
 [^fn-two-pizza-team]: Assuming an arbitrary pizza size, this either suggests very small teams, or really big pizzas.
 
-Instead, Bonér argues, a notion of size should refer to the *scope of responsibility*. A guideline towards this is once again the Unix philosophy [@Ray03] we already referred to. The philosophy suggests that programs should have a well-defined and limited scope. We realize more complex functionality by composing multiple of these simple programs. This concept is also found in object-oriented design, where we know it as the *single responsibility principle* of objects [@Gui17]. In the microservice context however, authors do not refer to the single responsibility principle a lot. Instead, they tend to phrase it *bounded context* [@Dra17a;@Dra17c;@Maz16]. Authors argue that services should be an aggregation of functionality around a single business capability. This divergence of granularity is one of the major evolutionary changes from SOA to microservices [@Mon16a;@Gui17].
+Instead, Bonér argues, a notion of size should refer to the *scope of
+responsibility*. A guideline towards this is once again the Unix
+philosophy [@Ray03] we already referred to. The philosophy suggests that
+programs should have a well-defined and limited scope. We realize more
+complex functionality by composing multiple of these simple programs.
+This concept is also found in object-oriented design, where we know it as
+the *single responsibility principle* of objects [@Gui17]. In the
+microservice context however, authors do not refer to the single
+responsibility principle a lot. Instead, they tend to phrase it *bounded
+context* [@Dra17a;@Dra17c;@Maz16]. Authors argue that services should be
+an aggregation of functionality around a single business capability. This
+divergence of granularity is one of the major evolutionary changes from
+SOA to microservices [@Mon16a;@Gui17].
 
-However, a too-fine granularity becomes an issue. In a distributed setting, granularity is always a balance between the number of messages that we send versus the performance implications we expect by every message. We must consider latencies of network channels, processing time of addressed services, and delay penalties that result from service unavailability when we design the granularity of microservices [@Sha17a]. In general, we expect Fallacies 1-3, 5 and 7 to contribute to bounded context considerations.
+However, a too-fine granularity becomes an issue. In a distributed
+setting, granularity is always a balance between the number of messages
+that we send versus the performance implications we expect by every
+message. We must consider latencies of network channels, processing time
+of addressed services, and delay penalties that result from service
+unavailability when we design the granularity of microservices [@Sha17a].
+In general, we expect Fallacies 1-3, 5 and 7 to contribute to bounded
+context considerations.
 
 
 ## Service-oriented Programming
 
 
-Until now, we have regarded microservices in the light of a software architectural style. Within this context, the building blocks are all truly isolated components we instantiate from independently executable artifacts. We merely link the artifacts through rather loosely coupled message passing communication channels. Scholars argue that due to these characteristics the perspective in the literature (both academic as well as industrial) has a focus on the *deployment*, which is the operation of a service engine [@Gui17;@Xu16]. After all, the deployment context of MSA is the origin of the concurrent nature, that is independent processes of the OS or network. In this section however, we favor an argumentation towards a linguistic viewpoint on microservices as a programming model instead.
+Until now, we have regarded microservices in the light of a software
+architectural style. Within this context, the building blocks are all
+truly isolated components we instantiate from independently executable
+artifacts. We merely link the artifacts through rather loosely coupled
+message passing communication channels. Scholars argue that due to these
+characteristics the perspective in the literature (both academic as well
+as industrial) has a focus on the *deployment*, which is the operation of
+a service engine [@Gui17;@Xu16]. After all, the deployment context of MSA
+is the origin of the concurrent nature, that is independent processes of
+the OS or network. In this section however, we favor an argumentation
+towards a linguistic viewpoint on microservices as a programming model
+instead.
 
-Programming paradigms build upon respective conceptual constructs, e.g.\ objects in OOP or functions in *functional programming*. In more recent time, a new paradigm called *service-oriented programming* (SOP) [@Gui09;@Mon14] emerged. It builds upon the service-oriented computing approach that SOA and subsequently microservices emphasize and introduces it into the design of programming languages. Services become first-class entities of the language and are the smallest programmable constructs. Instead of a single executable artifact, service-oriented programs compile into multiple executables, one for each of the service constructs in the source code. Initially, the conception of SOP aimed for an evolutionary step. The idea was to combine the object-oriented notion with the SOA paradigm to program distributed systems. When the microservices principles finally distilled, it transpired that the compilation of SOP languages essentially produces microservice architectures. Instead of the total technology freedom of the mainstream MS paradigm, SOP languages are a separate and more restricted approach towards the microservice style [@Mon14;@Gui17]. Various prototype languages facilitate the service-oriented programming model. Two SOP languages merit attention:
+Programming paradigms build upon respective conceptual constructs,
+e.g.\ objects in OOP or functions in *functional programming*. In more
+recent time, a new paradigm called *service-oriented programming*
+(SOP) [@Gui09;@Mon14] emerged. It builds upon the service-oriented
+computing approach that SOA and subsequently microservices emphasize and
+introduces it into the design of programming languages. Services become
+first-class entities of the language and are the smallest programmable
+constructs. Instead of a single executable artifact, service-oriented
+programs compile into multiple executables, one for each of the service
+constructs in the source code. Initially, the conception of SOP aimed for
+an evolutionary step. The idea was to combine the object-oriented notion
+with the SOA paradigm to program distributed systems. When the
+microservices principles finally distilled, it transpired that the
+compilation of SOP languages essentially produces microservice
+architectures. Instead of the total technology freedom of the mainstream
+MS paradigm, SOP languages are a separate and more restricted approach
+towards the microservice style [@Mon14;@Gui17]. Various prototype
+languages facilitate the service-oriented programming model. Two SOP
+languages merit attention:
 
 * CAOPLE
   : One attempt of a service-oriented programming language is *CAOPLE* [@Xu16]. It calls its basic programming constructs *agents* (microservices). Agents provide a very strict notion of state encapsulation, autonomy, and well-defined communication interfaces. Unlike traditional microservices, agents do not execute directly on the host's OS, but run on a dedicated virtual machine called *CAVM-2* instead. CAOPLE's VM focuses on providing a lightweight dynamic deployment of services compared to container technology. Additionally, the VM is optimized for running large quantities of services in a lightweight manner, as well as abstracting the network distribution of agents across host machines.
@@ -97,7 +310,17 @@ Programming paradigms build upon respective conceptual constructs, e.g.\ objects
   : ~ center
     `Program \(void|::=\) D \(return|main\) { B }`{language:"java"; class:"pretty"}
     ~
-    
+
   : The language's syntactic rules prevent us from introducing the deployment expression (`D`{.pretty}) into a behavioral expression (`B`{.pretty}) and vice versa. The only connection between behavior and deployment are the communication ports. The behavior abstractly uses the communication ports, and the deployment concretely defines the ports. Hence, behavior and deployment are complemental. As a scientific prototype language, Jolie incorporates many interesting concepts. There is only an implicit notion of concurrency from the service execution as OS processes, and the `concurrent`{color:blue} primitive as one option for the so-called *execution modality*. In this case, upon receiving a message on a communication port, a Jolie service spawns a dedicated process such that the behavior executes in a separate local memory space (cf.\ the fork approach in the C processes case study of Section [#sec-concurrency-os-level]). The primitive hereby allows concurrent message processing. Among other concepts, Jolie supports complex message routing through *correlation sets*, and facilitates transparent delegation through the so-called *aggregation* primitive, which extends a service's interface with the interfaces of other services.
 
-Microservices share many similarities with objects in general [@Dra17a]. Therefore, service-oriented languages tend to have many analogies to object-oriented languages, as the computational units in both paradigms provide functionality via a public interface [@Xu16;@Sny93]. However, this marks also the most important difference to objects. In general, objects facilitate information hiding and encapsulation in a *shared memory* setup. Microservices on the other hand solely rely on *message passing* [@Dra17a]. Besides this difference, advanced object-oriented concepts can also be part of a language's service constructs. For example, Jolie has static type checking for service interfaces [@Min17], and CAOPLE even supports polymorphism via an inheritance mechanism.
+Microservices share many similarities with objects in general [@Dra17a].
+Therefore, service-oriented languages tend to have many analogies to
+object-oriented languages, as the computational units in both paradigms
+provide functionality via a public interface [@Xu16;@Sny93]. However,
+this marks also the most important difference to objects. In general,
+objects facilitate information hiding and encapsulation in a *shared
+memory* setup. Microservices on the other hand solely rely on *message
+passing* [@Dra17a]. Besides this difference, advanced object-oriented
+concepts can also be part of a language's service constructs. For
+example, Jolie has static type checking for service interfaces [@Min17],
+and CAOPLE even supports polymorphism via an inheritance mechanism.
