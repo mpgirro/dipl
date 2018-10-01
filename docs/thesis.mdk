@@ -1,7 +1,6 @@
 Title             : Concurrent Programming with Actors and Microservices
 Subtitle          :
 Author            : Maximilian Irro
-<!--Email             : max@irro.at-->
 Copyright         : Maximilian Irro, 2018
 Title Footer      : 2018
 Subtitle EN       : &subtitle;
@@ -86,12 +85,6 @@ Epigraph {
   margin-bottom: 70px;
 }
 
-<!--
-Bibl { 
-  before: "# &name-references; { -; .heading-references; font-family: tex-cmd-sffamily }&nl;";
-}
--->
-
 .acronym       { font-family: sans-serif; font-weight: bold; width:15ex; }
 .acronym-table { list-style-type:none; margin-left:0; paddding-left:0; tex-env: "itemize[leftmargin=*]"}
 
@@ -144,22 +137,17 @@ toc.toc-tables    { - }
 
 CSS Header      :
   /*
-  @import url(https://fonts.googleapis.com/css?family=Crimson+Text);
-  @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
-  @import url(https://fonts.googleapis.com/css?family=Roboto);
-  */
-  /*
   @import url(http://spratt.github.io/Computer-Modern/cmserif.css);
   @import url(http://spratt.github.io/Computer-Modern/cmsans.css);
   */
   @import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css);
   body.madoko {
-    font-family: "Computer Modern Serif", "Crimson Text", serif;
+    font-family: "Computer Modern Serif", serif;
     font-size: 16px;
     max-width: 39em; /* reduce to: 34em */
   }
   .madoko code, .madoko pre {
-    font-family: "Computer Modern Typewriter", "Source Code Pro", monospace;
+    font-family: "Computer Modern Typewriter", monospace;
     font-size: 1rem !important;
   }
   .madoko .math-rendering {
@@ -246,17 +234,7 @@ CSS Header      :
 <!-- HTML -->
 ~ Begin HtmlOnly
 [TITLE]
-
-<!-- 
-A PDF Version of this thesis is available at [max.irro.at/pub/dipl/thesis.pdf](http://max.irro.at/pub/dipl/thesis.pdf)
--->
-
 [TOC]
-
-<!--
-[TOC=figures]
-[TOC=tables]
--->
 ~ End HtmlOnly
 
 
@@ -291,13 +269,11 @@ An dieser Stelle möchte ich einigen wenigen meinen Dank aussprechen:
 ~ Begin TexRaw
 \end{danksagung*}
 ~ End TexRaw
-~ End TexOnly
 
 
 &pagebreak;
 
 
-~ Begin TexOnly
 ~ Begin TexRaw
 \begin{abstract}
 ~ End TexRaw
@@ -389,13 +365,11 @@ synchroner Kommunikationsmechanismen.
 % Select the language of the thesis, e.g., english or naustrian.
 \selectlanguage{english}
 ~ End TexRaw
-~ End TexOnly
 
 
 &pagebreak;
 
 
-~ Begin TexOnly
 ~ Begin TexRaw
 \vspace*{\fill}
 ~ End TexRaw
@@ -494,13 +468,6 @@ microservice model. This work aims to fill this gap, with a focus on the
 concurrent programming aspects of these two concepts. Specifically, we
 ask the following research questions:
 
-<!--
-- __RQ1__: *Why do actors and microservices qualify for programming concurrency?*
-* __RQ2__: *How do the actor and microservice model facilitate concurrent execution?*
-* __RQ3__: *What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?*
-* __RQ4__: *How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?*
-{ list-style-type:none }
--->
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ1__         | Why do actors and microservices qualify for programming concurrency? |
@@ -519,16 +486,6 @@ ask the following research questions:
 | __RQ4__         | How does the performance of actors and microservices compare in a multi- |
 |                 | core environment relative to a concurrent system scenario?               |
 { }
-
-<!--
-> __RQ1__: Why do actors and microservices qualify for programming concurrency?
-
-> __RQ2__: How do the actor and microservice model facilitate concurrent execution?
-
-> __RQ3__: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
-
-> __RQ4__: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
--->
 
 
 ## Methodological Approach
@@ -1486,7 +1443,6 @@ actor system, it always means additional message processing for the
 involved actors, which potentially turns into a bottleneck [@Sub11].
 
 
-
 # Microservice Paradigm {#ch-microservice-paradigm}
 
 
@@ -2325,7 +2281,6 @@ library-based implementation. The arguments for a library are [@Hal09;
   introduce an additional concurrency abstraction, as the next section
   demonstrates.
 
-
 ~ Findings
 [Main findings]{.findings-title}
 
@@ -2751,10 +2706,6 @@ research. It is marked as "may change" and to be considered experimental.
   messages. { .findings-list }
 ~
 
-<!--
-+ Actor runtimes can provide additional abstractions for synchronous communication. These abstractions either require additional concurrency models (futures) or additional actors (delegation).
-+ The actor model intrinsically types all received messages dynamically. Hence, sending messages is usually rather weakly-typed in actor systems. We can achieve stronger typization for sending messages by type-restricting the actor addresses.
--->
 
 ### Supervision and Monitoring
 
@@ -2816,7 +2767,9 @@ We must frequently send a message not to one actor specifically, but
 distribute the message among a set of equivalent instances. Akka provides
 an appropriate concept called *routers*:
 
+~ TexOnly
 &pagebreak;
+~
 
 ```{language:scala}
 val router: Router = {
@@ -2846,13 +2799,6 @@ can fail and we must not send any message to a terminated actor. If the
 routees are children of the routing actor, then the router gets informed
 through its supervision obligation in the case of a subordinate's demise.
 A supervision-managed set of routees is called a *pool* [@Roe15].
-
-<!--
-Since supervision is the foundation of a pool, it is useful to use a separate component for routing, especially if actors are part of several router pools, or a parent-child relationship is otherwise logically inadequate:
-
-* Message Routers (R)
-  : distribute received messages among equally qualified potential recipients, based on a certain selection strategy, the *routing logic*. Routers are intermediate units and supervise their routees. They only forward messages to living children. 
--->
 
 Alternatively, routees are part of a so-called *group* when the routing
 actor does not supervise the routees [@Roe15]. Akka provides the
@@ -3040,7 +2986,6 @@ As we did with the actor implementation, in subsequent sections we pay
 attention to the linguistic support provided by the framework regarding
 the expression of service requirements.
 
-
 ~ Findings
 [Main findings]{.findings-title}
 
@@ -3124,7 +3069,6 @@ possible. However, the asynchronously dispatched method does not run
 within the same transaction as the dispatching method, but in a fresh
 transaction instead [@SpringDoc].
 
-
 ~ Findings
 [Main findings]{.findings-title}
 
@@ -3176,7 +3120,6 @@ database in a concurrent way [@Wal07].
 
 [img-persistence-microservice]: graphics/persistence-microservice.[svg,png] "Image about microservice persistence" { width:5cm; vertical-align:middle; padding-bottom:1em; }
 
-
 Since Spring executes every request concurrently inside a
 `Runnable`{language:java} task on a thread-pool, concurrent database
 interactions are implicitly available. Every thread of the pool can
@@ -3186,7 +3129,6 @@ heed to or apply additional strategies to leverage efficient persistency
 through database concurrency. Hence, we expect a microservice to have
 several database connections in place at the same time
 (Figure [#fig-persistence-microservice]).
-
 
 ~ Findings
 [Main findings]{.findings-title}
@@ -3419,19 +3361,6 @@ as it cooperates with Eureka to maintain a set of valid instances of a
 static name [@Car17]. This name is in fact the `name` argument for the
 `@FeignClient` annotation of the declarative REST interface, since Ribbon
 integrates transparently into Feign.
-
-<!--
-Figure [#fig-client-side-load-balancing] shows an example for a client-side load balancing interaction model in Echo. 
-
-~ Begin Figure { #fig-client-side-load-balancing; \
-                 caption: "Example for client-side load balancing: The Searcher distributes requests among several IndexStores. The Ribbon module inside the Searcher regularly fetches the addresses from the discovery service"; \
-                 width:100%; page-align:here; }
-![img-client-side-load-balancing]{margin-right:2cm}
-
-~ End Figure
-
-[img-client-side-load-balancing]: graphics/load-balancing-client-side.[svg,png] "Image about client-side load balancing" { height:4cm; vertical-align:middle; padding-bottom:1em; }
--->
 
 ~ Findings
 [Main findings]{.findings-title}
@@ -3782,10 +3711,6 @@ the JMS terminology calls *queue* semantics (one-to-one), but not the JMS
 *topics* (one-to-many). We must employ another messaging technology.
 *Kafka* [@ApacheKafka] is a widely adopted publish/subscribe streaming
 system with very lightweight message constructs.
-
-<!--
-, and therefore appropriate for the microservice paradigm. 
--->
 
 One important realization is the difference in messaging interfaces.
 While Akka provides few but homogenous interfaces (`tell [!]`, `ask [?]`,
@@ -4259,7 +4184,6 @@ microservice components. However, we could have also written every
 service with a different technology stack. Even now, we can replace
 existing services by new versions using different technologies.
 
-
 ~ Begin Center
 ~ Begin TableFigure { #tab-modularity; \
                       caption: "Comparison of modularity capabilities of Akka actors and Spring-based microservices"; \
@@ -4468,7 +4392,6 @@ This unified approach is not quite common yet, but technologies start to
 emerge which build on this idea. An example is *Lagom* [@LightbendLagom],
 a reactive microservice system framework built on top of Akka.
 
-
 ~ Findings
 [Main findings]{.findings-title}
 
@@ -4592,14 +4515,6 @@ dependencies come into play at runtime to realize the declared
 functionality. As a result, every microservice engine is larger (in
 bytecode size) and upon incarnation also considerably slower than the
 entire actor engine.
-
-
-<!--
-~ todo
-Bar plot der fat JAR sizes und startup time, mit 2 Achsen. Falls ich das noch irgendwie hinkriegen sollte
-~
--->
-
 
 ~ Findings
 [Main findings]{.findings-title}
@@ -4808,7 +4723,6 @@ towards every process on a regular basis. In contrast, Akka actors,
 besides being more lightweight constructs in general, only get scheduled
 and thus only consume resources when they have messages in their mailbox.
 
-
 ~ Figure { #fig-eval-index-mem; \
            caption: "Memory consumption of the executable artifact VMs in the indexing phase"; \
            width:100%; page-align:here; }
@@ -4845,7 +4759,6 @@ than REST-based communication.
 ~
 
 [img-eval-search-rtt-overall]: graphics/eval-search-rtt-overall.[pdf,png] "Image about eval-search-rtt-overall" { width:8cm; vertical-align:middle; padding-bottom:1em; }
-
 
 In Section [#sec-actor-communication-abstractions] we have actually
 discussed two variants to model request/asynchronous response
@@ -5183,7 +5096,11 @@ content.
 
 [^fn-lorem-ipsum]: <https://lipsum.com>
 
+
+~ TexOnly
 &pagebreak;
+~
+
 
 ```{language:html}
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
