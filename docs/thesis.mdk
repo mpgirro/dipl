@@ -19,6 +19,9 @@ Advisor Pretitle  : Ao.Univ.Prof. Dipl.-Ing. Dr.
 Advisor Posttitle : 
 Subject           : Concurrent Programming
 Keywords          : concurrent programming, actor model, microservice architecture
+Submission Day    : 30
+Submission Month  : 09
+Submission Year   : 2018
 Thesis Type       : master <!-- bachelor / master / doctor / phd-school -->
 Bachelor Thesis   : false
 Master Thesis     : true
@@ -332,20 +335,21 @@ Applikationen benötigen häufig eine simultane Bearbeitung mehrerer Aufgaben. *
 ~ End TexOnly
 
 
-
-
-
 &pagebreak;
+
+
 ~ Begin TexOnly
 ~ Begin TexRaw
 \vspace*{\fill}
 ~ End TexRaw
 ~ End TexOnly
+
 ~ Begin Center
 
 *To whom it may concern*
 
 ~ End Center
+
 ~ Begin TexOnly
 ~ Begin TexRaw
 \vspace*{\fill}

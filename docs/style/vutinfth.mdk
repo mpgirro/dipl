@@ -78,7 +78,7 @@ Tex Header    :
     % Required data.
     \setaddress{&author-address;}
     \setregnumber{&regnumber;}
-    \setdate{&day;}{&month;}{&year;}
+    \setdate{&submission-day;}{&submission-month;}{&submission-year;}
     \settitle{\thesistitle}{&title;} % Sets English and German version of the title (both can be English or German).
     \setsubtitle{&subtitle-en;}{&subtitle-de;} % Sets English and German version of the subtitle (both can be English or German).
     %
