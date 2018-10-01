@@ -9,10 +9,16 @@ thesis:
 references:
 	madoko --pdf references.mdk
 
-slides1: ensure-outdir
-	pdflatex -halt-on-error -output-directory out slides1.tex
+slides-seminar1: ensure-outdir
+	pdflatex -halt-on-error -output-directory out slides-seminar1.tex
 
-slides: ensure-outdir slides1
+slides-seminar2: ensure-outdir
+	pdflatex -halt-on-error -output-directory out slides-seminar2.tex
+
+slides-defense: ensure-outdir
+	pdflatex -halt-on-error -output-directory out slides-defense.tex
+
+slides: ensure-outdir slides-seminar1 slides-seminar2 slides-defense
 
 poster: ensure-outdir
 	pdflatex -halt-on-error -output-directory out poster.tex
