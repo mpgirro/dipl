@@ -1,4 +1,4 @@
-# Diplomarbeit
+# Concurrent Programming with Actors and Microservices
 
 Comming soon(ish).
 
