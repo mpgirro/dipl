@@ -153,15 +153,6 @@ CSS Header      :
     float:right; 
     font-style:normal;
   }
-  /* TODO do I want the paper style for paragraphs?
-  p {
-    margin-bottom: 0;
-  }
-  p + p {
-    text-indent: 1.5em;
-    margin-top: 0; 
-  }
-  */
   .li {
     text-align: justify;
   }
@@ -375,22 +366,22 @@ concurrent programming aspects of these two concepts. Specifically, we
 ask the following research questions:
 
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ1__         | Why do actors and microservices qualify for programming concurrency? |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ1__         | Why do actors and microservices qualify for programming concurrency?         |
 { }
 
 |:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 | __RQ2__         | How do the actor and the microservice model facilitate concurrent execution? |
 { }
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ3__         | What are the expressive capabilities of actors and microservices regarding |
-|                 | concurrent programming concerns?                                           |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ3__         | What are the expressive capabilities of actors and microservices regarding   |
+|                 | concurrent programming concerns?                                             |
 { }
 
-|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-| __RQ4__         | How does the performance of actors and microservices compare in a multi- |
-|                 | core environment relative to a concurrent system scenario?               |
+|:~~{width:8ex}~~~|:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+| __RQ4__         | How does the performance of actors and microservices compare in a multi-     |
+|                 | core environment relative to a concurrent system scenario?                   |
 { }
 
 
