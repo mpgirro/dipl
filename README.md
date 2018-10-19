@@ -1,6 +1,12 @@
 # Concurrent Programming with Actors and Microservices
 
 
+Master Thesis, Maximilian Irro, September 2018, TU Wien.
+
+
+## TOC
+
+
 * [Repository Structure](#repository-structure)
 * [Thesis Document](#thesis-document)
     * [Abstract (EN)](#abstract-en)
@@ -89,7 +95,19 @@ An implementation of Echo's backend based on an architecture that uses the [acto
 
 :open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
 
-An implementation of Echo's backend based on a [microservice architecture](https://en.wikipedia.org/wiki/Microservices). This system is composed of several executable artifacts (the microservices). These distinct programs communicate via network mechanism, either [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) or [RabbitMQ](https://www.rabbitmq.com) (an [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol)-compatible messaging system). 
+An implementation of Echo's backend based on a [microservice architecture](https://en.wikipedia.org/wiki/Microservices). This system is composed of several executable artifacts (the microservices). These distinct programs communicate via network mechanism, either [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) or [RabbitMQ](https://www.rabbitmq.com) (an [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol)-compatible messaging system). All microservices build on [Spring Boot](https://spring.io/projects/spring-boot) as the application foundation and various components of [Spring Cloud](http://projects.spring.io/spring-cloud/).
+
+The microservice applications are:
+
+* [app-catalog](src/echo-microservices/app-catalog/)
+* [app-cli](src/echo-microservices/app-cli/)
+* [app-crawler](src/echo-microservices/app-crawler/)
+* [app-gateway](src/echo-microservices/app-gateway/)
+* [app-index](src/echo-microservices/app-index/)
+* [app-parser](src/echo-microservices/app-parser/)
+* [app-registry](src/echo-microservices/app-registry/)
+* [app-searcher](src/echo-microservices/app-searcher/)
+* [app-updater](src/echo-microservices/app-updater/)
 
 
 ### Web UI
