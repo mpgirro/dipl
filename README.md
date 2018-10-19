@@ -3,9 +3,10 @@
 
 Master Thesis, Maximilian Irro, September 2018, TU Wien.
 
+This repository contains all materials related to my master thesis (document and program sources, measurement data, etc.).
 
-## TOC
 
+__Table of Contents__:
 
 * [Repository Structure](#repository-structure)
 * [Thesis Document](#thesis-document)
