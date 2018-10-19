@@ -3,8 +3,6 @@
 
 This directory contains all documents related to this master thesis project. The relevant documents are:
 
-The central document is the thesis' source file [thesis](thesis.mdk). There are also additional documents:
-
 * [Thesis](thesis.mdk) is the central document for the whole submission document
 * [Proposal](proposal.mdk) for working on this thesis
 * [Bibtex database](dipl.bib) file with all literature that the thesis uses. The database holds additional literature that seemed relevant enough at some stage.
@@ -12,19 +10,15 @@ The central document is the thesis' source file [thesis](thesis.mdk). There are 
 * [Scientific poster](poster.tex) for the poster session that is part of the [EPILOG](http://www.informatik.tuwien.ac.at/studium/studierende/epilog) of the Faculty of Informatics. The poster is available at the digital poster session. 
 * [Errata](errata.md) document
 
-Additionally, there is the thesis proposal, various slides for related presentations, and a result poster. 
-
 
 ## Document Processor
 
 
-Most documents are written using the [Madoko](http://madoko.org/reference.html) scholarly markdown flavor (`.mdk` file extension). Special thanks to Daan Leijen for creating Madoko. Use Madoko through the web editor at [www.madoko.net](https://www.madoko.net) or install it locally with:
+Most documents are written using the [Madoko](http://madoko.org/reference.html) scholarly markdown flavor (`.mdk` file extension). Special thanks to [Daan Leijen](https://www.microsoft.com/en-us/research/people/daan/) for creating Madoko. A web editor for Madoko is available at [www.madoko.net](https://www.madoko.net) or it can be installed locally with:
 
     npm install madoko -g
 
-Madoko is able to generate sophisticated HTML versions of scientific documents as well as standard PDF versions through LaTeX.
-
-Other files, like the slides and the poster, use LaTeX directly. The [Makefile](/docs/Makefile) wraps the respective call to the right tool for each target document.
+Madoko is able to generate sophisticated HTML versions of scientific documents as well as standard PDF versions through LaTeX. Other files, like the slides and the poster, use LaTeX directly. The [Makefile](Makefile) wraps the respective call to the right tool for each target document.
 
 
 ## Graphics
