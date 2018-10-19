@@ -13,9 +13,9 @@ Comming soon(ish).
 
 This repository is structured as follows:
 
-* [/docs](docs/) — documents (thesis, poster, slides, graphics, etc.)
-* [/eval](eval/) — evaluation material (measurement data, R scripts)
-* [/src](src/) — program artifact source code (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
+* [/docs](docs/) &ndash; documents (thesis, poster, slides, graphics, etc.)
+* [/eval](eval/) &ndash; evaluation material (measurement data, R scripts)
+* [/src](src/) &ndash; program artifact source code (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
 
 The subdirectories have separate `README.md` files with detailed information.
 
