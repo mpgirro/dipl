@@ -13,15 +13,18 @@ Comming soon(ish).
 
 This repository is structured as follows:
 
-* [/docs/](docs/) &ndash; document source files (thesis, poster, slides, graphics, etc.)
-* [/eval/](eval/) &ndash; evaluation material (measurement data, R scripts)
-* [/src/](src/) &ndash; program artifact source code (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
+* :open_file_folder: [/docs/](docs/) &ndash; document source files (thesis, poster, slides, graphics, etc.)
+* :open_file_folder: [/eval/](eval/) &ndash; evaluation material (measurement data, R scripts)
+* :open_file_folder: [/src/](src/) &ndash; program artifact source code (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
 
 The subdirectories have separate `README.md` files with detailed information.
 
 ## Thesis Document
 
-This master project originated a thesis document. It is available as in [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing) and [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens) versions.
+This master project originated a thesis document. It is available in the following file versions:
+
+* :page_facing_up: [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
+* :page_facing_up: [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
 
 If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
 
