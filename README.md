@@ -13,9 +13,9 @@ Comming soon(ish).
 
 This repository is structured as follows:
 
-* [docs/](docs/) -- Document (thesis, poster, slides, graphics, etc.)
-* [eval/](eval/) -- Evaluation material (measurement data, R scripts)
-* [src/](src/) -- Source code (actor architecture, microservice architecture, domain library, web interface)
+* [/docs](docs/) — documents (thesis, poster, slides, graphics, etc.)
+* [/eval](eval/) — evaluation material (measurement data, R scripts)
+* [/src](src/) — program artifact source code (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
 
 The subdirectories have separate `README.md` files with detailed information.
 
@@ -79,7 +79,7 @@ wohlfundierte Konstrukte, welche transparent eine nebenläufige, parallele
 und verteilte Ausführung ermöglichen. Bei dem anderen Modell handelt es
 sich um einen relativ neuen Architekturstil unter Verwendung von
 *Microservices*, welche sich kürzlich im akademischen und industriellen
-Umfeld gro&szlig;er Beliebtheit erfreuen. Microservices bauen auf viele
+Umfeld großer Beliebtheit erfreuen. Microservices bauen auf viele
 Prinzipien der alten Unix-Philosophie, indem sie komplexe Funktionalität
 durch den Zusammenschluss kleiner, unabhängiger, kohäsiver und lose
 gekoppelter Programme konzipieren. Diese Programme interagieren über
@@ -95,7 +95,7 @@ gleichwertige Möglichkeiten um typische Anliegen der nebenläufigen
 Programmierung wie Kommunikation und Skalierbarkeit auszudrücken. Jedoch
 unterliegen die Modelle unterschiedlichen Trade-offs. Wir stellen
 Implementierungen des Fallbeispiels bereit, welche jeweils auf Actors
-bzw.\ Microservices basieren. Die Resultate eines Benchmarkings dieser
+bzw. Microservices basieren. Die Resultate eines Benchmarkings dieser
 Implementierungen legen nahe, dass Actors eine bessere Systemeffizienz
 verbunden mit einer kleineren Codebasis ermöglichen.
 Microservice-Architekturen hingegen konsumieren erheblich mehr
