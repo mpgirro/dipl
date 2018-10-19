@@ -3,7 +3,7 @@
 
 Master Thesis, Maximilian Irro, September 2018, TU Wien.
 
-This repository contains all materials related to my master thesis (document and program sources, measurement data, etc.).
+This repository contains all materials related to my master thesis (document and program sources, measurement data, etc.). I did this work in 2017-2018 at TU Wien. The supervisor was [Franz Puntigam](http://www.complang.tuwien.ac.at/franz/) from the [Institute for Information Systems Engineering, Compilers and Languages Group](http://www.complang.tuwien.ac.at).
 
 
 __Table of Contents__:

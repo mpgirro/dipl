@@ -1,9 +1,12 @@
 # Thesis Documents
 
 
-This directory contains all documents related to this master thesis project. The central document is the thesis' source file [thesis](thesis.mdk). There are also additional documents:
+This directory contains all documents related to this master thesis project. The relevant documents are:
 
-* [Proposal](proposal.mdk) for this thesis
+The central document is the thesis' source file [thesis](thesis.mdk). There are also additional documents:
+
+* [Thesis](thesis.mdk) is the central document for the whole submission document
+* [Proposal](proposal.mdk) for working on this thesis
 * [Bibtex database](dipl.bib) file with all literature that the thesis uses. The database holds additional literature that seemed relevant enough at some stage.
 * Various slides for given presentations
 * [Scientific poster](poster.tex) for the poster session that is part of the [EPILOG](http://www.informatik.tuwien.ac.at/studium/studierende/epilog) of the Faculty of Informatics. The poster is available at the digital poster session. 
