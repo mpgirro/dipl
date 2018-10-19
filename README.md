@@ -50,4 +50,9 @@ Applikationen benötigen häufig eine simultane Bearbeitung mehrerer Aufgaben. *
 
 ## Implementations
 
-TODO
+This thesis uses a non-trivial system scenario. The scenario is a podcast search engine called *Echo*. Several implementation artifacts for Echo were produced in the course of this project. The four main parts are:
+
+* [echo-core](src/echo-core/) : A core library for domain-specific functionality.
+* [echo-actors](src/echo-actors/) : An implementation of the Echo podcast search engine (backend) based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model).
+* [echo-microservices](src/echo-microservices/) : An implementation of the Echo podcast search engine (backend) based on a [microservice architecture](https://en.wikipedia.org/wiki/Microservices).
+* [echo-web](src/echo-web/) : The web-frontend for the Echo search engine.
