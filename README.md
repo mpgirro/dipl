@@ -4,6 +4,27 @@ Comming soon(ish).
 
 ![](https://media2.giphy.com/media/kFgzrTt798d2w/giphy.gif)
 
+* [Repository Structure](#repository-structure)
+* [Thesis Document](#thesis-document)
+    * [Abstract (EN)](#abstract-en)
+    * [Abstract (DE)](#abstract-de)
+
+## Repository Structure
+
+This repository is structured as follows:
+
+* [docs/](docs/) -- Document (thesis, poster, slides, graphics, etc.)
+* [eval/](eval/) -- Evaluation material (measurement data, R scripts)
+* [src/](src/) -- Source code (actor architecture, microservice architecture, domain library, web interface)
+
+The subdirectories have separate `README.md` files with detailed information.
+
+## Thesis Document
+
+This master project originated a thesis document. It is available as in [PDF]((https://max.irro.at/pub/dipl/thesis.pdf)) (optimized for printing) and [HTML]((https://max.irro.at/pub/dipl/thesis.html)) (optimized for screens) versions.
+
+If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
+
 ```bibtex
 @mastersthesis{Irro18,
   author    = {Maximilian Irro},
@@ -19,7 +40,7 @@ Comming soon(ish).
 }
 ```
 
-## Abstract (EN)
+### Abstract (EN)
 
 Common problems require applications to manage multiple concerns
 simultaneously. A convenient approach is the concept of *concurrent
@@ -47,7 +68,7 @@ actors provide better system efficiency through a smaller codebase.
 Microservice architectures consume significantly more system resources
 and suffer especially from purely synchronous communication mechanisms.
 
-## Abstract (DE)
+### Abstract (DE)
 
 Applikationen benötigen häufig eine simultane Bearbeitung mehrerer
 Aufgaben. *Nebenläufige Programmierung* ist hierfür ein verbreitetes
