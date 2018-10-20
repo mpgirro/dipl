@@ -1,5 +1,7 @@
 <h1 align="center">
-    Concurrent Programming with Actors and Microservices
+    Concurrent Programming with
+    <br/>
+    Actors and Microservices
 </h1>
 
 I am [Maximilian Irro](https://max.irro.at) and this is my master thesis ("Diplomarbeit") I worked on in 2017/2018 as a requirement for the completion of my master curriculum [Software Engineering & Internet Computing](http://www.informatik.tuwien.ac.at/studium/angebot/master/software-engineering-and-internet-computing) at [TU Wien](http://www.informatik.tuwien.ac.at). The supervisor was [Franz Puntigam](http://www.complang.tuwien.ac.at/franz/) from the [Institute for Information Systems Engineering, Compilers and Languages Group](http://www.complang.tuwien.ac.at). This repository contains all materials related to my master thesis project (documents and implementation source codes, measurement data, etc.).
