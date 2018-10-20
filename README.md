@@ -1,7 +1,7 @@
 # Concurrent Programming with Actors and Microservices
 
 
-I am [Maximilian Irro](https://max.irro.at) and this is my master thesis I worked on in 2017/2018 as a requirement for the completion of my master curriculum [Software Engineering & Internet Computing](http://www.informatik.tuwien.ac.at/studium/angebot/master/software-engineering-and-internet-computing) at [TU Wien](http://www.informatik.tuwien.ac.at). The supervisor was [Franz Puntigam](http://www.complang.tuwien.ac.at/franz/) from the [Institute for Information Systems Engineering, Compilers and Languages Group](http://www.complang.tuwien.ac.at). This repository contains all materials related to my master thesis project (documents and implementation source codes, measurement data, etc.).
+I am [Maximilian Irro](https://max.irro.at) and this is my master thesis ("Diplomarbeit") I worked on in 2017/2018 as a requirement for the completion of my master curriculum [Software Engineering & Internet Computing](http://www.informatik.tuwien.ac.at/studium/angebot/master/software-engineering-and-internet-computing) at [TU Wien](http://www.informatik.tuwien.ac.at). The supervisor was [Franz Puntigam](http://www.complang.tuwien.ac.at/franz/) from the [Institute for Information Systems Engineering, Compilers and Languages Group](http://www.complang.tuwien.ac.at). This repository contains all materials related to my master thesis project (documents and implementation source codes, measurement data, etc.).
 
 
 ## Table of Contents
@@ -79,7 +79,7 @@ A core library for domain-specific functionality.
 
 :open_file_folder: [/src/echo-actors/](src/echo-actors/) 
 
-An implementation of Echo's backend based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model). This system implements the whole search engine within a single executable artifact (monolith). The programming language is Scala. The actor library is [Akka](https://akka.io).
+An implementation of Echo's backend based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model). The programming language is Scala. The actor library is [Akka](https://akka.io). This system implements the whole search engine within a single executable artifact (monolith).
 
 
 ### Microservice Architecture
