@@ -1,10 +1,12 @@
-# Concurrent Programming with Actors and Microservices
-
+<h1 align="center">
+    Concurrent Programming with Actors and Microservices
+</h1>
 
 I am [Maximilian Irro](https://max.irro.at) and this is my master thesis ("Diplomarbeit") I worked on in 2017/2018 as a requirement for the completion of my master curriculum [Software Engineering & Internet Computing](http://www.informatik.tuwien.ac.at/studium/angebot/master/software-engineering-and-internet-computing) at [TU Wien](http://www.informatik.tuwien.ac.at). The supervisor was [Franz Puntigam](http://www.complang.tuwien.ac.at/franz/) from the [Institute for Information Systems Engineering, Compilers and Languages Group](http://www.complang.tuwien.ac.at). This repository contains all materials related to my master thesis project (documents and implementation source codes, measurement data, etc.).
 
 
 ## Table of Contents
+
 
 * [Abstract](#abstract)
 * [Repository Structure](#repository-structure)
@@ -71,7 +73,6 @@ This thesis uses a non-trivial system scenario for evaluating the programming of
 [![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 [![Lucene version](https://img.shields.io/badge/lucene-7.2-blue.svg)](https://lucene.apache.org/core/7_2_0/index.html)
 
-
 :open_file_folder: [/src/echo-core/](src/echo-core/)
 
 A library for all domain-specific functionality.
@@ -83,7 +84,6 @@ A library for all domain-specific functionality.
 [![Scala version](https://img.shields.io/badge/scala-2.12-blue.svg)](https://www.scala-lang.org/download/2.12.0.html)
 [![Akka version](https://img.shields.io/badge/akka-2.5-blue.svg)](https://akka.io/blog/news/2017/04/13/akka-2.5.0-released)
 
-
 :open_file_folder: [/src/echo-actors/](src/echo-actors/) 
 
 An implementation of Echo's backend based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model). The programming language is Scala. The actor library is [Akka](https://akka.io). This system implements the whole search engine within a single executable artifact (monolith).
@@ -94,7 +94,6 @@ An implementation of Echo's backend based on an architecture that uses the [acto
 
 [![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 [![Spring Boot version](https://img.shields.io/badge/springboot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
-
 
 :open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
 
@@ -118,7 +117,6 @@ The microservice applications are:
 
 [![Node version](https://img.shields.io/badge/node-9.11-blue.svg)](https://nodejs.org/en/blog/release/v9.11.2/)
 [![Angular version](https://img.shields.io/badge/angular-5-blue.svg)](https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
-
 
 :open_file_folder: [/src/echo-web/](src/echo-web/)
 
