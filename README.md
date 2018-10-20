@@ -30,7 +30,7 @@ This repository is structured as follows:
 
 * :open_file_folder: [/docs/](docs/) &ndash; document source files (thesis, poster, slides, graphics, etc.)
 * :open_file_folder: [/eval/](eval/) &ndash; evaluation material (measurement data, R scripts)
-* :open_file_folder: [/src/](src/) &ndash; program artifact source codes (actor architecture, microservice architecture, domain library, web interface) for the Echo search engine implementations
+* :open_file_folder: [/src/](src/) &ndash; program artifact source codes (actor and microservice architecture, domain library, web interface)
 
 The subdirectories have separate `README.md` files with detailed information.
 
@@ -40,7 +40,7 @@ The subdirectories have separate `README.md` files with detailed information.
 
 This master project originated a thesis document. It is available in the following file versions:
 
-* :scroll: [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
+* :book: [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
 * :page_facing_up: [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
 
 If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
@@ -54,8 +54,7 @@ If you want to cite the original thesis, please use the following [BibTeX entry]
         month     = {September},
         keywords  = {concurrent programming, actor model, microservice architecture},
         timestamp = {20180930},
-        url       = {https://max.irro.at/pub/dipl/},
-        pdf       = {https://max.irro.at/pub/dipl/thesis.pdf}
+        url       = {TODO}
     }
 
 For a lists errors found in the submitted version of the thesis, see the [errata](/docs/errata.md) file. 
@@ -64,7 +63,7 @@ For a lists errors found in the submitted version of the thesis, see the [errata
 ## Implementations
 
 
-This thesis uses a non-trivial system scenario. The scenario is a podcast search engine called *Echo*. Several implementation artifacts for Echo were produced in the course of this project. The four main parts are:
+This thesis uses a non-trivial system scenario for evaluating the programming of concurrency with actors and microservices. The scenario is a podcast search engine called *Echo*. Several implementation artifacts for Echo were produced in the course of this project. The four main parts are:
 
 ### Core Library
 
@@ -75,7 +74,7 @@ This thesis uses a non-trivial system scenario. The scenario is a podcast search
 
 :open_file_folder: [/src/echo-core/](src/echo-core/)
 
-A core library for domain-specific functionality.
+A library for all domain-specific functionality.
 
 
 ### Actor Architecture
@@ -94,7 +93,7 @@ An implementation of Echo's backend based on an architecture that uses the [acto
 
 
 [![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-[![Spring Boot version](https://img.shields.io/badge/SpringBoot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
+[![Spring Boot version](https://img.shields.io/badge/springboot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
 
 
 :open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
