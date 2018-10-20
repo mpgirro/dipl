@@ -69,6 +69,10 @@ This thesis uses a non-trivial system scenario. The scenario is a podcast search
 ### Core Library
 
 
+[![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+[![Lucene version](https://img.shields.io/badge/lucene-7.2-blue.svg)](https://lucene.apache.org/core/7_2_0/index.html)
+
+
 :open_file_folder: [/src/echo-core/](src/echo-core/)
 
 A core library for domain-specific functionality.
@@ -77,12 +81,20 @@ A core library for domain-specific functionality.
 ### Actor Architecture
 
 
+[![Scala version](https://img.shields.io/badge/scala-2.12-blue.svg)](https://www.scala-lang.org/download/2.12.0.html)
+[![Akka version](https://img.shields.io/badge/akka-2.5-blue.svg)](https://akka.io/blog/news/2017/04/13/akka-2.5.0-released)
+
+
 :open_file_folder: [/src/echo-actors/](src/echo-actors/) 
 
 An implementation of Echo's backend based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model). The programming language is Scala. The actor library is [Akka](https://akka.io). This system implements the whole search engine within a single executable artifact (monolith).
 
 
 ### Microservice Architecture
+
+
+[![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+[![Spring Boot version](https://img.shields.io/badge/SpringBoot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
 
 
 :open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
@@ -103,6 +115,10 @@ The microservice applications are:
 
 
 ### Web UI
+
+
+[![Node version](https://img.shields.io/badge/node-9.11-blue.svg)](https://nodejs.org/en/blog/release/v9.11.2/)
+[![Angular version](https://img.shields.io/badge/angular-5-blue.svg)](https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
 
 
 :open_file_folder: [/src/echo-web/](src/echo-web/)
