@@ -96,6 +96,7 @@ An implementation of Echo's backend based on an architecture that uses the [acto
 
 [![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 [![Spring Boot version](https://img.shields.io/badge/springboot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
+[![Spring Cloud version](https://img.shields.io/badge/springcloud-Finchley.M5-blue.svg)](http://cloud.spring.io/spring-cloud-static/Finchley.M5/single/spring-cloud.html)
 
 :open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
 
