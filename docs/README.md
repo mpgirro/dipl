@@ -18,7 +18,9 @@ Most documents are written using the [Madoko](http://madoko.org/reference.html) 
 
     npm install madoko -g
 
-Madoko is able to generate sophisticated HTML versions of scientific documents as well as standard PDF versions through LaTeX. Other files, like the slides and the poster, use LaTeX directly. The [Makefile](Makefile) wraps the respective call to the right tool for each target document.
+Madoko is able to generate sophisticated HTML versions of scientific documents as well as standard PDF versions through LaTeX. Other files, like the slides and the poster, use LaTeX directly. The [Makefile](Makefile) wraps the respective call to the right tool for each target document. Madoko files are generated with:
+
+    madoko --pdf thesis.mdk
 
 
 ## Graphics
