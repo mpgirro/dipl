@@ -58,7 +58,7 @@ If you want to cite the original thesis, please use the following [BibTeX entry]
         month     = {September},
         keywords  = {concurrent programming, actor model, microservice architecture},
         timestamp = {20180930},
-        url       = {https://max.irro.at/pub/dipl/thesis.pdf}
+        url       = {https://repositum.tuwien.ac.at/urn:nbn:at:at-ubtuw:1-115820}
     }
 
 For a lists errors found in the submitted version of the thesis, see the [errata](/docs/errata.md) file. 
