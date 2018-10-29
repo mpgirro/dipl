@@ -56,7 +56,7 @@ If you want to cite the original thesis, please use the following [BibTeX entry]
         type      = {Master Thesis},
         year      = {2018},
         month     = {September},
-        keywords  = {concurrent programming, actor model, microservice architecture},
+        keywords  = {concurrent programming, actors, microservices},
         timestamp = {20180930},
         url       = {https://repositum.tuwien.ac.at/urn:nbn:at:at-ubtuw:1-115820}
     }
