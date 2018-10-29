@@ -32,9 +32,9 @@ Common problems require applications to manage multiple concerns simultaneously.
 
 This repository is structured as follows:
 
-* :open_file_folder: [/docs/](docs/) &ndash; document source files (thesis, poster, slides, graphics, etc.)
-* :open_file_folder: [/eval/](eval/) &ndash; evaluation material (measurement data, R scripts)
-* :open_file_folder: [/src/](src/) &ndash; program artifact source codes (actor and microservice architecture, domain library, web interface)
+* 📂 [/docs/](docs/) &ndash; document source files (thesis, poster, slides, graphics, etc.)
+* 📂 [/eval/](eval/) &ndash; evaluation material (measurement data, R scripts)
+* 📂 [/src/](src/) &ndash; program artifact source codes (actor and microservice architecture, domain library, web interface)
 
 The subdirectories have separate `README.md` files with detailed information.
 
@@ -44,21 +44,21 @@ The subdirectories have separate `README.md` files with detailed information.
 
 This master project originated a thesis document. It is available in the following file versions:
 
-* :book: [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
-* :page_facing_up: [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
+* 📖 [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
+* 📄 [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
 
 If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
 
     @mastersthesis{Irro18,
         author    = {Maximilian Irro},
         title     = {{Concurrent Programming with Actors and Microservices}},
-        school    = {Compilers and Languages Group, TU Wien},
+        school    = {Institute for Information Systems Engineering, TU Wien},
         type      = {Master Thesis},
         year      = {2018},
         month     = {September},
         keywords  = {concurrent programming, actor model, microservice architecture},
         timestamp = {20180930},
-        url       = {TODO}
+        url       = {https://max.irro.at/pub/dipl/thesis.pdf}
     }
 
 For a lists errors found in the submitted version of the thesis, see the [errata](/docs/errata.md) file. 
@@ -75,7 +75,7 @@ This thesis uses a non-trivial system scenario for evaluating the programming of
 [![Java version](https://img.shields.io/badge/java-1.8-blue.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 [![Lucene version](https://img.shields.io/badge/lucene-7.2-blue.svg)](https://lucene.apache.org/core/7_2_0/index.html)
 
-:open_file_folder: [/src/echo-core/](src/echo-core/)
+📂 [/src/echo-core/](src/echo-core/)
 
 A library for all domain-specific functionality.
 
@@ -86,7 +86,7 @@ A library for all domain-specific functionality.
 [![Scala version](https://img.shields.io/badge/scala-2.12-blue.svg)](https://www.scala-lang.org/download/2.12.0.html)
 [![Akka version](https://img.shields.io/badge/akka-2.5-blue.svg)](https://akka.io/blog/news/2017/04/13/akka-2.5.0-released)
 
-:open_file_folder: [/src/echo-actors/](src/echo-actors/) 
+📂 [/src/echo-actors/](src/echo-actors/) 
 
 An implementation of Echo's backend based on an architecture that uses the [actor model](https://en.wikipedia.org/wiki/Actor_model). The programming language is Scala. The actor library is [Akka](https://akka.io). This system implements the whole search engine within a single executable artifact (monolith).
 
@@ -98,7 +98,7 @@ An implementation of Echo's backend based on an architecture that uses the [acto
 [![Spring Boot version](https://img.shields.io/badge/springboot-1.5.10-blue.svg)](https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/html/index.html)
 [![Spring Cloud version](https://img.shields.io/badge/springcloud-Finchley.M5-blue.svg)](http://cloud.spring.io/spring-cloud-static/Finchley.M5/single/spring-cloud.html)
 
-:open_file_folder: [/src/echo-microservices/](src/echo-microservices/)
+📂 [/src/echo-microservices/](src/echo-microservices/)
 
 An implementation of Echo's backend based on a [microservice architecture](https://en.wikipedia.org/wiki/Microservices). This system is composed of several executable artifacts (the microservices). These distinct programs communicate via network mechanism, either [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) or [RabbitMQ](https://www.rabbitmq.com) (an [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol)-compatible messaging system). All microservices build on [Spring Boot](https://spring.io/projects/spring-boot) as the application foundation and various components of [Spring Cloud](http://projects.spring.io/spring-cloud/).
 
@@ -121,11 +121,11 @@ The microservice applications are:
 [![Node version](https://img.shields.io/badge/node-9.11-blue.svg)](https://nodejs.org/en/blog/release/v9.11.2/)
 [![Angular version](https://img.shields.io/badge/angular-5-blue.svg)](https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
 
-:open_file_folder: [/src/echo-web/](src/echo-web/)
+📂 [/src/echo-web/](src/echo-web/)
 
 The web-frontend for the Echo search engine. This web app builds on [Angular](https://angular.io).
 
-<img src="docs/graphics/webapp-screenshot.png" alt="WebApp Screenshot" width="540" />
+<img src="docs/graphics/webapp-screenshot.png" alt="WebApp Screenshot" width="540" style="display: block; margin-left: auto; margin-right: auto;" />
 
 
 ## Evaluation
