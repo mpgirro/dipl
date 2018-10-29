@@ -35,22 +35,36 @@
 %  \tableofcontents
 %\end{frame}
 
+
 \section{Concurrency}
 
 % TODO hier sollte vielleicht noch ein anderer Slide vorher stehen
 
-\begin{frame}{Forms of Concurrency}
+
+\begin{frame}{Forms of Concurrent Execution}
 
 \begin{itemize}
-  \item Concurrent execution
-  \item Parallel execution
-  \item Distributed execution
+  \item \textbf{Pseudo-Simultaneous}: in alternation on a single CPU
+  \item \textbf{Parallel}: truely simultaneous on several CPU cores
+  \item \textbf{Distributed}: several host machines
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Foundational Issues of Concurrent Programming}
+
+\begin{itemize}
+  \item \textbf{Expression of concurrent execution}: threads, futures, coroutines, etc.
+  \item \textbf{Communication}: shared state vs. message passing
+  \item \textbf{Synchronization}: semaphores, locks, STM
 \end{itemize}
 
 \end{frame}
 
 
 \section{Actor Model}
+
 
 \begin{frame}{Actors}
 
