@@ -125,7 +125,9 @@ The microservice applications are:
 
 The web-frontend for the Echo search engine. This web app builds on [Angular](https://angular.io).
 
-<img src="docs/graphics/webapp-screenshot.png" alt="WebApp Screenshot" width="540" style="display: block; margin-left: auto; margin-right: auto;" />
+<p align="center">
+  <img src="docs/graphics/webapp-screenshot.png" alt="WebApp Screenshot" width="540" />
+</p>
 
 
 ## Evaluation
