@@ -40,6 +40,7 @@
 
 % TODO hier sollte vielleicht noch ein anderer Slide vorher stehen
 
+% ###################################################################
 
 \begin{frame}{Forms of Concurrent Execution}
 
@@ -51,6 +52,7 @@
 
 \end{frame}
 
+% ###################################################################
 
 \begin{frame}{Foundational Issues of Concurrent Programming}
 
@@ -62,6 +64,7 @@
 
 \end{frame}
 
+% ###################################################################
 
 \begin{frame}{Programming Abstractions}
 
@@ -73,19 +76,55 @@
 
 \end{frame}
 
+% ###################################################################
 
 \section{Actor Model}
 
+% ###################################################################
 
-\begin{frame}{Actors}
+\begin{frame}{Actor Model: basic model primitives}
 
 \begin{itemize}
-  \item TODO
+  \item Send a finite number of messages to itself and other actors.
+  \item Create a finite number of new actors.
+  \item Substitute current behavior with a \textit{replacement behavior}.
 \end{itemize}
 
 \end{frame}
 
+% ###################################################################
+
+\begin{frame}{Actor Model}
+
+\begin{itemize}
+  \item \textit{Actors} as basic building blocks
+  \item Self-contained, interactive and independent components that communicate via asynchronous message passing
+  \item Unique actor address (location transparency)
+  \item \textit{Mailbox} buffers messages, access is race-free.
+  \item Single-threaded semantics (isolated turn principle).
+  \item Messages are immutable
+  \item Properties allows \textit{actor system} to execute actors concurrently
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Actor Systems and Variations}
+
+\begin{itemize}
+  \item Erlang
+  \item Akka
+\end{itemize}
+  \item Orleans: mature \textit{active objects} variant
+
+\end{frame}
+
+% ###################################################################
+
 \section{Microservices Paradigm}
+
+% ###################################################################
 
 \begin{frame}{Microservices}
 
@@ -94,6 +133,8 @@
 \end{itemize}
 
 \end{frame}
+
+% ###################################################################
 
 
 \end{document}
