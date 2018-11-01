@@ -96,14 +96,24 @@
 
 \begin{frame}{Actor Model}
 
+%\begin{itemize}
+%  \item \textit{Actors} as basic building blocks
+%  \item Self-contained, interactive and independent components that communicate via asynchronous message passing
+%  \item Unique actor address (location transparency)
+%  \item \textit{Mailbox} buffers messages, access is race-free.
+%  \item Single-threaded semantics (isolated turn principle).
+%  \item Messages are immutable
+%  \item Properties allows \textit{actor system} to execute actors concurrently
+%\end{itemize}
+
 \begin{itemize}
-  \item \textit{Actors} as basic building blocks
-  \item Self-contained, interactive and independent components that communicate via asynchronous message passing
-  \item Unique actor address (location transparency)
-  \item \textit{Mailbox} buffers messages, access is race-free.
-  \item Single-threaded semantics (isolated turn principle).
-  \item Messages are immutable
-  \item Properties allows \textit{actor system} to execute actors concurrently
+  \item defines theoretically well-known constructs
+  \item support concurrent, parallel and distributed execution
+  \item encapsulate state exclusively
+  \item communicate via asynchronous message passing
+  \item runtime system executes actors concurrently
+  \item passive computational units $\rightarrow$ only react to messages
+  \item single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
 \end{itemize}
 
 \end{frame}
@@ -115,8 +125,9 @@
 \begin{itemize}
   \item Erlang
   \item Akka
-\end{itemize}
   \item Orleans: mature \textit{active objects} variant
+\end{itemize}
+  
 
 \end{frame}
 
@@ -126,10 +137,15 @@
 
 % ###################################################################
 
-\begin{frame}{Microservices}
+\begin{frame}{Microservices Paradigm}
 
 \begin{itemize}
-  \item TODO
+  \item complex functionality through composition of several \textit{services}
+  \item microservice: relatively small, independent, highly cohesive and loosely coupled executable
+  \item every microservices a dedicated operating system process
+  \item communicate via lightweight, technology-neutral message passing channels
+  \item executed by an operating system scheduler (concurrency/parallelism)
+  \item Network-based communication $\rightarrow$ distribution
 \end{itemize}
 
 \end{frame}
