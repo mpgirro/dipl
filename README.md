@@ -45,7 +45,7 @@ The subdirectories have separate `README.md` files with detailed information.
 This master project originated a thesis document. It is available in the following file versions:
 
 * 📖 [PDF](https://max.irro.at/pub/dipl/thesis.pdf) (optimized for printing)
-* 📄 [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
+* 🌐 [HTML](https://max.irro.at/pub/dipl/thesis.html) (optimized for screens)
 
 If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
 
