@@ -1,3 +1,3 @@
 # Errata
 
-Nothing is wrong! The thesis is perfect so far.
+Nothing is wrong so far! The thesis is still perfect.
