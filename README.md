@@ -50,15 +50,13 @@ This master project originated a thesis document. It is available in the followi
 If you want to cite the original thesis, please use the following [BibTeX entry](https://max.irro.at/pub/dipl/thesis.bib):
 
     @mastersthesis{Irro18,
-        author    = {Maximilian Irro},
-        title     = {{Concurrent Programming with Actors and Microservices}},
-        school    = {Institute for Information Systems Engineering, TU Wien},
-        type      = {Master Thesis},
-        year      = {2018},
-        month     = {September},
-        keywords  = {concurrent programming, actors, microservices},
-        timestamp = {20180930},
-        url       = {https://repositum.tuwien.ac.at/urn:nbn:at:at-ubtuw:1-115820}
+      author    = {Maximilian Irro},
+      title     = {{Concurrent Programming with Actors and Microservices}},
+      school    = {TU Wien},
+      year      = {2018},
+      keywords  = {concurrent programming, actors, microservices},
+      timestamp = {20180930},
+      url       = {https://repositum.tuwien.ac.at/urn:nbn:at:at-ubtuw:1-115820}
     }
 
 For a lists errors found in the submitted version of the thesis, see the [errata](/docs/errata.md) file. 
