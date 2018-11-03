@@ -17,6 +17,9 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
+\usepackage{pdfcomment}
+
+\newcommand{\pdfnote}[1]{\marginnote{\pdfcomment[icon=note]{#1}}}
 
 \newcommand\mydots{\hbox to 1em{.\hss.\hss.}}
 
@@ -146,6 +149,77 @@
   \item communicate via lightweight, technology-neutral message passing channels
   \item executed by an operating system scheduler (concurrency/parallelism)
   \item Network-based communication $\rightarrow$ distribution
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Expressiveness and Capabilities}
+
+% ###################################################################
+
+\begin{frame}{Expressiveness and Capabilities}
+
+\begin{itemize}
+  \item Same expressive capabilities regarding concurrent programming concerns?
+  \item For specific technology stacks
+  \item Actor variant: Akka
+  \item Microservice: Found on Spring Framework (Spring Boot $+$ Spring Cloud)
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Foundational Issues revisited}
+
+% ###################################################################
+
+\begin{frame}{Foundational Issues revisited: Expression}
+
+\begin{itemize}
+  \item Akka: Actor instantiation from class $+$ runtime
+  \item Microservice: Starting system process
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Foundational Issues revisited: Synchronization}
+
+\begin{itemize}
+  \item \textbf{Exclusive State}: state encapsulation omits the need for synchronization
+  \item Microservice: OS enforces memory boundaries among processes
+  \item Actor: hazards of the JVM
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Foundational Issues revisited: Communication}
+
+\begin{itemize}
+  \item Exclusive state $\rightarrow$ no shared state, \textbf{message passing} instead 
+  \item Actors have an asynchronous messaging primi- tive. Additional communication abstractions build on top of this primitive, and are therefore at most semi-synchronous.
+  \item Microservices are open for every technology-neutral, message passing communication channel in every interaction style
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Concurrent Execution}
+
+\pdfnote{remember to say hello}
+
+\begin{itemize}
+  \item Foundation: exclusively encapsulated state $+$ message passing communication
+  \item These properties result in a temporal and spacial decoupling
+  \item Actor: concurrent execution through actor runtime
+  \item Microservice: concurrent execution through operating system
 \end{itemize}
 
 \end{frame}
