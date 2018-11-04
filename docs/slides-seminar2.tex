@@ -13,11 +13,14 @@
   \usefonttheme{default}  % or try serif, structurebold, ...
   \setbeamertemplate{navigation symbols}{}
   \setbeamertemplate{caption}[numbered]
+  \setbeamertemplate{footline}[frame number]
 } 
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage{pdfcomment}
+\usepackage{fancyvrb}
+
 
 \newcommand{\pdfnote}[1]{\marginnote{\pdfcomment[icon=note]{#1}}}
 
@@ -116,11 +119,10 @@
 
 \begin{itemize}
   \item defines theoretically well-known constructs
-  \item support concurrent, parallel and distributed execution
+  \item receive and process messages (asynchronous, passiv)
+  \item process one message at a time
   \item encapsulate state exclusively
-  \item communicate via asynchronous message passing
   \item runtime system executes actors concurrently
-  \item passive computational units $\rightarrow$ only react to messages
   \item single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
 \end{itemize}
 
@@ -148,7 +150,8 @@
 
 \begin{itemize}
   \item complex functionality through composition of several \textit{services}
-  \item microservice: relatively small, independent, highly cohesive and loosely coupled executable
+  \item microservice: small, independent, highly cohesive and loosely coupled executable
+  \item \glqq small\grqq{} size $\rightarrow$ in it's \textit{scope of responsibility}
   \item every microservices a dedicated operating system process
   \item communicate via lightweight, technology-neutral message passing channels
   \item executed by an operating system scheduler (concurrency/parallelism)
@@ -186,9 +189,25 @@
 \begin{frame}{RQ1: Why do actors and microservices qualify for programming concurrency?}
 
 \begin{itemize}
-  \item Encapsulate state exclusively
+  \item Encapsulate state exclusively $\rightarrow$ synchronization-free (\textbf{?})
   \item No shared state $\rightarrow$ message passing communication
   \item Temporal $+$ spacial decoupling 
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Encapsulation (conceptual) vs. Isolation (pratical)}
+
+\begin{itemize}
+  \item Microservice: process memory boundaries
+  \item Actors (on the JVM):
+  \begin{itemize}
+    \item Visibility $+$ Accessibility $\rightarrow$ information hiding
+    \item Reference types $+$ pass-by-value $\rightarrow$ immutability
+    \item Coding conventions required
+  \end{itemize}
 \end{itemize}
 
 \end{frame}
@@ -202,12 +221,14 @@
     \textbf{Actors}
     \begin{itemize}
       \item Concurrent execution by actor runtime
+      \item History of combining actors with other \textit{compatible} concurrency abstractions (futures)
     \end{itemize}
   \end{column}
   \begin{column} {0.4\textwidth}
     \textbf{Microservices} \\
     \begin{itemize}
       \item Concurrent execution by operating system
+      \item Free to use \textit{every} concurrency approach available to the technology stack internally
     \end{itemize}
   \end{column}
 \end{columns}
@@ -220,14 +241,30 @@
 
 % ###################################################################
 
-\begin{frame}{Expressiveness and Capabilities}
+\begin{frame}{RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?}
 
 \begin{itemize}
-  \item Same expressive capabilities regarding concurrent programming concerns?
-  \item For specific technology stacks
+  \item For specific technology stack
   \item Actor variant: Akka
-  \item Microservice: Found on Spring Framework (Spring Boot $+$ Spring Cloud)
+  \item Microservice: Spring Boot $+$ Spring Cloud
 \end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?}
+
+
+\begin{table}
+  \begin{tabular}{l l l}
+            & Swim & Cycle \\ \hline
+    John T & 13:04 & 24:15 \\ 
+    Norman P & 8:00 & 22:45 \\
+    Alex K & 14:00 & 28:00\\
+    Sarah H & 9:22 & 21:10 
+  \end{tabular}
+\end{table}
 
 \end{frame}
 
@@ -237,7 +274,7 @@
 
 % ###################################################################
 
-\begin{frame}{Foundational Issues revisited: Expression}
+\begin{frame}{DELETE Foundational Issues revisited: Expression}
 
 \begin{itemize}
   \item Akka: Actor instantiation from class $+$ runtime
@@ -248,7 +285,7 @@
 
 % ###################################################################
 
-\begin{frame}{Foundational Issues revisited: Synchronization}
+\begin{frame}{DELETE Foundational Issues revisited: Synchronization}
 
 \begin{itemize}
   \item \textbf{Exclusive State}: state encapsulation omits the need for synchronization
@@ -260,7 +297,7 @@
 
 % ###################################################################
 
-\begin{frame}{Foundational Issues revisited: Communication}
+\begin{frame}{DELETE Foundational Issues revisited: Communication}
 
 \begin{itemize}
   \item Exclusive state $\rightarrow$ no shared state, \textbf{message passing} instead 
@@ -272,7 +309,7 @@
 
 % ###################################################################
 
-\begin{frame}{Concurrent Execution}
+\begin{frame}{DELETE Concurrent Execution}
 
 \pdfnote{remember to say hello}
 
@@ -282,6 +319,27 @@
   \item Actor: concurrent execution through actor runtime
   \item Microservice: concurrent execution through operating system
 \end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}[fragile]{Supplemental: Actor state isolation in Java}
+
+\begin{verbatim}
+public class Foo extends UntypedActor {
+    public String bar;
+    public static Props props() {
+        return Props.create(Foo.class, () -> new Foo());
+    }
+    @Override
+    public void onReceive(Object msg) { 
+      /* handle msg */ 
+    }
+}
+
+final ActorRef foo = system.actorOf(Foo.props());
+\end{verbatim}
 
 \end{frame}
 
