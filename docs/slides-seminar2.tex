@@ -205,7 +205,7 @@
 
 % ###################################################################
 
-\begin{frame}{Encapsulation (conceptual) vs. Isolation (pratical)}
+\begin{frame}{OPT! Encapsulation (conceptual) vs. Isolation (pratical)}
 
 \begin{itemize}
   \item Microservice: process memory boundaries
@@ -383,23 +383,7 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 % ###################################################################
 
-\begin{frame}{Semi-Synchronous Communication in Akka}
-
-Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
-
-\begin{center}
-  \begin{figure} 
-    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
-  \end{figure}
-\end{center}
-
-\end{frame}
-
-% ###################################################################
-
 \begin{frame}{Relevance of the Benchmark}
-
-Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
 
 \begin{itemize}
   \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
@@ -451,6 +435,20 @@ public class Foo extends UntypedActor {
 
 final ActorRef foo = system.actorOf(Foo.props());
 \end{verbatim}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: Semi-Synchronous Communication in Akka}
+
+Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
+  \end{figure}
+\end{center}
 
 \end{frame}
 
