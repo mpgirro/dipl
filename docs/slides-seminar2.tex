@@ -13,14 +13,21 @@
   \usefonttheme{default}  % or try serif, structurebold, ...
   \setbeamertemplate{navigation symbols}{}
   \setbeamertemplate{caption}[numbered]
-  \setbeamertemplate{footline}[frame number]
+  \setbeamertemplate{footline}{% 
+    \hfill% 
+    \usebeamercolor[fg]{page number in head/foot}% 
+    \usebeamerfont{page number in head/foot}% 
+    \insertframenumber%
+    %\,/\,\inserttotalframenumber
+    \kern1em\vskip2pt% 
+  }
 } 
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage{pdfcomment}
 \usepackage{fancyvrb}
-
+\usepackage{tabularx}
 
 \newcommand{\pdfnote}[1]{\marginnote{\pdfcomment[icon=note]{#1}}}
 
@@ -217,14 +224,14 @@
 \begin{frame}{RQ2: How do the actor and the microservice model facilitate concurrent execution?}
 
 \begin{columns}
-  \begin{column} {0.4\textwidth} 
+  \begin{column} {0.48\textwidth} 
     \textbf{Actors}
     \begin{itemize}
       \item Concurrent execution by actor runtime
       \item History of combining actors with other \textit{compatible} concurrency abstractions (futures)
     \end{itemize}
   \end{column}
-  \begin{column} {0.4\textwidth}
+  \begin{column} {0.48\textwidth}
     \textbf{Microservices} \\
     \begin{itemize}
       \item Concurrent execution by operating system
@@ -237,7 +244,7 @@
 
 % ###################################################################
 
-\section{Expressiveness and Capabilities}
+\section{RQ3}
 
 % ###################################################################
 
@@ -255,70 +262,174 @@
 
 \begin{frame}{RQ3: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?}
 
-
 \begin{table}
-  \begin{tabular}{l l l}
-            & Swim & Cycle \\ \hline
-    John T & 13:04 & 24:15 \\ 
-    Norman P & 8:00 & 22:45 \\
-    Alex K & 14:00 & 28:00\\
-    Sarah H & 9:22 & 21:10 
-  \end{tabular}
+  \begin{tabularx}{\textwidth}{l|X|X}
+                     & Actors                                         & Microservices                                         \\ \hline
+    Encapsulation    & libraries face issues                          & process memory\newline boundaries                     \\ \hline
+    Communication    & async. primitive and abstractions on top       & variety of channel\newline technologies               \\ \hline
+    Concurrent Exec. & by actor runtime\newline $+$ additional models & by operating system\newline $+$ every model available \\ \hline
+    Scalability      & \multicolumn{2}{l}{vertical scalability, horizontal scalability}
+  \end{tabularx}
 \end{table}
 
 \end{frame}
 
 % ###################################################################
 
-\section{Foundational Issues revisited}
+\section{RQ4}
 
 % ###################################################################
 
-\begin{frame}{DELETE Foundational Issues revisited: Expression}
+\begin{frame}{RQ4: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?}
 
 \begin{itemize}
-  \item Akka: Actor instantiation from class $+$ runtime
-  \item Microservice: Starting system process
+  \item Benchmark system: domain-specific search engine
 \end{itemize}
 
 \end{frame}
 
 % ###################################################################
 
-\begin{frame}{DELETE Foundational Issues revisited: Synchronization}
+\begin{frame}{Benchmark System Architecture}
+
+\begin{columns}
+  \begin{column}{0.47\textwidth}
+    \begin{itemize}
+      \item Gateway (G) 
+      \item CatalogStore (C)
+      \item Updater (U)
+      \item Web Crawler (W)
+      \item Parser (P)
+      \item IndexStore (I)
+      \item Searcher (S)
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \begin{figure} 
+      \includegraphics[width=0.7\textwidth]{graphics/interaction-model.png} 
+      \caption{Interaction Model}
+    \end{figure}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Software Artifact Analysis}
+
+\begin{table}
+  \begin{tabular}{l|r|r|r|r}
+    \textbf{Artifact} & \textbf{LoC} & \textbf{sJAR (KB)} & \textbf{fJAR (KB)} & \textbf{Up (s)}  \\ \hline
+    Akka monolith     & 4487         & 1004.3             & 76 775.1           & 5.5                     \\ \hline
+    CatalogStore (MS) & 1838         & 56.1               & 89 225.8           & 14.6                    \\ \hline
+    IndexStore (MS)   & 724          & 23.8               & 83 518.2           & 8.8                     \\ \hline
+    Searcher (MS)     & 656          & 22.2               & 81 754.4           & 8.1                     \\ \hline
+    Web Crawler (MS)  & 716          & 23.5               & 83 517.9           & 9.2                     \\ \hline
+    Parser (MS)       & 703          & 24.2               & 83 519.1           & 8.6                     \\ \hline
+    Registry (MS)     & 334          & 9.9                & 90 699.7           & 9.4                     \\ \hline
+    Gateway (MS)      & 889          & 30.5               & 83 655.1           & 9.7                     \\ \hline
+    Updater (MS)      & 693          & 23.9               & 83 518.3           & 8.7                     \\ \hline
+  \end{tabular}
+\end{table}
 
 \begin{itemize}
-  \item \textbf{Exclusive State}: state encapsulation omits the need for synchronization
-  \item Microservice: OS enforces memory boundaries among processes
-  \item Actor: hazards of the JVM
+  \item $\sum\mbox{LoC}(\mbox{MS}) = 6553$, about 46 \% larger
 \end{itemize}
 
 \end{frame}
 
 % ###################################################################
 
-\begin{frame}{DELETE Foundational Issues revisited: Communication}
+\begin{frame}{Artifact Memory Consumption}
+
+Memory consumption of the executable artifact VMs in the indexing phase:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-index-mem.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Overall Processing Time: Indexing Subsystem}
+
+Benchmark results for the overall processing time of the indexing subsystem:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-index-overall.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Overall Processing Time: Retrieval Subsystem}
+
+Benchmark results of the overall processing time for the retrieval subsystem:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-rtt-overall.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Semi-Synchronous Communication in Akka}
+
+Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Relevance of the Benchmark}
+
+Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
 
 \begin{itemize}
-  \item Exclusive state $\rightarrow$ no shared state, \textbf{message passing} instead 
-  \item Actors have an asynchronous messaging primi- tive. Additional communication abstractions build on top of this primitive, and are therefore at most semi-synchronous.
-  \item Microservices are open for every technology-neutral, message passing communication channel in every interaction style
+  \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
+  \item Lack of different interaction modes in microservice architecture benchmarks according to literature $\rightarrow$ comparison to asynchronous actor system
 \end{itemize}
 
 \end{frame}
 
 % ###################################################################
 
-\begin{frame}{DELETE Concurrent Execution}
-
-\pdfnote{remember to say hello}
+\begin{frame}{Contributions}
 
 \begin{itemize}
-  \item Foundation: exclusively encapsulated state $+$ message passing communication
-  \item These properties result in a temporal and spacial decoupling
-  \item Actor: concurrent execution through actor runtime
-  \item Microservice: concurrent execution through operating system
+  \item Compared the programming of concurrent computation with the actors and microservices
+  \item Explored the interrelations of the two models and filled a gap in the literature
+  \item Designed a non-trivial scenario for a concurrent domain-specific search engine
+  \item Actor and microservice implementation
+  \item Capability evaluation and efficiency benchmark
 \end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+
+\begin{frame}{}
+
+\begin{center}
+  \texttt{</end>}
+\end{center}
 
 \end{frame}
 
