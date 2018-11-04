@@ -48,8 +48,11 @@
 \begin{frame}{Forms of Concurrent Execution}
 
 \begin{itemize}
+  \pause
   \item \textbf{Pseudo-Simultaneous}: in alternation on a single CPU
+  \pause
   \item \textbf{Parallel}: truely simultaneous on several CPU cores
+  \pause
   \item \textbf{Distributed}: several host machines
 \end{itemize}
 
@@ -73,7 +76,9 @@
 
 \begin{itemize}
   \item \textbf{Language-Construct Approach}: threads $+$ locks
+  \pause
   \item \textbf{Operating System Approach}: processes $+$ pipes
+  \pause
   \item \textbf{Network Approach}: processes $+$ network channel
 \end{itemize}
 
@@ -85,15 +90,15 @@
 
 % ###################################################################
 
-\begin{frame}{Actor Model: basic model primitives}
+%\begin{frame}{Actor Model: basic model primitives}
 
-\begin{itemize}
-  \item Send a finite number of messages to itself and other actors.
-  \item Create a finite number of new actors.
-  \item Substitute current behavior with a \textit{replacement behavior}.
-\end{itemize}
+%\begin{itemize}
+%  \item Send a finite number of messages to itself and other actors.
+%  \item Create a finite number of new actors.
+%  \item Substitute current behavior with a \textit{replacement behavior}.
+%\end{itemize}
 
-\end{frame}
+%\end{frame}
 
 % ###################################################################
 
@@ -123,16 +128,15 @@
 
 % ###################################################################
 
-\begin{frame}{Actor Systems and Variations}
+%\begin{frame}{Actor Systems and Variations}
 
-\begin{itemize}
-  \item Erlang
-  \item Akka
-  \item Orleans: mature \textit{active objects} variant
-\end{itemize}
+%\begin{itemize}
+%  \item Erlang
+%  \item Akka
+%  \item Orleans: mature \textit{active objects} variant
+%\end{itemize}
   
-
-\end{frame}
+%\end{frame}
 
 % ###################################################################
 
@@ -161,14 +165,56 @@
 
 \begin{frame}{Research Questions}
 
+%\begin{itemize}
+%  \item \textbf{RQ1}: Why do actors and microservices qualify for programming concurrency?
+%  \item \textbf{RQ2}: How do the actor and the microservice model facilitate concurrent execution?
+%  \item \textbf{RQ3}: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
+%  \item \textbf{RQ4}: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+%\end{itemize}
+
+\begin{description}
+  \item[RQ1] Why do actors and microservices qualify for programming concurrency?
+  \item[RQ2] How do the actor and the microservice model facilitate concurrent execution?
+  \item[RQ3] What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
+  \item[RQ4] How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+\end{description}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{RQ1: Why do actors and microservices qualify for programming concurrency?}
+
 \begin{itemize}
-  \item \textbf{RQ1}: Why do actors and microservices qualify for programming concurrency?
-  \item \textbf{RQ2}: How do the actor and the microservice model facilitate concurrent execution?
-  \item \textbf{RQ3}: What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
-  \item \textbf{RQ4}: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+  \item Encapsulate state exclusively
+  \item No shared state $\rightarrow$ message passing communication
+  \item Temporal $+$ spacial decoupling 
 \end{itemize}
 
 \end{frame}
+
+% ###################################################################
+
+\begin{frame}{RQ2: How do the actor and the microservice model facilitate concurrent execution?}
+
+\begin{columns}
+  \begin{column} {0.4\textwidth} 
+    \textbf{Actors}
+    \begin{itemize}
+      \item Concurrent execution by actor runtime
+    \end{itemize}
+  \end{column}
+  \begin{column} {0.4\textwidth}
+    \textbf{Microservices} \\
+    \begin{itemize}
+      \item Concurrent execution by operating system
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ###################################################################
 
 \section{Expressiveness and Capabilities}
 
