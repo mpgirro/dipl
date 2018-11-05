@@ -121,12 +121,12 @@
 \pause
 
 \begin{itemize}
-  \item defines theoretically well-known constructs
-  \item receive and process messages (asynchronous, passiv)
-  \item process one message at a time
-  \item encapsulate state exclusively
-  \item runtime system executes actors concurrently
-  \item single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
+  \item Defines theoretically well-known constructs
+  \item Receive and process messages (asynchronous, passiv)
+  \item Process one message at a time
+  \item Encapsulate state exclusively
+  \item Runtime system executes actors concurrently
+  \item Single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
 \end{itemize}
 
 \end{frame}
@@ -154,12 +154,12 @@
 \pause
 
 \begin{itemize}
-  \item complex functionality through composition of several \textit{services}
-  \item microservice: small, independent, highly cohesive and loosely coupled executable
+  \item Complex functionality through composition of several \textit{services}
+  \item Microservice: small, independent executable
   \item \glqq small\grqq{} size $\rightarrow$ in it's \textit{scope of responsibility}
-  \item every microservices a dedicated operating system process
-  \item communicate via lightweight, technology-neutral message passing channels
-  \item executed by an operating system scheduler (concurrency/parallelism)
+  \item Every microservice a dedicated operating system process
+  \item Executed by an operating system scheduler (concurrency/parallelism)
+  \item Communicate via message passing channels
   \item Network-based communication $\rightarrow$ distribution
 \end{itemize}
 
@@ -380,17 +380,6 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 % ###################################################################
 
-\begin{frame}{Relevance of the Benchmark}
-
-\begin{itemize}
-  \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
-  \item Lack of different interaction modes in microservice architecture benchmarks according to literature $\rightarrow$ comparison to asynchronous actor system
-\end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
 \begin{frame}{Contributions}
 
 \begin{itemize}
@@ -462,6 +451,17 @@ Comparison of the benchmark results for the retrieval subsystem using either del
     \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
   \end{figure}
 \end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: Relevance of the Benchmark}
+
+\begin{itemize}
+  \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
+  \item Lack of different interaction modes in microservice architecture benchmarks according to literature $\rightarrow$ comparison to asynchronous actor system
+\end{itemize}
 
 \end{frame}
 
