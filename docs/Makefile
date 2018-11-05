@@ -1,4 +1,7 @@
 
+.PHONY: default
+default: thesis ;
+
 # This uses Madoko (https://github.com/koka-lang/madoko)
 proposal:
 	madoko --pdf proposal.mdk
@@ -15,10 +18,10 @@ slides-seminar1: ensure-outdir
 slides-seminar2: ensure-outdir
 	pdflatex -halt-on-error -output-directory out slides-seminar2.tex
 
-slides-defense: ensure-outdir
-	pdflatex -halt-on-error -output-directory out slides-defense.tex
+slides-exam: ensure-outdir
+	pdflatex -halt-on-error -output-directory out slides-exam.tex
 
-slides: ensure-outdir slides-seminar1 slides-seminar2 slides-defense
+slides: ensure-outdir slides-seminar1 slides-seminar2 slides-exam
 
 poster: ensure-outdir
 	pdflatex -halt-on-error -output-directory out poster.tex
