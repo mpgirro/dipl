@@ -73,8 +73,11 @@
 \begin{frame}{Foundational Issues of Concurrent Programming}
 
 \begin{itemize}
+  \pause
   \item \textbf{Expression of concurrent execution}: threads, futures, coroutines, etc.
+  \pause
   \item \textbf{Communication}: shared state vs. message passing
+  \pause
   \item \textbf{Synchronization}: semaphores, locks, STM
 \end{itemize}
 
@@ -85,6 +88,7 @@
 \begin{frame}{Programming Abstractions}
 
 \begin{itemize}
+  \pause
   \item \textbf{Language-Construct Approach}: threads $+$ locks
   \pause
   \item \textbf{Operating System Approach}: processes $+$ pipes
@@ -114,15 +118,7 @@
 
 \begin{frame}{Actor Model}
 
-%\begin{itemize}
-%  \item \textit{Actors} as basic building blocks
-%  \item Self-contained, interactive and independent components that communicate via asynchronous message passing
-%  \item Unique actor address (location transparency)
-%  \item \textit{Mailbox} buffers messages, access is race-free.
-%  \item Single-threaded semantics (isolated turn principle).
-%  \item Messages are immutable
-%  \item Properties allows \textit{actor system} to execute actors concurrently
-%\end{itemize}
+\pause
 
 \begin{itemize}
   \item defines theoretically well-known constructs
@@ -155,6 +151,8 @@
 
 \begin{frame}{Microservices Paradigm}
 
+\pause
+
 \begin{itemize}
   \item complex functionality through composition of several \textit{services}
   \item microservice: small, independent, highly cohesive and loosely coupled executable
@@ -182,12 +180,23 @@
 %  \item \textbf{RQ4}: How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
 %\end{itemize}
 
-\begin{description}
-  \item[RQ1] Why do actors and microservices qualify for programming concurrency?
-  \item[RQ2] How do the actor and the microservice model facilitate concurrent execution?
-  \item[RQ3] What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
-  \item[RQ4] How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
-\end{description}
+\pause
+
+\begin{table}
+  \begin{tabularx}{\textwidth}{lX}                                                                                                                    \\[10pt]%
+    \textbf{RQ1} & Why do actors and microservices qualify for programming concurrency?                                                               \\[10pt]%
+    \textbf{RQ2} & How do the actor and the microservice model facilitate concurrent execution?                                                       \\[10pt]%
+    \textbf{RQ3} & What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?                        \\[10pt]%
+    \textbf{RQ4} & How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+  \end{tabularx}
+\end{table}
+
+%\begin{description}
+%  \item[RQ1] Why do actors and microservices qualify for programming concurrency?
+%  \item[RQ2] How do the actor and the microservice model facilitate concurrent execution?
+%  \item[RQ3] What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?
+%  \item[RQ4] How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+%\end{description}
 
 \end{frame}
 
@@ -195,10 +204,12 @@
 
 \begin{frame}{RQ1: Why do actors and microservices qualify for programming concurrency?}
 
+\pause
+
 \begin{itemize}
   \item Encapsulate state exclusively $\rightarrow$ synchronization-free (\textbf{?})
   \item No shared state $\rightarrow$ message passing communication
-  \item Temporal $+$ spacial decoupling 
+  \item Temporal $+$ spacial decoupling $\rightarrow$ concurrent scheduling by runtime/OS
 \end{itemize}
 
 \end{frame}
@@ -206,6 +217,8 @@
 % ###################################################################
 
 \begin{frame}{RQ2: How do the actor and the microservice model facilitate concurrent execution?}
+
+\pause
 
 \begin{columns}
   \begin{column} {0.48\textwidth} 
