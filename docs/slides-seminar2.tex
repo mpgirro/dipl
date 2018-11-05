@@ -205,22 +205,6 @@
 
 % ###################################################################
 
-\begin{frame}{OPT! Encapsulation (conceptual) vs. Isolation (pratical)}
-
-\begin{itemize}
-  \item Microservice: process memory boundaries
-  \item Actors (on the JVM):
-  \begin{itemize}
-    \item Visibility $+$ Accessibility $\rightarrow$ information hiding
-    \item Reference types $+$ pass-by-value $\rightarrow$ immutability
-    \item Coding conventions required
-  \end{itemize}
-\end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
 \begin{frame}{RQ2: How do the actor and the microservice model facilitate concurrent execution?}
 
 \begin{columns}
@@ -414,6 +398,22 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 \begin{center}
   \texttt{</end>}
 \end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: State Encapsulation vs. Isolation}
+
+\begin{itemize}
+  \item Microservice: process memory boundaries
+  \item Actors (on the JVM):
+  \begin{itemize}
+    \item Visibility $+$ Accessibility $\rightarrow$ information hiding
+    \item Reference types $+$ pass-by-value $\rightarrow$ immutability
+    \item Coding conventions required
+  \end{itemize}
+\end{itemize}
 
 \end{frame}
 
