@@ -1,5 +1,6 @@
 package echo.core.parse.rss;
 
+import echo.core.domain.dto.EpisodeDTO;
 import echo.core.domain.dto.PodcastDTO;
 import echo.core.exception.FeedParsingException;
 import org.junit.jupiter.api.*;
@@ -70,6 +71,46 @@ public class RomeFeedParserTest {
         assertNotEquals(0, p.getItunesCategories().size());
         p.getItunesCategories().stream()
             .forEach(c -> assertFalse(isNullOrEmpty(c), "<itunes:category> is null or empty"));
+    }
+
+    @DisplayName("All Episodes are found")
+    @Test
+    void test_episodesEpisodesAreFound() throws FeedParsingException {
+        final FeedParser parser = RomeFeedParser.of(feedData);
+        assertEquals(2, parser.getEpisodes().size());
+    }
+
+    @DisplayName("All Episodes are found")
+    //@Test // TODO add this test once I've fixed the problem
+    void test_episodeFieldsAreParsed() throws FeedParsingException {
+        final FeedParser parser = RomeFeedParser.of(feedData);
+        for (EpisodeDTO e : parser.getEpisodes()) {
+            log.info(e.getGuid());
+            assertFalse(isNullOrEmpty(e.getTitle()), "<title> is null or empty");
+            assertFalse(isNullOrEmpty(e.getLink()), "<link> is null or empty");
+            assertFalse(isNullOrEmpty(e.getDescription()), "<description> is null or empty");
+            assertFalse(isNullOrEmpty(e.getGuid()), "<guid> is null or empty");
+            assertNotNull(e.getGuidIsPermaLink(), "<guid isPermaLink> is null or empty");
+            assertFalse(isNullOrEmpty(e.getImage()), "<image> is null or empty");
+            assertFalse(isNullOrEmpty(e.getItunesAuthor()), "<itunes:author> is null or empty");
+            assertFalse(isNullOrEmpty(e.getItunesDuration()), "<itunes:duration> is null or empty");
+            assertFalse(isNullOrEmpty(e.getItunesSummary()), "<itunes:summary> is null or empty");
+            assertFalse(isNullOrEmpty(e.getItunesSubtitle()), "<itunes:subtitle> is null or empty");
+            assertFalse(isNullOrEmpty(e.getItunesEpisodeType()), "<itunes:episodeType> is null or empty");
+            assertNotNull(e.getItunesSeason(), "<itunes:explicit> is null or empty");
+            assertNotNull(e.getItunesEpisode(), "<itunes:block> is null or empty");
+            assertNotNull(e.getEnclosureLength(), "<enclosure length> is null");
+            assertFalse(isNullOrEmpty(e.getEnclosureType()), "<enclosure type> is null or empty");
+            assertFalse(isNullOrEmpty(e.getEnclosureUrl()), "<enclosure url> is null or empty");
+            assertFalse(isNullOrEmpty(e.getContentEncoded()), "<content:encoded> is null or empty");
+            e.getChapters().stream()
+                .forEach(c -> {
+                    assertFalse(isNullOrEmpty(c.getTitle()), "<psc:chapter title> is null or empty");
+                    assertFalse(isNullOrEmpty(c.getHref()), "<psc:chapter href> is null or empty");
+                    assertFalse(isNullOrEmpty(c.getImage()), "<psc:chapter image> is null or empty");
+                    assertFalse(isNullOrEmpty(c.getStart()), "<psc:chapter start> is null or empty");
+                });
+        }
     }
 
 }
