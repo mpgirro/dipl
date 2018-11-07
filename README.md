@@ -51,7 +51,7 @@ If you want to cite the original thesis, please use the following [BibTeX entry]
 
     @mastersthesis{Irro18,
       author    = {Maximilian Irro},
-      title     = {{Concurrent Programming with Actors and Microservices}},
+      title     = {Concurrent Programming with Actors and Microservices},
       school    = {TU Wien},
       year      = {2018},
       keywords  = {concurrent programming, actors, microservices},
