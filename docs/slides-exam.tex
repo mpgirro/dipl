@@ -22,7 +22,7 @@
 
 \title[Your Short Title]{Concurrent Programming with\\Actors and Microservices}
 \author{Maximilian Irro}
-\date{Diplomprüfung\\XX.11.2018}
+\date{Diplomprüfung\\12.11.2018}
 
 \begin{document}
 
@@ -31,28 +31,64 @@
 \end{frame}
 
 % Uncomment these lines for an automatically generated outline.
-%\begin{frame}{Outline}
-%  \tableofcontents
-%\end{frame}
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
 
-\section{Concurrency}
+% ###################################################################
 
-% TODO hier sollte vielleicht noch ein anderer Slide vorher stehen
+\section{Overview}
 
-\begin{frame}{Forms of Concurrency}
+% ###################################################################
+
+\begin{frame}{Forms of Concurrent Execution}
 
 \begin{itemize}
-  \item Concurrent execution
-  \item Parallel execution
-  \item Distributed execution
+  \item \textbf{Pseudo-Simultaneous}: in alternation on a single CPU
+  \item \textbf{Parallel}: truely simultaneous on several CPU cores
+  \item \textbf{Distributed}: several host machines
 \end{itemize}
 
 \end{frame}
 
+% ###################################################################
 
-\section{Actor Model}
+\begin{frame}{Actor Model}
 
-\begin{frame}{Actors}
+\begin{itemize}
+  \item Defines theoretically well-known constructs
+  \item Receive and process messages (asynchronous, passiv)
+  \item Process one message at a time
+  \item Encapsulate state exclusively
+  \item Runtime system executes actors concurrently
+  \item Single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Microservices Paradigm}
+
+\begin{itemize}
+  \item Complex functionality through composition of several \textit{services}
+  \item Microservice: small, independent executable
+  \item \glqq small\grqq{} size $\rightarrow$ in it's \textit{scope of responsibility}
+  \item Every microservice a dedicated operating system process
+  \item Executed by an operating system scheduler (concurrency/parallelism)
+  \item Communicate via message passing channels
+  \item Network-based communication $\rightarrow$ distribution
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Research Questions}
+
+% ###################################################################
+
+\begin{frame}{Research Questions}
 
 \begin{itemize}
   \item TODO
@@ -60,15 +96,91 @@
 
 \end{frame}
 
-\section{Microservices Paradigm}
+% ###################################################################
 
-\begin{frame}{Microservices}
+\section{Contributions}
+
+% ###################################################################
+
+\begin{frame}{Contributions}
 
 \begin{itemize}
   \item TODO
 \end{itemize}
 
 \end{frame}
+
+% ###################################################################
+
+\section{Topics selected}
+
+% ###################################################################
+
+\begin{frame}{(Problem of) Topics selected}
+
+\begin{itemize}
+  \item TODO
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Implementation}
+
+% ###################################################################
+
+\begin{frame}{Implementation}
+
+\begin{itemize}
+  \item TODO
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Measurement Results}
+
+% ###################################################################
+
+\begin{frame}{Measurement Results}
+
+\begin{itemize}
+  \item TODO
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Conclusion}
+
+% ###################################################################
+
+\begin{frame}{Conclusion}
+
+\begin{itemize}
+  \item TODO
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\section{Research Questions Revisited}
+
+% ###################################################################
+
+\begin{frame}{Research Questions Revisited}
+
+\begin{itemize}
+  \item TODO
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
 
 
 \end{document}
