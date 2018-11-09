@@ -37,7 +37,7 @@
 
 % ###################################################################
 
-\section{Overview}
+\section{Overview: Concurrency, Actors, Microservices}
 
 % ###################################################################
 
@@ -90,9 +90,16 @@
 
 \begin{frame}{Research Questions}
 
-\begin{itemize}
-  \item TODO
-\end{itemize}
+\pause
+
+\begin{table}
+  \begin{tabularx}{\textwidth}{lX}                                                                                                                    \\[10pt]%
+    \textbf{RQ1} & Why do actors and microservices qualify for programming concurrency?                                                               \\[10pt]%
+    \textbf{RQ2} & How do the actor and the microservice model facilitate concurrent execution?                                                       \\[10pt]%
+    \textbf{RQ3} & What are the expressive capabilities of actors and microservices regarding concurrent programming concerns?                        \\[10pt]%
+    \textbf{RQ4} & How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
+  \end{tabularx}
+\end{table}
 
 \end{frame}
 
@@ -140,6 +147,57 @@
 
 % ###################################################################
 
+\begin{frame}{Benchmark System Architecture}
+
+\begin{columns}
+  \begin{column}{0.47\textwidth}
+    \begin{itemize}
+      \item Gateway (G) 
+      \item CatalogStore (C)
+      \item Updater (U)
+      \item Web Crawler (W)
+      \item Parser (P)
+      \item IndexStore (I)
+      \item Searcher (S)
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \begin{figure} 
+      \includegraphics[width=0.7\textwidth]{graphics/interaction-model.png} 
+      \caption{Interaction Model}
+    \end{figure}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Software Artifact Analysis}
+
+\begin{table}
+  \begin{tabular}{l|r|r|r|r}
+    \textbf{Artifact} & \textbf{LoC} & \textbf{sJAR (KB)} & \textbf{fJAR (KB)} & \textbf{Up (s)}  \\ \hline
+    Akka monolith     & 4487         & 1004.3             & 76 775.1           & 5.5                     \\ \hline
+    CatalogStore (MS) & 1838         & 56.1               & 89 225.8           & 14.6                    \\ \hline
+    IndexStore (MS)   & 724          & 23.8               & 83 518.2           & 8.8                     \\ \hline
+    Searcher (MS)     & 656          & 22.2               & 81 754.4           & 8.1                     \\ \hline
+    Web Crawler (MS)  & 716          & 23.5               & 83 517.9           & 9.2                     \\ \hline
+    Parser (MS)       & 703          & 24.2               & 83 519.1           & 8.6                     \\ \hline
+    Registry (MS)     & 334          & 9.9                & 90 699.7           & 9.4                     \\ \hline
+    Gateway (MS)      & 889          & 30.5               & 83 655.1           & 9.7                     \\ \hline
+    Updater (MS)      & 693          & 23.9               & 83 518.3           & 8.7                     \\ \hline
+  \end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item $\sum\mbox{LoC}(\mbox{MS}) = 6553$, about 46 \% larger
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
 \section{Measurement Results}
 
 % ###################################################################
@@ -149,6 +207,48 @@
 \begin{itemize}
   \item TODO
 \end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Artifact Memory Consumption}
+
+Memory consumption of the executable artifact VMs in the indexing phase:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-index-mem.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Overall Processing Time: Indexing Subsystem}
+
+Benchmark results for the overall processing time of the indexing subsystem:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-index-overall.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Overall Processing Time: Retrieval Subsystem}
+
+Benchmark results of the overall processing time for the retrieval subsystem:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-rtt-overall.pdf} 
+  \end{figure}
+\end{center}
 
 \end{frame}
 
