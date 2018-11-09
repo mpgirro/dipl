@@ -2600,7 +2600,8 @@ research. It is marked as "may change" and to be considered experimental.
   must handle time and communicate it in terms of messages.
 + The actor model intrinsically types all received messages dynamically.
   Type-restricting the actor addresses constrains the range of acceptable
-  messages. { .findings-list }
+  messages. 
+{ .findings-list }
 ~
 
 
@@ -2813,7 +2814,7 @@ they call *actor database systems* [@Sha17c].
   strategies as for synchronous actor communication.
 + Concurrent database interaction via delegation forces us to
   intentionally weaken the conceptual encapsulation of actor state.
-  {.findings-list}
+{.findings-list}
 ~
 
 
@@ -2889,7 +2890,8 @@ the expression of service requirements.
 + We can leverage inversion of control frameworks to reduce the effort
   that comes with writing many separate applications for MSAs.
 + Programming with IoC transfers the management of concurrent execution
-  to the IoC container. {.findings-list}
+  to the IoC container. 
+{.findings-list}
 ~
 
 
@@ -2974,7 +2976,7 @@ transaction instead [@SpringDoc].
   `@Async`, STM).
 + A declarative programming style can simplify the handling of
   concurrency issues in an imperative programming language.
-  {.findings-list}
+{.findings-list}
 ~
 
 
@@ -3270,7 +3272,7 @@ integrates transparently into Feign.
   compatibility issues.
 + Location transparency is not intrinsically available in MSAs. Network
   communication coupled with discovery technology adds this feature.
-  {.findings-list}
+{.findings-list}
 ~
 
 
@@ -4298,7 +4300,7 @@ a reactive microservice system framework built on top of Akka.
   scientific question.
 + Actors and microservices can integrate without a formal basis. However,
   the correctness properties of the models are then not guaranteed.
-  {.findings-list}
+{.findings-list}
 ~
 
 
@@ -4423,7 +4425,7 @@ entire actor engine.
   overhead at startup is the price for the reduced programming effort.
 + Microservice architectures are drastically larger in terms of
   executable component sizes compared to a monolithic actor architecture.
-  {.findings-list}
+{.findings-list}
 ~
 
 
