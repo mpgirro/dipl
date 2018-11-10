@@ -13,11 +13,23 @@
   \usefonttheme{default}  % or try serif, structurebold, ...
   \setbeamertemplate{navigation symbols}{}
   \setbeamertemplate{caption}[numbered]
+  \setbeamertemplate{footline}{% 
+    \hfill% 
+    \usebeamercolor[fg]{page number in head/foot}% 
+    \usebeamerfont{page number in head/foot}% 
+    \insertframenumber%
+    %\,/\,\inserttotalframenumber
+    \kern1em\vskip2pt% 
+  }
 } 
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
+\usepackage{pdfcomment}
+\usepackage{fancyvrb}
+\usepackage{tabularx}
 
+\newcommand{\pdfnote}[1]{\marginnote{\pdfcomment[icon=note]{#1}}}
 \newcommand\mydots{\hbox to 1em{.\hss.\hss.}}
 
 \title[Your Short Title]{Concurrent Programming with\\Actors and Microservices}
@@ -112,7 +124,11 @@
 \begin{frame}{Contributions}
 
 \begin{itemize}
-  \item TODO
+  \item Compared the programming of concurrent computation with the actors and microservices
+  \item Explored the interrelations of the two models and filled a gap in the literature
+  \item Designed a non-trivial scenario for a concurrent domain-specific search engine
+  \item Actor and microservice implementation
+  \item Capability evaluation and efficiency benchmark
 \end{itemize}
 
 \end{frame}
@@ -258,7 +274,7 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 % ###################################################################
 
-\begin{frame}{Conclusion}
+\begin{frame}{Conclusion \& Implications}
 
 \begin{itemize}
   \item TODO
