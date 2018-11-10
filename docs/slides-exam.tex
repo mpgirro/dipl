@@ -124,8 +124,8 @@
 \begin{frame}{Contributions}
 
 \begin{itemize}
-  \item Compared the programming of concurrent computation with the actors and microservices
-  \item Explored the interrelations of the two models and filled a gap in the literature
+  \item Compared the programming of concurrent computation with actors and microservices
+  \item Explored interrelations of the two models $\rightarrow$ filled a gap in the literature
   \item Designed a non-trivial scenario for a concurrent domain-specific search engine
   \item Actor and microservice implementation
   \item Capability evaluation and efficiency benchmark
@@ -142,7 +142,14 @@
 \begin{frame}{(Problem of) Topics selected}
 
 \begin{itemize}
-  \item TODO
+  \item \textbf{Encapsulation} \\%
+        Isolation, Shared and Mutable State, Persistence/IO, Cohesion, Coupling, Independence
+  \item \textbf{Communication} \\%
+        Communication Styles, Message Routing
+  \item \textbf{Concurrent Execution} \\%
+        Conception of Conc. Exec., Distribution, Location Transparency, Fairness, Resource Consumption
+  \item \textbf{Scalability and Modularity} \\%
+        Forms (Vertical, Horizontal, Load), Dynamic Reconfiguration, Extensibility, Technology Diversity
 \end{itemize}
 
 \end{frame}
@@ -153,17 +160,7 @@
 
 % ###################################################################
 
-\begin{frame}{Implementation}
-
-\begin{itemize}
-  \item TODO
-\end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
-\begin{frame}{Benchmark System Architecture}
+\begin{frame}{Implementation: Domain-specific Search Engine}
 
 \begin{columns}
   \begin{column}{0.47\textwidth}
@@ -297,6 +294,56 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 \end{frame}
 
 % ###################################################################
+
+\begin{frame}{}
+
+\vspace{1cm}
+\begin{center}
+  \texttt{</presentation>}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: State Encapsulation vs. Isolation}
+
+\begin{itemize}
+  \item Microservice: process memory boundaries
+  \item Actors (on the JVM):
+  \begin{itemize}
+    \item Visibility $+$ Accessibility $\rightarrow$ information hiding
+    \item Reference types $+$ pass-by-value $\rightarrow$ immutability
+    \item Coding conventions required
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: Semi-Synchronous Communication in Akka}
+
+Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Supplemental: Relevance of the Benchmark}
+
+\begin{itemize}
+  \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
+  \item Lack of different interaction modes in microservice architecture benchmarks according to literature $\rightarrow$ comparison to asynchronous actor system
+\end{itemize}
+
+\end{frame}
 
 
 \end{document}
