@@ -149,13 +149,11 @@
 \begin{frame}{Contributions}
 
 \begin{itemize}
-  \item Designed a non-trivial scenario for a concurrent domain-specific search engine
-  \begin{itemize}
-    \item Actor and microservice architecture implementation
-  \end{itemize}
-  \item Compared conc. prog. with actors and microservices
+  \item Designed a non-trivial concurrent system scenario \\%
+        $\rightarrow$ Actor and microservice implementation
+  \item Compared programming of concurrency
   \item Describe interrelations $\rightarrow$ filled a gap in the literature
-  \item Capability evaluation and efficiency benchmark
+  \item Capability evaluation $+$ efficiency benchmark
 \end{itemize}
 
 \end{frame}
@@ -301,9 +299,9 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 \begin{itemize}
   \item \textbf{Same} capabilities regarding concurrent programming concerns
-  \item Subject to \textbf{different} trade-offs
+  \item \textbf{Different} strategies $+$ trade-offs
   \item Actors: more efficient, less resource consumption
-  \item Microservices: more independent \& modular, more interaction freedom \\%
+  \item Microservices: more independent, more interaction freedom \\%
         $\rightarrow$ benefit from actor principles 
 \end{itemize}
 
@@ -322,6 +320,20 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 % ###################################################################
 
+\begin{frame}{Supplemental: Semi-Synchronous Communication in Akka}
+
+Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
+  \end{figure}
+\end{center}
+
+\end{frame}
+
+% ###################################################################
+
 \begin{frame}{Supplemental: State Encapsulation vs. Isolation}
 
 \begin{itemize}
@@ -333,20 +345,6 @@ Benchmark results of the overall processing time for the retrieval subsystem:
     \item Coding conventions required
   \end{itemize}
 \end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
-\begin{frame}{Supplemental: Semi-Synchronous Communication in Akka}
-
-Comparison of the benchmark results for the retrieval subsystem using either delegation or futures for request/response communication in the Akka:
-
-\begin{center}
-  \begin{figure} 
-    \includegraphics[width=0.5\textwidth]{graphics/eval-search-comparison-akka-delegation-future.pdf} 
-  \end{figure}
-\end{center}
 
 \end{frame}
 
