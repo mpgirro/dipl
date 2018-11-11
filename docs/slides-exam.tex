@@ -102,8 +102,6 @@
 
 \begin{frame}{Research Questions}
 
-\pause
-
 \begin{table}
   \begin{tabularx}{\textwidth}{lX}                                                                                                                    \\[10pt]%
     \textbf{RQ1} & Why do actors and microservices qualify for programming concurrency?                                                               \\[10pt]%
@@ -112,6 +110,20 @@
     \textbf{RQ4} & How does the performance of actors and microservices compare in a multi-core environment relative to a concurrent system scenario?
   \end{tabularx}
 \end{table}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Demarcation of Research Area}
+
+\pause
+
+\begin{center}
+  \begin{figure} 
+    \includegraphics[width=\textwidth]{graphics/topics-venn.pdf} 
+  \end{figure}
+\end{center}
 
 \end{frame}
 
@@ -143,13 +155,14 @@
 
 \begin{itemize}
   \item \textbf{Encapsulation} \\%
-        Isolation, Shared and Mutable State, Persistence/IO, Cohesion, Coupling, Independence
+        Isolation (Shared/ Mutable State), Persistence/IO, Cohesion, Coupling, Independence
   \item \textbf{Communication} \\%
         Communication Styles, Message Routing
   \item \textbf{Concurrent Execution} \\%
-        Conception of Conc. Exec., Distribution, Location Transparency, Fairness, Resource Consumption
+        Conception of Conc. Exec., Distribution, Location Transparency, Fairness, Resource Consumption, Notion of Time
   \item \textbf{Scalability and Modularity} \\%
         Forms (Vertical, Horizontal, Load), Dynamic Reconfiguration, Extensibility, Technology Diversity
+  \item \textbf{Integration of Actors and Microservices}
 \end{itemize}
 
 \end{frame}
@@ -161,6 +174,8 @@
 % ###################################################################
 
 \begin{frame}{Implementation: Domain-specific Search Engine}
+
+\pause
 
 \begin{columns}
   \begin{column}{0.47\textwidth}
@@ -186,25 +201,28 @@
 
 % ###################################################################
 
-\begin{frame}{Software Artifact Analysis}
+\begin{frame}{Implementation: Subsystems \& Processing Pipelines}
 
-\begin{table}
-  \begin{tabular}{l|r|r|r|r}
-    \textbf{Artifact} & \textbf{LoC} & \textbf{sJAR (KB)} & \textbf{fJAR (KB)} & \textbf{Up (s)}  \\ \hline
-    Akka monolith     & 4487         & 1004.3             & 76 775.1           & 5.5                     \\ \hline
-    CatalogStore (MS) & 1838         & 56.1               & 89 225.8           & 14.6                    \\ \hline
-    IndexStore (MS)   & 724          & 23.8               & 83 518.2           & 8.8                     \\ \hline
-    Searcher (MS)     & 656          & 22.2               & 81 754.4           & 8.1                     \\ \hline
-    Web Crawler (MS)  & 716          & 23.5               & 83 517.9           & 9.2                     \\ \hline
-    Parser (MS)       & 703          & 24.2               & 83 519.1           & 8.6                     \\ \hline
-    Registry (MS)     & 334          & 9.9                & 90 699.7           & 9.4                     \\ \hline
-    Gateway (MS)      & 889          & 30.5               & 83 655.1           & 9.7                     \\ \hline
-    Updater (MS)      & 693          & 23.9               & 83 518.3           & 8.7                     \\ \hline
-  \end{tabular}
-\end{table}
+\begin{figure} 
+  \includegraphics[width=0.77\textwidth]{graphics/pipeline-indexing.png} 
+  \caption{Indexing Pipeline}
+\end{figure}
+
+\begin{figure} 
+  \includegraphics[width=0.65\textwidth]{graphics/pipeline-retrieval.png} 
+  \caption{Retrieval Pipeline}
+\end{figure}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Implementation: Technology Stacks}
 
 \begin{itemize}
-  \item $\sum\mbox{LoC}(\mbox{MS}) = 6553$, about 46 \% larger
+  \item JVM based
+  \item Actor variant: Akka
+  \item Microservice: Spring Boot $+$ Spring Cloud
 \end{itemize}
 
 \end{frame}
@@ -215,10 +233,25 @@
 
 % ###################################################################
 
-\begin{frame}{Measurement Results}
+\begin{frame}{Software Artifact Analysis}
+
+\begin{table}
+  \begin{tabular}{l|r|r|r|r}
+    \textbf{Artifact} & \textbf{LoC} & \textbf{sJAR (KB)} & \textbf{fJAR (KB)} & \textbf{Up (s)}  \\ \hline
+    Akka monolith     & 4487         & 1004.3             & 76 775.1           & 5.5              \\ \hline
+    CatalogStore (MS) & 1838         & 56.1               & 89 225.8           & 14.6             \\ \hline
+    IndexStore (MS)   & 724          & 23.8               & 83 518.2           & 8.8              \\ \hline
+    Searcher (MS)     & 656          & 22.2               & 81 754.4           & 8.1              \\ \hline
+    Web Crawler (MS)  & 716          & 23.5               & 83 517.9           & 9.2              \\ \hline
+    Parser (MS)       & 703          & 24.2               & 83 519.1           & 8.6              \\ \hline
+    Registry (MS)     & 334          & 9.9                & 90 699.7           & 9.4              \\ \hline
+    Gateway (MS)      & 889          & 30.5               & 83 655.1           & 9.7              \\ \hline
+    Updater (MS)      & 693          & 23.9               & 83 518.3           & 8.7              \\ \hline
+  \end{tabular}
+\end{table}
 
 \begin{itemize}
-  \item TODO
+  \item $\sum\mbox{LoC}(\mbox{MS}) = 6553$, about 46 \% larger
 \end{itemize}
 
 \end{frame}
@@ -335,15 +368,6 @@ Comparison of the benchmark results for the retrieval subsystem using either del
 \end{frame}
 
 % ###################################################################
-
-\begin{frame}{Supplemental: Relevance of the Benchmark}
-
-\begin{itemize}
-  \item First benchmark comparing Akka actors and Spring- based microservices (full application context)
-  \item Lack of different interaction modes in microservice architecture benchmarks according to literature $\rightarrow$ comparison to asynchronous actor system
-\end{itemize}
-
-\end{frame}
 
 
 \end{document}
