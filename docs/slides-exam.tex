@@ -68,12 +68,12 @@
 \begin{frame}{Actor Model}
 
 \begin{itemize}
-  \item Defines theoretically well-known constructs
+  \item Theoretically well-known constructs
   \item Receive and process messages (asynchronous, passiv)
-  \item Process one message at a time
+  \item One message at a time
   \item Encapsulate state exclusively
-  \item Runtime system executes actors concurrently
-  \item Single-threaded semantics internally: exclusive state ownership $+$ isolated message processing
+  \item Concurrent execution through runtime
+  \item Single-threaded semantics
 \end{itemize}
 
 \end{frame}
@@ -83,20 +83,19 @@
 \begin{frame}{Microservices Paradigm}
 
 \begin{itemize}
-  \item Complex functionality through composition of several \textit{services}
+  \item Complex functionality: composition of several \textit{services}
   \item Microservice: small, independent executable
-  \item \glqq small\grqq{} size $\rightarrow$ in it's \textit{scope of responsibility}
-  \item Every microservice a dedicated operating system process
-  \item Executed by an operating system scheduler (concurrency/parallelism)
+  \item \glqq Small\grqq{} size $\rightarrow$ in it's \textit{scope of responsibility}
+  \item Dedicated operating system processes
   \item Communicate via message passing channels
-  \item Network-based communication $\rightarrow$ distribution
+%  \item Network-based communication $\rightarrow$ distribution
 \end{itemize}
 
 \end{frame}
 
 % ###################################################################
 
-\section{Research Questions}
+\section{Research Questions \& Contributions}
 
 % ###################################################################
 
@@ -129,29 +128,7 @@
 
 % ###################################################################
 
-\section{Contributions}
-
-% ###################################################################
-
-\begin{frame}{Contributions}
-
-\begin{itemize}
-  \item Compared the programming of concurrent computation with actors and microservices
-  \item Explored interrelations of the two models $\rightarrow$ filled a gap in the literature
-  \item Designed a non-trivial scenario for a concurrent domain-specific search engine
-  \item Actor and microservice implementation
-  \item Capability evaluation and efficiency benchmark
-\end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
-\section{Topics selected}
-
-% ###################################################################
-
-\begin{frame}{(Problem of) Topics selected}
+\begin{frame}{Selected Capabilities}
 
 \begin{itemize}
   \item \textbf{Encapsulation} \\%
@@ -163,6 +140,22 @@
   \item \textbf{Scalability and Modularity} \\%
         Forms (Vertical, Horizontal, Load), Dynamic Reconfiguration, Extensibility, Technology Diversity
   \item \textbf{Integration of Actors and Microservices}
+\end{itemize}
+
+\end{frame}
+
+% ###################################################################
+
+\begin{frame}{Contributions}
+
+\begin{itemize}
+  \item Designed a non-trivial scenario for a concurrent domain-specific search engine
+  \begin{itemize}
+    \item Actor and microservice architecture implementation
+  \end{itemize}
+  \item Compared conc. prog. with actors and microservices
+  \item Describe interrelations $\rightarrow$ filled a gap in the literature
+  \item Capability evaluation and efficiency benchmark
 \end{itemize}
 
 \end{frame}
@@ -229,7 +222,7 @@
 
 % ###################################################################
 
-\section{Measurement Results}
+\section{Benchmark Results}
 
 % ###################################################################
 
@@ -300,28 +293,18 @@ Benchmark results of the overall processing time for the retrieval subsystem:
 
 % ###################################################################
 
-\section{Conclusion}
+\section{Conclusion \& Implications}
 
 % ###################################################################
 
 \begin{frame}{Conclusion \& Implications}
 
 \begin{itemize}
-  \item TODO
-\end{itemize}
-
-\end{frame}
-
-% ###################################################################
-
-\section{Research Questions Revisited}
-
-% ###################################################################
-
-\begin{frame}{Research Questions Revisited}
-
-\begin{itemize}
-  \item TODO
+  \item \textbf{Same} capabilities regarding concurrent programming concerns
+  \item Subject to \textbf{different} trade-offs
+  \item Actors: more efficient, less resource consumption
+  \item Microservices: more independent \& modular, more interaction freedom \\%
+        $\rightarrow$ benefit from actor principles 
 \end{itemize}
 
 \end{frame}
