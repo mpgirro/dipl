@@ -130,6 +130,6 @@ The web-frontend for the Echo search engine. This web app builds on [Angular](ht
 
 ## Evaluation
 
-<img src="docs/graphics/eval-index-overall.png" alt="Indexing subsystem benchmark results" width="540" />
+<img src="docs/graphics/eval-index-overall.png" alt="Indexing subsystem benchmark results" width="360" />
 
-<img src="docs/graphics/eval-search-rtt-overall.png" alt="Retrieval subsystem benchmark results" width="540" />
+<img src="docs/graphics/eval-search-rtt-overall.png" alt="Retrieval subsystem benchmark results" width="360" />
