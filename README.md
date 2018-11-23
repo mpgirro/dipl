@@ -130,6 +130,11 @@ The web-frontend for the Echo search engine. This web app builds on [Angular](ht
 
 ## Evaluation
 
-<img src="docs/graphics/eval-index-overall.png" alt="Indexing subsystem benchmark results" width="360" />
 
-<img src="docs/graphics/eval-search-rtt-overall.png" alt="Retrieval subsystem benchmark results" width="360" />
+<img src="docs/graphics/eval-index-overall.png" alt="Indexing subsystem benchmark results" width="240" align="right" />
+
+The indexing phase facilitates asynchronous communication. The efficiency benchmark results show that the execution modality of actors is more efficient. Microservices have a higher runtime over- head, since they are separate system processes.
+
+<img src="docs/graphics/eval-search-rtt-overall.png" alt="Retrieval subsystem benchmark results" width="240" />
+
+The time constraints of the retrieval phase favours synchronous interaction. Actors use a request/asynchronous response style (Akka's `ask` message dispatch). This semi-synchronous strategy shows better efficiency than the strictly synchronous communication via REST in the microservice architecture.
