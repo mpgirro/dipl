@@ -2600,7 +2600,7 @@ research. It is marked as "may change" and to be considered experimental.
   must handle time and communicate it in terms of messages.
 + The actor model intrinsically types all received messages dynamically.
   Type-restricting the actor addresses constrains the range of acceptable
-  messages. 
+  messages.
 { .findings-list }
 ~
 
@@ -2890,7 +2890,7 @@ the expression of service requirements.
 + We can leverage inversion of control frameworks to reduce the effort
   that comes with writing many separate applications for MSAs.
 + Programming with IoC transfers the management of concurrent execution
-  to the IoC container. 
+  to the IoC container.
 {.findings-list}
 ~
 
