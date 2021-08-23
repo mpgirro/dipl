@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: If you use this software, please cite the thesis from preferred-citation.
+authors:
+  - family-names: Irro
+    given-names: Maximilian
+title: Concurrent Programming with Actors and Microservices
+date-released: 2018-09-30
+version: 1.0.0
+repository-code: https://github.com/mpgirro/dipl
+institution: TU Wien
+preferred-citation:
+  authors:
+    - family-names: Irro
+      given-names: Maximilian
+  title: Concurrent Programming with Actors and Microservices
+  year: 2018
+  thesis-type: Master's thesis
+  type: thesis
+  keywords:
+    - concurrent programming
+    - actors
+    - microservices
+  languages: 
+    - en
+  repository: https://repositum.tuwien.at/handle/20.500.12708/5461
