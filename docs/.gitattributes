@@ -1,0 +1,4 @@
+*.mdk linguist-detectable
+*.mdk linguist-language=Markdown
+*.mdk linguist-documentation=false
+*.mdk text
